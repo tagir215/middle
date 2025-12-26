@@ -161,7 +161,7 @@ namespace middle {
 		outFile << "#include \"middle_script_registry.h\"" << std::endl;
 		outFile << "static std::string name = \"" << sceneName << index <<  "\";" << std::endl;
 		outFile << std::endl;
-		outFile << "void print(middle::GameState* gameState) {" << std::endl;
+		outFile << "static void print(middle::GameState* gameState) {" << std::endl;
 		outFile << std::endl;
 		outFile << "}" << std::endl;
 		outFile << std::endl;

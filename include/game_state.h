@@ -150,6 +150,7 @@ namespace middle {
 		BUILD,
 		CREATE_LOOPS,
 		LOAD_SCENE,
+		IMPORT_SCENE,
 		NEW_SCENE,
 		OPEN_SCRIPT,
 	};

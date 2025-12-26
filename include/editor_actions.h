@@ -51,6 +51,12 @@ namespace middle {
 		void execute(GameState* gameState) override;
 	};
 
+	// what is import scene? it's so that you can import scenes as objects, or loops 
+	class EditorActionImportScene : public EditorActionContainer {
+	public:
+		void execute(GameState* gameState) override;
+	};
+
 	// this will create scripts if theres no script, and open script if there is script.
 	// it is so much work to find scripts. Finding things from list of files is not smart. You need to use the editor
 	class EditorActionOpenScript : public EditorActionContainer {

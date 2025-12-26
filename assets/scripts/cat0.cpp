@@ -1,7 +1,7 @@
 #include "middle_script_registry.h"
 static std::string name = "cat0";
 
-void print(middle::GameState* gameState) {
+static void print(middle::GameState* gameState) {
 
 }
 

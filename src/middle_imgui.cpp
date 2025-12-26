@@ -193,17 +193,35 @@ namespace middle {
 
 		// SCENE MANAGER
 		ImGui::Begin("Scene");
-		if (gameState->sceneNames.size() > 0) {
-			ImGui::Text(("ActiveScene: " + gameState->sceneNames[gameState->activeScene]).c_str());
+
+		static EditorAction popupAction = EditorAction::LOAD_SCENE;
+		// Add new scene button
+		if (ImGui::Button("OPEN SCENE")) {
+			ImGui::OpenPopup("Scene Selector");
+			popupAction = EditorAction::LOAD_SCENE;
 		}
-		for (int i = 0; i < gameState->sceneNames.size(); ++i) {
-			auto name = gameState->sceneNames[i];
-			if (ImGui::Button(name.c_str())) {
-				EditorActionContainer::Params params;
-				params.intValue = i;
-				gameState->nextEditorAction = EditorAction::LOAD_SCENE;
-				gameState->nextEditorActionParams = params;
+		if (ImGui::Button("IMPORT SCENE")) {
+			ImGui::OpenPopup("Scene Selector");
+			popupAction = EditorAction::IMPORT_SCENE;
+		}
+
+		if (ImGui::BeginPopup("Scene Selector")) {
+
+			if (gameState->sceneNames.size() > 0) {
+				ImGui::Text(("ActiveScene: " + gameState->sceneNames[gameState->activeScene]).c_str());
 			}
+			for (int i = 0; i < gameState->sceneNames.size(); ++i) {
+				auto name = gameState->sceneNames[i];
+				if (ImGui::Button(name.c_str())) {
+					EditorActionContainer::Params params;
+					params.intValue = i;
+					gameState->nextEditorAction = popupAction;
+					gameState->nextEditorActionParams = params;
+					ImGui::CloseCurrentPopup();
+				}
+			}
+
+			ImGui::EndPopup();
 		}
 
 		ImGui::Separator();

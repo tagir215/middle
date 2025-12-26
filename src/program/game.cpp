@@ -26,11 +26,6 @@ __declspec(dllexport) void UpdateGame(GameState* gameState)
 	updateInstances(gameState);
 
 
-	// run scripts
-	loopInstances(gameState, [gameState](int i, ShapeInstance& instance) {
-		runScript(gameState, i);
-		});
-
 
 
 	// camera controls
@@ -146,7 +141,7 @@ __declspec(dllexport) void UpdateGame(GameState* gameState)
 		}
 
 		if (instance.grabDown) {
-			moveShape(gameState, instance, gameState->input.mouseXZ_PlanePos);
+			moveShape(gameState, instance, gameState->input.mouseXZ_PlaneVelocity);
 		}
 
 		});
@@ -163,6 +158,12 @@ __declspec(dllexport) void UpdateGame(GameState* gameState)
 		gameState->doOneStep = false;
 		return;
 	}
+
+	// run scripts
+	loopInstances(gameState, [gameState](int i, ShapeInstance& instance) {
+		runScript(gameState, i);
+		});
+
 
 	// shape phsyics stuff
 	// create pairs

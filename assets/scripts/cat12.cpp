@@ -2,7 +2,7 @@
 #include <iostream>
 static std::string name = "cat12";
 
-void print(middle::GameState* gameState) {
+static void print(middle::GameState* gameState) {
 	//std::cout << "hello from " << name << std::endl;
 }
 

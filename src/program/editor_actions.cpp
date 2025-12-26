@@ -60,6 +60,11 @@ namespace middle {
 			action.execute(gameState);
 			break;
 		}
+		case EditorAction::IMPORT_SCENE: {
+			auto action = EditorActionImportScene();
+			action.params = gameState->nextEditorActionParams;
+			action.execute(gameState);
+		}
 		case EditorAction::OPEN_SCRIPT: {
 			auto action = EditorActionOpenScript();
 			action.params = gameState->nextEditorActionParams;
@@ -288,6 +293,12 @@ namespace middle {
 		gameState->reload = true;
 		gameState->reset = true;
 	}
+
+	void EditorActionImportScene::execute(GameState* gameState)
+	{
+
+	}
+
 
 	void EditorActionOpenScript::execute(GameState* gameState)
 	{
