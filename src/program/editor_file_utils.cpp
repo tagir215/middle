@@ -59,13 +59,7 @@ namespace middle {
 			auto& shape = gameState->shapes[i];
 
 			// do references in second pass, 
-			if (shape.type == ShapeType::REFERENCE) {
-				++cumulatedOffset;
-				continue;
-			}
-			// don't save elements that belong to a scene reference, since they are stored in the other scene
-			int containerIndex = findHighestLevelContainer(gameState, i);
-			if (containerIndex != UNASSIGNED && gameState->shapes[containerIndex].type == ShapeType::REFERENCE) {
+			if (shape.isReferenceShape) {
 				++cumulatedOffset;
 				continue;
 			}
@@ -173,7 +167,7 @@ namespace middle {
 
 		// if not importing make sure loop index is 0, 
 		if (!import) {
-			assert(gameState->loopIndex == 0);
+			gameState->loopIndex = 0;
 		}
 
 		std::vector<std::string>buffer;
@@ -218,6 +212,12 @@ namespace middle {
 				members.push_back(v);
 			}
 			reference(indexOffset + currentIndex, members, sceneName);
+
+			// set as reference shapes,  its good to know..
+			for (int i = 0; i < shapesAddedCount; ++i) {
+				Shape& shape = gameState->shapes[indexOffset + i];
+				shape.isReferenceShape = true;
+			}
 
 			// move imported scene where it wants to be
 			moveShape(gameState, indexOffset + currentIndex, pos);

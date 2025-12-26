@@ -3,12 +3,19 @@
 #include "middle_shape_utils.h"
 namespace middle {
 
+	std::vector<PhysicsBody*> physicsBodies;
+
 	void reset(GameState* gameState) {
 		if (gameState->reset) {
 			gameState->reset = false;
 			for (int i = 0; i < gameState->shapes.size(); ++i) {
-				++gameState->shapes[i].id.generation;
+				int nextGeneration = gameState->shapes[i].id.generation + 1;
+				gameState->shapes[i] = Shape();
+				gameState->shapes[i].id.generation = nextGeneration;
 			}
+		}
+		for (int i = 0; i < physicsBodies.size(); ++i) {
+			physicsBodies[i] = nullptr;
 		}
 
 	}

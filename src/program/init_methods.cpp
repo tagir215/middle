@@ -49,5 +49,6 @@ namespace middle {
 		gameStateRef->shapes[index].type = ShapeType::REFERENCE;
 		gameStateRef->shapes[index].radius = DEF_RADIUS_REFERENCE_INDICATOR;
 		gameStateRef->shapes[index].name = sceneName;
+		gameStateRef->shapes[index].isReferenceShape = true;
 	}
 }

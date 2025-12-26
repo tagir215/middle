@@ -6,7 +6,6 @@
 #include "descart_loop.h"
 #include "middle_script_registry.h"
 
-std::array<PhysicsBody*, MAX_SHAPE_COUNT> bodies;
 using namespace middle;
 
 
@@ -18,6 +17,7 @@ __declspec(dllexport) void UpdateGame(GameState* gameState)
 	// update
 	if (gameState->reload) {
 		//gameInitializer.update(gameState);
+		reset(gameState);
 		loadSceneNames(gameState);
 		if (gameState->sceneNames.size() > 0) {
 			loadScene(gameState, gameState->sceneNames[gameState->activeScene], false);

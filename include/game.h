@@ -6,8 +6,6 @@
 #include "editor_actions.h"
 using namespace middle;
 
-std::vector<PhysicsBody*>physicsBodies;
-
 extern "C" 
 {
 	__declspec(dllexport) void UpdateGame(GameState* renderData);
