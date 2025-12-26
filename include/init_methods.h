@@ -6,5 +6,6 @@ namespace middle {
 	extern GameState* gameStateRef;
 	void sphere(int index, Vector3 position);
 	void constraint(int index, int indexA, int indexB, float targetDistance);
-	void loop(int index, std::vector<int> loopIndexes);
+	void loop(int index, const std::vector<int>& loopIndexes);
+	void reference(int index, const std::vector<int>& loopIndexes);
 }

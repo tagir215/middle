@@ -82,12 +82,7 @@ namespace middle {
 		int freeIndex = findFreeIndex(gameState);
 
 		Vector3 xzPos = gameState->input.mouseXZ_PlanePos;
-		Shape shape;
-		shape.type = ShapeType::SPHERE;
-		shape.position = xzPos;
-
-		gameState->addShape(freeIndex, shape);
-
+		sphere(freeIndex, xzPos);
 	};
 
 	void EditorActionNewConstraint::execute(GameState* gameState) {
@@ -109,23 +104,18 @@ namespace middle {
 		assert(shapes[indexA].type == ShapeType::SPHERE);
 		assert(shapes[indexB].type == ShapeType::SPHERE);
 		if (constraintAlreadyExists(gameState, indexA, indexB)) {
-
 			return;
 		}
 
 		int freeIndex = findFreeIndex(gameState);
 
 		if (indexA != indexB) {
-			shapes[freeIndex].type = ShapeType::CONSTRAINT;
-			shapes[freeIndex].maxLifetime = DEF_LIFETIME;
-			shapes[freeIndex].color = DEF_COLOR;
-			shapes[freeIndex].constraint.indexA = indexA;
-			shapes[freeIndex].constraint.indexB = indexB;
-
 			float distBetween = descart::DistV(gameState->getShapeInstance(indexA).pData.position, gameState->getShapeInstance(indexB).pData.position);
 			auto& shapeA = shapes[indexA];
 			auto& shapeB = shapes[indexB];
 			shapes[freeIndex].constraint.targetDistance = distBetween;
+
+			constraint(freeIndex, indexA, indexB, distBetween);
 
 			// auto unselect
 			unselect(gameState);
@@ -216,8 +206,8 @@ namespace middle {
 		int freeIndex = findFreeIndex(gameState);
 		int loopIndex = gameState->loopIndex;
 
-		// find selected items and set them to the loop member array
-		int loopSize = 0;
+		// find selected items 
+		std::vector<int>memberIndexes;
 		loopInstances(gameState, [&](int i, ShapeInstance& instance) {
 			if (instance.shape.type != ShapeType::SPHERE && instance.shape.type != ShapeType::LOOP)
 				return;
@@ -228,36 +218,19 @@ namespace middle {
 			}
 
 			if (instance.selected) {
-				gameState->loopMembers[loopIndex + loopSize] = i;
-				++loopSize;
+				memberIndexes.push_back(i);
 			}
 			});
 
 		// loops must have at least 2 things
-		if (loopSize < 2)
+		if (memberIndexes.size() < 2)
 			return;
 
-		// create new shape, why I call them shapes?
-		gameState->shapes[freeIndex].type = ShapeType::LOOP;
-		gameState->shapes[freeIndex].loopArrayOffset = loopIndex;
-		gameState->shapes[freeIndex].radius = DEF_RADIUS_LOOP_INDICATOR;
-
-		// set loop size
-		gameState->shapes[freeIndex].loopSize = loopSize;
-
+		// create 
+		loop(freeIndex, memberIndexes);
 
 		// auto unselect
 		unselect(gameState);
-
-		// iterate members once more to set parents to all the things
-		for (int i = gameState->loopIndex; i < gameState->loopIndex + loopSize; ++i) {
-			auto& shape = gameState->shapes[gameState->loopMembers[i]];
-			shape.parentLoopIndex = freeIndex;
-		}
-
-		// move loop index
-		gameState->loopIndex += loopSize;
-
 	}
 
 
@@ -271,6 +244,7 @@ namespace middle {
 		}
 		gameState->reload = true;
 		gameState->activeScene = params.intValue;
+		gameState->loopIndex = 0;
 	}
 
 	void EditorActionNewScene::execute(GameState* gameState)
@@ -296,7 +270,8 @@ namespace middle {
 
 	void EditorActionImportScene::execute(GameState* gameState)
 	{
-
+		assert(params.intValue != UNASSIGNED);
+		std::string sceneName = gameState->sceneNames[params.intValue];
 	}
 
 

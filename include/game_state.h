@@ -37,6 +37,7 @@ namespace middle {
 		SPHERE,
 		CONSTRAINT,
 		LOOP,
+		REFERENCE,
 		CAMERA,
 	};
 

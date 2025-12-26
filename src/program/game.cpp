@@ -20,7 +20,7 @@ __declspec(dllexport) void UpdateGame(GameState* gameState)
 		//gameInitializer.update(gameState);
 		loadSceneNames(gameState);
 		if (gameState->sceneNames.size() > 0) {
-			loadScene(gameState, gameState->sceneNames[gameState->activeScene]);
+			loadScene(gameState, gameState->sceneNames[gameState->activeScene], false);
 		}
 	}
 	updateInstances(gameState);

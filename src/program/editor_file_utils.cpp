@@ -5,6 +5,8 @@
 #include <algorithm>
 #include <cctype>
 #include <filesystem>
+#include <middle_shape_utils.h>
+#include <set>
 
 namespace middle {
 
@@ -107,9 +109,8 @@ namespace middle {
 		assert(true, "somethings wrong, about data");
 	}
 
-	void loadScene(GameState* gameState, const std::string& sceneName) {
+	void loadScene(GameState* gameState, const std::string& sceneName, bool import) {
 		gameStateRef = gameState;
-		gameStateRef->loopIndex = 0;
 
 		std::string filename = "../assets/scenes/" + sceneName + ".midsc";
 
@@ -122,6 +123,19 @@ namespace middle {
 		std::string line;
 		int currentType = -1;
 		int currentIndex = 0;
+
+
+		// if we import we will add to the tail
+		int ogIndex = currentIndex;
+		if (import) {
+			currentIndex = findFreeIndex(gameState);
+		}
+
+		// if not importing make sure loop index is 0, 
+		if (!import) {
+			assert(gameState->loopIndex == 0);
+		}
+
 		std::vector<std::string>buffer;
 
 		while (std::getline(inputFile, line)) {
@@ -145,6 +159,22 @@ namespace middle {
 		flushBuffer(gameState, buffer, currentType, currentIndex);
 
 		inputFile.close();
+
+
+		// if we import we contain all the content in a reference loop
+		if (import) {
+			currentIndex++;
+			int shapesAddedCount = currentIndex - ogIndex;
+			std::set<int>highestLevelContainers;
+			for (int i = 0; i < shapesAddedCount; ++i) {
+				highestLevelContainers.insert(findHighestLevelContainer(gameState, ogIndex + i));
+			}
+			std::vector<int>members;
+			for (int v : highestLevelContainers) {
+				members.push_back(v);
+			}
+			reference(currentIndex, members);
+		}
 	}
 
 	void newScript(GameState* gameState, const std::string& filename, const std::string& sceneName, int index)

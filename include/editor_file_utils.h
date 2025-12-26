@@ -6,6 +6,6 @@
 namespace middle {
 	void loadSceneNames(GameState* gameState);
 	void saveScene(GameState* gameState, const std::string& sceneName);
-	void loadScene(GameState* gameState, const std::string& name);
+	void loadScene(GameState* gameState, const std::string& name, bool import);
 	void newScript(GameState* gameState, const std::string& filename, const std::string& sceneName, int index);
 }

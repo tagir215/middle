@@ -103,6 +103,15 @@ namespace middle {
 		}
 	}
 
+	int findHighestLevelContainer(GameState* gameState, int index)
+	{
+		assert(!gameState->isSlotFree(index));
+		Shape& shape = gameState->shapes[index];
+		if (shape.parentLoopIndex == UNASSIGNED)
+			return index;
+
+		return findHighestLevelContainer(gameState, shape.parentLoopIndex);
+	}
 
 	void moveShape(GameState* gameState, ShapeInstance& instance, Vector3 linearVelocity) {
 

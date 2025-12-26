@@ -17,7 +17,7 @@ namespace middle {
 		shapes[index].constraint.targetDistance = targetDistance;
 		++shapes[index].id.generation;
 	}
-	void loop(int index, std::vector<int> loopIndexes) {
+	void loop(int index, const std::vector<int>& loopIndexes) {
 		auto& members = gameStateRef->loopMembers;
 		auto& shape = gameStateRef->shapes[index];
 		shape.type = ShapeType::LOOP;
@@ -36,5 +36,9 @@ namespace middle {
 		}
 		gameStateRef->loopIndex += loopSize;
 		++shape.id.generation;
+	}
+	void reference(int index, const std::vector<int>& loopIndexes) {
+		loop(index, loopIndexes);
+		gameStateRef->shapes[index].type == ShapeType::REFERENCE;
 	}
 }

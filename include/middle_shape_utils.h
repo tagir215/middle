@@ -15,10 +15,12 @@ namespace middle {
 	void reorderLoops(GameState* gameState);
 	// return child indexes of loops, because it's so confusing to think about everytime
 	std::vector<int> getChildIndexes(GameState* gameState, int id);
-	// unseelect selected things
+	// unselect selected things
 	void unselect(GameState* gameState);
 	// move shape and its children
 	void moveShape(GameState* gameState, ShapeInstance& instance, Vector3 linearVel);
+	// find container of containers containers
+	int findHighestLevelContainer(GameState* gameState, int index);
 	// loop the shape instances
 	template<typename F>
 	void loopInstances(GameState* gameState, F func) {
