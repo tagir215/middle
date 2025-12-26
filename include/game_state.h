@@ -18,6 +18,7 @@ using namespace descart;
 namespace middle {
 	static float DEF_RADIUS = 2;
 	static float DEF_RADIUS_LOOP_INDICATOR = 1;
+	static float DEF_RADIUS_REFERENCE_INDICATOR = 3;
 	static Color DEF_COLOR = UGLY_PINK;
 	static float DEF_LIFETIME = INFINITY;
 	static float DEF_GRAVITY = 0;
@@ -64,6 +65,7 @@ namespace middle {
 		ShapeType type;
 		Matrix initTransform;
 		Color color;
+		std::string name;
 		float thickness;
 		float radius;
 		float maxLifetime;
@@ -96,6 +98,7 @@ namespace middle {
 			angularVelocity = { 0,0,0 };
 			linearAcceleration = { 0,0,DEF_GRAVITY };
 			angularAcceleration = { 0,0,0 };
+			position = { 0,0,0 };
 			linearDamping = DEF_DAMPING;
 			mass = DEF_MASS;
 			inertia = DEF_INERTIA;
@@ -106,6 +109,7 @@ namespace middle {
 			parentLoopIndex = UNASSIGNED;
 			loopArrayOffset = 0;
 			loopSize = 0;
+			name = "";
 
 			// constraint defaults
 			constraint.type = DEF_CONSTRAINT_TYPE;

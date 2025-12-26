@@ -105,7 +105,8 @@ namespace middle {
 
 	int findHighestLevelContainer(GameState* gameState, int index)
 	{
-		assert(!gameState->isSlotFree(index));
+		if(gameState->isSlotFree(index) || gameState->shapes[index].type == ShapeType::CONSTRAINT)
+			return UNASSIGNED;
 		Shape& shape = gameState->shapes[index];
 		if (shape.parentLoopIndex == UNASSIGNED)
 			return index;
@@ -113,15 +114,35 @@ namespace middle {
 		return findHighestLevelContainer(gameState, shape.parentLoopIndex);
 	}
 
-	void moveShape(GameState* gameState, ShapeInstance& instance, Vector3 linearVelocity) {
+	int findHighestUsedIndex(GameState* gameState)
+	{
+		int highestI = 0;
+		for (int i = 0; i < gameState->shapes.size(); ++i) {
+			if (gameState->shapes[i].type != ShapeType::NONE) {
+				highestI = i;
+			}
+		}
+		return highestI;
+	}
 
-		if (instance.shape.type == ShapeType::LOOP) {
+	bool isContainer(GameState* gameState, int index)
+	{
+		Shape& shape = gameState->shapes[index];
+		return shape.type == ShapeType::LOOP || shape.type == ShapeType::REFERENCE;
+	}
+
+	void dragShape(GameState* gameState, int index, Vector3 linearVelocity) {
+		ShapeInstance& instance = gameState->getShapeInstance(index);
+		if (isContainer(gameState, index)) {
 			for (int i = instance.shape.loopArrayOffset; i < instance.shape.loopArrayOffset + instance.shape.loopSize; ++i) {
 				int memberIndex = gameState->loopMembers[i];
-				moveShape(gameState, gameState->getShapeInstance(memberIndex), linearVelocity);
+				dragShape(gameState, memberIndex, linearVelocity);
 			}
-			return;
 		}
+
+		// don't move loops, we can move references though
+		if (instance.shape.type == ShapeType::LOOP)
+			return;
 
 		Vec linearVel = DescVec(linearVelocity);
 		if (instance.shape.physicalShape && !gameState->paused) {
@@ -131,4 +152,17 @@ namespace middle {
 			instance.pData.position = AddV(instance.pData.position, ScaleV(linearVel, gameState->frameTime));
 		}
 	}
+
+	void moveShape(GameState* gameState, int index, Vector3 displacement)
+	{
+		Shape& shape = gameState->shapes[index];
+		if (isContainer(gameState, index)) {
+			for (int i = shape.loopArrayOffset; i < shape.loopArrayOffset + shape.loopSize; ++i) {
+				int memberIndex = gameState->loopMembers[i];
+				moveShape(gameState, memberIndex, displacement);
+			}
+		}
+		shape.position += displacement;
+	}
+
 }

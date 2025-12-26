@@ -1,5 +1,6 @@
 #include "state_update.h"
 #include "middle_math.h"
+#include "middle_shape_utils.h"
 namespace middle {
 
 	void reset(GameState* gameState) {
@@ -51,13 +52,14 @@ namespace middle {
 				}
 
 				// update loop centroids
-				if (instance.shape.type == ShapeType::LOOP) {
+				if (shape.type == ShapeType::LOOP) {
 					Vec centroid = { 0,0,0 };
 					for (int loopIndex = shape.loopArrayOffset; loopIndex < shape.loopArrayOffset + shape.loopSize; ++loopIndex) {
 						// add member positions 
 						centroid = descart::AddV(centroid, gameState->getShapeInstance(gameState->loopMembers[loopIndex]).pData.position);
 					}
 					instance.pData.position = descart::ScaleV(centroid, 1.0f / (float)shape.loopSize);
+					shape.position = FromDescVec(instance.pData.position);
 				}
 
 				// reset state

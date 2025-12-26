@@ -17,11 +17,17 @@ namespace middle {
 	std::vector<int> getChildIndexes(GameState* gameState, int id);
 	// unselect selected things
 	void unselect(GameState* gameState);
-	// move shape and its children
-	void moveShape(GameState* gameState, ShapeInstance& instance, Vector3 linearVel);
+	// drag shape and its children
+	void dragShape(GameState* gameState, int index, Vector3 linearVel);
+	// move shape and its chidlren
+	void moveShape(GameState* gameState, int index, Vector3 displacement);
 	// find container of containers containers
 	int findHighestLevelContainer(GameState* gameState, int index);
 	// loop the shape instances
+	int findHighestUsedIndex(GameState* gameState);
+	// is it a loop or a reference?
+	bool isContainer(GameState* gameState, int index);
+
 	template<typename F>
 	void loopInstances(GameState* gameState, F func) {
 		for (int i = 0; i < gameState->shapes.size(); ++i) {

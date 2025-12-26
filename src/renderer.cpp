@@ -88,7 +88,7 @@ namespace middle {
 				break;
 			}
 			case ShapeType::LOOP:
-
+			case ShapeType::REFERENCE:
 				if(shapeInstance.grabDown) {
 					float length = shape.radius * 4;
 					DrawCube(pos, length, length, length, ColorAlpha(ORANGE, 0.3f));
@@ -97,7 +97,13 @@ namespace middle {
 					float length = shape.radius * 4;
 					DrawCube(pos, length, length, length, ColorAlpha(WHITE, 0.3f));
 				}
-				DrawSphere(FromDescVec(shapeInstance.pData.position), shapeInstance.shape.radius, WHITE);
+
+				Color loopColor = WHITE;
+				if (shapeInstance.shape.type == ShapeType::REFERENCE) {
+					loopColor = PURPLE;
+				}
+
+				DrawSphere(FromDescVec(shapeInstance.pData.position), shapeInstance.shape.radius, loopColor);
 				break;
 			}
 

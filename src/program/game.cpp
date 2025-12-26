@@ -26,8 +26,6 @@ __declspec(dllexport) void UpdateGame(GameState* gameState)
 	updateInstances(gameState);
 
 
-
-
 	// camera controls
 	const float maxCameraSpeed = 20;
 	float mouseCamRatio = gameState->input.mousePos.y / gameState->screenHeight;
@@ -55,9 +53,10 @@ __declspec(dllexport) void UpdateGame(GameState* gameState)
 		Shape& shape = gameState->shapes[i];
 
 		bool wasIntersecting = instance.mouseIntersects;
-		if (shape.type == ShapeType::SPHERE || shape.type == ShapeType::LOOP) {
+		bool container = isContainer(gameState, i);
+		if (shape.type == ShapeType::SPHERE || container) {
 			// when in constraint mode only can select shapes
-			if (shape.type == ShapeType::LOOP && gameState->creationMode == CreationMode::CONSTRAINT_MODE)
+			if (container && gameState->creationMode == CreationMode::CONSTRAINT_MODE)
 				return;
 			auto pos = instance.pData.position;
 			bool mouseIntersect = RayCastLineSphere(FromDescVec(pos), instance.shape.radius, gameState->camera.position, gameState->camera.position + gameState->input.mouseDir);
@@ -141,7 +140,7 @@ __declspec(dllexport) void UpdateGame(GameState* gameState)
 		}
 
 		if (instance.grabDown) {
-			moveShape(gameState, instance, gameState->input.mouseXZ_PlaneVelocity);
+			dragShape(gameState, i, gameState->input.mouseXZ_PlaneVelocity);
 		}
 
 		});

@@ -10,9 +10,8 @@ void print(middle::GameState* gameState) {
 		dir *= -1;
 		frames = 100;
 	}
-	middle::ShapeInstance& instance = gameState->getShapeInstance(index);
 	//instance.pData.linearVel = { 10.0f * dir,0,0 };
-	moveShape(gameState, instance, { 10.0f * dir, 0,0 });
+	dragShape(gameState, index, { 10.0f * dir, 0,0 });
 }
 
 static bool registered = []() {

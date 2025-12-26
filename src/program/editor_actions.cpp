@@ -64,6 +64,7 @@ namespace middle {
 			auto action = EditorActionImportScene();
 			action.params = gameState->nextEditorActionParams;
 			action.execute(gameState);
+			break;
 		}
 		case EditorAction::OPEN_SCRIPT: {
 			auto action = EditorActionOpenScript();
@@ -237,7 +238,6 @@ namespace middle {
 	void EditorActionLoadScene::execute(GameState* gameState)
 	{
 		assert(params.intValue != UNASSIGNED);
-		saveScene(gameState, gameState->sceneNames[gameState->activeScene]);
 		// DELETE EVERYTHING
 		for (int i = 0; i < gameState->shapes.size(); ++i) {
 			gameState->deleteShape(i);
@@ -272,6 +272,7 @@ namespace middle {
 	{
 		assert(params.intValue != UNASSIGNED);
 		std::string sceneName = gameState->sceneNames[params.intValue];
+		loadScene(gameState, sceneName, true);
 	}
 
 
