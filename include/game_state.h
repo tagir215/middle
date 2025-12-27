@@ -86,7 +86,7 @@ namespace middle {
 		int loopSize;
 		int parentLoopIndex;
 		Constraint constraint;
-		bool isReferenceShape;
+		bool isGhostShape;
 
 		Shape() {
 			// shape defaults
@@ -111,7 +111,7 @@ namespace middle {
 			loopArrayOffset = 0;
 			loopSize = 0;
 			name = "";
-			isReferenceShape = false;
+			isGhostShape = false;
 
 			// constraint defaults
 			constraint.type = DEF_CONSTRAINT_TYPE;

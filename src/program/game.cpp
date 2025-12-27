@@ -160,7 +160,7 @@ __declspec(dllexport) void UpdateGame(GameState* gameState)
 
 	// run scripts
 	loopInstances(gameState, [gameState](int i, ShapeInstance& instance) {
-		runScript(gameState, i);
+		//runScript(gameState, i);
 		});
 
 

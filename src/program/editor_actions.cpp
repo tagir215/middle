@@ -83,7 +83,7 @@ namespace middle {
 		int freeIndex = findFreeIndex(gameState);
 
 		Vector3 xzPos = gameState->input.mouseXZ_PlanePos;
-		sphere(freeIndex, xzPos);
+		sphere(gameState, freeIndex, xzPos);
 	};
 
 	void EditorActionNewConstraint::execute(GameState* gameState) {
@@ -116,7 +116,7 @@ namespace middle {
 			auto& shapeB = shapes[indexB];
 			shapes[freeIndex].constraint.targetDistance = distBetween;
 
-			constraint(freeIndex, indexA, indexB, distBetween);
+			constraint(gameState, freeIndex, indexA, indexB, distBetween);
 
 			// auto unselect
 			unselect(gameState);
@@ -228,7 +228,7 @@ namespace middle {
 			return;
 
 		// create 
-		loop(freeIndex, memberIndexes);
+		loop(gameState, freeIndex, memberIndexes);
 
 		// auto unselect
 		unselect(gameState);
@@ -272,7 +272,7 @@ namespace middle {
 	{
 		assert(params.intValue != UNASSIGNED);
 		std::string sceneName = gameState->sceneNames[params.intValue];
-		loadScene(gameState, sceneName, true);
+		loadScene(gameState, sceneName, true, {0,0,0}, findFreeIndex(gameState));
 	}
 
 
