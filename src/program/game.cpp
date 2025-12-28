@@ -66,12 +66,17 @@ __declspec(dllexport) void UpdateGame(GameState* gameState)
 			// in constraint creation mode, can't select constraints, only spheres to create constraints to
 			if (gameState->creationMode == CreationMode::CONSTRAINT_MODE)
 				return;
-			auto& instanceA = gameState->getShapeInstance(instance.shape.constraint.indexA);
-			auto& instanceB = gameState->getShapeInstance(instance.shape.constraint.indexB);
+			auto& instanceA = getShapeInstance(gameState, instance.shape.constraint.indexA);
+			auto& instanceB = getShapeInstance(gameState, instance.shape.constraint.indexB);
 			auto posA = instanceA.pData.position;
 			auto posB = instanceB.pData.position;
 			bool mouseIntersect = PointIntersectLineZX_Plane(gameState->input.mouseXZ_PlanePos, FromDescVec(posA), FromDescVec(posB), DEF_LINE_PADDING_H, DEF_LINE_PADDING_V);
 			instance.mouseIntersects = mouseIntersect;
+		}
+
+		// ghost shapes can't be selected or edited
+		if (isGhostShape(i)) {
+			return;
 		}
 
 		// when holding down, don't immediatedly toggle once when starting intersect
@@ -178,11 +183,11 @@ __declspec(dllexport) void UpdateGame(GameState* gameState)
 
 
 	for (int i = 0; i < gameState->shapes.size(); ++i) {
-		if (!gameState->isShapeAlive(i)) {
+		if (!isShapeAlive(gameState, i)) {
 			physicsBodies[i] = nullptr;
 			continue;
 		}
-		auto& instance = gameState->getShapeInstance(i);
+		auto& instance = getShapeInstance(gameState, i);
 
 		if (instance.shape.type == ShapeType::CONSTRAINT) {
 			if (instance.shape.constraint.indexA != UNASSIGNED && instance.shape.constraint.indexB != UNASSIGNED)

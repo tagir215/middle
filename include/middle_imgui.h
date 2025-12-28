@@ -5,6 +5,7 @@
 #include <cstdlib>
 #include <thread>
 #include "rlgl.h"
+#include "middle_shape_utils.h"
 
 namespace middle {
 	void setupUI(GameState* gameState);

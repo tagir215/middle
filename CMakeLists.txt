@@ -27,6 +27,7 @@ add_executable(middle
     src/win32_platform.cpp 
     src/renderer.cpp
     src/middle_imgui.cpp
+    src/program/middle_shape_utils.cpp
 )
 target_include_directories(middle PUBLIC ${CMAKE_SOURCE_DIR}/include)
 target_link_libraries(middle PUBLIC raylib winmm)

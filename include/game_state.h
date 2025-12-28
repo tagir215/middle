@@ -193,6 +193,7 @@ namespace middle {
 		std::array<Vector3, MAX_VERTEX_COUNT> vertexArray;
 		std::array<int, MAX_LOOP_MEMBER_COUNT> loopMembers;
 		std::array<GameScript, MAX_SHAPE_COUNT> gameplayScripts;
+		std::array<ShapeInstance, MAX_SHAPE_COUNT>shapeInstances;
 		Matrix worldM;
 		Vector2 mouseDragPos;
 		Matrix oldWorldM;
@@ -216,40 +217,6 @@ namespace middle {
 		EditorAction nextEditorAction = EditorAction::NONE;
 		EditorActionContainer::Params nextEditorActionParams;
 
-		bool isSlotFree(int index) {
-			return shapes[index].type == ShapeType::NONE;
-		}
-
-		bool isShapeAlive(int index) {
-			return shapes[index].type != ShapeType::NONE
-				&& shapes[index].id == shapeInstances[index].id;
-		}
-
-		ShapeInstance& getShapeInstance(int index) {
-			auto& instance = shapeInstances[index];
-			auto& shape = shapes[index];
-			assert(instance.id == shape.id);
-			return shapeInstances[index];
-		}
-
-		void deleteShape(int index) {
-			int prevGeneration = shapes[index].id.generation;
-			shapes[index] = Shape();
-			shapes[index].id.generation = prevGeneration + 1;
-		}
-
-		void addShape(int index, Shape shape) {
-			shape.id.generation = shapes[index].id.generation + 1;
-			shapes[index] = shape;
-		}
-
-		void addInstance(int index, ShapeInstance instance) {
-			instance.id.generation = shapes[index].id.generation;
-			shapeInstances[index] = instance;
-		}
-	private:
-
-		std::array<ShapeInstance, MAX_SHAPE_COUNT>shapeInstances;
 	};
 
 

@@ -104,10 +104,10 @@ namespace middle {
 		ImGui::End();
 
 		for (int i = 0; i < gameState->shapes.size(); ++i) {
-			if (!gameState->isShapeAlive(i))
+			if (!isShapeAlive(gameState, i))
 				continue;
 			Shape& shape = gameState->shapes[i];
-			ShapeInstance& shapeInstance = gameState->getShapeInstance(i);
+			ShapeInstance& shapeInstance = getShapeInstance(gameState, i);
 
 			Vector3 pos = FromDescVec(shapeInstance.pData.position);
 

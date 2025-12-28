@@ -25,20 +25,20 @@ namespace middle {
 
 		for (int i = 0; i < gameState->shapes.size(); ++i) {
 			Shape& shape = gameState->shapes[i];
-			bool shouldSkip = gameState->isSlotFree(i);
-			bool shouldMake = !gameState->isSlotFree(i) && !gameState->isShapeAlive(i);
-			bool shouldUpdate = !gameState->isSlotFree(i) && gameState->isShapeAlive(i);
-			bool shouldDelete = gameState->isSlotFree(i) && gameState->isShapeAlive(i);
+			bool shouldSkip = isSlotFree(gameState, i);
+			bool shouldMake = !isSlotFree(gameState, i) && !isShapeAlive(gameState, i);
+			bool shouldUpdate = !isSlotFree(gameState, i) && isShapeAlive(gameState, i);
+			bool shouldDelete = isSlotFree(gameState, i) && isShapeAlive(gameState, i);
 
 
 			if (shouldSkip) {
 				continue;
 			}
 			if (shouldMake) {
-				gameState->addInstance(i, MakeShapeInstance(shape));
+				addInstance(gameState, i, MakeShapeInstance(shape));
 			}
 			if (shouldUpdate) {
-				auto& instance = gameState->getShapeInstance(i);
+				auto& instance = getShapeInstance(gameState, i);
 				// update shape for hot reload
 				instance.shape = shape;
 
@@ -63,7 +63,7 @@ namespace middle {
 					Vec centroid = { 0,0,0 };
 					for (int loopIndex = shape.loopArrayOffset; loopIndex < shape.loopArrayOffset + shape.loopSize; ++loopIndex) {
 						// add member positions 
-						centroid = descart::AddV(centroid, gameState->getShapeInstance(gameState->loopMembers[loopIndex]).pData.position);
+						centroid = descart::AddV(centroid, getShapeInstance(gameState, gameState->loopMembers[loopIndex]).pData.position);
 					}
 					instance.pData.position = descart::ScaleV(centroid, 1.0f / (float)shape.loopSize);
 					shape.position = FromDescVec(instance.pData.position);

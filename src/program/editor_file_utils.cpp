@@ -52,7 +52,7 @@ namespace middle {
 		int saveSpam = GHOST_INDEX_OFFSET;
 		for (int i = 0; i < saveSpam; ++i) {
 			// skip empty parts if over max used index
-			if (gameState->isSlotFree(i))
+			if (isSlotFree(gameState, i))
 				continue;
 
 			auto& shape = gameState->shapes[i];
@@ -190,7 +190,7 @@ namespace middle {
 			std::set<int>highestLevelContainers;
 			for (int i = indexOffset; i < highestUsedIndex; ++i) {
 				// skip nons and skip constraints since they don't have parents
-				if(!gameState->isSlotFree(i) && gameState->shapes[i].type != ShapeType::CONSTRAINT)
+				if(!isSlotFree(gameState, i) && gameState->shapes[i].type != ShapeType::CONSTRAINT)
 					highestLevelContainers.insert(findHighestLevelContainer(gameState, i));
 			}
 

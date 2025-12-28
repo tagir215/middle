@@ -36,7 +36,7 @@ namespace middle {
 	int findFreeIndex(GameState* gameState)
 	{
 		for (int i = 0; i < gameState->shapes.size(); ++i) {
-			if (gameState->isSlotFree(i))
+			if (isSlotFree(gameState, i))
 				return i;
 		}
 		assert(true);
@@ -69,9 +69,9 @@ namespace middle {
 
 	void unselect(GameState* gameState) {
 		for (int i = 0; i < gameState->shapes.size(); ++i) {
-			if (!gameState->isShapeAlive(i))
+			if (!isShapeAlive(gameState, i))
 				continue;
-			gameState->getShapeInstance(i).selected = false;
+			getShapeInstance(gameState, i).selected = false;
 		}
 	}
 
@@ -105,7 +105,7 @@ namespace middle {
 
 	int findHighestLevelContainer(GameState* gameState, int index)
 	{
-		if(gameState->isSlotFree(index) || gameState->shapes[index].type == ShapeType::CONSTRAINT)
+		if(isSlotFree(gameState, index) || gameState->shapes[index].type == ShapeType::CONSTRAINT)
 			return UNASSIGNED;
 		Shape& shape = gameState->shapes[index];
 		if (shape.parentLoopIndex == UNASSIGNED)
@@ -132,7 +132,7 @@ namespace middle {
 	}
 
 	void dragShape(GameState* gameState, int index, Vector3 linearVelocity) {
-		ShapeInstance& instance = gameState->getShapeInstance(index);
+		ShapeInstance& instance = getShapeInstance(gameState, index);
 		if (isContainer(gameState, index)) {
 			for (int i = instance.shape.loopArrayOffset; i < instance.shape.loopArrayOffset + instance.shape.loopSize; ++i) {
 				int memberIndex = gameState->loopMembers[i];
@@ -171,4 +171,46 @@ namespace middle {
 		return index >= GHOST_INDEX_OFFSET;
 	}
 
+
+	bool isSlotFree(GameState* gamestate, int index) {
+		return gamestate->shapes[index].type == ShapeType::NONE;
+	}
+
+	bool isShapeAlive(GameState* gameState, int index){
+		return gameState->shapes[index].type != ShapeType::NONE
+			&& gameState->shapes[index].id == gameState->shapeInstances[index].id;
+	}
+
+	ShapeInstance& getShapeInstance(GameState* gameState, int index) {
+		auto& instance = gameState->shapeInstances[index];
+		auto& shape = gameState->shapes[index];
+		assert(instance.id == shape.id);
+		return gameState->shapeInstances[index];
+	}
+
+	void deleteShape(GameState* gameState, int index) {
+		int prevGeneration = gameState->shapes[index].id.generation;
+		gameState->shapes[index] = Shape();
+		gameState->shapes[index].id.generation = prevGeneration + 1;
+	}
+
+	void deleteShapeRecursive(GameState* gameState, int index) {
+		Shape& shape = gameState->shapes[index];
+		if (isContainer(gameState, index)) {
+			for (int i = shape.loopArrayOffset; i < shape.loopArrayOffset + shape.loopSize; ++i) {
+				deleteShape(gameState, index);
+			}
+		}
+		deleteShape(gameState, index);
+	}
+
+	void addShape(GameState* gameState, int index, Shape shape) {
+		shape.id.generation = gameState->shapes[index].id.generation + 1;
+		gameState->shapes[index] = shape;
+	}
+
+	void addInstance(GameState* gameState, int index, ShapeInstance instance) {
+		instance.id.generation = gameState->shapes[index].id.generation;
+		gameState->shapeInstances[index] = instance;
+	}
 }

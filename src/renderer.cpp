@@ -1,3 +1,4 @@
+#pragma once
 #include "renderer.h"
 #include <raylib.h>
 #include <string>
@@ -44,10 +45,10 @@ namespace middle {
 
 
 		for (int i = 0; i < gameState->shapes.size(); ++i) {
-			if (!gameState->isShapeAlive(i))
+			if (!isShapeAlive(gameState, i))
 				continue;
 
-			auto& shapeInstance = gameState->getShapeInstance(i);
+			auto& shapeInstance = getShapeInstance(gameState, i);
 			auto& shape = shapeInstance.shape;
 
 			descart::PhysicsBody pData = shapeInstance.pData;
@@ -68,13 +69,13 @@ namespace middle {
 				break;
 			case ShapeType::CONSTRAINT: {
 				descart::Constraint& constraint = shapeInstance.shape.constraint;
-				descart::Vec posA = gameState->getShapeInstance(constraint.indexA).pData.position;
-				descart::Vec posB = gameState->getShapeInstance(constraint.indexB).pData.position;
+				descart::Vec posA = getShapeInstance(gameState, constraint.indexA).pData.position;
+				descart::Vec posB = getShapeInstance(gameState, constraint.indexB).pData.position;
 				DrawLine3D(FromDescVec(posA), FromDescVec(posB), UGLY_PINK);
 
 				if (shapeInstance.selected) {
-					auto posA = gameState->getShapeInstance(constraint.indexA).pData.position;
-					auto posB = gameState->getShapeInstance(constraint.indexB).pData.position;
+					auto posA = getShapeInstance(gameState, constraint.indexA).pData.position;
+					auto posB = getShapeInstance(gameState, constraint.indexB).pData.position;
 					auto center = descart::ScaleV(descart::AddV(posA, posB), 0.5f);
 					float length = descart::DistV(posA, posB);
 					auto dir = descart::SubV(posB, posA);

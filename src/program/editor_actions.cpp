@@ -93,7 +93,7 @@ namespace middle {
 		for (int i = 0; i < gameState->shapes.size(); ++i) {
 			if (gameState->shapes[i].type != ShapeType::SPHERE)
 				continue;
-			if (gameState->isShapeAlive(i) && gameState->getShapeInstance(i).selected)
+			if (isShapeAlive(gameState, i) && getShapeInstance(gameState, i).selected)
 				selectedIndexes.push_back(i);
 		}
 		// must have 2 constraints selected 
@@ -111,7 +111,7 @@ namespace middle {
 		int freeIndex = findFreeIndex(gameState);
 
 		if (indexA != indexB) {
-			float distBetween = descart::DistV(gameState->getShapeInstance(indexA).pData.position, gameState->getShapeInstance(indexB).pData.position);
+			float distBetween = descart::DistV(getShapeInstance(gameState, indexA).pData.position, getShapeInstance(gameState, indexB).pData.position);
 			auto& shapeA = shapes[indexA];
 			auto& shapeB = shapes[indexB];
 			shapes[freeIndex].constraint.targetDistance = distBetween;
@@ -132,9 +132,9 @@ namespace middle {
 		std::set<int>deteledLoopMembersParentLoops;
 
 		for (int i = 0; i < gameState->shapes.size(); ++i) {
-			if (!gameState->isShapeAlive(i))
+			if (!isShapeAlive(gameState, i))
 				continue;
-			ShapeInstance& shapeInstance = gameState->getShapeInstance(i);
+			ShapeInstance& shapeInstance = getShapeInstance(gameState, i);
 			if (!shapeInstance.selected)
 				continue;
 			Shape& shape = gameState->shapes[i];
@@ -149,6 +149,10 @@ namespace middle {
 				}
 			}
 
+			if (shape.type == ShapeType::REFERENCE) {
+				deleteShape(gameState, i);
+			}
+
 			// store parent loops to re generate later
 			if (shape.parentLoopIndex != UNASSIGNED) {
 				deteledLoopMembersParentLoops.insert(shape.parentLoopIndex);
@@ -157,19 +161,19 @@ namespace middle {
 			foundSelected = true;
 			// set all connected constraints as selected
 			for (int id : connectedConstraints) {
-				auto& constraint = gameState->getShapeInstance(id);
+				auto& constraint = getShapeInstance(gameState, id);
 				constraint.selected = true;
 			}
 		}
 
 		// set all selected shapes as type none to activate deletion process
 		for (int i = 0; i < gameState->shapes.size(); ++i) {
-			if (!gameState->isShapeAlive(i))
+			if (!isShapeAlive(gameState, i))
 				continue;
-			ShapeInstance& shapeInstance = gameState->getShapeInstance(i);
+			ShapeInstance& shapeInstance = getShapeInstance(gameState, i);
 			if (!shapeInstance.selected)
 				continue;
-			gameState->deleteShape(i);
+			deleteShape(gameState, i);
 		}
 
 		// if member was deleted from a group we obviously need to update the loop
@@ -240,7 +244,7 @@ namespace middle {
 		assert(params.intValue != UNASSIGNED);
 		// DELETE EVERYTHING
 		for (int i = 0; i < gameState->shapes.size(); ++i) {
-			gameState->deleteShape(i);
+			deleteShape(gameState, i);
 		}
 		gameState->reload = true;
 		gameState->activeScene = params.intValue;
@@ -259,7 +263,7 @@ namespace middle {
 		gameState->activeScene = params.intValue;
 		// DELETE EVERYTHING
 		for (int i = 0; i < gameState->shapes.size(); ++i) {
-			gameState->deleteShape(i);
+			deleteShape(gameState, i);
 		}
 		// save new scene
 		saveScene(gameState, params.stringValue);
