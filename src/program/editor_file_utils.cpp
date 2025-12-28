@@ -64,13 +64,11 @@ namespace middle {
 			}
 			if (shape.type == ShapeType::CONSTRAINT) {
 				outFile << shape.constraint.targetDistance << std::endl;
-				// IMPORTANT: cumulated offset cumulates because of the scene references, so all the above saved indexes are shifted down for the save file
 				outFile << shape.constraint.indexA << std::endl;
 				outFile << shape.constraint.indexB << std::endl;
 			}
 			if (shape.type == ShapeType::LOOP) {
 				for (int mIndex = shape.loopArrayOffset; mIndex < shape.loopArrayOffset + shape.loopSize; ++mIndex) {
-					// IMPORTANT: cumulated offset here too
 					outFile << gameState->loopMembers[mIndex] << std::endl;
 				}
 			}
@@ -132,7 +130,7 @@ namespace middle {
 		assert(true, "somethings wrong, about data");
 	}
 
-	void loadScene(GameState* gameState, const std::string& sceneName, bool import, const Vector3& pos, int referenceIndex) {
+	void loadScene(GameState* gameState, const std::string& sceneName, bool import, const Vector3& pos, int sceneReferenceIndex) {
 		std::string filename = "../assets/scenes/" + sceneName + ".midsc";
 
 		std::ifstream inputFile(filename);
@@ -146,11 +144,11 @@ namespace middle {
 		int currentIndex = 0;
 
 		// all import indexes are shifted by half of total allowed shape count
-		// if highest used index is above total allowed shape count, use the next one after highest used as offset
+		// if highest used index is above half of total allowed shape count, use the next one after highest used as offset
 		int indexOffset = 0;
 		if (import) {
 			indexOffset = findHighestUsedIndex(gameState) + 1;
-			int minImportOffset = MAX_SHAPE_COUNT / 2;
+			int minImportOffset = GHOST_INDEX_OFFSET;
 			indexOffset = indexOffset > minImportOffset ? indexOffset : minImportOffset;
 		}
 
@@ -202,15 +200,15 @@ namespace middle {
 				members.push_back(v);
 			}
 
-			// if it's ghost shape find next highest index to use, otherwise the reference index should be the one passed in
-			if (isGhostShape(referenceIndex)) {
-				referenceIndex = highestUsedIndex + 1;
+			// if it's ghost scene, basically a scene imported by a scene, find next highest index to use, otherwise the reference index should be the one passed in
+			if (isGhostShape(sceneReferenceIndex)) {
+				sceneReferenceIndex = highestUsedIndex + 1;
 			}
 
-			reference(gameState, referenceIndex, members, sceneName);
+			reference(gameState, sceneReferenceIndex, members, sceneName);
 
 			// move imported scene where it wants to be
-			moveShape(gameState, referenceIndex, pos);
+			moveShape(gameState, sceneReferenceIndex, pos);
 		}
 	}
 
