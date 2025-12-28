@@ -72,6 +72,12 @@ namespace middle {
 			action.execute(gameState);
 			break;
 		}
+		case EditorAction::NEW_CAMERA: {
+			auto action = EditorActionNewCamera();
+			action.params = gameState->nextEditorActionParams;
+			action.execute(gameState);
+			break;
+		}
 		}
 		gameState->nextEditorAction = EditorAction::NONE;
 		gameState->nextEditorActionParams = {};
@@ -293,6 +299,13 @@ namespace middle {
 
 
 		shell_open_file(filename);
+	}
+
+	void EditorActionNewCamera::execute(GameState* gameState)
+	{
+		int freeIndex = findFreeIndex(gameState);
+		Vector3& pos = gameState->camera.position;
+		camera(gameState, freeIndex, pos);
 	}
 
 }

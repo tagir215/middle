@@ -12,6 +12,12 @@ using namespace middle;
 
 __declspec(dllexport) void UpdateGame(GameState* gameState)
 {
+	if (gameState->closeGame) {
+		closeGame(gameState);
+		return;
+	}
+
+
 	processEditorActions(gameState);
 
 	// update
@@ -27,7 +33,7 @@ __declspec(dllexport) void UpdateGame(GameState* gameState)
 
 
 	// camera controls
-	const float maxCameraSpeed = 20;
+	const float maxCameraSpeed = 60;
 	float mouseCamRatio = gameState->input.mousePos.y / gameState->screenHeight;
 	const float cameraSpeed = mouseCamRatio * mouseCamRatio * mouseCamRatio * maxCameraSpeed;
 	Vector3 cameraMovementDir = { 0,0,0 };
@@ -53,10 +59,11 @@ __declspec(dllexport) void UpdateGame(GameState* gameState)
 		Shape& shape = gameState->shapes[i];
 
 		bool wasIntersecting = instance.mouseIntersects;
-		bool container = isContainer(gameState, i);
-		if (shape.type == ShapeType::SPHERE || container) {
-			// when in constraint mode only can select shapes
-			if (container && gameState->creationMode == CreationMode::CONSTRAINT_MODE)
+		bool bContainer = isContainer(gameState, i);
+		bool bSphere = isSphere(gameState, i);
+		if (bSphere) {
+			// when in constraint mode can only select actual spheres
+			if (gameState->creationMode == CreationMode::CONSTRAINT_MODE && shape.type != ShapeType::SPHERE)
 				return;
 			auto pos = instance.pData.position;
 			bool mouseIntersect = RayCastLineSphere(FromDescVec(pos), instance.shape.radius, gameState->camera.position, gameState->camera.position + gameState->input.mouseDir);
@@ -148,7 +155,6 @@ __declspec(dllexport) void UpdateGame(GameState* gameState)
 		if (instance.grabDown) {
 			dragShape(gameState, i, gameState->input.mouseXZ_PlaneVelocity);
 		}
-
 		});
 
 	if (gameState->input.grabReleased && gameState->selectCount == 1) {
@@ -206,6 +212,11 @@ __declspec(dllexport) void UpdateGame(GameState* gameState)
 
 	DescLoop(gameState->frameTime, pairs, constraints, physicsBodies);
 
+}
+
+void closeGame(GameState* gameState)
+{
+	saveEditorCameraPosition(gameState, gameState->sceneNames[gameState->activeScene]);
 }
 
 

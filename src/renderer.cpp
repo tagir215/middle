@@ -22,6 +22,8 @@ namespace middle {
 
 		BeginMode3D(gameState->camera);
 
+		rlSetClipPlanes(gameState->nearPlaneDistance, gameState->farPlaneDistance);
+
 		const float axisLength = 1000;
 		const Color CartesianColor = WHITE;
 
@@ -90,6 +92,7 @@ namespace middle {
 			}
 			case ShapeType::LOOP:
 			case ShapeType::REFERENCE:
+			case ShapeType::CAMERA:
 				if(shapeInstance.grabDown) {
 					float length = shape.radius * 4;
 					DrawCube(pos, length, length, length, ColorAlpha(ORANGE, 0.3f));
@@ -102,6 +105,9 @@ namespace middle {
 				Color loopColor = WHITE;
 				if (shapeInstance.shape.type == ShapeType::REFERENCE) {
 					loopColor = PURPLE;
+				}
+				if (shapeInstance.shape.type == ShapeType::CAMERA) {
+					loopColor = ORANGE;
 				}
 
 				DrawSphere(FromDescVec(shapeInstance.pData.position), shapeInstance.shape.radius, loopColor);

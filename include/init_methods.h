@@ -7,4 +7,5 @@ namespace middle {
 	void constraint(GameState* gameState, int index, int indexA, int indexB, float targetDistance, int offset = 0);
 	void loop(GameState* gameState, int index, const std::vector<int>& loopIndexes, int offset = 0);
 	void reference(GameState* gameState, int index, const std::vector<int>& loopIndexes, const std::string& sceneName, int offset = 0);
+	void camera(GameState* gameState, int index, const Vector3& position);
 }

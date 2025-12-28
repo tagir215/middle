@@ -19,6 +19,7 @@ namespace middle {
 	static float DEF_RADIUS = 2;
 	static float DEF_RADIUS_LOOP_INDICATOR = 1;
 	static float DEF_RADIUS_REFERENCE_INDICATOR = 3;
+	static float DEF_RADIUS_CAMERA = 5;
 	static Color DEF_COLOR = UGLY_PINK;
 	static float DEF_LIFETIME = INFINITY;
 	static float DEF_GRAVITY = 0;
@@ -46,6 +47,7 @@ namespace middle {
 		SELECT_MODE,
 		SPHERE_MODE,
 		CONSTRAINT_MODE,
+		CAMERA_MODE,
 	};
 
 	struct Id {
@@ -149,6 +151,7 @@ namespace middle {
 		NONE, 
 		NEW_SPHERE,
 		NEW_CONSTRAINT,
+		NEW_CAMERA,
 		MOVE_SPHERES,
 		DELETE_SHAPES,
 		SAVE_SCENE,
@@ -188,7 +191,8 @@ namespace middle {
 		int gridSize = 4;
 		int intersectCount = 0;
 		int selectCount = 0;
-		const float nearPlaneDistance = 0.05f;
+		const double nearPlaneDistance = 0.05;
+		const double farPlaneDistance = 5000;
 		std::array<Shape, MAX_SHAPE_COUNT>shapes;
 		std::array<Vector3, MAX_VERTEX_COUNT> vertexArray;
 		std::array<int, MAX_LOOP_MEMBER_COUNT> loopMembers;
@@ -217,6 +221,8 @@ namespace middle {
 		EditorAction nextEditorAction = EditorAction::NONE;
 		EditorActionContainer::Params nextEditorActionParams;
 
+		bool closeGame = false;
+		bool startGame = false;
 	};
 
 

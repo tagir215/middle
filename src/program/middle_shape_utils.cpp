@@ -125,6 +125,13 @@ namespace middle {
 		return highestI;
 	}
 
+	bool isSphere(GameState* gameState, int index)
+	{
+		// for now everything is spheres
+		ShapeType type = gameState->shapes[index].type;
+		return type == ShapeType::SPHERE || type == ShapeType::CAMERA || isContainer(gameState, index);
+	}
+
 	bool isContainer(GameState* gameState, int index)
 	{
 		ShapeType type = gameState->shapes[index].type;

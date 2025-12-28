@@ -45,9 +45,12 @@ namespace middle {
 			std::cerr << "failed to open to write\n";
 		}
 
-		outFile << "# scene:" << std::endl;
+		outFile << "#scene" << std::endl;
 		outFile << sceneName << std::endl;
-		outFile << std::endl;
+		outFile << "#activeCamera" << std::endl;
+		outFile << gameState->activeCameraIndex << std::endl;
+		outFile << "#editorCameraPos" << std::endl;
+		outFile << coordToLines(gameState->camera.position) << std::endl;
 
 		int saveSpam = GHOST_INDEX_OFFSET;
 		for (int i = 0; i < saveSpam; ++i) {
@@ -76,10 +79,68 @@ namespace middle {
 				outFile << shape.name << std::endl;
 				outFile << coordToLines(shape.position) << std::endl;
 			}
+			if (shape.type == ShapeType::CAMERA) {
+				outFile << coordToLines(shape.position) << std::endl;
+			}
 		}
 
 		outFile.flush();
 		outFile.close();
+	}
+
+	void saveEditorCameraPosition(GameState* gameState, const std::string& sceneName)
+	{
+		std::string filename = "../assets/scenes/" + sceneName + ".midsc";
+		std::ifstream inputFile(filename);
+
+		if (!inputFile.is_open()) {
+			std::cerr << "Failed to open file to write";
+			return;
+		}
+
+		std::string line;
+		std::vector<std::string>lines;
+		while (std::getline(inputFile, line)) {
+			lines.push_back(line);
+		}
+		inputFile.close();
+
+		std::ofstream outFile(filename);
+		if (!outFile.is_open()) {
+			std::cerr << "failed to open to write\n";
+		}
+
+		for (int i = 0; i < lines.size(); ++i) {
+			if (lines[i].find("#editorCameraPos") != std::string::npos) {
+				lines[i + 1] = std::to_string(gameState->camera.position.x);
+				lines[i + 2] = std::to_string(gameState->camera.position.y);
+				lines[i + 3] = std::to_string(gameState->camera.position.z);
+				i += 3;
+			}
+		}
+
+		for (int i = 0; i < lines.size(); ++i) {
+			outFile << lines[i] << std::endl;
+		}
+
+		outFile.flush();
+		outFile.close();
+	}
+
+	void flushFieldBuffer(GameState* gameState, std::vector<std::string>& buffer, const std::string& field) {
+		if (field == "#activeCamera") {
+			assert(buffer.size() == 1);
+			gameState->activeCameraIndex = std::stoi(buffer[0]);
+			buffer.clear();
+		}
+		if (field == "#editorCameraPos") {
+			assert(buffer.size() == 3);
+			Vector3 pos;
+			pos.x = std::stof(buffer[0]);
+			pos.y = std::stof(buffer[1]);
+			pos.z = std::stof(buffer[2]);
+			gameState->camera.position = pos;
+		}
 	}
 
 	void flushBuffer(GameState* gameState, std::vector<std::string>& buffer, int type, int index, int offset = 0) {
@@ -127,6 +188,14 @@ namespace middle {
 			buffer.clear();
 			return;
 		}
+		if (type == (int)ShapeType::CAMERA) {
+			assert(buffer.size() == 3);
+			Vector3 pos;
+			pos.x = std::stof(buffer[0]);
+			pos.y = std::stof(buffer[1]);
+			pos.z = std::stof(buffer[2]);
+			camera(gameState, index, pos);
+		}
 		assert(true, "somethings wrong, about data");
 	}
 
@@ -159,7 +228,36 @@ namespace middle {
 
 		std::vector<std::string>buffer;
 
+		std::string field = "";
+
+		// read scene info
 		while (std::getline(inputFile, line)) {
+			if (line.find("#") != std::string::npos) {
+				if (buffer.size() > 0)
+					flushFieldBuffer(gameState, buffer, field);
+				field = line;
+				buffer.clear();
+				continue;
+			}
+
+			if (line.find("__") != std::string::npos)
+				break;
+
+			if (field != "")
+				buffer.push_back(line);
+		}
+		flushFieldBuffer(gameState, buffer, field);
+
+
+		// reset input file to start:w
+		buffer.clear();
+		inputFile.clear();
+		inputFile.seekg(0, std::ios::beg);
+
+		// read objects
+		while (std::getline(inputFile, line)) {
+
+			// read shapes
 			if (line.find("__") != std::string::npos) {
 				if (currentType >= 0) {
 					flushBuffer(gameState, buffer, currentType, currentIndex, indexOffset);
@@ -173,7 +271,7 @@ namespace middle {
 				continue;
 			}
 			// don't append until first type is found, (where data section starts, so skip metadata)
-			if(currentType >= 0)
+			if (currentType >= 0)
 				buffer.push_back(line);
 		}
 
@@ -190,7 +288,7 @@ namespace middle {
 			std::set<int>highestLevelContainers;
 			for (int i = indexOffset; i < highestUsedIndex; ++i) {
 				// skip nons and skip constraints since they don't have parents
-				if(!isSlotFree(gameState, i) && gameState->shapes[i].type != ShapeType::CONSTRAINT)
+				if (!isSlotFree(gameState, i) && gameState->shapes[i].type != ShapeType::CONSTRAINT)
 					highestLevelContainers.insert(findHighestLevelContainer(gameState, i));
 			}
 

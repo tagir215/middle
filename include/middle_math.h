@@ -128,7 +128,7 @@ static ShapeInstance MakeShapeInstance(Shape shape) {
     pdat.linearDamping = shape.linearDamping;
 
     // TODO rotation
-	TranslateInitShape(shape, pdat.position.x, pdat.position.y, pdat.position.z);
+    pdat.position = DescVec(shape.position);
 
     // shapes
     if (shape.type == ShapeType::SPHERE) {

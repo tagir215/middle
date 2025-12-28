@@ -25,6 +25,8 @@ namespace middle {
 	int findHighestLevelContainer(GameState* gameState, int index);
 	// loop the shape instances
 	int findHighestUsedIndex(GameState* gameState);
+	// return if the shape is of sphere family
+	bool isSphere(GameState* gameState, int index);
 	// is it a loop or a reference?
 	bool isContainer(GameState* gameState, int index);
 	// is the shape real editable thing or a ghost (reference from other scene)

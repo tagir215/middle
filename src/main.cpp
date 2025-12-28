@@ -84,6 +84,7 @@ int main(void)
 		CAMERA_PERSPECTIVE
 	};
 
+
 	// Main game loop
 	while (!WindowShouldClose())    // Detect window close button or ESC key
 	{
@@ -115,6 +116,9 @@ int main(void)
 		middle::Draw(gameState);
 
 	}
+
+	gameState->closeGame = true;
+	UpdateGame(gameState);
 
 	// De-Initialization
 	//--------------------------------------------------------------------------------------

@@ -143,7 +143,7 @@ namespace middle {
 
 		ImGui::Begin("Editor");
 
-		const char* items[] = { "SELECT MODE", "SPHERE MODE", "CONSTRAINT MODE" };
+		const char* items[] = { "SELECT MODE", "SPHERE MODE", "CONSTRAINT MODE", "CAMERA MODE"};
 		static int currentItem = 0;
 		if (gameState->input.selectModeClick) {
 			currentItem = 0;
@@ -167,6 +167,9 @@ namespace middle {
 			}
 			if (gameState->creationMode == CreationMode::CONSTRAINT_MODE && gameState->selectCount == 2) {
 				gameState->nextEditorAction = EditorAction::NEW_CONSTRAINT;
+			}
+			if(gameState->creationMode == CreationMode::CAMERA_MODE && gameState->input.mouseClicked){
+				gameState->nextEditorAction = EditorAction::NEW_CAMERA;
 			}
 
 		}

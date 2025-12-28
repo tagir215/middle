@@ -49,4 +49,12 @@ namespace middle {
 		gameState->shapes[index].radius = DEF_RADIUS_REFERENCE_INDICATOR;
 		gameState->shapes[index].name = sceneName;
 	}
+	void camera(GameState* gameState, int index, const Vector3& position) {
+		auto& shapes = gameState->shapes;
+		shapes[index].type = ShapeType::CAMERA;
+		shapes[index].position = position;
+		shapes[index].radius = DEF_RADIUS_CAMERA;
+		shapes[index].physicalShape = false;
+		++shapes[index].id.generation;
+	}
 }
