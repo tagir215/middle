@@ -127,8 +127,8 @@ namespace middle {
 
 	bool isContainer(GameState* gameState, int index)
 	{
-		Shape& shape = gameState->shapes[index];
-		return shape.type == ShapeType::LOOP || shape.type == ShapeType::REFERENCE;
+		ShapeType type = gameState->shapes[index].type;
+		return type == ShapeType::LOOP || type == ShapeType::REFERENCE;
 	}
 
 	void dragShape(GameState* gameState, int index, Vector3 linearVelocity) {
@@ -153,16 +153,22 @@ namespace middle {
 		}
 	}
 
-	void moveShape(GameState* gameState, int index, Vector3 displacement)
+	void moveShape(GameState* gameState, int index, const Vector3& displacement)
 	{
 		Shape& shape = gameState->shapes[index];
 		if (isContainer(gameState, index)) {
 			for (int i = shape.loopArrayOffset; i < shape.loopArrayOffset + shape.loopSize; ++i) {
 				int memberIndex = gameState->loopMembers[i];
+				assert(index != memberIndex);
 				moveShape(gameState, memberIndex, displacement);
 			}
 		}
 		shape.position += displacement;
+	}
+
+	bool isGhostShape(int index)
+	{
+		return index > GHOST_INDEX_OFFSET;
 	}
 
 }

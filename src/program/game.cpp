@@ -87,6 +87,7 @@ __declspec(dllexport) void UpdateGame(GameState* gameState)
 		// grabbing activates selected if there's no selections yet, except can't grab constraints
 		if (instance.mouseIntersects && gameState->input.grabDown && gameState->selectCount == 0 && shape.type != ShapeType::CONSTRAINT) {
 			instance.selected = true;
+			++gameState->selectCount;
 		}
 
 		});

@@ -49,7 +49,7 @@ namespace middle {
 		outFile << sceneName << std::endl;
 		outFile << std::endl;
 
-		int saveSpam = MAX_SHAPE_COUNT / 2;
+		int saveSpam = GHOST_INDEX_OFFSET;
 		for (int i = 0; i < saveSpam; ++i) {
 			// skip empty parts if over max used index
 			if (gameState->isSlotFree(i))
@@ -125,7 +125,7 @@ namespace middle {
 			pos.y = std::stof(buffer[2]);
 			pos.z = std::stof(buffer[3]);
 			// import scene
-			loadScene(gameState, sceneName, true, pos, index);
+			loadScene(gameState, sceneName, true, pos, index + offset);
 			buffer.clear();
 			return;
 		}
@@ -200,6 +200,12 @@ namespace middle {
 			for (int v : highestLevelContainers) {
 				members.push_back(v);
 			}
+
+			// if it's ghost shape find next highest index to use, otherwise the reference index should be the one passed in
+			if (isGhostShape(referenceIndex)) {
+				referenceIndex = findHighestUsedIndex(gameState) + 1;
+			}
+
 			reference(gameState, referenceIndex, members, sceneName);
 
 			// set as reference shapes,  its good to know..

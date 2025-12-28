@@ -20,13 +20,16 @@ namespace middle {
 	// drag shape and its children
 	void dragShape(GameState* gameState, int index, Vector3 linearVel);
 	// move shape and its chidlren
-	void moveShape(GameState* gameState, int index, Vector3 displacement);
+	void moveShape(GameState* gameState, int index, const Vector3& displacement);
 	// find container of containers containers
 	int findHighestLevelContainer(GameState* gameState, int index);
 	// loop the shape instances
 	int findHighestUsedIndex(GameState* gameState);
 	// is it a loop or a reference?
 	bool isContainer(GameState* gameState, int index);
+	// is the shape real editable thing or a ghost (reference from other scene)
+	bool isGhostShape(int index);
+
 
 	template<typename F>
 	void loopInstances(GameState* gameState, F func) {
