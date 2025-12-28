@@ -48,6 +48,5 @@ namespace middle {
 		gameState->shapes[index].type = ShapeType::REFERENCE;
 		gameState->shapes[index].radius = DEF_RADIUS_REFERENCE_INDICATOR;
 		gameState->shapes[index].name = sceneName;
-		gameState->shapes[index].isGhostShape = false;
 	}
 }

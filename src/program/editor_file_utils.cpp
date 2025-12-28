@@ -187,12 +187,13 @@ namespace middle {
 		// if we import we contain all the content in a reference loop
 		if (import) {
 			currentIndex++;
-			int shapesAddedCount = currentIndex;
+			int highestUsedIndex = findHighestUsedIndex(gameState);
+			int shapesAddedCount = highestUsedIndex - indexOffset;
 			std::set<int>highestLevelContainers;
-			for (int i = 0; i < shapesAddedCount; ++i) {
+			for (int i = indexOffset; i < highestUsedIndex; ++i) {
 				// skip nons and skip constraints since they don't have parents
-				if(!gameState->isSlotFree(indexOffset + i) && gameState->shapes[indexOffset + i].type != ShapeType::CONSTRAINT)
-					highestLevelContainers.insert(findHighestLevelContainer(gameState, indexOffset + i));
+				if(!gameState->isSlotFree(i) && gameState->shapes[i].type != ShapeType::CONSTRAINT)
+					highestLevelContainers.insert(findHighestLevelContainer(gameState, i));
 			}
 
 			// make reference
@@ -203,16 +204,10 @@ namespace middle {
 
 			// if it's ghost shape find next highest index to use, otherwise the reference index should be the one passed in
 			if (isGhostShape(referenceIndex)) {
-				referenceIndex = findHighestUsedIndex(gameState) + 1;
+				referenceIndex = highestUsedIndex + 1;
 			}
 
 			reference(gameState, referenceIndex, members, sceneName);
-
-			// set as reference shapes,  its good to know..
-			for (int i = 0; i < shapesAddedCount; ++i) {
-				Shape& shape = gameState->shapes[indexOffset + i];
-				shape.isGhostShape = true;
-			}
 
 			// move imported scene where it wants to be
 			moveShape(gameState, referenceIndex, pos);

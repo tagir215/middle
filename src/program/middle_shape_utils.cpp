@@ -168,7 +168,7 @@ namespace middle {
 
 	bool isGhostShape(int index)
 	{
-		return index > GHOST_INDEX_OFFSET;
+		return index >= GHOST_INDEX_OFFSET;
 	}
 
 }
