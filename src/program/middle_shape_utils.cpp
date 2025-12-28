@@ -77,7 +77,7 @@ namespace middle {
 
 	std::vector<int> getChildIndexes(GameState* gameState, int id) {
 		auto& shape = gameState->shapes[id];
-		assert(shape.type == ShapeType::LOOP);
+		assert(shape.type == ShapeType::LOOP || shape.type == ShapeType::REFERENCE);
 		std::vector<int> result;
 		for (int i = shape.loopArrayOffset; i < shape.loopArrayOffset + shape.loopSize; ++i) {
 			result.push_back(gameState->loopMembers[i]);
@@ -197,9 +197,14 @@ namespace middle {
 	void deleteShapeRecursive(GameState* gameState, int index) {
 		Shape& shape = gameState->shapes[index];
 		if (isContainer(gameState, index)) {
-			for (int i = shape.loopArrayOffset; i < shape.loopArrayOffset + shape.loopSize; ++i) {
-				deleteShape(gameState, index);
+			std::vector<int> children = getChildIndexes(gameState, index);
+			for (int childIndex : children) {
+				deleteShapeRecursive(gameState, childIndex);
 			}
+		}
+		std::vector<int> connectedConstraints = findConnectedConstraints(gameState, index);
+		for (int connectedIndex : connectedConstraints) {
+			deleteShape(gameState, connectedIndex);
 		}
 		deleteShape(gameState, index);
 	}

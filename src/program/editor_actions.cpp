@@ -150,7 +150,7 @@ namespace middle {
 			}
 
 			if (shape.type == ShapeType::REFERENCE) {
-				deleteShape(gameState, i);
+				deleteShapeRecursive(gameState, i);
 			}
 
 			// store parent loops to re generate later
