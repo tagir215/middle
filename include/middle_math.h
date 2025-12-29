@@ -72,7 +72,7 @@ static bool PointInsideShape(const Vector3& point, const ShapeInstance& instance
     return false;
 }
 
-static bool RayCastLineSphere(const Vector3& spherePos, float radius, const Vector3& rayStart, const Vector3& rayEnd) {
+static bool RayCastLineSphere(const Vector3& spherePos, float radius, const Vector3& rayStart, const Vector3& rayEnd, Vector3& outIntersectPos) {
     Vector3 toSphere = spherePos - rayStart;
     Vector3 rayDir = Vector3Normalize(rayEnd - rayStart);
     float projectionMag = Vector3DotProduct(rayDir, toSphere);
@@ -80,6 +80,7 @@ static bool RayCastLineSphere(const Vector3& spherePos, float radius, const Vect
 
     float distSq = Vector3DistanceSqr(closestPointOnLine, spherePos);
 
+    outIntersectPos = closestPointOnLine;
     // TODO
     return distSq < radius * radius;
 }

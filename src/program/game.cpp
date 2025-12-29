@@ -72,7 +72,8 @@ __declspec(dllexport) void UpdateGame(GameState* gameState)
 			if (gameState->editorState.creationMode == CreationMode::CONSTRAINT_MODE && shape.type != ShapeType::SPHERE)
 				return;
 			auto pos = instance.pData.position;
-			bool mouseIntersect = RayCastLineSphere(FromDescVec(pos), instance.shape.radius, gameState->editorState.camera.position, gameState->editorState.camera.position + gameState->input.mouseDir);
+			Vector3 intersectPos;
+			bool mouseIntersect = RayCastLineSphere(FromDescVec(pos), instance.shape.radius, gameState->editorState.camera.position, gameState->editorState.camera.position + gameState->input.mouseDir, intersectPos);
 			instance.mouseIntersects = mouseIntersect;
 		}
 		if (shape.type == ShapeType::CONSTRAINT) {
@@ -159,7 +160,12 @@ __declspec(dllexport) void UpdateGame(GameState* gameState)
 		}
 
 		if (instance.grabDown) {
-			dragShape(gameState, i, gameState->input.mouseXZ_PlaneVelocity);
+			float objYDistance = std::abs(instance.pData.position.y - gameState->editorState.camera.position.y);
+			float yDistance = std::abs(gameState->editorState.camera.position.y);
+			if (yDistance == 0)
+				yDistance = 0.001f;
+			Vector3 xzVel = Vector3Scale(gameState->input.mouseXZ_PlaneVelocity, objYDistance / yDistance);
+			dragShape(gameState, i, xzVel);
 		}
 		});
 
