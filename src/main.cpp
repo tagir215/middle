@@ -76,7 +76,7 @@ int main(void)
 	gameState->frameTime = fixedTimeStep;
 
 
-	gameState->camera = {
+	gameState->editorState.camera = {
 		{0,-100,0},
 		{0,0,0},
 		{0,0,1},
@@ -84,6 +84,7 @@ int main(void)
 		CAMERA_PERSPECTIVE
 	};
 
+	gameState->startGame = true;
 
 	// Main game loop
 	while (!WindowShouldClose())    // Detect window close button or ESC key
@@ -212,21 +213,21 @@ void UpdateInput(GameState* gameState, Matrix& screenOrientorM) {
 	gameState->input.mouseNormalizedPos.x = (float)relativeX / (float)cameraPosX;
 	gameState->input.mouseNormalizedPos.y = (float)relativeY / (float)cameraPosX;
 	gameState->aspectRatio = gameState->screenWidth / gameState->screenHeight;
-	float angle = gameState->camera.fovy * DEG2RAD * 0.5f;
+	float angle = gameState->editorState.camera.fovy * DEG2RAD * 0.5f;
 	float nearAxisY = tan(angle) * gameState->nearPlaneDistance;
 	float nearAxisX = nearAxisY * gameState->aspectRatio;
 	float nearPlanePos2dX = nearAxisX * gameState->input.mouseNormalizedPos.x;
 	float nearPlanePos2dY = nearAxisX * gameState->input.mouseNormalizedPos.y;
 
-	Vector3 cameraDir = Vector3Normalize(gameState->camera.target - gameState->camera.position);
-	Vector3 cameraRight = Vector3Normalize(Vector3CrossProduct(cameraDir, gameState->camera.up));
+	Vector3 cameraDir = Vector3Normalize(gameState->editorState.camera.target - gameState->editorState.camera.position);
+	Vector3 cameraRight = Vector3Normalize(Vector3CrossProduct(cameraDir, gameState->editorState.camera.up));
 	Vector3 cameraUp = Vector3CrossProduct(cameraRight, cameraDir);
-	gameState->input.mouseNearPlanePos = gameState->camera.position
+	gameState->input.mouseNearPlanePos = gameState->editorState.camera.position
 		+ cameraDir * gameState->nearPlaneDistance
 		+ cameraRight * nearPlanePos2dX
 		+ cameraUp * nearPlanePos2dY;
 
-	gameState->input.mouseDir = Vector3Normalize(gameState->input.mouseNearPlanePos - gameState->camera.position);
+	gameState->input.mouseDir = Vector3Normalize(gameState->input.mouseNearPlanePos - gameState->editorState.camera.position);
 
 	Vector3 xzPlanePos = { 0,0,0 };
 	Vector3 xzPlaneNormal = { 0,-1,0 };

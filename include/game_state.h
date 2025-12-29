@@ -50,6 +50,11 @@ namespace middle {
 		CAMERA_MODE,
 	};
 
+	enum class ApplicationMode {
+		EDITOR_MODE,
+		GAME_MODE,
+	};
+
 	struct Id {
 		int generation = -1;
 		bool operator==(const Id& other) {
@@ -178,12 +183,21 @@ namespace middle {
 		virtual void execute(GameState* gameState) = 0;
 	};
 
+	struct EditorState {
+		CreationMode creationMode;
+		Camera3D camera;
+		bool initialized = false;
+		bool doOneStep = false;
+		bool showAllInfo = false;
+		int stepDir = 1;
+		EditorAction nextEditorAction = EditorAction::NONE;
+		EditorActionContainer::Params nextEditorActionParams;
+	};
 
 	using GameScript = void(*)(GameState*);
 
 	struct GameState {
 	public:
-
 		float screenWidth;
 		float screenHeight;
 		float aspectRatio;
@@ -193,6 +207,8 @@ namespace middle {
 		int selectCount = 0;
 		const double nearPlaneDistance = 0.05;
 		const double farPlaneDistance = 5000;
+		ApplicationMode applicationMode = ApplicationMode::EDITOR_MODE;
+		EditorState editorState;
 		std::array<Shape, MAX_SHAPE_COUNT>shapes;
 		std::array<Vector3, MAX_VERTEX_COUNT> vertexArray;
 		std::array<int, MAX_LOOP_MEMBER_COUNT> loopMembers;
@@ -202,27 +218,18 @@ namespace middle {
 		Vector2 mouseDragPos;
 		Matrix oldWorldM;
 		Matrix screenOrientorM;
-		CreationMode creationMode;
-		int vertexIndex = 0;
-		int loopIndex = 0;
-		bool reload = true;
-		bool initialized = false;
-		bool paused = false;
-		bool doOneStep = false;
-		bool reset = false;
-		bool showAllInfo = false;
-		int stepDir = 1;
 		int activeScene = 0;
 		int activeCameraIndex = 0;
+		int vertexIndex = 0;
+		int loopIndex = 0;
 		std::vector<std::string>sceneNames;
 		Input input;
 		std::set<InputBlockers> inputBlockers;
-		Camera3D camera;
-		EditorAction nextEditorAction = EditorAction::NONE;
-		EditorActionContainer::Params nextEditorActionParams;
-
+		bool paused = false;
 		bool closeGame = false;
 		bool startGame = false;
+		bool reload = true;
+		bool reset = false;
 	};
 
 

@@ -18,6 +18,11 @@ namespace middle {
 		return x + y + z;
 	}
 
+	bool isEmptyOrWhitespace(const std::string& s) {
+		return s.empty() ||
+			std::all_of(s.begin(), s.end(),
+				[](unsigned char c) { return std::isspace(c); });
+	}
 
 	void loadSceneNames(GameState* gameState)
 	{
@@ -49,8 +54,6 @@ namespace middle {
 		outFile << sceneName << std::endl;
 		outFile << "#activeCamera" << std::endl;
 		outFile << gameState->activeCameraIndex << std::endl;
-		outFile << "#editorCameraPos" << std::endl;
-		outFile << coordToLines(gameState->camera.position) << std::endl;
 
 		int saveSpam = GHOST_INDEX_OFFSET;
 		for (int i = 0; i < saveSpam; ++i) {
@@ -88,60 +91,23 @@ namespace middle {
 		outFile.close();
 	}
 
-	void saveEditorCameraPosition(GameState* gameState, const std::string& sceneName)
+	void saveEditorState(GameState* gameState)
 	{
-		std::string filename = "../assets/scenes/" + sceneName + ".midsc";
-		std::ifstream inputFile(filename);
-
-		if (!inputFile.is_open()) {
-			std::cerr << "Failed to open file to write";
-			return;
-		}
-
-		std::string line;
-		std::vector<std::string>lines;
-		while (std::getline(inputFile, line)) {
-			lines.push_back(line);
-		}
-		inputFile.close();
-
+		std::string filename = "../src/editor_data/editor_state.midsc";
 		std::ofstream outFile(filename);
 		if (!outFile.is_open()) {
 			std::cerr << "failed to open to write\n";
 		}
 
-		for (int i = 0; i < lines.size(); ++i) {
-			if (lines[i].find("#editorCameraPos") != std::string::npos) {
-				lines[i + 1] = std::to_string(gameState->camera.position.x);
-				lines[i + 2] = std::to_string(gameState->camera.position.y);
-				lines[i + 3] = std::to_string(gameState->camera.position.z);
-				i += 3;
-			}
-		}
-
-		for (int i = 0; i < lines.size(); ++i) {
-			outFile << lines[i] << std::endl;
-		}
+		outFile << "#activeScene" << std::endl;
+		outFile << gameState->activeScene << std::endl;
+		outFile << "#editorCameraPos" << std::endl;
+		outFile << coordToLines(gameState->editorState.camera.position) << std::endl;
 
 		outFile.flush();
 		outFile.close();
 	}
 
-	void flushFieldBuffer(GameState* gameState, std::vector<std::string>& buffer, const std::string& field) {
-		if (field == "#activeCamera") {
-			assert(buffer.size() == 1);
-			gameState->activeCameraIndex = std::stoi(buffer[0]);
-			buffer.clear();
-		}
-		if (field == "#editorCameraPos") {
-			assert(buffer.size() == 3);
-			Vector3 pos;
-			pos.x = std::stof(buffer[0]);
-			pos.y = std::stof(buffer[1]);
-			pos.z = std::stof(buffer[2]);
-			gameState->camera.position = pos;
-		}
-	}
 
 	void flushBuffer(GameState* gameState, std::vector<std::string>& buffer, int type, int index, int offset = 0) {
 		if (type == (int)ShapeType::SPHERE) {
@@ -199,6 +165,29 @@ namespace middle {
 		assert(true, "somethings wrong, about data");
 	}
 
+	void flushFieldBuffer(GameState* gameState, std::vector<std::string>& buffer, const std::string& field) {
+		if (field == "#activeCamera") {
+			assert(buffer.size() == 1);
+			gameState->activeCameraIndex = std::stoi(buffer[0]);
+			buffer.clear();
+		}
+		if (field == "#editorCameraPos") {
+			assert(buffer.size() == 3);
+			Vector3 pos;
+			pos.x = std::stof(buffer[0]);
+			pos.y = std::stof(buffer[1]);
+			pos.z = std::stof(buffer[2]);
+			gameState->editorState.camera.position = pos;
+			buffer.clear();
+		}
+		if (field == "#activeScene") {
+			assert(buffer.size() == 1);
+			gameState->activeScene = std::stoi(buffer[0]);
+			buffer.clear();
+		}
+		assert("something wrong about data");
+	}
+
 	void loadScene(GameState* gameState, const std::string& sceneName, bool import, const Vector3& pos, int sceneReferenceIndex) {
 		std::string filename = "../assets/scenes/" + sceneName + ".midsc";
 
@@ -243,7 +232,7 @@ namespace middle {
 			if (line.find("__") != std::string::npos)
 				break;
 
-			if (field != "")
+			if (!isEmptyOrWhitespace(line))
 				buffer.push_back(line);
 		}
 		flushFieldBuffer(gameState, buffer, field);
@@ -271,7 +260,7 @@ namespace middle {
 				continue;
 			}
 			// don't append until first type is found, (where data section starts, so skip metadata)
-			if (currentType >= 0)
+			if (currentType >= 0 && !isEmptyOrWhitespace(line))
 				buffer.push_back(line);
 		}
 
@@ -308,6 +297,32 @@ namespace middle {
 			// move imported scene where it wants to be
 			moveShape(gameState, sceneReferenceIndex, pos);
 		}
+	}
+
+	void loadEditorState(GameState* gameState) {
+		std::string filename = "../src/editor_data/editor_state.midsc";
+
+		std::ifstream inputFile(filename);
+		if (!inputFile.is_open()) {
+			std::cerr << "Failed to open file to write";
+			return;
+		}
+
+		std::string line;
+		std::vector<std::string>buffer;
+		std::string field = "";
+
+		while (std::getline(inputFile, line)) {
+			if (line.find("#") != std::string::npos) {
+				if(field != "")
+					flushFieldBuffer(gameState, buffer, field);
+				field = line;
+				continue;
+			}
+			if(!isEmptyOrWhitespace(line))
+				buffer.push_back(line);
+		}
+		flushFieldBuffer(gameState, buffer, field);
 	}
 
 	void newScript(GameState* gameState, const std::string& filename, const std::string& sceneName, int index)

@@ -20,7 +20,7 @@ namespace middle {
 		// 89, 135, 168
 		ClearBackground(BACKGROUND_COLOR);
 
-		BeginMode3D(gameState->camera);
+		BeginMode3D(gameState->editorState.camera);
 
 		rlSetClipPlanes(gameState->nearPlaneDistance, gameState->farPlaneDistance);
 

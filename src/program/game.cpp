@@ -17,17 +17,23 @@ __declspec(dllexport) void UpdateGame(GameState* gameState)
 		return;
 	}
 
-
 	processEditorActions(gameState);
+
+	if (gameState->startGame) {
+		if (gameState->applicationMode == ApplicationMode::EDITOR_MODE) {
+			loadEditorState(gameState);
+		}
+		gameState->startGame = false;
+	}
 
 	// update
 	if (gameState->reload) {
-		//gameInitializer.update(gameState);
 		reset(gameState);
 		loadSceneNames(gameState);
 		if (gameState->sceneNames.size() > 0) {
 			loadScene(gameState, gameState->sceneNames[gameState->activeScene], false);
 		}
+		gameState->reload = false;
 	}
 	updateInstances(gameState);
 
@@ -38,20 +44,20 @@ __declspec(dllexport) void UpdateGame(GameState* gameState)
 	const float cameraSpeed = mouseCamRatio * mouseCamRatio * mouseCamRatio * maxCameraSpeed;
 	Vector3 cameraMovementDir = { 0,0,0 };
 	if (gameState->input.w)
-		cameraMovementDir += Vector3Normalize(gameState->camera.target - gameState->camera.position);
+		cameraMovementDir += Vector3Normalize(gameState->editorState.camera.target - gameState->editorState.camera.position);
 	if (gameState->input.s)
-		cameraMovementDir += Vector3Negate(Vector3Normalize(gameState->camera.target - gameState->camera.position));
+		cameraMovementDir += Vector3Negate(Vector3Normalize(gameState->editorState.camera.target - gameState->editorState.camera.position));
 	if (gameState->input.e)
 		cameraMovementDir += { 0, 0, 1 };
 	if (gameState->input.q)
 		cameraMovementDir += { 0, 0, -1 };
 	if (gameState->input.d)
-		cameraMovementDir += Vector3Negate(Vector3Normalize(Vector3CrossProduct(gameState->camera.up, gameState->camera.target - gameState->camera.position)));
+		cameraMovementDir += Vector3Negate(Vector3Normalize(Vector3CrossProduct(gameState->editorState.camera.up, gameState->editorState.camera.target - gameState->editorState.camera.position)));
 	if (gameState->input.a)
-		cameraMovementDir += Vector3Normalize(Vector3CrossProduct(gameState->camera.up, gameState->camera.target - gameState->camera.position));
+		cameraMovementDir += Vector3Normalize(Vector3CrossProduct(gameState->editorState.camera.up, gameState->editorState.camera.target - gameState->editorState.camera.position));
 
-	gameState->camera.position += cameraMovementDir * cameraSpeed;
-	gameState->camera.target += cameraMovementDir * cameraSpeed;
+	gameState->editorState.camera.position += cameraMovementDir * cameraSpeed;
+	gameState->editorState.camera.target += cameraMovementDir * cameraSpeed;
 
 
 	// mouse intersects 
@@ -63,15 +69,15 @@ __declspec(dllexport) void UpdateGame(GameState* gameState)
 		bool bSphere = isSphere(gameState, i);
 		if (bSphere) {
 			// when in constraint mode can only select actual spheres
-			if (gameState->creationMode == CreationMode::CONSTRAINT_MODE && shape.type != ShapeType::SPHERE)
+			if (gameState->editorState.creationMode == CreationMode::CONSTRAINT_MODE && shape.type != ShapeType::SPHERE)
 				return;
 			auto pos = instance.pData.position;
-			bool mouseIntersect = RayCastLineSphere(FromDescVec(pos), instance.shape.radius, gameState->camera.position, gameState->camera.position + gameState->input.mouseDir);
+			bool mouseIntersect = RayCastLineSphere(FromDescVec(pos), instance.shape.radius, gameState->editorState.camera.position, gameState->editorState.camera.position + gameState->input.mouseDir);
 			instance.mouseIntersects = mouseIntersect;
 		}
 		if (shape.type == ShapeType::CONSTRAINT) {
 			// in constraint creation mode, can't select constraints, only spheres to create constraints to
-			if (gameState->creationMode == CreationMode::CONSTRAINT_MODE)
+			if (gameState->editorState.creationMode == CreationMode::CONSTRAINT_MODE)
 				return;
 			auto& instanceA = getShapeInstance(gameState, instance.shape.constraint.indexA);
 			auto& instanceB = getShapeInstance(gameState, instance.shape.constraint.indexB);
@@ -116,7 +122,7 @@ __declspec(dllexport) void UpdateGame(GameState* gameState)
 
 	// info on/off
 	if (gameState->intersectCount == 0 && gameState->input.infoClick) {
-		gameState->showAllInfo = !gameState->showAllInfo;
+		gameState->editorState.showAllInfo = !gameState->editorState.showAllInfo;
 	}
 	else {
 		loopInstances(gameState, [gameState](int i, ShapeInstance& instance) {
@@ -135,8 +141,8 @@ __declspec(dllexport) void UpdateGame(GameState* gameState)
 	if (gameState->input.openScript && gameState->intersectCount > 0) {
 		loopInstances(gameState, [&](int i, ShapeInstance& instance) {
 			if (instance.mouseIntersects) {
-				gameState->nextEditorAction = EditorAction::OPEN_SCRIPT;
-				gameState->nextEditorActionParams = { "", i };
+				gameState->editorState.nextEditorAction = EditorAction::OPEN_SCRIPT;
+				gameState->editorState.nextEditorActionParams = { "", i };
 			}
 			});
 	}
@@ -161,12 +167,12 @@ __declspec(dllexport) void UpdateGame(GameState* gameState)
 		unselect(gameState);
 	}
 
-	bool paused = gameState->paused && !gameState->doOneStep;
-	gameState->doOneStep = false;
+	bool paused = gameState->paused && !gameState->editorState.doOneStep;
+	gameState->editorState.doOneStep = false;
 
-	if (paused || gameState->stepDir == -1)
+	if (paused || gameState->editorState.stepDir == -1)
 	{
-		gameState->doOneStep = false;
+		gameState->editorState.doOneStep = false;
 		return;
 	}
 
@@ -216,7 +222,7 @@ __declspec(dllexport) void UpdateGame(GameState* gameState)
 
 void closeGame(GameState* gameState)
 {
-	saveEditorCameraPosition(gameState, gameState->sceneNames[gameState->activeScene]);
+	saveEditorState(gameState);
 }
 
 

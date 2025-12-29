@@ -10,17 +10,17 @@
 
 namespace middle {
 	void processEditorActions(GameState* gameState) {
-		switch (gameState->nextEditorAction) {
+		switch (gameState->editorState.nextEditorAction) {
 		case EditorAction::NEW_SPHERE: {
 			auto action = EditorActionNewSphere();
-			action.params = gameState->nextEditorActionParams;
+			action.params = gameState->editorState.nextEditorActionParams;
 			action.execute(gameState);
 			break;
 		}
 		case EditorAction::NEW_CONSTRAINT: {
 
 			auto action = EditorActionNewConstraint();
-			action.params = gameState->nextEditorActionParams;
+			action.params = gameState->editorState.nextEditorActionParams;
 			action.execute(gameState);
 			break;
 		}
@@ -50,37 +50,37 @@ namespace middle {
 		}
 		case EditorAction::LOAD_SCENE: {
 			auto action = EditorActionLoadScene();
-			action.params = gameState->nextEditorActionParams;
+			action.params = gameState->editorState.nextEditorActionParams;
 			action.execute(gameState);
 			break;
 		}
 		case EditorAction::NEW_SCENE: {
 			auto action = EditorActionNewScene();
-			action.params = gameState->nextEditorActionParams;
+			action.params = gameState->editorState.nextEditorActionParams;
 			action.execute(gameState);
 			break;
 		}
 		case EditorAction::IMPORT_SCENE: {
 			auto action = EditorActionImportScene();
-			action.params = gameState->nextEditorActionParams;
+			action.params = gameState->editorState.nextEditorActionParams;
 			action.execute(gameState);
 			break;
 		}
 		case EditorAction::OPEN_SCRIPT: {
 			auto action = EditorActionOpenScript();
-			action.params = gameState->nextEditorActionParams;
+			action.params = gameState->editorState.nextEditorActionParams;
 			action.execute(gameState);
 			break;
 		}
 		case EditorAction::NEW_CAMERA: {
 			auto action = EditorActionNewCamera();
-			action.params = gameState->nextEditorActionParams;
+			action.params = gameState->editorState.nextEditorActionParams;
 			action.execute(gameState);
 			break;
 		}
 		}
-		gameState->nextEditorAction = EditorAction::NONE;
-		gameState->nextEditorActionParams = {};
+		gameState->editorState.nextEditorAction = EditorAction::NONE;
+		gameState->editorState.nextEditorActionParams = {};
 	}
 
 	void EditorActionNewSphere::execute(GameState* gameState) {
@@ -304,7 +304,7 @@ namespace middle {
 	void EditorActionNewCamera::execute(GameState* gameState)
 	{
 		int freeIndex = findFreeIndex(gameState);
-		Vector3& pos = gameState->camera.position;
+		Vector3& pos = gameState->editorState.camera.position;
 		camera(gameState, freeIndex, pos);
 	}
 

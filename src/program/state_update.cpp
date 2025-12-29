@@ -21,7 +21,6 @@ namespace middle {
 	}
 
 	void updateInstances(GameState* gameState) {
-		gameState->reload = false;
 
 		for (int i = 0; i < gameState->shapes.size(); ++i) {
 			Shape& shape = gameState->shapes[i];
@@ -43,13 +42,13 @@ namespace middle {
 				instance.shape = shape;
 
 				// step backward
-				if (gameState->doOneStep && instance.history.size() > 0 && gameState->stepDir == -1) {
+				if (gameState->editorState.doOneStep && instance.history.size() > 0 && gameState->editorState.stepDir == -1) {
 					instance.pData = instance.history.front();
 					instance.history.pop_front();
 					instance.lifeTime -= gameState->frameTime;
 				}
 				// step forward
-				else if ((!gameState->paused || gameState->doOneStep) && gameState->stepDir == 1) {
+				else if ((!gameState->paused || gameState->editorState.doOneStep) && gameState->editorState.stepDir == 1) {
 					auto copy = instance.pData;
 					instance.history.push_front(copy);
 					if (instance.history.size() > shape.historyMemoryLength) {

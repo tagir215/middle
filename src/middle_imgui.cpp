@@ -65,15 +65,15 @@ namespace middle {
 		else {
 			if (ImGui::Button("continue")) {
 				gameState->paused = false;
-				gameState->stepDir = 1;
+				gameState->editorState.stepDir = 1;
 			}
 			if (ImGui::Button("next step")) {
-				gameState->doOneStep = true;
-				gameState->stepDir = 1;
+				gameState->editorState.doOneStep = true;
+				gameState->editorState.stepDir = 1;
 			}
 			if (ImGui::Button("previous step")) {
-				gameState->doOneStep = true;
-				gameState->stepDir = -1;
+				gameState->editorState.doOneStep = true;
+				gameState->editorState.stepDir = -1;
 			}
 		}
 		if (ImGui::Button("reset")) {
@@ -90,9 +90,9 @@ namespace middle {
 		ImGui::End();
 
 		ImGui::Begin("GameState");
-		ImGuiDisplay("camera position", gameState->camera.position);
-		ImGuiDisplay("camera up", gameState->camera.up);
-		ImGuiDisplay("camera target", gameState->camera.target);
+		ImGuiDisplay("camera position", gameState->editorState.camera.position);
+		ImGuiDisplay("camera up", gameState->editorState.camera.up);
+		ImGuiDisplay("camera target", gameState->editorState.camera.target);
 		ImGuiDisplay("mousePos", gameState->input.mousePos);
 		ImGuiDisplay("mouse near plane pos", gameState->input.mouseNearPlanePos);
 		ImGuiDisplay("mouse normalized pos", gameState->input.mouseNormalizedPos);
@@ -111,7 +111,7 @@ namespace middle {
 
 			Vector3 pos = FromDescVec(shapeInstance.pData.position);
 
-			if ((shape.physicalShape && shapeInstance.selected && shapeInstance.infoVisible) || gameState->showAllInfo) {
+			if ((shape.physicalShape && shapeInstance.selected && shapeInstance.infoVisible) || gameState->editorState.showAllInfo) {
 				referencePos = pos;
 
 				ImGui::Begin(std::to_string(i).c_str());
@@ -155,41 +155,41 @@ namespace middle {
 			currentItem = 2;
 		}
 		ImGui::Combo("Select things to add", &currentItem, items, IM_ARRAYSIZE(items));
-		gameState->creationMode = static_cast<CreationMode>(currentItem);
+		gameState->editorState.creationMode = static_cast<CreationMode>(currentItem);
 
 		auto end = gameState->inputBlockers.end();
 		auto& blockers = gameState->inputBlockers;
 
-		if (gameState->creationMode != CreationMode::SELECT_MODE) {
+		if (gameState->editorState.creationMode != CreationMode::SELECT_MODE) {
 
-			if (gameState->creationMode == CreationMode::SPHERE_MODE && gameState->input.mouseClicked) {
-				gameState->nextEditorAction = EditorAction::NEW_SPHERE;
+			if (gameState->editorState.creationMode == CreationMode::SPHERE_MODE && gameState->input.mouseClicked) {
+				gameState->editorState.nextEditorAction = EditorAction::NEW_SPHERE;
 			}
-			if (gameState->creationMode == CreationMode::CONSTRAINT_MODE && gameState->selectCount == 2) {
-				gameState->nextEditorAction = EditorAction::NEW_CONSTRAINT;
+			if (gameState->editorState.creationMode == CreationMode::CONSTRAINT_MODE && gameState->selectCount == 2) {
+				gameState->editorState.nextEditorAction = EditorAction::NEW_CONSTRAINT;
 			}
-			if(gameState->creationMode == CreationMode::CAMERA_MODE && gameState->input.mouseClicked){
-				gameState->nextEditorAction = EditorAction::NEW_CAMERA;
+			if(gameState->editorState.creationMode == CreationMode::CAMERA_MODE && gameState->input.mouseClicked){
+				gameState->editorState.nextEditorAction = EditorAction::NEW_CAMERA;
 			}
 
 		}
 
 		if (ImGui::Button("DELETE OBJECT") || gameState->input.deleteClick) {
-			gameState->nextEditorAction = EditorAction::DELETE_SHAPES;
+			gameState->editorState.nextEditorAction = EditorAction::DELETE_SHAPES;
 		}
 
 		if (ImGui::Button("SAVE SCENE") || gameState->input.saveClick) {
-			gameState->nextEditorAction = EditorAction::SAVE_SCENE;
+			gameState->editorState.nextEditorAction = EditorAction::SAVE_SCENE;
 		}
 
 		if (ImGui::Button("CREATE LOOP") || gameState->input.loopClick) {
-			gameState->nextEditorAction = EditorAction::CREATE_LOOPS;
+			gameState->editorState.nextEditorAction = EditorAction::CREATE_LOOPS;
 		}
 
 		ImGui::Separator();
 
 		if (ImGui::Button("BUILD")) {
-			gameState->nextEditorAction = EditorAction::BUILD;
+			gameState->editorState.nextEditorAction = EditorAction::BUILD;
 		}
 
 
@@ -219,8 +219,8 @@ namespace middle {
 				if (ImGui::Button(name.c_str())) {
 					EditorActionContainer::Params params;
 					params.intValue = i;
-					gameState->nextEditorAction = popupAction;
-					gameState->nextEditorActionParams = params;
+					gameState->editorState.nextEditorAction = popupAction;
+					gameState->editorState.nextEditorActionParams = params;
 					ImGui::CloseCurrentPopup();
 				}
 			}
@@ -249,8 +249,8 @@ namespace middle {
 					EditorActionContainer::Params params;
 					params.stringValue = std::string(newSceneName);
 					params.intValue = gameState->sceneNames.size();
-					gameState->nextEditorAction = EditorAction::NEW_SCENE;
-					gameState->nextEditorActionParams = params;
+					gameState->editorState.nextEditorAction = EditorAction::NEW_SCENE;
+					gameState->editorState.nextEditorActionParams = params;
 
 					// Clear buffer and close popup
 					newSceneName[0] = '\0';
