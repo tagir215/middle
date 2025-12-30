@@ -93,6 +93,21 @@ namespace middle {
 			case ShapeType::LOOP:
 			case ShapeType::REFERENCE:
 			case ShapeType::CAMERA:
+
+				Color loopColor = WHITE;
+				if (shapeInstance.shape.type == ShapeType::REFERENCE) {
+					loopColor = PURPLE;
+				}
+				if (shapeInstance.shape.type == ShapeType::CAMERA) {
+					if (gameState->activeCameraIndex == i) {
+						loopColor = ORANGE;
+					}
+					else {
+						loopColor = BLACK;
+					}
+				}
+
+				DrawSphere(FromDescVec(shapeInstance.pData.position), shapeInstance.shape.radius, loopColor);
 				if(shapeInstance.grabDown) {
 					float length = shape.radius * 4;
 					DrawCube(pos, length, length, length, ColorAlpha(ORANGE, 0.3f));
@@ -102,15 +117,7 @@ namespace middle {
 					DrawCube(pos, length, length, length, ColorAlpha(WHITE, 0.3f));
 				}
 
-				Color loopColor = WHITE;
-				if (shapeInstance.shape.type == ShapeType::REFERENCE) {
-					loopColor = PURPLE;
-				}
-				if (shapeInstance.shape.type == ShapeType::CAMERA) {
-					loopColor = ORANGE;
-				}
 
-				DrawSphere(FromDescVec(shapeInstance.pData.position), shapeInstance.shape.radius, loopColor);
 				break;
 			}
 

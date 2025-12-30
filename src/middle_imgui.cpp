@@ -52,10 +52,7 @@ namespace middle {
 
 	}
 
-	void setupUI(GameState* gameState)
-	{
-		rlImGuiBegin();
-
+	void editorUI(GameState* gameState) {
 		ImGui::Begin("Control");
 		if (!gameState->paused) {
 			if (ImGui::Button("pause")) {
@@ -86,6 +83,9 @@ namespace middle {
 			--gameState->gridSize;
 			if (gameState->gridSize < 1)
 				gameState->gridSize = 1;
+		}
+		if (ImGui::Button("PLAY")) {
+			gameState->applicationMode = ApplicationMode::GAME_MODE;
 		}
 		ImGui::End();
 
@@ -154,6 +154,9 @@ namespace middle {
 		if (gameState->input.constraintModeClick) {
 			currentItem = 2;
 		}
+		if (gameState->input.cameraModeClick) {
+			currentItem = 3;
+		}
 		ImGui::Combo("Select things to add", &currentItem, items, IM_ARRAYSIZE(items));
 		gameState->editorState.creationMode = static_cast<CreationMode>(currentItem);
 
@@ -162,16 +165,20 @@ namespace middle {
 
 		if (gameState->editorState.creationMode != CreationMode::SELECT_MODE) {
 
-			if (gameState->editorState.creationMode == CreationMode::SPHERE_MODE && gameState->input.mouseClicked) {
+			if (gameState->editorState.creationMode == CreationMode::SPHERE_MODE && gameState->input.newThing) {
 				gameState->editorState.nextEditorAction = EditorAction::NEW_SPHERE;
 			}
 			if (gameState->editorState.creationMode == CreationMode::CONSTRAINT_MODE && gameState->selectCount == 2) {
 				gameState->editorState.nextEditorAction = EditorAction::NEW_CONSTRAINT;
 			}
-			if(gameState->editorState.creationMode == CreationMode::CAMERA_MODE && gameState->input.mouseClicked){
-				gameState->editorState.nextEditorAction = EditorAction::NEW_CAMERA;
+			if(gameState->editorState.creationMode == CreationMode::CAMERA_MODE){
+				if (gameState->input.newThing) {
+					gameState->editorState.nextEditorAction = EditorAction::NEW_CAMERA;
+				}
+				if (gameState->input.focus) {
+					gameState->editorState.nextEditorAction = EditorAction::SET_ACTIVE_CAMERA;
+				}
 			}
-
 		}
 
 		if (ImGui::Button("DELETE OBJECT") || gameState->input.deleteClick) {
@@ -269,6 +276,28 @@ namespace middle {
 
 
 		ImGui::End();
+	}
+
+	void gameDevelopmentUI(GameState* gameState) {
+		ImGui::Begin("debug");
+
+		if (ImGui::Button("EDIT")) {
+			gameState->applicationMode = ApplicationMode::EDITOR_MODE;
+		}
+
+		ImGui::End();
+	}
+
+	void setupUI(GameState* gameState)
+	{
+		rlImGuiBegin();
+
+		if (gameState->applicationMode == ApplicationMode::EDITOR_MODE) {
+			editorUI(gameState);
+		}
+		if (gameState->applicationMode == ApplicationMode::GAME_MODE) {
+			gameDevelopmentUI(gameState);
+		}
 
 		rlImGuiEnd();
 	}

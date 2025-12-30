@@ -78,6 +78,11 @@ namespace middle {
 			action.execute(gameState);
 			break;
 		}
+		case EditorAction::SET_ACTIVE_CAMERA: {
+			auto action = EditorActionSelectCamera();
+			action.execute(gameState);
+			break;
+		}
 		}
 		gameState->editorState.nextEditorAction = EditorAction::NONE;
 		gameState->editorState.nextEditorActionParams = {};
@@ -306,6 +311,17 @@ namespace middle {
 		int freeIndex = findFreeIndex(gameState);
 		Vector3& pos = gameState->editorState.camera.position;
 		camera(gameState, freeIndex, pos);
+	}
+
+	void EditorActionSelectCamera::execute(GameState* gameState)
+	{
+		if (gameState->selectCount == 1) {
+			loopInstances(gameState, [gameState](int index, ShapeInstance& instance) {
+				if (instance.selected && instance.shape.type == ShapeType::CAMERA) {
+					gameState->activeCameraIndex = index;
+				}
+				});
+		}
 	}
 
 }

@@ -64,7 +64,14 @@ namespace middle {
 		void execute(GameState* gameState) override;
 	};
 
+	// new perspective 
 	class EditorActionNewCamera : public EditorActionContainer {
+	public:
+		void execute(GameState* gameState) override;
+	};
+
+	// we are directors now
+	class EditorActionSelectCamera : public EditorActionContainer {
 	public:
 		void execute(GameState* gameState) override;
 	};

@@ -177,9 +177,9 @@ void UpdateInput(GameState* gameState, Matrix& screenOrientorM) {
 	gameState->input.zoomIn = GetMouseWheelMoveV().y > 0;
 	gameState->input.zoomOut = GetMouseWheelMoveV().y < 0;
 	if (gameState->inputBlockers.find(InputBlockers::KEYBOARD_BLOCK) == gameState->inputBlockers.end()) {
-		gameState->input.mouseHeld = IsKeyDown(KEY_F);
-		gameState->input.mouseClicked = IsKeyPressed(KEY_F);
-		gameState->input.mouseReleased = IsKeyReleased(KEY_F);
+		gameState->input.mouseHeld = IsMouseButtonDown(MOUSE_BUTTON_LEFT);
+		gameState->input.mouseClicked = IsMouseButtonPressed(MOUSE_BUTTON_LEFT);
+		gameState->input.mouseReleased = IsMouseButtonPressed(MOUSE_BUTTON_LEFT);
 		gameState->input.w = IsKeyDown(KEY_W);
 		gameState->input.s = IsKeyDown(KEY_S);
 		gameState->input.a = IsKeyDown(KEY_A);
@@ -194,10 +194,13 @@ void UpdateInput(GameState* gameState, Matrix& screenOrientorM) {
 		gameState->input.selectModeClick = IsKeyPressed(KEY_ONE);
 		gameState->input.sphereModeClick = IsKeyPressed(KEY_TWO);
 		gameState->input.constraintModeClick = IsKeyPressed(KEY_THREE);
+		gameState->input.cameraModeClick = IsKeyPressed(KEY_FOUR);
 		gameState->input.deleteClick = IsKeyPressed(KEY_R);
 		gameState->input.copyClick = IsKeyPressed(KEY_C);
 		gameState->input.saveClick = IsKeyPressed(KEY_P);
 		gameState->input.openScript = IsKeyPressed(KEY_SPACE);
+		gameState->input.focus = IsKeyPressed(KEY_F);
+		gameState->input.newThing = IsKeyPressed(KEY_N);
 	}
 
 	// auto clear so others can fight over keeping stuff blocked

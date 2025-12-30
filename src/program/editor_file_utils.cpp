@@ -161,6 +161,8 @@ namespace middle {
 			pos.y = std::stof(buffer[1]);
 			pos.z = std::stof(buffer[2]);
 			camera(gameState, index, pos);
+			buffer.clear();
+			return;
 		}
 		assert(true, "somethings wrong, about data");
 	}
@@ -220,22 +222,24 @@ namespace middle {
 		std::string field = "";
 
 		// read scene info
-		while (std::getline(inputFile, line)) {
-			if (line.find("#") != std::string::npos) {
-				if (buffer.size() > 0)
-					flushFieldBuffer(gameState, buffer, field);
-				field = line;
-				buffer.clear();
-				continue;
+		if (!import) {
+			while (std::getline(inputFile, line)) {
+				if (line.find("#") != std::string::npos) {
+					if (buffer.size() > 0)
+						flushFieldBuffer(gameState, buffer, field);
+					field = line;
+					buffer.clear();
+					continue;
+				}
+
+				if (line.find("__") != std::string::npos)
+					break;
+
+				if (!isEmptyOrWhitespace(line))
+					buffer.push_back(line);
 			}
-
-			if (line.find("__") != std::string::npos)
-				break;
-
-			if (!isEmptyOrWhitespace(line))
-				buffer.push_back(line);
+			flushFieldBuffer(gameState, buffer, field);
 		}
-		flushFieldBuffer(gameState, buffer, field);
 
 
 		// reset input file to start:w
@@ -314,12 +318,12 @@ namespace middle {
 
 		while (std::getline(inputFile, line)) {
 			if (line.find("#") != std::string::npos) {
-				if(field != "")
+				if (field != "")
 					flushFieldBuffer(gameState, buffer, field);
 				field = line;
 				continue;
 			}
-			if(!isEmptyOrWhitespace(line))
+			if (!isEmptyOrWhitespace(line))
 				buffer.push_back(line);
 		}
 		flushFieldBuffer(gameState, buffer, field);
