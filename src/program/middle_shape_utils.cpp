@@ -225,4 +225,10 @@ namespace middle {
 		instance.id.generation = gameState->shapes[index].id.generation;
 		gameState->shapeInstances[index] = instance;
 	}
+	void moveCameraXZ(Camera3D& camera, const Vector3& pos)
+	{
+		Vector3 displacement = pos - camera.position;
+		camera.position += displacement;
+		camera.target += displacement;
+	}
 }

@@ -179,7 +179,7 @@ namespace middle {
 			pos.x = std::stof(buffer[0]);
 			pos.y = std::stof(buffer[1]);
 			pos.z = std::stof(buffer[2]);
-			gameState->editorState.camera.position = pos;
+			moveCameraXZ(gameState->editorState.camera, pos);
 			buffer.clear();
 		}
 		if (field == "#activeScene") {

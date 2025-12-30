@@ -21,6 +21,13 @@ __declspec(dllexport) void UpdateGame(GameState* gameState)
 		updateEditor(gameState);
 	}
 
+	if (gameState->applicationMode == ApplicationMode::GAME_MODE) {
+
+		// TODO for now just uses editor camera
+		ShapeInstance& activeCamera = getShapeInstance(gameState, gameState->activeCameraIndex);
+		moveCameraXZ(gameState->editorState.camera, FromDescVec(activeCamera.pData.position));
+	}
+
 	// run scripts
 	loopInstances(gameState, [gameState](int i, ShapeInstance& instance) {
 		//runScript(gameState, i);
