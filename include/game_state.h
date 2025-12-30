@@ -224,7 +224,7 @@ namespace middle {
 		int vertexIndex = 0;
 		int loopIndex = 0;
 		std::vector<std::string>sceneNames;
-		Input input;
+		EditorInput input;
 		std::set<InputBlockers> inputBlockers;
 		bool paused = false;
 		bool closeGame = false;

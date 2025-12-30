@@ -17188,7 +17188,7 @@ void ImGui::DebugNodeFont(ImFont* font)
     for (int src_n = 0; src_n < font->Sources.Size; src_n++)
     {
         ImFontConfig* src = font->Sources[src_n];
-        if (TreeNode(src, "Input %d: \'%s\' [%d], Oversample: %d,%d, PixelSnapH: %d, Offset: (%.1f,%.1f)",
+        if (TreeNode(src, "EditorInput %d: \'%s\' [%d], Oversample: %d,%d, PixelSnapH: %d, Offset: (%.1f,%.1f)",
             src_n, src->Name, src->FontNo, src->OversampleH, src->OversampleV, src->PixelSnapH, src->GlyphOffset.x, src->GlyphOffset.y))
         {
             const ImFontLoader* loader = src->FontLoader ? src->FontLoader : atlas->FontLoader;
@@ -17209,10 +17209,10 @@ void ImGui::DebugNodeFont(ImFont* font)
             TreePop();
         }
     }
-    if (font->Sources.Size > 1 && TreeNode("Input Glyphs Overlap Detection Tool"))
+    if (font->Sources.Size > 1 && TreeNode("EditorInput Glyphs Overlap Detection Tool"))
     {
-        TextWrapped("- First Input that contains the glyph is used.\n"
-            "- Use ImFontConfig::GlyphExcludeRanges[] to specify ranges to ignore glyph in given Input.\n- Prefer using a small number of ranges as the list is scanned every time a new glyph is loaded,\n  - e.g. GlyphExcludeRanges[] = { ICON_MIN_FA, ICON_MAX_FA, 0 };\n- This tool doesn't cache results and is slow, don't keep it open!");
+        TextWrapped("- First EditorInput that contains the glyph is used.\n"
+            "- Use ImFontConfig::GlyphExcludeRanges[] to specify ranges to ignore glyph in given EditorInput.\n- Prefer using a small number of ranges as the list is scanned every time a new glyph is loaded,\n  - e.g. GlyphExcludeRanges[] = { ICON_MIN_FA, ICON_MAX_FA, 0 };\n- This tool doesn't cache results and is slow, don't keep it open!");
         if (BeginTable("table", 2))
         {
             for (unsigned int c = 0; c < 0x10000; c++)
@@ -17266,7 +17266,7 @@ void ImGui::DebugNodeFont(ImFont* font)
                 ImFontConfig* src = font->Sources[src_n];
                 int oversample_h, oversample_v;
                 ImFontAtlasBuildGetOversampleFactors(src, baked, &oversample_h, &oversample_v);
-                BulletText("Input %d: \'%s\', Oversample: (%d=>%d,%d=>%d), PixelSnapH: %d, Offset: (%.1f,%.1f)",
+                BulletText("EditorInput %d: \'%s\', Oversample: (%d=>%d,%d=>%d), PixelSnapH: %d, Offset: (%.1f,%.1f)",
                     src_n, src->Name, src->OversampleH, oversample_h, src->OversampleV, oversample_v, src->PixelSnapH, src->GlyphOffset.x, src->GlyphOffset.y);
             }
 

@@ -1,9 +1,6 @@
 #pragma once
 #include "middle_constants.h"
-#include "middle_shape_utils.h"
-#include "editor_file_utils.h"
-#include "middle_math.h"
-#include "editor_actions.h"
+#include "editor_update.h"
 using namespace middle;
 
 extern "C" 

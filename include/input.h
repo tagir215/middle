@@ -8,7 +8,7 @@ namespace middle {
 		ADD_OBJECT_CHECKBOX,
 	};
 
-	struct Input {
+	struct EditorInput {
 		Vector2 mousePos;
 		Vector2 mouseNormalizedPos;
 		Vector3 mouseNearPlanePos;

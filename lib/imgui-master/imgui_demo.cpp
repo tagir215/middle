@@ -3691,11 +3691,11 @@ static void DemoWindowWidgetsTextInput()
 {
     // To wire InputText() with std::string or any other custom string type,
     // see the "Text Input > Resize Callback" section of this demo, and the misc/cpp/imgui_stdlib.h file.
-    IMGUI_DEMO_MARKER("Widgets/Text Input");
-    if (ImGui::TreeNode("Text Input"))
+    IMGUI_DEMO_MARKER("Widgets/Text EditorInput");
+    if (ImGui::TreeNode("Text EditorInput"))
     {
-        IMGUI_DEMO_MARKER("Widgets/Text Input/Multi-line Text Input");
-        if (ImGui::TreeNode("Multi-line Text Input"))
+        IMGUI_DEMO_MARKER("Widgets/Text EditorInput/Multi-line Text EditorInput");
+        if (ImGui::TreeNode("Multi-line Text EditorInput"))
         {
             // WE ARE USING A FIXED-SIZE BUFFER FOR SIMPLICITY HERE.
             // If you want to use InputText() with std::string or any custom dynamic string type:
@@ -3725,8 +3725,8 @@ static void DemoWindowWidgetsTextInput()
             ImGui::TreePop();
         }
 
-        IMGUI_DEMO_MARKER("Widgets/Text Input/Filtered Text Input");
-        if (ImGui::TreeNode("Filtered Text Input"))
+        IMGUI_DEMO_MARKER("Widgets/Text EditorInput/Filtered Text EditorInput");
+        if (ImGui::TreeNode("Filtered Text EditorInput"))
         {
             struct TextFilters
             {
@@ -3757,8 +3757,8 @@ static void DemoWindowWidgetsTextInput()
             ImGui::TreePop();
         }
 
-        IMGUI_DEMO_MARKER("Widgets/Text Input/Password input");
-        if (ImGui::TreeNode("Password Input"))
+        IMGUI_DEMO_MARKER("Widgets/Text EditorInput/Password input");
+        if (ImGui::TreeNode("Password EditorInput"))
         {
             static char password[64] = "password123";
             ImGui::InputText("password", password, IM_ARRAYSIZE(password), ImGuiInputTextFlags_Password);
@@ -3768,7 +3768,7 @@ static void DemoWindowWidgetsTextInput()
             ImGui::TreePop();
         }
 
-        IMGUI_DEMO_MARKER("Widgets/Text Input/Completion, History, Edit Callbacks");
+        IMGUI_DEMO_MARKER("Widgets/Text EditorInput/Completion, History, Edit Callbacks");
         if (ImGui::TreeNode("Completion, History, Edit Callbacks"))
         {
             struct Funcs
@@ -3830,7 +3830,7 @@ static void DemoWindowWidgetsTextInput()
             ImGui::TreePop();
         }
 
-        IMGUI_DEMO_MARKER("Widgets/Text Input/Resize Callback");
+        IMGUI_DEMO_MARKER("Widgets/Text EditorInput/Resize Callback");
         if (ImGui::TreeNode("Resize Callback"))
         {
             // To wire InputText() with std::string or any other custom string type,
@@ -3876,7 +3876,7 @@ static void DemoWindowWidgetsTextInput()
             ImGui::TreePop();
         }
 
-        IMGUI_DEMO_MARKER("Widgets/Text Input/Eliding, Alignment");
+        IMGUI_DEMO_MARKER("Widgets/Text EditorInput/Eliding, Alignment");
         if (ImGui::TreeNode("Eliding, Alignment"))
         {
             static char buf1[128] = "/path/to/some/folder/with/long/filename.cpp";
@@ -3886,7 +3886,7 @@ static void DemoWindowWidgetsTextInput()
             ImGui::TreePop();
         }
 
-        IMGUI_DEMO_MARKER("Widgets/Text Input/Miscellaneous");
+        IMGUI_DEMO_MARKER("Widgets/Text EditorInput/Miscellaneous");
         if (ImGui::TreeNode("Miscellaneous"))
         {
             static char buf1[16];
@@ -6370,7 +6370,7 @@ static void DemoWindowTables()
                 ImGui::AlignTextToFramePadding(); // FIXME-TABLE: Workaround for wrong text baseline propagation across columns
                 ImGui::Text("'%s'", column_names[column]);
                 ImGui::Spacing();
-                ImGui::Text("Input flags:");
+                ImGui::Text("EditorInput flags:");
                 EditTableColumnsFlags(&column_flags[column]);
                 ImGui::Spacing();
                 ImGui::Text("Output flags:");
@@ -8742,7 +8742,7 @@ static void ShowExampleMenuFile()
         static float f = 0.5f;
         static int n = 0;
         ImGui::SliderFloat("Value", &f, 0.0f, 1.0f);
-        ImGui::InputFloat("Input", &f, 0.1f);
+        ImGui::InputFloat("EditorInput", &f, 0.1f);
         ImGui::Combo("Combo", &n, "Yes\0No\0Maybe\0\0");
         ImGui::EndMenu();
     }
@@ -8971,7 +8971,7 @@ struct ExampleAppConsole
         // Command-line
         bool reclaim_focus = false;
         ImGuiInputTextFlags input_text_flags = ImGuiInputTextFlags_EnterReturnsTrue | ImGuiInputTextFlags_EscapeClearsAll | ImGuiInputTextFlags_CallbackCompletion | ImGuiInputTextFlags_CallbackHistory;
-        if (ImGui::InputText("Input", InputBuf, IM_ARRAYSIZE(InputBuf), input_text_flags, &TextEditCallbackStub, (void*)this))
+        if (ImGui::InputText("EditorInput", InputBuf, IM_ARRAYSIZE(InputBuf), input_text_flags, &TextEditCallbackStub, (void*)this))
         {
             char* s = InputBuf;
             Strtrim(s);
