@@ -8,4 +8,5 @@ namespace middle {
 	void loop(GameState* gameState, int index, const std::vector<int>& loopIndexes, int offset = 0);
 	void reference(GameState* gameState, int index, const std::vector<int>& loopIndexes, const std::string& sceneName, int offset = 0);
 	void camera(GameState* gameState, int index, const Vector3& position);
+	void script(GameState* gameState, int index, const std::string& scriptName, const Vector3& position);
 }

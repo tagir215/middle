@@ -57,4 +57,14 @@ namespace middle {
 		shapes[index].physicalShape = false;
 		++shapes[index].id.generation;
 	}
+	void script(GameState* gameState, int index, const std::string& scriptName, const Vector3& position)
+	{
+		auto& shapes = gameState->shapes;
+		shapes[index].type == ShapeType::SCRIPT;
+		shapes[index].position = position;
+		shapes[index].name = scriptName;
+		shapes[index].radius = DEF_RADIUS_SCRIPT;
+		shapes[index].physicalShape = false;
+		++shapes[index].id.generation;
+	}
 }

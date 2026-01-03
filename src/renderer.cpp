@@ -93,6 +93,7 @@ namespace middle {
 			case ShapeType::LOOP:
 			case ShapeType::REFERENCE:
 			case ShapeType::CAMERA:
+			case ShapeType::SCRIPT:
 
 				Color loopColor = WHITE;
 				if (shapeInstance.shape.type == ShapeType::REFERENCE) {
@@ -105,6 +106,9 @@ namespace middle {
 					else {
 						loopColor = BLACK;
 					}
+				}
+				if (shapeInstance.shape.type == ShapeType::SCRIPT) {
+					loopColor = GREEN;
 				}
 
 				DrawSphere(FromDescVec(shapeInstance.pData.position), shapeInstance.shape.radius, loopColor);
@@ -120,6 +124,7 @@ namespace middle {
 
 				break;
 			}
+
 
 		}
 

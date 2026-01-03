@@ -195,6 +195,7 @@ void UpdateInput(GameState* gameState, Matrix& screenOrientorM) {
 		gameState->input.sphereModeClick = IsKeyPressed(KEY_TWO);
 		gameState->input.constraintModeClick = IsKeyPressed(KEY_THREE);
 		gameState->input.cameraModeClick = IsKeyPressed(KEY_FOUR);
+		gameState->input.scriptModeClick = IsKeyPressed(KEY_FIVE);
 		gameState->input.deleteClick = IsKeyPressed(KEY_R);
 		gameState->input.copyClick = IsKeyPressed(KEY_C);
 		gameState->input.saveClick = IsKeyPressed(KEY_P);

@@ -143,7 +143,7 @@ namespace middle {
 
 		ImGui::Begin("Editor");
 
-		const char* items[] = { "SELECT MODE", "SPHERE MODE", "CONSTRAINT MODE", "CAMERA MODE"};
+		const char* items[] = { "SELECT MODE", "SPHERE MODE", "CONSTRAINT MODE", "CAMERA MODE", "SCRIPT_MODE"};
 		static int currentItem = 0;
 		if (gameState->input.selectModeClick) {
 			currentItem = 0;
@@ -156,6 +156,9 @@ namespace middle {
 		}
 		if (gameState->input.cameraModeClick) {
 			currentItem = 3;
+		}
+		if (gameState->input.scriptModeClick) {
+			currentItem = 4;
 		}
 		ImGui::Combo("Select things to add", &currentItem, items, IM_ARRAYSIZE(items));
 		gameState->editorState.creationMode = static_cast<CreationMode>(currentItem);
@@ -202,6 +205,7 @@ namespace middle {
 
 
 		// SCENE MANAGER
+
 		ImGui::Begin("Scene");
 
 		if (gameState->sceneNames.size() > 0) {
@@ -214,6 +218,8 @@ namespace middle {
 			ImGui::OpenPopup("Scene Selector");
 			popupAction = EditorAction::LOAD_SCENE;
 		}
+
+
 		if (ImGui::Button("IMPORT SCENE")) {
 			ImGui::OpenPopup("Scene Selector");
 			popupAction = EditorAction::IMPORT_SCENE;
@@ -234,8 +240,6 @@ namespace middle {
 
 			ImGui::EndPopup();
 		}
-
-		ImGui::Separator();
 
 		// Add new scene button
 		if (ImGui::Button("ADD NEW SCENE")) {
@@ -272,7 +276,82 @@ namespace middle {
 
 			ImGui::EndPopup();
 		}
+
+
+		ImGui::Separator();
+
 		ImGui::End();
+
+
+
+
+
+		// SCRIPT MANAGER
+
+		ImGui::Begin("Script Manager");
+
+		// import SCRIPT
+		if (ImGui::Button("IMPORT SCENE")) {
+			ImGui::OpenPopup("Script Selector");
+			popupAction = EditorAction::IMPORT_SCRIPT;
+		}
+
+		if (ImGui::BeginPopup("Script Selector")) {
+
+			for (int i = 0; i < gameState->scriptNames.size(); ++i) {
+				auto name = gameState->scriptNames[i];
+				if (ImGui::Button(name.c_str())) {
+					EditorActionContainer::Params params;
+					params.intValue = i;
+					gameState->editorState.nextEditorAction = popupAction;
+					gameState->editorState.nextEditorActionParams = params;
+					ImGui::CloseCurrentPopup();
+				}
+			}
+
+			ImGui::EndPopup();
+		}
+
+		// Add new script button
+		if (ImGui::Button("ADD NEW SCRIPT")) {
+			ImGui::OpenPopup("New Script Popup");
+		}
+
+		// Popup for entering new scene name
+		static char newScriptName[128] = ""; // buffer for scene name input
+		if (ImGui::BeginPopup("New Script Popup")) {
+			gameState->inputBlockers.insert(InputBlockers::KEYBOARD_BLOCK);
+
+			ImGui::Text("Enter new script name:");
+			ImGui::InputText("##newScriptName", newScriptName, IM_ARRAYSIZE(newScriptName));
+
+			if (ImGui::Button("Add")) {
+				if (strlen(newScriptName) > 0) {
+					// Add the new scene to the editor
+					EditorActionContainer::Params params;
+					params.stringValue = std::string(newScriptName);
+					gameState->editorState.nextEditorAction = EditorAction::NEW_SCRIPT;
+					gameState->editorState.nextEditorActionParams = params;
+
+					// Clear buffer and close popup
+					newScriptName[0] = '\0';
+					ImGui::CloseCurrentPopup();
+				}
+			}
+			ImGui::SameLine();
+			if (ImGui::Button("Cancel")) {
+				newScriptName[0] = '\0';
+				ImGui::CloseCurrentPopup();
+			}
+
+			ImGui::EndPopup();
+		}
+
+		ImGui::End();
+
+
+
+
 
 
 		ImGui::End();

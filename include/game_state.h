@@ -20,6 +20,7 @@ namespace middle {
 	static float DEF_RADIUS_LOOP_INDICATOR = 1;
 	static float DEF_RADIUS_REFERENCE_INDICATOR = 3;
 	static float DEF_RADIUS_CAMERA = 5;
+	static float DEF_RADIUS_SCRIPT = 8;
 	static Color DEF_COLOR = UGLY_PINK;
 	static float DEF_LIFETIME = INFINITY;
 	static float DEF_GRAVITY = 0;
@@ -41,6 +42,7 @@ namespace middle {
 		LOOP,
 		REFERENCE,
 		CAMERA,
+		SCRIPT,
 	};
 
 	enum class CreationMode {
@@ -157,6 +159,7 @@ namespace middle {
 		NEW_SPHERE,
 		NEW_CONSTRAINT,
 		NEW_CAMERA,
+		NEW_SCRIPT,
 		SET_ACTIVE_CAMERA,
 		MOVE_SPHERES,
 		DELETE_SHAPES,
@@ -165,6 +168,7 @@ namespace middle {
 		CREATE_LOOPS,
 		LOAD_SCENE,
 		IMPORT_SCENE,
+		IMPORT_SCRIPT,
 		NEW_SCENE,
 		OPEN_SCRIPT,
 	};
@@ -224,6 +228,7 @@ namespace middle {
 		int vertexIndex = 0;
 		int loopIndex = 0;
 		std::vector<std::string>sceneNames;
+		std::vector<std::string>scriptNames;
 		EditorInput input;
 		std::set<InputBlockers> inputBlockers;
 		bool paused = false;

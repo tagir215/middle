@@ -85,6 +85,10 @@ namespace middle {
 			if (shape.type == ShapeType::CAMERA) {
 				outFile << coordToLines(shape.position) << std::endl;
 			}
+			if (shape.type == ShapeType::SCRIPT) {
+				outFile << shape.name << std::endl;
+				outFile << coordToLines(shape.position) << std::endl;
+			}
 		}
 
 		outFile.flush();
@@ -163,6 +167,15 @@ namespace middle {
 			camera(gameState, index, pos);
 			buffer.clear();
 			return;
+		}
+		if (type == (int)ShapeType::SCRIPT) {
+			assert(buffer.size() == 4);
+			std::string scriptName = buffer[0];
+			Vector3 pos;
+			pos.x = std::stof(buffer[1]);
+			pos.y = std::stof(buffer[2]);
+			pos.z = std::stof(buffer[3]);
+			script(gameState, index, scriptName, pos);
 		}
 		assert(true, "somethings wrong, about data");
 	}

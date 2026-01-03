@@ -296,14 +296,25 @@ namespace middle {
 		assert(params.intValue != UNASSIGNED);
 		std::string sceneName = gameState->sceneNames[gameState->activeScene];
 		std::string scriptName = sceneName + std::to_string(params.intValue);
-		std::string filename = "../assets/scripts/" + scriptName + ".cpp";
 
 		if (!scriptExists(scriptName)) {
-			newScript(gameState, filename, sceneName, params.intValue);
+			assert(true);
 		}
 
+		shell_open_file(scriptName + ".cpp");
+	}
 
-		shell_open_file(filename);
+	void EditorActionNewScript::execute(GameState* gameState)
+	{
+		assert(params.stringValue != "");
+		std::string scriptName = params.stringValue;
+		std::string sceneName = gameState->sceneNames[gameState->activeScene];
+
+		if (!scriptExists(scriptName)) {
+			newScript(gameState, scriptName + ".cpp", sceneName, params.intValue);
+		}
+
+		script(gameState, findFreeIndex(gameState), scriptName, gameState->input.mouseXZ_PlanePos);
 	}
 
 	void EditorActionNewCamera::execute(GameState* gameState)
@@ -323,5 +334,6 @@ namespace middle {
 				});
 		}
 	}
+
 
 }
