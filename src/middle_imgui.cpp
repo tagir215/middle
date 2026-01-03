@@ -298,11 +298,11 @@ namespace middle {
 
 		if (ImGui::BeginPopup("Script Selector")) {
 
-			for (int i = 0; i < gameState->scriptNames.size(); ++i) {
-				auto name = gameState->scriptNames[i];
+			for (auto& pair : gameState->gameplayScripts) {
+				auto name = pair.first;
 				if (ImGui::Button(name.c_str())) {
 					EditorActionContainer::Params params;
-					params.intValue = i;
+					params.stringValue = name;
 					gameState->editorState.nextEditorAction = popupAction;
 					gameState->editorState.nextEditorActionParams = params;
 					ImGui::CloseCurrentPopup();

@@ -9,5 +9,6 @@ namespace middle {
 	void loadScene(GameState* gameState, const std::string& name, bool import, const Vector3& pos ={0,0,0}, int referenceIndex = 0);
 	void saveEditorState(GameState* gameState);
 	void loadEditorState(GameState* gameState);
-	void newScript(GameState* gameState, const std::string& filename, const std::string& sceneName, int index);
+	void newScript(GameState* gameState, const std::string& scriptName);
+	void loadScript(GameState* gameState, const std::string& filename, int index);
 }

@@ -12,6 +12,9 @@
 #include <set>
 #include "middle_constants.h"
 #include <memory>
+#include "middle_gameplay_script.h"
+#include <unordered_map>
+#include "middle_gameplay_script_map.h"
 
 using namespace descart;
 
@@ -199,8 +202,6 @@ namespace middle {
 		EditorActionContainer::Params nextEditorActionParams;
 	};
 
-	using GameScript = void(*)(GameState*);
-
 	struct GameState {
 	public:
 		float screenWidth;
@@ -217,8 +218,8 @@ namespace middle {
 		std::array<Shape, MAX_SHAPE_COUNT>shapes;
 		std::array<Vector3, MAX_VERTEX_COUNT> vertexArray;
 		std::array<int, MAX_LOOP_MEMBER_COUNT> loopMembers;
-		std::array<GameScript, MAX_SHAPE_COUNT> gameplayScripts;
 		std::array<ShapeInstance, MAX_SHAPE_COUNT>shapeInstances;
+		std::unordered_map<std::string, std::unique_ptr<MiddleGameplayScript>> gameplayScripts;
 		Matrix worldM;
 		Vector2 mouseDragPos;
 		Matrix oldWorldM;
@@ -228,7 +229,6 @@ namespace middle {
 		int vertexIndex = 0;
 		int loopIndex = 0;
 		std::vector<std::string>sceneNames;
-		std::vector<std::string>scriptNames;
 		EditorInput input;
 		std::set<InputBlockers> inputBlockers;
 		bool paused = false;
@@ -238,5 +238,11 @@ namespace middle {
 		bool reset = false;
 	};
 
+	template<typename T>
+	struct Registrar {
+		Registrar(std::string scriptName) {
+			scriptMap[scriptName] = std::make_unique<T>();
+		}
+	};
 
 }

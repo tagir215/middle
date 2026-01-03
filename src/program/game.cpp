@@ -4,7 +4,6 @@
 #include "game.h"
 #include "state_update.h"
 #include "descart_loop.h"
-#include "middle_script_registry.h"
 
 using namespace middle;
 
@@ -29,9 +28,9 @@ __declspec(dllexport) void UpdateGame(GameState* gameState)
 	}
 
 	// run scripts
-	loopInstances(gameState, [gameState](int i, ShapeInstance& instance) {
-		//runScript(gameState, i);
-		});
+	for (auto& script : gameState->gameplayScripts) {
+		script.second.get()->onUpdate(gameState);
+	}
 
 
 	// shape phsyics stuff

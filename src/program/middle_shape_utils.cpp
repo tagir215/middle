@@ -129,7 +129,7 @@ namespace middle {
 	{
 		// for now everything is spheres
 		ShapeType type = gameState->shapes[index].type;
-		return type == ShapeType::SPHERE || type == ShapeType::CAMERA || isContainer(gameState, index);
+		return type == ShapeType::SPHERE || type == ShapeType::CAMERA || isContainer(gameState, index) || type == ShapeType::SCRIPT;
 	}
 
 	bool isContainer(GameState* gameState, int index)

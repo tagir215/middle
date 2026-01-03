@@ -1,4 +1,5 @@
 #include "init_methods.h"
+#include "middle_gameplay_script_map.h"
 
 namespace middle {
 
@@ -60,11 +61,16 @@ namespace middle {
 	void script(GameState* gameState, int index, const std::string& scriptName, const Vector3& position)
 	{
 		auto& shapes = gameState->shapes;
-		shapes[index].type == ShapeType::SCRIPT;
+		shapes[index].type = ShapeType::SCRIPT;
 		shapes[index].position = position;
 		shapes[index].name = scriptName;
 		shapes[index].radius = DEF_RADIUS_SCRIPT;
 		shapes[index].physicalShape = false;
 		++shapes[index].id.generation;
+
+		// register script 
+		if (scriptMap[scriptName].get() != nullptr) {
+			gameState->gameplayScripts[scriptName] = std::move(scriptMap[scriptName]);
+		}
 	}
 }

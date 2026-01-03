@@ -176,6 +176,8 @@ namespace middle {
 			pos.y = std::stof(buffer[2]);
 			pos.z = std::stof(buffer[3]);
 			script(gameState, index, scriptName, pos);
+			buffer.clear();
+			return;
 		}
 		assert(true, "somethings wrong, about data");
 	}
@@ -316,6 +318,11 @@ namespace middle {
 		}
 	}
 
+	void loadScript(GameState* gameState, const std::string& filename, int index)
+	{
+
+	}
+
 	void loadEditorState(GameState* gameState) {
 		std::string filename = "../src/editor_data/editor_state.midsc";
 
@@ -342,31 +349,50 @@ namespace middle {
 		flushFieldBuffer(gameState, buffer, field);
 	}
 
-	void newScript(GameState* gameState, const std::string& filename, const std::string& sceneName, int index)
+	void newScript(GameState* gameState, const std::string& scriptName)
 	{
 
-		std::string line;
 
-		// yes filename is index... open it from editor, deal with it. I don't think its a big deal
+		std::string templateFilename = "../src/editor_data/script_template.cpp";
+		std::ifstream inputFile(templateFilename);
+		if (!inputFile.is_open()) {
+			std::cerr << "Failed to open file to write";
+			return;
+		}
+
+		std::string filename = "../assets/scripts/" + scriptName + ".cpp";
+
+		// read template to string array
+		std::string templateLine;
+		std::vector<std::string> templateLines;
+		while (std::getline(inputFile, templateLine)) {
+			templateLines.push_back(templateLine);
+		}
+		inputFile.close();
+
+		// replace lines with script names
+		std::string placeholder = "/*scriptname*/";
+		for (int i = 0; i < templateLines.size(); ++i) {
+			auto& line = templateLines[i];
+			size_t pos = line.find(placeholder);
+			if (pos != std::string::npos) {
+				line.replace(pos, placeholder.length(), scriptName);
+			}
+		}
+
+		// write generated code
 		std::ofstream outFile(filename);
 		if (!outFile.is_open()) {
 			std::cerr << "failed to open to write\n";
 		}
 
-		outFile << "#include \"middle_script_registry.h\"" << std::endl;
-		outFile << "static std::string name = \"" << sceneName << index << "\";" << std::endl;
-		outFile << std::endl;
-		outFile << "static void print(middle::GameState* gameState) {" << std::endl;
-		outFile << std::endl;
-		outFile << "}" << std::endl;
-		outFile << std::endl;
-		outFile << "static bool registered = []() {" << std::endl;
-		outFile << "\tmiddle::registerScript(name, &print);" << std::endl;
-		outFile << "\treturn true;" << std::endl;
-		outFile << "}();" << std::endl;
+		for (auto& line : templateLines) {
+			outFile << line << std::endl;
+		}
 
 		outFile.flush();
 		outFile.close();
 	}
+
 }
 

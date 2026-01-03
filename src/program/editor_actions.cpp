@@ -6,7 +6,6 @@
 #include <unordered_map>
 #include <set>
 #include "script_opener.h"
-#include "middle_script_registry.h"
 
 namespace middle {
 	void processEditorActions(GameState* gameState) {
@@ -62,6 +61,12 @@ namespace middle {
 		}
 		case EditorAction::IMPORT_SCENE: {
 			auto action = EditorActionImportScene();
+			action.params = gameState->editorState.nextEditorActionParams;
+			action.execute(gameState);
+			break;
+		}
+		case EditorAction::NEW_SCRIPT: {
+			auto action = EditorActionNewScript();
 			action.params = gameState->editorState.nextEditorActionParams;
 			action.execute(gameState);
 			break;
@@ -297,7 +302,7 @@ namespace middle {
 		std::string sceneName = gameState->sceneNames[gameState->activeScene];
 		std::string scriptName = sceneName + std::to_string(params.intValue);
 
-		if (!scriptExists(scriptName)) {
+		if (gameState->gameplayScripts.find(scriptName) != gameState->gameplayScripts.end()) {
 			assert(true);
 		}
 
@@ -310,11 +315,12 @@ namespace middle {
 		std::string scriptName = params.stringValue;
 		std::string sceneName = gameState->sceneNames[gameState->activeScene];
 
-		if (!scriptExists(scriptName)) {
-			newScript(gameState, scriptName + ".cpp", sceneName, params.intValue);
+		if (gameState->gameplayScripts.find(scriptName) == gameState->gameplayScripts.end()) {
+			newScript(gameState, scriptName);
 		}
 
-		script(gameState, findFreeIndex(gameState), scriptName, gameState->input.mouseXZ_PlanePos);
+		int freeIndex = findFreeIndex(gameState);
+		script(gameState, freeIndex, scriptName, {0,0,0});
 	}
 
 	void EditorActionNewCamera::execute(GameState* gameState)

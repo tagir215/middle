@@ -1,7 +1,6 @@
 #pragma once
 #include "state_update.h"
 #include "descart_loop.h"
-#include "middle_script_registry.h"
 #include "middle_shape_utils.h"
 #include "editor_file_utils.h"
 #include "middle_math.h"
