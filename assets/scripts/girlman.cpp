@@ -10,7 +10,7 @@ class girlman : public middle::MiddleGameplayScript {
 	}
 
 	void onUpdate(middle::GameState* gameState) override {
-		std::cout << "interesting" << std::endl;
+
 	}
 
 	void onDestroy(middle::GameState* gameState) override {

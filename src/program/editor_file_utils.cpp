@@ -39,6 +39,13 @@ namespace middle {
 		}
 	}
 
+	void loadScriptNames(GameState* gameState)
+	{
+		for (auto& pair : scriptMap) {
+			gameState->scriptNames.push_back(pair.first);
+		}
+	}
+
 	void saveScene(GameState* gameState, const std::string& sceneName) {
 		std::string line;
 

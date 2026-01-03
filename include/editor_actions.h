@@ -69,6 +69,11 @@ namespace middle {
 		void execute(GameState* gameState) override;
 	};
 
+	// import script, the code already exists
+	class EditorActionImportScript : public EditorActionContainer {
+	public:
+		void execute(GameState* gameState) override;
+	};
 
 	// new perspective 
 	class EditorActionNewCamera : public EditorActionContainer {

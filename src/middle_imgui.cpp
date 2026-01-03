@@ -291,19 +291,17 @@ namespace middle {
 		ImGui::Begin("Script Manager");
 
 		// import SCRIPT
-		if (ImGui::Button("IMPORT SCENE")) {
+		if (ImGui::Button("IMPORT SCRIPT")) {
 			ImGui::OpenPopup("Script Selector");
-			popupAction = EditorAction::IMPORT_SCRIPT;
 		}
 
 		if (ImGui::BeginPopup("Script Selector")) {
 
-			for (auto& pair : gameState->gameplayScripts) {
-				auto name = pair.first;
+			for (auto& name : gameState->scriptNames) {
 				if (ImGui::Button(name.c_str())) {
 					EditorActionContainer::Params params;
 					params.stringValue = name;
-					gameState->editorState.nextEditorAction = popupAction;
+					gameState->editorState.nextEditorAction = EditorAction::IMPORT_SCRIPT;
 					gameState->editorState.nextEditorActionParams = params;
 					ImGui::CloseCurrentPopup();
 				}

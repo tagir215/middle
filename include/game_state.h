@@ -229,6 +229,7 @@ namespace middle {
 		int vertexIndex = 0;
 		int loopIndex = 0;
 		std::vector<std::string>sceneNames;
+		std::vector<std::string>scriptNames;
 		EditorInput input;
 		std::set<InputBlockers> inputBlockers;
 		bool paused = false;
@@ -236,6 +237,7 @@ namespace middle {
 		bool startGame = false;
 		bool reload = true;
 		bool reset = false;
+		bool quit = false;
 	};
 
 	template<typename T>

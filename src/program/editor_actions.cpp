@@ -65,6 +65,12 @@ namespace middle {
 			action.execute(gameState);
 			break;
 		}
+		case EditorAction::IMPORT_SCRIPT: {
+			auto action = EditorActionImportScript();
+			action.params = gameState->editorState.nextEditorActionParams;
+			action.execute(gameState);
+			break;
+		}
 		case EditorAction::NEW_SCRIPT: {
 			auto action = EditorActionNewScript();
 			action.params = gameState->editorState.nextEditorActionParams;
@@ -298,15 +304,20 @@ namespace middle {
 
 	void EditorActionOpenScript::execute(GameState* gameState)
 	{
-		assert(params.intValue != UNASSIGNED);
-		std::string sceneName = gameState->sceneNames[gameState->activeScene];
-		std::string scriptName = sceneName + std::to_string(params.intValue);
+		std::string scriptName = "";
+		bool found = false;
+		loopInstances(gameState, [gameState, &scriptName, &found](int i, ShapeInstance& instance) {
+			if (instance.mouseIntersects && instance.shape.type == ShapeType::SCRIPT) {
+				scriptName = instance.shape.name;
+				found = true;
+			}
+			});
 
-		if (gameState->gameplayScripts.find(scriptName) != gameState->gameplayScripts.end()) {
-			assert(true);
+		if (found) {
+			shell_open_file("../assets/scripts/" + scriptName + ".cpp");
+			gameState->quit = true;
 		}
 
-		shell_open_file(scriptName + ".cpp");
 	}
 
 	void EditorActionNewScript::execute(GameState* gameState)
@@ -321,6 +332,15 @@ namespace middle {
 
 		int freeIndex = findFreeIndex(gameState);
 		script(gameState, freeIndex, scriptName, {0,0,0});
+	}
+
+	void EditorActionImportScript::execute(GameState* gameState) 
+	{
+		assert(params.stringValue != "");
+		std::string scriptName = params.stringValue;
+
+		int freeIndex = findFreeIndex(gameState);
+		script(gameState, freeIndex, scriptName, { 0,0,0 });
 	}
 
 	void EditorActionNewCamera::execute(GameState* gameState)

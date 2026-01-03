@@ -28,9 +28,13 @@ __declspec(dllexport) void UpdateGame(GameState* gameState)
 	}
 
 	// run scripts
-	for (auto& script : gameState->gameplayScripts) {
-		script.second.get()->onUpdate(gameState);
-	}
+	loopInstances(gameState, [gameState](int i, ShapeInstance& instance) {
+		if (instance.shape.type == ShapeType::SCRIPT) {
+			auto scriptName = instance.shape.name;
+			assert(gameState->gameplayScripts.find(scriptName) != gameState->gameplayScripts.end());
+			gameState->gameplayScripts[scriptName]->onUpdate(gameState);
+		}
+		});
 
 
 	// shape phsyics stuff
