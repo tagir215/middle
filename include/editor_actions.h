@@ -58,19 +58,19 @@ namespace middle {
 	};
 
 	// it is so much work to find scripts. Finding things from list of files is not smart. You need to use the editor
-	class EditorActionOpenScript : public EditorActionContainer {
+	class EditorActionOpenSystem : public EditorActionContainer {
 	public:
 		void execute(GameState* gameState) override;
 	};
 
 	// create new script
-	class EditorActionNewScript : public EditorActionContainer {
+	class EditorActionNewSystem : public EditorActionContainer {
 	public:
 		void execute(GameState* gameState) override;
 	};
 
 	// import script, the code already exists
-	class EditorActionImportScript : public EditorActionContainer {
+	class EditorActionImportSystem : public EditorActionContainer {
 	public:
 		void execute(GameState* gameState) override;
 	};
@@ -83,6 +83,21 @@ namespace middle {
 
 	// we are directors now
 	class EditorActionSelectCamera : public EditorActionContainer {
+	public:
+		void execute(GameState* gameState) override;
+	};
+
+	class EditorActionNewComponent : public EditorActionContainer {
+	public:
+		void execute(GameState* gameState) override;
+	};
+
+	class EditorActionImportComponent : public EditorActionContainer {
+	public:
+		void execute(GameState* gameState) override;
+	};
+
+	class EditorActionOpenComponent : public EditorActionContainer {
 	public:
 		void execute(GameState* gameState) override;
 	};

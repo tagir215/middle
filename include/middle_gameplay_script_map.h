@@ -1,7 +1,7 @@
 #pragma once
-class MiddleGameplayScript;
+class MiddleGameplaySystem;
 
 namespace middle {
-	inline std::unordered_map < std::string, std::unique_ptr<MiddleGameplayScript> > scriptMap;
+	inline std::unordered_map <std::string, std::unique_ptr<MiddleGameplaySystem>> scriptMap;
 }
 

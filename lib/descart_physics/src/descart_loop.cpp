@@ -55,12 +55,12 @@ namespace descart {
 	}
 
 	void SolveConstraints(std::vector<Constraint>& constraints, std::vector<PhysicsBody*>& bodies) {
-		for (Constraint& constraint : constraints) {
-			switch (constraint.type) {
+		for (Constraint& initConstraint : constraints) {
+			switch (initConstraint.type) {
 			case ConstraintType::collision:
 				break;
 			case ConstraintType::distance:
-				SolveDistanceConstraint(constraint, bodies);
+				SolveDistanceConstraint(initConstraint, bodies);
 				break;
 			}
 		}
@@ -104,8 +104,8 @@ namespace descart {
 		EulerIntegrate(frameTime, bodies);
 
 		for (int i = constraints.size() - 1; i >= 0; --i) {
-			auto& constraint = constraints[i];
-			if (constraint.type == ConstraintType::collision) {
+			auto& initConstraint = constraints[i];
+			if (initConstraint.type == ConstraintType::collision) {
 				constraints.pop_back();
 			}
 		}

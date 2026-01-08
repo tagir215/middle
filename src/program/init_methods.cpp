@@ -1,27 +1,28 @@
 #include "init_methods.h"
 #include "middle_gameplay_script_map.h"
+#include "middle_component_table.h"
 
 namespace middle {
 
-	void sphere(GameState* gameState, int index, Vector3 position, int offset) {
+	void initJoint(GameState* gameState, int index, Vector3 position, int offset) {
 		index += offset;
 		auto& shapes = gameState->shapes;
 		shapes[index].type = ShapeType::SPHERE;
 		shapes[index].position = position;
 		++shapes[index].id.generation;
 	}
-	void constraint(GameState* gameState, int index, int indexA, int indexB, float targetDistance, int offset) {
+	void initConstraint(GameState* gameState, int index, int indexA, int indexB, float targetDistance, int offset) {
 		index += offset;
 		indexA += offset;
 		indexB += offset;
 		auto& shapes = gameState->shapes;
 		shapes[index].type = ShapeType::CONSTRAINT;
-		shapes[index].constraint.indexA = indexA;
-		shapes[index].constraint.indexB = indexB;
-		shapes[index].constraint.targetDistance = targetDistance;
+		shapes[index].initConstraint.indexA = indexA;
+		shapes[index].initConstraint.indexB = indexB;
+		shapes[index].initConstraint.targetDistance = targetDistance;
 		++shapes[index].id.generation;
 	}
-	void loop(GameState* gameState, int index, const std::vector<int>& loopIndexes, int offset) {
+	void initLoop(GameState* gameState, int index, const std::vector<int>& loopIndexes, int offset) {
 		index += offset;
 
 		auto& members = gameState->loopMembers;
@@ -44,13 +45,13 @@ namespace middle {
 		gameState->loopIndex += loopSize;
 		++shape.id.generation;
 	}
-	void reference(GameState* gameState, int index, const std::vector<int>& loopIndexes, const std::string& sceneName, int offset) {
-		loop(gameState, index, loopIndexes, offset);
+	void initReference(GameState* gameState, int index, const std::vector<int>& loopIndexes, const std::string& sceneName, int offset) {
+		initLoop(gameState, index, loopIndexes, offset);
 		gameState->shapes[index].type = ShapeType::REFERENCE;
 		gameState->shapes[index].radius = DEF_RADIUS_REFERENCE_INDICATOR;
 		gameState->shapes[index].name = sceneName;
 	}
-	void camera(GameState* gameState, int index, const Vector3& position) {
+	void initCamera(GameState* gameState, int index, const Vector3& position) {
 		auto& shapes = gameState->shapes;
 		shapes[index].type = ShapeType::CAMERA;
 		shapes[index].position = position;
@@ -58,13 +59,13 @@ namespace middle {
 		shapes[index].physicalShape = false;
 		++shapes[index].id.generation;
 	}
-	void script(GameState* gameState, int index, const std::string& scriptName, const Vector3& position)
+	void initScript(GameState* gameState, int index, const std::string& scriptName, const Vector3& position)
 	{
 		auto& shapes = gameState->shapes;
-		shapes[index].type = ShapeType::SCRIPT;
+		shapes[index].type = ShapeType::SYSTEM;
 		shapes[index].position = position;
 		shapes[index].name = scriptName;
-		shapes[index].radius = DEF_RADIUS_SCRIPT;
+		shapes[index].radius = DEF_RADIUS_SYSTEM;
 		shapes[index].physicalShape = false;
 		++shapes[index].id.generation;
 
@@ -72,5 +73,16 @@ namespace middle {
 		if (scriptMap[scriptName].get() != nullptr) {
 			gameState->gameplayScripts[scriptName] = std::move(scriptMap[scriptName]);
 		}
+	}
+	void initComponent(GameState* gameState, int index, int componentId, const std::string& componentName, const Vector3& position) {
+		auto& shapes = gameState->shapes;
+		shapes[index].type = ShapeType::COMPONENT;
+		shapes[index].position = position;
+		shapes[index].name = componentName;
+		shapes[index].radius = DEF_RADIUS_COMPONENT;
+		shapes[index].physicalShape = false;
+		shapes[index].component.typeId = componentTypeMap[componentName];
+		shapes[index].component.componentId = componentId;
+		++shapes[index].id.generation;
 	}
 }

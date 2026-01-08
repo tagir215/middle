@@ -23,7 +23,8 @@ namespace middle {
 	static float DEF_RADIUS_LOOP_INDICATOR = 1;
 	static float DEF_RADIUS_REFERENCE_INDICATOR = 3;
 	static float DEF_RADIUS_CAMERA = 5;
-	static float DEF_RADIUS_SCRIPT = 8;
+	static float DEF_RADIUS_SYSTEM = 8;
+	static float DEF_RADIUS_COMPONENT = 7;
 	static Color DEF_COLOR = UGLY_PINK;
 	static float DEF_LIFETIME = INFINITY;
 	static float DEF_GRAVITY = 0;
@@ -45,7 +46,8 @@ namespace middle {
 		LOOP,
 		REFERENCE,
 		CAMERA,
-		SCRIPT,
+		SYSTEM,
+		COMPONENT,
 	};
 
 	enum class CreationMode {
@@ -69,6 +71,11 @@ namespace middle {
 		bool operator!=(const Id& other) {
 			return !(*this == other);
 		}
+	};
+
+	struct Component {
+		int typeId;
+		int componentId;
 	};
 
 	struct Shape {
@@ -97,7 +104,8 @@ namespace middle {
 		int loopArrayOffset;
 		int loopSize;
 		int parentLoopIndex;
-		Constraint constraint;
+		Constraint initConstraint;
+		Component component;
 
 		Shape() {
 			// shape defaults
@@ -124,8 +132,8 @@ namespace middle {
 			name = "";
 
 			// constraint defaults
-			constraint.type = DEF_CONSTRAINT_TYPE;
-			constraint.stiffness = DEF_STIFFNESS;
+			initConstraint.type = DEF_CONSTRAINT_TYPE;
+			initConstraint.stiffness = DEF_STIFFNESS;
 		}
 
 	};
@@ -162,7 +170,9 @@ namespace middle {
 		NEW_SPHERE,
 		NEW_CONSTRAINT,
 		NEW_CAMERA,
-		NEW_SCRIPT,
+		NEW_SCENE,
+		NEW_SYSTEM,
+		NEW_COMPONENT,
 		SET_ACTIVE_CAMERA,
 		MOVE_SPHERES,
 		DELETE_SHAPES,
@@ -171,9 +181,10 @@ namespace middle {
 		CREATE_LOOPS,
 		LOAD_SCENE,
 		IMPORT_SCENE,
-		IMPORT_SCRIPT,
-		NEW_SCENE,
-		OPEN_SCRIPT,
+		IMPORT_SYSTEM,
+		IMPORT_COMPONENT,
+		OPEN_SYSTEM,
+		OPEN_COMPONENT,
 	};
 
 	class EditorActionContainer {
@@ -193,7 +204,7 @@ namespace middle {
 
 	struct EditorState {
 		CreationMode creationMode;
-		Camera3D camera;
+		Camera3D initCamera;
 		bool initialized = false;
 		bool doOneStep = false;
 		bool showAllInfo = false;
@@ -219,7 +230,7 @@ namespace middle {
 		std::array<Vector3, MAX_VERTEX_COUNT> vertexArray;
 		std::array<int, MAX_LOOP_MEMBER_COUNT> loopMembers;
 		std::array<ShapeInstance, MAX_SHAPE_COUNT>shapeInstances;
-		std::unordered_map<std::string, std::unique_ptr<MiddleGameplayScript>> gameplayScripts;
+		std::unordered_map<std::string, std::unique_ptr<MiddleGameplaySystem>> gameplayScripts;
 		Matrix worldM;
 		Vector2 mouseDragPos;
 		Matrix oldWorldM;
@@ -228,6 +239,7 @@ namespace middle {
 		int activeCameraIndex = 0;
 		int vertexIndex = 0;
 		int loopIndex = 0;
+		int uniqueComponentCount = 0;
 		std::vector<std::string>sceneNames;
 		std::vector<std::string>scriptNames;
 		EditorInput input;
@@ -238,13 +250,6 @@ namespace middle {
 		bool reload = true;
 		bool reset = false;
 		bool quit = false;
-	};
-
-	template<typename T>
-	struct Registrar {
-		Registrar(std::string scriptName) {
-			scriptMap[scriptName] = std::make_unique<T>();
-		}
 	};
 
 }

@@ -11,7 +11,7 @@ namespace middle {
 			if (shape.type != ShapeType::CONSTRAINT)
 				continue;
 
-			if (shape.constraint.indexA == id || shape.constraint.indexB == id)
+			if (shape.initConstraint.indexA == id || shape.initConstraint.indexB == id)
 				result.push_back(i);
 		}
 		return result;
@@ -23,10 +23,10 @@ namespace middle {
 			if (shape.type != ShapeType::CONSTRAINT)
 				continue;
 
-			if (shape.constraint.indexA == indexA && shape.constraint.indexB == indexB)
+			if (shape.initConstraint.indexA == indexA && shape.initConstraint.indexB == indexB)
 				return true;
 
-			if (shape.constraint.indexB == indexA && shape.constraint.indexA == indexB)
+			if (shape.initConstraint.indexB == indexA && shape.initConstraint.indexA == indexB)
 				return true;
 		}
 
@@ -129,7 +129,7 @@ namespace middle {
 	{
 		// for now everything is spheres
 		ShapeType type = gameState->shapes[index].type;
-		return type == ShapeType::SPHERE || type == ShapeType::CAMERA || isContainer(gameState, index) || type == ShapeType::SCRIPT;
+		return type == ShapeType::SPHERE || type == ShapeType::CAMERA || isContainer(gameState, index) || type == ShapeType::SYSTEM || type == ShapeType::COMPONENT;
 	}
 
 	bool isContainer(GameState* gameState, int index)
@@ -225,10 +225,10 @@ namespace middle {
 		instance.id.generation = gameState->shapes[index].id.generation;
 		gameState->shapeInstances[index] = instance;
 	}
-	void moveCameraXZ(Camera3D& camera, const Vector3& pos)
+	void moveCameraXZ(Camera3D& initCamera, const Vector3& pos)
 	{
-		Vector3 displacement = pos - camera.position;
-		camera.position += displacement;
-		camera.target += displacement;
+		Vector3 displacement = pos - initCamera.position;
+		initCamera.position += displacement;
+		initCamera.target += displacement;
 	}
 }

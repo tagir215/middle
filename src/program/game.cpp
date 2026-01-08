@@ -24,15 +24,17 @@ __declspec(dllexport) void UpdateGame(GameState* gameState)
 
 		// TODO for now just uses editor camera
 		ShapeInstance& activeCamera = getShapeInstance(gameState, gameState->activeCameraIndex);
-		moveCameraXZ(gameState->editorState.camera, FromDescVec(activeCamera.pData.position));
+		moveCameraXZ(gameState->editorState.initCamera, FromDescVec(activeCamera.pData.position));
 	}
 
 	// run scripts
 	loopInstances(gameState, [gameState](int i, ShapeInstance& instance) {
-		if (instance.shape.type == ShapeType::SCRIPT) {
+		if (instance.shape.type == ShapeType::SYSTEM) {
 			auto scriptName = instance.shape.name;
-			assert(gameState->gameplayScripts.find(scriptName) != gameState->gameplayScripts.end());
-			gameState->gameplayScripts[scriptName]->onUpdate(gameState);
+			if (gameState->gameplayScripts.find(scriptName) == gameState->gameplayScripts.end())
+				return;
+			//assert(gameState->gameplayScripts.find(scriptName) != gameState->gameplayScripts.end());
+			gameState->gameplayScripts[scriptName]->update(gameState);
 		}
 		});
 
@@ -57,8 +59,8 @@ __declspec(dllexport) void UpdateGame(GameState* gameState)
 		auto& instance = getShapeInstance(gameState, i);
 
 		if (instance.shape.type == ShapeType::CONSTRAINT) {
-			if (instance.shape.constraint.indexA != UNASSIGNED && instance.shape.constraint.indexB != UNASSIGNED)
-				constraints.push_back(instance.shape.constraint);
+			if (instance.shape.initConstraint.indexA != UNASSIGNED && instance.shape.initConstraint.indexB != UNASSIGNED)
+				constraints.push_back(instance.shape.initConstraint);
 		}
 		if (instance.shape.type == ShapeType::SPHERE) {
 			for (int j : grounds) {

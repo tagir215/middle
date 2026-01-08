@@ -90,9 +90,9 @@ namespace middle {
 		ImGui::End();
 
 		ImGui::Begin("GameState");
-		ImGuiDisplay("camera position", gameState->editorState.camera.position);
-		ImGuiDisplay("camera up", gameState->editorState.camera.up);
-		ImGuiDisplay("camera target", gameState->editorState.camera.target);
+		ImGuiDisplay("initCamera position", gameState->editorState.initCamera.position);
+		ImGuiDisplay("initCamera up", gameState->editorState.initCamera.up);
+		ImGuiDisplay("initCamera target", gameState->editorState.initCamera.target);
 		ImGuiDisplay("mousePos", gameState->input.mousePos);
 		ImGuiDisplay("mouse near plane pos", gameState->input.mouseNearPlanePos);
 		ImGuiDisplay("mouse normalized pos", gameState->input.mouseNormalizedPos);
@@ -134,8 +134,8 @@ namespace middle {
 				ImGuiDisplay("normal", FromDescVec(sweepData.normal));
 				ImGuiDisplay("toi", sweepData.toi);
 				ImGui::Separator();
-				ImGuiDisplay("parent loop", shape.parentLoopIndex);
-				ImGuiDisplay("loop array offset", shape.loopArrayOffset);
+				ImGuiDisplay("parent initLoop", shape.parentLoopIndex);
+				ImGuiDisplay("initLoop array offset", shape.loopArrayOffset);
 				ImGui::End();
 			}
 
@@ -291,7 +291,7 @@ namespace middle {
 		ImGui::Begin("Script Manager");
 
 		// import SCRIPT
-		if (ImGui::Button("IMPORT SCRIPT")) {
+		if (ImGui::Button("IMPORT SYSTEM")) {
 			ImGui::OpenPopup("Script Selector");
 		}
 
@@ -301,7 +301,7 @@ namespace middle {
 				if (ImGui::Button(name.c_str())) {
 					EditorActionContainer::Params params;
 					params.stringValue = name;
-					gameState->editorState.nextEditorAction = EditorAction::IMPORT_SCRIPT;
+					gameState->editorState.nextEditorAction = EditorAction::IMPORT_SYSTEM;
 					gameState->editorState.nextEditorActionParams = params;
 					ImGui::CloseCurrentPopup();
 				}
@@ -320,15 +320,22 @@ namespace middle {
 		if (ImGui::BeginPopup("New Script Popup")) {
 			gameState->inputBlockers.insert(InputBlockers::KEYBOARD_BLOCK);
 
-			ImGui::Text("Enter new script name:");
+			ImGui::Text("Enter new initScript name:");
 			ImGui::InputText("##newScriptName", newScriptName, IM_ARRAYSIZE(newScriptName));
+
+			const char* scriptItems[] = { "SYSTEM", "COMPONENT" };
+			static int selectedScriptItem = 0;
+			ImGui::Combo("System or Script?", &selectedScriptItem, scriptItems, IM_ARRAYSIZE(scriptItems));
 
 			if (ImGui::Button("Add")) {
 				if (strlen(newScriptName) > 0) {
 					// Add the new scene to the editor
 					EditorActionContainer::Params params;
 					params.stringValue = std::string(newScriptName);
-					gameState->editorState.nextEditorAction = EditorAction::NEW_SCRIPT;
+					if(selectedScriptItem == 0)
+						gameState->editorState.nextEditorAction = EditorAction::NEW_SYSTEM;
+					else
+						gameState->editorState.nextEditorAction = EditorAction::NEW_COMPONENT;
 					gameState->editorState.nextEditorActionParams = params;
 
 					// Clear buffer and close popup
@@ -346,10 +353,6 @@ namespace middle {
 		}
 
 		ImGui::End();
-
-
-
-
 
 
 		ImGui::End();

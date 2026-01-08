@@ -7,6 +7,7 @@
 #include <filesystem>
 #include <middle_shape_utils.h>
 #include <set>
+#include <typeinfo>
 
 namespace middle {
 
@@ -76,9 +77,9 @@ namespace middle {
 				outFile << coordToLines(shape.position) << std::endl;
 			}
 			if (shape.type == ShapeType::CONSTRAINT) {
-				outFile << shape.constraint.targetDistance << std::endl;
-				outFile << shape.constraint.indexA << std::endl;
-				outFile << shape.constraint.indexB << std::endl;
+				outFile << shape.initConstraint.targetDistance << std::endl;
+				outFile << shape.initConstraint.indexA << std::endl;
+				outFile << shape.initConstraint.indexB << std::endl;
 			}
 			if (shape.type == ShapeType::LOOP) {
 				for (int mIndex = shape.loopArrayOffset; mIndex < shape.loopArrayOffset + shape.loopSize; ++mIndex) {
@@ -92,14 +93,48 @@ namespace middle {
 			if (shape.type == ShapeType::CAMERA) {
 				outFile << coordToLines(shape.position) << std::endl;
 			}
-			if (shape.type == ShapeType::SCRIPT) {
+			if (shape.type == ShapeType::SYSTEM) {
 				outFile << shape.name << std::endl;
+				outFile << coordToLines(shape.position) << std::endl;
+			}
+			if (shape.type == ShapeType::COMPONENT) {
+				outFile << shape.name << std::endl;
+				outFile << shape.component.componentId << std::endl;
 				outFile << coordToLines(shape.position) << std::endl;
 			}
 		}
 
 		outFile.flush();
 		outFile.close();
+	}
+
+	std::string fieldToString(const std::any& field) {
+		if (field.type() == typeid(std::string)) {
+			const std::string& v = std::any_cast<const std::string&>(field);
+			return "s " + v;
+		}
+		else if (field.type() == typeid(int)) {
+			int v = std::any_cast<int>(field);
+			return "i " + std::to_string(v);
+		}
+		else if (field.type() == typeid(float)) {
+			int v = std::any_cast<float>(field);
+			return "f " + std::to_string(v);
+		}
+		else if (field.type() == typeid(double)) {
+			int v = std::any_cast<double>(field);
+			return "d " + std::to_string(v);
+		}
+		else if (field.type() == typeid(double)) {
+			int v = std::any_cast<double>(field);
+			return "d " + std::to_string(v);
+		}
+		else if (field.type() == typeid(bool)) {
+			bool v = std::any_cast<bool>(field);
+			return "b " + std::to_string(v);
+		}
+
+		assert(true, "nope not supporting");
 	}
 
 	void saveEditorState(GameState* gameState)
@@ -113,7 +148,7 @@ namespace middle {
 		outFile << "#activeScene" << std::endl;
 		outFile << gameState->activeScene << std::endl;
 		outFile << "#editorCameraPos" << std::endl;
-		outFile << coordToLines(gameState->editorState.camera.position) << std::endl;
+		outFile << coordToLines(gameState->editorState.initCamera.position) << std::endl;
 
 		outFile.flush();
 		outFile.close();
@@ -127,7 +162,7 @@ namespace middle {
 			pos.x = std::stof(buffer[0]);
 			pos.y = std::stof(buffer[1]);
 			pos.z = std::stof(buffer[2]);
-			sphere(gameState, index, pos, offset);
+			initJoint(gameState, index, pos, offset);
 			buffer.clear();
 			return;
 		}
@@ -136,7 +171,7 @@ namespace middle {
 			float targetDistance = std::stof(buffer[0]);
 			int indexA = std::stoi(buffer[1]);
 			int indexB = std::stoi(buffer[2]);
-			constraint(gameState, index, indexA, indexB, targetDistance, offset);
+			initConstraint(gameState, index, indexA, indexB, targetDistance, offset);
 			buffer.clear();
 			return;
 		}
@@ -147,7 +182,7 @@ namespace middle {
 			for (int i = 0; i < buffer.size(); ++i) {
 				memberIndexes.push_back(std::stoi(buffer[i]));
 			}
-			loop(gameState, index, memberIndexes, offset);
+			initLoop(gameState, index, memberIndexes, offset);
 			buffer.clear();
 			return;
 		}
@@ -171,18 +206,30 @@ namespace middle {
 			pos.x = std::stof(buffer[0]);
 			pos.y = std::stof(buffer[1]);
 			pos.z = std::stof(buffer[2]);
-			camera(gameState, index, pos);
+			initCamera(gameState, index, pos);
 			buffer.clear();
 			return;
 		}
-		if (type == (int)ShapeType::SCRIPT) {
+		if (type == (int)ShapeType::SYSTEM) {
 			assert(buffer.size() == 4);
 			std::string scriptName = buffer[0];
 			Vector3 pos;
 			pos.x = std::stof(buffer[1]);
 			pos.y = std::stof(buffer[2]);
 			pos.z = std::stof(buffer[3]);
-			script(gameState, index, scriptName, pos);
+			initScript(gameState, index, scriptName, pos);
+			buffer.clear();
+			return;
+		}
+		if (type == (int)ShapeType::COMPONENT) {
+			assert(buffer.size() == 5);
+			std::string componentName = buffer[0];
+			int componentId = std::stoi(buffer[1]);
+			Vector3 pos;
+			pos.x = std::stof(buffer[2]);
+			pos.y = std::stof(buffer[3]);
+			pos.z = std::stof(buffer[4]);
+			initComponent(gameState, index, componentId, componentName, pos);
 			buffer.clear();
 			return;
 		}
@@ -201,7 +248,7 @@ namespace middle {
 			pos.x = std::stof(buffer[0]);
 			pos.y = std::stof(buffer[1]);
 			pos.z = std::stof(buffer[2]);
-			moveCameraXZ(gameState->editorState.camera, pos);
+			moveCameraXZ(gameState->editorState.initCamera, pos);
 			buffer.clear();
 		}
 		if (field == "#activeScene") {
@@ -318,16 +365,11 @@ namespace middle {
 				sceneReferenceIndex = highestUsedIndex + 1;
 			}
 
-			reference(gameState, sceneReferenceIndex, members, sceneName);
+			initReference(gameState, sceneReferenceIndex, members, sceneName);
 
 			// move imported scene where it wants to be
 			moveShape(gameState, sceneReferenceIndex, pos);
 		}
-	}
-
-	void loadScript(GameState* gameState, const std::string& filename, int index)
-	{
-
 	}
 
 	void loadEditorState(GameState* gameState) {
@@ -356,11 +398,9 @@ namespace middle {
 		flushFieldBuffer(gameState, buffer, field);
 	}
 
-	void newScript(GameState* gameState, const std::string& scriptName)
+	void newSystemFile(GameState* gameState, const std::string& scriptName)
 	{
-
-
-		std::string templateFilename = "../src/editor_data/script_template.cpp";
+		std::string templateFilename = "../src/editor_data/system_template.cpp";
 		std::ifstream inputFile(templateFilename);
 		if (!inputFile.is_open()) {
 			std::cerr << "Failed to open file to write";
@@ -401,5 +441,47 @@ namespace middle {
 		outFile.close();
 	}
 
+	void newComponentFile(GameState* gameState, const std::string& componentName)
+	{
+		std::string templateFilename = "../src/editor_data/component_template.h";
+		std::ifstream inputFile(templateFilename);
+		if (!inputFile.is_open()) {
+			std::cerr << "Failed to open file to write";
+			return;
+		}
+
+		std::string filename = "../assets/components/" + componentName + ".h";
+
+		// read template to string array
+		std::string templateLine;
+		std::vector<std::string> templateLines;
+		while (std::getline(inputFile, templateLine)) {
+			templateLines.push_back(templateLine);
+		}
+		inputFile.close();
+
+		// replace lines with script names
+		std::string placeholder = "/*componentName*/";
+		for (int i = 0; i < templateLines.size(); ++i) {
+			auto& line = templateLines[i];
+			size_t pos = line.find(placeholder);
+			if (pos != std::string::npos) {
+				line.replace(pos, placeholder.length(), componentName);
+			}
+		}
+
+		// write generated code
+		std::ofstream outFile(filename);
+		if (!outFile.is_open()) {
+			std::cerr << "failed to open to write\n";
+		}
+
+		for (auto& line : templateLines) {
+			outFile << line << std::endl;
+		}
+
+		outFile.flush();
+		outFile.close();
+	}
 }
 

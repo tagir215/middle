@@ -2,6 +2,8 @@
 #include <unordered_map>
 #include "game_state.h"
 #include "init_methods.h"
+#include <any>
+#include <typeinfo>
 
 namespace middle {
 	void loadSceneNames(GameState* gameState);
@@ -10,6 +12,7 @@ namespace middle {
 	void loadScene(GameState* gameState, const std::string& name, bool import, const Vector3& pos ={0,0,0}, int referenceIndex = 0);
 	void saveEditorState(GameState* gameState);
 	void loadEditorState(GameState* gameState);
-	void newScript(GameState* gameState, const std::string& scriptName);
-	void loadScript(GameState* gameState, const std::string& filename, int index);
+	void newSystemFile(GameState* gameState, const std::string& scriptName);
+	void newComponentFile(GameState* gameState, const std::string& componentName);
+	std::string fieldToString(const std::any& field);
 }

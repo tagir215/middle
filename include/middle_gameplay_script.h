@@ -5,11 +5,9 @@ namespace middle {
 
 	class GameState;
 
-	class MiddleGameplayScript {
+	class MiddleGameplaySystem {
 	public:
-		virtual void onCreate(GameState* gameState) = 0;
-		virtual void onUpdate(GameState* gameState) = 0;
-		virtual void onDestroy(GameState* gameState) = 0;
+		virtual void update(GameState* gameState) = 0;
 	};
 
 }

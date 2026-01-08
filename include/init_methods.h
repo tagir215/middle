@@ -3,10 +3,11 @@
 
 
 namespace middle {
-	void sphere(GameState* gameState, int index, Vector3 position, int offset = 0);
-	void constraint(GameState* gameState, int index, int indexA, int indexB, float targetDistance, int offset = 0);
-	void loop(GameState* gameState, int index, const std::vector<int>& loopIndexes, int offset = 0);
-	void reference(GameState* gameState, int index, const std::vector<int>& loopIndexes, const std::string& sceneName, int offset = 0);
-	void camera(GameState* gameState, int index, const Vector3& position);
-	void script(GameState* gameState, int index, const std::string& scriptName, const Vector3& position);
+	void initJoint(GameState* gameState, int index, Vector3 position, int offset = 0);
+	void initConstraint(GameState* gameState, int index, int indexA, int indexB, float targetDistance, int offset = 0);
+	void initLoop(GameState* gameState, int index, const std::vector<int>& loopIndexes, int offset = 0);
+	void initReference(GameState* gameState, int index, const std::vector<int>& loopIndexes, const std::string& sceneName, int offset = 0);
+	void initCamera(GameState* gameState, int index, const Vector3& position);
+	void initScript(GameState* gameState, int index, const std::string& scriptName, const Vector3& position);
+	void initComponent(GameState* gameState, int index, int componentId, const std::string& componentName, const Vector3& position);
 }

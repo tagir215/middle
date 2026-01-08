@@ -5,6 +5,7 @@
 #include "middle_math.h"
 #include <unordered_map>
 #include <set>
+#include "middle_component_table.h"
 #include "script_opener.h"
 
 namespace middle {
@@ -65,23 +66,34 @@ namespace middle {
 			action.execute(gameState);
 			break;
 		}
-		case EditorAction::IMPORT_SCRIPT: {
-			auto action = EditorActionImportScript();
+		case EditorAction::IMPORT_SYSTEM: {
+			auto action = EditorActionImportSystem();
 			action.params = gameState->editorState.nextEditorActionParams;
 			action.execute(gameState);
 			break;
 		}
-		case EditorAction::NEW_SCRIPT: {
-			auto action = EditorActionNewScript();
+		case EditorAction::NEW_SYSTEM: {
+			auto action = EditorActionNewSystem();
 			action.params = gameState->editorState.nextEditorActionParams;
 			action.execute(gameState);
 			break;
 		}
-		case EditorAction::OPEN_SCRIPT: {
-			auto action = EditorActionOpenScript();
+		case EditorAction::NEW_COMPONENT: {
+			auto action = EditorActionNewComponent();
 			action.params = gameState->editorState.nextEditorActionParams;
 			action.execute(gameState);
 			break;
+		}
+		case EditorAction::OPEN_SYSTEM: {
+			auto action = EditorActionOpenSystem();
+			action.params = gameState->editorState.nextEditorActionParams;
+			action.execute(gameState);
+			break;
+		}
+		case EditorAction::OPEN_COMPONENT: {
+			auto action = EditorActionOpenComponent();
+			action.params = gameState->editorState.nextEditorActionParams;
+			action.execute(gameState);
 		}
 		case EditorAction::NEW_CAMERA: {
 			auto action = EditorActionNewCamera();
@@ -105,7 +117,7 @@ namespace middle {
 		int freeIndex = findFreeIndex(gameState);
 
 		Vector3 xzPos = gameState->input.mouseXZ_PlanePos;
-		sphere(gameState, freeIndex, xzPos);
+		initJoint(gameState, freeIndex, xzPos);
 	};
 
 	void EditorActionNewConstraint::execute(GameState* gameState) {
@@ -136,9 +148,9 @@ namespace middle {
 			float distBetween = descart::DistV(getShapeInstance(gameState, indexA).pData.position, getShapeInstance(gameState, indexB).pData.position);
 			auto& shapeA = shapes[indexA];
 			auto& shapeB = shapes[indexB];
-			shapes[freeIndex].constraint.targetDistance = distBetween;
+			shapes[freeIndex].initConstraint.targetDistance = distBetween;
 
-			constraint(gameState, freeIndex, indexA, indexB, distBetween);
+			initConstraint(gameState, freeIndex, indexA, indexB, distBetween);
 
 			// auto unselect
 			unselect(gameState);
@@ -183,8 +195,8 @@ namespace middle {
 			foundSelected = true;
 			// set all connected constraints as selected
 			for (int id : connectedConstraints) {
-				auto& constraint = getShapeInstance(gameState, id);
-				constraint.selected = true;
+				auto& initConstraint = getShapeInstance(gameState, id);
+				initConstraint.selected = true;
 			}
 		}
 
@@ -224,9 +236,7 @@ namespace middle {
 
 	void EditorActionBuild::execute(GameState* gameState) {
 		std::string command = "python ../src/editor_scripts/build_project.py";
-		//std::thread([command]() {
 		system(command.c_str());
-			//}).detach();
 	}
 
 	void EditorActionCreateLoop::execute(GameState* gameState) {
@@ -254,7 +264,7 @@ namespace middle {
 			return;
 
 		// create 
-		loop(gameState, freeIndex, memberIndexes);
+		initLoop(gameState, freeIndex, memberIndexes);
 
 		// auto unselect
 		unselect(gameState);
@@ -302,12 +312,12 @@ namespace middle {
 	}
 
 
-	void EditorActionOpenScript::execute(GameState* gameState)
+	void EditorActionOpenSystem::execute(GameState* gameState)
 	{
 		std::string scriptName = "";
 		bool found = false;
 		loopInstances(gameState, [gameState, &scriptName, &found](int i, ShapeInstance& instance) {
-			if (instance.mouseIntersects && instance.shape.type == ShapeType::SCRIPT) {
+			if (instance.mouseIntersects && instance.shape.type == ShapeType::SYSTEM) {
 				scriptName = instance.shape.name;
 				found = true;
 			}
@@ -315,39 +325,41 @@ namespace middle {
 
 		if (found) {
 			shell_open_file("../assets/scripts/" + scriptName + ".cpp");
-			gameState->quit = true;
 		}
 
 	}
 
-	void EditorActionNewScript::execute(GameState* gameState)
+	void EditorActionNewSystem::execute(GameState* gameState)
 	{
 		assert(params.stringValue != "");
+
 		std::string scriptName = params.stringValue;
-		std::string sceneName = gameState->sceneNames[gameState->activeScene];
 
 		if (gameState->gameplayScripts.find(scriptName) == gameState->gameplayScripts.end()) {
-			newScript(gameState, scriptName);
+			newSystemFile(gameState, scriptName);
 		}
 
 		int freeIndex = findFreeIndex(gameState);
-		script(gameState, freeIndex, scriptName, {0,0,0});
+		initScript(gameState, freeIndex, scriptName, {0,0,0});
+
+		std::string command = "python ../src/editor_scripts/build_project.py";
+		system(command.c_str());
 	}
 
-	void EditorActionImportScript::execute(GameState* gameState) 
+	void EditorActionImportSystem::execute(GameState* gameState) 
 	{
 		assert(params.stringValue != "");
 		std::string scriptName = params.stringValue;
 
 		int freeIndex = findFreeIndex(gameState);
-		script(gameState, freeIndex, scriptName, { 0,0,0 });
+		initScript(gameState, freeIndex, scriptName, { 0,0,0 });
 	}
 
 	void EditorActionNewCamera::execute(GameState* gameState)
 	{
 		int freeIndex = findFreeIndex(gameState);
-		Vector3& pos = gameState->editorState.camera.position;
-		camera(gameState, freeIndex, pos);
+		Vector3& pos = gameState->editorState.initCamera.position;
+		initCamera(gameState, freeIndex, pos);
 	}
 
 	void EditorActionSelectCamera::execute(GameState* gameState)
@@ -361,5 +373,55 @@ namespace middle {
 		}
 	}
 
+
+	void EditorActionNewComponent::execute(GameState* gameState)
+	{
+		assert(params.stringValue != "");
+
+		std::string componentName = params.stringValue;
+
+		newComponentFile(gameState, componentName);
+
+		int freeIndex = findFreeIndex(gameState);
+		// creating new type of component here. So it starts at 0
+		int freeComponentIndex = 0;
+		reserveComponentType(componentName);
+		initComponent(gameState, freeIndex, freeComponentIndex, componentName, { 0,0,0 });
+
+		saveScene(gameState, gameState->sceneNames[gameState->activeScene]);
+
+		std::string command = "python ../src/editor_scripts/build_project.py";
+		system(command.c_str());
+
+		shell_open_file("../assets/components/" + componentName + ".h");
+
+		gameState->closeGame = true;
+	}
+
+	void EditorActionImportComponent::execute(GameState* gameState)
+	{
+		assert(params.intValue != UNASSIGNED);
+		int typeId = params.intValue;
+
+		int freeIndex = findFreeIndex(gameState);
+		//initComponent(gameState, freeIndex, , { 0,0,0 });
+	}
+
+	void EditorActionOpenComponent::execute(GameState* gameState)
+	{
+		std::string componentName = "";
+		bool found = false;
+		loopInstances(gameState, [gameState, &componentName, &found](int i, ShapeInstance& instance) {
+			if (instance.mouseIntersects && instance.shape.type == ShapeType::COMPONENT) {
+				componentName = instance.shape.name;
+				found = true;
+			}
+			});
+
+		if (found) {
+			shell_open_file("../assets/components/" + componentName + ".h");
+		}
+
+	}
 
 }

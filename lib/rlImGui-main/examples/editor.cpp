@@ -121,7 +121,7 @@ public:
 				}
 
 				ImGui::SameLine();
-				ImGui::TextUnformatted(TextFormat("camera target X%f Y%f", Camera.target.x, Camera.target.y));
+				ImGui::TextUnformatted(TextFormat("initCamera target X%f Y%f", Camera.target.x, Camera.target.y));
 				ImGui::EndChild();
 			}
 

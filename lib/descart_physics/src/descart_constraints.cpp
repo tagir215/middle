@@ -2,15 +2,15 @@
 
 namespace descart {
 
-	void SolveDistanceConstraint(Constraint& constraint, std::vector<PhysicsBody*>& bodies)
+	void SolveDistanceConstraint(Constraint& initConstraint, std::vector<PhysicsBody*>& bodies)
 	{
-		PhysicsBody* bodyA = bodies[constraint.indexA];
-		PhysicsBody* bodyB = bodies[constraint.indexB];
+		PhysicsBody* bodyA = bodies[initConstraint.indexA];
+		PhysicsBody* bodyB = bodies[initConstraint.indexB];
 
-		assert(constraint.targetDistance != 0);
+		assert(initConstraint.targetDistance != 0);
 
 		Vec deltaPos = SubV(bodyB->position, bodyA->position);
-		float posError = MagV(deltaPos) - constraint.targetDistance;
+		float posError = MagV(deltaPos) - initConstraint.targetDistance;
 		// if posError == 0 default to this axis
 		Vec axis = { 1,0,0 };
 		if (MagSqV(deltaPos) != 0) {
@@ -21,7 +21,7 @@ namespace descart {
 
 		float invMass = bodyA->invMass + bodyB->invMass;
 
-		Vec biasV = ScaleV(posErrorV, -constraint.biasFactor);
+		Vec biasV = ScaleV(posErrorV, -initConstraint.biasFactor);
 		Vec totalError = AddV(velError, posErrorV);
 		Vec impulse = NegateV(DivideV(totalError, invMass));
 
@@ -35,18 +35,18 @@ namespace descart {
 		AssertNanVec(bodyB->linearVel);
 	}
 
-	void SolveCollisionConstraint(Constraint& constraint, std::vector<PhysicsBody*>& bodies) {
+	void SolveCollisionConstraint(Constraint& initConstraint, std::vector<PhysicsBody*>& bodies) {
 
-		PhysicsBody* bodyA = bodies[constraint.indexA];
-		PhysicsBody* bodyB = bodies[constraint.indexB];
+		PhysicsBody* bodyA = bodies[initConstraint.indexA];
+		PhysicsBody* bodyB = bodies[initConstraint.indexB];
 
-		float relVel = RelativeVelocity(bodyA, bodyB, constraint.normal);
+		float relVel = RelativeVelocity(bodyA, bodyB, initConstraint.normal);
 		if (relVel < 0)
 			return;
 		float emass = bodyA->invMass + bodyB->invMass;
-		float impulseMag = -(1 + constraint.restitution) * relVel / emass;
+		float impulseMag = -(1 + initConstraint.restitution) * relVel / emass;
 
-		Vec impulse = ScaleV(constraint.normal, impulseMag);
+		Vec impulse = ScaleV(initConstraint.normal, impulseMag);
 		bodyA->linearVel = AddV(bodyA->linearVel, NegateV(ScaleV(impulse, bodyA->invMass)));
 		bodyB->linearVel = AddV(bodyB->linearVel, ScaleV(impulse, bodyB->invMass));
 

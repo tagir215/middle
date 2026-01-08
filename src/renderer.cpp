@@ -20,7 +20,7 @@ namespace middle {
 		// 89, 135, 168
 		ClearBackground(BACKGROUND_COLOR);
 
-		BeginMode3D(gameState->editorState.camera);
+		BeginMode3D(gameState->editorState.initCamera);
 
 		rlSetClipPlanes(gameState->nearPlaneDistance, gameState->farPlaneDistance);
 
@@ -70,14 +70,14 @@ namespace middle {
 				}
 				break;
 			case ShapeType::CONSTRAINT: {
-				descart::Constraint& constraint = shapeInstance.shape.constraint;
-				descart::Vec posA = getShapeInstance(gameState, constraint.indexA).pData.position;
-				descart::Vec posB = getShapeInstance(gameState, constraint.indexB).pData.position;
+				descart::Constraint& initConstraint = shapeInstance.shape.initConstraint;
+				descart::Vec posA = getShapeInstance(gameState, initConstraint.indexA).pData.position;
+				descart::Vec posB = getShapeInstance(gameState, initConstraint.indexB).pData.position;
 				DrawLine3D(FromDescVec(posA), FromDescVec(posB), UGLY_PINK);
 
 				if (shapeInstance.selected) {
-					auto posA = getShapeInstance(gameState, constraint.indexA).pData.position;
-					auto posB = getShapeInstance(gameState, constraint.indexB).pData.position;
+					auto posA = getShapeInstance(gameState, initConstraint.indexA).pData.position;
+					auto posB = getShapeInstance(gameState, initConstraint.indexB).pData.position;
 					auto center = descart::ScaleV(descart::AddV(posA, posB), 0.5f);
 					float length = descart::DistV(posA, posB);
 					auto dir = descart::SubV(posB, posA);
@@ -93,7 +93,8 @@ namespace middle {
 			case ShapeType::LOOP:
 			case ShapeType::REFERENCE:
 			case ShapeType::CAMERA:
-			case ShapeType::SCRIPT:
+			case ShapeType::SYSTEM:
+			case ShapeType::COMPONENT:
 
 				Color loopColor = WHITE;
 				if (shapeInstance.shape.type == ShapeType::REFERENCE) {
@@ -107,8 +108,11 @@ namespace middle {
 						loopColor = BLACK;
 					}
 				}
-				if (shapeInstance.shape.type == ShapeType::SCRIPT) {
+				if (shapeInstance.shape.type == ShapeType::SYSTEM) {
 					loopColor = GREEN;
+				}
+				if (shapeInstance.shape.type == ShapeType::COMPONENT) {
+					loopColor = BLUE;
 				}
 
 				DrawSphere(FromDescVec(shapeInstance.pData.position), shapeInstance.shape.radius, loopColor);

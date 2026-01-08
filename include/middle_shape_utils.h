@@ -46,7 +46,7 @@ namespace middle {
 	// add isntance make generation match shape
 	void addInstance(GameState* gameState, int index, ShapeInstance instance);
 	// move camera in xz plane moving also the target 
-	void moveCameraXZ(Camera3D& camera, const Vector3& pos);
+	void moveCameraXZ(Camera3D& initCamera, const Vector3& pos);
 
 	template<typename F>
 	void loopInstances(GameState* gameState, F func) {

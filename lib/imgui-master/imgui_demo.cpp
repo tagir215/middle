@@ -987,7 +987,7 @@ static void DemoWindowWidgetsBasic()
                 "Click on the color square to open a color picker.\n"
                 "Click and hold to use drag and drop.\n"
                 "Right-Click on the color square to show options.\n"
-                "Ctrl+Click on individual component to input value.\n");
+                "Ctrl+Click on individual initComponent to input value.\n");
 
             ImGui::ColorEdit4("color 2", col2);
         }
@@ -1105,7 +1105,7 @@ static void DemoWindowWidgetsColorAndPickers()
         ImGui::Text("Color widget:");
         ImGui::SameLine(); HelpMarker(
             "Click on the color square to open a color picker.\n"
-            "Ctrl+Click on individual component to input value.\n");
+            "Ctrl+Click on individual initComponent to input value.\n");
         ImGui::ColorEdit3("MyColor##1", (float*)&color, base_flags);
 
         IMGUI_DEMO_MARKER("Widgets/Color/ColorEdit (HSV, with Alpha)");
@@ -1918,8 +1918,8 @@ static void DemoWindowWidgetsListBoxes()
 
 static void DemoWindowWidgetsMultiComponents()
 {
-    IMGUI_DEMO_MARKER("Widgets/Multi-component Widgets");
-    if (ImGui::TreeNode("Multi-component Widgets"))
+    IMGUI_DEMO_MARKER("Widgets/Multi-initComponent Widgets");
+    if (ImGui::TreeNode("Multi-initComponent Widgets"))
     {
         static float vec4f[4] = { 0.10f, 0.20f, 0.30f, 0.44f };
         static int vec4i[4] = { 1, 5, 100, 255 };
@@ -5694,7 +5694,7 @@ static void DemoWindowTables()
 
         // [Method 1] Using TableNextRow() to create a new row, and TableSetColumnIndex() to select the column.
         // In many situations, this is the most flexible and easy to use pattern.
-        HelpMarker("Using TableNextRow() + calling TableSetColumnIndex() _before_ each cell, in a loop.");
+        HelpMarker("Using TableNextRow() + calling TableSetColumnIndex() _before_ each cell, in a initLoop.");
         if (ImGui::BeginTable("table1", 3))
         {
             for (int row = 0; row < 4; row++)
@@ -6171,7 +6171,7 @@ static void DemoWindowTables()
         {
             ImGui::SameLine();
             HelpMarker(
-                "Be mindful that using right-alignment (e.g. size.x = -FLT_MIN) creates a feedback loop "
+                "Be mindful that using right-alignment (e.g. size.x = -FLT_MIN) creates a feedback initLoop "
                 "where contents width can feed into auto-column width can feed into contents width.");
         }
         ImGui::DragInt("Columns", &column_count, 0.1f, 1, 64, "%d", ImGuiSliderFlags_AlwaysClamp);
@@ -9609,7 +9609,7 @@ static void ShowExampleAppAutoResize(bool* p_open)
     ImGui::TextUnformatted(
         "Window will resize every-frame to the size of its content.\n"
         "Note that you probably don't want to query the window size to\n"
-        "output your content because that would create a feedback loop.");
+        "output your content because that would create a feedback initLoop.");
     ImGui::SliderInt("Number of lines", &lines, 1, 20);
     for (int i = 0; i < lines; i++)
         ImGui::Text("%*sThis is line %d", i * 4, "", i); // Pad with space to extend size horizontally

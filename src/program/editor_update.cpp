@@ -31,20 +31,20 @@ namespace middle {
 		const float cameraSpeed = mouseCamRatio * mouseCamRatio * mouseCamRatio * maxCameraSpeed;
 		Vector3 cameraMovementDir = { 0,0,0 };
 		if (gameState->input.w)
-			cameraMovementDir += Vector3Normalize(gameState->editorState.camera.target - gameState->editorState.camera.position);
+			cameraMovementDir += Vector3Normalize(gameState->editorState.initCamera.target - gameState->editorState.initCamera.position);
 		if (gameState->input.s)
-			cameraMovementDir += Vector3Negate(Vector3Normalize(gameState->editorState.camera.target - gameState->editorState.camera.position));
+			cameraMovementDir += Vector3Negate(Vector3Normalize(gameState->editorState.initCamera.target - gameState->editorState.initCamera.position));
 		if (gameState->input.e)
 			cameraMovementDir += { 0, 0, 1 };
 		if (gameState->input.q)
 			cameraMovementDir += { 0, 0, -1 };
 		if (gameState->input.d)
-			cameraMovementDir += Vector3Negate(Vector3Normalize(Vector3CrossProduct(gameState->editorState.camera.up, gameState->editorState.camera.target - gameState->editorState.camera.position)));
+			cameraMovementDir += Vector3Negate(Vector3Normalize(Vector3CrossProduct(gameState->editorState.initCamera.up, gameState->editorState.initCamera.target - gameState->editorState.initCamera.position)));
 		if (gameState->input.a)
-			cameraMovementDir += Vector3Normalize(Vector3CrossProduct(gameState->editorState.camera.up, gameState->editorState.camera.target - gameState->editorState.camera.position));
+			cameraMovementDir += Vector3Normalize(Vector3CrossProduct(gameState->editorState.initCamera.up, gameState->editorState.initCamera.target - gameState->editorState.initCamera.position));
 
-		gameState->editorState.camera.position += cameraMovementDir * cameraSpeed;
-		gameState->editorState.camera.target += cameraMovementDir * cameraSpeed;
+		gameState->editorState.initCamera.position += cameraMovementDir * cameraSpeed;
+		gameState->editorState.initCamera.target += cameraMovementDir * cameraSpeed;
 
 
 		// mouse intersects 
@@ -60,15 +60,15 @@ namespace middle {
 					return;
 				auto pos = instance.pData.position;
 				Vector3 intersectPos;
-				bool mouseIntersect = RayCastLineSphere(FromDescVec(pos), instance.shape.radius, gameState->editorState.camera.position, gameState->editorState.camera.position + gameState->input.mouseDir, intersectPos);
+				bool mouseIntersect = RayCastLineSphere(FromDescVec(pos), instance.shape.radius, gameState->editorState.initCamera.position, gameState->editorState.initCamera.position + gameState->input.mouseDir, intersectPos);
 				instance.mouseIntersects = mouseIntersect;
 			}
 			if (shape.type == ShapeType::CONSTRAINT) {
 				// in constraint creation mode, can't select constraints, only spheres to create constraints to
 				if (gameState->editorState.creationMode == CreationMode::CONSTRAINT_MODE)
 					return;
-				auto& instanceA = getShapeInstance(gameState, instance.shape.constraint.indexA);
-				auto& instanceB = getShapeInstance(gameState, instance.shape.constraint.indexB);
+				auto& instanceA = getShapeInstance(gameState, instance.shape.initConstraint.indexA);
+				auto& instanceB = getShapeInstance(gameState, instance.shape.initConstraint.indexB);
 				auto posA = instanceA.pData.position;
 				auto posB = instanceB.pData.position;
 				bool mouseIntersect = PointIntersectLineZX_Plane(gameState->input.mouseXZ_PlanePos, FromDescVec(posA), FromDescVec(posB), DEF_LINE_PADDING_H, DEF_LINE_PADDING_V);
@@ -129,7 +129,10 @@ namespace middle {
 		if (gameState->input.openScript && gameState->intersectCount > 0) {
 			loopInstances(gameState, [&](int i, ShapeInstance& instance) {
 				if (instance.mouseIntersects) {
-					gameState->editorState.nextEditorAction = EditorAction::OPEN_SCRIPT;
+					if(instance.shape.type == ShapeType::SYSTEM)
+						gameState->editorState.nextEditorAction = EditorAction::OPEN_SYSTEM;
+					if(instance.shape.type == ShapeType::COMPONENT)
+						gameState->editorState.nextEditorAction = EditorAction::OPEN_COMPONENT;
 					gameState->editorState.nextEditorActionParams = { "", i };
 				}
 				});
@@ -147,8 +150,8 @@ namespace middle {
 			}
 
 			if (instance.grabDown) {
-				float objYDistance = std::abs(instance.pData.position.y - gameState->editorState.camera.position.y);
-				float yDistance = std::abs(gameState->editorState.camera.position.y);
+				float objYDistance = std::abs(instance.pData.position.y - gameState->editorState.initCamera.position.y);
+				float yDistance = std::abs(gameState->editorState.initCamera.position.y);
 				if (yDistance == 0)
 					yDistance = 0.001f;
 				Vector3 xzVel = Vector3Scale(gameState->input.mouseXZ_PlaneVelocity, objYDistance / yDistance);
