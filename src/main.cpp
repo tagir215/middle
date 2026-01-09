@@ -34,6 +34,7 @@
 #include <raymath.h>
 #include <rlImGui.h>
 #include "editor_actions.h"
+#include "middle_gameplay_script_map.h"
 
 void UpdateGame(GameState* gameState);
 void ReloadGameDLL();
@@ -115,6 +116,7 @@ int main(void)
 			timeAccumulator -= fixedTimeStep;
 		}
 
+		scriptMap["RendererSystem"]->update(gameState);
 
 	}
 

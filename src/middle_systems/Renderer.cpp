@@ -1,7 +1,5 @@
 #pragma once
 #include "game_state.h"
-#include "middle_shape_utils.h"
-#include "middle_component_table.h"
 #include "middle_imgui.h"
 #include "middle_constants.h"
 #include <iostream>

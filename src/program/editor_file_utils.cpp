@@ -297,7 +297,7 @@ namespace middle {
 				sceneReferenceIndex = highestUsedIndex + 1;
 			}
 
-			initReference(gameState, sceneReferenceIndex, members, sceneName);
+			//initReference(gameState, sceneReferenceIndex, members, sceneName);
 
 			// move imported scene where it wants to be
 			moveShape(gameState, sceneReferenceIndex, pos);
