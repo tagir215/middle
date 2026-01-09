@@ -400,11 +400,11 @@ namespace middle {
 
 	void EditorActionImportComponent::execute(GameState* gameState)
 	{
-		assert(params.intValue != UNASSIGNED);
-		int typeId = params.intValue;
+		assert(params.stringValue != "");
+		std::string componentName = params.stringValue;
 
-		int freeIndex = findFreeIndex(gameState);
-		//initComponent(gameState, freeIndex, , { 0,0,0 });
+		int freeIndex = freeComponentIndex(componentName);
+		initComponent(gameState, freeIndex, freeIndex, componentName, { 0,0,0 });
 	}
 
 	void EditorActionOpenComponent::execute(GameState* gameState)

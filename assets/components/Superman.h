@@ -1,23 +1,15 @@
 #pragma once
 #include "registrars.h"
-#include <fstream>
+#include "editor_file_utils.h"
 
 namespace components {
 	static std::string componentName = "Superman";
 
-	struct Superman {
+	struct Superman : public middle::Serializable{
 		int power = 0;
+
+		void serialize(std::ostream& ostream) override;
+		void deserialize(const std::vector<std::string>& buffer);
 	};
 
-	static middle::ComponentRegistrar<Superman> reg(
-		componentName, 
-		[](Superman& man, std::ostream& outFile)
-		{
-			outFile << man.power << "\n";
-		},
-		[](Superman& man, const std::vector<std::string>& buffer)
-		{
-			man.power = std::stoi(buffer[0]);
-		}
-	);
 }

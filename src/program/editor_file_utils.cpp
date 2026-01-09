@@ -6,16 +6,71 @@
 #include <cctype>
 #include <filesystem>
 #include <middle_shape_utils.h>
+#include "middle_component_table.h"
 #include <set>
-#include <typeinfo>
 
 namespace middle {
 
+	std::string fieldToString(const std::any& field) {
+		if (field.type() == typeid(std::string)) {
+			const std::string& v = std::any_cast<const std::string&>(field);
+			return "s " + v + "\n";
+		}
+		else if (field.type() == typeid(int)) {
+			int v = std::any_cast<int>(field);
+			return "i " + std::to_string(v) + "\n";
+		}
+		else if (field.type() == typeid(float)) {
+			int v = std::any_cast<float>(field);
+			return "f " + std::to_string(v) + "\n";
+		}
+		else if (field.type() == typeid(double)) {
+			int v = std::any_cast<double>(field);
+			return "d " + std::to_string(v) + "\n";
+		}
+		else if (field.type() == typeid(double)) {
+			int v = std::any_cast<double>(field);
+			return "d " + std::to_string(v) + "\n";
+		}
+		else if (field.type() == typeid(bool)) {
+			bool v = std::any_cast<bool>(field);
+			return "b " + std::to_string(v) + "\n";
+		}
+
+		assert(true, "nope not supporting");
+	}
+
+	void fillField(void* field, const std::string& fieldString) {
+		char c = fieldString[0];
+		std::string valueStr = fieldString.substr(2);
+		if (c == 's') {
+			std::string* strptr = static_cast<std::string*>(field);
+			*strptr = valueStr;
+		}
+		else if (c == 'i') {
+			int* intptr = static_cast<int*>(field);
+			*intptr = std::stoi(valueStr);
+		}
+		else if (c == 'f') {
+			float* floatptr = static_cast<float*>(field);
+			*floatptr = std::stof(valueStr);
+		}
+		else if (c == 'd') {
+			double* doubleptr = static_cast<double*>(field);
+			*doubleptr = std::stod(valueStr);
+		}
+		else if (c == 'b') {
+			bool* boolptr = static_cast<bool*>(field);
+			*boolptr = std::stoi(valueStr);
+		}
+
+		assert("nope not supported");
+	}
 
 	std::string coordToLines(const Vector3& position) {
-		auto x = std::to_string(position.x) + "\n";
-		auto y = std::to_string(position.y) + "\n";
-		auto z = std::to_string(position.z);
+		auto x = "f " + std::to_string(position.x) + "\n";
+		auto y = "f " + std::to_string(position.y) + "\n";
+		auto z = "f " + std::to_string(position.z) + "\n";
 		return x + y + z;
 	}
 
@@ -47,6 +102,13 @@ namespace middle {
 		}
 	}
 
+	void loadComponentNames(GameState* gameState)
+	{
+		for (auto& pair : componentTypeMap) {
+			gameState->componentNames.push_back(pair.first);
+		}
+	}
+
 	void saveScene(GameState* gameState, const std::string& sceneName) {
 		std::string line;
 
@@ -58,10 +120,10 @@ namespace middle {
 			std::cerr << "failed to open to write\n";
 		}
 
-		outFile << "#scene" << std::endl;
-		outFile << sceneName << std::endl;
-		outFile << "#activeCamera" << std::endl;
-		outFile << gameState->activeCameraIndex << std::endl;
+		outFile << "#scene\n";
+		outFile << fieldToString(sceneName);
+		outFile << "#activeCamera\n";
+		outFile << fieldToString(gameState->activeCameraIndex);
 
 		int saveSpam = GHOST_INDEX_OFFSET;
 		for (int i = 0; i < saveSpam; ++i) {
@@ -74,33 +136,35 @@ namespace middle {
 			outFile << "__" << std::to_string((int)shape.type) << "__" << std::endl;
 
 			if (shape.type == ShapeType::SPHERE) {
-				outFile << coordToLines(shape.position) << std::endl;
+				outFile << coordToLines(shape.position);
 			}
 			if (shape.type == ShapeType::CONSTRAINT) {
-				outFile << shape.initConstraint.targetDistance << std::endl;
-				outFile << shape.initConstraint.indexA << std::endl;
-				outFile << shape.initConstraint.indexB << std::endl;
+				outFile << fieldToString(shape.initConstraint.targetDistance);
+				outFile << fieldToString(shape.initConstraint.indexA);
+				outFile << fieldToString(shape.initConstraint.indexB);;
 			}
 			if (shape.type == ShapeType::LOOP) {
 				for (int mIndex = shape.loopArrayOffset; mIndex < shape.loopArrayOffset + shape.loopSize; ++mIndex) {
-					outFile << gameState->loopMembers[mIndex] << std::endl;
+					outFile << fieldToString(gameState->loopMembers[mIndex]);
 				}
 			}
 			if (shape.type == ShapeType::REFERENCE) {
-				outFile << shape.name << std::endl;
-				outFile << coordToLines(shape.position) << std::endl;
+				outFile << fieldToString(shape.name);
+				outFile << coordToLines(shape.position);
 			}
 			if (shape.type == ShapeType::CAMERA) {
-				outFile << coordToLines(shape.position) << std::endl;
+				outFile << coordToLines(shape.position);
 			}
 			if (shape.type == ShapeType::SYSTEM) {
-				outFile << shape.name << std::endl;
-				outFile << coordToLines(shape.position) << std::endl;
+				outFile << fieldToString(shape.name);
+				outFile << coordToLines(shape.position);
 			}
 			if (shape.type == ShapeType::COMPONENT) {
-				outFile << shape.name << std::endl;
-				outFile << shape.component.componentId << std::endl;
-				outFile << coordToLines(shape.position) << std::endl;
+				outFile << fieldToString(shape.name);
+				outFile << fieldToString(shape.component.componentId);
+				outFile << coordToLines(shape.position);
+				int typeId = componentTypeMap[shape.name];
+				componentArrayMap[typeId];
 			}
 		}
 
@@ -108,34 +172,6 @@ namespace middle {
 		outFile.close();
 	}
 
-	std::string fieldToString(const std::any& field) {
-		if (field.type() == typeid(std::string)) {
-			const std::string& v = std::any_cast<const std::string&>(field);
-			return "s " + v;
-		}
-		else if (field.type() == typeid(int)) {
-			int v = std::any_cast<int>(field);
-			return "i " + std::to_string(v);
-		}
-		else if (field.type() == typeid(float)) {
-			int v = std::any_cast<float>(field);
-			return "f " + std::to_string(v);
-		}
-		else if (field.type() == typeid(double)) {
-			int v = std::any_cast<double>(field);
-			return "d " + std::to_string(v);
-		}
-		else if (field.type() == typeid(double)) {
-			int v = std::any_cast<double>(field);
-			return "d " + std::to_string(v);
-		}
-		else if (field.type() == typeid(bool)) {
-			bool v = std::any_cast<bool>(field);
-			return "b " + std::to_string(v);
-		}
-
-		assert(true, "nope not supporting");
-	}
 
 	void saveEditorState(GameState* gameState)
 	{
@@ -145,9 +181,9 @@ namespace middle {
 			std::cerr << "failed to open to write\n";
 		}
 
-		outFile << "#activeScene" << std::endl;
-		outFile << gameState->activeScene << std::endl;
-		outFile << "#editorCameraPos" << std::endl;
+		outFile << "#activeScene" << "\n";
+		outFile << fieldToString(gameState->activeScene);
+		outFile << "#editorCameraPos" << "\n";
 		outFile << coordToLines(gameState->editorState.initCamera.position) << std::endl;
 
 		outFile.flush();
@@ -159,18 +195,20 @@ namespace middle {
 		if (type == (int)ShapeType::SPHERE) {
 			assert(buffer.size() == 3);
 			Vector3 pos;
-			pos.x = std::stof(buffer[0]);
-			pos.y = std::stof(buffer[1]);
-			pos.z = std::stof(buffer[2]);
+			fillField(&pos.x, buffer[0]);
+			fillField(&pos.y, buffer[1]);
+			fillField(&pos.z, buffer[2]);
 			initJoint(gameState, index, pos, offset);
 			buffer.clear();
 			return;
 		}
 		if (type == (int)ShapeType::CONSTRAINT) {
 			assert(buffer.size() == 3);
-			float targetDistance = std::stof(buffer[0]);
-			int indexA = std::stoi(buffer[1]);
-			int indexB = std::stoi(buffer[2]);
+			float targetDistance;
+			int indexA, indexB;
+			fillField(&targetDistance, buffer[0]);
+			fillField(&indexA, buffer[1]);
+			fillField(&indexB, buffer[2]);
 			initConstraint(gameState, index, indexA, indexB, targetDistance, offset);
 			buffer.clear();
 			return;
@@ -180,7 +218,7 @@ namespace middle {
 			assert(loopSize > 0);
 			std::vector<int>memberIndexes;
 			for (int i = 0; i < buffer.size(); ++i) {
-				memberIndexes.push_back(std::stoi(buffer[i]));
+				fillField(&memberIndexes[i], buffer[i]);
 			}
 			initLoop(gameState, index, memberIndexes, offset);
 			buffer.clear();
@@ -189,12 +227,13 @@ namespace middle {
 		if (type == (int)ShapeType::REFERENCE) {
 			assert(buffer.size() == 4);
 			// index 0 is scene name
-			std::string sceneName = buffer[0];
+			std::string sceneName;
 			// move scene
 			Vector3 pos;
-			pos.x = std::stof(buffer[1]);
-			pos.y = std::stof(buffer[2]);
-			pos.z = std::stof(buffer[3]);
+			fillField(&sceneName, buffer[0]);
+			fillField(&pos.x, buffer[1]);
+			fillField(&pos.y, buffer[2]);
+			fillField(&pos.z, buffer[3]);
 			// import scene
 			loadScene(gameState, sceneName, true, pos, index + offset);
 			buffer.clear();
@@ -203,32 +242,35 @@ namespace middle {
 		if (type == (int)ShapeType::CAMERA) {
 			assert(buffer.size() == 3);
 			Vector3 pos;
-			pos.x = std::stof(buffer[0]);
-			pos.y = std::stof(buffer[1]);
-			pos.z = std::stof(buffer[2]);
+			fillField(&pos.x, buffer[0]);
+			fillField(&pos.y, buffer[1]);
+			fillField(&pos.z, buffer[2]);
 			initCamera(gameState, index, pos);
 			buffer.clear();
 			return;
 		}
 		if (type == (int)ShapeType::SYSTEM) {
 			assert(buffer.size() == 4);
-			std::string scriptName = buffer[0];
+			std::string scriptName;
 			Vector3 pos;
-			pos.x = std::stof(buffer[1]);
-			pos.y = std::stof(buffer[2]);
-			pos.z = std::stof(buffer[3]);
+			fillField(&scriptName, buffer[0]);
+			fillField(&pos.x, buffer[1]);
+			fillField(&pos.y, buffer[2]);
+			fillField(&pos.z, buffer[3]);
 			initScript(gameState, index, scriptName, pos);
 			buffer.clear();
 			return;
 		}
 		if (type == (int)ShapeType::COMPONENT) {
 			assert(buffer.size() == 5);
-			std::string componentName = buffer[0];
-			int componentId = std::stoi(buffer[1]);
+			std::string componentName;
+			int componentId;
 			Vector3 pos;
-			pos.x = std::stof(buffer[2]);
-			pos.y = std::stof(buffer[3]);
-			pos.z = std::stof(buffer[4]);
+			fillField(&componentName, buffer[0]);
+			fillField(&componentId, buffer[1]);
+			fillField(&pos.x, buffer[2]);
+			fillField(&pos.y, buffer[3]);
+			fillField(&pos.z, buffer[4]);
 			initComponent(gameState, index, componentId, componentName, pos);
 			buffer.clear();
 			return;
@@ -239,21 +281,21 @@ namespace middle {
 	void flushFieldBuffer(GameState* gameState, std::vector<std::string>& buffer, const std::string& field) {
 		if (field == "#activeCamera") {
 			assert(buffer.size() == 1);
-			gameState->activeCameraIndex = std::stoi(buffer[0]);
+			fillField(&gameState->activeCameraIndex, buffer[0]);
 			buffer.clear();
 		}
 		if (field == "#editorCameraPos") {
 			assert(buffer.size() == 3);
 			Vector3 pos;
-			pos.x = std::stof(buffer[0]);
-			pos.y = std::stof(buffer[1]);
-			pos.z = std::stof(buffer[2]);
+			fillField(&pos.x, buffer[0]);
+			fillField(&pos.y, buffer[1]);
+			fillField(&pos.z, buffer[2]);
 			moveCameraXZ(gameState->editorState.initCamera, pos);
 			buffer.clear();
 		}
 		if (field == "#activeScene") {
 			assert(buffer.size() == 1);
-			gameState->activeScene = std::stoi(buffer[0]);
+			fillField(&gameState->activeScene, buffer[0]);
 			buffer.clear();
 		}
 		assert("something wrong about data");

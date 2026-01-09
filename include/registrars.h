@@ -16,7 +16,7 @@ namespace middle {
 
 	template<typename T>
 	struct ComponentRegistrar {
-		ComponentRegistrar(const std::string& componentName, std::function<void(T&, std::ostream&)>serialize, std::function<void(T&, const std::vector<std::string>&)>deserialize) {
+		ComponentRegistrar(const std::string& componentName) {
 			addToComponentArray<T>(componentName);
 		}
 	};

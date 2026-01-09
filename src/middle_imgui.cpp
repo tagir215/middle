@@ -295,6 +295,11 @@ namespace middle {
 			ImGui::OpenPopup("Script Selector");
 		}
 
+		// import COMPONENT
+		if (ImGui::Button("IMPORT COMPONENT")) {
+			ImGui::OpenPopup("Component Selector");
+		}
+
 		if (ImGui::BeginPopup("Script Selector")) {
 
 			for (auto& name : gameState->scriptNames) {
@@ -302,6 +307,22 @@ namespace middle {
 					EditorActionContainer::Params params;
 					params.stringValue = name;
 					gameState->editorState.nextEditorAction = EditorAction::IMPORT_SYSTEM;
+					gameState->editorState.nextEditorActionParams = params;
+					ImGui::CloseCurrentPopup();
+				}
+			}
+
+			ImGui::EndPopup();
+		}
+
+
+		if (ImGui::BeginPopup("Component Selector")) {
+
+			for (auto& name : gameState->componentNames) {
+				if (ImGui::Button(name.c_str())) {
+					EditorActionContainer::Params params;
+					params.stringValue = name;
+					gameState->editorState.nextEditorAction = EditorAction::IMPORT_COMPONENT;
 					gameState->editorState.nextEditorActionParams = params;
 					ImGui::CloseCurrentPopup();
 				}

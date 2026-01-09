@@ -81,7 +81,6 @@ namespace middle {
 		shapes[index].name = componentName;
 		shapes[index].radius = DEF_RADIUS_COMPONENT;
 		shapes[index].physicalShape = false;
-		shapes[index].component.typeId = componentTypeMap[componentName];
 		shapes[index].component.componentId = componentId;
 		++shapes[index].id.generation;
 	}

@@ -1,4 +1,7 @@
 #pragma once
+#include <unordered_map>
+#include "middle_gameplay_script.h"
+
 class MiddleGameplaySystem;
 
 namespace middle {

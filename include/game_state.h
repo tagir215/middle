@@ -74,7 +74,6 @@ namespace middle {
 	};
 
 	struct Component {
-		int typeId;
 		int componentId;
 	};
 
@@ -242,6 +241,7 @@ namespace middle {
 		int uniqueComponentCount = 0;
 		std::vector<std::string>sceneNames;
 		std::vector<std::string>scriptNames;
+		std::vector<std::string>componentNames;
 		EditorInput input;
 		std::set<InputBlockers> inputBlockers;
 		bool paused = false;

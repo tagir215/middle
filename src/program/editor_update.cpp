@@ -17,6 +17,7 @@ namespace middle {
 			reset(gameState);
 			loadSceneNames(gameState);
 			loadScriptNames(gameState);
+			loadComponentNames(gameState);
 			if (gameState->sceneNames.size() > 0) {
 				loadScene(gameState, gameState->sceneNames[gameState->activeScene], false);
 			}

@@ -15,10 +15,11 @@ set_target_properties(raylib PROPERTIES
 file(GLOB SOURCES "${CMAKE_SOURCE_DIR}/src/program/*.cpp")
 file(GLOB SCRIPTS "${CMAKE_SOURCE_DIR}/assets/scripts/*.cpp")
 file(GLOB HEADERS "${CMAKE_SOURCE_DIR}/include/*.h")
-file(GLOB COMPONENTS "${CMAKE_SOURCE_DIR}/assets/components/*.h")
+file(GLOB COMPONENT_HEADERS "${CMAKE_SOURCE_DIR}/assets/components/*.h")
+file(GLOB COMPONENT_SOURCES "${CMAKE_SOURCE_DIR}/assets/components/*.cpp")
 
 # library game, hot reloadable I guess
-add_library(game SHARED ${SOURCES} ${HEADERS} ${SCRIPTS} ${COMPONENTS})
+add_library(game SHARED ${SOURCES} ${HEADERS} ${SCRIPTS} ${COMPONENT_HEADERS} ${COMPONENT_SOURCES})
 target_include_directories(game PUBLIC ${CMAKE_SOURCE_DIR}/include)
 target_include_directories(game PUBLIC ${CMAKE_SOURCE_DIR}/assets/components)
 target_include_directories(game PUBLIC ${CMAKE_SOURCE_DIR}/lib/raylib-5.5_win64_msvc16/include)
