@@ -1,6 +1,7 @@
 #pragma once
 #include "game_state.h"
 #include <cassert>
+
 using namespace descart;
 using namespace middle;
 
@@ -30,46 +31,10 @@ static Matr DescMat(Matrix mat) {
     };
 }
 
-static void TranslateShape(ShapeInstance& instance, float x, float y, float z) {
-    Matr translate = {
-           1,0,0,x,
-           0,1,0,y,
-           0,0,1,z,
-           0,0,0,1
-    };
-    instance.pData.transform = MatrMul(instance.pData.transform, translate);
-}
 
-static void TranslateInitShape(Shape& shape, float x, float y, float z) {
-    shape.initTransform = MatrixIdentity();
-    Matrix translate = {
-           1,0,0,x,
-           0,1,0,y,
-           0,0,1,z,
-           0,0,0,1
-    };
-    shape.initTransform = MatrixMultiply(shape.initTransform, translate);
-}
-
-static Matrix ScaleShape(Shape& shape, float x, float y, float z) {
-    Matrix scale = {
-        x,0,0,0,
-        0,y,0,0,
-        0,0,z,0,
-        0,0,0,1,
-    };
-
-    return MatrixMultiply(shape.initTransform, scale);
-}
-
-static bool PointInsideShape(const Vector3& point, const ShapeInstance& instance) {
-    if (instance.shape.type == ShapeType::SPHERE) {
-        Vec pos = VecTransform({ 0,0,0 }, instance.pData.transform);
-        float sqDist = Vector3DistanceSqr(FromDescVec(pos), point);
-        return sqDist < instance.shape.radius * instance.shape.radius;
-    }
-
-    return false;
+static bool PointInsideSphere(const Vector3& point, const Vector3& spherePos, float radius) {
+	float sqDist = Vector3DistanceSqr(point, spherePos);
+	return sqDist < radius * radius;
 }
 
 static bool RayCastLineSphere(const Vector3& spherePos, float radius, const Vector3& rayStart, const Vector3& rayEnd, Vector3& outIntersectPos) {
@@ -122,41 +87,6 @@ static Vector3 RayCastLinePlane(const Vector3& planePos, const Vector3& planeNor
 
 static ShapeInstance MakeShapeInstance(Shape shape) {
     ShapeInstance instance;
-    PhysicsBody& pdat = instance.pData;
-    pdat.linearAcc = DescVec(shape.linearAcceleration);
-    pdat.linearVel = DescVec(shape.linearVelocity);
-    pdat.position = DescVec(shape.position);
-    pdat.linearDamping = shape.linearDamping;
 
-    // TODO rotation
-    pdat.position = DescVec(shape.position);
-
-    // shapes
-    if (shape.type == ShapeType::SPHERE) {
-        // TODO sphere
-        pdat.colliderType = ColliderType::CIRC;
-    }
-
-	pdat.radius = shape.radius;
-
-    // masses
-    if (!shape.physicalShape) {
-        pdat.infiniteMass = true;
-    }
-    else {
-		pdat.mass = shape.mass;
-		pdat.invMass = 1.0f / shape.mass;
-        pdat.momentOfInertia = shape.inertia;
-        pdat.invMomentOfInertia = 1.0f / shape.inertia;
-	}
-
-	instance.shape = shape;
-	instance.pData.transform = DescMat(shape.initTransform);
-	instance.isShapeAlive = true;
-    instance.shape.loopSize;
-	if (instance.pData.infiniteMass) {
-		instance.pData.invMass = 0;
-		instance.pData.invMomentOfInertia = 0;
-	}
     return instance;
 }

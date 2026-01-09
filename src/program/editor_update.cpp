@@ -1,4 +1,7 @@
 #include "editor_update.h"
+#include "Position.h"
+#include "Constraint.h"
+#include "Sphere.h"
 
 namespace middle {
 	void updateEditor(GameState* gameState)
@@ -57,21 +60,27 @@ namespace middle {
 			bool bSphere = isSphere(gameState, i);
 			if (bSphere) {
 				// when in constraint mode can only select actual spheres
-				if (gameState->editorState.creationMode == CreationMode::CONSTRAINT_MODE && shape.type != ShapeType::SPHERE)
+				if (gameState->editorState.creationMode == CreationMode::CONSTRAINT_MODE && !isSphere(gameState, i))
 					return;
-				auto pos = instance.pData.position;
+
+				auto sphere = getComponent<components::Sphere>(shape);
+				auto posC = getComponent<components::Position>(shape);
+				Vec pos = {posC->posX, posC->posY, posC->posZ};
 				Vector3 intersectPos;
-				bool mouseIntersect = RayCastLineSphere(FromDescVec(pos), instance.shape.radius, gameState->editorState.initCamera.position, gameState->editorState.initCamera.position + gameState->input.mouseDir, intersectPos);
+				bool mouseIntersect = RayCastLineSphere(FromDescVec(pos), sphere->radius, gameState->editorState.initCamera.position, gameState->editorState.initCamera.position + gameState->input.mouseDir, intersectPos);
 				instance.mouseIntersects = mouseIntersect;
 			}
-			if (shape.type == ShapeType::CONSTRAINT) {
+			auto constraint = getComponent<components::Constraint>(shape);
+			if (constraint != nullptr) {
 				// in constraint creation mode, can't select constraints, only spheres to create constraints to
 				if (gameState->editorState.creationMode == CreationMode::CONSTRAINT_MODE)
 					return;
-				auto& instanceA = getShapeInstance(gameState, instance.shape.initConstraint.indexA);
-				auto& instanceB = getShapeInstance(gameState, instance.shape.initConstraint.indexB);
-				auto posA = instanceA.pData.position;
-				auto posB = instanceB.pData.position;
+				auto& instanceA = getShapeInstance(gameState, constraint->indexA);
+				auto& instanceB = getShapeInstance(gameState, constraint->indexB);
+				auto posCA = getComponent<components::Position>(instanceA.shape);
+				auto posCB = getComponent<components::Position>(instanceB.shape);
+				Vec posA = {posCA->posX, posCA->posY, posCA->posZ};
+				Vec posB = {posCB->posX, posCB->posY, posCB->posZ};
 				bool mouseIntersect = PointIntersectLineZX_Plane(gameState->input.mouseXZ_PlanePos, FromDescVec(posA), FromDescVec(posB), DEF_LINE_PADDING_H, DEF_LINE_PADDING_V);
 				instance.mouseIntersects = mouseIntersect;
 			}
@@ -92,7 +101,7 @@ namespace middle {
 			}
 
 			// grabbing activates selected if there's no selections yet, except can't grab constraints
-			if (instance.mouseIntersects && gameState->input.grabDown && gameState->selectCount == 0 && shape.type != ShapeType::CONSTRAINT) {
+			if (instance.mouseIntersects && gameState->input.grabDown && gameState->selectCount == 0 && constraint == nullptr) {
 				instance.selected = true;
 				++gameState->selectCount;
 			}
@@ -130,11 +139,11 @@ namespace middle {
 		if (gameState->input.openScript && gameState->intersectCount > 0) {
 			loopInstances(gameState, [&](int i, ShapeInstance& instance) {
 				if (instance.mouseIntersects) {
-					if(instance.shape.type == ShapeType::SYSTEM)
-						gameState->editorState.nextEditorAction = EditorAction::OPEN_SYSTEM;
-					if(instance.shape.type == ShapeType::COMPONENT)
-						gameState->editorState.nextEditorAction = EditorAction::OPEN_COMPONENT;
-					gameState->editorState.nextEditorActionParams = { "", i };
+					//if(instance.shape.type == ShapeType::SYSTEM)
+					//	gameState->editorState.nextEditorAction = EditorAction::OPEN_SYSTEM;
+					//if(instance.shape.type == ShapeType::COMPONENT)
+					//	gameState->editorState.nextEditorAction = EditorAction::OPEN_COMPONENT;
+					//gameState->editorState.nextEditorActionParams = { "", i };
 				}
 				});
 		}
@@ -151,7 +160,9 @@ namespace middle {
 			}
 
 			if (instance.grabDown) {
-				float objYDistance = std::abs(instance.pData.position.y - gameState->editorState.initCamera.position.y);
+				auto posC = getComponent<components::Position>(instance.shape);
+				Vec pos = { posC->posX, posC->posY, posC->posZ };
+				float objYDistance = std::abs(pos.y - pos.y);
 				float yDistance = std::abs(gameState->editorState.initCamera.position.y);
 				if (yDistance == 0)
 					yDistance = 0.001f;

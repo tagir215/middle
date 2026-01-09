@@ -1,6 +1,7 @@
 #pragma once
 #include <unordered_map>
 #include "middle_gameplay_script.h"
+#include "entity.h"
 
 class MiddleGameplaySystem;
 

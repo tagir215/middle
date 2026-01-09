@@ -4,9 +4,17 @@
 #include <memory>
 #include <functional>
 #include <cassert>
-struct Component;
+#include "entity.h"
+
 
 namespace middle {
+	struct Component;
+
+	struct Serializable {
+		virtual void serialize(std::ostream& istream) = 0;
+		virtual void deserialize(const std::vector<std::string>& buffer) = 0;
+	};
+
 
 	struct Concept {
 		virtual	~Concept() = default;
@@ -32,7 +40,8 @@ namespace middle {
 
 	inline std::unordered_map <std::string, int> componentTypeMap;
 	inline std::unordered_map <int, std::unique_ptr<Concept>> componentArrayMap;
-	inline std::unordered_map <std::string, std::vector<ComponentId>> componentIdMap;
+	inline std::unordered_map <int, std::vector<ComponentId>> componentIdMap;
+	inline std::unordered_map <int, std::vector<Serializable*>> componentSerializableRefMap;
 
 	template<typename T>
 	inline std::vector<T>getComponentArray() {
@@ -56,11 +65,49 @@ namespace middle {
 	}
 
 	inline int freeComponentId(const std::string& componentName) {
-		std::vector<ComponentId> ids = componentIdMap[componentName];
+		int typeId = componentTypeMap[componentName];
+		std::vector<ComponentId> ids = componentIdMap[typeId];
 		for (int i = 0; i < ids.size(); ++i) {
 			if (ids[i].freeIndex)
 				return i;
 		}
 		assert(true);
+	}
+
+	template<typename T>
+	inline T* getComponent(Shape& shape) {
+		int typeId = getTypeId<T>();
+		if (shape.componentMap.find(typeId) == shape.componentMap.end()) {
+			return nullptr;
+		}
+		int componentId = shape.componentMap[typeId].componentId;
+		auto& v = getComponentArray<T>();
+		return &v[componentId];
+	}
+
+	template<typename T>
+	inline T* getComponentAssert(const Shape& shape) {
+		int typeId = getTypeId<T>();
+		if (shape.shapeComponentMap.find(typeId) == shape.shapeComponentMap.end()) {
+			assert(true);
+		}
+		int componentId = shape.shapeComponentMap[typeId].componentId;
+		auto& v = getComponentArray<T>();
+		return &v[componentId];
+	}
+
+	inline Serializable* getSerializableComponent(Shape& shape, int typeId) {
+		if (shape.componentMap.find(typeId) == shape.componentMap.end()) {
+			assert(true);
+		}
+		auto component = shape.componentMap[typeId];
+		int componentId = component.componentId;
+		// check generation
+		if (componentIdMap[typeId][componentId].freeIndex) {
+			assert(true);
+		}
+		Serializable* result = componentSerializableRefMap[typeId][componentId];
+		assert(result != nullptr);
+		return result;
 	}
 }

@@ -28,12 +28,8 @@ target_include_directories(game PUBLIC ${CMAKE_SOURCE_DIR}/lib/raylib-5.5_win64_
 add_executable(middle 
     src/main.cpp 
     src/win32_platform.cpp 
-    src/renderer.cpp
-    src/middle_imgui.cpp
-    src/program/middle_shape_utils.cpp
 )
 target_include_directories(middle PUBLIC ${CMAKE_SOURCE_DIR}/include)
-target_link_libraries(middle PUBLIC raylib winmm)
 
 add_subdirectory(${CMAKE_SOURCE_DIR}/lib/descart_physics)
 add_subdirectory(${CMAKE_SOURCE_DIR}/lib/rlImGui-main)
@@ -41,6 +37,6 @@ add_subdirectory(${CMAKE_SOURCE_DIR}/lib/imgui-master)
 
 target_include_directories(rlImGui PUBLIC ${CMAKE_SOURCE_DIR}/lib/raylib-5.5_win64_msvc16/include)
 
-target_link_libraries(game PUBLIC descart_physics)
-target_link_libraries(middle PUBLIC rlImGui descart_physics)
+target_link_libraries(game PUBLIC descart_physics rlImGui)
+target_link_libraries(middle PUBLIC descart_physics raylib rlImGui)
 target_link_libraries(rlImGui PUBLIC raylib winmm)

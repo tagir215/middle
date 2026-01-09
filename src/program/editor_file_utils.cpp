@@ -133,38 +133,11 @@ namespace middle {
 
 			auto& shape = gameState->shapes[i];
 
-			outFile << "__" << std::to_string((int)shape.type) << "__" << std::endl;
-
-			if (shape.type == ShapeType::SPHERE) {
-				outFile << coordToLines(shape.position);
-			}
-			if (shape.type == ShapeType::CONSTRAINT) {
-				outFile << fieldToString(shape.initConstraint.targetDistance);
-				outFile << fieldToString(shape.initConstraint.indexA);
-				outFile << fieldToString(shape.initConstraint.indexB);;
-			}
-			if (shape.type == ShapeType::LOOP) {
-				for (int mIndex = shape.loopArrayOffset; mIndex < shape.loopArrayOffset + shape.loopSize; ++mIndex) {
-					outFile << fieldToString(gameState->loopMembers[mIndex]);
-				}
-			}
-			if (shape.type == ShapeType::REFERENCE) {
-				outFile << fieldToString(shape.name);
-				outFile << coordToLines(shape.position);
-			}
-			if (shape.type == ShapeType::CAMERA) {
-				outFile << coordToLines(shape.position);
-			}
-			if (shape.type == ShapeType::SYSTEM) {
-				outFile << fieldToString(shape.name);
-				outFile << coordToLines(shape.position);
-			}
-			if (shape.type == ShapeType::COMPONENT) {
-				outFile << fieldToString(shape.name);
-				outFile << fieldToString(shape.component.componentId);
-				outFile << coordToLines(shape.position);
-				int typeId = componentTypeMap[shape.name];
-				componentArrayMap[typeId];
+			outFile << "__" << std::to_string((int)shape.id.index) << "__" << std::endl;
+			for (auto& pair : shape.componentMap) {
+				outFile << fieldToString(pair.first);
+				Serializable* serializable = getSerializableComponent(shape, pair.second.typeId);
+				serializable->serialize(outFile);
 			}
 		}
 
@@ -192,90 +165,7 @@ namespace middle {
 
 
 	void flushBuffer(GameState* gameState, std::vector<std::string>& buffer, int type, int index, int offset = 0) {
-		if (type == (int)ShapeType::SPHERE) {
-			assert(buffer.size() == 3);
-			Vector3 pos;
-			fillField(&pos.x, buffer[0]);
-			fillField(&pos.y, buffer[1]);
-			fillField(&pos.z, buffer[2]);
-			initJoint(gameState, index, pos, offset);
-			buffer.clear();
-			return;
-		}
-		if (type == (int)ShapeType::CONSTRAINT) {
-			assert(buffer.size() == 3);
-			float targetDistance;
-			int indexA, indexB;
-			fillField(&targetDistance, buffer[0]);
-			fillField(&indexA, buffer[1]);
-			fillField(&indexB, buffer[2]);
-			initConstraint(gameState, index, indexA, indexB, targetDistance, offset);
-			buffer.clear();
-			return;
-		}
-		if (type == (int)ShapeType::LOOP) {
-			int loopSize = buffer.size();
-			assert(loopSize > 0);
-			std::vector<int>memberIndexes;
-			for (int i = 0; i < buffer.size(); ++i) {
-				fillField(&memberIndexes[i], buffer[i]);
-			}
-			initLoop(gameState, index, memberIndexes, offset);
-			buffer.clear();
-			return;
-		}
-		if (type == (int)ShapeType::REFERENCE) {
-			assert(buffer.size() == 4);
-			// index 0 is scene name
-			std::string sceneName;
-			// move scene
-			Vector3 pos;
-			fillField(&sceneName, buffer[0]);
-			fillField(&pos.x, buffer[1]);
-			fillField(&pos.y, buffer[2]);
-			fillField(&pos.z, buffer[3]);
-			// import scene
-			loadScene(gameState, sceneName, true, pos, index + offset);
-			buffer.clear();
-			return;
-		}
-		if (type == (int)ShapeType::CAMERA) {
-			assert(buffer.size() == 3);
-			Vector3 pos;
-			fillField(&pos.x, buffer[0]);
-			fillField(&pos.y, buffer[1]);
-			fillField(&pos.z, buffer[2]);
-			initCamera(gameState, index, pos);
-			buffer.clear();
-			return;
-		}
-		if (type == (int)ShapeType::SYSTEM) {
-			assert(buffer.size() == 4);
-			std::string scriptName;
-			Vector3 pos;
-			fillField(&scriptName, buffer[0]);
-			fillField(&pos.x, buffer[1]);
-			fillField(&pos.y, buffer[2]);
-			fillField(&pos.z, buffer[3]);
-			initScript(gameState, index, scriptName, pos);
-			buffer.clear();
-			return;
-		}
-		if (type == (int)ShapeType::COMPONENT) {
-			assert(buffer.size() == 5);
-			std::string componentName;
-			int componentId;
-			Vector3 pos;
-			fillField(&componentName, buffer[0]);
-			fillField(&componentId, buffer[1]);
-			fillField(&pos.x, buffer[2]);
-			fillField(&pos.y, buffer[3]);
-			fillField(&pos.z, buffer[4]);
-			initComponent(gameState, index, componentId, componentName, pos);
-			buffer.clear();
-			return;
-		}
-		assert(true, "somethings wrong, about data");
+
 	}
 
 	void flushFieldBuffer(GameState* gameState, std::vector<std::string>& buffer, const std::string& field) {
@@ -392,8 +282,8 @@ namespace middle {
 			std::set<int>highestLevelContainers;
 			for (int i = indexOffset; i < highestUsedIndex; ++i) {
 				// skip nons and skip constraints since they don't have parents
-				if (!isSlotFree(gameState, i) && gameState->shapes[i].type != ShapeType::CONSTRAINT)
-					highestLevelContainers.insert(findHighestLevelContainer(gameState, i));
+				//if (!isSlotFree(gameState, i) && gameState->shapes[i].type != ShapeType::CONSTRAINT)
+					//highestLevelContainers.insert(findHighestLevelContainer(gameState, i));
 			}
 
 			// make reference

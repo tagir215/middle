@@ -109,36 +109,6 @@ namespace middle {
 			Shape& shape = gameState->shapes[i];
 			ShapeInstance& shapeInstance = getShapeInstance(gameState, i);
 
-			Vector3 pos = FromDescVec(shapeInstance.pData.position);
-
-			if ((shape.physicalShape && shapeInstance.selected && shapeInstance.infoVisible) || gameState->editorState.showAllInfo) {
-				referencePos = pos;
-
-				ImGui::Begin(std::to_string(i).c_str());
-				descart::PhysicsBody& pData = shapeInstance.pData;
-				descart::SweepResult& sweepData = shapeInstance.sweepData;
-				ImGuiDisplay("radius", shape.radius);
-				ImGuiDisplay("linear acceleration", FromDescVec(pData.linearAcc));
-				ImGuiDisplay("linear vel", FromDescVec(pData.linearVel));
-				ImGuiDisplay("linear vel before", FromDescVec(pData.linearVelBefore));
-				ImGuiDisplay("linear vel after forces", FromDescVec(pData.linearVelAfterForces));
-				ImGuiDisplay("linear vel after impulses", FromDescVec(pData.linearVelAfterImpulses));
-				ImGuiDisplay("linear disp", FromDescVec(pData.linearDisp));
-				ImGuiDisplay("linear disp before", FromDescVec(pData.linearDispBefore));
-				ImGuiDisplay("linear disp after forces", FromDescVec(pData.linearDispAfterForces));
-				ImGuiDisplay("linear disp after impulses", FromDescVec(pData.linearDispAfterImpulses));
-				ImGuiDisplay("mouse intersects", shapeInstance.mouseIntersects);
-				ImGuiDisplay("position", pos);
-				ImGuiDisplay("collided", sweepData.collided);
-				ImGuiDisplay("collision point", FromDescVec(sweepData.collisionPoint));
-				ImGuiDisplay("normal", FromDescVec(sweepData.normal));
-				ImGuiDisplay("toi", sweepData.toi);
-				ImGui::Separator();
-				ImGuiDisplay("parent initLoop", shape.parentLoopIndex);
-				ImGuiDisplay("initLoop array offset", shape.loopArrayOffset);
-				ImGui::End();
-			}
-
 		}
 
 		ImGui::Begin("Editor");

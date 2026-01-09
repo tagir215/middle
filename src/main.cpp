@@ -33,7 +33,6 @@
 #include "game_state.h"
 #include <raymath.h>
 #include <rlImGui.h>
-#include "renderer.h"
 #include "editor_actions.h"
 
 void UpdateGame(GameState* gameState);
@@ -116,8 +115,6 @@ int main(void)
 			timeAccumulator -= fixedTimeStep;
 		}
 
-
-		middle::Draw(gameState);
 
 	}
 

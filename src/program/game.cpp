@@ -4,6 +4,10 @@
 #include "game.h"
 #include "state_update.h"
 #include "descart_loop.h"
+#include "SystemReference.h"
+#include "Constraint.h"
+#include "PhysicsData.h"
+#include "Position.h"
 
 using namespace middle;
 
@@ -24,16 +28,20 @@ __declspec(dllexport) void UpdateGame(GameState* gameState)
 
 		// TODO for now just uses editor camera
 		ShapeInstance& activeCamera = getShapeInstance(gameState, gameState->activeCameraIndex);
-		moveCameraXZ(gameState->editorState.initCamera, FromDescVec(activeCamera.pData.position));
+		auto pos = getComponent<components::Position>(activeCamera.shape);
+		assert(pos != nullptr);
+		Vector3 p = { pos->posX, pos->posY, pos->posZ };
+		moveCameraXZ(gameState->editorState.initCamera, p);
 	}
 
 	// run scripts
 	loopInstances(gameState, [gameState](int i, ShapeInstance& instance) {
-		if (instance.shape.type == ShapeType::SYSTEM) {
-			auto scriptName = instance.shape.name;
+		auto sysRef = getComponent<components::SystemReference>(instance.shape);
+		if (sysRef != nullptr) {
+			auto scriptName = sysRef->systemName;
 			if (gameState->gameplayScripts.find(scriptName) == gameState->gameplayScripts.end())
 				return;
-			//assert(gameState->gameplayScripts.find(scriptName) != gameState->gameplayScripts.end());
+			assert(gameState->gameplayScripts.find(scriptName) != gameState->gameplayScripts.end());
 			gameState->gameplayScripts[scriptName]->update(gameState);
 		}
 		});
@@ -58,18 +66,31 @@ __declspec(dllexport) void UpdateGame(GameState* gameState)
 		}
 		auto& instance = getShapeInstance(gameState, i);
 
-		if (instance.shape.type == ShapeType::CONSTRAINT) {
-			if (instance.shape.initConstraint.indexA != UNASSIGNED && instance.shape.initConstraint.indexB != UNASSIGNED)
-				constraints.push_back(instance.shape.initConstraint);
-		}
-		if (instance.shape.type == ShapeType::SPHERE) {
-			for (int j : grounds) {
-				BodyPair pair;
-				pair.indexA = i;
-				pair.indexB = j;
-				pairs.push_back(pair);
+		auto constraint = getComponent<components::Constraint>(instance.shape);
+		if (constraint) {
+			if (constraint->indexA != UNASSIGNED && constraint->indexB != UNASSIGNED) {
+				Constraint c;
+				c.indexA = constraint->indexA;
+				c.indexB = constraint->indexB;
+				c.biasFactor = constraint->biasFactor;
+				c.stiffness = constraint->stiffness;
+				constraints.push_back(c);
 			}
-			physicsBodies[i] = &instance.pData;
+		}
+		auto pcomp = getComponent<components::PhysicsData>(instance.shape);
+		auto pos = getComponent<components::Position>(instance.shape);
+		if (pcomp) {
+			assert(pos != nullptr);
+			PhysicsBody* body = physicsBodies[i];
+			body->infiniteMass = pcomp->infiniteMass;
+			body->mass = pcomp->mass;
+			body->invMass = pcomp->invMass;
+			body->momentOfInertia = pcomp->momentOfInertia;
+			body->invMomentOfInertia = pcomp->invMomentOfInertia;
+			body->colliderType = ColliderType::CIRC;
+			body->linearAcc = { pcomp->accX, pcomp->accY, pcomp->accZ };
+			body->linearVel = { pcomp->velX, pcomp->velY, pcomp->velZ };
+			body->position = { pos->posX, pos->posY, pos->posZ };
 		}
 	}
 

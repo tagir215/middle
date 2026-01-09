@@ -7,6 +7,9 @@
 #include <set>
 #include "middle_component_table.h"
 #include "script_opener.h"
+#include "LoopSociety.h"
+#include "Reference.h"
+#include "Position.h"
 
 namespace middle {
 	void processEditorActions(GameState* gameState) {
@@ -125,7 +128,7 @@ namespace middle {
 
 		std::vector<int> selectedIndexes;
 		for (int i = 0; i < gameState->shapes.size(); ++i) {
-			if (gameState->shapes[i].type != ShapeType::SPHERE)
+			if (isSphere(gameState, i))
 				continue;
 			if (isShapeAlive(gameState, i) && getShapeInstance(gameState, i).selected)
 				selectedIndexes.push_back(i);
@@ -136,8 +139,8 @@ namespace middle {
 
 		int indexA = selectedIndexes[0];
 		int indexB = selectedIndexes[1];
-		assert(shapes[indexA].type == ShapeType::SPHERE);
-		assert(shapes[indexB].type == ShapeType::SPHERE);
+		assert(isSphere(gameState, indexA));
+		assert(isSphere(gameState, indexB));
 		if (constraintAlreadyExists(gameState, indexA, indexB)) {
 			return;
 		}
@@ -145,11 +148,11 @@ namespace middle {
 		int freeIndex = findFreeIndex(gameState);
 
 		if (indexA != indexB) {
-			float distBetween = descart::DistV(getShapeInstance(gameState, indexA).pData.position, getShapeInstance(gameState, indexB).pData.position);
 			auto& shapeA = shapes[indexA];
 			auto& shapeB = shapes[indexB];
-			shapes[freeIndex].initConstraint.targetDistance = distBetween;
-
+			auto posA = getComponent<components::Position>(shapeA);
+			auto posB = getComponent<components::Position>(shapeB);
+			float distBetween = descart::DistV({posA->posX, posA->posY, posA->posZ}, {posA->posX, posA->posY, posA->posZ});
 			initConstraint(gameState, freeIndex, indexA, indexB, distBetween);
 
 			// auto unselect
@@ -176,20 +179,24 @@ namespace middle {
 			std::vector<int> connectedConstraints = findConnectedConstraints(gameState, i);
 
 			// remove parent indexes if deleting loops from children
-			if (shape.type == ShapeType::LOOP) {
+			if (isContainer(gameState, i)) {
 				auto childIndexes = getChildIndexes(gameState, i);
 				for (int childIndex : childIndexes) {
-					gameState->shapes[childIndex].parentLoopIndex = UNASSIGNED;
+					auto& shape = gameState->shapes[childIndex];
+					auto loop = getComponent<components::LoopSociety>(shape);
+					loop->parentLoopIndex = UNASSIGNED;
 				}
 			}
 
-			if (shape.type == ShapeType::REFERENCE) {
+			if(getComponent<components::Reference>(shape)){
 				deleteShapeRecursive(gameState, i);
 			}
 
 			// store parent loops to re generate later
-			if (shape.parentLoopIndex != UNASSIGNED) {
-				deteledLoopMembersParentLoops.insert(shape.parentLoopIndex);
+			auto loop = getComponent<components::LoopSociety>(shape);
+			assert(loop != nullptr);
+			if (loop->parentLoopIndex != UNASSIGNED) {
+				deteledLoopMembersParentLoops.insert(loop->parentLoopIndex);
 			}
 
 			foundSelected = true;
@@ -212,7 +219,7 @@ namespace middle {
 
 		// if member was deleted from a group we obviously need to update the loop
 		for (int loopShapeIndex : deteledLoopMembersParentLoops) {
-			if (gameState->shapes[loopShapeIndex].type == ShapeType::NONE)
+			if (!isShapeAlive(gameState, loopShapeIndex))
 				continue;
 			updateLoop(gameState, loopShapeIndex);
 			editedLoops = true;
@@ -226,11 +233,6 @@ namespace middle {
 	}
 
 	void EditorActionSaveScene::execute(GameState* gameState) {
-
-		loopInstances(gameState, [gameState](int i, ShapeInstance& instance) {
-			gameState->shapes[i].position = FromDescVec(instance.pData.position);
-			});
-
 		saveScene(gameState, gameState->sceneNames[gameState->activeScene]);
 	}
 
@@ -246,14 +248,6 @@ namespace middle {
 		// find selected items 
 		std::vector<int>memberIndexes;
 		loopInstances(gameState, [&](int i, ShapeInstance& instance) {
-			if (instance.shape.type != ShapeType::SPHERE && instance.shape.type != ShapeType::LOOP)
-				return;
-
-			// unselect shapes that are already in loops, don't allow them into new loops betray not allowed
-			if (instance.shape.parentLoopIndex != UNASSIGNED) {
-				instance.selected = false;
-			}
-
 			if (instance.selected) {
 				memberIndexes.push_back(i);
 			}
@@ -314,18 +308,18 @@ namespace middle {
 
 	void EditorActionOpenSystem::execute(GameState* gameState)
 	{
-		std::string scriptName = "";
-		bool found = false;
-		loopInstances(gameState, [gameState, &scriptName, &found](int i, ShapeInstance& instance) {
-			if (instance.mouseIntersects && instance.shape.type == ShapeType::SYSTEM) {
-				scriptName = instance.shape.name;
-				found = true;
-			}
-			});
+		//std::string scriptName = "";
+		//bool found = false;
+		//loopInstances(gameState, [gameState, &scriptName, &found](int i, ShapeInstance& instance) {
+		//	if (instance.mouseIntersects && instance.shape.type == ShapeType::SYSTEM) {
+		//		scriptName = instance.shape.name;
+		//		found = true;
+		//	}
+		//	});
 
-		if (found) {
-			shell_open_file("../assets/scripts/" + scriptName + ".cpp");
-		}
+		//if (found) {
+		//	shell_open_file("../assets/scripts/" + scriptName + ".cpp");
+		//}
 
 	}
 
@@ -364,63 +358,63 @@ namespace middle {
 
 	void EditorActionSelectCamera::execute(GameState* gameState)
 	{
-		if (gameState->selectCount == 1) {
-			loopInstances(gameState, [gameState](int index, ShapeInstance& instance) {
-				if (instance.selected && instance.shape.type == ShapeType::CAMERA) {
-					gameState->activeCameraIndex = index;
-				}
-				});
-		}
+		//if (gameState->selectCount == 1) {
+		//	loopInstances(gameState, [gameState](int index, ShapeInstance& instance) {
+		//		if (instance.selected && instance.shape.type == ShapeType::CAMERA) {
+		//			gameState->activeCameraIndex = index;
+		//		}
+		//		});
+		//}
 	}
 
 
 	void EditorActionNewComponent::execute(GameState* gameState)
 	{
-		assert(params.stringValue != "");
+		//assert(params.stringValue != "");
 
-		std::string componentName = params.stringValue;
+		//std::string componentName = params.stringValue;
 
-		newComponentFile(gameState, componentName);
+		//newComponentFile(gameState, componentName);
 
-		int freeIndex = findFreeIndex(gameState);
-		// creating new type of component here. So it starts at 0
-		int freeComponentIndex = 0;
-		reserveComponentType(componentName);
-		initComponent(gameState, freeIndex, freeComponentIndex, componentName, { 0,0,0 });
+		//int freeIndex = findFreeIndex(gameState);
+		//// creating new type of component here. So it starts at 0
+		//int freeComponentIndex = 0;
+		//reserveComponentType(componentName);
+		//initComponent(gameState, freeIndex, freeComponentIndex, componentName, { 0,0,0 });
 
-		saveScene(gameState, gameState->sceneNames[gameState->activeScene]);
+		//saveScene(gameState, gameState->sceneNames[gameState->activeScene]);
 
-		std::string command = "python ../src/editor_scripts/build_project.py";
-		system(command.c_str());
+		//std::string command = "python ../src/editor_scripts/build_project.py";
+		//system(command.c_str());
 
-		shell_open_file("../assets/components/" + componentName + ".h");
+		//shell_open_file("../assets/components/" + componentName + ".h");
 
-		gameState->closeGame = true;
+		//gameState->closeGame = true;
 	}
 
 	void EditorActionImportComponent::execute(GameState* gameState)
 	{
-		assert(params.stringValue != "");
-		std::string componentName = params.stringValue;
+		//assert(params.stringValue != "");
+		//std::string componentName = params.stringValue;
 
-		int freeIndex = freeComponentIndex(componentName);
-		initComponent(gameState, freeIndex, freeIndex, componentName, { 0,0,0 });
+		//int freeIndex = freeComponentIndex(componentName);
+		//initComponent(gameState, freeIndex, freeIndex, componentName, { 0,0,0 });
 	}
 
 	void EditorActionOpenComponent::execute(GameState* gameState)
 	{
-		std::string componentName = "";
-		bool found = false;
-		loopInstances(gameState, [gameState, &componentName, &found](int i, ShapeInstance& instance) {
-			if (instance.mouseIntersects && instance.shape.type == ShapeType::COMPONENT) {
-				componentName = instance.shape.name;
-				found = true;
-			}
-			});
+		//std::string componentName = "";
+		//bool found = false;
+		//loopInstances(gameState, [gameState, &componentName, &found](int i, ShapeInstance& instance) {
+		//	if (instance.mouseIntersects && instance.shape.type == ShapeType::COMPONENT) {
+		//		componentName = instance.shape.name;
+		//		found = true;
+		//	}
+		//	});
 
-		if (found) {
-			shell_open_file("../assets/components/" + componentName + ".h");
-		}
+		//if (found) {
+		//	shell_open_file("../assets/components/" + componentName + ".h");
+		//}
 
 	}
 

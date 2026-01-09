@@ -9,5 +9,4 @@ namespace middle {
 	void initReference(GameState* gameState, int index, const std::vector<int>& loopIndexes, const std::string& sceneName, int offset = 0);
 	void initCamera(GameState* gameState, int index, const Vector3& position);
 	void initScript(GameState* gameState, int index, const std::string& scriptName, const Vector3& position);
-	void initComponent(GameState* gameState, int index, int componentId, const std::string& componentName, const Vector3& position);
 }

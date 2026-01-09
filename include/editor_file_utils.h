@@ -7,11 +7,6 @@
 #include <string>
 
 namespace middle {
-	struct Serializable {
-		virtual void serialize(std::ostream& istream) = 0;
-		virtual void deserialize(const std::vector<std::string>& buffer) = 0;
-	};
-
 	void loadSceneNames(GameState* gameState);
 	void loadScriptNames(GameState* gameState);
 	void loadComponentNames(GameState* gameState);
