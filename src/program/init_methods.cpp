@@ -1,6 +1,9 @@
 #include "init_methods.h"
 #include "middle_gameplay_script_map.h"
 #include "middle_component_table.h"
+#include "Sphere.h"
+#include "Color.h"
+#include "Position.h"
 
 namespace middle {
 
@@ -11,6 +14,18 @@ namespace middle {
 	}
 	void initJoint(GameState* gameState, int index, Vector3 position, int offset)
 	{
+		auto& shapes = gameState->shapes;
+		++shapes[index].id.generation;
+		components::Sphere* sphere = addComponent<components::Sphere>(shapes[index]);
+		components::Color* color = addComponent<components::Color>(shapes[index]);
+		components::Position* pos = addComponent<components::Position>(shapes[index]);
+		sphere->radius = DEF_RADIUS;
+		color->colorA = UGLY_PINK.r;
+		color->colorG = UGLY_PINK.g;
+		color->colorB = UGLY_PINK.b;
+		pos->posX = position.x;
+		pos->posY = position.x;
+		pos->posZ = position.x;
 	}
 	void initConstraint(GameState* gameState, int index, int indexA, int indexB, float targetDistance, int offset)
 	{

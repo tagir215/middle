@@ -136,7 +136,7 @@ namespace middle {
 			outFile << "__" << std::to_string((int)shape.id.index) << "__" << std::endl;
 			for (auto& pair : shape.componentMap) {
 				outFile << fieldToString(pair.first);
-				Serializable* serializable = getSerializableComponent(shape, pair.second.typeId);
+				Serializable* serializable = getSerializableComponent(shape, pair.first);
 				serializable->serialize(outFile);
 			}
 		}

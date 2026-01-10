@@ -39,28 +39,23 @@ namespace middle {
 	};
 
 	struct Component {
-		int typeId;
-		int componentId;
+		// offset where the shapes component is in component vector in middle_component_table (currently)
+		int componentOffset;
 	};
 
 	struct Shape {
-	public:
 		Id id;
-		std::string name;
-		float maxLifetime;
-		bool renderMemory;
-		bool initialized;
-		int historyMemoryLength;
 		std::unordered_map<int, Component> componentMap;
-
-		Shape() {
-			// shape defaults
-			maxLifetime = DEF_LIFETIME;
-			historyMemoryLength = DEF_HISTORY_MEMEORY_LENGTH;
-			renderMemory = false;
-			name = "";
-		}
-
 	};
 
+	struct ShapeInstance {
+		Id id;
+		bool isShapeAlive = false;
+		Shape shape;
+		float lifeTime = 0;
+		bool mouseIntersects = false;
+		bool selected = false;
+		bool grabDown = false;
+		bool grabReleased = false;
+	};
 }

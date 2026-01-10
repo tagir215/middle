@@ -118,18 +118,6 @@ namespace middle {
 				++gameState->intersectCount;
 			});
 
-		// info on/off
-		if (gameState->intersectCount == 0 && gameState->input.infoClick) {
-			gameState->editorState.showAllInfo = !gameState->editorState.showAllInfo;
-		}
-		else {
-			loopInstances(gameState, [gameState](int i, ShapeInstance& instance) {
-				if (instance.selected && gameState->input.infoClick) {
-					instance.infoVisible = !instance.infoVisible;
-				}
-				});
-		}
-
 		// unselect
 		if (gameState->input.mouseClicked && gameState->intersectCount == 0) {
 			unselect(gameState);

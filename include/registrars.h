@@ -17,7 +17,7 @@ namespace middle {
 	template<typename T>
 	struct ComponentRegistrar {
 		ComponentRegistrar(const std::string& componentName) {
-			addToComponentArray<T>(componentName);
+			registerToComponentTypes<T>(componentName);
 		}
 	};
 }

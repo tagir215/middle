@@ -208,11 +208,11 @@ namespace middle {
 	}
 
 	bool isShapeAlive(GameState* gameState, int index){
-		return gameState->shapes[index].id == gameState->shapeInstances[index].id;
+		return gameState->shapes[index].id == gameState->shapeInstances[index].id && gameState->shapes[index].id.generation != UNASSIGNED;
 	}
 
 	bool isSlotFree(GameState* gameState, int index) {
-		return isShapeAlive(gameState, index);
+		return !isShapeAlive(gameState, index);
 	}
 
 

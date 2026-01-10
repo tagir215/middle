@@ -38,21 +38,6 @@ namespace middle {
 		bool collided;
 	};
 
-	struct ShapeInstance {
-		Id id;
-		bool isShapeAlive = false;
-		Shape shape;
-		SweepResult sweepData;
-		std::list<PhysicsBody> history;
-		float lifeTime = 0;
-		bool mouseIntersects = false;
-		bool selected = false;
-		bool grabDown = false;
-		bool grabReleased = false;
-		bool infoVisible = false;
-		int vertexListOffset;
-		int vertexCount = 0;
-	};
 
 	enum class EditorAction {
 		NONE, 

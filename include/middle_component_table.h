@@ -5,6 +5,7 @@
 #include <functional>
 #include <cassert>
 #include "entity.h"
+#include <any>
 
 
 namespace middle {
@@ -16,21 +17,6 @@ namespace middle {
 	};
 
 
-	struct Concept {
-		virtual	~Concept() = default;
-	};
-
-	struct ComponentId {
-		int generation = -1;
-		bool freeIndex = true;
-	};
-
-	template<typename T>
-	struct Model : Concept{
-		std::vector<T>data;
-	};
-
-
 	inline int globalTypeCounter = 0;
 	template<typename T>
 	inline int getTypeId() {
@@ -39,39 +25,25 @@ namespace middle {
 	}
 
 	inline std::unordered_map <std::string, int> componentTypeMap;
-	inline std::unordered_map <int, std::unique_ptr<Concept>> componentArrayMap;
-	inline std::unordered_map <int, std::vector<ComponentId>> componentIdMap;
+	inline std::unordered_map <int, std::any> componentListMap;
 	inline std::unordered_map <int, std::vector<Serializable*>> componentSerializableRefMap;
 
 	template<typename T>
-	inline std::vector<T>getComponentArray() {
+	inline std::vector<T>* getComponentArray() {
 		int typeId = getTypeId<T>();
-		if (componentArrayMap.find(typeId) == componentArrayMap.end()) {
-			return std::vector<T>();
+		if (componentListMap.find(typeId) == componentListMap.end()) {
+			return nullptr;
 		}
-		Model<T>* model = static_cast<Model<T>*>(componentArrayMap[typeId].get());
-		return model->data;
+
+		auto& vec = std::any_cast<std::vector<T>&>(componentListMap[typeId]);
+		return &vec;
 	}
 
 	template<typename T>
-	inline void addToComponentArray(const std::string& componentName) {
-		int typeId = componentTypeMap[componentName] = getTypeId<T>();
-		Model<T> model;
-		componentArrayMap[typeId] = std::make_unique <Concept>(model);
-	}
-
-	inline void reserveComponentType(const std::string& componentName) {
-		componentTypeMap[componentName] = globalTypeCounter;
-	}
-
-	inline int freeComponentId(const std::string& componentName) {
-		int typeId = componentTypeMap[componentName];
-		std::vector<ComponentId> ids = componentIdMap[typeId];
-		for (int i = 0; i < ids.size(); ++i) {
-			if (ids[i].freeIndex)
-				return i;
-		}
-		assert(true);
+	inline void registerToComponentTypes(const std::string& componentName) {
+		int typeId = getTypeId<T>();
+		componentTypeMap[componentName] = typeId;
+		componentListMap[typeId] = std::vector<T>();
 	}
 
 	template<typename T>
@@ -80,9 +52,22 @@ namespace middle {
 		if (shape.componentMap.find(typeId) == shape.componentMap.end()) {
 			return nullptr;
 		}
-		int componentId = shape.componentMap[typeId].componentId;
-		auto& v = getComponentArray<T>();
-		return &v[componentId];
+		int componentId = shape.componentMap[typeId].componentOffset;
+		std::vector<T>* v = getComponentArray<T>();
+		T& t = (*v)[componentId];
+		return &t;
+	}
+
+	template<typename T>
+	inline T* addComponent(Shape& shape) {
+		int typeId = getTypeId<T>();
+		std::vector<T>* data = getComponentArray<T>();
+		int nextIndex = data->size();
+		T t;
+		data->push_back(t);
+		shape.componentMap[typeId] = Component();
+		shape.componentMap[typeId].componentOffset = nextIndex;
+		return &(*data)[nextIndex];
 	}
 
 	template<typename T>
@@ -101,11 +86,7 @@ namespace middle {
 			assert(true);
 		}
 		auto component = shape.componentMap[typeId];
-		int componentId = component.componentId;
-		// check generation
-		if (componentIdMap[typeId][componentId].freeIndex) {
-			assert(true);
-		}
+		int componentId = component.componentOffset;
 		Serializable* result = componentSerializableRefMap[typeId][componentId];
 		assert(result != nullptr);
 		return result;
