@@ -2,6 +2,7 @@
 
 namespace middle {
 	std::unordered_map <std::string, int> componentTypeMap;
+	std::unordered_map <int, std::string> componentNameMap;
 	std::unordered_map <int, std::any> componentListMap;
 	std::unordered_map <int, std::vector<Serializable*>> componentSerializableRefMap;
 
@@ -10,8 +11,7 @@ namespace middle {
 			assert(true);
 		}
 		auto component = shape.componentMap[typeId];
-		int componentId = component.componentOffset;
-		Serializable* result = componentSerializableRefMap[typeId][componentId];
+		Serializable* result = componentSerializableRefMap[typeId][component.componentOffset];
 		assert(result != nullptr);
 		return result;
 	}

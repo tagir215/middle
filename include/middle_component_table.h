@@ -25,6 +25,7 @@ namespace middle {
 	}
 
 	extern std::unordered_map <std::string, int> componentTypeMap;
+	extern std::unordered_map <int, std::string> componentNameMap;
 	extern std::unordered_map <int, std::any> componentListMap;
 	extern std::unordered_map <int, std::vector<Serializable*>> componentSerializableRefMap;
 
@@ -39,7 +40,9 @@ namespace middle {
 	inline void registerToComponentTypes(const std::string& componentName) {
 		int typeId = getTypeId<T>();
 		componentTypeMap[componentName] = typeId;
+		componentNameMap[typeId] = componentName;
 		componentListMap[typeId] = std::vector<T>();
+		componentSerializableRefMap[typeId] = std::vector<Serializable*>();
 	}
 
 	template<typename T>
@@ -55,6 +58,19 @@ namespace middle {
 	}
 
 	template<typename T>
+	inline void updateSerializableMap() {
+		// add to serializable list
+		int typeId = getTypeId<T>();
+		std::vector<Serializable*>& serVec = componentSerializableRefMap[typeId];
+		serVec.clear();
+		std::vector<T>* data = getComponentArray<T>();
+		serVec.resize(data->size());
+		for (int i = 0; i < serVec.size(); ++i) {
+			serVec[i] = dynamic_cast<Serializable*>(&(*data)[i]);
+		}
+	}
+
+	template<typename T>
 	inline T* addComponent(Shape& shape) {
 		int typeId = getTypeId<T>();
 		std::vector<T>* data = getComponentArray<T>();
@@ -63,7 +79,7 @@ namespace middle {
 		data->push_back(t);
 		shape.componentMap[typeId] = Component();
 		shape.componentMap[typeId].componentOffset = nextIndex;
-
+		updateSerializableMap<T>();
 		return &(*data)[nextIndex];
 	}
 
