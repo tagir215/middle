@@ -98,6 +98,7 @@ namespace middle {
 			auto action = EditorActionOpenComponent();
 			action.params = gameState->editorState.nextEditorActionParams;
 			action.execute(gameState);
+			break;
 		}
 		case EditorAction::NEW_CAMERA: {
 			auto action = EditorActionNewCamera();
@@ -129,7 +130,7 @@ namespace middle {
 
 		std::vector<int> selectedIndexes;
 		for (int i = 0; i < gameState->shapes.size(); ++i) {
-			if (isSphere(gameState, i))
+			if (!isSphere(gameState, i))
 				continue;
 			if (isShapeAlive(gameState, i) && isShapeSelected(gameState, i))
 				selectedIndexes.push_back(i);
@@ -142,6 +143,7 @@ namespace middle {
 		int indexB = selectedIndexes[1];
 		assert(isSphere(gameState, indexA));
 		assert(isSphere(gameState, indexB));
+
 		if (constraintAlreadyExists(gameState, indexA, indexB)) {
 			return;
 		}
@@ -151,9 +153,9 @@ namespace middle {
 		if (indexA != indexB) {
 			auto& shapeA = shapes[indexA];
 			auto& shapeB = shapes[indexB];
-			auto posA = getComponent<components::Position>(shapeA);
-			auto posB = getComponent<components::Position>(shapeB);
-			float distBetween = descart::DistV({posA->posX, posA->posY, posA->posZ}, {posA->posX, posA->posY, posA->posZ});
+			auto posA = getShapePosition(gameState, indexA);
+			auto posB = getShapePosition(gameState, indexB);
+			float distBetween = Vector3Distance(posA, posB);
 			initConstraint(gameState, freeIndex, indexA, indexB, distBetween);
 
 			// auto unselect

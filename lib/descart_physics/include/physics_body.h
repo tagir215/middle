@@ -12,6 +12,7 @@ namespace descart{
 	};
 
 	struct PhysicsBody {
+		bool active;
 		Matr transform;
 		float mass;
 		float momentOfInertia;

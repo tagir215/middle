@@ -2,10 +2,10 @@
 
 namespace descart {
 
-	float RelativeVelocity(const PhysicsBody* bodyA, const PhysicsBody* bodyB, const Vec& normal)
+	float RelativeVelocity(const PhysicsBody& bodyA, const PhysicsBody& bodyB, const Vec& normal)
 	{
 		// TODO
-		Vec deltaVel = SubV(bodyB->linearVel, bodyA->linearVel);
+		Vec deltaVel = SubV(bodyB.linearVel, bodyA.linearVel);
 		return DotV(normal, deltaVel);
 	}
 
@@ -63,14 +63,14 @@ namespace descart {
 		return result;
 	}
 
-	void AssertBody(PhysicsBody* body)
+	void AssertBody(PhysicsBody& body)
 	{
-		AssertNanVec(body->linearVel);
-		AssertNanVec(body->position);
-		assert(body->mass);
-		assert(body->invMass);
-		assert(body->momentOfInertia);
-		assert(body->invMomentOfInertia);
+		AssertNanVec(body.linearVel);
+		AssertNanVec(body.position);
+		assert(body.mass);
+		assert(body.invMass);
+		assert(body.momentOfInertia);
+		assert(body.invMomentOfInertia);
 	}
 
 

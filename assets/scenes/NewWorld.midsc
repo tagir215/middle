@@ -11,9 +11,23 @@ f 144.000000
 f 181.000000
 f 255.000000
 Position
-f 88.302124
-f -0.000000
-f 202.849411
+f -40.664295
+f -0.000038
+f 188.133667
+PhysicsData
+f 1.000000
+f 1.000000
+f 1.000000
+f 1.000000
+f 0.000000
+f 0.000000
+f -0.042528
+f 0.000000
+f -0.069333
+f 0.000000
+f 0.000000
+f 0.000000
+b 0
 MouseSelectable
 b 0
 MouseGrabbable
@@ -30,9 +44,23 @@ f 144.000000
 f 181.000000
 f 255.000000
 Position
-f 131.587875
-f -0.000000
-f 145.968933
+f -57.596680
+f -0.000015
+f 160.528778
+PhysicsData
+f 1.000000
+f 1.000000
+f 1.000000
+f 1.000000
+f 0.000000
+f 0.000000
+f 0.042528
+f 0.000000
+f 0.069333
+f 0.000000
+f 0.000000
+f 0.000000
+b 0
 MouseSelectable
 b 0
 MouseGrabbable
@@ -41,40 +69,14 @@ MouseIntersectable
 b 0
 b 0
 __2__
-Sphere
-f 2.000000
 Color
-f 188.000000
-f 144.000000
-f 181.000000
-f 255.000000
-Position
-f 85.773087
-f 0.000015
-f 147.434738
-MouseSelectable
-b 0
-MouseGrabbable
-b 0
-MouseIntersectable
-b 0
-b 0
-__3__
-Sphere
-f 2.000000
-Color
-f 188.000000
-f 144.000000
-f 181.000000
-f 255.000000
-Position
-f 131.958588
-f -0.000000
-f 203.272079
-MouseSelectable
-b 0
-MouseGrabbable
-b 0
-MouseIntersectable
-b 0
-b 0
+f -107374176.000000
+f -107374176.000000
+f -107374176.000000
+f -107374176.000000
+Constraint
+i 0
+i 1
+f 0.800000
+f 0.900000
+f 31.584381

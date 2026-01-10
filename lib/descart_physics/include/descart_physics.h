@@ -32,10 +32,10 @@ namespace descart {
 		SweepResult sweepResult;
 	};
 
-	float RelativeVelocity(const PhysicsBody* bodyA, const PhysicsBody* bodyB, const Vec& normal);
+	float RelativeVelocity(const PhysicsBody& bodyA, const PhysicsBody& bodyB, const Vec& normal);
 	CollisionResult TestCircleLine(Vec posCircle, float radius, Vec linePosA, Vec linePosB);
 	SweepResult SweepCircleLine(Vec posCircle, Vec displacementCircle, float radius, Vec linePosA, Vec linePosB);
 
-	void AssertBody(PhysicsBody* body);
+	void AssertBody(PhysicsBody& body);
 
 }

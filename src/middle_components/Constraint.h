@@ -4,8 +4,8 @@
 
 namespace components {
 	struct Constraint : public middle::Serializable{
-        float indexA = -1;
-        float indexB = -1;
+        int indexA = -1;
+        int indexB = -1;
         float stiffness = 0.7f;
         float biasFactor = 0.9f;
         float targetDistance = 0;

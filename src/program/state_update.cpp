@@ -3,7 +3,6 @@
 #include "middle_shape_utils.h"
 namespace middle {
 
-	std::vector<PhysicsBody*> physicsBodies;
 
 	void reset(GameState* gameState) {
 		if (gameState->reset) {
@@ -14,10 +13,6 @@ namespace middle {
 				gameState->shapes[i].id.generation = nextGeneration;
 			}
 		}
-		for (int i = 0; i < physicsBodies.size(); ++i) {
-			physicsBodies[i] = nullptr;
-		}
-
 	}
 
 	void updateInstances(GameState* gameState) {
