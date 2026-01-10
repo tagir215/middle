@@ -49,6 +49,10 @@ namespace RendererSystem {
 					DrawSphere(item.center, item.radius, item.color);
 				}
 
+				if (item.type == middle::RenderItemType::RECTANGLE) {
+					DrawCube(item.center, item.widht, item.height, item.length, item.color);
+				}
+
 				if (item.type == middle::RenderItemType::LINE) {
 					DrawLine3D(item.linePointA, item.linePointB, item.color);
 				}

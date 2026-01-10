@@ -10,6 +10,9 @@
 #include "Position.h"
 #include "Color.h"
 #include "Sphere.h"
+#include "MouseSelectable.h"
+#include "MouseGrabbable.h"
+#include "MouseIntersectable.h"
 
 using namespace middle;
 
@@ -28,6 +31,10 @@ void physicsUpdate(GameState* gameState) {
 		Vector3 p = { pos->posX, pos->posY, pos->posZ };
 		moveCameraXZ(gameState->editorState.initCamera, p);
 	}
+
+	scriptMap["MouseIntersectDetectionSystem"]->update(gameState);
+	scriptMap["MouseGrabbingSystem"]->update(gameState);
+	scriptMap["MouseSelectionSystem"]->update(gameState);
 
 	// run scripts
 	loopInstances(gameState, [gameState](int i, Shape& shape) {
@@ -108,10 +115,28 @@ void updateRenderData(GameState* gameState) {
 		item.color.a = color->colorA;
 
 		auto sphere = getComponent<components::Sphere>(shape);
+		auto selectable = getComponent<components::MouseSelectable>(shape);
+		auto intersectable = getComponent<components::MouseIntersectable>(shape);
 		if (sphere) {
 			item.center = getShapePosition(gameState, i);
 			item.type = RenderItemType::SPHERE;
 			item.radius = sphere->radius;
+
+			if (selectable && selectable->selected) {
+				RenderItem selectItem;
+				selectItem.type = RenderItemType::RECTANGLE;
+				selectItem.center = getShapePosition(gameState, i);
+				selectItem.widht = item.radius * 4;
+				selectItem.height = item.radius * 4;
+				selectItem.length = item.radius * 4;
+				selectItem.color = ColorAlpha(WHITE, 0.4f);
+				gameState->renderData.push_back(selectItem);
+			}
+
+			if (intersectable && intersectable->intersecting) {
+				item.color = WHITE;
+			}
+
 			gameState->renderData.push_back(item);
 			continue;
 		}

@@ -4,6 +4,9 @@
 #include "Sphere.h"
 #include "Color.h"
 #include "Position.h"
+#include "MouseSelectable.h"
+#include "MouseGrabbable.h"
+#include "MouseIntersectable.h"
 
 namespace middle {
 
@@ -14,12 +17,15 @@ namespace middle {
 	}
 	void initJoint(GameState* gameState, int index, Vector3 position, int offset)
 	{
-		auto& shapes = gameState->shapes;
-		++shapes[index].id.generation;
-		gameState->ids[index].generation = shapes[index].id.generation;
-		components::Sphere* sphere = addComponent<components::Sphere>(shapes[index]);
-		components::Color* color = addComponent<components::Color>(shapes[index]);
-		components::Position* pos = addComponent<components::Position>(shapes[index]);
+		auto& shape = gameState->shapes[index];
+		++shape.id.generation;
+		gameState->ids[index].generation = shape.id.generation;
+		components::Sphere* sphere = addComponent<components::Sphere>(shape);
+		components::Color* color = addComponent<components::Color>(shape);
+		components::Position* pos = addComponent<components::Position>(shape);
+		addComponent<components::MouseSelectable>(shape);
+		addComponent<components::MouseGrabbable>(shape);
+		addComponent<components::MouseIntersectable>(shape);
 		sphere->radius = DEF_RADIUS;
 		color->colorR = UGLY_PINK.r;
 		color->colorG = UGLY_PINK.g;

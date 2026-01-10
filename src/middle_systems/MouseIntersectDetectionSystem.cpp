@@ -16,7 +16,12 @@ namespace MouseIntersectDetectionSystem {
 			for (int i = 0; i < gameState->shapes.size(); ++i) {
 				middle::Shape& shape = gameState->shapes[i];
 
+				auto intersectComponent = middle::getComponent<components::MouseIntersectable>(shape);
+				if (!intersectComponent)
+					continue;
+
 				bool wasIntersecting = middle::isMouseIntersectingShape(gameState, i);
+				intersectComponent->wasIntersecting = wasIntersecting;
 				bool bContainer = isContainer(gameState, i);
 				bool bSphere = isSphere(gameState, i);
 				if (bSphere) {
@@ -28,8 +33,8 @@ namespace MouseIntersectDetectionSystem {
 					Vector3 pos = middle::getShapePosition(gameState, i);
 					Vector3 intersectPos;
 					bool isIntersecting = middle::RayCastLineSphere(pos, sphere->radius, gameState->editorState.initCamera.position, gameState->editorState.initCamera.position + gameState->input.mouseDir, intersectPos);
-					auto intersectComponent = middle::getComponentAssert<components::MouseIntersectable>(shape);
 					intersectComponent->intersecting = isIntersecting;
+					continue;
 				}
 
 				auto constraint = middle::getComponent<components::Constraint>(shape);
