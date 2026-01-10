@@ -21,15 +21,11 @@ namespace middle {
 			return "i " + std::to_string(v) + "\n";
 		}
 		else if (field.type() == typeid(float)) {
-			int v = std::any_cast<float>(field);
+			float v = std::any_cast<float>(field);
 			return "f " + std::to_string(v) + "\n";
 		}
 		else if (field.type() == typeid(double)) {
-			int v = std::any_cast<double>(field);
-			return "d " + std::to_string(v) + "\n";
-		}
-		else if (field.type() == typeid(double)) {
-			int v = std::any_cast<double>(field);
+			double v = std::any_cast<double>(field);
 			return "d " + std::to_string(v) + "\n";
 		}
 		else if (field.type() == typeid(bool)) {
@@ -165,8 +161,13 @@ namespace middle {
 	}
 
 
-	void flushBuffer(GameState* gameState, std::vector<std::string>& buffer, int type, int index, int offset = 0) {
-
+	void flushBuffer(GameState* gameState, std::vector<std::string>& buffer, const std::string& componentName, int index, int offset = 0) {
+		int typeId = componentTypeMap[componentName];
+		int size = componentListMap[typeId]->grow();
+		int componentOffset = size - 1;
+		componentSerializableRefMap[typeId][componentOffset]->deserialize(buffer);
+		gameState->shapes[index].componentMap[typeId].componentOffset = componentOffset;
+		buffer.clear();
 	}
 
 	void flushFieldBuffer(GameState* gameState, std::vector<std::string>& buffer, const std::string& field) {
@@ -202,7 +203,6 @@ namespace middle {
 		}
 
 		std::string line;
-		int currentType = -1;
 		int currentIndex = 0;
 
 		// all import indexes are shifted by half of total allowed shape count
@@ -219,28 +219,26 @@ namespace middle {
 			gameState->loopIndex = 0;
 		}
 
-		std::vector<std::string>buffer;
 
+		std::vector<std::string>buffer;
 		std::string field = "";
+		std::string component = "";
 
 		// read scene info
 		if (!import) {
-			while (std::getline(inputFile, line)) {
-				if (line.find("#") != std::string::npos) {
-					if (buffer.size() > 0)
-						flushFieldBuffer(gameState, buffer, field);
-					field = line;
-					buffer.clear();
-					continue;
-				}
+			//while (std::getline(inputFile, line)) {
+			//	if (line.find("#") != std::string::npos) {
+			//		if (buffer.size() > 0)
+			//			flushFieldBuffer(gameState, buffer, field);
+			//		field = line;
+			//		buffer.clear();
+			//		continue;
+			//	}
 
-				if (line.find("__") != std::string::npos)
-					break;
-
-				if (!isEmptyOrWhitespace(line))
-					buffer.push_back(line);
-			}
-			flushFieldBuffer(gameState, buffer, field);
+			//	if (!isEmptyOrWhitespace(line))
+			//		buffer.push_back(line);
+			//}
+			//flushFieldBuffer(gameState, buffer, field);
 		}
 
 
@@ -249,28 +247,43 @@ namespace middle {
 		inputFile.clear();
 		inputFile.seekg(0, std::ios::beg);
 
+		std::string activeComponentName = "";
+		std::string none = "";
+		int activeShapeIndex = -1;
+
 		// read objects
 		while (std::getline(inputFile, line)) {
 
-			// read shapes
 			if (line.find("__") != std::string::npos) {
-				if (currentType >= 0) {
-					flushBuffer(gameState, buffer, currentType, currentIndex, indexOffset);
-					++currentIndex;
+				if (activeComponentName != none) {
+					flushBuffer(gameState, buffer, activeComponentName, activeShapeIndex, indexOffset);
 				}
 				int l = line.size();
 				int start = 2;
 				int end = l - 2;
 				std::string digits = line.substr(start, end);
-				currentType = std::stoi(digits);
+				activeShapeIndex = std::stoi(digits);
+				addShape(gameState, activeShapeIndex, Shape());
+				activeComponentName = none;
+			}
+
+			// read shapes
+			if(componentTypeMap.find(line) != componentTypeMap.end()){
+				if (activeComponentName != none) {
+					flushBuffer(gameState, buffer, activeComponentName, activeShapeIndex, indexOffset);
+				}
+				activeComponentName = line;
 				continue;
 			}
 			// don't append until first type is found, (where data section starts, so skip metadata)
-			if (currentType >= 0 && !isEmptyOrWhitespace(line))
+			if (activeComponentName != none) {
 				buffer.push_back(line);
+			}
 		}
 
-		flushBuffer(gameState, buffer, currentType, currentIndex, indexOffset);
+		if (activeComponentName != none) {
+			flushBuffer(gameState, buffer, activeComponentName, activeShapeIndex, indexOffset);
+		}
 
 		inputFile.close();
 

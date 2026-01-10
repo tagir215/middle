@@ -15,7 +15,19 @@ namespace middle {
 		virtual void serialize(std::ostream& istream) = 0;
 		virtual void deserialize(const std::vector<std::string>& buffer) = 0;
 	};
-
+	struct IComponentVectorContainer {
+		virtual int grow() = 0;
+	};
+	template<typename T> 
+	struct ComponentVectorContainer : public IComponentVectorContainer {
+		std::vector<T> vectorData;
+		int grow() override {
+			int size = vectorData.size();
+			vectorData.resize(size+1);
+			updateSerializableMap<T>();
+			return size + 1;
+		}
+	};
 
 	inline int globalTypeCounter = 0;
 	template<typename T>
@@ -26,14 +38,15 @@ namespace middle {
 
 	extern std::unordered_map <std::string, int> componentTypeMap;
 	extern std::unordered_map <int, std::string> componentNameMap;
-	extern std::unordered_map <int, std::any> componentListMap;
+	extern std::unordered_map <int, std::unique_ptr<IComponentVectorContainer>> componentListMap;
 	extern std::unordered_map <int, std::vector<Serializable*>> componentSerializableRefMap;
 
 	template<typename T>
 	inline std::vector<T>* getComponentArray() {
 		int typeId = getTypeId<T>();
-		auto& vec = std::any_cast<std::vector<T>&>(componentListMap[typeId]);
-		return &vec;
+		IComponentVectorContainer* iContainer = componentListMap[typeId].get();
+		ComponentVectorContainer<T>* vectorContainer = static_cast<ComponentVectorContainer<T>*>(iContainer);
+		return &vectorContainer->vectorData;
 	}
 
 	template<typename T>
@@ -41,7 +54,11 @@ namespace middle {
 		int typeId = getTypeId<T>();
 		componentTypeMap[componentName] = typeId;
 		componentNameMap[typeId] = componentName;
-		componentListMap[typeId] = std::vector<T>();
+		// vector container
+		auto vectorContainer = std::make_unique<ComponentVectorContainer<T>>();
+		vectorContainer->vectorData = std::vector<T>();
+		componentListMap[typeId] = std::move(vectorContainer);
+		// serializable
 		componentSerializableRefMap[typeId] = std::vector<Serializable*>();
 	}
 
@@ -62,11 +79,10 @@ namespace middle {
 		// add to serializable list
 		int typeId = getTypeId<T>();
 		std::vector<Serializable*>& serVec = componentSerializableRefMap[typeId];
-		serVec.clear();
 		std::vector<T>* data = getComponentArray<T>();
 		serVec.resize(data->size());
 		for (int i = 0; i < serVec.size(); ++i) {
-			serVec[i] = dynamic_cast<Serializable*>(&(*data)[i]);
+			serVec[i] = static_cast<Serializable*>(&(*data)[i]);
 		}
 	}
 
