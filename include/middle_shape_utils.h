@@ -31,20 +31,22 @@ namespace middle {
 	bool isContainer(GameState* gameState, int index);
 	// is the shape real editable thing or a ghost (reference from other scene)
 	bool isGhostShape(int index);
-	// is slot free in shape array
-	bool isSlotFree(GameState* gameStaet, int index);
+	// is the shape selected via mouse
+	bool isShapeSelected(GameState* gameState, int index);
+	// is the mouse intersecting this shape
+	bool isMouseIntersectingShape(GameState* gameState, int index);
 	// is shape slot taken and there should be instance
 	bool isShapeAlive(GameState* gameState, int index);
+	// get pos quickly
+	Vector3 getShapePosition(GameState* gameState, int index);
 	// get shape instance
-	ShapeInstance& getShapeInstance(GameState* gameState, int index);
+	Shape& getShape(GameState* gameState, int index);
 	// delete shape , updates generational indexes
 	void deleteShape(GameState* gameState, int index);
 	// deletes shapes and its children
 	void deleteShapeRecursive(GameState* gameState, int index);
 	// add shape and updates generations
 	void addShape(GameState* gameState, int index, Shape shape);
-	// add isntance make generation match shape
-	void addInstance(GameState* gameState, int index, ShapeInstance instance);
 	// move camera in xz plane moving also the target 
 	void moveCameraXZ(Camera3D& initCamera, const Vector3& pos);
 
@@ -53,7 +55,7 @@ namespace middle {
 		for (int i = 0; i < gameState->shapes.size(); ++i) {
 			if (!isShapeAlive(gameState, i))
 				continue;
-			func(i, getShapeInstance(gameState, i));
+			func(i, gameState->shapes[i]);
 		}
 	}
 }

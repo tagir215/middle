@@ -299,7 +299,7 @@ void ImGui_ImplAllegro5_UpdateTexture(ImTextureData* tex)
         ImTextureRect r = tex->UpdateRect; // Bounding box encompassing all individual updates
         ALLEGRO_BITMAP* gpu_bitmap = (ALLEGRO_BITMAP*)(intptr_t)tex->TexID;
         ALLEGRO_LOCKED_REGION* locked_region = al_lock_bitmap_region(gpu_bitmap, r.x, r.y, r.w, r.h, al_get_bitmap_format(gpu_bitmap), ALLEGRO_LOCK_WRITEONLY);
-        IM_ASSERT(locked_region && "Backend failed to update texture!");
+        IM_ASSERT(locked_region && "Backend failed to physicsUpdate texture!");
         for (int y = 0; y < r.h; y++)
             memcpy((unsigned char*)locked_region->data + locked_region->pitch * y, tex->GetPixelsAt(r.x, r.y + y), r.w * tex->BytesPerPixel); // dst, src, block pitch
         al_unlock_bitmap(gpu_bitmap);

@@ -19,6 +19,7 @@ file(GLOB COMPONENT_HEADERS "${CMAKE_SOURCE_DIR}/assets/components/*.h")
 file(GLOB COMPONENT_SOURCES "${CMAKE_SOURCE_DIR}/assets/components/*.cpp")
 file(GLOB MID_COMPONENT_HEADERS "${CMAKE_SOURCE_DIR}/src/middle_components/*.h")
 file(GLOB MID_COMPONENT_SOURCES "${CMAKE_SOURCE_DIR}/src/middle_components/*.cpp")
+file(GLOB MID_SYSTEM_SOURCES "${CMAKE_SOURCE_DIR}/src/middle_systems/*.cpp")
 
 # library game, hot reloadable I guess
 add_library(game SHARED 
@@ -28,7 +29,9 @@ add_library(game SHARED
     ${COMPONENT_HEADERS} 
     ${COMPONENT_SOURCES} 
     ${MID_COMPONENT_HEADERS} 
-    ${MID_COMPONENT_SOURCES})
+    ${MID_COMPONENT_SOURCES}
+    ${MID_SYSTEM_SOURCES}
+)
 target_include_directories(game PUBLIC ${CMAKE_SOURCE_DIR}/include)
 target_include_directories(game PUBLIC ${CMAKE_SOURCE_DIR}/assets/components)
 target_include_directories(game PUBLIC ${CMAKE_SOURCE_DIR}/src/middle_components)
@@ -39,11 +42,7 @@ add_executable(middle
     src/main.cpp 
     src/win32_platform.cpp 
     src/middle_imgui.cpp 
-    src/program/middle_shape_utils.cpp
-    src/program/editor_file_utils.cpp
-    src/middle_systems/Renderer.cpp
-    ${MID_COMPONENT_HEADERS}
-    ${MID_COMPONENT_SOURCES}
+    src/Renderer.cpp
 )
 target_include_directories(middle PUBLIC ${CMAKE_SOURCE_DIR}/include)
 target_include_directories(middle PUBLIC ${CMAKE_SOURCE_DIR}/assets/components)

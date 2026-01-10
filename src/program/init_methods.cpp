@@ -16,16 +16,18 @@ namespace middle {
 	{
 		auto& shapes = gameState->shapes;
 		++shapes[index].id.generation;
+		gameState->ids[index].generation = shapes[index].id.generation;
 		components::Sphere* sphere = addComponent<components::Sphere>(shapes[index]);
 		components::Color* color = addComponent<components::Color>(shapes[index]);
 		components::Position* pos = addComponent<components::Position>(shapes[index]);
 		sphere->radius = DEF_RADIUS;
-		color->colorA = UGLY_PINK.r;
+		color->colorR = UGLY_PINK.r;
 		color->colorG = UGLY_PINK.g;
 		color->colorB = UGLY_PINK.b;
+		color->colorA = UGLY_PINK.a;
 		pos->posX = position.x;
-		pos->posY = position.x;
-		pos->posZ = position.x;
+		pos->posY = position.y;
+		pos->posZ = position.z;
 	}
 	void initConstraint(GameState* gameState, int index, int indexA, int indexB, float targetDistance, int offset)
 	{

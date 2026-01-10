@@ -88,7 +88,6 @@ namespace middle {
 			gameState->applicationMode = ApplicationMode::GAME_MODE;
 		}
 		ImGui::End();
-
 		ImGui::Begin("GameState");
 		ImGuiDisplay("initCamera position", gameState->editorState.initCamera.position);
 		ImGuiDisplay("initCamera up", gameState->editorState.initCamera.up);
@@ -102,14 +101,6 @@ namespace middle {
 		ImGuiDisplay("screen width", gameState->screenWidth);
 		ImGuiDisplay("screen height", gameState->screenHeight);
 		ImGui::End();
-
-		for (int i = 0; i < gameState->shapes.size(); ++i) {
-			if (!isShapeAlive(gameState, i))
-				continue;
-			Shape& shape = gameState->shapes[i];
-			ShapeInstance& shapeInstance = getShapeInstance(gameState, i);
-
-		}
 
 		ImGui::Begin("Editor");
 

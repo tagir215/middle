@@ -24,9 +24,9 @@
 *
 ********************************************************************************************/
 
-#include "raylib.h"
 #include "game.h"
 #include "platform.h"
+#include "raylib.h"
 #include <chrono>
 #include <filesystem>
 #include <thread>
@@ -72,7 +72,6 @@ int main(void)
 	rlImGuiSetup(true);
 
 	const float fixedTimeStep = 1.0f / 60.0f;
-	float timeAccumulator = 0;
 	gameState->frameTime = fixedTimeStep;
 
 
@@ -108,13 +107,8 @@ int main(void)
 
 		UpdateInput(gameState, gameState->screenOrientorM);
 
-
-		timeAccumulator += GetFrameTime();
-		if (timeAccumulator >= fixedTimeStep) 
-		{
-			UpdateGame(gameState);
-			timeAccumulator -= fixedTimeStep;
-		}
+		gameState->frameTimeAccumulator += GetFrameTime();
+		UpdateGame(gameState);
 
 		scriptMap["RendererSystem"]->update(gameState);
 

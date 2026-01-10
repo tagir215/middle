@@ -10,6 +10,7 @@
 #include "LoopSociety.h"
 #include "Reference.h"
 #include "Position.h"
+#include "MouseSelectable.h"
 
 namespace middle {
 	void processEditorActions(GameState* gameState) {
@@ -130,7 +131,7 @@ namespace middle {
 		for (int i = 0; i < gameState->shapes.size(); ++i) {
 			if (isSphere(gameState, i))
 				continue;
-			if (isShapeAlive(gameState, i) && getShapeInstance(gameState, i).selected)
+			if (isShapeAlive(gameState, i) && isShapeSelected(gameState, i))
 				selectedIndexes.push_back(i);
 		}
 		// must have 2 constraints selected 
@@ -171,10 +172,8 @@ namespace middle {
 		for (int i = 0; i < gameState->shapes.size(); ++i) {
 			if (!isShapeAlive(gameState, i))
 				continue;
-			ShapeInstance& shapeInstance = getShapeInstance(gameState, i);
-			if (!shapeInstance.selected)
-				continue;
-			Shape& shape = gameState->shapes[i];
+			Shape& shape = getShape(gameState, i);
+
 			// delete all connected constraints
 			std::vector<int> connectedConstraints = findConnectedConstraints(gameState, i);
 
@@ -202,8 +201,9 @@ namespace middle {
 			foundSelected = true;
 			// set all connected constraints as selected
 			for (int id : connectedConstraints) {
-				auto& initConstraint = getShapeInstance(gameState, id);
-				initConstraint.selected = true;
+				Shape& constraintShape = getShape(gameState, id);
+				auto selectable = getComponent<components::MouseSelectable>(constraintShape);
+				selectable->selected = true;
 			}
 		}
 
@@ -211,8 +211,7 @@ namespace middle {
 		for (int i = 0; i < gameState->shapes.size(); ++i) {
 			if (!isShapeAlive(gameState, i))
 				continue;
-			ShapeInstance& shapeInstance = getShapeInstance(gameState, i);
-			if (!shapeInstance.selected)
+			if (!isShapeSelected(gameState, i))
 				continue;
 			deleteShape(gameState, i);
 		}
@@ -247,11 +246,13 @@ namespace middle {
 
 		// find selected items 
 		std::vector<int>memberIndexes;
-		loopInstances(gameState, [&](int i, ShapeInstance& instance) {
-			if (instance.selected) {
+		for (int i = 0; i < gameState->shapes.size(); ++i) {
+			if (!isShapeAlive(gameState, i))
+				continue;
+			if (isShapeSelected(gameState, i)) {
 				memberIndexes.push_back(i);
 			}
-			});
+		}
 
 		// loops must have at least 2 things
 		if (memberIndexes.size() < 2)

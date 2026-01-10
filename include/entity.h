@@ -27,7 +27,6 @@ namespace middle {
 	static float DEF_LINE_PADDING_V = 2.2f;
 
 	struct Id {
-		int index = UNASSIGNED;
 		int generation = UNASSIGNED;
 		bool operator==(const Id& other) {
 			return other.generation == generation;
@@ -46,16 +45,5 @@ namespace middle {
 	struct Shape {
 		Id id;
 		std::unordered_map<int, Component> componentMap;
-	};
-
-	struct ShapeInstance {
-		Id id;
-		bool isShapeAlive = false;
-		Shape shape;
-		float lifeTime = 0;
-		bool mouseIntersects = false;
-		bool selected = false;
-		bool grabDown = false;
-		bool grabReleased = false;
 	};
 }

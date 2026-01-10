@@ -24,17 +24,13 @@ namespace middle {
 		return id;
 	}
 
-	inline std::unordered_map <std::string, int> componentTypeMap;
-	inline std::unordered_map <int, std::any> componentListMap;
-	inline std::unordered_map <int, std::vector<Serializable*>> componentSerializableRefMap;
+	extern std::unordered_map <std::string, int> componentTypeMap;
+	extern std::unordered_map <int, std::any> componentListMap;
+	extern std::unordered_map <int, std::vector<Serializable*>> componentSerializableRefMap;
 
 	template<typename T>
 	inline std::vector<T>* getComponentArray() {
 		int typeId = getTypeId<T>();
-		if (componentListMap.find(typeId) == componentListMap.end()) {
-			return nullptr;
-		}
-
 		auto& vec = std::any_cast<std::vector<T>&>(componentListMap[typeId]);
 		return &vec;
 	}
@@ -67,28 +63,21 @@ namespace middle {
 		data->push_back(t);
 		shape.componentMap[typeId] = Component();
 		shape.componentMap[typeId].componentOffset = nextIndex;
+
 		return &(*data)[nextIndex];
 	}
 
 	template<typename T>
-	inline T* getComponentAssert(const Shape& shape) {
+	inline T* getComponentAssert(Shape& shape) {
 		int typeId = getTypeId<T>();
-		if (shape.shapeComponentMap.find(typeId) == shape.shapeComponentMap.end()) {
-			assert(true);
+		if (shape.componentMap.find(typeId) == shape.componentMap.end()) {
+			assert(true, "component doesn't exist");
 		}
-		int componentId = shape.shapeComponentMap[typeId].componentId;
-		auto& v = getComponentArray<T>();
-		return &v[componentId];
+		int componentId = shape.componentMap[typeId].componentOffset;
+		std::vector<T>* v = getComponentArray<T>();
+		T& t = (*v)[componentId];
+		return &t;
 	}
 
-	inline Serializable* getSerializableComponent(Shape& shape, int typeId) {
-		if (shape.componentMap.find(typeId) == shape.componentMap.end()) {
-			assert(true);
-		}
-		auto component = shape.componentMap[typeId];
-		int componentId = component.componentOffset;
-		Serializable* result = componentSerializableRefMap[typeId][componentId];
-		assert(result != nullptr);
-		return result;
-	}
+	Serializable* getSerializableComponent(Shape& shape, int typeId);
 }

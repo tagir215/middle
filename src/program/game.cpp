@@ -8,18 +8,13 @@
 #include "Constraint.h"
 #include "PhysicsData.h"
 #include "Position.h"
+#include "Color.h"
+#include "Sphere.h"
 
 using namespace middle;
 
 
-
-__declspec(dllexport) void UpdateGame(GameState* gameState)
-{
-	if (gameState->closeGame) {
-		closeGame(gameState);
-		return;
-	}
-
+void physicsUpdate(GameState* gameState) {
 	if (gameState->applicationMode == ApplicationMode::EDITOR_MODE) {
 		updateEditor(gameState);
 	}
@@ -27,16 +22,16 @@ __declspec(dllexport) void UpdateGame(GameState* gameState)
 	if (gameState->applicationMode == ApplicationMode::GAME_MODE) {
 
 		// TODO for now just uses editor camera
-		ShapeInstance& activeCamera = getShapeInstance(gameState, gameState->activeCameraIndex);
-		auto pos = getComponent<components::Position>(activeCamera.shape);
+		Shape& activeCamera = getShape(gameState, gameState->activeCameraIndex);
+		auto pos = getComponent<components::Position>(activeCamera);
 		assert(pos != nullptr);
 		Vector3 p = { pos->posX, pos->posY, pos->posZ };
 		moveCameraXZ(gameState->editorState.initCamera, p);
 	}
 
 	// run scripts
-	loopInstances(gameState, [gameState](int i, ShapeInstance& instance) {
-		auto sysRef = getComponent<components::SystemReference>(instance.shape);
+	loopInstances(gameState, [gameState](int i, Shape& shape) {
+		auto sysRef = getComponent<components::SystemReference>(shape);
 		if (sysRef != nullptr) {
 			auto scriptName = sysRef->systemName;
 			if (gameState->gameplayScripts.find(scriptName) == gameState->gameplayScripts.end())
@@ -64,9 +59,9 @@ __declspec(dllexport) void UpdateGame(GameState* gameState)
 			physicsBodies[i] = nullptr;
 			continue;
 		}
-		auto& instance = getShapeInstance(gameState, i);
+		auto& shape = getShape(gameState, i);
 
-		auto constraint = getComponent<components::Constraint>(instance.shape);
+		auto constraint = getComponent<components::Constraint>(shape);
 		if (constraint) {
 			if (constraint->indexA != UNASSIGNED && constraint->indexB != UNASSIGNED) {
 				Constraint c;
@@ -77,8 +72,8 @@ __declspec(dllexport) void UpdateGame(GameState* gameState)
 				constraints.push_back(c);
 			}
 		}
-		auto pcomp = getComponent<components::PhysicsData>(instance.shape);
-		auto pos = getComponent<components::Position>(instance.shape);
+		auto pcomp = getComponent<components::PhysicsData>(shape);
+		auto pos = getComponent<components::Position>(shape);
 		if (pcomp) {
 			assert(pos != nullptr);
 			PhysicsBody* body = physicsBodies[i];
@@ -95,6 +90,56 @@ __declspec(dllexport) void UpdateGame(GameState* gameState)
 	}
 
 	DescLoop(gameState->frameTime, pairs, constraints, physicsBodies);
+}
+
+void updateRenderData(GameState* gameState) {
+	gameState->renderData.clear();
+	for (int i = 0; i < gameState->shapes.size(); ++i) {
+		auto& shape = gameState->shapes[i];
+		auto color = getComponent<components::Color>(shape);
+		if (!color)
+			continue;
+
+
+		RenderItem item;
+		item.color.r = color->colorR;
+		item.color.g = color->colorG;
+		item.color.b = color->colorB;
+		item.color.a = color->colorA;
+
+		auto sphere = getComponent<components::Sphere>(shape);
+		if (sphere) {
+			item.center = getShapePosition(gameState, i);
+			item.type = RenderItemType::SPHERE;
+			item.radius = sphere->radius;
+			gameState->renderData.push_back(item);
+			continue;
+		}
+		auto constraint = getComponent<components::Constraint>(shape);
+		if (constraint) {
+			item.type = RenderItemType::LINE;
+			item.linePointA = getShapePosition(gameState, constraint->indexA);
+			item.linePointB = getShapePosition(gameState, constraint->indexB);
+			gameState->renderData.push_back(item);
+			continue;
+		}
+
+	}
+}
+
+__declspec(dllexport) void UpdateGame(GameState* gameState)
+{
+	if (gameState->closeGame) {
+		closeGame(gameState);
+		return;
+	}
+
+	if (gameState->frameTimeAccumulator >= gameState->frameTime)
+	{
+		gameState->frameTimeAccumulator -= gameState->frameTime;
+		physicsUpdate(gameState);
+		updateRenderData(gameState);
+	}
 
 }
 

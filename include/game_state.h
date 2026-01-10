@@ -87,6 +87,19 @@ namespace middle {
 		EditorActionContainer::Params nextEditorActionParams;
 	};
 
+	enum RenderItemType {
+		SPHERE,
+		LINE
+	};
+
+	struct RenderItem {
+		RenderItemType type;
+		Color color;
+		Vector3 center;
+		Vector3 linePointA;
+		Vector3 linePointB;
+		float radius;
+	};
 
 	struct GameState {
 	public:
@@ -94,6 +107,7 @@ namespace middle {
 		float screenHeight;
 		float aspectRatio;
 		float frameTime;
+		float frameTimeAccumulator = 0;
 		int gridSize = 4;
 		int intersectCount = 0;
 		int selectCount = 0;
@@ -101,10 +115,10 @@ namespace middle {
 		const double farPlaneDistance = 5000;
 		ApplicationMode applicationMode = ApplicationMode::EDITOR_MODE;
 		EditorState editorState;
+		std::array<Id, MAX_SHAPE_COUNT>ids;
 		std::array<Shape, MAX_SHAPE_COUNT>shapes;
 		std::array<Vector3, MAX_VERTEX_COUNT> vertexArray;
 		std::array<int, MAX_LOOP_MEMBER_COUNT> loopMembers;
-		std::array<ShapeInstance, MAX_SHAPE_COUNT>shapeInstances;
 		std::unordered_map<std::string, std::unique_ptr<MiddleGameplaySystem>> gameplayScripts;
 		Matrix worldM;
 		Vector2 mouseDragPos;
@@ -126,6 +140,7 @@ namespace middle {
 		bool reload = true;
 		bool reset = false;
 		bool quit = false;
+		std::vector<RenderItem>renderData;
 	};
 
 }

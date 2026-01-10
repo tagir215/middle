@@ -7,6 +7,8 @@
 #include "Position.h"
 #include "Constraint.h"
 #include "PhysicsData.h"
+#include "MouseSelectable.h"
+#include "MouseIntersectable.h"
 
 namespace middle {
 
@@ -45,7 +47,7 @@ namespace middle {
 	int findFreeIndex(GameState* gameState)
 	{
 		for (int i = 0; i < gameState->shapes.size(); ++i) {
-			if (isSlotFree(gameState, i))
+			if (!isShapeAlive(gameState, i))
 				return i;
 		}
 		assert(true);
@@ -80,9 +82,11 @@ namespace middle {
 
 	void unselect(GameState* gameState) {
 		for (int i = 0; i < gameState->shapes.size(); ++i) {
-			if (!isShapeAlive(gameState, i))
-				continue;
-			getShapeInstance(gameState, i).selected = false;
+			auto& shape = gameState->shapes[i];
+			auto selectableComponent = getComponent<components::MouseSelectable>(shape);
+			if (selectableComponent) {
+				selectableComponent->selected = false;
+			}
 		}
 	}
 
@@ -117,7 +121,7 @@ namespace middle {
 
 	int findHighestLevelContainer(GameState* gameState, int index)
 	{
-		if(isSlotFree(gameState, index))
+		if(!isShapeAlive(gameState, index))
 			return UNASSIGNED;
 		Shape& shape = gameState->shapes[index];
 		auto loop = getComponent<components::LoopSociety>(shape);
@@ -155,8 +159,8 @@ namespace middle {
 	}
 
 	void dragShape(GameState* gameState, int index, Vector3 linearVelocity) {
-		ShapeInstance& instance = getShapeInstance(gameState, index);
-		auto loop = getComponent<components::LoopSociety>(instance.shape);
+		Shape& shape = getShape(gameState, index);
+		auto loop = getComponent<components::LoopSociety>(shape);
 		if (loop != nullptr && loop->loopSize > 0) {
 			for (int i = loop->loopArrayOffset; i < loop->loopArrayOffset + loop->loopSize; ++i) {
 				int memberIndex = gameState->loopMembers[i];
@@ -169,8 +173,8 @@ namespace middle {
 		//	return;
 
 		Vec linearVel = DescVec(linearVelocity);
-		auto pData = getComponent<components::PhysicsData>(instance.shape);
-		auto posData = getComponent<components::Position>(instance.shape);
+		auto pData = getComponent<components::PhysicsData>(shape);
+		auto posData = getComponent<components::Position>(shape);
 		if(pData != nullptr){
 			pData->velX = linearVel.x;
 			pData->velY = linearVel.y;
@@ -207,20 +211,43 @@ namespace middle {
 		return index >= GHOST_INDEX_OFFSET;
 	}
 
-	bool isShapeAlive(GameState* gameState, int index){
-		return gameState->shapes[index].id == gameState->shapeInstances[index].id && gameState->shapes[index].id.generation != UNASSIGNED;
-	}
-
-	bool isSlotFree(GameState* gameState, int index) {
-		return !isShapeAlive(gameState, index);
-	}
-
-
-	ShapeInstance& getShapeInstance(GameState* gameState, int index) {
-		auto& instance = gameState->shapeInstances[index];
+	bool isShapeSelected(GameState* gameState, int index) {
 		auto& shape = gameState->shapes[index];
-		assert(instance.id == shape.id);
-		return gameState->shapeInstances[index];
+		auto selectedComponent = getComponent<components::MouseSelectable>(shape);
+		if (selectedComponent) {
+			return selectedComponent->selected;
+		}
+		return false;
+	}
+
+	bool isMouseIntersectingShape(GameState* gameState, int index)
+	{
+		auto& shape = gameState->shapes[index];
+		auto intersectable = getComponent<components::MouseIntersectable>(shape);
+		if (intersectable) {
+			return intersectable->intersecting;
+		}
+		return false;
+	}
+
+	bool isShapeAlive(GameState* gameState, int index){
+		return gameState->shapes[index].id == gameState->ids[index] && gameState->shapes[index].id.generation >= 0;
+	}
+
+	Vector3 getShapePosition(GameState* gameState, int index)
+	{
+		auto& shape = gameState->shapes[index];
+		auto position = getComponent<components::Position>(shape);
+		assert(position);
+		return { position->posX, position->posY, position->posZ };
+	}
+
+	Shape& getShape(GameState* gameState, int index)
+	{
+		if (gameState->shapes[index].id == gameState->ids[index]) {
+			return gameState->shapes[index];
+		}
+		assert(true);
 	}
 
 	void deleteShape(GameState* gameState, int index) {
@@ -246,13 +273,10 @@ namespace middle {
 
 	void addShape(GameState* gameState, int index, Shape shape) {
 		shape.id.generation = gameState->shapes[index].id.generation + 1;
+		gameState->ids[index] = shape.id;
 		gameState->shapes[index] = shape;
 	}
 
-	void addInstance(GameState* gameState, int index, ShapeInstance instance) {
-		instance.id.generation = gameState->shapes[index].id.generation;
-		gameState->shapeInstances[index] = instance;
-	}
 	void moveCameraXZ(Camera3D& initCamera, const Vector3& pos)
 	{
 		Vector3 displacement = pos - initCamera.position;

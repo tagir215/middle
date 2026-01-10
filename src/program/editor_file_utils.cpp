@@ -128,12 +128,12 @@ namespace middle {
 		int saveSpam = GHOST_INDEX_OFFSET;
 		for (int i = 0; i < saveSpam; ++i) {
 			// skip empty parts if over max used index
-			if (isSlotFree(gameState, i))
+			if (!isShapeAlive(gameState, i))
 				continue;
 
 			auto& shape = gameState->shapes[i];
 
-			outFile << "__" << std::to_string((int)shape.id.index) << "__" << std::endl;
+			outFile << "__" << std::to_string(i) << "__" << std::endl;
 			for (auto& pair : shape.componentMap) {
 				outFile << fieldToString(pair.first);
 				Serializable* serializable = getSerializableComponent(shape, pair.first);
