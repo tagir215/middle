@@ -11,7 +11,6 @@ namespace MouseGrabbingSystem {
 	class MouseGrabbingSystem : public middle::MiddleGameplaySystem {
 		void update(middle::GameState* gameState) override {
 			for (int i = 0; i < gameState->shapes.size(); ++i) {
-
 				middle::Shape& shape = gameState->shapes[i];
 				auto grabbable = middle::getComponent<components::MouseGrabbable>(shape);
 				if (!grabbable)
@@ -26,8 +25,9 @@ namespace MouseGrabbingSystem {
 
 				if (grabbable->grabbing) {
 					Vector3 pos = middle::getShapePosition(gameState, i);
-					float objYDistance = std::abs(pos.y);
-					float yDistance = std::abs(gameState->editorState.initCamera.position.y);
+					Vector3 cameraPos = gameState->editorState.camera.position;
+					float objYDistance = std::abs(pos.y - cameraPos.y);
+					float yDistance = std::abs(cameraPos.y);
 					if (yDistance == 0)
 						yDistance = 0.001f;
 					Vector3 xzVel = Vector3Scale(gameState->input.mouseXZ_PlaneVelocity, objYDistance / yDistance);

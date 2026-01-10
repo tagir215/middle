@@ -75,7 +75,7 @@ int main(void)
 	gameState->frameTime = fixedTimeStep;
 
 
-	gameState->editorState.initCamera = {
+	gameState->editorState.camera = {
 		{0,-100,0},
 		{0,0,0},
 		{0,0,1},
@@ -213,21 +213,21 @@ void UpdateInput(GameState* gameState, Matrix& screenOrientorM) {
 	gameState->input.mouseNormalizedPos.x = (float)relativeX / (float)cameraPosX;
 	gameState->input.mouseNormalizedPos.y = (float)relativeY / (float)cameraPosX;
 	gameState->aspectRatio = gameState->screenWidth / gameState->screenHeight;
-	float angle = gameState->editorState.initCamera.fovy * DEG2RAD * 0.5f;
+	float angle = gameState->editorState.camera.fovy * DEG2RAD * 0.5f;
 	float nearAxisY = tan(angle) * gameState->nearPlaneDistance;
 	float nearAxisX = nearAxisY * gameState->aspectRatio;
 	float nearPlanePos2dX = nearAxisX * gameState->input.mouseNormalizedPos.x;
 	float nearPlanePos2dY = nearAxisX * gameState->input.mouseNormalizedPos.y;
 
-	Vector3 cameraDir = Vector3Normalize(gameState->editorState.initCamera.target - gameState->editorState.initCamera.position);
-	Vector3 cameraRight = Vector3Normalize(Vector3CrossProduct(cameraDir, gameState->editorState.initCamera.up));
+	Vector3 cameraDir = Vector3Normalize(gameState->editorState.camera.target - gameState->editorState.camera.position);
+	Vector3 cameraRight = Vector3Normalize(Vector3CrossProduct(cameraDir, gameState->editorState.camera.up));
 	Vector3 cameraUp = Vector3CrossProduct(cameraRight, cameraDir);
-	gameState->input.mouseNearPlanePos = gameState->editorState.initCamera.position
+	gameState->input.mouseNearPlanePos = gameState->editorState.camera.position
 		+ cameraDir * gameState->nearPlaneDistance
 		+ cameraRight * nearPlanePos2dX
 		+ cameraUp * nearPlanePos2dY;
 
-	gameState->input.mouseDir = Vector3Normalize(gameState->input.mouseNearPlanePos - gameState->editorState.initCamera.position);
+	gameState->input.mouseDir = Vector3Normalize(gameState->input.mouseNearPlanePos - gameState->editorState.camera.position);
 
 	Vector3 xzPlanePos = { 0,0,0 };
 	Vector3 xzPlaneNormal = { 0,-1,0 };

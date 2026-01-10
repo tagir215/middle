@@ -35,20 +35,20 @@ namespace middle {
 		const float cameraSpeed = mouseCamRatio * mouseCamRatio * mouseCamRatio * maxCameraSpeed;
 		Vector3 cameraMovementDir = { 0,0,0 };
 		if (gameState->input.w)
-			cameraMovementDir += Vector3Normalize(gameState->editorState.initCamera.target - gameState->editorState.initCamera.position);
+			cameraMovementDir += Vector3Normalize(gameState->editorState.camera.target - gameState->editorState.camera.position);
 		if (gameState->input.s)
-			cameraMovementDir += Vector3Negate(Vector3Normalize(gameState->editorState.initCamera.target - gameState->editorState.initCamera.position));
+			cameraMovementDir += Vector3Negate(Vector3Normalize(gameState->editorState.camera.target - gameState->editorState.camera.position));
 		if (gameState->input.e)
 			cameraMovementDir += { 0, 0, 1 };
 		if (gameState->input.q)
 			cameraMovementDir += { 0, 0, -1 };
 		if (gameState->input.d)
-			cameraMovementDir += Vector3Negate(Vector3Normalize(Vector3CrossProduct(gameState->editorState.initCamera.up, gameState->editorState.initCamera.target - gameState->editorState.initCamera.position)));
+			cameraMovementDir += Vector3Negate(Vector3Normalize(Vector3CrossProduct(gameState->editorState.camera.up, gameState->editorState.camera.target - gameState->editorState.camera.position)));
 		if (gameState->input.a)
-			cameraMovementDir += Vector3Normalize(Vector3CrossProduct(gameState->editorState.initCamera.up, gameState->editorState.initCamera.target - gameState->editorState.initCamera.position));
+			cameraMovementDir += Vector3Normalize(Vector3CrossProduct(gameState->editorState.camera.up, gameState->editorState.camera.target - gameState->editorState.camera.position));
 
-		gameState->editorState.initCamera.position += cameraMovementDir * cameraSpeed;
-		gameState->editorState.initCamera.target += cameraMovementDir * cameraSpeed;
+		gameState->editorState.camera.position += cameraMovementDir * cameraSpeed;
+		gameState->editorState.camera.target += cameraMovementDir * cameraSpeed;
 
 		// count update
 		gameState->intersectCount = 0;

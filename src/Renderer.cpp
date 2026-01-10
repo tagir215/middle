@@ -16,7 +16,7 @@ namespace RendererSystem {
 			// 89, 135, 168
 			ClearBackground(middle::BACKGROUND_COLOR);
 
-			BeginMode3D(gameState->editorState.initCamera);
+			BeginMode3D(gameState->editorState.camera);
 
 			rlSetClipPlanes(gameState->nearPlaneDistance, gameState->farPlaneDistance);
 

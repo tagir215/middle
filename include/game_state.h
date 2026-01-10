@@ -78,7 +78,7 @@ namespace middle {
 
 	struct EditorState {
 		CreationMode creationMode;
-		Camera3D initCamera;
+		Camera3D camera;
 		bool initialized = false;
 		bool doOneStep = false;
 		bool showAllInfo = false;

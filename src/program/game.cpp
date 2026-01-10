@@ -29,7 +29,7 @@ void physicsUpdate(GameState* gameState) {
 		auto pos = getComponent<components::Position>(activeCamera);
 		assert(pos != nullptr);
 		Vector3 p = { pos->posX, pos->posY, pos->posZ };
-		moveCameraXZ(gameState->editorState.initCamera, p);
+		moveCameraXZ(gameState->editorState.camera, p);
 	}
 
 	scriptMap["MouseIntersectDetectionSystem"]->update(gameState);

@@ -89,9 +89,9 @@ namespace middle {
 		}
 		ImGui::End();
 		ImGui::Begin("GameState");
-		ImGuiDisplay("initCamera position", gameState->editorState.initCamera.position);
-		ImGuiDisplay("initCamera up", gameState->editorState.initCamera.up);
-		ImGuiDisplay("initCamera target", gameState->editorState.initCamera.target);
+		ImGuiDisplay("camera position", gameState->editorState.camera.position);
+		ImGuiDisplay("camera up", gameState->editorState.camera.up);
+		ImGuiDisplay("camera target", gameState->editorState.camera.target);
 		ImGuiDisplay("mousePos", gameState->input.mousePos);
 		ImGuiDisplay("mouse near plane pos", gameState->input.mouseNearPlanePos);
 		ImGuiDisplay("mouse normalized pos", gameState->input.mouseNormalizedPos);

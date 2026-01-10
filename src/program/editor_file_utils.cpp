@@ -157,7 +157,7 @@ namespace middle {
 		outFile << "#activeScene" << "\n";
 		outFile << fieldToString(gameState->activeScene);
 		outFile << "#editorCameraPos" << "\n";
-		outFile << coordToLines(gameState->editorState.initCamera.position) << std::endl;
+		outFile << coordToLines(gameState->editorState.camera.position) << std::endl;
 
 		outFile.flush();
 		outFile.close();
@@ -180,7 +180,7 @@ namespace middle {
 			fillField(&pos.x, buffer[0]);
 			fillField(&pos.y, buffer[1]);
 			fillField(&pos.z, buffer[2]);
-			moveCameraXZ(gameState->editorState.initCamera, pos);
+			moveCameraXZ(gameState->editorState.camera, pos);
 			buffer.clear();
 		}
 		if (field == "#activeScene") {

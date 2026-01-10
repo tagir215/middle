@@ -32,7 +32,7 @@ namespace MouseIntersectDetectionSystem {
 					auto sphere = middle::getComponent<components::Sphere>(shape);
 					Vector3 pos = middle::getShapePosition(gameState, i);
 					Vector3 intersectPos;
-					bool isIntersecting = middle::RayCastLineSphere(pos, sphere->radius, gameState->editorState.initCamera.position, gameState->editorState.initCamera.position + gameState->input.mouseDir, intersectPos);
+					bool isIntersecting = middle::RayCastLineSphere(pos, sphere->radius, gameState->editorState.camera.position, gameState->editorState.camera.position + gameState->input.mouseDir, intersectPos);
 					intersectComponent->intersecting = isIntersecting;
 					continue;
 				}

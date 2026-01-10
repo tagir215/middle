@@ -353,7 +353,7 @@ namespace middle {
 	void EditorActionNewCamera::execute(GameState* gameState)
 	{
 		int freeIndex = findFreeIndex(gameState);
-		Vector3& pos = gameState->editorState.initCamera.position;
+		Vector3& pos = gameState->editorState.camera.position;
 		initCamera(gameState, freeIndex, pos);
 	}
 
