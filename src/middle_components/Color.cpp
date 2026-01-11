@@ -8,7 +8,7 @@ namespace components {
 		ostream << middle::fieldToString(colorA);
 	}
 
-	void Color::deserialize(const std::vector<std::string>& buffer) {
+	void Color::deserialize(const std::vector<std::string>& buffer, int indexOffset) {
 		middle::fillField(&colorR, buffer[0]);
 		middle::fillField(&colorG, buffer[1]);
 		middle::fillField(&colorB, buffer[2]);

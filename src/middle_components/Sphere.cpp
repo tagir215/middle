@@ -5,7 +5,7 @@ namespace components {
 		ostream << middle::fieldToString(radius);
 	}
 
-	void Sphere::deserialize(const std::vector<std::string>& buffer) {
+	void Sphere::deserialize(const std::vector<std::string>& buffer, int indexOffset) {
 		middle::fillField(&radius, buffer[0]);
 	}
 

@@ -8,6 +8,8 @@
 #include <middle_shape_utils.h>
 #include "middle_component_table.h"
 #include <set>
+#include "LoopSociety.h"
+#include "ReferenceEntity.h"
 
 namespace middle {
 
@@ -200,13 +202,26 @@ namespace middle {
 	}
 
 
-	void flushBuffer(GameState* gameState, std::vector<std::string>& buffer, const std::string& componentName, int index, int offset = 0) {
+	void flushBuffer(GameState* gameState, std::vector<std::string>& buffer, const std::string& componentName, int index, int indexOffset = 0) {
 		int typeId = componentTypeMap[componentName];
 		int size = componentListMap[typeId]->grow();
 		int componentOffset = size - 1;
-		componentSerializableRefMap[typeId][componentOffset]->deserialize(buffer);
-		gameState->shapes[index].componentMap[typeId].componentOffset = componentOffset;
+		componentSerializableRefMap[typeId][componentOffset]->deserialize(buffer, indexOffset);
+		auto& shape = gameState->shapes[index + indexOffset];
+		shape.componentMap[typeId].componentOffset = componentOffset;
 		buffer.clear();
+
+		// load scene if added a reference to a scene above
+		auto referenceComponent = getComponent<components::Reference>(shape);
+		if (referenceComponent && componentName == "Reference") {
+			auto posComponent = getComponent<components::Position>(shape);
+			Vector3 pos = { posComponent->posX, posComponent->posY, posComponent->posZ };
+			// reset to zero, because load scene will again set the position, while also moving its children
+			posComponent->posX = 0;
+			posComponent->posY = 0;
+			posComponent->posZ = 0;
+			loadScene(gameState, referenceComponent->sceneName, true, pos, index);
+		}
 	}
 
 	void flushFieldBuffer(GameState* gameState, std::vector<std::string>& buffer, const std::string& field) {
@@ -263,23 +278,6 @@ namespace middle {
 		std::string field = "";
 		std::string component = "";
 
-		// read scene info
-		if (!import) {
-			//while (std::getline(inputFile, line)) {
-			//	if (line.find("#") != std::string::npos) {
-			//		if (buffer.size() > 0)
-			//			flushFieldBuffer(gameState, buffer, field);
-			//		field = line;
-			//		buffer.clear();
-			//		continue;
-			//	}
-
-			//	if (!isEmptyOrWhitespace(line))
-			//		buffer.push_back(line);
-			//}
-			//flushFieldBuffer(gameState, buffer, field);
-		}
-
 
 		// reset input file to start:w
 		buffer.clear();
@@ -307,7 +305,7 @@ namespace middle {
 				int end = l - 2;
 				std::string digits = line.substr(start, end);
 				activeShapeIndex = std::stoi(digits);
-				addShape(gameState, activeShapeIndex, Shape());
+				addShape(gameState, activeShapeIndex + indexOffset, Shape());
 				parseMode = noParse;
 			}
 
@@ -352,8 +350,12 @@ namespace middle {
 			std::set<int>highestLevelContainers;
 			for (int i = indexOffset; i < highestUsedIndex; ++i) {
 				// skip nons and skip constraints since they don't have parents
-				//if (!isSlotFree(gameState, i) && gameState->shapes[i].type != ShapeType::CONSTRAINT)
-					//highestLevelContainers.insert(findHighestLevelContainer(gameState, i));
+				if (!isShapeAlive(gameState, i))
+					continue;
+				auto& shape = getShape(gameState, i);
+				if (getComponent<components::LoopSociety>(shape) != nullptr) {
+					highestLevelContainers.insert(findHighestLevelContainer(gameState, i));
+				}
 			}
 
 			// make reference
@@ -367,7 +369,15 @@ namespace middle {
 				sceneReferenceIndex = highestUsedIndex + 1;
 			}
 
-			//initReference(gameState, sceneReferenceIndex, members, sceneName);
+			// if reference doesn't exist yet, when importing from editor, create new reference
+			if(!isShapeAlive(gameState, sceneReferenceIndex)){
+				entities::initReference(gameState, sceneReferenceIndex, members, sceneName);
+			}
+			// if reference already exists, when deserializing, just update the container loop, since its refence objects are not stored to the file
+			else {
+				auto loop = getComponentAssert<components::LoopSociety>(gameState->shapes[sceneReferenceIndex]);
+				loop->loopMemberIndexes = members;
+			}
 
 			// move imported scene where it wants to be
 			moveShape(gameState, sceneReferenceIndex, pos);

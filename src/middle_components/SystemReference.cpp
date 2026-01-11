@@ -5,7 +5,7 @@ namespace components {
 		ostream << middle::fieldToString(systemName);
 	}
 
-	void SystemReference::deserialize(const std::vector<std::string>& buffer) {
+	void SystemReference::deserialize(const std::vector<std::string>& buffer, int indexOffset) {
 		middle::fillField(&systemName, buffer[0]);
 	}
 

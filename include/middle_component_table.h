@@ -13,7 +13,7 @@ namespace middle {
 
 	struct Serializable {
 		virtual void serialize(std::ostream& istream) = 0;
-		virtual void deserialize(const std::vector<std::string>& buffer) = 0;
+		virtual void deserialize(const std::vector<std::string>& buffer, int indexOffset = 0) = 0;
 	};
 	struct IComponentVectorContainer {
 		virtual int grow() = 0;

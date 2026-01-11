@@ -19,7 +19,7 @@ namespace components {
 		ostream << middle::fieldToString(infiniteMass);
 	}
 
-	void PhysicsData::deserialize(const std::vector<std::string>& buffer) {
+	void PhysicsData::deserialize(const std::vector<std::string>& buffer, int indexOffset) {
 		middle::fillField(&mass, buffer[0]);
 		middle::fillField(&momentOfInertia, buffer[1]);
 		middle::fillField(&invMass, buffer[2]);

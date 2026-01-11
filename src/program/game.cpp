@@ -18,6 +18,7 @@
 #include "LoopEntity.h"
 #include "ConstraintEntity.h"
 #include "LoopTag.h"
+#include "Reference.h"
 
 using namespace middle;
 
@@ -130,35 +131,6 @@ void updateRenderData(GameState* gameState) {
 	gameState->renderData.clear();
 	loopInstances(gameState, [gameState](int i, Shape& shape) {
 
-		if (getComponent<components::LoopTag>(shape)) {
-			auto loop = getComponent<components::LoopSociety>(shape);
-			auto selectable = getComponent<components::MouseSelectable>(shape);
-			auto intersectable = getComponent<components::MouseIntersectable>(shape);
-			RenderItem loopItem;
-			Vector3 centroid = getLoopCentroid(gameState, i);
-			loopItem.type = RenderItemType::SPHERE;
-			loopItem.center = centroid;
-			loopItem.radius = DEF_RADIUS_LOOP_INDICATOR;
-			loopItem.color = LOOP_INDICATOR_COLOR;
-			if (intersectable && intersectable->intersecting) {
-				loopItem.color = RED;
-			}
-			gameState->renderData.push_back(loopItem);
-
-			if (selectable && selectable->selected) {
-				RenderItem selectItem;
-				selectItem.type = RenderItemType::RECTANGLE;
-				selectItem.center = { 0,0,0 };
-				selectItem.transform.translation = loopItem.center;
-				selectItem.transform.scale = { 1,1,1 };
-				selectItem.transform.rotation = { 0,0,0,0 };
-				selectItem.widht = loopItem.radius * 4;
-				selectItem.height = loopItem.radius * 4;
-				selectItem.length = loopItem.radius * 4;
-				selectItem.color = ColorAlpha(WHITE, 0.4f);
-				gameState->renderData.push_back(selectItem);
-			}
-		}
 
 		auto sphere = getComponent<components::Sphere>(shape);
 		if (sphere) {
@@ -223,6 +195,67 @@ void updateRenderData(GameState* gameState) {
 			}
 			return;
 		}
+
+		auto reference = getComponent<components::Reference>(shape);
+		if (reference) {
+			auto selectable = getComponent<components::MouseSelectable>(shape);
+			auto intersectable = getComponent<components::MouseIntersectable>(shape);
+			auto position = getComponent<components::Position>(shape);
+			RenderItem refItem;
+			refItem.type = RenderItemType::SPHERE;
+			refItem.color = REFERENCE_INDICATOR_COLOR;
+			refItem.center = { position->posX, position->posY, position->posZ };
+			refItem.radius = DEF_RADIUS_REFERENCE_INDICATOR;
+			if (intersectable && intersectable->intersecting) {
+				refItem.color = HOVERED_THING_COLOR;
+			}
+			gameState->renderData.push_back(refItem);
+
+			if (selectable && selectable->selected) {
+				RenderItem selectItem;
+				selectItem.type = RenderItemType::RECTANGLE;
+				selectItem.center = { 0,0,0 };
+				selectItem.transform.translation = getShapePosition(gameState, i);
+				selectItem.transform.scale = { 1,1,1 };
+				selectItem.transform.rotation = { 0,0,0,0 };
+				selectItem.widht = refItem.radius * 4;
+				selectItem.height = refItem.radius * 4;
+				selectItem.length = refItem.radius * 4;
+				selectItem.color = ColorAlpha(WHITE, 0.4f);
+				gameState->renderData.push_back(selectItem);
+			}
+		}
+
+		if (!reference && getComponent<components::LoopTag>(shape)) {
+			auto loop = getComponent<components::LoopSociety>(shape);
+			auto selectable = getComponent<components::MouseSelectable>(shape);
+			auto intersectable = getComponent<components::MouseIntersectable>(shape);
+			RenderItem loopItem;
+			Vector3 centroid = getLoopCentroid(gameState, i);
+			loopItem.type = RenderItemType::SPHERE;
+			loopItem.center = centroid;
+			loopItem.radius = DEF_RADIUS_LOOP_INDICATOR;
+			loopItem.color = LOOP_INDICATOR_COLOR;
+			if (intersectable && intersectable->intersecting) {
+				loopItem.color = RED;
+			}
+			gameState->renderData.push_back(loopItem);
+
+			if (selectable && selectable->selected) {
+				RenderItem selectItem;
+				selectItem.type = RenderItemType::RECTANGLE;
+				selectItem.center = { 0,0,0 };
+				selectItem.transform.translation = loopItem.center;
+				selectItem.transform.scale = { 1,1,1 };
+				selectItem.transform.rotation = { 0,0,0,0 };
+				selectItem.widht = loopItem.radius * 4;
+				selectItem.height = loopItem.radius * 4;
+				selectItem.length = loopItem.radius * 4;
+				selectItem.color = ColorAlpha(WHITE, 0.4f);
+				gameState->renderData.push_back(selectItem);
+			}
+		}
+
 	});
 
 }

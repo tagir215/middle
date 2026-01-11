@@ -5,7 +5,7 @@ namespace components {
 		ostream << middle::fieldToString(sceneName);
 	}
 
-	void Reference::deserialize(const std::vector<std::string>& buffer) {
+	void Reference::deserialize(const std::vector<std::string>& buffer, int indexOffset) {
 		middle::fillField(&sceneName, buffer[0]);
 	}
 

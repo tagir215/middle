@@ -7,7 +7,7 @@ namespace components {
 		ostream << middle::fieldToString(posZ);
 	}
 
-	void Position::deserialize(const std::vector<std::string>& buffer) {
+	void Position::deserialize(const std::vector<std::string>& buffer, int indexOffset) {
 		middle::fillField(&posX, buffer[0]);
 		middle::fillField(&posY, buffer[1]);
 		middle::fillField(&posZ, buffer[2]);

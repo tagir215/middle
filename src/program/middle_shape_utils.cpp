@@ -81,7 +81,7 @@ namespace middle {
 	{
 		int highestI = 0;
 		for (int i = 0; i < gameState->shapes.size(); ++i) {
-			if (!isShapeAlive(gameState, i)) {
+			if (isShapeAlive(gameState, i)) {
 				highestI = i;
 			}
 		}
@@ -130,10 +130,13 @@ namespace middle {
 				moveShape(gameState, memberIndex, displacement);
 			}
 		}
+
 		auto pos = getComponent<components::Position>(shape);
-		pos->posX += displacement.x;
-		pos->posY += displacement.y;
-		pos->posZ += displacement.z;
+		if (pos) {
+			pos->posX += displacement.x;
+			pos->posY += displacement.y;
+			pos->posZ += displacement.z;
+		}
 	}
 
 	bool isGhostShape(int index)
@@ -174,7 +177,7 @@ namespace middle {
 		return false;
 	}
 
-	bool isShapeAlive(GameState* gameState, int index){
+	bool isShapeAlive(GameState* gameState, int index) {
 		return gameState->shapes[index].id == gameState->ids[index] && gameState->shapes[index].id.generation >= 0;
 	}
 
@@ -203,6 +206,7 @@ namespace middle {
 				centroid += getShapePosition(gameState, childIndex);
 			}
 		}
+
 		centroid = centroid * (1.0f / loop->loopMemberIndexes.size());
 		return centroid;
 	}

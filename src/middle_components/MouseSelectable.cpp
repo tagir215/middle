@@ -5,7 +5,7 @@ namespace components {
 		ostream << middle::fieldToString(selected);
 	}
 
-	void MouseSelectable::deserialize(const std::vector<std::string>& buffer) {
+	void MouseSelectable::deserialize(const std::vector<std::string>& buffer, int indexOffset) {
 		middle::fillField(&selected, buffer[0]);
 	}
 

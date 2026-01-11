@@ -337,7 +337,7 @@ namespace middle {
 		}
 
 		int freeIndex = findFreeIndex(gameState);
-		initScript(gameState, freeIndex, scriptName, {0,0,0});
+		//initScript(gameState, freeIndex, scriptName, {0,0,0});
 
 		std::string command = "python ../src/editor_scripts/build_project.py";
 		system(command.c_str());
@@ -349,14 +349,14 @@ namespace middle {
 		std::string scriptName = params.stringValue;
 
 		int freeIndex = findFreeIndex(gameState);
-		initScript(gameState, freeIndex, scriptName, { 0,0,0 });
+		//initScript(gameState, freeIndex, scriptName, { 0,0,0 });
 	}
 
 	void EditorActionNewCamera::execute(GameState* gameState)
 	{
 		int freeIndex = findFreeIndex(gameState);
 		Vector3& pos = gameState->editorState.camera.position;
-		initCamera(gameState, freeIndex, pos);
+		//initCamera(gameState, freeIndex, pos);
 	}
 
 	void EditorActionSelectCamera::execute(GameState* gameState)

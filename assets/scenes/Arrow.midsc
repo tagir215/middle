@@ -1,0 +1,319 @@
+#scene
+s  Arrow
+#activeCamera
+i  0
+__0__
+Sphere
+f  2.000000
+LoopSociety
+i  -1
+vi
+Position
+f  -78.616928
+f  -0.000015
+f  27.111813
+PhysicsData
+f  1.000000
+f  1.000000
+f  1.000000
+f  1.000000
+f  0.000000
+f  0.001788
+f  0.000000
+f  -0.001543
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.800000
+f  0.800000
+f  0.800000
+b  0
+MouseSelectable
+b  0
+MouseGrabbable
+b  0
+MouseIntersectable
+b  0
+b  0
+__1__
+Sphere
+f  2.000000
+LoopSociety
+i  -1
+vi
+Position
+f  -74.681023
+f  0.000061
+f  -46.499001
+PhysicsData
+f  1.000000
+f  1.000000
+f  1.000000
+f  1.000000
+f  0.000000
+f  0.002431
+f  0.000000
+f  0.002993
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.800000
+f  0.800000
+f  0.800000
+b  0
+MouseSelectable
+b  0
+MouseGrabbable
+b  0
+MouseIntersectable
+b  0
+b  0
+__2__
+Sphere
+f  2.000000
+LoopSociety
+i  -1
+vi
+Position
+f  -41.160290
+f  0.000061
+f  -5.226662
+PhysicsData
+f  1.000000
+f  1.000000
+f  1.000000
+f  1.000000
+f  0.000000
+f  -0.010516
+f  0.000000
+f  -0.001604
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.800000
+f  0.800000
+f  0.800000
+b  0
+MouseSelectable
+b  0
+MouseGrabbable
+b  0
+MouseIntersectable
+b  0
+b  0
+__3__
+Sphere
+f  2.000000
+LoopSociety
+i  -1
+vi
+Position
+f  65.799080
+f  -0.000015
+f  -2.606088
+PhysicsData
+f  1.000000
+f  1.000000
+f  1.000000
+f  1.000000
+f  0.000000
+f  -0.001603
+f  0.000000
+f  -0.000284
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.800000
+f  0.800000
+f  0.800000
+b  0
+MouseSelectable
+b  0
+MouseGrabbable
+b  0
+MouseIntersectable
+b  0
+b  0
+__4__
+Sphere
+f  2.000000
+LoopSociety
+i  -1
+vi
+Position
+f  79.449600
+f  0.000031
+f  20.356686
+PhysicsData
+f  1.000000
+f  1.000000
+f  1.000000
+f  1.000000
+f  0.000000
+f  0.005184
+f  0.000000
+f  0.008025
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.800000
+f  0.800000
+f  0.800000
+b  0
+MouseSelectable
+b  0
+MouseGrabbable
+b  0
+MouseIntersectable
+b  0
+b  0
+__5__
+Sphere
+f  2.000000
+LoopSociety
+i  -1
+vi
+Position
+f  112.832230
+f  -0.000061
+f  -1.192733
+PhysicsData
+f  1.000000
+f  1.000000
+f  1.000000
+f  1.000000
+f  0.000000
+f  -0.001582
+f  0.000000
+f  -0.000801
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.800000
+f  0.800000
+f  0.800000
+b  0
+MouseSelectable
+b  0
+MouseGrabbable
+b  0
+MouseIntersectable
+b  0
+b  0
+__6__
+Sphere
+f  2.000000
+LoopSociety
+i  -1
+vi
+Position
+f  76.246574
+f  0.000000
+f  -29.557661
+PhysicsData
+f  1.000000
+f  1.000000
+f  1.000000
+f  1.000000
+f  0.000000
+f  0.004298
+f  0.000000
+f  -0.006785
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.800000
+f  0.800000
+f  0.800000
+b  0
+MouseSelectable
+b  0
+MouseGrabbable
+b  0
+MouseIntersectable
+b  0
+b  0
+__7__
+Constraint
+i  3
+i  6
+f  0.800000
+f  0.900000
+f  28.952805
+MouseSelectable
+b  0
+MouseIntersectable
+b  0
+b  0
+__8__
+Constraint
+i  3
+i  4
+f  0.800000
+f  0.900000
+f  26.764618
+MouseSelectable
+b  0
+MouseIntersectable
+b  0
+b  0
+__9__
+Constraint
+i  4
+i  5
+f  0.800000
+f  0.900000
+f  39.730083
+MouseSelectable
+b  0
+MouseIntersectable
+b  0
+b  0
+__10__
+Constraint
+i  5
+i  6
+f  0.800000
+f  0.900000
+f  46.288586
+MouseSelectable
+b  0
+MouseIntersectable
+b  0
+b  0
+__11__
+Constraint
+i  2
+i  3
+f  0.800000
+f  0.900000
+f  107.034088
+MouseSelectable
+b  0
+MouseIntersectable
+b  0
+b  0
+__12__
+Constraint
+i  0
+i  2
+f  0.800000
+f  0.900000
+f  49.439499
+MouseSelectable
+b  0
+MouseIntersectable
+b  0
+b  0
+__13__
+Constraint
+i  1
+i  2
+f  0.800000
+f  0.900000
+f  53.112297
+MouseSelectable
+b  0
+MouseIntersectable
+b  0
+b  0

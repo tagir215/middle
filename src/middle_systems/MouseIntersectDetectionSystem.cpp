@@ -11,6 +11,7 @@
 #include "LoopEntity.h"
 #include "ConstraintEntity.h"
 #include "LoopTag.h"
+#include "Reference.h"
 
 namespace MouseIntersectDetectionSystem {
 
@@ -63,6 +64,15 @@ namespace MouseIntersectDetectionSystem {
 					if (isIntersecting) {
 						int a = 0;
 					}
+					continue;
+				}
+
+				if (middle::getComponent<components::Reference>(shape)) {
+					Vector3 pos = middle::getShapePosition(gameState, i);
+					Vector3 intersectPos;
+					bool isIntersecting = middle::RayCastLineSphere(pos, middle::DEF_RADIUS_REFERENCE_INDICATOR, 
+						gameState->editorState.camera.position, gameState->editorState.camera.position + gameState->input.mouseDir, intersectPos);
+					intersectComponent->intersecting = isIntersecting;
 					continue;
 				}
 			}

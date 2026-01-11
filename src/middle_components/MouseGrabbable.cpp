@@ -5,7 +5,7 @@ namespace components {
         ostream << middle::fieldToString(grabbing);
 	}
 
-	void MouseGrabbable::deserialize(const std::vector<std::string>& buffer) {
+	void MouseGrabbable::deserialize(const std::vector<std::string>& buffer, int indexOffset) {
         middle::fillField(&grabbing, buffer[0]);
 	}
 
