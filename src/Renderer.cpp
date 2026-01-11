@@ -2,6 +2,7 @@
 #include "game_state.h"
 #include "middle_imgui.h"
 #include "registrars.h"
+#include "raymath.h"
 #include "rlImGui.h"
 
 namespace RendererSystem {
@@ -50,7 +51,14 @@ namespace RendererSystem {
 				}
 
 				if (item.type == middle::RenderItemType::RECTANGLE) {
-					DrawCube(item.center, item.widht, item.height, item.length, item.color);
+					Matrix T = MatrixTranslate(item.transform.translation.x, item.transform.translation.y, item.transform.translation.z);
+					Matrix R = QuaternionToMatrix(item.transform.rotation);
+					Matrix S = MatrixScale(item.transform.scale.x, item.transform.scale.y, item.transform.scale.z);
+					Matrix M = MatrixMultiply(MatrixMultiply(S, R), T);
+					rlPushMatrix();
+					rlMultMatrixf(MatrixToFloatV(M).v);
+					DrawCube(item.center, item.widht,item.length,item.height, item.color);
+					rlPopMatrix();
 				}
 
 				if (item.type == middle::RenderItemType::LINE) {

@@ -90,7 +90,7 @@ namespace middle {
 	enum RenderItemType {
 		SPHERE,
 		LINE,
-		RECTANGLE
+		RECTANGLE,
 	};
 
 	struct RenderItem {
@@ -99,6 +99,7 @@ namespace middle {
 		Vector3 center;
 		Vector3 linePointA;
 		Vector3 linePointB;
+		Transform transform;
 		float radius;
 		float length;
 		float widht;

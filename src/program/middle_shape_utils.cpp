@@ -143,7 +143,6 @@ namespace middle {
 
 	bool isEntityOfType(GameState* gameState, int index, const std::vector<int>& entity)
 	{
-		assert(entity.size() > 0);
 		auto& shape = getShape(gameState, index);
 		if (shape.componentMap.size() != entity.size()) {
 			return false;
@@ -209,7 +208,7 @@ namespace middle {
 
 	Shape& getShape(GameState* gameState, int index)
 	{
-		if (gameState->shapes[index].id == gameState->ids[index]) {
+		if (gameState->shapes[index].id.generation == gameState->ids[index].generation) {
 			return gameState->shapes[index];
 		}
 		assert(true);

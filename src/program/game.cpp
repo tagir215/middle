@@ -159,7 +159,10 @@ void updateRenderData(GameState* gameState) {
 			if (selectable && selectable->selected) {
 				RenderItem selectItem;
 				selectItem.type = RenderItemType::RECTANGLE;
-				selectItem.center = getShapePosition(gameState, i);
+				selectItem.center = { 0,0,0 };
+				selectItem.transform.translation = getShapePosition(gameState, i);
+				selectItem.transform.scale = { 1,1,1 };
+				selectItem.transform.rotation = { 0,0,0,0 };
 				selectItem.widht = sphereItem.radius * 4;
 				selectItem.height = sphereItem.radius * 4;
 				selectItem.length = sphereItem.radius * 4;
@@ -171,11 +174,33 @@ void updateRenderData(GameState* gameState) {
 		}
 		if (isEntityOfType(gameState, i, entities::ConstraintEntity)) {
 			auto constraint = getComponent<components::Constraint>(shape);
+			auto selectable = getComponent<components::MouseSelectable>(shape);
+			auto intersectable = getComponent<components::MouseIntersectable>(shape);
 			RenderItem lineItem;
 			lineItem.type = RenderItemType::LINE;
 			lineItem.linePointA = getShapePosition(gameState, constraint->indexA);
 			lineItem.linePointB = getShapePosition(gameState, constraint->indexB);
+			lineItem.color = CONSTRAINT_COLOR;
+			if (intersectable && intersectable->intersecting) {
+				lineItem.color = HOVERED_THING_COLOR;
+			}
 			gameState->renderData.push_back(lineItem);
+
+			if (selectable && selectable->selected) {
+				RenderItem selectItem;
+				selectItem.type = RenderItemType::RECTANGLE;
+				selectItem.center = { 0,0,0 };
+				float height = Vector3Distance(lineItem.linePointA, lineItem.linePointB);
+				Vector3 lineDir = Vector3Normalize(lineItem.linePointB - lineItem.linePointA);
+				selectItem.widht = 1;
+				selectItem.height = height;
+				selectItem.length = 1;
+				selectItem.color = ColorAlpha(WHITE, 0.4f);
+				selectItem.transform.scale = { 1,1,1 };
+				selectItem.transform.rotation = QuaternionFromVector3ToVector3({ 0,0,1 }, lineDir);
+				selectItem.transform.translation = Vector3Scale(lineItem.linePointA + lineItem.linePointB, 0.5f);
+				gameState->renderData.push_back(selectItem);
+			}
 			continue;
 		}
 
