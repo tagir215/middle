@@ -15,6 +15,9 @@ namespace MouseSelectionSystem {
 				if (middle::isGhostShape(i)) {
 					return;
 				}
+				if (!middle::isShapeAlive(gameState, i)) {
+					continue;
+				}
 
 				auto& shape = middle::getShape(gameState, i);
 				auto selectable = middle::getComponent<components::MouseSelectable>(shape);

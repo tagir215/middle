@@ -52,6 +52,8 @@ namespace middle {
 		gameState->ids[index].generation = shape.id.generation;
 		components::Color* color = addComponent<components::Color>(shape);
 		components::Constraint* constraint = addComponent<components::Constraint>(shape);
+		addComponent<components::MouseSelectable>(shape);
+		addComponent<components::MouseIntersectable>(shape);
 		constraint->stiffness = DEF_STIFFNESS;
 		constraint->targetDistance = targetDistance;
 		constraint->indexA = indexA;

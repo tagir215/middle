@@ -174,6 +174,9 @@ namespace middle {
 		for (int i = 0; i < gameState->shapes.size(); ++i) {
 			if (!isShapeAlive(gameState, i))
 				continue;
+			if(!isShapeSelected(gameState, i))
+				continue;
+
 			Shape& shape = getShape(gameState, i);
 
 			// delete all connected constraints
@@ -195,8 +198,7 @@ namespace middle {
 
 			// store parent loops to re generate later
 			auto loop = getComponent<components::LoopSociety>(shape);
-			assert(loop != nullptr);
-			if (loop->parentLoopIndex != UNASSIGNED) {
+			if (loop != nullptr && loop->parentLoopIndex != UNASSIGNED) {
 				deteledLoopMembersParentLoops.insert(loop->parentLoopIndex);
 			}
 
@@ -205,11 +207,12 @@ namespace middle {
 			for (int id : connectedConstraints) {
 				Shape& constraintShape = getShape(gameState, id);
 				auto selectable = getComponent<components::MouseSelectable>(constraintShape);
+				assert(selectable);
 				selectable->selected = true;
 			}
 		}
 
-		// set all selected shapes as type none to activate deletion process
+		// delete selected shapes
 		for (int i = 0; i < gameState->shapes.size(); ++i) {
 			if (!isShapeAlive(gameState, i))
 				continue;

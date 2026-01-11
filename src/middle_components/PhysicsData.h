@@ -9,7 +9,6 @@ namespace components {
         float invMass = 0;
         float invMomentOfInertia = 0;
         float radius = 0;
-        float linearDamping = 0;
         float velX = 0;
         float velY = 0;
         float velZ = 0;
