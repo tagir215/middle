@@ -7,6 +7,9 @@
 #include "Position.h"
 #include "middle_math.h"
 #include "Constraint.h"
+#include "JointEntity.h"
+#include "LoopEntity.h"
+#include "ConstraintEntity.h"
 
 namespace MouseIntersectDetectionSystem {
 
@@ -22,11 +25,13 @@ namespace MouseIntersectDetectionSystem {
 
 				bool wasIntersecting = middle::isMouseIntersectingShape(gameState, i);
 				intersectComponent->wasIntersecting = wasIntersecting;
-				bool bContainer = isContainer(gameState, i);
-				bool bSphere = isSphere(gameState, i);
-				if (bSphere) {
+				bool bContainer = middle::isEntityOfType(gameState, i, entities::LoopEntity);
+				bool bJoint = middle::isEntityOfType(gameState, i, entities::JointEntity);
+				bool bConstraint = middle::isEntityOfType(gameState, i, entities::ConstraintEntity);
+
+				if (bJoint) {
 					// when in constraint mode can only select actual spheres
-					if (gameState->editorState.creationMode == middle::CreationMode::CONSTRAINT_MODE && !isSphere(gameState, i))
+					if (gameState->editorState.creationMode == middle::CreationMode::CONSTRAINT_MODE && !bJoint)
 						return;
 
 					auto sphere = middle::getComponent<components::Sphere>(shape);
@@ -37,8 +42,8 @@ namespace MouseIntersectDetectionSystem {
 					continue;
 				}
 
-				auto constraint = middle::getComponent<components::Constraint>(shape);
-				if (constraint != nullptr) {
+				if (bConstraint) {
+					auto constraint = middle::getComponentAssert<components::Constraint>(shape);
 					// in constraint creation mode, can't select constraints, only spheres to create constraints to
 					if (gameState->editorState.creationMode == middle::CreationMode::CONSTRAINT_MODE)
 						return;
@@ -49,6 +54,14 @@ namespace MouseIntersectDetectionSystem {
 					bool mouseIntersect = middle::PointIntersectLineZX_Plane(gameState->input.mouseXZ_PlanePos, posA, posB, middle::DEF_LINE_PADDING_H, middle::DEF_LINE_PADDING_V);
 					auto intersectComponent = middle::getComponentAssert<components::MouseIntersectable>(shape);
 					intersectComponent->intersecting = mouseIntersect;
+				}
+
+				if (bContainer) {
+					auto loop = middle::getComponentAssert<components::LoopSociety>(shape);
+					Vector3 centroid = middle::getLoopCentroid(gameState, i);
+					Vector3 intersectPos;
+					bool isIntersecting = middle::RayCastLineSphere(centroid, middle::DEF_RADIUS_LOOP_INDICATOR, gameState->editorState.camera.position, gameState->editorState.camera.position + gameState->input.mouseDir, intersectPos);
+					intersectComponent->intersecting = isIntersecting;
 				}
 			}
 		}

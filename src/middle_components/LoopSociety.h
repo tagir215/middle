@@ -4,9 +4,8 @@
 
 namespace components {
 	struct LoopSociety : public middle::Serializable{
-        int loopArrayOffset = UNASSIGNED;
-        int loopSize = 0;
         int parentLoopIndex = UNASSIGNED;
+		std::vector<int>loopMemberIndexes;
 
 		void serialize(std::ostream& ostream) override;
 		void deserialize(const std::vector<std::string>& buffer);

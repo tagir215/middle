@@ -9,12 +9,6 @@ namespace middle {
 	std::vector<int>findConnectedConstraints(GameState* gameState, int id);
 	// this constraint already exists... don't make duplicates
 	bool constraintAlreadyExists(GameState* gameState, int indexA, int indexB);
-	// update loop if some members have been deleted 
-	void updateLoop(GameState* gameState, int id);
-	// reorder loop member array, after editing loops
-	void reorderLoops(GameState* gameState);
-	// return child indexes of loops, because it's so confusing to think about everytime
-	std::vector<int> getChildIndexes(GameState* gameState, int id);
 	// unselect selected things
 	void unselect(GameState* gameState);
 	// drag shape and its children
@@ -25,12 +19,10 @@ namespace middle {
 	int findHighestLevelContainer(GameState* gameState, int index);
 	// loop the shape instances
 	int findHighestUsedIndex(GameState* gameState);
-	// return if the shape is of sphere family
-	bool isSphere(GameState* gameState, int index);
-	// is it a loop or a reference?
-	bool isContainer(GameState* gameState, int index);
 	// is the shape real editable thing or a ghost (reference from other scene)
 	bool isGhostShape(int index);
+	// check if is of entity type
+	bool isEntityOfType(GameState* gameState, int index, const std::vector<int>& entity);
 	// is the shape selected via mouse
 	bool isShapeSelected(GameState* gameState, int index);
 	// is the mouse intersecting this shape
@@ -39,6 +31,8 @@ namespace middle {
 	bool isShapeAlive(GameState* gameState, int index);
 	// get pos quickly
 	Vector3 getShapePosition(GameState* gameState, int index);
+	// get center pos os loops for 
+	Vector3 getLoopCentroid(GameState* gameState, int index);
 	// get shape instance
 	Shape& getShape(GameState* gameState, int index);
 	// delete shape , updates generational indexes

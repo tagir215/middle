@@ -9,6 +9,8 @@
 #include "PhysicsData.h"
 #include "MouseSelectable.h"
 #include "MouseIntersectable.h"
+#include "JointEntity.h"
+#include "LoopEntity.h"
 
 namespace middle {
 
@@ -53,33 +55,6 @@ namespace middle {
 		assert(true);
 	}
 
-	void updateLoop(GameState* gameState, int id) {
-		Shape& loopShape = gameState->shapes[id];
-		auto loop = getComponent<components::LoopSociety>(loopShape);
-		assert(loop != nullptr);
-
-		std::vector<int>members;
-		// store still valid members
-		for (int i = loop->loopArrayOffset; i < loop->loopArrayOffset + loop->loopSize; ++i) {
-			int memberIndex = gameState->loopMembers[i];
-			Shape& shape = gameState->shapes[memberIndex];
-			if (isShapeAlive(gameState, memberIndex)) {
-				members.push_back(memberIndex);
-			}
-		}
-		int newSize = members.size();
-		// if there's less than two valid members mark as NONE to you know, for deletion process
-		if (newSize < 2) {
-			++loopShape.id.generation;
-			return;
-		}
-		// otherwise we update the member array valid members to come sequentially, and update the loopsize
-		loop->loopSize = newSize;
-		for (int i = 0; i < newSize; ++i) {
-			gameState->loopMembers[loop->loopArrayOffset + i] = members[i];
-		}
-	}
-
 	void unselect(GameState* gameState) {
 		for (int i = 0; i < gameState->shapes.size(); ++i) {
 			auto& shape = gameState->shapes[i];
@@ -87,35 +62,6 @@ namespace middle {
 			if (selectableComponent) {
 				selectableComponent->selected = false;
 			}
-		}
-	}
-
-	std::vector<int> getChildIndexes(GameState* gameState, int id) {
-		auto& shape = gameState->shapes[id];
-		auto loop = getComponent<components::LoopSociety>(shape);
-		std::vector<int> result;
-		for (int i = loop->loopArrayOffset; i < loop->loopArrayOffset + loop->loopSize; ++i) {
-			result.push_back(gameState->loopMembers[i]);
-		}
-		return result;
-	}
-
-	void reorderLoops(GameState* gameState) {
-		gameState->loopIndex = 0;
-		// copy old array
-		std::array<int, MAX_LOOP_MEMBER_COUNT>oldMembers = gameState->loopMembers;
-		for (int i = 0; i < gameState->shapes.size(); ++i) {
-			Shape& shape = gameState->shapes[i];
-			auto loop = getComponent<components::LoopSociety>(shape);
-			if (loop == nullptr) {
-				continue;
-			}
-			int loopIndex = gameState->loopIndex;
-			for (int j = 0; j < loop->loopSize; ++j) {
-				gameState->loopMembers[loopIndex + j] = oldMembers[loop->loopArrayOffset + j];
-			}
-			loop->loopArrayOffset = gameState->loopIndex;
-			gameState->loopIndex += loop->loopSize;
 		}
 	}
 
@@ -142,28 +88,12 @@ namespace middle {
 		return highestI;
 	}
 
-	bool isSphere(GameState* gameState, int index)
-	{
-		Shape& shape = gameState->shapes[index];
-		if (getComponent<components::Sphere>(shape)) {
-			return true;
-		}
-		return false;
-	}
-
-	bool isContainer(GameState* gameState, int index)
-	{
-		Shape& shape = gameState->shapes[index];
-		auto loop = getComponent<components::LoopSociety>(shape);
-		return loop != nullptr && loop->loopSize > 0;
-	}
-
 	void dragShape(GameState* gameState, int index, Vector3 linearVelocity) {
 		Shape& shape = getShape(gameState, index);
 		auto loop = getComponent<components::LoopSociety>(shape);
-		if (loop != nullptr && loop->loopSize > 0) {
-			for (int i = loop->loopArrayOffset; i < loop->loopArrayOffset + loop->loopSize; ++i) {
-				int memberIndex = gameState->loopMembers[i];
+		if (loop != nullptr) {
+			for (int i = 0; i < loop->loopMemberIndexes.size(); ++i) {
+				int memberIndex = loop->loopMemberIndexes[i];
 				dragShape(gameState, memberIndex, linearVelocity);
 			}
 		}
@@ -194,8 +124,8 @@ namespace middle {
 		Shape& shape = gameState->shapes[index];
 		auto loop = getComponent<components::LoopSociety>(shape);
 		if (loop != nullptr) {
-			for (int i = loop->loopArrayOffset; i < loop->loopArrayOffset + loop->loopSize; ++i) {
-				int memberIndex = gameState->loopMembers[i];
+			for (int i = 0; i < loop->loopMemberIndexes.size(); ++i) {
+				int memberIndex = loop->loopMemberIndexes[i];
 				assert(index != memberIndex);
 				moveShape(gameState, memberIndex, displacement);
 			}
@@ -209,6 +139,21 @@ namespace middle {
 	bool isGhostShape(int index)
 	{
 		return index >= GHOST_INDEX_OFFSET;
+	}
+
+	bool isEntityOfType(GameState* gameState, int index, const std::vector<int>& entity)
+	{
+		assert(entity.size() > 0);
+		auto& shape = getShape(gameState, index);
+		if (shape.componentMap.size() != entity.size()) {
+			return false;
+		}
+		for (int componentTypeId : entity) {
+			if (shape.componentMap.find(componentTypeId) == shape.componentMap.end()) {
+				return false;
+			}
+		}
+		return true;
 	}
 
 	bool isShapeSelected(GameState* gameState, int index) {
@@ -242,6 +187,26 @@ namespace middle {
 		return { position->posX, position->posY, position->posZ };
 	}
 
+	Vector3 getLoopCentroid(GameState* gameState, int index)
+	{
+		auto& shape = gameState->shapes[index];
+		auto loop = getComponentAssert<components::LoopSociety>(shape);
+		Vector3 centroid = { 0,0,0 };
+		if (loop->loopMemberIndexes.size() < 1)
+			return centroid;
+
+		for (int childIndex : loop->loopMemberIndexes) {
+			if (isEntityOfType(gameState, childIndex, entities::LoopEntity)) {
+				centroid += getLoopCentroid(gameState, index);
+			}
+			else {
+				centroid += getShapePosition(gameState, childIndex);
+			}
+		}
+		centroid = centroid * (1.0f / loop->loopMemberIndexes.size());
+		return centroid;
+	}
+
 	Shape& getShape(GameState* gameState, int index)
 	{
 		if (gameState->shapes[index].id == gameState->ids[index]) {
@@ -258,9 +223,9 @@ namespace middle {
 
 	void deleteShapeRecursive(GameState* gameState, int index) {
 		Shape& shape = gameState->shapes[index];
-		if (isContainer(gameState, index)) {
-			std::vector<int> children = getChildIndexes(gameState, index);
-			for (int childIndex : children) {
+		auto loop = getComponent<components::LoopSociety>(shape);
+		if (loop) {
+			for (int childIndex : loop->loopMemberIndexes) {
 				deleteShapeRecursive(gameState, childIndex);
 			}
 		}

@@ -11,26 +11,53 @@
 
 namespace middle {
 
+	std::vector<std::string> split(const std::string& s, char delim) {
+		std::vector<std::string> parts;
+		std::size_t start = 0;
+		std::size_t pos;
+
+		if (s == "")
+			return parts;
+
+		while ((pos = s.find(delim, start)) != std::string::npos) {
+			parts.push_back(s.substr(start, pos - start));
+			start = pos + 1;
+		}
+
+		std::string lastSegment = s.substr(start);
+		if(lastSegment != "")
+			parts.push_back(lastSegment);  // last segment
+		return parts;
+	}
+
 	std::string fieldToString(const std::any& field) {
 		if (field.type() == typeid(std::string)) {
 			const std::string& v = std::any_cast<const std::string&>(field);
-			return "s " + v + "\n";
+			return "s  " + v + "\n";
 		}
 		else if (field.type() == typeid(int)) {
 			int v = std::any_cast<int>(field);
-			return "i " + std::to_string(v) + "\n";
+			return "i  " + std::to_string(v) + "\n";
 		}
 		else if (field.type() == typeid(float)) {
 			float v = std::any_cast<float>(field);
-			return "f " + std::to_string(v) + "\n";
+			return "f  " + std::to_string(v) + "\n";
 		}
 		else if (field.type() == typeid(double)) {
 			double v = std::any_cast<double>(field);
-			return "d " + std::to_string(v) + "\n";
+			return "d  " + std::to_string(v) + "\n";
 		}
 		else if (field.type() == typeid(bool)) {
 			bool v = std::any_cast<bool>(field);
-			return "b " + std::to_string(v) + "\n";
+			return "b  " + std::to_string(v) + "\n";
+		}
+		else if (field.type() == typeid(std::vector<int>)) {
+			auto v = std::any_cast<std::vector<int>>(field);
+			std::string result = "vi\n";
+			for (int i = 0; i < v.size(); ++i) {
+				result += std::to_string(v[i]) + "\n";
+			}
+			return result;
 		}
 
 		assert(true, "nope not supporting");
@@ -38,7 +65,7 @@ namespace middle {
 
 	void fillField(void* field, const std::string& fieldString) {
 		char c = fieldString[0];
-		std::string valueStr = fieldString.substr(2);
+		std::string valueStr = fieldString.substr(3);
 		if (c == 's') {
 			std::string* strptr = static_cast<std::string*>(field);
 			*strptr = valueStr;
@@ -59,14 +86,25 @@ namespace middle {
 			bool* boolptr = static_cast<bool*>(field);
 			*boolptr = std::stoi(valueStr);
 		}
+		else if (c == 'v') {
+			std::vector<int>* vectorptr = static_cast<std::vector<int>*>(field);
+			char vectorType = fieldString[1];
+			std::vector<std::string> values = split(valueStr, '\n');
+			vectorptr->resize(values.size());
+			if (vectorType == 'i') {
+				for (int i = 0; i < values.size(); ++i) {
+					(*vectorptr)[i] = std::stoi(values[i]);
+				}
+			}
+		}
 
 		assert("nope not supported");
 	}
 
 	std::string coordToLines(const Vector3& position) {
-		auto x = "f " + std::to_string(position.x) + "\n";
-		auto y = "f " + std::to_string(position.y) + "\n";
-		auto z = "f " + std::to_string(position.z) + "\n";
+		auto x = "f  " + std::to_string(position.x) + "\n";
+		auto y = "f  " + std::to_string(position.y) + "\n";
+		auto z = "f  " + std::to_string(position.z) + "\n";
 		return x + y + z;
 	}
 
@@ -133,7 +171,8 @@ namespace middle {
 			for (auto& pair : shape.componentMap) {
 				std::string componentName = componentNameMap[pair.first];
 				outFile << componentName << "\n";
-				Serializable* serializable = getSerializableComponent(shape, pair.first);
+				int componentTypeId = pair.first;
+				Serializable* serializable = getSerializableComponent(shape, componentTypeId);
 				serializable->serialize(outFile);
 			}
 		}
@@ -248,40 +287,57 @@ namespace middle {
 		inputFile.seekg(0, std::ios::beg);
 
 		std::string activeComponentName = "";
-		std::string none = "";
+		const int noParse = 0;
+		const int vectorMode = 1;
+		const int componentMode = 2;
 		int activeShapeIndex = -1;
+		int parseMode = noParse;
 
 		// read objects
 		while (std::getline(inputFile, line)) {
 
+			// stumbled into an entity. flush the previous entity
 			if (line.find("__") != std::string::npos) {
-				if (activeComponentName != none) {
+				if (parseMode != noParse) {
 					flushBuffer(gameState, buffer, activeComponentName, activeShapeIndex, indexOffset);
 				}
+				// parse entity index and initialize it
 				int l = line.size();
 				int start = 2;
 				int end = l - 2;
 				std::string digits = line.substr(start, end);
 				activeShapeIndex = std::stoi(digits);
 				addShape(gameState, activeShapeIndex, Shape());
-				activeComponentName = none;
+				parseMode = noParse;
 			}
 
-			// read shapes
+			// component name found from component type map
 			if(componentTypeMap.find(line) != componentTypeMap.end()){
-				if (activeComponentName != none) {
+				if (parseMode != noParse) {
 					flushBuffer(gameState, buffer, activeComponentName, activeShapeIndex, indexOffset);
 				}
 				activeComponentName = line;
+				parseMode = componentMode;
 				continue;
 			}
-			// don't append until first type is found, (where data section starts, so skip metadata)
-			if (activeComponentName != none) {
+
+			if (line[0] == 'v') {
+				parseMode = vectorMode;
+				buffer.push_back(line + '\n');
+				continue;
+			}
+
+
+			if (parseMode == componentMode) {
 				buffer.push_back(line);
+			}
+			// in vector mode push new lines to the last buffer element
+			if (parseMode == vectorMode) {
+				buffer[buffer.size() - 1] += line + '\n';
 			}
 		}
 
-		if (activeComponentName != none) {
+		if (parseMode != noParse) {
 			flushBuffer(gameState, buffer, activeComponentName, activeShapeIndex, indexOffset);
 		}
 

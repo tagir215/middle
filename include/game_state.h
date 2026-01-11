@@ -122,7 +122,6 @@ namespace middle {
 		std::array<Id, MAX_SHAPE_COUNT>ids;
 		std::array<Shape, MAX_SHAPE_COUNT>shapes;
 		std::array<Vector3, MAX_VERTEX_COUNT> vertexArray;
-		std::array<int, MAX_LOOP_MEMBER_COUNT> loopMembers;
 		std::unordered_map<std::string, std::unique_ptr<MiddleGameplaySystem>> gameplayScripts;
 		Matrix worldM;
 		Vector2 mouseDragPos;

@@ -13,6 +13,10 @@
 #include "MouseSelectable.h"
 #include "MouseGrabbable.h"
 #include "MouseIntersectable.h"
+#include "LoopSociety.h"
+#include "JointEntity.h"
+#include "LoopEntity.h"
+#include "ConstraintEntity.h"
 
 using namespace middle;
 
@@ -125,49 +129,53 @@ void updateRenderData(GameState* gameState) {
 	gameState->renderData.clear();
 	for (int i = 0; i < gameState->shapes.size(); ++i) {
 		auto& shape = gameState->shapes[i];
-		auto color = getComponent<components::Color>(shape);
-		if (!color)
-			continue;
 
+		if (isEntityOfType(gameState, i, entities::LoopEntity)) {
+			auto loop = getComponent<components::LoopSociety>(shape);
+			RenderItem loopItem;
+			Vector3 centroid = getLoopCentroid(gameState, i);
+			loopItem.type = RenderItemType::SPHERE;
+			loopItem.center = centroid;
+			loopItem.radius = DEF_RADIUS_LOOP_INDICATOR;
+			loopItem.color = LOOP_INDICATOR_COLOR;
+			gameState->renderData.push_back(loopItem);
+		}
 
-		RenderItem item;
-		item.color.r = color->colorR;
-		item.color.g = color->colorG;
-		item.color.b = color->colorB;
-		item.color.a = color->colorA;
-
-		auto sphere = getComponent<components::Sphere>(shape);
-		auto selectable = getComponent<components::MouseSelectable>(shape);
-		auto intersectable = getComponent<components::MouseIntersectable>(shape);
-		if (sphere) {
-			item.center = getShapePosition(gameState, i);
-			item.type = RenderItemType::SPHERE;
-			item.radius = sphere->radius;
+		if (isEntityOfType(gameState, i, entities::JointEntity)) {
+			auto sphere = getComponent<components::Sphere>(shape);
+			auto pos = getComponent<components::Position>(shape);
+			auto intersectable = getComponent<components::MouseIntersectable>(shape);
+			auto selectable = getComponent<components::MouseSelectable>(shape);
+			RenderItem sphereItem;
+			sphereItem.type = RenderItemType::SPHERE;
+			sphereItem.radius = sphere->radius;
+			sphereItem.center = { pos->posX, pos->posY, pos->posZ };
+			sphereItem.color = JOINT_COLOR;
+			if (intersectable && intersectable->intersecting) {
+				sphereItem.color = HOVERED_THING_COLOR;
+			}
+			gameState->renderData.push_back(sphereItem);
 
 			if (selectable && selectable->selected) {
 				RenderItem selectItem;
 				selectItem.type = RenderItemType::RECTANGLE;
 				selectItem.center = getShapePosition(gameState, i);
-				selectItem.widht = item.radius * 4;
-				selectItem.height = item.radius * 4;
-				selectItem.length = item.radius * 4;
+				selectItem.widht = sphereItem.radius * 4;
+				selectItem.height = sphereItem.radius * 4;
+				selectItem.length = sphereItem.radius * 4;
 				selectItem.color = ColorAlpha(WHITE, 0.4f);
 				gameState->renderData.push_back(selectItem);
 			}
 
-			if (intersectable && intersectable->intersecting) {
-				item.color = WHITE;
-			}
-
-			gameState->renderData.push_back(item);
 			continue;
 		}
-		auto constraint = getComponent<components::Constraint>(shape);
-		if (constraint) {
-			item.type = RenderItemType::LINE;
-			item.linePointA = getShapePosition(gameState, constraint->indexA);
-			item.linePointB = getShapePosition(gameState, constraint->indexB);
-			gameState->renderData.push_back(item);
+		if (isEntityOfType(gameState, i, entities::ConstraintEntity)) {
+			auto constraint = getComponent<components::Constraint>(shape);
+			RenderItem lineItem;
+			lineItem.type = RenderItemType::LINE;
+			lineItem.linePointA = getShapePosition(gameState, constraint->indexA);
+			lineItem.linePointB = getShapePosition(gameState, constraint->indexB);
+			gameState->renderData.push_back(lineItem);
 			continue;
 		}
 

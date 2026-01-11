@@ -5,6 +5,7 @@
 #include "middle_shape_utils.h"
 #include "MouseGrabbable.h"
 #include "Position.h"
+#include "LoopSociety.h"
 
 namespace MouseGrabbingSystem {
 
@@ -24,7 +25,18 @@ namespace MouseGrabbingSystem {
 				}
 
 				if (grabbable->grabbing) {
-					Vector3 pos = middle::getShapePosition(gameState, i);
+					Vector3 pos;
+					auto posComponent = middle::getComponent<components::Position>(shape);
+					if (posComponent) {
+						pos = { posComponent->posX, posComponent->posY, posComponent->posZ };
+					}
+					else {
+						auto loop = middle::getComponent<components::LoopSociety>(shape);
+						if (loop) {
+							pos = middle::getLoopCentroid(gameState, i);
+						}
+					}
+
 					Vector3 cameraPos = gameState->editorState.camera.position;
 					float objYDistance = std::abs(pos.y - cameraPos.y);
 					float yDistance = std::abs(cameraPos.y);

@@ -11,6 +11,9 @@
 #include "Reference.h"
 #include "Position.h"
 #include "MouseSelectable.h"
+#include "JointEntity.h"
+#include "ConstraintEntity.h"
+#include "LoopEntity.h"
 
 namespace middle {
 	void processEditorActions(GameState* gameState) {
@@ -122,7 +125,7 @@ namespace middle {
 		int freeIndex = findFreeIndex(gameState);
 
 		Vector3 xzPos = gameState->input.mouseXZ_PlanePos;
-		initJoint(gameState, freeIndex, xzPos);
+		entities::initJoint(gameState, freeIndex, xzPos);
 	};
 
 	void EditorActionNewConstraint::execute(GameState* gameState) {
@@ -130,7 +133,7 @@ namespace middle {
 
 		std::vector<int> selectedIndexes;
 		for (int i = 0; i < gameState->shapes.size(); ++i) {
-			if (!isSphere(gameState, i))
+			if (!isEntityOfType(gameState, i, entities::JointEntity))
 				continue;
 			if (isShapeAlive(gameState, i) && isShapeSelected(gameState, i))
 				selectedIndexes.push_back(i);
@@ -141,8 +144,8 @@ namespace middle {
 
 		int indexA = selectedIndexes[0];
 		int indexB = selectedIndexes[1];
-		assert(isSphere(gameState, indexA));
-		assert(isSphere(gameState, indexB));
+		assert(isEntityOfType(gameState, indexA, entities::JointEntity));
+		assert(isEntityOfType(gameState, indexB, entities::JointEntity));
 
 		if (constraintAlreadyExists(gameState, indexA, indexB)) {
 			return;
@@ -156,7 +159,7 @@ namespace middle {
 			auto posA = getShapePosition(gameState, indexA);
 			auto posB = getShapePosition(gameState, indexB);
 			float distBetween = Vector3Distance(posA, posB);
-			initConstraint(gameState, freeIndex, indexA, indexB, distBetween);
+			entities::initConstraint(gameState, freeIndex, indexA, indexB, distBetween);
 
 			// auto unselect
 			unselect(gameState);
@@ -183,9 +186,9 @@ namespace middle {
 			std::vector<int> connectedConstraints = findConnectedConstraints(gameState, i);
 
 			// remove parent indexes if deleting loops from children
-			if (isContainer(gameState, i)) {
-				auto childIndexes = getChildIndexes(gameState, i);
-				for (int childIndex : childIndexes) {
+			auto loop = getComponent<components::LoopSociety>(shape);
+			if (loop) {
+				for (int childIndex : loop->loopMemberIndexes) {
 					auto& shape = gameState->shapes[childIndex];
 					auto loop = getComponent<components::LoopSociety>(shape);
 					loop->parentLoopIndex = UNASSIGNED;
@@ -197,12 +200,11 @@ namespace middle {
 			}
 
 			// store parent loops to re generate later
-			auto loop = getComponent<components::LoopSociety>(shape);
 			if (loop != nullptr && loop->parentLoopIndex != UNASSIGNED) {
 				deteledLoopMembersParentLoops.insert(loop->parentLoopIndex);
-			}
-
-			foundSelected = true;
+			 }
+             
+			 foundSelected = true;
 			// set all connected constraints as selected
 			for (int id : connectedConstraints) {
 				Shape& constraintShape = getShape(gameState, id);
@@ -220,20 +222,6 @@ namespace middle {
 				continue;
 			deleteShape(gameState, i);
 		}
-
-		// if member was deleted from a group we obviously need to update the loop
-		for (int loopShapeIndex : deteledLoopMembersParentLoops) {
-			if (!isShapeAlive(gameState, loopShapeIndex))
-				continue;
-			updateLoop(gameState, loopShapeIndex);
-			editedLoops = true;
-		}
-
-		// if we edited loops we need to reorder the loop array, to remove gaps
-		if (editedLoops) {
-			reorderLoops(gameState);
-		}
-
 	}
 
 	void EditorActionSaveScene::execute(GameState* gameState) {
@@ -264,7 +252,7 @@ namespace middle {
 			return;
 
 		// create 
-		initLoop(gameState, freeIndex, memberIndexes);
+		entities::initLoop(gameState, freeIndex, memberIndexes);
 
 		// auto unselect
 		unselect(gameState);
