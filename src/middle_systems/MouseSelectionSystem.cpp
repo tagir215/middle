@@ -5,6 +5,7 @@
 #include "middle_shape_utils.h"
 #include "MouseSelectable.h"
 #include "Constraint.h"
+#include "ConstraintEntity.h"
 
 namespace MouseSelectionSystem {
 
@@ -20,11 +21,18 @@ namespace MouseSelectionSystem {
 				}
 
 				auto& shape = middle::getShape(gameState, i);
-				auto selectable = middle::getComponent<components::MouseSelectable>(shape);
 				auto intersectable = middle::getComponent<components::MouseIntersectable>(shape);
-				auto constraint = middle::getComponent<components::Constraint>(shape);
+				auto selectable = middle::getComponent<components::MouseSelectable>(shape);
 				if (selectable == nullptr || intersectable == nullptr)
 					continue;
+
+				auto constraint = middle::getComponent<components::Constraint>(shape);
+
+				// in constraint mode unselect constraints 
+				if (gameState->editorState.creationMode == middle::CreationMode::CONSTRAINT_MODE && constraint) {
+					selectable->selected = false;
+					continue;
+				}
 
 				// when holding down, don't immediatedly toggle once when starting intersect
 				if (!intersectable->wasIntersecting && intersectable->intersecting && gameState->input.mouseHeld) {

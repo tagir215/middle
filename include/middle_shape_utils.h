@@ -21,8 +21,6 @@ namespace middle {
 	int findHighestUsedIndex(GameState* gameState);
 	// is the shape real editable thing or a ghost (reference from other scene)
 	bool isGhostShape(int index);
-	// check if is of entity type
-	bool isEntityOfType(GameState* gameState, int index, const std::vector<int>& entity);
 	// is the shape selected via mouse
 	bool isShapeSelected(GameState* gameState, int index);
 	// is the mouse intersecting this shape

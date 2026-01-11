@@ -3,21 +3,24 @@ s  NewWorld
 #activeCamera
 i  0
 __0__
+LoopSociety
+i  5
+vi
 Sphere
 f  2.000000
 Position
-f  -70.635689
-f  0.000000
-f  248.273010
+f  -116.598068
+f  -0.000099
+f  267.516113
 PhysicsData
 f  1.000000
 f  1.000000
 f  1.000000
 f  1.000000
 f  0.000000
+f  0.000023
 f  0.000000
-f  0.000000
-f  0.000000
+f  0.000001
 f  0.000000
 f  0.000000
 f  0.000000
@@ -32,25 +35,25 @@ b  0
 MouseIntersectable
 b  0
 b  0
-LoopSociety
-i  -1
-vi
 __1__
+LoopSociety
+i  5
+vi
 Sphere
 f  2.000000
 Position
-f  -103.516327
-f  0.000000
-f  220.102066
+f  -108.210815
+f  -0.000099
+f  213.906937
 PhysicsData
 f  1.000000
 f  1.000000
 f  1.000000
 f  1.000000
 f  0.000000
+f  0.000005
 f  0.000000
-f  0.000000
-f  0.000000
+f  -0.000011
 f  0.000000
 f  0.000000
 f  0.000000
@@ -65,25 +68,25 @@ b  0
 MouseIntersectable
 b  0
 b  0
-LoopSociety
-i  -1
-vi
 __2__
+LoopSociety
+i  5
+vi
 Sphere
 f  2.000000
 Position
-f  -45.778976
-f  0.000000
-f  207.106796
+f  -85.637207
+f  -0.000053
+f  226.850586
 PhysicsData
 f  1.000000
 f  1.000000
 f  1.000000
 f  1.000000
 f  0.000000
+f  -0.000014
 f  0.000000
-f  0.000000
-f  0.000000
+f  0.000035
 f  0.000000
 f  0.000000
 f  0.000000
@@ -98,40 +101,98 @@ b  0
 MouseIntersectable
 b  0
 b  0
-LoopSociety
-i  -1
-vi
 __3__
-Constraint
-i  0
-i  1
+LoopSociety
+i  5
+vi
+Sphere
+f  2.000000
+Position
+f  -95.458282
+f  -0.000053
+f  257.784637
+PhysicsData
+f  1.000000
+f  1.000000
+f  1.000000
+f  1.000000
+f  0.000000
+f  -0.000014
+f  0.000000
+f  -0.000025
+f  0.000000
+f  0.000000
+f  0.000000
 f  0.800000
-f  0.900000
-f  43.298252
+f  0.800000
+f  0.800000
+b  0
 MouseSelectable
+b  0
+MouseGrabbable
 b  0
 MouseIntersectable
 b  0
 b  0
 __4__
 Constraint
-i  1
-i  2
+i  0
+i  3
 f  0.800000
 f  0.900000
-f  59.181740
+f  23.271996
 MouseSelectable
 b  0
 MouseIntersectable
 b  0
 b  0
 __5__
+LoopTag
+LoopSociety
+i  -1
+vi
+0
+1
+2
+3
+MouseSelectable
+b  0
+MouseIntersectable
+b  0
+b  0
+MouseGrabbable
+b  0
+__7__
 Constraint
-i  0
+i  2
+i  3
+f  0.800000
+f  0.900000
+f  32.455360
+MouseSelectable
+b  0
+MouseIntersectable
+b  0
+b  0
+__8__
+Constraint
+i  1
 i  2
 f  0.800000
 f  0.900000
-f  48.088600
+f  26.021284
+MouseSelectable
+b  0
+MouseIntersectable
+b  0
+b  0
+__9__
+Constraint
+i  0
+i  1
+f  0.800000
+f  0.900000
+f  54.261356
 MouseSelectable
 b  0
 MouseIntersectable

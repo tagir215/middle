@@ -11,16 +11,6 @@
 
 namespace entities{
 
-    inline std::vector<int>JointEntity{
-        middle::getTypeId<components::Position>(),
-        middle::getTypeId<components::Sphere>(),
-        middle::getTypeId<components::MouseSelectable>(),
-        middle::getTypeId<components::MouseIntersectable>(),
-        middle::getTypeId<components::LoopSociety>(),
-        middle::getTypeId<components::MouseGrabbable>(),
-        middle::getTypeId<components::PhysicsData>(),
-    };
-
     inline void initJoint(middle::GameState* gameState, int index, const Vector3& position){
 		auto& shape = gameState->shapes[index];
 		++shape.id.generation;

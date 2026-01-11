@@ -7,12 +7,6 @@
 
 namespace entities{
 
-    inline std::vector<int>ConstraintEntity{
-        middle::getTypeId<components::Constraint>(),
-        middle::getTypeId<components::MouseSelectable>(),
-        middle::getTypeId<components::MouseIntersectable>(),
-    };
-
     inline void initConstraint(middle::GameState* gameState, int index, int indexA, int indexB, float targetDistance){
 		auto& shape = gameState->shapes[index];
 		++shape.id.generation;

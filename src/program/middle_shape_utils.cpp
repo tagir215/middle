@@ -180,7 +180,7 @@ namespace middle {
 
 	Vector3 getShapePosition(GameState* gameState, int index)
 	{
-		auto& shape = gameState->shapes[index];
+		auto& shape = getShape(gameState, index);
 		auto position = getComponent<components::Position>(shape);
 		assert(position);
 		return { position->posX, position->posY, position->posZ };
@@ -188,15 +188,16 @@ namespace middle {
 
 	Vector3 getLoopCentroid(GameState* gameState, int index)
 	{
-		auto& shape = gameState->shapes[index];
+		auto& shape = getShape(gameState, index);
 		auto loop = getComponentAssert<components::LoopSociety>(shape);
 		Vector3 centroid = { 0,0,0 };
 		if (loop->loopMemberIndexes.size() < 1)
 			return centroid;
 
 		for (int childIndex : loop->loopMemberIndexes) {
-			if (isEntityOfType(gameState, childIndex, entities::LoopEntity)) {
-				centroid += getLoopCentroid(gameState, index);
+			auto& child = getShape(gameState, childIndex);
+			if (getComponent<components::LoopTag>(child)) {
+				centroid += getLoopCentroid(gameState, childIndex);
 			}
 			else {
 				centroid += getShapePosition(gameState, childIndex);
@@ -208,10 +209,10 @@ namespace middle {
 
 	Shape& getShape(GameState* gameState, int index)
 	{
-		if (gameState->shapes[index].id.generation == gameState->ids[index].generation) {
+		if (gameState->shapes[index].id == gameState->ids[index]) {
 			return gameState->shapes[index];
 		}
-		assert(true);
+		assert(false);
 	}
 
 	void deleteShape(GameState* gameState, int index) {

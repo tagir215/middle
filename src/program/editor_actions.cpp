@@ -14,6 +14,7 @@
 #include "JointEntity.h"
 #include "ConstraintEntity.h"
 #include "LoopEntity.h"
+#include "LoopTag.h"
 
 namespace middle {
 	void processEditorActions(GameState* gameState) {
@@ -133,7 +134,7 @@ namespace middle {
 
 		std::vector<int> selectedIndexes;
 		for (int i = 0; i < gameState->shapes.size(); ++i) {
-			if (!isEntityOfType(gameState, i, entities::JointEntity))
+			if (!getComponent<components::Sphere>(shapes[i]))
 				continue;
 			if (isShapeAlive(gameState, i) && isShapeSelected(gameState, i))
 				selectedIndexes.push_back(i);
@@ -144,8 +145,6 @@ namespace middle {
 
 		int indexA = selectedIndexes[0];
 		int indexB = selectedIndexes[1];
-		assert(isEntityOfType(gameState, indexA, entities::JointEntity));
-		assert(isEntityOfType(gameState, indexB, entities::JointEntity));
 
 		if (constraintAlreadyExists(gameState, indexA, indexB)) {
 			return;
@@ -199,9 +198,17 @@ namespace middle {
 				deleteShapeRecursive(gameState, i);
 			}
 
-			// store parent loops to re generate later
+			// delete reference to this from parent, as this is deleted
 			if (loop != nullptr && loop->parentLoopIndex != UNASSIGNED) {
-				deteledLoopMembersParentLoops.insert(loop->parentLoopIndex);
+				auto& parentShape = getShape(gameState, loop->parentLoopIndex);
+				auto parentLoop = getComponent<components::LoopSociety>(parentShape);
+				for (int j = 0; j < parentLoop->loopMemberIndexes.size(); ++j) {
+					int parentChildIndex = parentLoop->loopMemberIndexes[j];
+					if (parentChildIndex == i) {
+						parentLoop->loopMemberIndexes.erase(parentLoop->loopMemberIndexes.begin() + j);
+						break;
+					}
+				}
 			 }
              
 			 foundSelected = true;
@@ -242,7 +249,9 @@ namespace middle {
 		for (int i = 0; i < gameState->shapes.size(); ++i) {
 			if (!isShapeAlive(gameState, i))
 				continue;
-			if (isShapeSelected(gameState, i)) {
+			auto loop = getComponent<components::LoopTag>(gameState->shapes[i]);
+			auto sphere = getComponent<components::Sphere>(gameState->shapes[i]);
+			if ((sphere || loop) && isShapeSelected(gameState, i)) {
 				memberIndexes.push_back(i);
 			}
 		}

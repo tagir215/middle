@@ -17,6 +17,7 @@
 #include "JointEntity.h"
 #include "LoopEntity.h"
 #include "ConstraintEntity.h"
+#include "LoopTag.h"
 
 using namespace middle;
 
@@ -127,22 +128,40 @@ void physicsUpdate(GameState* gameState) {
 
 void updateRenderData(GameState* gameState) {
 	gameState->renderData.clear();
-	for (int i = 0; i < gameState->shapes.size(); ++i) {
-		auto& shape = gameState->shapes[i];
+	loopInstances(gameState, [gameState](int i, Shape& shape) {
 
-		if (isEntityOfType(gameState, i, entities::LoopEntity)) {
+		if (getComponent<components::LoopTag>(shape)) {
 			auto loop = getComponent<components::LoopSociety>(shape);
+			auto selectable = getComponent<components::MouseSelectable>(shape);
+			auto intersectable = getComponent<components::MouseIntersectable>(shape);
 			RenderItem loopItem;
 			Vector3 centroid = getLoopCentroid(gameState, i);
 			loopItem.type = RenderItemType::SPHERE;
 			loopItem.center = centroid;
 			loopItem.radius = DEF_RADIUS_LOOP_INDICATOR;
 			loopItem.color = LOOP_INDICATOR_COLOR;
+			if (intersectable && intersectable->intersecting) {
+				loopItem.color = RED;
+			}
 			gameState->renderData.push_back(loopItem);
+
+			if (selectable && selectable->selected) {
+				RenderItem selectItem;
+				selectItem.type = RenderItemType::RECTANGLE;
+				selectItem.center = { 0,0,0 };
+				selectItem.transform.translation = loopItem.center;
+				selectItem.transform.scale = { 1,1,1 };
+				selectItem.transform.rotation = { 0,0,0,0 };
+				selectItem.widht = loopItem.radius * 4;
+				selectItem.height = loopItem.radius * 4;
+				selectItem.length = loopItem.radius * 4;
+				selectItem.color = ColorAlpha(WHITE, 0.4f);
+				gameState->renderData.push_back(selectItem);
+			}
 		}
 
-		if (isEntityOfType(gameState, i, entities::JointEntity)) {
-			auto sphere = getComponent<components::Sphere>(shape);
+		auto sphere = getComponent<components::Sphere>(shape);
+		if (sphere) {
 			auto pos = getComponent<components::Position>(shape);
 			auto intersectable = getComponent<components::MouseIntersectable>(shape);
 			auto selectable = getComponent<components::MouseSelectable>(shape);
@@ -170,10 +189,11 @@ void updateRenderData(GameState* gameState) {
 				gameState->renderData.push_back(selectItem);
 			}
 
-			continue;
+			return;
 		}
-		if (isEntityOfType(gameState, i, entities::ConstraintEntity)) {
-			auto constraint = getComponent<components::Constraint>(shape);
+
+		auto constraint = getComponent<components::Constraint>(shape);
+		if (constraint) {
 			auto selectable = getComponent<components::MouseSelectable>(shape);
 			auto intersectable = getComponent<components::MouseIntersectable>(shape);
 			RenderItem lineItem;
@@ -201,10 +221,10 @@ void updateRenderData(GameState* gameState) {
 				selectItem.transform.translation = Vector3Scale(lineItem.linePointA + lineItem.linePointB, 0.5f);
 				gameState->renderData.push_back(selectItem);
 			}
-			continue;
+			return;
 		}
+	});
 
-	}
 }
 
 __declspec(dllexport) void UpdateGame(GameState* gameState)

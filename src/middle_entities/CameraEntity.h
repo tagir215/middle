@@ -11,16 +11,6 @@
 
 namespace entities{
 
-    std::vector<int>CameraEntity{
-        middle::getTypeId<components::Position>(),
-        middle::getTypeId<components::Sphere>(),
-        middle::getTypeId<components::MouseSelectable>(),
-        middle::getTypeId<components::MouseIntersectable>(),
-        middle::getTypeId<components::LoopSociety>(),
-        middle::getTypeId<components::MouseGrabbable>(),
-        middle::getTypeId<components::PhysicsData>(),
-    };
-
     void initCamera(middle::GameState* gameState, int index, const Vector3& position){
 		auto& shape = gameState->shapes[index];
 		++shape.id.generation;
