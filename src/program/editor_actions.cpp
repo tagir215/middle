@@ -343,9 +343,6 @@ namespace middle {
 			newSystemFile(gameState, systemName);
 		}
 
-		int freeIndex = findFreeIndex(gameState);
-		entities::initSystem(gameState, freeIndex, {0,0,0}, systemName);
-
 		shell_open_file("../assets/systems/" + systemName + ".cpp");
 
 		std::string command = "python ../src/editor_scripts/build_project.py";
@@ -385,35 +382,38 @@ namespace middle {
 
 	void EditorActionNewComponent::execute(GameState* gameState)
 	{
-		//assert(params.stringValue != "");
+		assert(params.stringValue != "");
 
-		//std::string componentName = params.stringValue;
+		std::string componentName = params.stringValue;
 
-		//newComponentFile(gameState, componentName);
+		if (gameState->gameplaySystems.find(componentName) == gameState->gameplaySystems.end()) {
+			newComponentFile(gameState, componentName);
+		}
 
-		//int freeIndex = findFreeIndex(gameState);
-		//// creating new type of component here. So it starts at 0
-		//int freeComponentIndex = 0;
-		//reserveComponentType(componentName);
-		//initComponent(gameState, freeIndex, freeComponentIndex, componentName, { 0,0,0 });
+		shell_open_file("../assets/components/" + componentName + ".cpp");
 
-		//saveScene(gameState, gameState->sceneNames[gameState->activeScene]);
+		std::string command = "python ../src/editor_scripts/build_project.py";
+		system(command.c_str());
 
-		//std::string command = "python ../src/editor_scripts/build_project.py";
-		//system(command.c_str());
-
-		//shell_open_file("../assets/components/" + componentName + ".h");
-
-		//gameState->closeGame = true;
+		gameState->closeGame = true;
 	}
 
 	void EditorActionImportComponent::execute(GameState* gameState)
 	{
-		//assert(params.stringValue != "");
-		//std::string componentName = params.stringValue;
+		assert(params.stringValue != "");
+		const std::string componentName = params.stringValue;
 
-		//int freeIndex = freeComponentIndex(componentName);
-		//initComponent(gameState, freeIndex, freeIndex, componentName, { 0,0,0 });
+		loopInstances(gameState, [&componentName](int i, Shape& shape) {
+			auto selectable = getComponent<components::MouseSelectable>(shape);
+			if (selectable && selectable->selected) {
+				int componentTypeId = componentTypeMap[componentName];
+				assert(shape.componentMap.find(componentTypeId) == shape.componentMap.end());
+
+				Component component;
+				component.componentOffset = componentListMap[componentTypeId]->grow();
+				shape.componentMap[componentTypeId] = component;
+			}
+			});
 	}
 
 	void EditorActionOpenComponent::execute(GameState* gameState)

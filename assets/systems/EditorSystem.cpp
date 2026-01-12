@@ -23,6 +23,7 @@ class EditorSystem : public middle::MiddleGameplaySystem {
 		std::vector<std::string>systemNames;
 		systemNames.insert(systemNames.end(), middle::engineSystemNamesFrameStart.begin(), middle::engineSystemNamesFrameStart.end());
 		systemNames.insert(systemNames.end(), middle::engineSystemNamesFrameEnd.begin(), middle::engineSystemNamesFrameEnd.end());
+		systemNames.insert(systemNames.end(), middle::engineRendererSystemNames.begin(), middle::engineRendererSystemNames.end());
 
 		int systemCount = systemNames.size();
 		float angleBetween = PI / systemCount;

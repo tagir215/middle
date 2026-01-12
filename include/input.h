@@ -5,7 +5,7 @@ namespace middle {
 
 	enum InputBlockers {
 		KEYBOARD_BLOCK,
-		ADD_OBJECT_CHECKBOX,
+		MOUSE_BLOCK,
 	};
 
 	struct EditorInput {

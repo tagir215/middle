@@ -11,6 +11,7 @@ namespace middle {
 
 	inline std::vector<std::string>engineSystemNamesFrameStart
 	{
+		"InputSystem",
 		"EditorSystem",
 		"MouseIntersectDetectionSystem",
 		"MouseGrabbingSystem",
@@ -23,4 +24,7 @@ namespace middle {
 		"MiddlePhysicsSystem",
 	};
 
+	inline std::vector<std::string>engineRendererSystemNames{
+		"EditorRenderSetupSystem",
+	};
 }

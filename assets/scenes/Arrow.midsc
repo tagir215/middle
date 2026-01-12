@@ -3,24 +3,24 @@ s  Arrow
 #activeCamera
 i  0
 __0__
-Sphere
-f  2.000000
 LoopSociety
 i  -1
 vi
+Sphere
+f  2.000000
 Position
-f  -78.616928
-f  -0.000015
-f  27.111813
+f  -47.286098
+f  -0.000046
+f  -1.817895
 PhysicsData
 f  1.000000
 f  1.000000
 f  1.000000
 f  1.000000
 f  0.000000
-f  0.001788
+f  -0.000005
 f  0.000000
-f  -0.001543
+f  0.000002
 f  0.000000
 f  0.000000
 f  0.000000
@@ -36,24 +36,24 @@ MouseIntersectable
 b  0
 b  0
 __1__
-Sphere
-f  2.000000
 LoopSociety
 i  -1
 vi
+Sphere
+f  2.000000
 Position
-f  -74.681023
-f  0.000061
-f  -46.499001
+f  -47.618816
+f  0.000092
+f  -11.526931
 PhysicsData
 f  1.000000
 f  1.000000
 f  1.000000
 f  1.000000
 f  0.000000
-f  0.002431
+f  -0.000010
 f  0.000000
-f  0.002993
+f  -0.000005
 f  0.000000
 f  0.000000
 f  0.000000
@@ -69,24 +69,24 @@ MouseIntersectable
 b  0
 b  0
 __2__
-Sphere
-f  2.000000
 LoopSociety
 i  -1
 vi
+Sphere
+f  2.000000
 Position
-f  -41.160290
-f  0.000061
-f  -5.226662
+f  -36.935959
+f  0.000038
+f  -6.168909
 PhysicsData
 f  1.000000
 f  1.000000
 f  1.000000
 f  1.000000
 f  0.000000
-f  -0.010516
+f  0.000017
 f  0.000000
-f  -0.001604
+f  0.000003
 f  0.000000
 f  0.000000
 f  0.000000
@@ -102,24 +102,24 @@ MouseIntersectable
 b  0
 b  0
 __3__
-Sphere
-f  2.000000
 LoopSociety
 i  -1
 vi
+Sphere
+f  2.000000
 Position
-f  65.799080
-f  -0.000015
-f  -2.606088
+f  -1.119291
+f  0.000000
+f  -5.920266
 PhysicsData
 f  1.000000
 f  1.000000
 f  1.000000
 f  1.000000
 f  0.000000
-f  -0.001603
+f  -0.000001
 f  0.000000
-f  -0.000284
+f  0.000000
 f  0.000000
 f  0.000000
 f  0.000000
@@ -135,24 +135,24 @@ MouseIntersectable
 b  0
 b  0
 __4__
-Sphere
-f  2.000000
 LoopSociety
 i  -1
 vi
+Sphere
+f  2.000000
 Position
-f  79.449600
-f  0.000031
-f  20.356686
+f  -12.234957
+f  0.000046
+f  5.283451
 PhysicsData
 f  1.000000
 f  1.000000
 f  1.000000
 f  1.000000
 f  0.000000
-f  0.005184
+f  -0.000001
 f  0.000000
-f  0.008025
+f  0.000001
 f  0.000000
 f  0.000000
 f  0.000000
@@ -168,57 +168,36 @@ MouseIntersectable
 b  0
 b  0
 __5__
-Sphere
-f  2.000000
-LoopSociety
-i  -1
-vi
-Position
-f  112.832230
-f  -0.000061
-f  -1.192733
-PhysicsData
-f  1.000000
-f  1.000000
-f  1.000000
-f  1.000000
-f  0.000000
-f  -0.001582
-f  0.000000
-f  -0.000801
-f  0.000000
-f  0.000000
-f  0.000000
+Constraint
+i  3
+i  4
 f  0.800000
-f  0.800000
-f  0.800000
-b  0
+f  0.900000
+f  15.782317
 MouseSelectable
-b  0
-MouseGrabbable
 b  0
 MouseIntersectable
 b  0
 b  0
 __6__
-Sphere
-f  2.000000
 LoopSociety
 i  -1
 vi
+Sphere
+f  2.000000
 Position
-f  76.246574
-f  0.000000
-f  -29.557661
+f  -11.158474
+f  0.000015
+f  -17.236103
 PhysicsData
 f  1.000000
 f  1.000000
 f  1.000000
 f  1.000000
 f  0.000000
-f  0.004298
+f  -0.000001
 f  0.000000
-f  -0.006785
+f  -0.000001
 f  0.000000
 f  0.000000
 f  0.000000
@@ -235,11 +214,11 @@ b  0
 b  0
 __7__
 Constraint
-i  3
-i  6
+i  0
+i  2
 f  0.800000
 f  0.900000
-f  28.952805
+f  11.227589
 MouseSelectable
 b  0
 MouseIntersectable
@@ -247,11 +226,11 @@ b  0
 b  0
 __8__
 Constraint
-i  3
-i  4
+i  1
+i  2
 f  0.800000
 f  0.900000
-f  26.764618
+f  11.951359
 MouseSelectable
 b  0
 MouseIntersectable
@@ -259,11 +238,11 @@ b  0
 b  0
 __9__
 Constraint
-i  4
-i  5
+i  3
+i  6
 f  0.800000
 f  0.900000
-f  39.730083
+f  15.127247
 MouseSelectable
 b  0
 MouseIntersectable
@@ -271,47 +250,11 @@ b  0
 b  0
 __10__
 Constraint
-i  5
-i  6
-f  0.800000
-f  0.900000
-f  46.288586
-MouseSelectable
-b  0
-MouseIntersectable
-b  0
-b  0
-__11__
-Constraint
 i  2
 i  3
 f  0.800000
 f  0.900000
-f  107.034088
-MouseSelectable
-b  0
-MouseIntersectable
-b  0
-b  0
-__12__
-Constraint
-i  0
-i  2
-f  0.800000
-f  0.900000
-f  49.439499
-MouseSelectable
-b  0
-MouseIntersectable
-b  0
-b  0
-__13__
-Constraint
-i  1
-i  2
-f  0.800000
-f  0.900000
-f  53.112297
+f  35.817440
 MouseSelectable
 b  0
 MouseIntersectable

@@ -24,16 +24,41 @@ class EditorRenderSetupSystem : public middle::MiddleGameplaySystem {
 		gameState->renderData.clear();
 		loopInstances(gameState, [gameState](int i, middle::Shape& shape) {
 
+			// render component ring
+			auto position = middle::getComponent<components::Position>(shape);
+			auto selectable = middle::getComponent<components::MouseSelectable>(shape);
+			if (selectable && selectable->selected) {
+				int componentCount = shape.componentMap.size();
+				float angleBetween = 2 * PI / componentCount;
+				std::vector<Vector3> positions;
+				const float r = 30;
+				const float compR = 3;
+				positions.resize(componentCount);
+				for (int i = 0; i < componentCount; ++i) {
+					float angle = angleBetween * i;
+					float x = std::cosf(angle) * r;
+					float z = std::sinf(angle) * r;
+					Vector3 pos = { x,0,z };
+					pos += {position->posX, position->posY, position->posZ};
+					middle::RenderItem componentSphere;
+					componentSphere.type = middle::RenderItemType::SPHERE;
+					componentSphere.center = pos;
+					componentSphere.radius = compR;
+					componentSphere.color = BLUE;
+					gameState->renderData.push_back(componentSphere);
+				}
+			}
+
+
 
 			auto sphere = middle::getComponent<components::Sphere>(shape);
 			if (sphere) {
-				auto pos = middle::getComponent<components::Position>(shape);
 				auto intersectable = middle::getComponent<components::MouseIntersectable>(shape);
 				auto selectable = middle::getComponent<components::MouseSelectable>(shape);
 				middle::RenderItem sphereItem;
 				sphereItem.type = middle::RenderItemType::SPHERE;
 				sphereItem.radius = sphere->radius;
-				sphereItem.center = { pos->posX, pos->posY, pos->posZ };
+				sphereItem.center = { position->posX, position->posY, position->posZ };
 				sphereItem.color = middle::JOINT_COLOR;
 				if (intersectable && intersectable->intersecting) {
 					sphereItem.color = middle::HOVERED_THING_COLOR;
@@ -93,7 +118,6 @@ class EditorRenderSetupSystem : public middle::MiddleGameplaySystem {
 			if (reference) {
 				auto selectable = middle::getComponent<components::MouseSelectable>(shape);
 				auto intersectable = middle::getComponent<components::MouseIntersectable>(shape);
-				auto position = middle::getComponent<components::Position>(shape);
 				middle::RenderItem refItem;
 				refItem.type = middle::RenderItemType::SPHERE;
 				refItem.color = middle::REFERENCE_INDICATOR_COLOR;
@@ -117,6 +141,7 @@ class EditorRenderSetupSystem : public middle::MiddleGameplaySystem {
 					selectItem.color = ColorAlpha(WHITE, 0.4f);
 					gameState->renderData.push_back(selectItem);
 				}
+				return;
 			}
 
 			if (!reference && middle::getComponent<components::LoopTag>(shape)) {
@@ -147,13 +172,13 @@ class EditorRenderSetupSystem : public middle::MiddleGameplaySystem {
 					selectItem.color = ColorAlpha(WHITE, 0.4f);
 					gameState->renderData.push_back(selectItem);
 				}
+				return;
 			}
 
 			auto system = middle::getComponent<components::SystemReference>(shape);
 			if (system) {
 				auto selectable = middle::getComponent<components::MouseSelectable>(shape);
 				auto intersectable = middle::getComponent<components::MouseIntersectable>(shape);
-				auto position = middle::getComponent<components::Position>(shape);
 				middle::RenderItem systemItem;
 				systemItem.type = middle::RenderItemType::SPHERE;
 				systemItem.center = { position->posX, position->posY, position->posZ };
@@ -177,7 +202,7 @@ class EditorRenderSetupSystem : public middle::MiddleGameplaySystem {
 					selectItem.color = ColorAlpha(WHITE, 0.4f);
 					gameState->renderData.push_back(selectItem);
 				}
-
+				return;
 			}
 
 			});

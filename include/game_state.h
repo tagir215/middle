@@ -8,6 +8,7 @@
 #include "middle_gameplay_script.h"
 #include "middle_gameplay_script_map.h"
 #include "entity.h"
+#include <string>
 
 using namespace descart;
 
@@ -91,6 +92,7 @@ namespace middle {
 		SPHERE,
 		LINE,
 		RECTANGLE,
+		TEXT,
 	};
 
 	struct RenderItem {
@@ -104,6 +106,7 @@ namespace middle {
 		float length;
 		float widht;
 		float height;
+		std::string text = "";
 	};
 
 	struct GameState {

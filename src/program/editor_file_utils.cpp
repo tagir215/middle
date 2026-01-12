@@ -425,16 +425,13 @@ namespace middle {
 		flushFieldBuffer(gameState, buffer, field);
 	}
 
-	void newSystemFile(GameState* gameState, const std::string& systemName)
-	{
-		std::string templateFilename = "../src/editor_data/system_template.cpp";
-		std::ifstream inputFile(templateFilename);
+
+	void generateFileFromTemplate(const std::string& destinationPath, const std::string& templateFilePath, const std::string& placeholder, const std::string& objectName) {
+		std::ifstream inputFile(templateFilePath);
 		if (!inputFile.is_open()) {
 			std::cerr << "Failed to open file to write";
 			return;
 		}
-
-		std::string filename = "../assets/systems/" + systemName + ".cpp";
 
 		// read template to string array
 		std::string templateLine;
@@ -444,8 +441,7 @@ namespace middle {
 		}
 		inputFile.close();
 
-		// replace lines with script names
-		std::string placeholder = "/*systemName*/";
+		// replace placeholders with object names
 		for (int i = 0; i < templateLines.size(); ++i) {
 			auto& line = templateLines[i];
 
@@ -453,13 +449,13 @@ namespace middle {
 			while (pos != std::string::npos) {
 				pos = line.find(placeholder, pos);
 				if (pos != std::string::npos) {
-					line.replace(pos, placeholder.length(), systemName);
+					line.replace(pos, placeholder.length(), objectName);
 				}
 			}
 		}
 
 		// write generated code
-		std::ofstream outFile(filename);
+		std::ofstream outFile(destinationPath);
 		if (!outFile.is_open()) {
 			std::cerr << "failed to open to write\n";
 		}
@@ -472,47 +468,26 @@ namespace middle {
 		outFile.close();
 	}
 
+
+	void newSystemFile(GameState* gameState, const std::string& systemName)
+	{
+		const std::string templateFilename = "../src/editor_data/system_template.cpp";
+		const std::string filename = "../assets/systems/" + systemName + ".cpp";
+		const std::string placeholder = "/*systemName*/";
+
+		generateFileFromTemplate(filename, templateFilename, placeholder, systemName);
+	}
+
 	void newComponentFile(GameState* gameState, const std::string& componentName)
 	{
-		std::string templateFilename = "../src/editor_data/component_template.h";
-		std::ifstream inputFile(templateFilename);
-		if (!inputFile.is_open()) {
-			std::cerr << "Failed to open file to write";
-			return;
-		}
+		const std::string templateFilenameHeader = "../src/editor_data/component_template.h";
+		const std::string templateFilenameSource = "../src/editor_data/component_template.cpp";
+		const std::string filenameHeader = "../assets/components/" + componentName + ".h";
+		const std::string filenameSource = "../assets/components/" + componentName + ".cpp";
+		const std::string placeholder = "/*componentName*/";
 
-		std::string filename = "../assets/components/" + componentName + ".h";
-
-		// read template to string array
-		std::string templateLine;
-		std::vector<std::string> templateLines;
-		while (std::getline(inputFile, templateLine)) {
-			templateLines.push_back(templateLine);
-		}
-		inputFile.close();
-
-		// replace lines with script names
-		std::string placeholder = "/*componentName*/";
-		for (int i = 0; i < templateLines.size(); ++i) {
-			auto& line = templateLines[i];
-			size_t pos = line.find(placeholder);
-			if (pos != std::string::npos) {
-				line.replace(pos, placeholder.length(), componentName);
-			}
-		}
-
-		// write generated code
-		std::ofstream outFile(filename);
-		if (!outFile.is_open()) {
-			std::cerr << "failed to open to write\n";
-		}
-
-		for (auto& line : templateLines) {
-			outFile << line << std::endl;
-		}
-
-		outFile.flush();
-		outFile.close();
+		generateFileFromTemplate(filenameHeader, templateFilenameHeader, placeholder, componentName);
+		generateFileFromTemplate(filenameSource, templateFilenameSource, placeholder, componentName);
 	}
 }
 

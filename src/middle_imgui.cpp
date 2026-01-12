@@ -256,6 +256,7 @@ namespace middle {
 		// import COMPONENT
 		if (ImGui::Button("IMPORT COMPONENT")) {
 			ImGui::OpenPopup("Component Selector");
+			gameState->inputBlockers.insert(InputBlockers::MOUSE_BLOCK);
 		}
 
 		if (ImGui::BeginPopup("System Selector")) {
@@ -290,13 +291,13 @@ namespace middle {
 		}
 
 		// Add new system button
-		if (ImGui::Button("ADD NEW SYSTEM")) {
-			ImGui::OpenPopup("New System Popup");
+		if (ImGui::Button("ADD NEW SCRIPT")) {
+			ImGui::OpenPopup("New Script Popup");
 		}
 
 		// Popup for entering new scene name
 		static char newSystemName[128] = ""; // buffer for scene name input
-		if (ImGui::BeginPopup("New System Popup")) {
+		if (ImGui::BeginPopup("New Script Popup")) {
 			gameState->inputBlockers.insert(InputBlockers::KEYBOARD_BLOCK);
 
 			ImGui::Text("Enter new initSystem name:");

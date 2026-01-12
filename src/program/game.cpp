@@ -63,7 +63,9 @@ extern "C" {
 			physicsUpdate(gameState);
 		}
 
-		systemMap["EditorRenderSetupSystem"]->update(gameState);
+		for (auto& name : engineRendererSystemNames) {
+			systemMap[name]->update(gameState);
+		}
 
 	}
 
