@@ -24,7 +24,6 @@
 *
 ********************************************************************************************/
 
-#include "game.h"
 #include "platform.h"
 #include "raylib.h"
 #include <chrono>
@@ -35,6 +34,8 @@
 #include <rlImGui.h>
 #include "editor_actions.h"
 #include "middle_gameplay_script_map.h"
+#include "middle_math.h"
+#include "game.h"
 
 void UpdateGame(GameState* gameState);
 void ReloadGameDLL();
@@ -197,7 +198,7 @@ void UpdateInput(GameState* gameState, Matrix& screenOrientorM) {
 		gameState->input.deleteClick = IsKeyPressed(KEY_R);
 		gameState->input.copyClick = IsKeyPressed(KEY_C);
 		gameState->input.saveClick = IsKeyPressed(KEY_P);
-		gameState->input.openScript = IsKeyPressed(KEY_SPACE);
+		gameState->input.navigateToFileClick = IsKeyPressed(KEY_SPACE);
 		gameState->input.focus = IsKeyPressed(KEY_F);
 		gameState->input.newThing = IsKeyPressed(KEY_N);
 	}

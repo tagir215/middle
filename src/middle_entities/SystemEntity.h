@@ -10,7 +10,7 @@
 
 namespace entities{
 
-    void initSystem(middle::GameState* gameState, int index, const Vector3& position, const std::string& systemName){
+    inline void initSystem(middle::GameState* gameState, int index, const Vector3& position, const std::string& systemName){
 		auto& shape = gameState->shapes[index];
 		++shape.id.generation;
 		gameState->ids[index].generation = shape.id.generation;

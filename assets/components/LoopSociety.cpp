@@ -3,10 +3,10 @@
 
 namespace components {
 	void LoopSociety::serialize(std::ostream& ostream) {
-		if (parentLoopIndex >= GHOST_INDEX_OFFSET)
-			parentLoopIndex = UNASSIGNED;
+		if (parentLoopIndex >= middle::GHOST_INDEX_OFFSET)
+			parentLoopIndex = middle::UNASSIGNED;
 		for (int index : loopMemberIndexes) {
-			if (index >= GHOST_INDEX_OFFSET) {
+			if (index >= middle::GHOST_INDEX_OFFSET) {
 				loopMemberIndexes.clear();
 			}
 		}
@@ -17,7 +17,7 @@ namespace components {
 	void LoopSociety::deserialize(const std::vector<std::string>& buffer, int indexOffset) {
 		middle::fillField(&parentLoopIndex, buffer[0]);
 		middle::fillField(&loopMemberIndexes, buffer[1]);
-		if (parentLoopIndex != UNASSIGNED) {
+		if (parentLoopIndex != middle::UNASSIGNED) {
 			parentLoopIndex += indexOffset;
 		}
 		for (int& memberIndex : loopMemberIndexes) {

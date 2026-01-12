@@ -131,7 +131,7 @@ namespace middle {
 		}
 	}
 
-	void loadScriptNames(GameState* gameState)
+	void loadSystemNames(GameState* gameState)
 	{
 		for (auto& pair : systemMap) {
 			gameState->systemNames.push_back(pair.first);

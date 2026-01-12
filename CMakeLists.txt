@@ -18,7 +18,7 @@ file(GLOB HEADERS "${CMAKE_SOURCE_DIR}/include/*.h")
 file(GLOB SYSTEMS_SOURCES "${CMAKE_SOURCE_DIR}/assets/systems/*.cpp")
 file(GLOB COMPONENT_HEADERS "${CMAKE_SOURCE_DIR}/assets/components/*.h")
 file(GLOB COMPONENT_SOURCES "${CMAKE_SOURCE_DIR}/assets/components/*.cpp")
-file(GLOB NTITIES_HEADERS "${CMAKE_SOURCE_DIR}/src/middle_entities/*.h")
+file(GLOB ENTITIES_HEADERS "${CMAKE_SOURCE_DIR}/src/middle_entities/*.h")
 
 # library game, hot reloadable I guess
 add_library(game SHARED 
@@ -27,7 +27,7 @@ add_library(game SHARED
     ${SYSTEMS_SOURCES} 
     ${COMPONENT_HEADERS} 
     ${COMPONENT_SOURCES} 
-    ${NTITIES_HEADERS}
+    ${ENTITIES_HEADERS}
 )
 target_include_directories(game PUBLIC ${CMAKE_SOURCE_DIR}/include)
 target_include_directories(game PUBLIC ${CMAKE_SOURCE_DIR}/assets/components)

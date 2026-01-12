@@ -57,9 +57,6 @@ namespace MouseIntersectDetectionSystem {
 					Vector3 intersectPos;
 					bool isIntersecting = middle::RayCastLineSphere(centroid, middle::DEF_RADIUS_LOOP_INDICATOR, gameState->editorState.camera.position, gameState->editorState.camera.position + gameState->input.mouseDir, intersectPos);
 					intersectComponent->intersecting = isIntersecting;
-					if (isIntersecting) {
-						int a = 0;
-					}
 					continue;
 				}
 
@@ -80,7 +77,7 @@ namespace MouseIntersectDetectionSystem {
 					radius = sphere->radius;
 				}
 				if (reference) {
-					radius = middle::DEF_RADIUS_LOOP_INDICATOR;
+					radius = middle::DEF_RADIUS_REFERENCE_INDICATOR;
 				}
 				if (system) {
 					radius = middle::DEF_RADIUS_SYSTEM;

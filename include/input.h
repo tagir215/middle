@@ -37,7 +37,7 @@ namespace middle {
 		bool deleteClick = false;
 		bool copyClick = false;
 		bool saveClick = false;
-		bool openScript = false;
+		bool navigateToFileClick = false;
 		bool focus = false;
 		bool newThing = false;
 	};

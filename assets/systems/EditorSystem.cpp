@@ -1,24 +1,60 @@
-#include "editor_update.h"
-#include "Position.h"
-#include "Constraint.h"
-#include "Sphere.h"
+#pragma once
+#include "game_state.h"
+#include "registrars.h"
+#include "editor_actions.h"
+#include "editor_file_utils.h"
+#include "middle_shape_utils.h"
+#include "middle_gameplay_script_map.h"
+#include "SystemEntity.h"
 
-namespace middle {
-	void updateEditor(GameState* gameState)
-	{
+class EditorSystem : public middle::MiddleGameplaySystem {
+
+	void reset(middle::GameState* gameState) {
+		for (int i = 0; i < gameState->shapes.size(); ++i) {
+			middle::deleteShape(gameState, i);
+		}
+	}
+
+	// for mental palace. Palace is superior filesystem! TRUST THE PALACE
+	void importEngineSystemReferences(middle::GameState* gameState) {
+		int highestUsedIndex = middle::findHighestUsedIndex(gameState);
+		int index = highestUsedIndex + 1;
+		index = highestUsedIndex > middle::GHOST_INDEX_OFFSET ? highestUsedIndex : middle::GHOST_INDEX_OFFSET;
+		std::vector<std::string>systemNames;
+		systemNames.insert(systemNames.end(), middle::engineSystemNamesFrameStart.begin(), middle::engineSystemNamesFrameStart.end());
+		systemNames.insert(systemNames.end(), middle::engineSystemNamesFrameEnd.begin(), middle::engineSystemNamesFrameEnd.end());
+
+		int systemCount = systemNames.size();
+		float angleBetween = PI / systemCount;
+		std::vector<Vector3> positions;
+		const float r = 50;
+		positions.resize(systemCount);
+		for (int i = 0; i < systemCount; ++i) {
+			float angle = angleBetween * i;
+			float x = std::cosf(angle) * r;
+			float z = std::sinf(angle) * r;
+			Vector3 pos = { x,0,z };
+			entities::initSystem(gameState, index + i, pos, systemNames[i]);
+		}
+	}
+
+
+	void update(middle::GameState* gameState) override {
 		processEditorActions(gameState);
 
 		if (gameState->startGame) {
-			if (gameState->applicationMode == ApplicationMode::EDITOR_MODE) {
-				loadEditorState(gameState);
+			if (gameState->applicationMode == middle::ApplicationMode::EDITOR_MODE) {
+				middle::loadEditorState(gameState);
 			}
 			gameState->startGame = false;
 		}
 
 		// update
 		if (gameState->reload) {
+			reset(gameState);
 			loadSceneNames(gameState);
-			loadScriptNames(gameState);
+			loadSystemNames(gameState);
+			importEngineSystemReferences(gameState);
 			loadComponentNames(gameState);
 			if (gameState->sceneNames.size() > 0) {
 				loadScene(gameState, gameState->sceneNames[gameState->activeScene], false);
@@ -62,19 +98,7 @@ namespace middle {
 		if (gameState->input.mouseClicked && gameState->intersectCount == 0) {
 			unselect(gameState);
 		}
-
-		// open script
-		//if (gameState->input.openScript && gameState->intersectCount > 0) {
-		//	loopInstances(gameState, [&](int i, ShapeInstance& instance) {
-		//		if (instance.mouseIntersects) {
-		//			//if(instance.shape.type == ShapeType::SYSTEM)
-		//			//	gameState->editorState.nextEditorAction = EditorAction::OPEN_SYSTEM;
-		//			//if(instance.shape.type == ShapeType::COMPONENT)
-		//			//	gameState->editorState.nextEditorAction = EditorAction::OPEN_COMPONENT;
-		//			//gameState->editorState.nextEditorActionParams = { "", i };
-		//		}
-		//		});
-		//}
-
 	}
-}
+};
+
+static middle::SystemRegistrar<EditorSystem> reg("EditorSystem");

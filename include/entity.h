@@ -10,11 +10,11 @@
 
 namespace middle {
 	static float DEF_RADIUS = 2;
-	static float DEF_RADIUS_LOOP_INDICATOR = 1;
-	static float DEF_RADIUS_REFERENCE_INDICATOR = 3;
+	static float DEF_RADIUS_LOOP_INDICATOR = 4;
+	static float DEF_RADIUS_REFERENCE_INDICATOR = 5;
 	static float DEF_RADIUS_CAMERA = 5;
-	static float DEF_RADIUS_SYSTEM = 8;
-	static float DEF_RADIUS_COMPONENT = 7;
+	static float DEF_RADIUS_SYSTEM = 4;
+	static float DEF_RADIUS_COMPONENT = 3;
 	static Color DEF_COLOR = UGLY_PINK;
 	static float DEF_LIFETIME = INFINITY;
 	static float DEF_GRAVITY = 0;

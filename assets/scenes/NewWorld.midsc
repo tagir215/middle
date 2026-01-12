@@ -3,22 +3,22 @@ s  NewWorld
 #activeCamera
 i  0
 __0__
+LoopSociety
+i  8
+vi
 Sphere
 f  2.000000
-LoopSociety
-i  -1
-vi
 Position
-f  -2.907248
-f  0.000000
-f  -34.209938
+f  -21.368364
+f  0.000015
+f  -24.565956
 PhysicsData
 f  1.000000
 f  1.000000
 f  1.000000
 f  1.000000
 f  0.000000
-f  0.000000
+f  -0.000000
 f  0.000000
 f  0.000000
 f  0.000000
@@ -36,15 +36,15 @@ MouseIntersectable
 b  0
 b  0
 __1__
+LoopSociety
+i  8
+vi
 Sphere
 f  2.000000
-LoopSociety
-i  -1
-vi
 Position
-f  -2.252838
-f  0.000000
-f  -87.019112
+f  -20.713955
+f  0.000015
+f  -77.375130
 PhysicsData
 f  1.000000
 f  1.000000
@@ -69,22 +69,22 @@ MouseIntersectable
 b  0
 b  0
 __2__
+LoopSociety
+i  8
+vi
 Sphere
 f  2.000000
-LoopSociety
-i  -1
-vi
 Position
-f  45.008850
-f  0.000000
-f  -84.401466
+f  26.547733
+f  0.000015
+f  -74.757492
 PhysicsData
 f  1.000000
 f  1.000000
 f  1.000000
 f  1.000000
 f  0.000000
-f  0.000000
+f  -0.000000
 f  0.000000
 f  0.000000
 f  0.000000
@@ -102,15 +102,15 @@ MouseIntersectable
 b  0
 b  0
 __3__
+LoopSociety
+i  8
+vi
 Sphere
 f  2.000000
-LoopSociety
-i  -1
-vi
 Position
-f  44.360443
-f  0.000015
-f  -32.252708
+f  25.899330
+f  0.000030
+f  -22.608727
 PhysicsData
 f  1.000000
 f  1.000000
@@ -119,7 +119,7 @@ f  1.000000
 f  0.000000
 f  0.000000
 f  0.000000
-f  0.000000
+f  -0.000000
 f  0.000000
 f  0.000000
 f  0.000000
@@ -172,9 +172,9 @@ b  0
 b  0
 __7__
 Position
-f  -7.297517
-f  -0.000000
-f  33.655407
+f  3.375855
+f  -0.000015
+f  97.769325
 MouseSelectable
 b  0
 MouseGrabbable
@@ -187,3 +187,33 @@ s  Arrow
 LoopSociety
 i  -1
 vi
+__8__
+LoopTag
+LoopSociety
+i  -1
+vi
+0
+1
+2
+3
+MouseSelectable
+b  0
+MouseIntersectable
+b  0
+b  0
+MouseGrabbable
+b  0
+__9__
+MouseSelectable
+b  0
+MouseGrabbable
+b  0
+MouseIntersectable
+b  0
+b  0
+SystemReference
+s  TestSystem
+Position
+f  3.920011
+f  -0.000000
+f  -141.692368

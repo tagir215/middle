@@ -30,7 +30,7 @@ class MiddlePhysicsSystem : public middle::MiddleGameplaySystem {
 
 			auto constraint = middle::getComponent<components::Constraint>(shape);
 			if (constraint) {
-				if (constraint->indexA != UNASSIGNED && constraint->indexB != UNASSIGNED) {
+				if (constraint->indexA != middle::UNASSIGNED && constraint->indexB != middle::UNASSIGNED) {
 					Constraint c;
 					c.indexA = constraint->indexA;
 					c.indexB = constraint->indexB;
