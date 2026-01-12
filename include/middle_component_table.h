@@ -99,17 +99,5 @@ namespace middle {
 		return &(*data)[nextIndex];
 	}
 
-	template<typename T>
-	inline T* getComponentAssert(Shape& shape) {
-		int typeId = getTypeId<T>();
-		if (shape.componentMap.find(typeId) == shape.componentMap.end()) {
-			assert(true, "component doesn't exist");
-		}
-		int componentId = shape.componentMap[typeId].componentOffset;
-		std::vector<T>* v = getComponentArray<T>();
-		T& t = (*v)[componentId];
-		return &t;
-	}
-
 	Serializable* getSerializableComponent(Shape& shape, int typeId);
 }

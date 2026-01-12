@@ -1,12 +1,11 @@
 #pragma once
 #include "registrars.h"
+#include "editor_file_utils.h"
 
 namespace components {
-	static std::string componentName = "/*componentName*/";
+	struct /*componentName*/ public : middle::Serializable{
 
-	struct /*componentName*/ {
-
+		void serialize(std::ostream& ostream) override;
+		void deserialize(const std::vector<std::string>& buffer, int indexOffset) override;
 	};
-
-	inline middle::ComponentRegistrar</*componentName*/> reg(componentName);
 }

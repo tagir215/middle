@@ -123,7 +123,7 @@ namespace middle {
 		std::array<Id, MAX_SHAPE_COUNT>ids;
 		std::array<Shape, MAX_SHAPE_COUNT>shapes;
 		std::array<Vector3, MAX_VERTEX_COUNT> vertexArray;
-		std::unordered_map<std::string, std::unique_ptr<MiddleGameplaySystem>> gameplayScripts;
+		std::unordered_map<std::string, std::unique_ptr<MiddleGameplaySystem>> gameplaySystems;
 		Matrix worldM;
 		Vector2 mouseDragPos;
 		Matrix oldWorldM;
@@ -134,7 +134,7 @@ namespace middle {
 		int loopIndex = 0;
 		int uniqueComponentCount = 0;
 		std::vector<std::string>sceneNames;
-		std::vector<std::string>scriptNames;
+		std::vector<std::string>systemNames;
 		std::vector<std::string>componentNames;
 		EditorInput input;
 		std::set<InputBlockers> inputBlockers;
@@ -145,6 +145,7 @@ namespace middle {
 		bool reset = false;
 		bool quit = false;
 		std::vector<RenderItem>renderData;
+		std::vector<PhysicsBody>physicsBodies;
 	};
 
 }

@@ -34,7 +34,6 @@ namespace middle {
 		bool constraintModeClick = false;
 		bool cameraModeClick = false;
 		bool selectModeClick = false;
-		bool scriptModeClick = false;
 		bool deleteClick = false;
 		bool copyClick = false;
 		bool saveClick = false;

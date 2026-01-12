@@ -54,14 +54,14 @@ int main(void)
 {
 	// Initialization
 	//--------------------------------------------------------------------------------------
-	const int screenWidth = 1600;
-	const int screenHeight = 800;
+	const int screenWidth = 800;
+	const int screenHeight = 400;
 
 	InitWindow(screenWidth, screenHeight, "raylib [core] example - basic window");
 
-	SetWindowPosition(100, 150);
-	//set_window_always_on_top(GetWindowHandle());
-	//HideCursor();
+	SetWindowPosition(400, 600);
+	set_window_always_on_top(GetWindowHandle());
+	HideCursor();
 
 	gameState = new GameState();
 	gameState->worldM = MatrixIdentity();
@@ -110,8 +110,11 @@ int main(void)
 		gameState->frameTimeAccumulator += GetFrameTime();
 		UpdateGame(gameState);
 
-		scriptMap["RendererSystem"]->update(gameState);
+		systemMap["RendererSystem"]->update(gameState);
 
+		if (gameState->closeGame) {
+			break;
+		}
 	}
 
 	gameState->closeGame = true;
@@ -191,7 +194,6 @@ void UpdateInput(GameState* gameState, Matrix& screenOrientorM) {
 		gameState->input.sphereModeClick = IsKeyPressed(KEY_TWO);
 		gameState->input.constraintModeClick = IsKeyPressed(KEY_THREE);
 		gameState->input.cameraModeClick = IsKeyPressed(KEY_FOUR);
-		gameState->input.scriptModeClick = IsKeyPressed(KEY_FIVE);
 		gameState->input.deleteClick = IsKeyPressed(KEY_R);
 		gameState->input.copyClick = IsKeyPressed(KEY_C);
 		gameState->input.saveClick = IsKeyPressed(KEY_P);

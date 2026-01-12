@@ -3,22 +3,15 @@ s  NewWorld
 #activeCamera
 i  0
 __0__
+Sphere
+f  2.000000
 LoopSociety
 i  -1
 vi
-306
-307
-308
-309
-310
-311
-312
-Sphere
-f  2.000000
 Position
-f  -15.201803
+f  -2.907248
 f  0.000000
-f  114.838287
+f  -34.209938
 PhysicsData
 f  1.000000
 f  1.000000
@@ -43,15 +36,15 @@ MouseIntersectable
 b  0
 b  0
 __1__
+Sphere
+f  2.000000
 LoopSociety
 i  -1
 vi
-Sphere
-f  2.000000
 Position
-f  -19.385796
+f  -2.252838
 f  0.000000
-f  61.911102
+f  -87.019112
 PhysicsData
 f  1.000000
 f  1.000000
@@ -76,15 +69,15 @@ MouseIntersectable
 b  0
 b  0
 __2__
+Sphere
+f  2.000000
 LoopSociety
 i  -1
 vi
-Sphere
-f  2.000000
 Position
-f  11.058544
+f  45.008850
 f  0.000000
-f  77.161308
+f  -84.401466
 PhysicsData
 f  1.000000
 f  1.000000
@@ -109,15 +102,15 @@ MouseIntersectable
 b  0
 b  0
 __3__
+Sphere
+f  2.000000
 LoopSociety
 i  -1
 vi
-Sphere
-f  2.000000
 Position
-f  12.193899
-f  0.000000
-f  106.091843
+f  44.360443
+f  0.000015
+f  -32.252708
 PhysicsData
 f  1.000000
 f  1.000000
@@ -143,11 +136,11 @@ b  0
 b  0
 __4__
 Constraint
-i  0
+i  2
 i  3
 f  0.800000
 f  0.900000
-f  28.758039
+f  52.152790
 MouseSelectable
 b  0
 MouseIntersectable
@@ -155,11 +148,11 @@ b  0
 b  0
 __5__
 Constraint
+i  1
 i  2
-i  3
 f  0.800000
 f  0.900000
-f  28.952803
+f  47.334126
 MouseSelectable
 b  0
 MouseIntersectable
@@ -167,33 +160,21 @@ b  0
 b  0
 __6__
 Constraint
+i  0
 i  1
-i  2
 f  0.800000
 f  0.900000
-f  34.050354
+f  52.813229
 MouseSelectable
 b  0
 MouseIntersectable
 b  0
 b  0
 __7__
-Constraint
-i  0
-i  1
-f  0.800000
-f  0.900000
-f  53.092304
-MouseSelectable
-b  0
-MouseIntersectable
-b  0
-b  0
-__8__
 Position
-f  -6.075964
-f  0.000062
-f  160.097092
+f  -7.297517
+f  -0.000000
+f  33.655407
 MouseSelectable
 b  0
 MouseGrabbable
@@ -206,34 +187,3 @@ s  Arrow
 LoopSociety
 i  -1
 vi
-306
-307
-308
-309
-310
-311
-312
-__9__
-Position
-f  -92.015358
-f  0.000000
-f  -77.697357
-MouseSelectable
-b  0
-MouseGrabbable
-b  0
-MouseIntersectable
-b  0
-b  0
-Reference
-s  Arrow
-LoopSociety
-i  -1
-vi
-320
-321
-322
-323
-324
-325
-326

@@ -104,7 +104,7 @@ namespace middle {
 
 		ImGui::Begin("Editor");
 
-		const char* items[] = { "SELECT MODE", "SPHERE MODE", "CONSTRAINT MODE", "CAMERA MODE", "SCRIPT_MODE"};
+		const char* items[] = { "SELECT MODE", "SPHERE MODE", "CONSTRAINT MODE", "CAMERA MODE"};
 		static int currentItem = 0;
 		if (gameState->input.selectModeClick) {
 			currentItem = 0;
@@ -117,9 +117,6 @@ namespace middle {
 		}
 		if (gameState->input.cameraModeClick) {
 			currentItem = 3;
-		}
-		if (gameState->input.scriptModeClick) {
-			currentItem = 4;
 		}
 		ImGui::Combo("Select things to add", &currentItem, items, IM_ARRAYSIZE(items));
 		gameState->editorState.creationMode = static_cast<CreationMode>(currentItem);
@@ -249,11 +246,11 @@ namespace middle {
 
 		// SCRIPT MANAGER
 
-		ImGui::Begin("Script Manager");
+		ImGui::Begin("System Manager");
 
 		// import SCRIPT
 		if (ImGui::Button("IMPORT SYSTEM")) {
-			ImGui::OpenPopup("Script Selector");
+			ImGui::OpenPopup("System Selector");
 		}
 
 		// import COMPONENT
@@ -261,9 +258,9 @@ namespace middle {
 			ImGui::OpenPopup("Component Selector");
 		}
 
-		if (ImGui::BeginPopup("Script Selector")) {
+		if (ImGui::BeginPopup("System Selector")) {
 
-			for (auto& name : gameState->scriptNames) {
+			for (auto& name : gameState->systemNames) {
 				if (ImGui::Button(name.c_str())) {
 					EditorActionContainer::Params params;
 					params.stringValue = name;
@@ -292,42 +289,42 @@ namespace middle {
 			ImGui::EndPopup();
 		}
 
-		// Add new script button
-		if (ImGui::Button("ADD NEW SCRIPT")) {
-			ImGui::OpenPopup("New Script Popup");
+		// Add new system button
+		if (ImGui::Button("ADD NEW SYSTEM")) {
+			ImGui::OpenPopup("New System Popup");
 		}
 
 		// Popup for entering new scene name
-		static char newScriptName[128] = ""; // buffer for scene name input
-		if (ImGui::BeginPopup("New Script Popup")) {
+		static char newSystemName[128] = ""; // buffer for scene name input
+		if (ImGui::BeginPopup("New System Popup")) {
 			gameState->inputBlockers.insert(InputBlockers::KEYBOARD_BLOCK);
 
-			ImGui::Text("Enter new initScript name:");
-			ImGui::InputText("##newScriptName", newScriptName, IM_ARRAYSIZE(newScriptName));
+			ImGui::Text("Enter new initSystem name:");
+			ImGui::InputText("##newSystemName", newSystemName, IM_ARRAYSIZE(newSystemName));
 
-			const char* scriptItems[] = { "SYSTEM", "COMPONENT" };
-			static int selectedScriptItem = 0;
-			ImGui::Combo("System or Script?", &selectedScriptItem, scriptItems, IM_ARRAYSIZE(scriptItems));
+			const char* systemItems[] = { "SYSTEM", "COMPONENT" };
+			static int selectedSystemItem = 0;
+			ImGui::Combo("System or System?", &selectedSystemItem, systemItems, IM_ARRAYSIZE(systemItems));
 
 			if (ImGui::Button("Add")) {
-				if (strlen(newScriptName) > 0) {
+				if (strlen(newSystemName) > 0) {
 					// Add the new scene to the editor
 					EditorActionContainer::Params params;
-					params.stringValue = std::string(newScriptName);
-					if(selectedScriptItem == 0)
+					params.stringValue = std::string(newSystemName);
+					if(selectedSystemItem == 0)
 						gameState->editorState.nextEditorAction = EditorAction::NEW_SYSTEM;
 					else
 						gameState->editorState.nextEditorAction = EditorAction::NEW_COMPONENT;
 					gameState->editorState.nextEditorActionParams = params;
 
 					// Clear buffer and close popup
-					newScriptName[0] = '\0';
+					newSystemName[0] = '\0';
 					ImGui::CloseCurrentPopup();
 				}
 			}
 			ImGui::SameLine();
 			if (ImGui::Button("Cancel")) {
-				newScriptName[0] = '\0';
+				newSystemName[0] = '\0';
 				ImGui::CloseCurrentPopup();
 			}
 

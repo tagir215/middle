@@ -17,7 +17,6 @@ namespace middle {
 
 		// update
 		if (gameState->reload) {
-			reset(gameState);
 			loadSceneNames(gameState);
 			loadScriptNames(gameState);
 			loadComponentNames(gameState);
@@ -26,7 +25,6 @@ namespace middle {
 			}
 			gameState->reload = false;
 		}
-		updateInstances(gameState);
 
 
 		// camera controls

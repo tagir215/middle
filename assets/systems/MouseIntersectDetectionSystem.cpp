@@ -12,6 +12,7 @@
 #include "ConstraintEntity.h"
 #include "LoopTag.h"
 #include "Reference.h"
+#include "SystemReference.h"
 
 namespace MouseIntersectDetectionSystem {
 
@@ -31,14 +32,7 @@ namespace MouseIntersectDetectionSystem {
 				bool wasIntersecting = middle::isMouseIntersectingShape(gameState, i);
 				intersectComponent->wasIntersecting = wasIntersecting;
 
-				auto sphere = middle::getComponent<components::Sphere>(shape);
-				if (sphere) {
-					Vector3 pos = middle::getShapePosition(gameState, i);
-					Vector3 intersectPos;
-					bool isIntersecting = middle::RayCastLineSphere(pos, sphere->radius, gameState->editorState.camera.position, gameState->editorState.camera.position + gameState->input.mouseDir, intersectPos);
-					intersectComponent->intersecting = isIntersecting;
-					continue;
-				}
+				// line intersect
 
 				auto constraint = middle::getComponent<components::Constraint>(shape);
 				if (constraint) {
@@ -50,13 +44,15 @@ namespace MouseIntersectDetectionSystem {
 					Vector3 posA = middle::getShapePosition(gameState, constraint->indexA);
 					Vector3 posB = middle::getShapePosition(gameState, constraint->indexB);
 					bool mouseIntersect = middle::PointIntersectLineZX_Plane(gameState->input.mouseXZ_PlanePos, posA, posB, middle::DEF_LINE_PADDING_H, middle::DEF_LINE_PADDING_V);
-					auto intersectComponent = middle::getComponentAssert<components::MouseIntersectable>(shape);
+					auto intersectComponent = middle::getComponent<components::MouseIntersectable>(shape);
 					intersectComponent->intersecting = mouseIntersect;
 					continue;
 				}
 
+				// intersect centroid
+
 				if (middle::getComponent<components::LoopTag>(shape)) {
-					auto loop = middle::getComponentAssert<components::LoopSociety>(shape);
+					auto loop = middle::getComponent<components::LoopSociety>(shape);
 					Vector3 centroid = middle::getLoopCentroid(gameState, i);
 					Vector3 intersectPos;
 					bool isIntersecting = middle::RayCastLineSphere(centroid, middle::DEF_RADIUS_LOOP_INDICATOR, gameState->editorState.camera.position, gameState->editorState.camera.position + gameState->input.mouseDir, intersectPos);
@@ -67,14 +63,33 @@ namespace MouseIntersectDetectionSystem {
 					continue;
 				}
 
-				if (middle::getComponent<components::Reference>(shape)) {
-					Vector3 pos = middle::getShapePosition(gameState, i);
-					Vector3 intersectPos;
-					bool isIntersecting = middle::RayCastLineSphere(pos, middle::DEF_RADIUS_REFERENCE_INDICATOR, 
-						gameState->editorState.camera.position, gameState->editorState.camera.position + gameState->input.mouseDir, intersectPos);
-					intersectComponent->intersecting = isIntersecting;
+
+				// intersect sphere
+
+				auto position = middle::getComponent<components::Position>(shape);
+				if (!position)
 					continue;
+
+				auto sphere = middle::getComponent<components::Sphere>(shape);
+				auto reference = middle::getComponent<components::Reference>(shape);
+				auto system = middle::getComponent<components::SystemReference>(shape);
+				Vector3 pos = { position->posX, position->posY, position->posZ };
+
+				float radius = 0;
+				if (sphere) {
+					radius = sphere->radius;
 				}
+				if (reference) {
+					radius = middle::DEF_RADIUS_LOOP_INDICATOR;
+				}
+				if (system) {
+					radius = middle::DEF_RADIUS_SYSTEM;
+				}
+
+				Vector3 intersectPos;
+				bool isIntersecting = middle::RayCastLineSphere(pos, radius, gameState->editorState.camera.position, 
+					gameState->editorState.camera.position + gameState->input.mouseDir, intersectPos);
+				intersectComponent->intersecting = isIntersecting;
 			}
 		}
 	};

@@ -1,7 +1,15 @@
 #include "LoopSociety.h"
+#include "middle_constants.h"
 
 namespace components {
 	void LoopSociety::serialize(std::ostream& ostream) {
+		if (parentLoopIndex >= GHOST_INDEX_OFFSET)
+			parentLoopIndex = UNASSIGNED;
+		for (int index : loopMemberIndexes) {
+			if (index >= GHOST_INDEX_OFFSET) {
+				loopMemberIndexes.clear();
+			}
+		}
 		ostream << middle::fieldToString(parentLoopIndex);
 		ostream << middle::fieldToString(loopMemberIndexes);
 	}

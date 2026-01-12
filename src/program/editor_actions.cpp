@@ -15,6 +15,7 @@
 #include "ConstraintEntity.h"
 #include "LoopEntity.h"
 #include "LoopTag.h"
+#include "SystemEntity.h"
 
 namespace middle {
 	void processEditorActions(GameState* gameState) {
@@ -311,18 +312,24 @@ namespace middle {
 
 	void EditorActionOpenSystem::execute(GameState* gameState)
 	{
-		//std::string scriptName = "";
-		//bool found = false;
-		//loopInstances(gameState, [gameState, &scriptName, &found](int i, ShapeInstance& instance) {
-		//	if (instance.mouseIntersects && instance.shape.type == ShapeType::SYSTEM) {
-		//		scriptName = instance.shape.name;
-		//		found = true;
-		//	}
-		//	});
+		std::string systemName = "";
+		bool found = false;
+		loopInstances(gameState, [gameState, &systemName, &found](int i, Shape& shape) {
+			auto system = getComponent<components::SystemReference>(shape);
+			if (!system)
+				return;
 
-		//if (found) {
-		//	shell_open_file("../assets/scripts/" + scriptName + ".cpp");
-		//}
+			auto intersectable = getComponent<components::MouseIntersectable>(shape);
+
+			if (intersectable->intersecting) {
+				systemName = system->systemName;
+				found = true;
+			}
+			});
+
+		if (found) {
+			shell_open_file("../assets/systems/" + systemName + ".cpp");
+		}
 
 	}
 
@@ -330,26 +337,31 @@ namespace middle {
 	{
 		assert(params.stringValue != "");
 
-		std::string scriptName = params.stringValue;
+		std::string systemName = params.stringValue;
 
-		if (gameState->gameplayScripts.find(scriptName) == gameState->gameplayScripts.end()) {
-			newSystemFile(gameState, scriptName);
+		if (gameState->gameplaySystems.find(systemName) == gameState->gameplaySystems.end()) {
+			newSystemFile(gameState, systemName);
 		}
 
 		int freeIndex = findFreeIndex(gameState);
-		//initScript(gameState, freeIndex, scriptName, {0,0,0});
+		entities::initSystem(gameState, freeIndex, {0,0,0}, systemName);
+
+		shell_open_file("../assets/systems/" + systemName + ".cpp");
 
 		std::string command = "python ../src/editor_scripts/build_project.py";
 		system(command.c_str());
+
+
+		gameState->closeGame = true;
 	}
 
 	void EditorActionImportSystem::execute(GameState* gameState) 
 	{
 		assert(params.stringValue != "");
-		std::string scriptName = params.stringValue;
+		std::string systemName = params.stringValue;
 
 		int freeIndex = findFreeIndex(gameState);
-		//initScript(gameState, freeIndex, scriptName, { 0,0,0 });
+		entities::initSystem(gameState, freeIndex, { 0,0,0 }, systemName);
 	}
 
 	void EditorActionNewCamera::execute(GameState* gameState)

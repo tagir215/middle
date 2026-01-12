@@ -192,7 +192,7 @@ namespace middle {
 	Vector3 getLoopCentroid(GameState* gameState, int index)
 	{
 		auto& shape = getShape(gameState, index);
-		auto loop = getComponentAssert<components::LoopSociety>(shape);
+		auto loop = getComponent<components::LoopSociety>(shape);
 		Vector3 centroid = { 0,0,0 };
 		if (loop->loopMemberIndexes.size() < 1)
 			return centroid;

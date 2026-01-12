@@ -133,8 +133,8 @@ namespace middle {
 
 	void loadScriptNames(GameState* gameState)
 	{
-		for (auto& pair : scriptMap) {
-			gameState->scriptNames.push_back(pair.first);
+		for (auto& pair : systemMap) {
+			gameState->systemNames.push_back(pair.first);
 		}
 	}
 
@@ -201,6 +201,23 @@ namespace middle {
 		outFile.close();
 	}
 
+	void loadReferences(GameState* gameState, int index) {
+		auto& shape = getShape(gameState, index);
+
+		// load scene if added a reference to a scene above
+		auto referenceComponent = getComponent<components::Reference>(shape);
+		assert(referenceComponent);
+		if (referenceComponent) {
+			auto posComponent = getComponent<components::Position>(shape);
+			Vector3 pos = { posComponent->posX, posComponent->posY, posComponent->posZ };
+			// reset to zero, because load scene will again set the position, while also moving its children
+			posComponent->posX = 0;
+			posComponent->posY = 0;
+			posComponent->posZ = 0;
+			loadScene(gameState, referenceComponent->sceneName, true, pos, index);
+		}
+	}
+
 
 	void flushBuffer(GameState* gameState, std::vector<std::string>& buffer, const std::string& componentName, int index, int indexOffset = 0) {
 		int typeId = componentTypeMap[componentName];
@@ -211,17 +228,6 @@ namespace middle {
 		shape.componentMap[typeId].componentOffset = componentOffset;
 		buffer.clear();
 
-		// load scene if added a reference to a scene above
-		auto referenceComponent = getComponent<components::Reference>(shape);
-		if (referenceComponent && componentName == "Reference") {
-			auto posComponent = getComponent<components::Position>(shape);
-			Vector3 pos = { posComponent->posX, posComponent->posY, posComponent->posZ };
-			// reset to zero, because load scene will again set the position, while also moving its children
-			posComponent->posX = 0;
-			posComponent->posY = 0;
-			posComponent->posZ = 0;
-			loadScene(gameState, referenceComponent->sceneName, true, pos, index);
-		}
 	}
 
 	void flushFieldBuffer(GameState* gameState, std::vector<std::string>& buffer, const std::string& field) {
@@ -257,7 +263,6 @@ namespace middle {
 		}
 
 		std::string line;
-		int currentIndex = 0;
 
 		// all import indexes are shifted by half of total allowed shape count
 		// if highest used index is above half of total allowed shape count, use the next one after highest used as offset
@@ -342,13 +347,23 @@ namespace middle {
 		inputFile.close();
 
 
+
+		int highestUsedIndex = findHighestUsedIndex(gameState);
+
+		// loop added indexes and load all the references 
+		for(int i=indexOffset; i<highestUsedIndex + 1; ++i){
+			auto& shape = gameState->shapes[i];
+			if (getComponent<components::Reference>(shape)) {
+				loadReferences(gameState, i);
+			}
+		}
+
+		
+
 		// if we import we contain all the content in a reference loop
 		if (import) {
-			currentIndex++;
-			int highestUsedIndex = findHighestUsedIndex(gameState);
-			int shapesAddedCount = highestUsedIndex - indexOffset;
 			std::set<int>highestLevelContainers;
-			for (int i = indexOffset; i < highestUsedIndex; ++i) {
+			for (int i = indexOffset; i < highestUsedIndex + 1; ++i) {
 				// skip nons and skip constraints since they don't have parents
 				if (!isShapeAlive(gameState, i))
 					continue;
@@ -375,7 +390,7 @@ namespace middle {
 			}
 			// if reference already exists, when deserializing, just update the container loop, since its refence objects are not stored to the file
 			else {
-				auto loop = getComponentAssert<components::LoopSociety>(gameState->shapes[sceneReferenceIndex]);
+				auto loop = getComponent<components::LoopSociety>(gameState->shapes[sceneReferenceIndex]);
 				loop->loopMemberIndexes = members;
 			}
 
@@ -410,7 +425,7 @@ namespace middle {
 		flushFieldBuffer(gameState, buffer, field);
 	}
 
-	void newSystemFile(GameState* gameState, const std::string& scriptName)
+	void newSystemFile(GameState* gameState, const std::string& systemName)
 	{
 		std::string templateFilename = "../src/editor_data/system_template.cpp";
 		std::ifstream inputFile(templateFilename);
@@ -419,7 +434,7 @@ namespace middle {
 			return;
 		}
 
-		std::string filename = "../assets/scripts/" + scriptName + ".cpp";
+		std::string filename = "../assets/systems/" + systemName + ".cpp";
 
 		// read template to string array
 		std::string templateLine;
@@ -430,12 +445,16 @@ namespace middle {
 		inputFile.close();
 
 		// replace lines with script names
-		std::string placeholder = "/*scriptname*/";
+		std::string placeholder = "/*systemName*/";
 		for (int i = 0; i < templateLines.size(); ++i) {
 			auto& line = templateLines[i];
-			size_t pos = line.find(placeholder);
-			if (pos != std::string::npos) {
-				line.replace(pos, placeholder.length(), scriptName);
+
+			size_t pos = 0;
+			while (pos != std::string::npos) {
+				pos = line.find(placeholder, pos);
+				if (pos != std::string::npos) {
+					line.replace(pos, placeholder.length(), systemName);
+				}
 			}
 		}
 

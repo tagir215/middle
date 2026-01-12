@@ -23,7 +23,7 @@ namespace entities{
 		for (int loopMember : loopIndexes) {
 			auto& member = gameState->shapes[loopMember];
 			assert(member.id == gameState->ids[loopMember]);
-			auto memberLoop = middle::getComponentAssert<components::LoopSociety>(member);
+			auto memberLoop = middle::getComponent<components::LoopSociety>(member);
 			memberLoop->parentLoopIndex = index;
 		}
     }
