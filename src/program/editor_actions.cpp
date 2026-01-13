@@ -437,6 +437,8 @@ namespace middle {
 		if (found) {
 			shell_open_file("../assets/components/" + componentName + ".h");
 		}
+
+		unselect(gameState);
 	}
 
 }

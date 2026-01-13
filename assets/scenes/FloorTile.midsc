@@ -1,0 +1,184 @@
+#scene
+s  FloorTile
+#activeCamera
+i  0
+__0__
+Sphere
+f  2.000000
+LoopSociety
+i  -1
+vi
+Position
+f  -14.801121
+f  -0.000046
+f  -5.888910
+PhysicsData
+f  1.000000
+f  1.000000
+f  1.000000
+f  1.000000
+f  0.000000
+f  0.000034
+f  0.000000
+f  0.000103
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.800000
+f  0.800000
+f  0.800000
+b  0
+MouseSelectable
+b  0
+MouseGrabbable
+b  0
+MouseIntersectable
+b  0
+b  0
+__1__
+Sphere
+f  2.000000
+LoopSociety
+i  -1
+vi
+Position
+f  -15.538739
+f  0.000016
+f  7.165742
+PhysicsData
+f  1.000000
+f  1.000000
+f  1.000000
+f  1.000000
+f  0.000000
+f  0.000057
+f  0.000000
+f  -0.000106
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.800000
+f  0.800000
+f  0.800000
+b  0
+MouseSelectable
+b  0
+MouseGrabbable
+b  0
+MouseIntersectable
+b  0
+b  0
+__2__
+Sphere
+f  2.000000
+LoopSociety
+i  -1
+vi
+Position
+f  14.362247
+f  -0.000031
+f  6.763963
+PhysicsData
+f  1.000000
+f  1.000000
+f  1.000000
+f  1.000000
+f  0.000000
+f  -0.000040
+f  0.000000
+f  -0.000114
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.800000
+f  0.800000
+f  0.800000
+b  0
+MouseSelectable
+b  0
+MouseGrabbable
+b  0
+MouseIntersectable
+b  0
+b  0
+__3__
+Sphere
+f  2.000000
+LoopSociety
+i  -1
+vi
+Position
+f  15.729651
+f  -0.000046
+f  -7.504600
+PhysicsData
+f  1.000000
+f  1.000000
+f  1.000000
+f  1.000000
+f  0.000000
+f  -0.000051
+f  0.000000
+f  0.000116
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.800000
+f  0.800000
+f  0.800000
+b  0
+MouseSelectable
+b  0
+MouseGrabbable
+b  0
+MouseIntersectable
+b  0
+b  0
+__4__
+Constraint
+i  0
+i  3
+f  0.800000
+f  0.900000
+f  30.573080
+MouseSelectable
+b  0
+MouseIntersectable
+b  0
+b  0
+__5__
+Constraint
+i  2
+i  3
+f  0.800000
+f  0.900000
+f  14.332806
+MouseSelectable
+b  0
+MouseIntersectable
+b  0
+b  0
+__6__
+Constraint
+i  1
+i  2
+f  0.800000
+f  0.900000
+f  29.903210
+MouseSelectable
+b  0
+MouseIntersectable
+b  0
+b  0
+__7__
+Constraint
+i  0
+i  1
+f  0.800000
+f  0.900000
+f  13.074440
+MouseSelectable
+b  0
+MouseIntersectable
+b  0
+b  0

@@ -19,6 +19,9 @@ namespace RendererSystem {
 
 			BeginMode3D(gameState->editorState.camera);
 
+			// center indicator
+			DrawCube({ 0,0,0 }, 5, 5, 5, BLACK);
+
 			rlSetClipPlanes(gameState->nearPlaneDistance, gameState->farPlaneDistance);
 
 			const float axisLength = 1000;
@@ -77,6 +80,13 @@ namespace RendererSystem {
 					DrawText(item.text.c_str(), pos.x, pos.y, item.fontSize, item.color);
 				}
 			}
+
+			Vector3 center = { 0,0,0 };
+			Vector2 center2d = GetWorldToScreen(center, gameState->editorState.camera);
+			if (gameState->sceneNames.size() > 0) {
+				DrawText(gameState->sceneNames[gameState->activeScene].c_str(), center2d.x, center2d.y, 1, WHITE);
+			}
+
 			// imgui uis
 			setupUI(gameState);
 

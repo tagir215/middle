@@ -28,6 +28,7 @@ class EditorRenderSetupSystem : public middle::MiddleGameplaySystem {
 			auto position = middle::getComponent<components::Position>(shape);
 			auto selectable = middle::getComponent<components::MouseSelectable>(shape);
 			auto loop = middle::getComponent<components::LoopTag>(shape);
+			auto intersectable = middle::getComponent<components::MouseIntersectable>(shape);
 			Vector3 loopCentroid;
 			if (loop) {
 				loopCentroid = middle::getLoopCentroid(gameState, i);
@@ -56,6 +57,9 @@ class EditorRenderSetupSystem : public middle::MiddleGameplaySystem {
 				compRefItem.radius = middle::DEF_RADIUS_REFERENCE_INDICATOR;
 				compRefItem.color = BLUE;
 				compRefItem.center = { position->posX, position->posY, position->posZ };
+				if (intersectable->intersecting) {
+					compRefItem.color = middle::HOVERED_THING_COLOR;
+				}
 				gameState->renderData.push_back(compRefItem);
 				return;
 			}
@@ -63,7 +67,6 @@ class EditorRenderSetupSystem : public middle::MiddleGameplaySystem {
 
 			auto sphere = middle::getComponent<components::Sphere>(shape);
 			if (sphere) {
-				auto intersectable = middle::getComponent<components::MouseIntersectable>(shape);
 				auto selectable = middle::getComponent<components::MouseSelectable>(shape);
 				middle::RenderItem sphereItem;
 				sphereItem.type = middle::RenderItemType::SPHERE;
@@ -95,7 +98,6 @@ class EditorRenderSetupSystem : public middle::MiddleGameplaySystem {
 			auto constraint = middle::getComponent<components::Constraint>(shape);
 			if (constraint) {
 				auto selectable = middle::getComponent<components::MouseSelectable>(shape);
-				auto intersectable = middle::getComponent<components::MouseIntersectable>(shape);
 				middle::RenderItem lineItem;
 				lineItem.type = middle::RenderItemType::LINE;
 				lineItem.linePointA = getShapePosition(gameState, constraint->indexA);
@@ -127,7 +129,6 @@ class EditorRenderSetupSystem : public middle::MiddleGameplaySystem {
 			auto reference = middle::getComponent<components::Reference>(shape);
 			if (reference) {
 				auto selectable = middle::getComponent<components::MouseSelectable>(shape);
-				auto intersectable = middle::getComponent<components::MouseIntersectable>(shape);
 				middle::RenderItem refItem;
 				refItem.type = middle::RenderItemType::SPHERE;
 				refItem.color = middle::REFERENCE_INDICATOR_COLOR;
@@ -156,7 +157,6 @@ class EditorRenderSetupSystem : public middle::MiddleGameplaySystem {
 
 			if (!reference && loop) {
 				auto selectable = middle::getComponent<components::MouseSelectable>(shape);
-				auto intersectable = middle::getComponent<components::MouseIntersectable>(shape);
 				middle::RenderItem loopItem;
 				loopItem.type = middle::RenderItemType::SPHERE;
 				loopItem.center = loopCentroid;
@@ -186,7 +186,6 @@ class EditorRenderSetupSystem : public middle::MiddleGameplaySystem {
 			auto system = middle::getComponent<components::SystemReference>(shape);
 			if (system) {
 				auto selectable = middle::getComponent<components::MouseSelectable>(shape);
-				auto intersectable = middle::getComponent<components::MouseIntersectable>(shape);
 				assert(position);
 				middle::RenderItem systemItem;
 				systemItem.type = middle::RenderItemType::SPHERE;

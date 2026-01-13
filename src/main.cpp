@@ -54,12 +54,12 @@ int main(void)
 {
 	// Initialization
 	//--------------------------------------------------------------------------------------
-	const int screenWidth = 800;
-	const int screenHeight = 400;
+	const int screenWidth = 900;
+	const int screenHeight = 600;
 
 	InitWindow(screenWidth, screenHeight, "raylib [core] example - basic window");
 
-	SetWindowPosition(400, 600);
+	SetWindowPosition(1000, 40);
 	set_window_always_on_top(GetWindowHandle());
 	HideCursor();
 
