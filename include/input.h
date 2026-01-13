@@ -27,6 +27,7 @@ namespace middle {
 		bool d = false;
 		bool q = false;
 		bool e = false;
+		bool altDown = false;
 		bool grabDown = false;
 		bool grabReleased = false;
 		bool infoClick = false;

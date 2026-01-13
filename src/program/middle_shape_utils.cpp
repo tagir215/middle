@@ -11,6 +11,7 @@
 #include "MouseIntersectable.h"
 #include "JointEntity.h"
 #include "LoopEntity.h"
+#include "ComponentRefParent.h"
 
 namespace middle {
 
@@ -210,6 +211,8 @@ namespace middle {
 		}
 
 		centroid = centroid * (1.0f / loop->loopMemberIndexes.size());
+		// set centroid offset... have the indicator detached little bit
+		centroid.y = -60;
 		return centroid;
 	}
 
@@ -222,6 +225,40 @@ namespace middle {
 	}
 
 	void deleteShape(GameState* gameState, int index) {
+		// remove parent indexes if deleting loops from children
+		auto loop = getComponent<components::LoopSociety>(gameState->shapes[index]);
+		if (loop) {
+			for (int childIndex : loop->loopMemberIndexes) {
+				auto& childShape = gameState->shapes[childIndex];
+				auto loop = getComponent<components::LoopSociety>(childShape);
+				loop->parentLoopIndex = UNASSIGNED;
+			}
+
+			if (loop->parentLoopIndex != UNASSIGNED) {
+				auto& parentShape = getShape(gameState, loop->parentLoopIndex);
+				auto parentLoop = getComponent<components::LoopSociety>(parentShape);
+				for (int i = 0; i < parentLoop->loopMemberIndexes.size(); ++i) {
+					int parentChildIndex = parentLoop->loopMemberIndexes[i];
+					if (parentChildIndex == index) {
+						parentLoop->loopMemberIndexes.erase(parentLoop->loopMemberIndexes.begin() + i);
+						break;
+					}
+				}
+				if (parentLoop->loopMemberIndexes.size() < 2) {
+					deleteShape(gameState, loop->parentLoopIndex);
+				}
+			}
+
+
+		}
+
+		auto componentRefParent = getComponent<components::ComponentRefParent>(gameState->shapes[index]);
+		if (componentRefParent) {
+			for (int childIndex : componentRefParent->indicatorChildren) {
+				deleteShape(gameState, childIndex);
+			}
+		}
+
 		int prevGeneration = gameState->shapes[index].id.generation;
 		gameState->shapes[index] = Shape();
 		for (auto& pair : gameState->shapes[index].componentMap) {
@@ -229,6 +266,7 @@ namespace middle {
 			int typeId = pair.first;
 			componentListMap[typeId]->shrink(c.componentOffset);
 		}
+
 		gameState->shapes[index].id.generation = prevGeneration + 1;
 	}
 

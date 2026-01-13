@@ -20,7 +20,7 @@ namespace RendererSystem {
 			BeginMode3D(gameState->editorState.camera);
 
 			// center indicator
-			DrawCube({ 0,0,0 }, 5, 5, 5, BLACK);
+			DrawCube({ 0,5,0 }, 5, 5, 5, BLACK);
 
 			rlSetClipPlanes(gameState->nearPlaneDistance, gameState->farPlaneDistance);
 

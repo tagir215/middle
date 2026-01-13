@@ -17,6 +17,7 @@
 #include "LoopTag.h"
 #include "SystemEntity.h"
 #include "ComponentReference.h"
+#include "ComponentRefParent.h"
 
 namespace middle {
 	void processEditorActions(GameState* gameState) {
@@ -176,8 +177,6 @@ namespace middle {
 	}
 
 	void EditorActionDelete::execute(GameState* gameState) {
-		bool foundSelected = false;
-		bool editedLoops = false;
 		// loops of deleted spheres that belong to loops
 		std::set<int>deteledLoopMembersParentLoops;
 
@@ -192,34 +191,11 @@ namespace middle {
 			// delete all connected constraints
 			std::vector<int> connectedConstraints = findConnectedConstraints(gameState, i);
 
-			// remove parent indexes if deleting loops from children
-			auto loop = getComponent<components::LoopSociety>(shape);
-			if (loop) {
-				for (int childIndex : loop->loopMemberIndexes) {
-					auto& shape = gameState->shapes[childIndex];
-					auto loop = getComponent<components::LoopSociety>(shape);
-					loop->parentLoopIndex = UNASSIGNED;
-				}
-			}
 
 			if(getComponent<components::Reference>(shape)){
 				deleteShapeRecursive(gameState, i);
 			}
-
-			// delete reference to this from parent, as this is deleted
-			if (loop != nullptr && loop->parentLoopIndex != UNASSIGNED) {
-				auto& parentShape = getShape(gameState, loop->parentLoopIndex);
-				auto parentLoop = getComponent<components::LoopSociety>(parentShape);
-				for (int j = 0; j < parentLoop->loopMemberIndexes.size(); ++j) {
-					int parentChildIndex = parentLoop->loopMemberIndexes[j];
-					if (parentChildIndex == i) {
-						parentLoop->loopMemberIndexes.erase(parentLoop->loopMemberIndexes.begin() + j);
-						break;
-					}
-				}
-			 }
              
-			 foundSelected = true;
 			// set all connected constraints as selected
 			for (int id : connectedConstraints) {
 				Shape& constraintShape = getShape(gameState, id);
@@ -227,16 +203,10 @@ namespace middle {
 				assert(selectable);
 				selectable->selected = true;
 			}
-		}
 
-		// delete selected shapes
-		for (int i = 0; i < gameState->shapes.size(); ++i) {
-			if (!isShapeAlive(gameState, i))
-				continue;
-			if (!isShapeSelected(gameState, i))
-				continue;
 			deleteShape(gameState, i);
 		}
+
 	}
 
 	void EditorActionSaveScene::execute(GameState* gameState) {

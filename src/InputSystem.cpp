@@ -56,6 +56,7 @@ class InputSystem : public middle::MiddleGameplaySystem {
 			gameState->input.d = IsKeyDown(KEY_D);
 			gameState->input.q = IsKeyDown(KEY_Q);
 			gameState->input.e = IsKeyDown(KEY_E);
+			gameState->input.altDown = IsKeyDown(KEY_LEFT_ALT);
 			gameState->input.grabDown = IsKeyDown(KEY_G);
 			gameState->input.grabReleased = IsKeyReleased(KEY_G);
 			gameState->input.grabReleased = IsKeyReleased(KEY_G);
