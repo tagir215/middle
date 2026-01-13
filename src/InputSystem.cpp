@@ -18,10 +18,35 @@ class InputSystem : public middle::MiddleGameplaySystem {
 		gameState->input.zoomIn = GetMouseWheelMoveV().y > 0;
 		gameState->input.zoomOut = GetMouseWheelMoveV().y < 0;
 
+		gameState->input.mouseHeld = false;
+		gameState->input.mouseClicked = false;
+		gameState->input.mouseReleased = false;
+		gameState->input.w = false;
+		gameState->input.s = false;
+		gameState->input.a = false;
+		gameState->input.d = false;
+		gameState->input.q = false;
+		gameState->input.e = false;
+		gameState->input.grabDown = false;
+		gameState->input.grabReleased = false;
+		gameState->input.grabReleased = false;
+		gameState->input.infoClick = false;
+		gameState->input.loopClick = false;
+		gameState->input.selectModeClick = false;
+		gameState->input.sphereModeClick = false;
+		gameState->input.constraintModeClick = false;
+		gameState->input.cameraModeClick = false;
+		gameState->input.deleteClick = false;
+		gameState->input.copyClick = false;
+		gameState->input.saveClick = false;
+		gameState->input.navigateToFileClick = false;
+		gameState->input.focus = false;
+		gameState->input.newThing = false;
+
 		if (gameState->inputBlockers.find(middle::InputBlockers::MOUSE_BLOCK) == gameState->inputBlockers.end()) {
 			gameState->input.mouseHeld = IsMouseButtonDown(MOUSE_BUTTON_LEFT);
 			gameState->input.mouseClicked = IsMouseButtonPressed(MOUSE_BUTTON_LEFT);
-			gameState->input.mouseReleased = IsMouseButtonPressed(MOUSE_BUTTON_LEFT);
+			gameState->input.mouseReleased = IsMouseButtonReleased(MOUSE_BUTTON_LEFT);
 		}
 
 		if (gameState->inputBlockers.find(middle::InputBlockers::KEYBOARD_BLOCK) == gameState->inputBlockers.end()) {
@@ -47,9 +72,6 @@ class InputSystem : public middle::MiddleGameplaySystem {
 			gameState->input.focus = IsKeyPressed(KEY_F);
 			gameState->input.newThing = IsKeyPressed(KEY_N);
 		}
-
-		// auto clear so others can fight over keeping stuff blocked
-		gameState->inputBlockers.clear();
 
 		// CAMERA POSITION UPDATE
 		int cameraPosX = gameState->screenWidth / 2;

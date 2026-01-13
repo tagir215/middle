@@ -11,10 +11,15 @@ namespace MouseSelectionSystem {
 
 	class MouseSelectionSystem : public middle::MiddleGameplaySystem {
 		void update(middle::GameState* gameState) override {
+
+			if (gameState->input.mouseClicked) {
+				gameState->editorState.selectChangeCountAfterClick = 0;
+			}
+
 			for (int i = 0; i < gameState->shapes.size(); ++i) {
 				// ghost shapes can't be selected or edited
 				if (middle::isGhostShape(i)) {
-					return;
+					break;
 				}
 				if (!middle::isShapeAlive(gameState, i)) {
 					continue;
@@ -37,20 +42,39 @@ namespace MouseSelectionSystem {
 				// when holding down, don't immediatedly toggle once when starting intersect
 				if (!intersectable->wasIntersecting && intersectable->intersecting && gameState->input.mouseHeld) {
 					selectable->selected = !selectable->selected;
+					++gameState->editorState.selectChangeCountAfterClick;
 				}
 
 				// toggle selection when clicking
 				if (intersectable->intersecting && gameState->input.mouseClicked) {
 					selectable->selected = !selectable->selected;
+					++gameState->editorState.selectChangeCountAfterClick;
 				}
 
 				// grabbing activates selected if there's no selections yet, except can't grab constraints
-				if (intersectable->intersecting && gameState->input.grabDown && gameState->selectCount == 0 && constraint == nullptr) {
+				if (intersectable->intersecting && gameState->input.grabDown && gameState->editorState.selectCount == 0 && constraint == nullptr) {
 					selectable->selected = true;
-					++gameState->selectCount;
+					++gameState->editorState.selectCount;
+					++gameState->editorState.selectChangeCountAfterClick;
 				}
 
 			}
+
+			// count update
+			gameState->editorState.intersectCount = 0;
+			gameState->editorState.selectCount = 0;
+			for (int i = 0; i < gameState->shapes.size(); ++i) {
+				if (isShapeSelected(gameState, i))
+					++gameState->editorState.selectCount;
+				if (isMouseIntersectingShape(gameState, i))
+					++gameState->editorState.intersectCount;
+			}
+
+			// unselect
+			if (gameState->input.mouseReleased && gameState->editorState.selectChangeCountAfterClick == 0) {
+				unselect(gameState);
+			}
+
 		}
 	};
 

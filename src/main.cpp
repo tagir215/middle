@@ -102,6 +102,8 @@ int main(void)
 		gameState->screenHeight = GetScreenHeight();
 
 
+		systemMap["InputSystem"]->update(gameState);
+
 		gameState->frameTimeAccumulator += GetFrameTime();
 		UpdateGame(gameState);
 

@@ -27,7 +27,7 @@ class EditorRenderSetupSystem : public middle::MiddleGameplaySystem {
 			// render component ring
 			auto position = middle::getComponent<components::Position>(shape);
 			auto selectable = middle::getComponent<components::MouseSelectable>(shape);
-			if (selectable && selectable->selected) {
+			if (selectable && position && selectable->selected) {
 				int componentCount = shape.componentMap.size();
 				float angleBetween = 2 * PI / componentCount;
 				std::vector<Vector3> positions;

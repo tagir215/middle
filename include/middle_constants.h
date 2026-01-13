@@ -11,7 +11,6 @@ namespace middle {
 
 	inline std::vector<std::string>engineSystemNamesFrameStart
 	{
-		"InputSystem",
 		"EditorSystem",
 		"MouseIntersectDetectionSystem",
 		"MouseGrabbingSystem",

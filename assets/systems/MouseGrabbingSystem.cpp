@@ -46,7 +46,7 @@ namespace MouseGrabbingSystem {
 					dragShape(gameState, i, xzVel);
 				}
 
-				if (gameState->input.grabReleased && gameState->selectCount == 1) {
+				if (gameState->input.grabReleased && gameState->editorState.selectCount == 1) {
 					unselect(gameState);
 				}
 

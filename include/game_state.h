@@ -84,6 +84,10 @@ namespace middle {
 		bool doOneStep = false;
 		bool showAllInfo = false;
 		int stepDir = 1;
+		int gridSize = 4;
+		int intersectCount = 0;
+		int selectCount = 0;
+		int selectChangeCountAfterClick = 0;
 		EditorAction nextEditorAction = EditorAction::NONE;
 		EditorActionContainer::Params nextEditorActionParams;
 	};
@@ -116,9 +120,6 @@ namespace middle {
 		float aspectRatio;
 		float frameTime;
 		float frameTimeAccumulator = 0;
-		int gridSize = 4;
-		int intersectCount = 0;
-		int selectCount = 0;
 		const double nearPlaneDistance = 0.05;
 		const double farPlaneDistance = 5000;
 		ApplicationMode applicationMode = ApplicationMode::EDITOR_MODE;

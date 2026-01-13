@@ -28,10 +28,10 @@ namespace RendererSystem {
 			float mouseZ = gameState->input.mouseXZ_PlanePos.z;
 			// draw grid
 			const float visibleGridRadius = 10;
-			float visibleGridRadiusSq = visibleGridRadius * visibleGridRadius * gameState->gridSize * gameState->gridSize;
-			float gridSphereRadius = 0.10f * gameState->gridSize;
-			for (float x = -axisLength; x < axisLength; x += gameState->gridSize) {
-				for (float z = -axisLength; z < axisLength; z += gameState->gridSize) {
+			float visibleGridRadiusSq = visibleGridRadius * visibleGridRadius * gameState->editorState.gridSize * gameState->editorState.gridSize;
+			float gridSphereRadius = 0.10f * gameState->editorState.gridSize;
+			for (float x = -axisLength; x < axisLength; x += gameState->editorState.gridSize) {
+				for (float z = -axisLength; z < axisLength; z += gameState->editorState.gridSize) {
 					float deltaX = mouseX - x;
 					float deltaZ = mouseZ - z;
 					float distSq = deltaX * deltaX + deltaZ * deltaZ;
@@ -73,6 +73,7 @@ namespace RendererSystem {
 			setupUI(gameState);
 
 			EndDrawing();
+
 		}
 	};
 

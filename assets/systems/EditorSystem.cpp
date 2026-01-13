@@ -85,20 +85,6 @@ class EditorSystem : public middle::MiddleGameplaySystem {
 		gameState->editorState.camera.position += cameraMovementDir * cameraSpeed;
 		gameState->editorState.camera.target += cameraMovementDir * cameraSpeed;
 
-		// count update
-		gameState->intersectCount = 0;
-		gameState->selectCount = 0;
-		for (int i = 0; i < gameState->shapes.size(); ++i) {
-			if (isShapeSelected(gameState, i))
-				++gameState->selectCount;
-			if (isMouseIntersectingShape(gameState, i))
-				++gameState->intersectCount;
-		}
-
-		// unselect
-		if (gameState->input.mouseClicked && gameState->intersectCount == 0) {
-			unselect(gameState);
-		}
 	}
 };
 

@@ -41,6 +41,7 @@ add_executable(middle
     src/win32_platform.cpp 
     src/middle_imgui.cpp 
     src/Renderer.cpp
+    src/InputSystem.cpp
 )
 target_include_directories(middle PUBLIC ${CMAKE_SOURCE_DIR}/include)
 target_include_directories(middle PUBLIC ${CMAKE_SOURCE_DIR}/assets/components)

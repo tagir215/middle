@@ -53,6 +53,11 @@ namespace middle {
 	}
 
 	void editorUI(GameState* gameState) {
+
+		if (ImGui::IsWindowHovered(ImGuiHoveredFlags_AnyWindow)) {
+			gameState->inputBlockers.insert(InputBlockers::MOUSE_BLOCK);
+		}
+
 		ImGui::Begin("Control");
 		if (!gameState->paused) {
 			if (ImGui::Button("pause")) {
@@ -77,12 +82,12 @@ namespace middle {
 			gameState->reset = true;
 		}
 		if (ImGui::Button("increase grid")) {
-			++gameState->gridSize;
+			++gameState->editorState.gridSize;
 		}
 		if (ImGui::Button("decrease grid")) {
-			--gameState->gridSize;
-			if (gameState->gridSize < 1)
-				gameState->gridSize = 1;
+			--gameState->editorState.gridSize;
+			if (gameState->editorState.gridSize < 1)
+				gameState->editorState.gridSize = 1;
 		}
 		if (ImGui::Button("PLAY")) {
 			gameState->applicationMode = ApplicationMode::GAME_MODE;
@@ -129,7 +134,7 @@ namespace middle {
 			if (gameState->editorState.creationMode == CreationMode::SPHERE_MODE && gameState->input.newThing) {
 				gameState->editorState.nextEditorAction = EditorAction::NEW_SPHERE;
 			}
-			if (gameState->editorState.creationMode == CreationMode::CONSTRAINT_MODE && gameState->selectCount == 2) {
+			if (gameState->editorState.creationMode == CreationMode::CONSTRAINT_MODE && gameState->editorState.selectCount == 2) {
 				gameState->editorState.nextEditorAction = EditorAction::NEW_CONSTRAINT;
 			}
 			if(gameState->editorState.creationMode == CreationMode::CAMERA_MODE){
@@ -254,10 +259,11 @@ namespace middle {
 		}
 
 		// import COMPONENT
-		if (ImGui::Button("IMPORT COMPONENT")) {
+		ImGui::Button("IMPORT COMPONENT");
+		if (ImGui::IsItemClicked(ImGuiMouseButton_Left)) {
 			ImGui::OpenPopup("Component Selector");
-			gameState->inputBlockers.insert(InputBlockers::MOUSE_BLOCK);
 		}
+
 
 		if (ImGui::BeginPopup("System Selector")) {
 
@@ -276,7 +282,7 @@ namespace middle {
 
 
 		if (ImGui::BeginPopup("Component Selector")) {
-
+			gameState->inputBlockers.insert(InputBlockers::MOUSE_BLOCK);
 			for (auto& name : gameState->componentNames) {
 				if (ImGui::Button(name.c_str())) {
 					EditorActionContainer::Params params;
@@ -336,6 +342,8 @@ namespace middle {
 
 
 		ImGui::End();
+
+
 	}
 
 	void gameDevelopmentUI(GameState* gameState) {

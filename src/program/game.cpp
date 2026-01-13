@@ -44,6 +44,10 @@ namespace middle{
 			systemMap[name]->update(gameState);
 		}
 
+
+		// Clear input blockers at the end of physics update
+		gameState->inputBlockers.clear();
+
 	}
 
 }
@@ -60,6 +64,9 @@ extern "C" {
 		if (gameState->frameTimeAccumulator >= gameState->frameTime)
 		{
 			gameState->frameTimeAccumulator -= gameState->frameTime;
+			if (gameState->frameTimeAccumulator > gameState->frameTime * 2) {
+				gameState->frameTimeAccumulator = 0;
+			}
 			physicsUpdate(gameState);
 		}
 

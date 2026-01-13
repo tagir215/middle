@@ -3,9 +3,10 @@
 
 namespace middle {
 
-	enum InputBlockers {
+	enum class InputBlockers {
 		KEYBOARD_BLOCK,
 		MOUSE_BLOCK,
+		MOUSE_RELEASE_BLOCK,
 	};
 
 	struct EditorInput {
