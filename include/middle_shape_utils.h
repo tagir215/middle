@@ -19,6 +19,8 @@ namespace middle {
 	int findHighestLevelContainer(GameState* gameState, int index);
 	// loop the shape instances
 	int findHighestUsedIndex(GameState* gameState);
+	// find next usable ghost index
+	int findNextFreeGhostIndex(GameState* gameState);
 	// is the shape real editable thing or a ghost (reference from other scene)
 	bool isGhostShape(int index);
 	// is the shape selected via mouse

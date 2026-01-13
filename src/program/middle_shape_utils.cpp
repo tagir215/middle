@@ -88,6 +88,12 @@ namespace middle {
 		return highestI;
 	}
 
+	int findNextFreeGhostIndex(GameState* gameState)
+	{
+		int highestUsed = findHighestUsedIndex(gameState) + 1;
+		return highestUsed > GHOST_INDEX_OFFSET ? highestUsed : GHOST_INDEX_OFFSET;
+	}
+
 	void dragShape(GameState* gameState, int index, Vector3 linearVelocity) {
 		Shape& shape = getShape(gameState, index);
 		auto loop = getComponent<components::LoopSociety>(shape);

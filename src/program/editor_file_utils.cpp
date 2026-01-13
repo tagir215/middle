@@ -221,8 +221,7 @@ namespace middle {
 
 	void flushBuffer(GameState* gameState, std::vector<std::string>& buffer, const std::string& componentName, int index, int indexOffset = 0) {
 		int typeId = componentTypeMap[componentName];
-		int size = componentListMap[typeId]->grow();
-		int componentOffset = size - 1;
+		int componentOffset = componentListMap[typeId]->grow();
 		componentSerializableRefMap[typeId][componentOffset]->deserialize(buffer, indexOffset);
 		auto& shape = gameState->shapes[index + indexOffset];
 		shape.componentMap[typeId].componentOffset = componentOffset;

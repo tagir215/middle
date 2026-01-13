@@ -24,10 +24,25 @@ class EditorRenderSetupSystem : public middle::MiddleGameplaySystem {
 		gameState->renderData.clear();
 		loopInstances(gameState, [gameState](int i, middle::Shape& shape) {
 
-			// render component ring
 			auto position = middle::getComponent<components::Position>(shape);
 			auto selectable = middle::getComponent<components::MouseSelectable>(shape);
-			if (selectable && position && selectable->selected) {
+			auto loop = middle::getComponent<components::LoopTag>(shape);
+			Vector3 loopCentroid;
+			if (loop) {
+				loopCentroid = middle::getLoopCentroid(gameState, i);
+			}
+
+
+			// render component ring
+			if (selectable && selectable->selected) {
+				Vector3 entpos;
+				if (position) {
+					entpos = { position->posX, position->posY, position->posZ };
+				}
+				if (loop) {
+					entpos = loopCentroid;
+				}
+
 				int componentCount = shape.componentMap.size();
 				float angleBetween = 2 * PI / componentCount;
 				std::vector<Vector3> positions;
@@ -39,7 +54,7 @@ class EditorRenderSetupSystem : public middle::MiddleGameplaySystem {
 					float x = std::cosf(angle) * r;
 					float z = std::sinf(angle) * r;
 					Vector3 pos = { x,0,z };
-					pos += {position->posX, position->posY, position->posZ};
+					pos += entpos;
 					middle::RenderItem componentSphere;
 					componentSphere.type = middle::RenderItemType::SPHERE;
 					componentSphere.center = pos;
@@ -144,14 +159,12 @@ class EditorRenderSetupSystem : public middle::MiddleGameplaySystem {
 				return;
 			}
 
-			if (!reference && middle::getComponent<components::LoopTag>(shape)) {
-				auto loop = middle::getComponent<components::LoopSociety>(shape);
+			if (!reference && loop) {
 				auto selectable = middle::getComponent<components::MouseSelectable>(shape);
 				auto intersectable = middle::getComponent<components::MouseIntersectable>(shape);
 				middle::RenderItem loopItem;
-				Vector3 centroid = getLoopCentroid(gameState, i);
 				loopItem.type = middle::RenderItemType::SPHERE;
-				loopItem.center = centroid;
+				loopItem.center = loopCentroid;
 				loopItem.radius = middle::DEF_RADIUS_LOOP_INDICATOR;
 				loopItem.color = middle::LOOP_INDICATOR_COLOR;
 				if (intersectable && intersectable->intersecting) {
@@ -179,6 +192,7 @@ class EditorRenderSetupSystem : public middle::MiddleGameplaySystem {
 			if (system) {
 				auto selectable = middle::getComponent<components::MouseSelectable>(shape);
 				auto intersectable = middle::getComponent<components::MouseIntersectable>(shape);
+				assert(position);
 				middle::RenderItem systemItem;
 				systemItem.type = middle::RenderItemType::SPHERE;
 				systemItem.center = { position->posX, position->posY, position->posZ };

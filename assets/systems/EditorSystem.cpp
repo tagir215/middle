@@ -5,7 +5,9 @@
 #include "editor_file_utils.h"
 #include "middle_shape_utils.h"
 #include "middle_gameplay_script_map.h"
+#include "LoopTag.h"
 #include "SystemEntity.h"
+#include "ComponentReference.h"
 
 class EditorSystem : public middle::MiddleGameplaySystem {
 
@@ -84,6 +86,76 @@ class EditorSystem : public middle::MiddleGameplaySystem {
 
 		gameState->editorState.camera.position += cameraMovementDir * cameraSpeed;
 		gameState->editorState.camera.target += cameraMovementDir * cameraSpeed;
+
+
+		// COMPONENT REFERENCE PALACE
+		middle::loopInstances(gameState, [gameState](int i, middle::Shape& shape) {
+			auto selectable = middle::getComponent<components::MouseSelectable>(shape);
+
+			if (!selectable) {
+				return;
+			}
+
+			auto componentRef = middle::getComponent<components::ComponentReference>(shape);
+
+			// if already has componentRef while selected skip
+			if (selectable->selected && componentRef) {
+				return;
+			}
+
+			// if unselecteced while having a component skip
+			if (!selectable->selected) {
+				if (componentRef) {
+					middle::deleteComponent<components::ComponentReference>(shape);
+				}
+				return;
+			}
+
+			// else create component ref
+
+			auto newComponentRef = middle::addComponent<components::ComponentReference>(shape);
+
+			// get position
+			auto position = middle::getComponent<components::Position>(shape);
+			auto loop = middle::getComponent<components::LoopTag>(shape);
+			Vector3 entpos;
+			if (position) {
+				entpos = { position->posX, position->posY, position->posZ };
+			}
+			if (loop) {
+				entpos = middle::getLoopCentroid(gameState, i);
+			}
+
+
+			// component Ref setup
+			int componentCount = shape.componentMap.size();
+			float angleBetween = 2 * PI / componentCount;
+			std::vector<Vector3> positions;
+			const float r = 30;
+			const float compR = 3;
+
+			positions.resize(componentCount);
+			newComponentRef->componentNames.resize(componentCount);
+			newComponentRef->positionsX.resize(componentCount);
+			newComponentRef->positionsY.resize(componentCount);
+			newComponentRef->positionsZ.resize(componentCount);
+
+			int index = 0;
+			for (auto pair : shape.componentMap) {
+				int componentTypeId = pair.first;
+				float angle = angleBetween * index;
+				float x = std::cosf(angle) * r;
+				float z = std::sinf(angle) * r;
+				Vector3 pos = { x,0,z };
+				pos += entpos;
+				std::string componentName = middle::componentNameMap[componentTypeId];
+				newComponentRef->componentNames[index] = componentName;
+				newComponentRef->positionsX[index] = pos.x;
+				newComponentRef->positionsY[index] = pos.y;
+				newComponentRef->positionsZ[index] = pos.z;
+				++index;
+			}
+			});
 
 	}
 };

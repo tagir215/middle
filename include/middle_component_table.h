@@ -12,20 +12,30 @@ namespace middle {
 	struct Component;
 
 	struct Serializable {
+		virtual ~Serializable() = default;
 		virtual void serialize(std::ostream& istream) = 0;
 		virtual void deserialize(const std::vector<std::string>& buffer, int indexOffset = 0) = 0;
 	};
 	struct IComponentVectorContainer {
+		virtual ~IComponentVectorContainer() = default;
 		virtual int grow() = 0;
 	};
 	template<typename T> 
 	struct ComponentVectorContainer : public IComponentVectorContainer {
 		std::vector<T> vectorData;
+		std::vector<int>freeList;
 		int grow() override {
-			int size = vectorData.size();
-			vectorData.resize(size+1);
+			if (freeList.size() > 0) {
+				int nextFreeIndex = freeList.back();
+				freeList.pop_back();
+				updateSerializableMap<T>();
+				return nextFreeIndex;
+			}
+
+			int nextFreeIndex = vectorData.size();
+			vectorData.resize(nextFreeIndex+1);
 			updateSerializableMap<T>();
-			return size + 1;
+			return nextFreeIndex;
 		}
 	};
 
@@ -42,11 +52,11 @@ namespace middle {
 	extern std::unordered_map <int, std::vector<Serializable*>> componentSerializableRefMap;
 
 	template<typename T>
-	inline std::vector<T>* getComponentArray() {
+	inline ComponentVectorContainer<T>* getComponentVectorContainer() {
 		int typeId = getTypeId<T>();
 		IComponentVectorContainer* iContainer = componentListMap[typeId].get();
 		ComponentVectorContainer<T>* vectorContainer = static_cast<ComponentVectorContainer<T>*>(iContainer);
-		return &vectorContainer->vectorData;
+		return vectorContainer;
 	}
 
 	template<typename T>
@@ -69,8 +79,8 @@ namespace middle {
 			return nullptr;
 		}
 		int componentId = shape.componentMap[typeId].componentOffset;
-		std::vector<T>* v = getComponentArray<T>();
-		T& t = (*v)[componentId];
+		ComponentVectorContainer<T>* vectorContainer = getComponentVectorContainer<T>();
+		T& t = vectorContainer->vectorData[componentId];
 		return &t;
 	}
 
@@ -79,24 +89,34 @@ namespace middle {
 		// add to serializable list
 		int typeId = getTypeId<T>();
 		std::vector<Serializable*>& serVec = componentSerializableRefMap[typeId];
-		std::vector<T>* data = getComponentArray<T>();
-		serVec.resize(data->size());
+		ComponentVectorContainer<T>* vectorContainer = getComponentVectorContainer<T>();
+		serVec.resize(vectorContainer->vectorData.size());
 		for (int i = 0; i < serVec.size(); ++i) {
-			serVec[i] = static_cast<Serializable*>(&(*data)[i]);
+			serVec[i] = static_cast<Serializable*>(&vectorContainer->vectorData[i]);
 		}
 	}
 
 	template<typename T>
 	inline T* addComponent(Shape& shape) {
 		int typeId = getTypeId<T>();
-		std::vector<T>* data = getComponentArray<T>();
-		int nextIndex = data->size();
+		ComponentVectorContainer<T>* vectorContainer = getComponentVectorContainer<T>();
+		auto& data = vectorContainer->vectorData;
+		int nextIndex = vectorContainer->grow();
 		T t;
-		data->push_back(t);
+		data[nextIndex] = t;
 		shape.componentMap[typeId] = Component();
 		shape.componentMap[typeId].componentOffset = nextIndex;
 		updateSerializableMap<T>();
-		return &(*data)[nextIndex];
+		return &data[nextIndex];
+	}
+
+	template<typename T>
+	inline void deleteComponent(Shape& shape) {
+		int typeId = getTypeId<T>();
+		ComponentVectorContainer<T>* vectorContainer = getComponentVectorContainer<T>();
+		int componentOffset = shape.componentMap[typeId].componentOffset;
+		vectorContainer->freeList.push_back(componentOffset);
+		shape.componentMap.erase(typeId);
 	}
 
 	Serializable* getSerializableComponent(Shape& shape, int typeId);
