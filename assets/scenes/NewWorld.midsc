@@ -3,11 +3,11 @@ s  NewWorld
 #activeCamera
 i  0
 __0__
+Sphere
+f  2.000000
 LoopSociety
 i  8
 vi
-Sphere
-f  2.000000
 Position
 f  -85.405464
 f  0.000046
@@ -36,11 +36,11 @@ MouseIntersectable
 b  0
 b  0
 __1__
+Sphere
+f  2.000000
 LoopSociety
 i  8
 vi
-Sphere
-f  2.000000
 Position
 f  -138.214554
 f  0.000077
@@ -69,11 +69,11 @@ MouseIntersectable
 b  0
 b  0
 __2__
+Sphere
+f  2.000000
 LoopSociety
 i  8
 vi
-Sphere
-f  2.000000
 Position
 f  -135.860443
 f  0.000077
@@ -102,11 +102,11 @@ MouseIntersectable
 b  0
 b  0
 __3__
+Sphere
+f  2.000000
 LoopSociety
 i  8
 vi
-Sphere
-f  2.000000
 Position
 f  -83.707764
 f  0.000122
@@ -206,6 +206,17 @@ b  0
 __9__
 MouseSelectable
 b  0
+Text
+s  TestSystem
+f  2.000000
+f  0.000000
+f  10.000000
+f  255.000000
+f  255.000000
+f  255.000000
+f  255.000000
+i  10
+b  1
 MouseGrabbable
 b  0
 MouseIntersectable
@@ -214,6 +225,6 @@ b  0
 SystemReference
 s  TestSystem
 Position
-f  3.920011
-f  -0.000000
-f  -141.692368
+f  241.693146
+f  0.000061
+f  -162.393661

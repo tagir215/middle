@@ -11,6 +11,7 @@ namespace components {
 		ostream << middle::fieldToString(fontColorB);
 		ostream << middle::fieldToString(fontColorA);
 		ostream << middle::fieldToString(fontSize);
+		ostream << middle::fieldToString(visible);
 	}
 
 	void Text::deserialize(const std::vector<std::string>& buffer, int indexOffset) {
@@ -23,6 +24,7 @@ namespace components {
 		middle::fillField(&fontColorB, buffer[6]);
 		middle::fillField(&fontColorA, buffer[7]);
 		middle::fillField(&fontSize, buffer[8]);
+		middle::fillField(&visible, buffer[9]);
 	}
 
 	static middle::ComponentRegistrar<Text>reg("Text");

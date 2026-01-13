@@ -9,6 +9,8 @@
 #include "SystemEntity.h"
 #include "ComponentReference.h"
 #include "ComponentRefParent.h"
+#include "Text.h"
+#include "MouseIntersectable.h"
 
 class EditorSystem : public middle::MiddleGameplaySystem {
 
@@ -30,11 +32,12 @@ class EditorSystem : public middle::MiddleGameplaySystem {
 
 		int systemCount = systemNames.size();
 		float angleBetween = PI / systemCount;
+		float initAngle = PI * 0.1f;
 		std::vector<Vector3> positions;
-		const float r = 50;
+		const float r = 200;
 		positions.resize(systemCount);
 		for (int i = 0; i < systemCount; ++i) {
-			float angle = angleBetween * i;
+			float angle = initAngle + angleBetween * i;
 			float x = std::cosf(angle) * r;
 			float z = std::sinf(angle) * r;
 			Vector3 pos = { x,0,z };
@@ -134,8 +137,9 @@ class EditorSystem : public middle::MiddleGameplaySystem {
 			int componentCount = shape.componentMap.size();
 			float angleBetween = 2 * PI / componentCount;
 			std::vector<Vector3> positions;
-			const float r = 30;
+			const float r = 40;
 			const float compR = 3;
+			float initAngle = PI / 10;
 
 			positions.resize(componentCount);
 			newComponentRefParent->indicatorChildren.resize(componentCount);
@@ -143,7 +147,7 @@ class EditorSystem : public middle::MiddleGameplaySystem {
 			int index = 0;
 			for (auto pair : shape.componentMap) {
 				int componentTypeId = pair.first;
-				float angle = angleBetween * index;
+				float angle = initAngle + angleBetween * index;
 				float x = std::cosf(angle) * r;
 				float z = std::sinf(angle) * r;
 				Vector3 pos = { x,0,z };
@@ -157,10 +161,21 @@ class EditorSystem : public middle::MiddleGameplaySystem {
 				middle::addComponent<components::MouseIntersectable>(newShape);
 				auto newRef = middle::addComponent<components::ComponentReference>(newShape);
 				auto newPos = middle::addComponent<components::Position>(newShape);
+				auto newText = middle::addComponent<components::Text>(newShape);
 				newRef->componentName = componentName;
 				newPos->posX = pos.x;
 				newPos->posY = pos.y;
 				newPos->posZ = pos.z;
+				newText->fontColorR = WHITE.r;
+				newText->fontColorG = WHITE.g;
+				newText->fontColorB = WHITE.b;
+				newText->fontColorA = WHITE.a;
+				newText->offsetX = 2;
+				newText->offsetY = 0;
+				newText->offsetZ = 10;
+				newText->fontSize = middle::REF_TEXT_SIZE;
+				newText->text = componentName;
+
 				newComponentRefParent->indicatorChildren[index] = nextFreeIndex;
 				++index;
 			}

@@ -8,4 +8,5 @@ namespace middle {
 	inline Color CONSTRAINT_COLOR = UGLY_PINK;
 	inline Color JOINT_COLOR = UGLY_PINK;
 	inline Color REFERENCE_INDICATOR_COLOR = PURPLE;
+	inline Color REF_TEXT_COLOR = WHITE;
 }

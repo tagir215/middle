@@ -35,7 +35,7 @@ class EditorRenderSetupSystem : public middle::MiddleGameplaySystem {
 
 
 			auto text = middle::getComponent<components::Text>(shape);
-			if (text) {
+			if (text && text->visible) {
 				assert(position);
 				middle::RenderItem textItem;
 				Vector3 offset = { text->offsetX, text->offsetY, text->offsetZ };

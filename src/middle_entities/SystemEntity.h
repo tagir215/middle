@@ -7,6 +7,7 @@
 #include "LoopSociety.h"
 #include "MouseGrabbable.h"
 #include "SystemReference.h"
+#include "Text.h"
 
 namespace entities{
 
@@ -19,9 +20,19 @@ namespace entities{
 		middle::addComponent<components::MouseIntersectable>(shape);
 		auto system = middle::addComponent<components::SystemReference>(shape);
 		auto pos = middle::addComponent<components::Position>(shape);
+		auto text = middle::addComponent<components::Text>(shape);
 		system->systemName = systemName;
 		pos->posX = position.x;
 		pos->posY = position.y;
 		pos->posZ = position.z;
+		text->fontColorR = middle::REF_TEXT_COLOR.a;
+		text->fontColorG = middle::REF_TEXT_COLOR.a;
+		text->fontColorB = middle::REF_TEXT_COLOR.a;
+		text->fontColorA = middle::REF_TEXT_COLOR.a;
+		text->offsetX = 2;
+		text->offsetY = 0;
+		text->offsetZ = 10;
+		text->text = systemName;
+		text->fontSize = middle::REF_TEXT_SIZE;
     }
 }
