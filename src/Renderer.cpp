@@ -64,11 +64,19 @@ namespace RendererSystem {
 				if (item.type == middle::RenderItemType::LINE) {
 					DrawLine3D(item.linePointA, item.linePointB, item.color);
 				}
+
 			}
 
 
 			EndMode3D();
 
+			for (int i = 0; i < gameState->renderData.size(); ++i) {
+				middle::RenderItem item = gameState->renderData[i];
+				if (item.type == middle::RenderItemType::TEXT) {
+					Vector2 pos = GetWorldToScreen(item.center, gameState->editorState.camera);
+					DrawText(item.text.c_str(), pos.x, pos.y, item.fontSize, item.color);
+				}
+			}
 			// imgui uis
 			setupUI(gameState);
 

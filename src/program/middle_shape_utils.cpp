@@ -104,10 +104,6 @@ namespace middle {
 			}
 		}
 
-		// don't move loops, we can move references though
-		//if (instance.shape.type == ShapeType::LOOP)
-		//	return;
-
 		Vec linearVel = DescVec(linearVelocity);
 		auto pData = getComponent<components::PhysicsData>(shape);
 		auto posData = getComponent<components::Position>(shape);
@@ -228,6 +224,11 @@ namespace middle {
 	void deleteShape(GameState* gameState, int index) {
 		int prevGeneration = gameState->shapes[index].id.generation;
 		gameState->shapes[index] = Shape();
+		for (auto& pair : gameState->shapes[index].componentMap) {
+			Component c = pair.second;
+			int typeId = pair.first;
+			componentListMap[typeId]->shrink(c.componentOffset);
+		}
 		gameState->shapes[index].id.generation = prevGeneration + 1;
 	}
 

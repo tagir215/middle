@@ -3,24 +3,24 @@ s  NewWorld
 #activeCamera
 i  0
 __0__
-Sphere
-f  2.000000
 LoopSociety
 i  8
 vi
+Sphere
+f  2.000000
 Position
-f  -132.169418
-f  0.000008
-f  -7.176088
+f  -85.405464
+f  0.000046
+f  2.352654
 PhysicsData
 f  1.000000
 f  1.000000
 f  1.000000
 f  1.000000
 f  0.000000
-f  -0.000000
+f  -0.000045
 f  0.000000
-f  0.000002
+f  0.000001
 f  0.000000
 f  0.000000
 f  0.000000
@@ -36,24 +36,24 @@ MouseIntersectable
 b  0
 b  0
 __1__
-Sphere
-f  2.000000
 LoopSociety
 i  8
 vi
+Sphere
+f  2.000000
 Position
-f  -131.514969
-f  0.000008
-f  -59.985245
+f  -138.214554
+f  0.000077
+f  3.049166
 PhysicsData
 f  1.000000
 f  1.000000
 f  1.000000
 f  1.000000
 f  0.000000
-f  -0.000001
+f  0.000045
 f  0.000000
-f  -0.000002
+f  -0.000001
 f  0.000000
 f  0.000000
 f  0.000000
@@ -69,24 +69,24 @@ MouseIntersectable
 b  0
 b  0
 __2__
-Sphere
-f  2.000000
 LoopSociety
 i  8
 vi
+Sphere
+f  2.000000
 Position
-f  -84.253288
-f  0.000008
-f  -57.367599
+f  -135.860443
+f  0.000077
+f  -44.226395
 PhysicsData
 f  1.000000
 f  1.000000
 f  1.000000
 f  1.000000
 f  0.000000
-f  0.000001
+f  0.000042
 f  0.000000
-f  -0.000002
+f  0.000000
 f  0.000000
 f  0.000000
 f  0.000000
@@ -102,24 +102,24 @@ MouseIntersectable
 b  0
 b  0
 __3__
-Sphere
-f  2.000000
 LoopSociety
 i  8
 vi
+Sphere
+f  2.000000
 Position
-f  -84.901695
-f  0.000023
-f  -5.218859
+f  -83.707764
+f  0.000122
+f  -44.461971
 PhysicsData
 f  1.000000
 f  1.000000
 f  1.000000
 f  1.000000
 f  0.000000
-f  -0.000000
+f  -0.000042
 f  0.000000
-f  0.000002
+f  0.000000
 f  0.000000
 f  0.000000
 f  0.000000
@@ -172,9 +172,9 @@ b  0
 b  0
 __7__
 Position
-f  81.712067
-f  -0.000015
-f  -25.335016
+f  -44.766312
+f  -0.000046
+f  -14.049355
 MouseSelectable
 b  0
 MouseGrabbable
@@ -197,13 +197,12 @@ vi
 2
 3
 MouseSelectable
-b  1
+b  0
 MouseIntersectable
 b  0
 b  0
 MouseGrabbable
 b  0
-ComponentRefParent
 __9__
 MouseSelectable
 b  0

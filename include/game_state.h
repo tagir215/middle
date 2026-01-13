@@ -110,6 +110,7 @@ namespace middle {
 		float length;
 		float widht;
 		float height;
+		int fontSize;
 		std::string text = "";
 	};
 

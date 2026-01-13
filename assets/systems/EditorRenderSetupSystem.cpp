@@ -18,7 +18,7 @@
 #include "Reference.h"
 #include "SystemReference.h"
 #include "ComponentReference.h"
-
+#include "Text.h"
 
 class EditorRenderSetupSystem : public middle::MiddleGameplaySystem {
 	void update(middle::GameState* gameState) override {
@@ -32,6 +32,21 @@ class EditorRenderSetupSystem : public middle::MiddleGameplaySystem {
 			if (loop) {
 				loopCentroid = middle::getLoopCentroid(gameState, i);
 			}
+
+
+			auto text = middle::getComponent<components::Text>(shape);
+			if (text) {
+				assert(position);
+				middle::RenderItem textItem;
+				Vector3 offset = { text->offsetX, text->offsetY, text->offsetZ };
+				textItem.type = middle::RenderItemType::TEXT;
+				textItem.center = Vector3Add({ position->posX, position->posY, position->posZ }, offset);
+				textItem.text = text->text;
+				textItem.fontSize = text->fontSize;
+				textItem.color = WHITE;
+				gameState->renderData.push_back(textItem);
+			}
+
 
 			auto componentRef = middle::getComponent<components::ComponentReference>(shape);
 			if (componentRef) {

@@ -19,6 +19,7 @@ namespace middle {
 	struct IComponentVectorContainer {
 		virtual ~IComponentVectorContainer() = default;
 		virtual int grow() = 0;
+		virtual void shrink(int componentOffset) = 0;
 	};
 	template<typename T> 
 	struct ComponentVectorContainer : public IComponentVectorContainer {
@@ -36,6 +37,10 @@ namespace middle {
 			vectorData.resize(nextFreeIndex+1);
 			updateSerializableMap<T>();
 			return nextFreeIndex;
+		}
+
+		void shrink(int componentOffset) {
+			freeList.push_back(componentOffset);
 		}
 	};
 
@@ -115,7 +120,7 @@ namespace middle {
 		int typeId = getTypeId<T>();
 		ComponentVectorContainer<T>* vectorContainer = getComponentVectorContainer<T>();
 		int componentOffset = shape.componentMap[typeId].componentOffset;
-		vectorContainer->freeList.push_back(componentOffset);
+		vectorContainer->shrink(componentOffset);
 		shape.componentMap.erase(typeId);
 	}
 

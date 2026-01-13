@@ -154,6 +154,7 @@ class EditorSystem : public middle::MiddleGameplaySystem {
 				int nextFreeIndex = middle::findNextFreeGhostIndex(gameState);
 				middle::addShape(gameState, nextFreeIndex, middle::Shape());
 				auto& newShape = middle::getShape(gameState, nextFreeIndex);
+				middle::addComponent<components::MouseIntersectable>(newShape);
 				auto newRef = middle::addComponent<components::ComponentReference>(newShape);
 				auto newPos = middle::addComponent<components::Position>(newShape);
 				newRef->componentName = componentName;

@@ -16,6 +16,7 @@
 #include "LoopEntity.h"
 #include "LoopTag.h"
 #include "SystemEntity.h"
+#include "ComponentReference.h"
 
 namespace middle {
 	void processEditorActions(GameState* gameState) {
@@ -77,6 +78,12 @@ namespace middle {
 		}
 		case EditorAction::IMPORT_SYSTEM: {
 			auto action = EditorActionImportSystem();
+			action.params = gameState->editorState.nextEditorActionParams;
+			action.execute(gameState);
+			break;
+		}
+		case EditorAction::IMPORT_COMPONENT: {
+			auto action = EditorActionImportComponent();
 			action.params = gameState->editorState.nextEditorActionParams;
 			action.execute(gameState);
 			break;
@@ -370,13 +377,7 @@ namespace middle {
 
 	void EditorActionSelectCamera::execute(GameState* gameState)
 	{
-		//if (gameState->selectCount == 1) {
-		//	loopInstances(gameState, [gameState](int index, ShapeInstance& instance) {
-		//		if (instance.selected && instance.shape.type == ShapeType::CAMERA) {
-		//			gameState->activeCameraIndex = index;
-		//		}
-		//		});
-		//}
+
 	}
 
 
@@ -418,19 +419,24 @@ namespace middle {
 
 	void EditorActionOpenComponent::execute(GameState* gameState)
 	{
-		//std::string componentName = "";
-		//bool found = false;
-		//loopInstances(gameState, [gameState, &componentName, &found](int i, ShapeInstance& instance) {
-		//	if (instance.mouseIntersects && instance.shape.type == ShapeType::COMPONENT) {
-		//		componentName = instance.shape.name;
-		//		found = true;
-		//	}
-		//	});
+		std::string componentName = "";
+		bool found = false;
+		loopInstances(gameState, [gameState, &componentName, &found](int i, Shape& shape) {
+			auto componentRef = getComponent<components::ComponentReference>(shape);
+			if (!system)
+				return;
 
-		//if (found) {
-		//	shell_open_file("../assets/components/" + componentName + ".h");
-		//}
+			auto intersectable = getComponent<components::MouseIntersectable>(shape);
 
+			if (intersectable->intersecting) {
+				componentName = componentRef->componentName;
+				found = true;
+			}
+			});
+
+		if (found) {
+			shell_open_file("../assets/components/" + componentName + ".h");
+		}
 	}
 
 }

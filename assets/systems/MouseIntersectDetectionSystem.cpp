@@ -13,6 +13,7 @@
 #include "LoopTag.h"
 #include "Reference.h"
 #include "SystemReference.h"
+#include "ComponentReference.h"
 
 namespace MouseIntersectDetectionSystem {
 
@@ -70,13 +71,14 @@ namespace MouseIntersectDetectionSystem {
 				auto sphere = middle::getComponent<components::Sphere>(shape);
 				auto reference = middle::getComponent<components::Reference>(shape);
 				auto system = middle::getComponent<components::SystemReference>(shape);
+				auto compRef = middle::getComponent<components::ComponentReference>(shape);
 				Vector3 pos = { position->posX, position->posY, position->posZ };
 
 				float radius = 0;
 				if (sphere) {
 					radius = sphere->radius;
 				}
-				if (reference) {
+				if (reference || compRef) {
 					radius = middle::DEF_RADIUS_REFERENCE_INDICATOR;
 				}
 				if (system) {
