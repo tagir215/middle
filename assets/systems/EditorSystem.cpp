@@ -8,6 +8,7 @@
 #include "LoopTag.h"
 #include "SystemEntity.h"
 #include "ComponentReference.h"
+#include "ComponentRefParent.h"
 
 class EditorSystem : public middle::MiddleGameplaySystem {
 
@@ -96,24 +97,27 @@ class EditorSystem : public middle::MiddleGameplaySystem {
 				return;
 			}
 
-			auto componentRef = middle::getComponent<components::ComponentReference>(shape);
+			auto componentRefParent = middle::getComponent<components::ComponentRefParent>(shape);
 
-			// if already has componentRef while selected skip
-			if (selectable->selected && componentRef) {
+			// if already has componentRef while selected skip TODO
+			if (selectable->selected && componentRefParent) {
 				return;
 			}
 
-			// if unselecteced while having a component skip
+			// if unselecteced while having a component skip and delete if theres componentrefparent
 			if (!selectable->selected) {
-				if (componentRef) {
-					middle::deleteComponent<components::ComponentReference>(shape);
+				if (componentRefParent) {
+					// delete child shapes
+					for (int memberI : componentRefParent->indicatorChildren) {
+						middle::deleteShape(gameState, memberI);
+					}
+					middle::deleteComponent<components::ComponentRefParent>(shape);
 				}
 				return;
 			}
 
 			// else create component ref
-
-			auto newComponentRef = middle::addComponent<components::ComponentReference>(shape);
+			auto newComponentRefParent = middle::addComponent<components::ComponentRefParent>(shape);
 
 			// get position
 			auto position = middle::getComponent<components::Position>(shape);
@@ -126,8 +130,7 @@ class EditorSystem : public middle::MiddleGameplaySystem {
 				entpos = middle::getLoopCentroid(gameState, i);
 			}
 
-
-			// component Ref setup
+			// component Refs setup
 			int componentCount = shape.componentMap.size();
 			float angleBetween = 2 * PI / componentCount;
 			std::vector<Vector3> positions;
@@ -135,10 +138,7 @@ class EditorSystem : public middle::MiddleGameplaySystem {
 			const float compR = 3;
 
 			positions.resize(componentCount);
-			newComponentRef->componentNames.resize(componentCount);
-			newComponentRef->positionsX.resize(componentCount);
-			newComponentRef->positionsY.resize(componentCount);
-			newComponentRef->positionsZ.resize(componentCount);
+			newComponentRefParent->indicatorChildren.resize(componentCount);
 
 			int index = 0;
 			for (auto pair : shape.componentMap) {
@@ -149,10 +149,18 @@ class EditorSystem : public middle::MiddleGameplaySystem {
 				Vector3 pos = { x,0,z };
 				pos += entpos;
 				std::string componentName = middle::componentNameMap[componentTypeId];
-				newComponentRef->componentNames[index] = componentName;
-				newComponentRef->positionsX[index] = pos.x;
-				newComponentRef->positionsY[index] = pos.y;
-				newComponentRef->positionsZ[index] = pos.z;
+
+				// create entity
+				int nextFreeIndex = middle::findNextFreeGhostIndex(gameState);
+				middle::addShape(gameState, nextFreeIndex, middle::Shape());
+				auto& newShape = middle::getShape(gameState, nextFreeIndex);
+				auto newRef = middle::addComponent<components::ComponentReference>(newShape);
+				auto newPos = middle::addComponent<components::Position>(newShape);
+				newRef->componentName = componentName;
+				newPos->posX = pos.x;
+				newPos->posY = pos.y;
+				newPos->posZ = pos.z;
+				newComponentRefParent->indicatorChildren[index] = nextFreeIndex;
 				++index;
 			}
 			});

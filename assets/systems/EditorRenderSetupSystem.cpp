@@ -17,6 +17,7 @@
 #include "LoopTag.h"
 #include "Reference.h"
 #include "SystemReference.h"
+#include "ComponentReference.h"
 
 
 class EditorRenderSetupSystem : public middle::MiddleGameplaySystem {
@@ -32,38 +33,17 @@ class EditorRenderSetupSystem : public middle::MiddleGameplaySystem {
 				loopCentroid = middle::getLoopCentroid(gameState, i);
 			}
 
-
-			// render component ring
-			if (selectable && selectable->selected) {
-				Vector3 entpos;
-				if (position) {
-					entpos = { position->posX, position->posY, position->posZ };
-				}
-				if (loop) {
-					entpos = loopCentroid;
-				}
-
-				int componentCount = shape.componentMap.size();
-				float angleBetween = 2 * PI / componentCount;
-				std::vector<Vector3> positions;
-				const float r = 30;
-				const float compR = 3;
-				positions.resize(componentCount);
-				for (int i = 0; i < componentCount; ++i) {
-					float angle = angleBetween * i;
-					float x = std::cosf(angle) * r;
-					float z = std::sinf(angle) * r;
-					Vector3 pos = { x,0,z };
-					pos += entpos;
-					middle::RenderItem componentSphere;
-					componentSphere.type = middle::RenderItemType::SPHERE;
-					componentSphere.center = pos;
-					componentSphere.radius = compR;
-					componentSphere.color = BLUE;
-					gameState->renderData.push_back(componentSphere);
-				}
+			auto componentRef = middle::getComponent<components::ComponentReference>(shape);
+			if (componentRef) {
+				assert(position);
+				middle::RenderItem compRefItem;
+				compRefItem.type = middle::RenderItemType::SPHERE;
+				compRefItem.radius = middle::DEF_RADIUS_REFERENCE_INDICATOR;
+				compRefItem.color = BLUE;
+				compRefItem.center = { position->posX, position->posY, position->posZ };
+				gameState->renderData.push_back(compRefItem);
+				return;
 			}
-
 
 
 			auto sphere = middle::getComponent<components::Sphere>(shape);
