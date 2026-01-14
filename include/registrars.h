@@ -10,7 +10,7 @@ namespace middle {
 	template<typename T>
 	struct SystemRegistrar {
 		SystemRegistrar(std::string scriptName) {
-			systemMap[scriptName] = std::make_unique<T>();
+			getSystemMap()[scriptName] = std::make_unique<T>();
 		}
 	};
 

@@ -83,6 +83,13 @@ int main(void)
 		CAMERA_PERSPECTIVE
 	};
 
+	auto& systemMap = getSystemMap();
+
+	// these are called in middle project
+	auto inputSystem = std::move(systemMap["InputSystem"]);
+	auto renderSystem = std::move(systemMap["RendererSystem"]);
+
+
 	gameState->startGame = true;
 
 	// Main game loop
@@ -102,12 +109,12 @@ int main(void)
 		gameState->screenHeight = GetScreenHeight();
 
 
-		systemMap["InputSystem"]->update(gameState);
+		inputSystem->update(gameState);
 
 		gameState->frameTimeAccumulator += GetFrameTime();
 		UpdateGame(gameState);
 
-		systemMap["RendererSystem"]->update(gameState);
+		renderSystem->update(gameState);
 
 		if (gameState->closeGame) {
 			break;
@@ -121,6 +128,8 @@ int main(void)
 	//--------------------------------------------------------------------------------------
 	CloseWindow();        // Close window and OpenGL context
 	//--------------------------------------------------------------------------------------
+
+	delete gameState;
 
 	return 0;
 }

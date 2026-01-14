@@ -211,8 +211,8 @@ namespace middle {
 		}
 
 		centroid = centroid * (1.0f / loop->loopMemberIndexes.size());
-		// set centroid offset... have the indicator detached little bit
-		centroid.y = -60;
+		// offset y 
+		centroid.y = -20;
 		return centroid;
 	}
 
@@ -230,8 +230,10 @@ namespace middle {
 		if (loop) {
 			for (int childIndex : loop->loopMemberIndexes) {
 				auto& childShape = gameState->shapes[childIndex];
-				auto loop = getComponent<components::LoopSociety>(childShape);
-				loop->parentLoopIndex = UNASSIGNED;
+				if (isShapeAlive(gameState, childIndex)) {
+					auto childLoop = getComponent<components::LoopSociety>(childShape);
+					childLoop->parentLoopIndex = UNASSIGNED;
+				}
 			}
 
 			if (loop->parentLoopIndex != UNASSIGNED) {

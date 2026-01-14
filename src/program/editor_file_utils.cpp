@@ -133,7 +133,7 @@ namespace middle {
 
 	void loadSystemNames(GameState* gameState)
 	{
-		for (auto& pair : systemMap) {
+		for (auto& pair : getSystemMap()) {
 			gameState->systemNames.push_back(pair.first);
 		}
 	}

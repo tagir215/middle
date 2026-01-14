@@ -20,6 +20,8 @@ class EditorSystem : public middle::MiddleGameplaySystem {
 		}
 	}
 
+
+
 	// for mental palace. Palace is superior filesystem! TRUST THE PALACE
 	void importEngineSystemReferences(middle::GameState* gameState) {
 		int highestUsedIndex = middle::findHighestUsedIndex(gameState);

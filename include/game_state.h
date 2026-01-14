@@ -123,12 +123,16 @@ namespace middle {
 		float frameTimeAccumulator = 0;
 		const double nearPlaneDistance = 0.05;
 		const double farPlaneDistance = 5000;
+		bool systemsRegistered = false;
 		ApplicationMode applicationMode = ApplicationMode::EDITOR_MODE;
 		EditorState editorState;
 		std::array<Id, MAX_SHAPE_COUNT>ids;
 		std::array<Shape, MAX_SHAPE_COUNT>shapes;
 		std::array<Vector3, MAX_VERTEX_COUNT> vertexArray;
 		std::unordered_map<std::string, std::unique_ptr<MiddleGameplaySystem>> gameplaySystems;
+		std::vector<std::unique_ptr<MiddleGameplaySystem>> engineSystemsFrameStart;
+		std::vector<std::unique_ptr<MiddleGameplaySystem>> engineSystemsFrameEnd;
+		std::vector<std::unique_ptr<MiddleGameplaySystem>> engineRendererSystems;
 		Matrix worldM;
 		Vector2 mouseDragPos;
 		Matrix oldWorldM;

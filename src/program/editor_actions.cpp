@@ -229,13 +229,14 @@ namespace middle {
 				continue;
 			auto loop = getComponent<components::LoopTag>(gameState->shapes[i]);
 			auto sphere = getComponent<components::Sphere>(gameState->shapes[i]);
-			if ((sphere || loop) && isShapeSelected(gameState, i)) {
+			auto reference = getComponent<components::Reference>(gameState->shapes[i]);
+			if ((sphere || loop || reference) && isShapeSelected(gameState, i)) {
 				memberIndexes.push_back(i);
 			}
 		}
 
 		// loops must have at least 2 things
-		if (memberIndexes.size() < 2)
+		if (memberIndexes.size() < 1)
 			return;
 
 		// create 
