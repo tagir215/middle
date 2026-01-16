@@ -299,4 +299,15 @@ namespace middle {
 		initCamera.position += displacement;
 		initCamera.target += displacement;
 	}
+	std::vector<int> getSelectedShapes(GameState* gameState)
+	{
+		std::vector<int>result;
+		loopInstances(gameState, [&result](int i, Shape& shape) {
+			auto selectable = getComponent<components::MouseSelectable>(shape);
+			if (selectable && selectable->selected) {
+				result.push_back(i);
+			}
+			});
+		return result;
+	}
 }

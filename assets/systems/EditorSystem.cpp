@@ -50,7 +50,12 @@ class EditorSystem : public middle::MiddleGameplaySystem {
 
 
 	void update(middle::GameState* gameState) override {
-		processEditorActions(gameState);
+
+		// process editor actions
+		while (gameState->editorState.editorActions.size() > 0) {
+			gameState->editorState.editorActions.back()->execute(gameState);
+			gameState->editorState.editorActions.pop_back();
+		}
 
 		if (gameState->startGame) {
 			if (gameState->applicationMode == middle::ApplicationMode::EDITOR_MODE) {

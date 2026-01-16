@@ -3,13 +3,15 @@ project(middle VERSION 1 LANGUAGES CXX)
 set(CMAKE_BUILD_TYPE Debug)
 set(CMAKE_CXX_STANDARD 17)
 
-
 add_library(raylib STATIC IMPORTED)
 set_target_properties(raylib PROPERTIES
     IMPORTED_LOCATION "${CMAKE_SOURCE_DIR}/lib/raylib-5.5_win64_msvc16/lib/raylib.lib"
     INTERFACE_INCLUDE_DIRECTORIES "${CMAKE_SOURCE_DIR}/lib/raylib-5.5_win64_msvc16/include"
 )
 
+
+# export all symbolds.. for imgui to work as a shared library
+set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
 
 
 # globbing
@@ -53,7 +55,7 @@ add_subdirectory(${CMAKE_SOURCE_DIR}/lib/imgui-master)
 
 target_include_directories(rlImGui PUBLIC ${CMAKE_SOURCE_DIR}/lib/raylib-5.5_win64_msvc16/include)
 
-target_link_libraries(game PUBLIC descart_physics rlImGui)
+target_link_libraries(game PUBLIC descart_physics imgui_shared)
 target_link_libraries(middle PUBLIC descart_physics raylib rlImGui)
 target_link_libraries(rlImGui PUBLIC raylib winmm)
 
@@ -62,3 +64,11 @@ set_property(TARGET middle PROPERTY WIN32_EXECUTABLE TRUE)
 if (MSVC)
     target_link_options(middle PRIVATE /ENTRY:mainCRTStartup)
 endif()
+
+# Copy DLLs to executable output directory
+add_custom_command(TARGET middle POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+    $<TARGET_FILE:imgui_shared>
+    $<TARGET_FILE_DIR:middle>
+)
+

@@ -1,9 +1,12 @@
 #pragma once
 #include "game_state.h"
-#include "middle_imgui.h"
 #include "registrars.h"
 #include "raymath.h"
 #include "rlImGui.h"
+#include "imgui.h"
+#include <cstdlib>
+#include <thread>
+#include "rlgl.h"
 
 namespace RendererSystem {
 
@@ -87,8 +90,14 @@ namespace RendererSystem {
 				DrawText(gameState->sceneNames[gameState->activeScene].c_str(), center2d.x, center2d.y, 1, WHITE);
 			}
 
-			// imgui uis
-			setupUI(gameState);
+			rlImGuiBegin();
+
+			while (gameState->uiSetups.size() > 0) {
+				gameState->uiSetups.back()();
+				gameState->uiSetups.pop_back();
+			}
+
+			rlImGuiEnd();
 
 			EndDrawing();
 

@@ -26,5 +26,6 @@ namespace middle {
 
 	inline std::vector<std::string>engineRendererSystemNames{
 		"EditorRenderSetupSystem",
+		"EditorUiSystem",
 	};
 }

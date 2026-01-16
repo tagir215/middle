@@ -9,6 +9,8 @@
 #include "middle_gameplay_script_map.h"
 #include "entity.h"
 #include <string>
+#include <memory>
+#include <functional>
 
 using namespace descart;
 
@@ -39,40 +41,8 @@ namespace middle {
 		bool collided;
 	};
 
-
-	enum class EditorAction {
-		NONE, 
-		NEW_SPHERE,
-		NEW_CONSTRAINT,
-		NEW_CAMERA,
-		NEW_SCENE,
-		NEW_SYSTEM,
-		NEW_COMPONENT,
-		SET_ACTIVE_CAMERA,
-		MOVE_SPHERES,
-		DELETE_SHAPES,
-		SAVE_SCENE,
-		BUILD,
-		CREATE_LOOPS,
-		LOAD_SCENE,
-		IMPORT_SCENE,
-		IMPORT_SYSTEM,
-		IMPORT_COMPONENT,
-		OPEN_SYSTEM,
-		OPEN_COMPONENT,
-	};
-
 	class EditorActionContainer {
 	public:
-		// todo: this is probably horrible
-		struct Params {
-		public:
-			std::string stringValue = "";
-			int intValue = UNASSIGNED; 
-		};
-		Params params;
-
-		EditorAction editorAction;
 		virtual ~EditorActionContainer() = default;
 		virtual void execute(GameState* gameState) = 0;
 	};
@@ -88,8 +58,7 @@ namespace middle {
 		int intersectCount = 0;
 		int selectCount = 0;
 		int selectChangeCountAfterClick = 0;
-		EditorAction nextEditorAction = EditorAction::NONE;
-		EditorActionContainer::Params nextEditorActionParams;
+		std::vector<std::unique_ptr<EditorActionContainer>>editorActions;
 	};
 
 	enum RenderItemType {
@@ -155,6 +124,7 @@ namespace middle {
 		bool quit = false;
 		std::vector<RenderItem>renderData;
 		std::vector<PhysicsBody>physicsBodies;
+		std::vector<std::function<void()>>uiSetups;
 	};
 
 }

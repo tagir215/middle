@@ -10,6 +10,7 @@
 #include "LoopTag.h"
 #include "Position.h"
 #include "Text.h"
+#include "editor_actions.h"
 
 class EnviromentalFileNavigationSystem : public middle::MiddleGameplaySystem {
 	void update(middle::GameState* gameState) override {
@@ -22,12 +23,14 @@ class EnviromentalFileNavigationSystem : public middle::MiddleGameplaySystem {
 				if (intersectable->intersecting) {
 					if (gameState->input.navigateToFileClick) {
 						if (system) {
-							gameState->editorState.nextEditorAction = middle::EditorAction::OPEN_SYSTEM;
-							gameState->editorState.nextEditorActionParams.stringValue = system->systemName;
+							gameState->editorState.editorActions.push_back(
+								std::make_unique<middle::EditorActionOpenSystem>(system->systemName)
+							);
 						}
 						if (componentRef) {
-							gameState->editorState.nextEditorAction = middle::EditorAction::OPEN_COMPONENT;
-							gameState->editorState.nextEditorActionParams.stringValue = componentRef->componentName;
+							gameState->editorState.editorActions.push_back(
+								std::make_unique<middle::EditorActionOpenComponent>(system->systemName)
+							);
 						}
 					}
 				}

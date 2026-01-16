@@ -6,101 +6,170 @@ namespace middle {
 	// creation of new spheres are here
 	class EditorActionNewSphere : public EditorActionContainer {
 	public:
+		Vector3 position;
+		EditorActionNewSphere(const Vector3& position) {
+			this->position = position;
+		}
 		void execute(GameState* gameState) override;
 	};
 
 	// creation of new constraints happened here
 	class EditorActionNewConstraint : public EditorActionContainer {
 	public:
+		int indexA;
+		int indexB;
+		EditorActionNewConstraint(int indexA, int indexB) {
+			this->indexA = indexA;
+			this->indexB = indexB;
+		}
 		void execute(GameState* gameState) override;
 	};
 
 	// deletion of selected things happening here actually
 	class EditorActionDelete : public EditorActionContainer {
 	public:
+		std::vector<int>selectedIndexes;
+		EditorActionDelete(std::vector<int> selectedIndexes) {
+			this->selectedIndexes = selectedIndexes;
+		}
 		void execute(GameState* gameState) override;
 	};
 
 	// time to save positions, please don't forget to do it
 	class EditorActionSaveScene : public EditorActionContainer {
 	public:
+		std::string sceneName;
+		EditorActionSaveScene(std::string sceneName) {
+			this->sceneName = sceneName;
+		}
 		void execute(GameState* gameState) override;
 	};
 
 	// build from the editor.  hopefully no crashes...
 	class EditorActionBuild : public EditorActionContainer {
 	public:
+		EditorActionBuild() {
+
+		}
 		void execute(GameState* gameState) override;
 	};
 
 	// load scene new exiting start
 	class EditorActionLoadScene : public EditorActionContainer {
 	public:
+		std::string sceneName;
+		EditorActionLoadScene(const std::string& sceneName) {
+			this->sceneName = sceneName;
+		}
 		void execute(GameState* gameState) override;
 	};
 
 	// create loops, 
 	class EditorActionCreateLoop : public EditorActionContainer {
 	public:
+		std::vector<int>memberIndexes;
+		EditorActionCreateLoop(const std::vector<int>& selectedIndexes) {
+			memberIndexes = selectedIndexes;
+		}
 		void execute(GameState* gameState) override;
 	};
 
 	// new scene, new world
 	class EditorActionNewScene : public EditorActionContainer {
 	public:
+		std::string sceneName;
+		EditorActionNewScene(const std::string& sceneName) {
+			this->sceneName = sceneName;
+		}
 		void execute(GameState* gameState) override;
 	};
 
 	// what is import scene? it's so that you can import scenes as objects, or loops 
 	class EditorActionImportScene : public EditorActionContainer {
 	public:
+		std::string sceneName;
+		EditorActionImportScene(const std::string& sceneName) {
+			this->sceneName = sceneName;
+		}
 		void execute(GameState* gameState) override;
 	};
 
 	// it is so much work to find scripts. Finding things from list of files is not smart. You need to use the editor
 	class EditorActionOpenSystem : public EditorActionContainer {
 	public:
+		std::string systemName;
+		EditorActionOpenSystem(const std::string& systemName) {
+			this->systemName = systemName;
+		}
 		void execute(GameState* gameState) override;
 	};
 
 	// create new script
 	class EditorActionNewSystem : public EditorActionContainer {
 	public:
+		std::string systemName;
+		EditorActionNewSystem(const std::string& systemName) {
+			this->systemName = systemName;
+		}
 		void execute(GameState* gameState) override;
 	};
 
 	// import script, the code already exists
 	class EditorActionImportSystem : public EditorActionContainer {
 	public:
+		std::string systemName;
+		EditorActionImportSystem(const std::string& systemName) {
+			this->systemName = systemName;
+		}
 		void execute(GameState* gameState) override;
 	};
 
 	// new perspective 
 	class EditorActionNewCamera : public EditorActionContainer {
 	public:
+		Vector3 position;
+		EditorActionNewCamera(const Vector3& position) {
+			this->position = position;
+		}
 		void execute(GameState* gameState) override;
 	};
 
 	// we are directors now
 	class EditorActionSelectCamera : public EditorActionContainer {
 	public:
+		int cameraIndex;
+		EditorActionSelectCamera(int cameraIndex) {
+			this->cameraIndex = cameraIndex;
+		}
 		void execute(GameState* gameState) override;
 	};
 
 	class EditorActionNewComponent : public EditorActionContainer {
 	public:
+		std::string componentName;
+		EditorActionNewComponent(const std::string& componentName) {
+			this->componentName = componentName;
+		}
 		void execute(GameState* gameState) override;
 	};
 
 	class EditorActionImportComponent : public EditorActionContainer {
 	public:
+		std::string componentName;
+		std::vector<int>selectedIndexes;
+		EditorActionImportComponent(const std::string& componentName, std::vector<int>selectedIndexes) {
+			this->componentName = componentName;
+			this->selectedIndexes = selectedIndexes;
+		}
 		void execute(GameState* gameState) override;
 	};
 
 	class EditorActionOpenComponent : public EditorActionContainer {
 	public:
+		std::string componentName;
+		EditorActionOpenComponent(const std::string& componentName) {
+			this->componentName = componentName;
+		}
 		void execute(GameState* gameState) override;
 	};
-
-	void processEditorActions(GameState* gameState);
 }

@@ -88,7 +88,7 @@ class EditorRenderSetupSystem : public middle::MiddleGameplaySystem {
 					selectItem.widht = sphereItem.radius * 4;
 					selectItem.height = sphereItem.radius * 4;
 					selectItem.length = sphereItem.radius * 4;
-					selectItem.color = ColorAlpha(WHITE, 0.4f);
+					selectItem.color = {WHITE.r, WHITE.g, WHITE.b, 40};
 					gameState->renderData.push_back(selectItem);
 				}
 
@@ -117,7 +117,7 @@ class EditorRenderSetupSystem : public middle::MiddleGameplaySystem {
 					selectItem.widht = 1;
 					selectItem.height = height;
 					selectItem.length = 1;
-					selectItem.color = ColorAlpha(WHITE, 0.4f);
+					selectItem.color = {WHITE.r, WHITE.g, WHITE.b, 40};
 					selectItem.transform.scale = { 1,1,1 };
 					selectItem.transform.rotation = QuaternionFromVector3ToVector3({ 0,0,1 }, lineDir);
 					selectItem.transform.translation = Vector3Scale(lineItem.linePointA + lineItem.linePointB, 0.5f);
@@ -149,7 +149,7 @@ class EditorRenderSetupSystem : public middle::MiddleGameplaySystem {
 					selectItem.widht = refItem.radius * 4;
 					selectItem.height = refItem.radius * 4;
 					selectItem.length = refItem.radius * 4;
-					selectItem.color = ColorAlpha(WHITE, 0.4f);
+					selectItem.color = {WHITE.r, WHITE.g, WHITE.b, 40};
 					gameState->renderData.push_back(selectItem);
 				}
 				return;
@@ -177,7 +177,7 @@ class EditorRenderSetupSystem : public middle::MiddleGameplaySystem {
 					selectItem.widht = loopItem.radius * 4;
 					selectItem.height = loopItem.radius * 4;
 					selectItem.length = loopItem.radius * 4;
-					selectItem.color = ColorAlpha(WHITE, 0.4f);
+					selectItem.color = {WHITE.r, WHITE.g, WHITE.b, 40};
 					gameState->renderData.push_back(selectItem);
 				}
 				return;
@@ -207,7 +207,7 @@ class EditorRenderSetupSystem : public middle::MiddleGameplaySystem {
 					selectItem.widht = systemItem.radius * 4;
 					selectItem.height = systemItem.radius * 4;
 					selectItem.length = systemItem.radius * 4;
-					selectItem.color = ColorAlpha(WHITE, 0.4f);
+					selectItem.color = {WHITE.r, WHITE.g, WHITE.b, 40};
 					gameState->renderData.push_back(selectItem);
 				}
 				return;

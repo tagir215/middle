@@ -20,114 +20,6 @@
 #include "ComponentRefParent.h"
 
 namespace middle {
-	void processEditorActions(GameState* gameState) {
-		switch (gameState->editorState.nextEditorAction) {
-		case EditorAction::NEW_SPHERE: {
-			auto action = EditorActionNewSphere();
-			action.params = gameState->editorState.nextEditorActionParams;
-			action.execute(gameState);
-			break;
-		}
-		case EditorAction::NEW_CONSTRAINT: {
-
-			auto action = EditorActionNewConstraint();
-			action.params = gameState->editorState.nextEditorActionParams;
-			action.execute(gameState);
-			break;
-		}
-		case EditorAction::BUILD: {
-
-			auto action = EditorActionBuild();
-			action.execute(gameState);
-			break;
-		}
-		case EditorAction::SAVE_SCENE: {
-
-			auto action = EditorActionSaveScene();
-			action.execute(gameState);
-			break;
-		}
-		case EditorAction::DELETE_SHAPES: {
-
-			auto action = EditorActionDelete();
-			action.execute(gameState);
-			break;
-		}
-		case EditorAction::CREATE_LOOPS: {
-
-			auto action = EditorActionCreateLoop();
-			action.execute(gameState);
-			break;
-		}
-		case EditorAction::LOAD_SCENE: {
-			auto action = EditorActionLoadScene();
-			action.params = gameState->editorState.nextEditorActionParams;
-			action.execute(gameState);
-			break;
-		}
-		case EditorAction::NEW_SCENE: {
-			auto action = EditorActionNewScene();
-			action.params = gameState->editorState.nextEditorActionParams;
-			action.execute(gameState);
-			break;
-		}
-		case EditorAction::IMPORT_SCENE: {
-			auto action = EditorActionImportScene();
-			action.params = gameState->editorState.nextEditorActionParams;
-			action.execute(gameState);
-			break;
-		}
-		case EditorAction::IMPORT_SYSTEM: {
-			auto action = EditorActionImportSystem();
-			action.params = gameState->editorState.nextEditorActionParams;
-			action.execute(gameState);
-			break;
-		}
-		case EditorAction::IMPORT_COMPONENT: {
-			auto action = EditorActionImportComponent();
-			action.params = gameState->editorState.nextEditorActionParams;
-			action.execute(gameState);
-			break;
-		}
-		case EditorAction::NEW_SYSTEM: {
-			auto action = EditorActionNewSystem();
-			action.params = gameState->editorState.nextEditorActionParams;
-			action.execute(gameState);
-			break;
-		}
-		case EditorAction::NEW_COMPONENT: {
-			auto action = EditorActionNewComponent();
-			action.params = gameState->editorState.nextEditorActionParams;
-			action.execute(gameState);
-			break;
-		}
-		case EditorAction::OPEN_SYSTEM: {
-			auto action = EditorActionOpenSystem();
-			action.params = gameState->editorState.nextEditorActionParams;
-			action.execute(gameState);
-			break;
-		}
-		case EditorAction::OPEN_COMPONENT: {
-			auto action = EditorActionOpenComponent();
-			action.params = gameState->editorState.nextEditorActionParams;
-			action.execute(gameState);
-			break;
-		}
-		case EditorAction::NEW_CAMERA: {
-			auto action = EditorActionNewCamera();
-			action.params = gameState->editorState.nextEditorActionParams;
-			action.execute(gameState);
-			break;
-		}
-		case EditorAction::SET_ACTIVE_CAMERA: {
-			auto action = EditorActionSelectCamera();
-			action.execute(gameState);
-			break;
-		}
-		}
-		gameState->editorState.nextEditorAction = EditorAction::NONE;
-		gameState->editorState.nextEditorActionParams = {};
-	}
 
 	void EditorActionNewSphere::execute(GameState* gameState) {
 		auto& shapes = gameState->shapes;
@@ -210,7 +102,7 @@ namespace middle {
 	}
 
 	void EditorActionSaveScene::execute(GameState* gameState) {
-		saveScene(gameState, gameState->sceneNames[gameState->activeScene]);
+		saveScene(gameState, sceneName);
 	}
 
 	void EditorActionBuild::execute(GameState* gameState) {
@@ -249,74 +141,50 @@ namespace middle {
 
 	void EditorActionLoadScene::execute(GameState* gameState)
 	{
-		assert(params.intValue != UNASSIGNED);
 		// DELETE EVERYTHING
 		for (int i = 0; i < gameState->shapes.size(); ++i) {
 			deleteShape(gameState, i);
 		}
 		gameState->reload = true;
-		gameState->activeScene = params.intValue;
+		int index = -1;
+		for (int i = 0; i < gameState->sceneNames.size(); ++i) {
+			if (gameState->sceneNames[i] == sceneName) {
+				index = i;
+				break;
+			}
+		}
+		gameState->activeScene = index;
 		gameState->loopIndex = 0;
 	}
 
 	void EditorActionNewScene::execute(GameState* gameState)
 	{
-		assert(params.intValue != UNASSIGNED);
-		assert(params.stringValue != "");
-		for (auto& name : gameState->sceneNames) {
-			//todo print error
-			if (name == params.stringValue)
-				return;
-		}
-		gameState->activeScene = params.intValue;
 		// DELETE EVERYTHING
 		for (int i = 0; i < gameState->shapes.size(); ++i) {
 			deleteShape(gameState, i);
 		}
-		// save new scene
-		saveScene(gameState, params.stringValue);
-		gameState->sceneNames.push_back(params.stringValue);
+		gameState->sceneNames.push_back(sceneName);
+		int index = gameState->sceneNames.size() - 1;
+		gameState->activeScene = index;
 		gameState->reload = true;
 		gameState->reset = true;
 	}
 
 	void EditorActionImportScene::execute(GameState* gameState)
 	{
-		assert(params.intValue != UNASSIGNED);
-		std::string sceneName = gameState->sceneNames[params.intValue];
 		loadScene(gameState, sceneName, true, {0,0,0}, findFreeIndex(gameState));
 	}
 
 
 	void EditorActionOpenSystem::execute(GameState* gameState)
 	{
-		std::string systemName = "";
-		bool found = false;
-		loopInstances(gameState, [gameState, &systemName, &found](int i, Shape& shape) {
-			auto system = getComponent<components::SystemReference>(shape);
-			if (!system)
-				return;
-
-			auto intersectable = getComponent<components::MouseIntersectable>(shape);
-
-			if (intersectable->intersecting) {
-				systemName = system->systemName;
-				found = true;
-			}
-			});
-
-		if (found) {
-			shell_open_file("../assets/systems/" + systemName + ".cpp");
-		}
+		std::string name = systemName;
+		shell_open_file("../assets/systems/" + systemName + ".cpp");
 
 	}
 
 	void EditorActionNewSystem::execute(GameState* gameState)
 	{
-		assert(params.stringValue != "");
-
-		std::string systemName = params.stringValue;
-
 		if (gameState->gameplaySystems.find(systemName) == gameState->gameplaySystems.end()) {
 			newSystemFile(gameState, systemName);
 		}
@@ -332,9 +200,6 @@ namespace middle {
 
 	void EditorActionImportSystem::execute(GameState* gameState) 
 	{
-		assert(params.stringValue != "");
-		std::string systemName = params.stringValue;
-
 		int freeIndex = findFreeIndex(gameState);
 		entities::initSystem(gameState, freeIndex, { 0,0,0 }, systemName);
 	}
@@ -354,10 +219,6 @@ namespace middle {
 
 	void EditorActionNewComponent::execute(GameState* gameState)
 	{
-		assert(params.stringValue != "");
-
-		std::string componentName = params.stringValue;
-
 		if (gameState->gameplaySystems.find(componentName) == gameState->gameplaySystems.end()) {
 			newComponentFile(gameState, componentName);
 		}
@@ -372,43 +233,20 @@ namespace middle {
 
 	void EditorActionImportComponent::execute(GameState* gameState)
 	{
-		assert(params.stringValue != "");
-		const std::string componentName = params.stringValue;
+		for (int i : selectedIndexes) {
+			auto& shape = gameState->shapes[i];
+			int componentTypeId = componentTypeMap[componentName];
+			assert(shape.componentMap.find(componentTypeId) == shape.componentMap.end());
 
-		loopInstances(gameState, [&componentName](int i, Shape& shape) {
-			auto selectable = getComponent<components::MouseSelectable>(shape);
-			if (selectable && selectable->selected) {
-				int componentTypeId = componentTypeMap[componentName];
-				assert(shape.componentMap.find(componentTypeId) == shape.componentMap.end());
-
-				Component component;
-				component.componentOffset = componentListMap[componentTypeId]->grow();
-				shape.componentMap[componentTypeId] = component;
-			}
-			});
+			Component component;
+			component.componentOffset = componentListMap[componentTypeId]->grow();
+			shape.componentMap[componentTypeId] = component;
+		};
 	}
 
 	void EditorActionOpenComponent::execute(GameState* gameState)
 	{
-		std::string componentName = "";
-		bool found = false;
-		loopInstances(gameState, [gameState, &componentName, &found](int i, Shape& shape) {
-			auto componentRef = getComponent<components::ComponentReference>(shape);
-			if (!system)
-				return;
-
-			auto intersectable = getComponent<components::MouseIntersectable>(shape);
-
-			if (intersectable->intersecting) {
-				componentName = componentRef->componentName;
-				found = true;
-			}
-			});
-
-		if (found) {
-			shell_open_file("../assets/components/" + componentName + ".h");
-		}
-
+		shell_open_file("../assets/components/" + componentName + ".h");
 		unselect(gameState);
 	}
 
