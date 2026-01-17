@@ -54,13 +54,13 @@ int main(void)
 {
 	// Initialization
 	//--------------------------------------------------------------------------------------
-	const int screenWidth = 900;
-	const int screenHeight = 600;
+	const int screenWidth = 1400;
+	const int screenHeight = 800;
 
 	InitWindow(screenWidth, screenHeight, "raylib [core] example - basic window");
 
-	SetWindowPosition(1000, 40);
-	set_window_always_on_top(GetWindowHandle());
+	SetWindowPosition(500, 80);
+	//set_window_always_on_top(GetWindowHandle());
 	HideCursor();
 
 	gameState = new GameState();

@@ -29,7 +29,7 @@ class EnviromentalFileNavigationSystem : public middle::MiddleGameplaySystem {
 						}
 						if (componentRef) {
 							gameState->editorState.editorActions.push_back(
-								std::make_unique<middle::EditorActionOpenComponent>(system->systemName)
+								std::make_unique<middle::EditorActionOpenComponent>(componentRef->componentName)
 							);
 						}
 					}
