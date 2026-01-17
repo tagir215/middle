@@ -4,11 +4,10 @@
 
 namespace components {
 	struct MouseIntersectable : public middle::Serializable{
-        bool intersecting = false;
 		bool wasIntersecting = false;
+		bool intersecting = false;
 
 		void serialize(std::ostream& ostream) override;
-		void deserialize(const std::vector<std::string>& buffer, int indexOffset);
+		void deserialize(const std::vector<std::string>& buffer, int indexOffset) override;
 	};
-
 }

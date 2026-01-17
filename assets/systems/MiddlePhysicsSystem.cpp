@@ -30,10 +30,10 @@ class MiddlePhysicsSystem : public middle::MiddleGameplaySystem {
 
 			auto constraint = middle::getComponent<components::Constraint>(shape);
 			if (constraint) {
-				if (constraint->indexA != middle::UNASSIGNED && constraint->indexB != middle::UNASSIGNED) {
+				if (constraint->idA.index != middle::UNASSIGNED && constraint->idB.index != middle::UNASSIGNED) {
 					Constraint c;
-					c.indexA = constraint->indexA;
-					c.indexB = constraint->indexB;
+					c.indexA = constraint->idA.index;
+					c.indexB = constraint->idB.index;
 					c.biasFactor = constraint->biasFactor;
 					c.stiffness = constraint->stiffness;
 					c.targetDistance = constraint->targetDistance;

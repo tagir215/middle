@@ -40,24 +40,13 @@ namespace MouseIntersectDetectionSystem {
 					// in constraint creation mode, can't select constraints, only spheres to create constraints to
 					if (gameState->editorState.creationMode == middle::CreationMode::CONSTRAINT_MODE)
 						continue;
-					auto& instanceA = getShape(gameState, constraint->indexA);
-					auto& instanceB = getShape(gameState, constraint->indexB);
-					Vector3 posA = middle::getShapePosition(gameState, constraint->indexA);
-					Vector3 posB = middle::getShapePosition(gameState, constraint->indexB);
+					auto& instanceA = getShape(gameState, constraint->idA.index);
+					auto& instanceB = getShape(gameState, constraint->idB.index);
+					Vector3 posA = middle::getShapePosition(gameState, constraint->idA.index);
+					Vector3 posB = middle::getShapePosition(gameState, constraint->idB.index);
 					bool mouseIntersect = middle::PointIntersectLineZX_Plane(gameState->input.mouseXZ_PlanePos, posA, posB, middle::DEF_LINE_PADDING_H, middle::DEF_LINE_PADDING_V);
 					auto intersectComponent = middle::getComponent<components::MouseIntersectable>(shape);
 					intersectComponent->intersecting = mouseIntersect;
-					continue;
-				}
-
-				// intersect centroid
-
-				if (middle::getComponent<components::LoopTag>(shape)) {
-					auto loop = middle::getComponent<components::LoopSociety>(shape);
-					Vector3 centroid = middle::getLoopCentroid(gameState, i);
-					Vector3 intersectPos;
-					bool isIntersecting = middle::RayCastLineSphere(centroid, middle::DEF_RADIUS_LOOP_INDICATOR, gameState->editorState.camera.position, gameState->editorState.camera.position + gameState->input.mouseDir, intersectPos);
-					intersectComponent->intersecting = isIntersecting;
 					continue;
 				}
 
@@ -72,6 +61,7 @@ namespace MouseIntersectDetectionSystem {
 				auto reference = middle::getComponent<components::Reference>(shape);
 				auto system = middle::getComponent<components::SystemReference>(shape);
 				auto compRef = middle::getComponent<components::ComponentReference>(shape);
+				auto loopTag = middle::getComponent<components::LoopTag>(shape);
 				Vector3 pos = { position->posX, position->posY, position->posZ };
 
 				float radius = 0;
@@ -83,6 +73,9 @@ namespace MouseIntersectDetectionSystem {
 				}
 				if (system) {
 					radius = middle::DEF_RADIUS_SYSTEM;
+				}
+				if (loopTag) {
+					radius = middle::DEF_RADIUS_LOOP_INDICATOR;
 				}
 
 				Vector3 intersectPos;

@@ -30,12 +30,6 @@ namespace MouseGrabbingSystem {
 					if (posComponent) {
 						pos = { posComponent->posX, posComponent->posY, posComponent->posZ };
 					}
-					else {
-						auto loop = middle::getComponent<components::LoopSociety>(shape);
-						if (loop) {
-							pos = middle::getLoopCentroid(gameState, i);
-						}
-					}
 
 					Vector3 cameraPos = gameState->editorState.camera.position;
 					float objYDistance = std::abs(pos.y - cameraPos.y);

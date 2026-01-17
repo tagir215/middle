@@ -29,10 +29,6 @@ class EditorRenderSetupSystem : public middle::MiddleGameplaySystem {
 			auto selectable = middle::getComponent<components::MouseSelectable>(shape);
 			auto loop = middle::getComponent<components::LoopTag>(shape);
 			auto intersectable = middle::getComponent<components::MouseIntersectable>(shape);
-			Vector3 loopCentroid;
-			if (loop) {
-				loopCentroid = middle::getLoopCentroid(gameState, i);
-			}
 
 
 			auto text = middle::getComponent<components::Text>(shape);
@@ -100,8 +96,8 @@ class EditorRenderSetupSystem : public middle::MiddleGameplaySystem {
 				auto selectable = middle::getComponent<components::MouseSelectable>(shape);
 				middle::RenderItem lineItem;
 				lineItem.type = middle::RenderItemType::LINE;
-				lineItem.linePointA = getShapePosition(gameState, constraint->indexA);
-				lineItem.linePointB = getShapePosition(gameState, constraint->indexB);
+				lineItem.linePointA = getShapePosition(gameState, constraint->idA.index);
+				lineItem.linePointB = getShapePosition(gameState, constraint->idB.index);
 				lineItem.color = middle::CONSTRAINT_COLOR;
 				if (intersectable && intersectable->intersecting) {
 					lineItem.color = middle::HOVERED_THING_COLOR;
@@ -159,7 +155,7 @@ class EditorRenderSetupSystem : public middle::MiddleGameplaySystem {
 				auto selectable = middle::getComponent<components::MouseSelectable>(shape);
 				middle::RenderItem loopItem;
 				loopItem.type = middle::RenderItemType::SPHERE;
-				loopItem.center = loopCentroid;
+				loopItem.center = {position->posX, position->posY, position->posZ};
 				loopItem.radius = middle::DEF_RADIUS_LOOP_INDICATOR;
 				loopItem.color = middle::LOOP_INDICATOR_COLOR;
 				if (intersectable && intersectable->intersecting) {

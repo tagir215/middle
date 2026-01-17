@@ -16,5 +16,5 @@ namespace middle {
 	void newSystemFile(GameState* gameState, const std::string& scriptName);
 	void newComponentFile(GameState* gameState, const std::string& componentName);
 	std::string fieldToString(const std::any& field);
-	void fillField(void* field, const std::string& fieldString);
+	void fillField(void* field, const std::string& fieldString, int indexOffset = 0);
 }

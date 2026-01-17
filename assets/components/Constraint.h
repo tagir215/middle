@@ -4,14 +4,13 @@
 
 namespace components {
 	struct Constraint : public middle::Serializable{
-        int indexA = -1;
-        int indexB = -1;
-        float stiffness = 0.7f;
-        float biasFactor = 0.9f;
-        float targetDistance = 0;
+		middle::Id idA;
+		middle::Id idB;
+		float stiffness = 0.8f;
+		float biasFactor = 0.8f;;
+		float targetDistance;
 
 		void serialize(std::ostream& ostream) override;
-		void deserialize(const std::vector<std::string>& buffer, int indexOffset);
+		void deserialize(const std::vector<std::string>& buffer, int indexOffset) override;
 	};
-
 }

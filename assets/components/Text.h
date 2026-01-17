@@ -4,15 +4,15 @@
 
 namespace components {
 	struct Text : public middle::Serializable{
-		std::string text = "Text";
+		std::string text;
+		float fontColorR;
+		float fontColorG;
+		float fontColorB;
+		float fontColorA;
 		float offsetX = 0;
 		float offsetY = 0;
 		float offsetZ = 0;
-		float fontColorR = 0;
-		float fontColorG = 0;
-		float fontColorB = 0;
-		float fontColorA = 0;
-		int fontSize = 1;
+		float fontSize = 1;
 		bool visible = true;
 
 		void serialize(std::ostream& ostream) override;

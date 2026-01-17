@@ -4,12 +4,11 @@
 
 namespace components {
 	struct Position : public middle::Serializable{
-        float posX = 0;
-        float posY = 0;
-        float posZ = 0;
+		float posX;
+		float posY;
+		float posZ;
 
 		void serialize(std::ostream& ostream) override;
 		void deserialize(const std::vector<std::string>& buffer, int indexOffset) override;
 	};
-
 }

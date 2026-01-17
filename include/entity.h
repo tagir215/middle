@@ -27,9 +27,10 @@ namespace middle {
 	static float DEF_LINE_PADDING_V = 2.2f;
 
 	struct Id {
+		int index = UNASSIGNED;
 		int generation = UNASSIGNED;
 		bool operator==(const Id& other) {
-			return other.generation == generation;
+			return other.generation == generation && other.index == index;
 		}
 
 		bool operator!=(const Id& other) {

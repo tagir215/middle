@@ -1,0 +1,69 @@
+#scene
+s  stick
+#activeCamera
+i  0
+__0__
+LoopSociety
+q  -1
+vq
+Sphere
+f  2.000000
+Position
+f  -17.927359
+f  -0.000015
+f  -3.346790
+PhysicsData
+f  1.000000
+f  1.000000
+f  1.000000
+f  1.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.800000
+f  0.800000
+f  0.800000
+f  0.000000
+f  0.000000
+f  0.000000
+b  0
+MouseSelectable
+MouseGrabbable
+MouseIntersectable
+__1__
+LoopSociety
+q  -1
+vq
+Sphere
+f  2.000000
+Position
+f  17.825373
+f  0.000000
+f  5.225341
+PhysicsData
+f  1.000000
+f  1.000000
+f  1.000000
+f  1.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.800000
+f  0.800000
+f  0.800000
+f  0.000000
+f  0.000000
+f  0.000000
+b  0
+MouseSelectable
+MouseGrabbable
+MouseIntersectable
+__2__
+Constraint
+q  0
+q  1
+f  0.800000
+f  0.800000
+f  36.766006
+MouseSelectable
+MouseIntersectable

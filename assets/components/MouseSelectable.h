@@ -4,10 +4,9 @@
 
 namespace components {
 	struct MouseSelectable : public middle::Serializable{
-        bool selected = false;
+		bool selected = false;
 
 		void serialize(std::ostream& ostream) override;
-		void deserialize(const std::vector<std::string>& buffer, int indexOffset);
+		void deserialize(const std::vector<std::string>& buffer, int indexOffset) override;
 	};
-
 }

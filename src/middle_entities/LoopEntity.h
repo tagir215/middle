@@ -5,26 +5,29 @@
 #include "MouseIntersectable.h"
 #include "LoopSociety.h"
 #include "LoopTag.h"
+#include "Position.h"
 
 namespace entities{
 
-    inline void initLoop(middle::GameState* gameState, int index, std::vector<int>loopIndexes){
-		auto& shape = gameState->shapes[index];
-		++shape.id.generation;
-		gameState->ids[index].generation = shape.id.generation;
+    inline void initLoop(middle::GameState* gameState, int index, std::vector<middle::Id>loopIds, const Vector3& position){
+		auto& shape = middle::addShape(gameState, index);
 		middle::addComponent<components::LoopTag>(shape);
 		auto loop = middle::addComponent<components::LoopSociety>(shape);
 		middle::addComponent<components::MouseSelectable>(shape);
 		middle::addComponent<components::MouseIntersectable>(shape);
 		middle::addComponent<components::MouseGrabbable>(shape);
-		loop->loopMemberIndexes = loopIndexes;
+		auto pos = middle::addComponent<components::Position>(shape);
+		loop->loopMemberIds = loopIds;
+		pos->posX = position.x;
+		pos->posY = position.y;
+		pos->posZ = position.z;
 
 		// assign parents the loop as parent to children
-		for (int loopMember : loopIndexes) {
-			auto& member = gameState->shapes[loopMember];
-			assert(member.id == gameState->ids[loopMember]);
+		for (middle::Id loopMember : loopIds) {
+			auto& member = gameState->shapes[loopMember.index];
+			assert(member.id == gameState->ids[loopMember.index]);
 			auto memberLoop = middle::getComponent<components::LoopSociety>(member);
-			memberLoop->parentLoopIndex = index;
+			memberLoop->parentLoopId = shape.id;
 		}
     }
 }

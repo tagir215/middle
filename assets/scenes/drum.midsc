@@ -1,184 +1,180 @@
 #scene
-s  FloorTile
+s  drum
 #activeCamera
 i  0
 __0__
+LoopSociety
+q  9
+vq
 Sphere
 f  2.000000
-LoopSociety
-i  -1
-vi
 Position
-f  -14.801121
-f  -0.000046
-f  -5.888910
+f  18.128006
+f  -0.000023
+f  36.120655
 PhysicsData
 f  1.000000
 f  1.000000
 f  1.000000
 f  1.000000
+f  -0.000311
 f  0.000000
-f  0.000034
-f  0.000000
-f  0.000103
-f  0.000000
-f  0.000000
-f  0.000000
+f  -0.000124
 f  0.800000
 f  0.800000
 f  0.800000
+f  0.000000
+f  0.000000
+f  0.000000
 b  0
 MouseSelectable
-b  0
 MouseGrabbable
-b  0
 MouseIntersectable
-b  0
-b  0
 __1__
+LoopSociety
+q  -1
+vq
 Sphere
 f  2.000000
-LoopSociety
-i  -1
-vi
 Position
-f  -15.538739
-f  0.000016
-f  7.165742
+f  25.338741
+f  0.000000
+f  5.615918
 PhysicsData
 f  1.000000
 f  1.000000
 f  1.000000
 f  1.000000
+f  0.000176
 f  0.000000
-f  0.000057
-f  0.000000
-f  -0.000106
-f  0.000000
-f  0.000000
-f  0.000000
+f  0.000017
 f  0.800000
 f  0.800000
 f  0.800000
+f  0.000000
+f  0.000000
+f  0.000000
 b  0
 MouseSelectable
-b  0
 MouseGrabbable
-b  0
 MouseIntersectable
-b  0
-b  0
 __2__
+LoopSociety
+q  -1
+vq
 Sphere
 f  2.000000
-LoopSociety
-i  -1
-vi
 Position
-f  14.362247
-f  -0.000031
-f  6.763963
+f  -18.763752
+f  0.000000
+f  0.729702
 PhysicsData
 f  1.000000
 f  1.000000
 f  1.000000
 f  1.000000
+f  -0.000138
 f  0.000000
-f  -0.000040
-f  0.000000
-f  -0.000114
-f  0.000000
-f  0.000000
-f  0.000000
+f  0.000144
 f  0.800000
 f  0.800000
 f  0.800000
+f  0.000000
+f  0.000000
+f  0.000000
 b  0
 MouseSelectable
-b  0
 MouseGrabbable
-b  0
 MouseIntersectable
-b  0
-b  0
 __3__
+LoopSociety
+q  9
+vq
 Sphere
 f  2.000000
-LoopSociety
-i  -1
-vi
 Position
-f  15.729651
-f  -0.000046
-f  -7.504600
+f  -13.567653
+f  -0.000011
+f  23.188545
 PhysicsData
 f  1.000000
 f  1.000000
 f  1.000000
 f  1.000000
+f  0.000273
 f  0.000000
-f  -0.000051
-f  0.000000
-f  0.000116
-f  0.000000
-f  0.000000
-f  0.000000
+f  -0.000037
 f  0.800000
 f  0.800000
 f  0.800000
+f  0.000000
+f  0.000000
+f  0.000000
 b  0
 MouseSelectable
-b  0
 MouseGrabbable
-b  0
 MouseIntersectable
-b  0
-b  0
 __4__
 Constraint
-i  0
-i  3
+q  0
+q  3
 f  0.800000
-f  0.900000
-f  30.573080
+f  0.800000
+f  34.229500
 MouseSelectable
-b  0
 MouseIntersectable
-b  0
-b  0
 __5__
 Constraint
-i  2
-i  3
+q  1
+q  2
 f  0.800000
-f  0.900000
-f  14.332806
+f  0.800000
+f  44.373837
 MouseSelectable
-b  0
 MouseIntersectable
-b  0
-b  0
 __6__
 Constraint
-i  1
-i  2
+q  2
+q  3
 f  0.800000
-f  0.900000
-f  29.903210
+f  0.800000
+f  23.051685
 MouseSelectable
-b  0
 MouseIntersectable
-b  0
-b  0
 __7__
 Constraint
-i  0
-i  1
+q  0
+q  1
 f  0.800000
-f  0.900000
-f  13.074440
+f  0.800000
+f  31.345268
 MouseSelectable
-b  0
 MouseIntersectable
-b  0
-b  0
+__8__
+Position
+f  -7.536850
+f  -0.000030
+f  57.212036
+MouseSelectable
+MouseGrabbable
+MouseIntersectable
+Reference
+s  stick
+LoopSociety
+q  9
+vq
+__9__
+LoopTag
+LoopSociety
+q  -1
+vq
+0
+3
+8
+MouseSelectable
+MouseIntersectable
+MouseGrabbable
+Position
+f  -0.991774
+f  -0.000021
+f  38.842052

@@ -16,7 +16,7 @@
 namespace middle {
 
 
-	std::vector<int>findConnectedConstraints(GameState* gameState, int id) {
+	std::vector<int>findConnectedConstraints(GameState* gameState, Id id) {
 		std::vector<int> result;
 		for (int i = 0; i < gameState->shapes.size(); ++i) {
 			Shape& shape = gameState->shapes[i];
@@ -24,23 +24,25 @@ namespace middle {
 			if (constraint == nullptr)
 				continue;
 
-			if (constraint->indexA == id || constraint->indexB == id)
+			if (constraint->idA == id || constraint->idB == id)
 				result.push_back(i);
 		}
 		return result;
 	}
 
-	bool constraintAlreadyExists(GameState* gameState, int indexA, int indexB) {
+	bool constraintAlreadyExists(GameState* gameState, Id idA, Id idB) {
 		for (int i = 0; i < gameState->shapes.size(); ++i) {
 			Shape& shape = gameState->shapes[i];
+			if (!isShapeAlive(gameState, i))
+				continue;
 			auto constraint = getComponent<components::Constraint>(shape);
 			if (constraint == nullptr)
 				continue;
 
-			if (constraint->indexA == indexA && constraint->indexB == indexB)
+			if (constraint->idA == idA && constraint->idB == idB)
 				return true;
 
-			if (constraint->indexB == indexA && constraint->indexA == indexB)
+			if (constraint->idB == idA && constraint->idA == idB)
 				return true;
 		}
 
@@ -72,10 +74,10 @@ namespace middle {
 			return UNASSIGNED;
 		Shape& shape = gameState->shapes[index];
 		auto loop = getComponent<components::LoopSociety>(shape);
-		if (loop->parentLoopIndex == UNASSIGNED)
+		if (loop->parentLoopId.index == UNASSIGNED)
 			return index;
 
-		return findHighestLevelContainer(gameState, loop->parentLoopIndex);
+		return findHighestLevelContainer(gameState, loop->parentLoopId.index);
 	}
 
 	int findHighestUsedIndex(GameState* gameState)
@@ -99,9 +101,9 @@ namespace middle {
 		Shape& shape = getShape(gameState, index);
 		auto loop = getComponent<components::LoopSociety>(shape);
 		if (loop != nullptr) {
-			for (int i = 0; i < loop->loopMemberIndexes.size(); ++i) {
-				int memberIndex = loop->loopMemberIndexes[i];
-				dragShape(gameState, memberIndex, linearVelocity);
+			for (int i = 0; i < loop->loopMemberIds.size(); ++i) {
+				Id memberId = loop->loopMemberIds[i];
+				dragShape(gameState, memberId.index, linearVelocity);
 			}
 		}
 
@@ -127,10 +129,10 @@ namespace middle {
 		Shape& shape = gameState->shapes[index];
 		auto loop = getComponent<components::LoopSociety>(shape);
 		if (loop != nullptr) {
-			for (int i = 0; i < loop->loopMemberIndexes.size(); ++i) {
-				int memberIndex = loop->loopMemberIndexes[i];
-				assert(index != memberIndex);
-				moveShape(gameState, memberIndex, displacement);
+			for (int i = 0; i < loop->loopMemberIds.size(); ++i) {
+				Id memberId = loop->loopMemberIds[i];
+				assert(index != memberId.index);
+				moveShape(gameState, memberId.index, displacement);
 			}
 		}
 
@@ -192,30 +194,6 @@ namespace middle {
 		return { position->posX, position->posY, position->posZ };
 	}
 
-	Vector3 getLoopCentroid(GameState* gameState, int index)
-	{
-		auto& shape = getShape(gameState, index);
-		auto loop = getComponent<components::LoopSociety>(shape);
-		Vector3 centroid = { 0,0,0 };
-		if (loop->loopMemberIndexes.size() < 1)
-			return centroid;
-
-		for (int childIndex : loop->loopMemberIndexes) {
-			auto& child = getShape(gameState, childIndex);
-			if (getComponent<components::LoopTag>(child)) {
-				centroid += getLoopCentroid(gameState, childIndex);
-			}
-			else {
-				centroid += getShapePosition(gameState, childIndex);
-			}
-		}
-
-		centroid = centroid * (1.0f / loop->loopMemberIndexes.size());
-		// offset y 
-		centroid.y = -20;
-		return centroid;
-	}
-
 	Shape& getShape(GameState* gameState, int index)
 	{
 		if (gameState->shapes[index].id == gameState->ids[index]) {
@@ -225,29 +203,29 @@ namespace middle {
 	}
 
 	void deleteShape(GameState* gameState, int index) {
+		if (!isShapeAlive(gameState, index)) {
+			return;
+		}
 		// remove parent indexes if deleting loops from children
 		auto loop = getComponent<components::LoopSociety>(gameState->shapes[index]);
 		if (loop) {
-			for (int childIndex : loop->loopMemberIndexes) {
-				auto& childShape = gameState->shapes[childIndex];
-				if (isShapeAlive(gameState, childIndex)) {
+			for (Id childId : loop->loopMemberIds) {
+				auto& childShape = gameState->shapes[childId.index];
+				if (isShapeAlive(gameState, childId.index)) {
 					auto childLoop = getComponent<components::LoopSociety>(childShape);
-					childLoop->parentLoopIndex = UNASSIGNED;
+					childLoop->parentLoopId.index = UNASSIGNED;
 				}
 			}
 
-			if (loop->parentLoopIndex != UNASSIGNED) {
-				auto& parentShape = getShape(gameState, loop->parentLoopIndex);
+			if (loop->parentLoopId.index != UNASSIGNED && isShapeAlive(gameState, loop->parentLoopId.index)) {
+				auto& parentShape = getShape(gameState, loop->parentLoopId.index);
 				auto parentLoop = getComponent<components::LoopSociety>(parentShape);
-				for (int i = 0; i < parentLoop->loopMemberIndexes.size(); ++i) {
-					int parentChildIndex = parentLoop->loopMemberIndexes[i];
-					if (parentChildIndex == index) {
-						parentLoop->loopMemberIndexes.erase(parentLoop->loopMemberIndexes.begin() + i);
+				for (int i = 0; i < parentLoop->loopMemberIds.size(); ++i) {
+					Id parentChildIndex = parentLoop->loopMemberIds[i];
+					if (parentChildIndex.index == index) {
+						parentLoop->loopMemberIds.erase(parentLoop->loopMemberIds.begin() + i);
 						break;
 					}
-				}
-				if (parentLoop->loopMemberIndexes.size() < 2) {
-					deleteShape(gameState, loop->parentLoopIndex);
 				}
 			}
 
@@ -256,8 +234,8 @@ namespace middle {
 
 		auto componentRefParent = getComponent<components::ComponentRefParent>(gameState->shapes[index]);
 		if (componentRefParent) {
-			for (int childIndex : componentRefParent->indicatorChildren) {
-				deleteShape(gameState, childIndex);
+			for (Id childId : componentRefParent->memberIds) {
+				deleteShape(gameState, childId.index);
 			}
 		}
 
@@ -276,21 +254,24 @@ namespace middle {
 		Shape& shape = gameState->shapes[index];
 		auto loop = getComponent<components::LoopSociety>(shape);
 		if (loop) {
-			for (int childIndex : loop->loopMemberIndexes) {
-				deleteShapeRecursive(gameState, childIndex);
+			for (Id childIndex : loop->loopMemberIds) {
+				deleteShapeRecursive(gameState, childIndex.index);
 			}
 		}
-		std::vector<int> connectedConstraints = findConnectedConstraints(gameState, index);
+		std::vector<int> connectedConstraints = findConnectedConstraints(gameState, shape.id);
 		for (int connectedIndex : connectedConstraints) {
 			deleteShape(gameState, connectedIndex);
 		}
 		deleteShape(gameState, index);
 	}
 
-	void addShape(GameState* gameState, int index, Shape shape) {
+	Shape& addShape(GameState* gameState, int index) {
+		Shape shape;
 		shape.id.generation = gameState->shapes[index].id.generation + 1;
+		shape.id.index = index;
 		gameState->ids[index] = shape.id;
 		gameState->shapes[index] = shape;
+		return gameState->shapes[index];
 	}
 
 	void moveCameraXZ(Camera3D& initCamera, const Vector3& pos)

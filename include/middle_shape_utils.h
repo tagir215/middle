@@ -6,9 +6,9 @@ namespace middle {
 	// next free index in shape array
 	int findFreeIndex(GameState* gameState);
 	// constraints connected to shape
-	std::vector<int>findConnectedConstraints(GameState* gameState, int id);
+	std::vector<int>findConnectedConstraints(GameState* gameState, Id id);
 	// this constraint already exists... don't make duplicates
-	bool constraintAlreadyExists(GameState* gameState, int indexA, int indexB);
+	bool constraintAlreadyExists(GameState* gameState, Id indexA, Id indexB);
 	// unselect selected things
 	void unselect(GameState* gameState);
 	// drag shape and its children
@@ -31,8 +31,6 @@ namespace middle {
 	bool isShapeAlive(GameState* gameState, int index);
 	// get pos quickly
 	Vector3 getShapePosition(GameState* gameState, int index);
-	// get center pos os loops for 
-	Vector3 getLoopCentroid(GameState* gameState, int index);
 	// get shape instance
 	Shape& getShape(GameState* gameState, int index);
 	// delete shape , updates generational indexes
@@ -40,7 +38,7 @@ namespace middle {
 	// deletes shapes and its children
 	void deleteShapeRecursive(GameState* gameState, int index);
 	// add shape and updates generations
-	void addShape(GameState* gameState, int index, Shape shape);
+	Shape& addShape(GameState* gameState, int index);
 	// move camera in xz plane moving also the target 
 	void moveCameraXZ(Camera3D& initCamera, const Vector3& pos);
 	// get shapes selected..

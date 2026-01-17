@@ -32,7 +32,6 @@ namespace middle {
 
 	void EditorActionNewConstraint::execute(GameState* gameState) {
 		auto& shapes = gameState->shapes;
-
 		std::vector<int> selectedIndexes;
 		for (int i = 0; i < gameState->shapes.size(); ++i) {
 			if (!getComponent<components::Sphere>(shapes[i]))
@@ -46,8 +45,10 @@ namespace middle {
 
 		int indexA = selectedIndexes[0];
 		int indexB = selectedIndexes[1];
+		Shape& shapeA = getShape(gameState, indexA);
+		Shape& shapeB = getShape(gameState, indexB);
 
-		if (constraintAlreadyExists(gameState, indexA, indexB)) {
+		if (constraintAlreadyExists(gameState, shapeA.id, shapeB.id)) {
 			return;
 		}
 
@@ -81,7 +82,7 @@ namespace middle {
 			Shape& shape = getShape(gameState, i);
 
 			// delete all connected constraints
-			std::vector<int> connectedConstraints = findConnectedConstraints(gameState, i);
+			std::vector<int> connectedConstraints = findConnectedConstraints(gameState, shape.id);
 
 
 			if(getComponent<components::Reference>(shape)){
@@ -115,7 +116,7 @@ namespace middle {
 		int loopIndex = gameState->loopIndex;
 
 		// find selected items 
-		std::vector<int>memberIndexes;
+		std::vector<Id>memberIds;
 		for (int i = 0; i < gameState->shapes.size(); ++i) {
 			if (!isShapeAlive(gameState, i))
 				continue;
@@ -123,16 +124,26 @@ namespace middle {
 			auto sphere = getComponent<components::Sphere>(gameState->shapes[i]);
 			auto reference = getComponent<components::Reference>(gameState->shapes[i]);
 			if ((sphere || loop || reference) && isShapeSelected(gameState, i)) {
-				memberIndexes.push_back(i);
+				memberIds.push_back(gameState->shapes[i].id);
 			}
 		}
 
 		// loops must have at least 2 things
-		if (memberIndexes.size() < 1)
-			return;
+		if (memberIds.size() == 0) {
+			entities::initLoop(gameState, freeIndex, memberIds, gameState->input.mouseXZ_PlanePos);
+		}
+		else {
+			Vector3 centroid = { 0,0,0 };
+			for (int i = 0; i < memberIds.size(); ++i) {
+				auto& shape = getShape(gameState, memberIds[i].index);
+				auto pos = getComponent<components::Position>(shape);
+				centroid += { pos->posX, pos->posY, pos->posZ };
+			}
+			centroid *= 1.0f / memberIds.size();
+			entities::initLoop(gameState, freeIndex, memberIds, centroid);
+		}
 
 		// create 
-		entities::initLoop(gameState, freeIndex, memberIndexes);
 
 		// auto unselect
 		unselect(gameState);
@@ -168,6 +179,7 @@ namespace middle {
 		gameState->activeScene = index;
 		gameState->reload = true;
 		gameState->reset = true;
+		saveScene(gameState, sceneName);
 	}
 
 	void EditorActionImportScene::execute(GameState* gameState)

@@ -53,11 +53,18 @@ namespace middle {
 			bool v = std::any_cast<bool>(field);
 			return "b  " + std::to_string(v) + "\n";
 		}
-		else if (field.type() == typeid(std::vector<int>)) {
-			auto v = std::any_cast<std::vector<int>>(field);
-			std::string result = "vi\n";
+		else if (field.type() == typeid(Id)) {
+			Id id = std::any_cast<Id>(field);
+			return "q  " + std::to_string(id.index) + "\n";
+		}
+		else if (field.type() == typeid(std::vector<Id>)) {
+			auto v = std::any_cast<std::vector<Id>>(field);
+			std::string result = "vq\n";
 			for (int i = 0; i < v.size(); ++i) {
-				result += std::to_string(v[i]) + "\n";
+				// Don't serialize ghost objects... TODO maybe refactor
+				if (v[i].index >= GHOST_INDEX_OFFSET)
+					continue;
+				result += std::to_string(v[i].index) + "\n";
 			}
 			return result;
 		}
@@ -65,7 +72,7 @@ namespace middle {
 		assert(true, "nope not supporting");
 	}
 
-	void fillField(void* field, const std::string& fieldString) {
+	void fillField(void* field, const std::string& fieldString, int indexOffset) {
 		char c = fieldString[0];
 		std::string valueStr = fieldString.substr(3);
 		if (c == 's') {
@@ -88,14 +95,25 @@ namespace middle {
 			bool* boolptr = static_cast<bool*>(field);
 			*boolptr = std::stoi(valueStr);
 		}
+		else if (c == 'q') {
+			Id* id = static_cast<Id*>(field);
+			// Offset by indexOffset. This is used when importing scenes into other scenes, offsetting imported scenes indexes to ghost area
+			id->index = std::stoi(valueStr);
+			if (id->index != UNASSIGNED) {
+				id->index += indexOffset;
+			}
+			id->generation = 0;
+		}
 		else if (c == 'v') {
-			std::vector<int>* vectorptr = static_cast<std::vector<int>*>(field);
 			char vectorType = fieldString[1];
 			std::vector<std::string> values = split(valueStr, '\n');
-			vectorptr->resize(values.size());
-			if (vectorType == 'i') {
+			if (vectorType == 'q') {
+				std::vector<Id>* vectorptr = static_cast<std::vector<Id>*>(field);
+				vectorptr->resize(values.size());
 				for (int i = 0; i < values.size(); ++i) {
-					(*vectorptr)[i] = std::stoi(values[i]);
+					// Offset by indexOffsetGlobal. This is used when importing scenes into other scenes, offsetting imported scenes indexes to ghost area
+					(*vectorptr)[i].index = std::stoi(values[i]) + indexOffset;
+					(*vectorptr)[i].generation = 0;
 				}
 			}
 		}
@@ -255,6 +273,8 @@ namespace middle {
 	void loadScene(GameState* gameState, const std::string& sceneName, bool import, const Vector3& pos, int sceneReferenceIndex) {
 		std::string filename = "../assets/scenes/" + sceneName + ".midsc";
 
+		int indexOffset = 0;
+
 		std::ifstream inputFile(filename);
 		if (!inputFile.is_open()) {
 			std::cerr << "Failed to open file to write";
@@ -265,7 +285,6 @@ namespace middle {
 
 		// all import indexes are shifted by half of total allowed shape count
 		// if highest used index is above half of total allowed shape count, use the next one after highest used as offset
-		int indexOffset = 0;
 		if (import) {
 			indexOffset = findHighestUsedIndex(gameState) + 1;
 			int minImportOffset = GHOST_INDEX_OFFSET;
@@ -309,7 +328,7 @@ namespace middle {
 				int end = l - 2;
 				std::string digits = line.substr(start, end);
 				activeShapeIndex = std::stoi(digits);
-				addShape(gameState, activeShapeIndex + indexOffset, Shape());
+				addShape(gameState, activeShapeIndex + indexOffset);
 				parseMode = noParse;
 			}
 
@@ -373,9 +392,10 @@ namespace middle {
 			}
 
 			// make reference
-			std::vector<int>members;
+			std::vector<Id>members;
 			for (int v : highestLevelContainers) {
-				members.push_back(v);
+				auto& shape = getShape(gameState, v);
+				members.push_back(shape.id);
 			}
 
 			// if it's ghost scene, basically a scene imported by a scene, find next highest index to use, otherwise the reference index should be the one passed in
@@ -390,7 +410,7 @@ namespace middle {
 			// if reference already exists, when deserializing, just update the container loop, since its refence objects are not stored to the file
 			else {
 				auto loop = getComponent<components::LoopSociety>(gameState->shapes[sceneReferenceIndex]);
-				loop->loopMemberIndexes = members;
+				loop->loopMemberIds = members;
 			}
 
 			// move imported scene where it wants to be

@@ -4,11 +4,10 @@
 
 namespace components {
 	struct LoopSociety : public middle::Serializable{
-        int parentLoopIndex = middle::UNASSIGNED;
-		std::vector<int>loopMemberIndexes;
+		middle::Id parentLoopId;
+		std::vector<middle::Id>loopMemberIds;
 
 		void serialize(std::ostream& ostream) override;
-		void deserialize(const std::vector<std::string>& buffer, int indexOffset);
+		void deserialize(const std::vector<std::string>& buffer, int indexOffset) override;
 	};
-
 }

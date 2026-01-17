@@ -12,9 +12,7 @@
 namespace entities{
 
     inline void initSystem(middle::GameState* gameState, int index, const Vector3& position, const std::string& systemName){
-		auto& shape = gameState->shapes[index];
-		++shape.id.generation;
-		gameState->ids[index].generation = shape.id.generation;
+		auto& shape = middle::addShape(gameState, index);
 		middle::addComponent<components::MouseSelectable>(shape);
 		middle::addComponent<components::MouseGrabbable>(shape);
 		middle::addComponent<components::MouseIntersectable>(shape);
