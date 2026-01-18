@@ -48,6 +48,16 @@ namespace middle {
 		std::unordered_map<int, Component> componentMap;
 	};
 
+	enum class FieldType : char {
+		Bool = 'b',
+		Int = 'i',
+		String = 's',
+		Float = 'f',
+		Double = 'd',
+		Id = 'q',
+		IdVector = 'p',
+	};
+
 	struct Serializer {
 		std::ostream& ostream;
 		template<typename T>
@@ -55,6 +65,7 @@ namespace middle {
 			ostream << middle::fieldToString(value);
 		}
 	};
+
 	struct Deserializer {
 		const std::vector<std::string>& buffer;
 		int indexOffset;

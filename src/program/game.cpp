@@ -6,6 +6,7 @@
 #include "SystemReference.h"
 #include "Position.h"
 #include "middle_shape_utils.h"
+#include "engine_system_names.h"
 
 using namespace middle;
 

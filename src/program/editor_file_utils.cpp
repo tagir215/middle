@@ -9,7 +9,6 @@
 #include "middle_component_table.h"
 #include <set>
 #include "LoopSociety.h"
-#include <algorithm>
 #include "ReferenceEntity.h"
 
 namespace middle {
@@ -33,34 +32,54 @@ namespace middle {
 		return parts;
 	}
 
-	std::string fieldToString(const std::any& field) {
+	FieldType fieldToType(const std::any& field) {
+
 		if (field.type() == typeid(std::string)) {
-			const std::string& v = std::any_cast<const std::string&>(field);
-			return "s  " + v + "\n";
+			return FieldType::String;
 		}
 		else if (field.type() == typeid(int)) {
-			int v = std::any_cast<int>(field);
-			return "i  " + std::to_string(v) + "\n";
+			return FieldType::Int;
 		}
 		else if (field.type() == typeid(float)) {
-			float v = std::any_cast<float>(field);
-			return "f  " + std::to_string(v) + "\n";
+			return FieldType::Float;
 		}
 		else if (field.type() == typeid(double)) {
-			double v = std::any_cast<double>(field);
-			return "d  " + std::to_string(v) + "\n";
+			return FieldType::Double;
 		}
 		else if (field.type() == typeid(bool)) {
-			bool v = std::any_cast<bool>(field);
-			return "b  " + std::to_string(v) + "\n";
+			return FieldType::Bool;
 		}
 		else if (field.type() == typeid(Id)) {
-			Id id = std::any_cast<Id>(field);
-			return "q  " + std::to_string(id.index) + "\n";
+			return FieldType::Id;
 		}
 		else if (field.type() == typeid(std::vector<Id>)) {
+			return FieldType::IdVector;
+		}
+
+		assert(false, "no we are not supporting this");
+	}
+
+
+	std::string fieldToString(const std::any& field) {
+		FieldType type = fieldToType(field);
+		std::string result = std::string(1, static_cast<char>(type)) + "  ";
+
+		switch (type) {
+		case FieldType::String:
+			return result + std::any_cast<const std::string&>(field) + '\n';
+		case FieldType::Int:
+			return result + std::to_string(std::any_cast<int>(field)) + '\n';
+		case FieldType::Float:
+			return result + std::to_string(std::any_cast<float>(field)) + '\n';
+		case FieldType::Double:
+			return result + std::to_string(std::any_cast<double>(field)) + '\n';
+		case FieldType::Bool:
+			return result + std::to_string(std::any_cast<bool>(field)) + '\n';
+		case FieldType::Id:
+			return result + std::to_string(std::any_cast<Id>(field).index) + '\n';
+		case FieldType::IdVector:
 			auto v = std::any_cast<std::vector<Id>>(field);
-			std::string result = "vq\n";
+			result += '\n';
 			for (int i = 0; i < v.size(); ++i) {
 				// Don't serialize ghost objects... TODO maybe refactor
 				if (v[i].index >= GHOST_INDEX_OFFSET)
@@ -70,33 +89,40 @@ namespace middle {
 			return result;
 		}
 
-		assert(true, "nope not supporting");
+		assert(false, "no we are not supporting this");
 	}
 
 	void fillField(void* field, const std::string& fieldString, int indexOffset) {
 		char c = fieldString[0];
 		std::string valueStr = fieldString.substr(3);
-		if (c == 's') {
+
+		switch (c) {
+		case static_cast<char>(FieldType::String): {
 			std::string* strptr = static_cast<std::string*>(field);
 			*strptr = valueStr;
+			return;
 		}
-		else if (c == 'i') {
+		case static_cast<char>(FieldType::Int): {
 			int* intptr = static_cast<int*>(field);
 			*intptr = std::stoi(valueStr);
+			return;
 		}
-		else if (c == 'f') {
+		case static_cast<char>(FieldType::Float): {
 			float* floatptr = static_cast<float*>(field);
 			*floatptr = std::stof(valueStr);
+			return;
 		}
-		else if (c == 'd') {
+		case static_cast<char>(FieldType::Double): {
 			double* doubleptr = static_cast<double*>(field);
 			*doubleptr = std::stod(valueStr);
+			return;
 		}
-		else if (c == 'b') {
+		case static_cast<char>(FieldType::Bool): {
 			bool* boolptr = static_cast<bool*>(field);
 			*boolptr = std::stoi(valueStr);
+			return;
 		}
-		else if (c == 'q') {
+		case static_cast<char>(FieldType::Id): {
 			Id* id = static_cast<Id*>(field);
 			// Offset by indexOffset. This is used when importing scenes into other scenes, offsetting imported scenes indexes to ghost area
 			id->index = std::stoi(valueStr);
@@ -104,19 +130,19 @@ namespace middle {
 				id->index += indexOffset;
 			}
 			id->generation = 0;
+			return;
 		}
-		else if (c == 'v') {
-			char vectorType = fieldString[1];
+		case static_cast<char>(FieldType::IdVector): {
 			std::vector<std::string> values = split(valueStr, '\n');
-			if (vectorType == 'q') {
-				std::vector<Id>* vectorptr = static_cast<std::vector<Id>*>(field);
-				vectorptr->resize(values.size());
-				for (int i = 0; i < values.size(); ++i) {
-					// Offset by indexOffsetGlobal. This is used when importing scenes into other scenes, offsetting imported scenes indexes to ghost area
-					(*vectorptr)[i].index = std::stoi(values[i]) + indexOffset;
-					(*vectorptr)[i].generation = 0;
-				}
+			std::vector<Id>* vectorptr = static_cast<std::vector<Id>*>(field);
+			vectorptr->resize(values.size());
+			for (int i = 0; i < values.size(); ++i) {
+				// Offset by indexOffsetGlobal. This is used when importing scenes into other scenes, offsetting imported scenes indexes to ghost area
+				(*vectorptr)[i].index = std::stoi(values[i]) + indexOffset;
+				(*vectorptr)[i].generation = 0;
 			}
+			return;
+		}
 		}
 
 		assert("nope not supported");
@@ -334,7 +360,7 @@ namespace middle {
 			}
 
 			// component name found from component type map
-			if(componentTypeMap.find(line) != componentTypeMap.end()){
+			if (componentTypeMap.find(line) != componentTypeMap.end()) {
 				if (parseMode != noParse) {
 					flushBuffer(gameState, buffer, activeComponentName, activeShapeIndex, indexOffset);
 				}
@@ -370,14 +396,14 @@ namespace middle {
 		int highestUsedIndex = findHighestUsedIndex(gameState);
 
 		// loop added indexes and load all the references 
-		for(int i=indexOffset; i<highestUsedIndex + 1; ++i){
+		for (int i = indexOffset; i < highestUsedIndex + 1; ++i) {
 			auto& shape = gameState->shapes[i];
 			if (getComponent<components::Reference>(shape)) {
 				loadReferences(gameState, i);
 			}
 		}
 
-		
+
 
 		// if we import we contain all the content in a reference loop
 		if (import) {
@@ -405,7 +431,7 @@ namespace middle {
 			}
 
 			// if reference doesn't exist yet, when importing from editor, create new reference
-			if(!isShapeAlive(gameState, sceneReferenceIndex)){
+			if (!isShapeAlive(gameState, sceneReferenceIndex)) {
 				entities::initReference(gameState, sceneReferenceIndex, members, sceneName);
 			}
 			// if reference already exists, when deserializing, just update the container loop, since its refence objects are not stored to the file

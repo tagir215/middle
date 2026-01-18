@@ -10,22 +10,4 @@ namespace middle {
 	static const int MAX_VERTEX_COUNT = 10000;
 	static const int REF_TEXT_SIZE = 10;
 
-	inline std::vector<std::string>engineSystemNamesFrameStart
-	{
-		"EditorSystem",
-		"MouseIntersectDetectionSystem",
-		"MouseGrabbingSystem",
-		"MouseSelectionSystem",
-		"EnviromentalFileNavigationSystem",
-	};
-
-	inline std::vector<std::string>engineSystemNamesFrameEnd
-	{
-		"MiddlePhysicsSystem",
-	};
-
-	inline std::vector<std::string>engineRendererSystemNames{
-		"EditorRenderSetupSystem",
-		"EditorUiSystem",
-	};
 }

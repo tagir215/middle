@@ -11,6 +11,7 @@
 #include "ComponentRefParent.h"
 #include "Text.h"
 #include "MouseIntersectable.h"
+#include "engine_system_names.h"
 
 class EditorSystem : public middle::MiddleGameplaySystem {
 

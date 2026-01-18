@@ -125,6 +125,7 @@ namespace middle {
 		std::vector<RenderItem>renderData;
 		std::vector<PhysicsBody>physicsBodies;
 		std::vector<std::function<void()>>uiSetups;
+		std::vector<middle::FieldInfo>fields;
 	};
 
 }
