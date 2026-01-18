@@ -31,6 +31,7 @@ class EditorRenderSetupSystem : public middle::MiddleGameplaySystem {
 			auto intersectable = middle::getComponent<components::MouseIntersectable>(shape);
 
 
+
 			auto text = middle::getComponent<components::Text>(shape);
 			if (text && text->visible) {
 				assert(position);

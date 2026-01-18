@@ -42,7 +42,24 @@ class ComponentUiSystem : public middle::MiddleGameplaySystem {
 						int size = 0;
 						serializable->getFields(gameState->fields, &size);
 						for (int fieldIndex = 0; fieldIndex < size; ++fieldIndex) {
-							ImGui::Text(gameState->fields[fieldIndex].name);
+							middle::FieldInfo field = gameState->fields[fieldIndex];
+							if(field.type == middle::FieldType::Bool){
+								ImGui::Checkbox(field.name, static_cast<bool*>(field.value));
+							}
+							else if(field.type == middle::FieldType::Float){
+								ImGui::InputFloat(field.name, static_cast<float*>(field.value));
+							}
+							else if (field.type == middle::FieldType::Id) {
+								middle::Id* id = static_cast<middle::Id*>(field.value);
+								ImGui::InputInt(field.name, &id->index);
+							}
+							else if (field.type == middle::FieldType::String) {
+								std::string* string = static_cast<std::string*>(field.value);
+								//ImGui::InputText(field.name, , string);
+							}
+							else{
+								ImGui::Text(field.name);
+							}
 						}
 					}
 

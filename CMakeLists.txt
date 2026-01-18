@@ -9,7 +9,6 @@ set_target_properties(raylib PROPERTIES
     INTERFACE_INCLUDE_DIRECTORIES "${CMAKE_SOURCE_DIR}/lib/raylib-5.5_win64_msvc16/include"
 )
 
-
 # export all symbolds.. for imgui to work as a shared library
 set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
 
@@ -64,6 +63,7 @@ set_property(TARGET middle PROPERTY WIN32_EXECUTABLE TRUE)
 if (MSVC)
     target_link_options(middle PRIVATE /ENTRY:mainCRTStartup)
 endif()
+
 
 # Copy DLLs to executable output directory
 add_custom_command(TARGET middle POST_BUILD

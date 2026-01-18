@@ -78,6 +78,7 @@ namespace middle {
 	struct FieldInfo {
 		const char* name;
 		void* value;
+		FieldType type;
 	};
 	struct FieldCollector {
 		std::vector<FieldInfo>& fields;
@@ -86,6 +87,7 @@ namespace middle {
 		void operator()(const char* name, T& value) {
 			fields[*size].name = name;
 			fields[*size].value = &value;
+			fields[*size].type = middle::fieldToType(value);
 			++(*size);
 		}
 	};

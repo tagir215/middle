@@ -36,7 +36,7 @@ class EditorSystem : public middle::MiddleGameplaySystem {
 		int systemCount = systemNames.size();
 		float angleBetween = PI / systemCount;
 		float initAngle = PI * 0.1f;
-		float yCoord = 300;
+		float yCoord = 200;
 		std::vector<Vector3> positions;
 		const float r = 200;
 		positions.resize(systemCount);

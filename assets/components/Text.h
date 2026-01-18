@@ -15,7 +15,7 @@
 
 namespace components {
 	struct Text : public middle::Serializable{
-		std::string text;
+		std::string text = "Text";
 		float fontColorR;
 		float fontColorG;
 		float fontColorB;
