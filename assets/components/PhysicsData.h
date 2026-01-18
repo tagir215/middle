@@ -2,6 +2,21 @@
 #include "registrars.h"
 #include "editor_file_utils.h"
 
+#define MIDDLEPHYSICSDATA(X) \
+	X(mass) \
+	X(invMass) \
+	X(momentOfInertia) \
+	X(velX) \
+	X(velY) \
+	X(velZ) \
+	X(damX) \
+	X(damY) \
+	X(damZ) \
+	X(accX) \
+	X(accY) \
+	X(accZ) \
+	X(infiniteMass) 
+
 namespace components {
 	struct PhysicsData : public middle::Serializable{
 		float mass = 1;
@@ -21,5 +36,12 @@ namespace components {
 
 		void serialize(std::ostream& ostream) override;
 		void deserialize(const std::vector<std::string>& buffer, int indexOffset) override;
+		void getFields(std::vector<middle::FieldInfo>& fields, int* size) override;
+		template<typename V>
+		void reflect(V& v) {
+#define X(f) v(#f, f);
+			MIDDLEPHYSICSDATA(X)
+#undef X
+		}
 	};
 }

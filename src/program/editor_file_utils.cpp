@@ -9,6 +9,7 @@
 #include "middle_component_table.h"
 #include <set>
 #include "LoopSociety.h"
+#include <algorithm>
 #include "ReferenceEntity.h"
 
 namespace middle {
@@ -445,7 +446,7 @@ namespace middle {
 	}
 
 
-	void generateFileFromTemplate(const std::string& destinationPath, const std::string& templateFilePath, const std::string& placeholder, const std::string& objectName) {
+	void generateFileFromTemplate(const std::string& destinationPath, const std::string& templateFilePath, const std::string& objectName, const std::string& placeholder) {
 		std::ifstream inputFile(templateFilePath);
 		if (!inputFile.is_open()) {
 			std::cerr << "Failed to open file to write";
@@ -473,6 +474,23 @@ namespace middle {
 			}
 		}
 
+		std::string OBJECTNAME = objectName;
+		std::transform(OBJECTNAME.begin(), OBJECTNAME.end(), OBJECTNAME.begin(), ::toupper);
+		std::string PLACEHOLDER = placeholder;
+		std::transform(PLACEHOLDER.begin(), PLACEHOLDER.end(), PLACEHOLDER.begin(), ::toupper);
+		// replace upper cased placeholders 
+		for (int i = 0; i < templateLines.size(); ++i) {
+			auto& line = templateLines[i];
+
+			size_t pos = 0;
+			while (pos != std::string::npos) {
+				pos = line.find(PLACEHOLDER, pos);
+				if (pos != std::string::npos) {
+					line.replace(pos, PLACEHOLDER.length(), "MIDDLE" + OBJECTNAME);
+				}
+			}
+		}
+
 		// write generated code
 		std::ofstream outFile(destinationPath);
 		if (!outFile.is_open()) {
@@ -494,7 +512,7 @@ namespace middle {
 		const std::string filename = "../assets/systems/" + systemName + ".cpp";
 		const std::string placeholder = "/*systemName*/";
 
-		generateFileFromTemplate(filename, templateFilename, placeholder, systemName);
+		generateFileFromTemplate(filename, templateFilename, systemName, placeholder);
 	}
 
 	void newComponentFile(GameState* gameState, const std::string& componentName)
@@ -505,8 +523,8 @@ namespace middle {
 		const std::string filenameSource = "../assets/components/" + componentName + ".cpp";
 		const std::string placeholder = "/*componentName*/";
 
-		generateFileFromTemplate(filenameHeader, templateFilenameHeader, placeholder, componentName);
-		generateFileFromTemplate(filenameSource, templateFilenameSource, placeholder, componentName);
+		generateFileFromTemplate(filenameHeader, templateFilenameHeader, componentName, placeholder);
+		generateFileFromTemplate(filenameSource, templateFilenameSource, componentName, placeholder);
 	}
 }
 

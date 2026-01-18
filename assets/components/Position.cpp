@@ -2,15 +2,19 @@
 
 namespace components {
 	void Position::serialize(std::ostream& ostream) {
-		ostream << middle::fieldToString(posX);
-		ostream << middle::fieldToString(posY);
-		ostream << middle::fieldToString(posZ);
+		middle::Serializer serializer{ ostream };
+		reflect(serializer);
 	}
 
 	void Position::deserialize(const std::vector<std::string>& buffer, int indexOffset) {
-		middle::fillField(&posX, buffer[0]);
-		middle::fillField(&posY, buffer[1]);
-		middle::fillField(&posZ, buffer[2]);
+		middle::Deserializer deserializer{ buffer, indexOffset, 0 };
+		reflect(deserializer);
+	}
+
+	void Position::getFields(std::vector<middle::FieldInfo>& fields, int* size)
+	{
+		middle::FieldCollector collector{ fields, size };
+		reflect(collector);
 	}
 
 	static middle::ComponentRegistrar<Position>reg("Position");

@@ -11,11 +11,6 @@
 namespace middle {
 	struct Component;
 
-	struct Serializable {
-		virtual ~Serializable() = default;
-		virtual void serialize(std::ostream& istream) = 0;
-		virtual void deserialize(const std::vector<std::string>& buffer, int indexOffset) = 0;
-	};
 	struct IComponentVectorContainer {
 		virtual ~IComponentVectorContainer() = default;
 		virtual int grow() = 0;

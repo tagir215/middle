@@ -2,17 +2,19 @@
 
 namespace components {
 	void Color::serialize(std::ostream& ostream) {
-		ostream << middle::fieldToString(colorR);
-		ostream << middle::fieldToString(colorG);
-		ostream << middle::fieldToString(colorB);
-		ostream << middle::fieldToString(colorA);
+		middle::Serializer serializer{ ostream };
+		reflect(serializer);
 	}
 
 	void Color::deserialize(const std::vector<std::string>& buffer, int indexOffset) {
-		middle::fillField(&colorR, buffer[0]);
-		middle::fillField(&colorG, buffer[1]);
-		middle::fillField(&colorB, buffer[2]);
-		middle::fillField(&colorA, buffer[3]);
+		middle::Deserializer deserializer{ buffer, indexOffset, 0 };
+		reflect(deserializer);
+	}
+
+	void Color::getFields(std::vector<middle::FieldInfo>& fields, int* size)
+	{
+		middle::FieldCollector collector{ fields, size };
+		reflect(collector);
 	}
 
 	static middle::ComponentRegistrar<Color>reg("Color");

@@ -2,37 +2,19 @@
 
 namespace components {
 	void PhysicsData::serialize(std::ostream& ostream) {
-		ostream << middle::fieldToString(mass);
-		ostream << middle::fieldToString(invMass);
-		ostream << middle::fieldToString(momentOfInertia);
-		ostream << middle::fieldToString(invMomentOfInertia);
-		ostream << middle::fieldToString(velX);
-		ostream << middle::fieldToString(velY);
-		ostream << middle::fieldToString(velZ);
-		ostream << middle::fieldToString(damX);
-		ostream << middle::fieldToString(damY);
-		ostream << middle::fieldToString(damZ);
-		ostream << middle::fieldToString(accX);
-		ostream << middle::fieldToString(accY);
-		ostream << middle::fieldToString(accZ);
-		ostream << middle::fieldToString(infiniteMass);
+		middle::Serializer serializer{ ostream };
+		reflect(serializer);
 	}
 
 	void PhysicsData::deserialize(const std::vector<std::string>& buffer, int indexOffset) {
-		middle::fillField(&mass, buffer[0]);
-		middle::fillField(&invMass, buffer[1]);
-		middle::fillField(&momentOfInertia, buffer[2]);
-		middle::fillField(&invMomentOfInertia, buffer[3]);
-		middle::fillField(&velX, buffer[4]);
-		middle::fillField(&velY, buffer[5]);
-		middle::fillField(&velZ, buffer[6]);
-		middle::fillField(&damX, buffer[7]);
-		middle::fillField(&damY, buffer[8]);
-		middle::fillField(&damZ, buffer[9]);
-		middle::fillField(&accX, buffer[10]);
-		middle::fillField(&accY, buffer[11]);
-		middle::fillField(&accZ, buffer[12]);
-		middle::fillField(&infiniteMass, buffer[13]);
+		middle::Deserializer deserializer{ buffer, indexOffset, 0 };
+		reflect(deserializer);
+	}
+
+	void PhysicsData::getFields(std::vector<middle::FieldInfo>& fields, int* size)
+	{
+		middle::FieldCollector collector{ fields, size };
+		reflect(collector);
 	}
 
 	static middle::ComponentRegistrar<PhysicsData>reg("PhysicsData");

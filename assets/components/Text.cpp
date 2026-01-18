@@ -2,28 +2,19 @@
 
 namespace components {
 	void Text::serialize(std::ostream& ostream) {
-		ostream << middle::fieldToString(fontColorR);
-		ostream << middle::fieldToString(fontColorG);
-		ostream << middle::fieldToString(fontColorB);
-		ostream << middle::fieldToString(fontColorA);
-		ostream << middle::fieldToString(offsetX);
-		ostream << middle::fieldToString(offsetY);
-		ostream << middle::fieldToString(offsetZ);
-		ostream << middle::fieldToString(fontSize);
-		ostream << middle::fieldToString(visible);
+		middle::Serializer serializer{ ostream };
+		reflect(serializer);
 	}
 
 	void Text::deserialize(const std::vector<std::string>& buffer, int indexOffset) {
+		middle::Deserializer deserializer{ buffer, indexOffset, 0 };
+		reflect(deserializer);
+	}
 
-		middle::fillField(&fontColorR, buffer[0]);
-		middle::fillField(&fontColorG, buffer[1]);
-		middle::fillField(&fontColorB, buffer[2]);
-		middle::fillField(&fontColorA, buffer[3]);
-		middle::fillField(&offsetX, buffer[4]);
-		middle::fillField(&offsetY, buffer[5]);
-		middle::fillField(&offsetZ, buffer[6]);
-		middle::fillField(&fontSize, buffer[7]);
-		middle::fillField(&visible, buffer[8]);
+	void Text::getFields(std::vector<middle::FieldInfo>& fields, int* size)
+	{
+		middle::FieldCollector collector{ fields, size };
+		reflect(collector);
 	}
 
 	static middle::ComponentRegistrar<Text>reg("Text");

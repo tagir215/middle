@@ -3,27 +3,26 @@ s  drum
 #activeCamera
 i  0
 __0__
+Sphere
+f  2.000000
 LoopSociety
 q  9
 vq
-Sphere
-f  2.000000
 Position
-f  18.128006
-f  -0.000023
-f  36.120655
+f  72.498825
+f  -0.000047
+f  23.765978
 PhysicsData
 f  1.000000
 f  1.000000
 f  1.000000
-f  1.000000
-f  -0.000311
+f  0.003342
 f  0.000000
-f  -0.000124
+f  0.000001
+f  -0.000013
 f  0.800000
 f  0.800000
 f  0.800000
-f  0.000000
 f  0.000000
 f  0.000000
 b  0
@@ -31,27 +30,26 @@ MouseSelectable
 MouseGrabbable
 MouseIntersectable
 __1__
-LoopSociety
-q  -1
-vq
 Sphere
 f  2.000000
+LoopSociety
+q  9
+vq
 Position
-f  25.338741
-f  0.000000
-f  5.615918
+f  82.876122
+f  -0.000023
+f  -5.811687
 PhysicsData
 f  1.000000
 f  1.000000
 f  1.000000
-f  1.000000
-f  0.000176
+f  0.003342
 f  0.000000
-f  0.000017
+f  0.000003
+f  0.000006
 f  0.800000
 f  0.800000
 f  0.800000
-f  0.000000
 f  0.000000
 f  0.000000
 b  0
@@ -59,27 +57,26 @@ MouseSelectable
 MouseGrabbable
 MouseIntersectable
 __2__
-LoopSociety
-q  -1
-vq
 Sphere
 f  2.000000
+LoopSociety
+q  9
+vq
 Position
-f  -18.763752
-f  0.000000
-f  0.729702
+f  38.695808
+f  -0.000027
+f  -9.950447
 PhysicsData
 f  1.000000
 f  1.000000
 f  1.000000
-f  1.000000
-f  -0.000138
+f  0.003324
 f  0.000000
-f  0.000144
+f  -0.000003
+f  0.000007
 f  0.800000
 f  0.800000
 f  0.800000
-f  0.000000
 f  0.000000
 f  0.000000
 b  0
@@ -87,27 +84,26 @@ MouseSelectable
 MouseGrabbable
 MouseIntersectable
 __3__
+Sphere
+f  2.000000
 LoopSociety
 q  9
 vq
-Sphere
-f  2.000000
 Position
-f  -13.567653
-f  -0.000011
-f  23.188545
+f  39.985046
+f  -0.000030
+f  13.065149
 PhysicsData
 f  1.000000
 f  1.000000
 f  1.000000
-f  1.000000
-f  0.000273
+f  0.003326
 f  0.000000
-f  -0.000037
+f  -0.000001
+f  -0.000000
 f  0.800000
 f  0.800000
 f  0.800000
-f  0.000000
 f  0.000000
 f  0.000000
 b  0
@@ -152,16 +148,16 @@ MouseSelectable
 MouseIntersectable
 __8__
 Position
-f  -7.536850
+f  -10.168961
 f  -0.000030
-f  57.212036
+f  56.688202
 MouseSelectable
 MouseGrabbable
 MouseIntersectable
 Reference
 s  stick
 LoopSociety
-q  9
+q  -1
 vq
 __9__
 LoopTag
@@ -169,12 +165,121 @@ LoopSociety
 q  -1
 vq
 0
+1
+2
 3
-8
 MouseSelectable
 MouseIntersectable
 MouseGrabbable
 Position
-f  -0.991774
-f  -0.000021
-f  38.842052
+f  56.256950
+f  -0.000024
+f  7.064283
+__10__
+LoopSociety
+q  -1
+vq
+Sphere
+f  2.000000
+Position
+f  -45.319252
+f  -0.000031
+f  -5.164715
+PhysicsData
+f  1.000000
+f  1.000000
+f  1.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.800000
+f  0.800000
+f  0.800000
+f  0.000000
+f  0.000000
+f  0.000000
+b  0
+MouseSelectable
+MouseGrabbable
+MouseIntersectable
+__11__
+LoopSociety
+q  -1
+vq
+Sphere
+f  2.000000
+Position
+f  -13.067666
+f  0.000000
+f  -48.255230
+PhysicsData
+f  1.000000
+f  1.000000
+f  1.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.800000
+f  0.800000
+f  0.800000
+f  0.000000
+f  0.000000
+f  0.000000
+b  0
+MouseSelectable
+MouseGrabbable
+MouseIntersectable
+__12__
+LoopSociety
+q  -1
+vq
+Sphere
+f  2.000000
+Position
+f  -17.405485
+f  0.000031
+f  -17.089344
+PhysicsData
+f  1.000000
+f  1.000000
+f  1.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.800000
+f  0.800000
+f  0.800000
+f  0.000000
+f  0.000000
+f  0.000000
+b  0
+MouseSelectable
+MouseGrabbable
+MouseIntersectable
+__13__
+Constraint
+q  11
+q  12
+f  0.800000
+f  0.800000
+f  31.466316
+MouseSelectable
+MouseIntersectable
+__14__
+Constraint
+q  10
+q  11
+f  0.800000
+f  0.800000
+f  53.823391
+MouseSelectable
+MouseIntersectable
+__15__
+Constraint
+q  10
+q  12
+f  0.800000
+f  0.800000
+f  30.354162
+MouseSelectable
+MouseIntersectable

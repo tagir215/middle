@@ -2,15 +2,19 @@
 
 namespace components {
 	void LoopSociety::serialize(std::ostream& ostream) {
-		ostream << middle::fieldToString(parentLoopId);
-		ostream << middle::fieldToString(loopMemberIds);
+		middle::Serializer serializer{ ostream };
+		reflect(serializer);
 	}
 
 	void LoopSociety::deserialize(const std::vector<std::string>& buffer, int indexOffset) {
-		middle::fillField(&parentLoopId, buffer[0], indexOffset);
-		if (buffer.size() > 1) {
-			middle::fillField(&loopMemberIds, buffer[1], indexOffset);
-		}
+		middle::Deserializer deserializer{ buffer, indexOffset, 0 };
+		reflect(deserializer);
+	}
+
+	void LoopSociety::getFields(std::vector<middle::FieldInfo>& fields, int* size)
+	{
+		middle::FieldCollector collector{ fields, size };
+		reflect(collector);
 	}
 
 	static middle::ComponentRegistrar<LoopSociety>reg("LoopSociety");
