@@ -18,7 +18,7 @@ namespace RendererSystem {
 			BeginDrawing();
 
 			// 89, 135, 168
-			ClearBackground(middle::BACKGROUND_COLOR);
+			ClearBackground(gameState->editorState.backgroundColor);
 
 			BeginMode3D(gameState->editorState.camera);
 

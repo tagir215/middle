@@ -22,14 +22,34 @@
 
 class EditorRenderSetupSystem : public middle::MiddleGameplaySystem {
 	void update(middle::GameState* gameState) override {
+
+		Color textColor = WHITE;
+		Color systemColor = GREEN;
+		Color selectionBoxColor = { WHITE.r, WHITE.g, WHITE.b, 40 };
+		Color hoveredColor = middle::HOVERED_THING_COLOR;
+		Color backgroundColor = middle::BACKGROUND_COLOR;
+		Color jointColor = middle::JOINT_COLOR;
+		Color constraintColor = middle::CONSTRAINT_COLOR;
+		Color referenceColor = middle::REFERENCE_INDICATOR_COLOR;
+		Color loopColor = middle::LOOP_INDICATOR_COLOR;
+
+
+		if (gameState->editorState.creationMode == middle::CreationMode::LOOP_MODE) {
+			backgroundColor = GRAY;
+			textColor = GRAY;
+			systemColor = GRAY;
+		}
+		gameState->editorState.backgroundColor = backgroundColor;
+
+
 		gameState->renderData.clear();
-		loopInstances(gameState, [gameState](int i, middle::Shape& shape) {
+
+		loopInstances(gameState, [&](int i, middle::Shape& shape) {
 
 			auto position = middle::getComponent<components::Position>(shape);
 			auto selectable = middle::getComponent<components::MouseSelectable>(shape);
 			auto loop = middle::getComponent<components::LoopTag>(shape);
 			auto intersectable = middle::getComponent<components::MouseIntersectable>(shape);
-
 
 
 			auto text = middle::getComponent<components::Text>(shape);
@@ -41,7 +61,7 @@ class EditorRenderSetupSystem : public middle::MiddleGameplaySystem {
 				textItem.center = Vector3Add({ position->posX, position->posY, position->posZ }, offset);
 				textItem.text = text->text;
 				textItem.fontSize = text->fontSize;
-				textItem.color = WHITE;
+				textItem.color = textColor;
 				gameState->renderData.push_back(textItem);
 			}
 
@@ -55,7 +75,7 @@ class EditorRenderSetupSystem : public middle::MiddleGameplaySystem {
 				compRefItem.color = BLUE;
 				compRefItem.center = { position->posX, position->posY, position->posZ };
 				if (intersectable->intersecting) {
-					compRefItem.color = middle::HOVERED_THING_COLOR;
+					compRefItem.color = hoveredColor;
 				}
 				gameState->renderData.push_back(compRefItem);
 				return;
@@ -69,9 +89,9 @@ class EditorRenderSetupSystem : public middle::MiddleGameplaySystem {
 				sphereItem.type = middle::RenderItemType::SPHERE;
 				sphereItem.radius = sphere->radius;
 				sphereItem.center = { position->posX, position->posY, position->posZ };
-				sphereItem.color = middle::JOINT_COLOR;
+				sphereItem.color = jointColor;
 				if (intersectable && intersectable->intersecting) {
-					sphereItem.color = middle::HOVERED_THING_COLOR;
+					sphereItem.color = hoveredColor;
 				}
 				gameState->renderData.push_back(sphereItem);
 
@@ -85,7 +105,7 @@ class EditorRenderSetupSystem : public middle::MiddleGameplaySystem {
 					selectItem.widht = sphereItem.radius * 4;
 					selectItem.height = sphereItem.radius * 4;
 					selectItem.length = sphereItem.radius * 4;
-					selectItem.color = {WHITE.r, WHITE.g, WHITE.b, 40};
+					selectItem.color = selectionBoxColor;
 					gameState->renderData.push_back(selectItem);
 				}
 
@@ -99,9 +119,9 @@ class EditorRenderSetupSystem : public middle::MiddleGameplaySystem {
 				lineItem.type = middle::RenderItemType::LINE;
 				lineItem.linePointA = getShapePosition(gameState, constraint->idA.index);
 				lineItem.linePointB = getShapePosition(gameState, constraint->idB.index);
-				lineItem.color = middle::CONSTRAINT_COLOR;
+				lineItem.color = constraintColor;
 				if (intersectable && intersectable->intersecting) {
-					lineItem.color = middle::HOVERED_THING_COLOR;
+					lineItem.color = hoveredColor;
 				}
 				gameState->renderData.push_back(lineItem);
 
@@ -114,7 +134,7 @@ class EditorRenderSetupSystem : public middle::MiddleGameplaySystem {
 					selectItem.widht = 1;
 					selectItem.height = height;
 					selectItem.length = 1;
-					selectItem.color = {WHITE.r, WHITE.g, WHITE.b, 40};
+					selectItem.color = selectionBoxColor;
 					selectItem.transform.scale = { 1,1,1 };
 					selectItem.transform.rotation = QuaternionFromVector3ToVector3({ 0,0,1 }, lineDir);
 					selectItem.transform.translation = Vector3Scale(lineItem.linePointA + lineItem.linePointB, 0.5f);
@@ -128,11 +148,11 @@ class EditorRenderSetupSystem : public middle::MiddleGameplaySystem {
 				auto selectable = middle::getComponent<components::MouseSelectable>(shape);
 				middle::RenderItem refItem;
 				refItem.type = middle::RenderItemType::SPHERE;
-				refItem.color = middle::REFERENCE_INDICATOR_COLOR;
+				refItem.color = referenceColor;
 				refItem.center = { position->posX, position->posY, position->posZ };
 				refItem.radius = middle::DEF_RADIUS_REFERENCE_INDICATOR;
 				if (intersectable && intersectable->intersecting) {
-					refItem.color = middle::HOVERED_THING_COLOR;
+					refItem.color = hoveredColor;
 				}
 				gameState->renderData.push_back(refItem);
 
@@ -146,7 +166,7 @@ class EditorRenderSetupSystem : public middle::MiddleGameplaySystem {
 					selectItem.widht = refItem.radius * 4;
 					selectItem.height = refItem.radius * 4;
 					selectItem.length = refItem.radius * 4;
-					selectItem.color = {WHITE.r, WHITE.g, WHITE.b, 40};
+					selectItem.color = selectionBoxColor;
 					gameState->renderData.push_back(selectItem);
 				}
 				return;
@@ -158,9 +178,9 @@ class EditorRenderSetupSystem : public middle::MiddleGameplaySystem {
 				loopItem.type = middle::RenderItemType::SPHERE;
 				loopItem.center = {position->posX, position->posY, position->posZ};
 				loopItem.radius = middle::DEF_RADIUS_LOOP_INDICATOR;
-				loopItem.color = middle::LOOP_INDICATOR_COLOR;
+				loopItem.color = loopColor;
 				if (intersectable && intersectable->intersecting) {
-					loopItem.color = RED;
+					loopItem.color = hoveredColor;
 				}
 				gameState->renderData.push_back(loopItem);
 
@@ -174,7 +194,7 @@ class EditorRenderSetupSystem : public middle::MiddleGameplaySystem {
 					selectItem.widht = loopItem.radius * 4;
 					selectItem.height = loopItem.radius * 4;
 					selectItem.length = loopItem.radius * 4;
-					selectItem.color = {WHITE.r, WHITE.g, WHITE.b, 40};
+					selectItem.color = selectionBoxColor;
 					gameState->renderData.push_back(selectItem);
 				}
 				return;
@@ -188,9 +208,9 @@ class EditorRenderSetupSystem : public middle::MiddleGameplaySystem {
 				systemItem.type = middle::RenderItemType::SPHERE;
 				systemItem.center = { position->posX, position->posY, position->posZ };
 				systemItem.radius = middle::DEF_RADIUS_SYSTEM;
-				systemItem.color = GREEN;
+				systemItem.color = systemColor;
 				if (intersectable && intersectable->intersecting) {
-					systemItem.color = RED;
+					systemItem.color = hoveredColor;
 				}
 				gameState->renderData.push_back(systemItem);
 
@@ -204,13 +224,16 @@ class EditorRenderSetupSystem : public middle::MiddleGameplaySystem {
 					selectItem.widht = systemItem.radius * 4;
 					selectItem.height = systemItem.radius * 4;
 					selectItem.length = systemItem.radius * 4;
-					selectItem.color = {WHITE.r, WHITE.g, WHITE.b, 40};
+					selectItem.color = selectionBoxColor;
 					gameState->renderData.push_back(selectItem);
 				}
 				return;
 			}
 
 			});
+
+
+
 
 	}
 };

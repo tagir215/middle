@@ -15,6 +15,11 @@ class ComponentUiSystem : public middle::MiddleGameplaySystem {
 			gameState->fields.resize(maxFieldCount);
 		}
 
+		if (gameState->editorState.selectCount != 1) {
+			return;
+		}
+
+
 		middle::loopInstances(gameState, [gameState](int i, middle::Shape& shape) {
 			auto selected = middle::getComponent<components::MouseSelectable>(shape);
 			if (!selected || !selected->selected)

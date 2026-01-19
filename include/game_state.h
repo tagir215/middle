@@ -23,6 +23,7 @@ namespace middle {
 		SPHERE_MODE,
 		CONSTRAINT_MODE,
 		CAMERA_MODE,
+		LOOP_MODE,
 	};
 
 	enum class ApplicationMode {
@@ -58,6 +59,7 @@ namespace middle {
 		int intersectCount = 0;
 		int selectCount = 0;
 		int selectChangeCountAfterClick = 0;
+		Color backgroundColor = BACKGROUND_COLOR;
 		std::vector<std::unique_ptr<EditorActionContainer>>editorActions;
 	};
 

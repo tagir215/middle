@@ -99,7 +99,7 @@ class EditorUiSystem : public middle::MiddleGameplaySystem {
 
 			ImGui::Begin("Editor");
 
-			const char* items[] = { "SELECT MODE", "SPHERE MODE", "CONSTRAINT MODE", "CAMERA MODE" };
+			const char* items[] = { "SELECT MODE", "SPHERE MODE", "CONSTRAINT MODE", "CAMERA MODE", "LOOP_MODE"};
 			static int currentItem = 0;
 			if (gameState->input.selectModeClick) {
 				currentItem = 0;
