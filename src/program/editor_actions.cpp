@@ -262,4 +262,50 @@ namespace middle {
 		unselect(gameState);
 	}
 
+	void EditorActionRemoveFromLoop::execute(GameState* gameState)
+	{
+		Shape& childShape = getShape(gameState, childIndex);
+		auto childLoop = getComponent<components::LoopSociety>(childShape);
+		assert(childLoop);
+		if (childLoop->parentLoopId.index == UNASSIGNED) {
+			return;
+		}
+		Shape& parentShape = getShape(gameState, childLoop->parentLoopId.index);
+		auto parentLoop = getComponent<components::LoopSociety>(parentShape);
+		assert(parentLoop);
+
+		for (int i = 0; i < parentLoop->loopMemberIds.size(); ++i) {
+			auto& id = parentLoop->loopMemberIds[i];
+			if (id == childShape.id) {
+				parentLoop->loopMemberIds.erase(parentLoop->loopMemberIds.begin() + i);
+				childLoop->parentLoopId = Id();
+				return;
+			}
+		}
+	}
+
+	void EditorActionReparent::execute(GameState* gameState)
+	{
+		Shape& parentShape = getShape(gameState, parentIndex);
+		Shape& childShape = getShape(gameState, childIndex);
+		auto parentLoop = getComponent<components::LoopSociety>(parentShape);
+		auto childLoop = getComponent<components::LoopSociety>(childShape);
+		assert(parentLoop);
+		assert(childLoop);
+		for (Id id : parentLoop->loopMemberIds) {
+			if (id == childShape.id) {
+				return;
+			}
+		}
+
+		// remove from old parent 
+		if (childLoop->parentLoopId.index != UNASSIGNED) {
+			auto removeAction = EditorActionRemoveFromLoop(childIndex);
+			removeAction.execute(gameState);
+		}
+
+		parentLoop->loopMemberIds.push_back(childShape.id);
+		childLoop->parentLoopId = parentShape.id;
+	}
+
 }

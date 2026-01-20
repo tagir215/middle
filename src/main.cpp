@@ -167,6 +167,7 @@ void ReloadGameDLL()
 		gameDLL = platform_load_dynamic_library("game.load.dll");
 
 		gameState->reload = true;
+		gameState->systemsRegistered = false;
 
 		updateGamePtr = (UpdateGameType*)platform_load_dynamic_function(gameDLL, "UpdateGame");
 		lastWriteTime = writeTime;

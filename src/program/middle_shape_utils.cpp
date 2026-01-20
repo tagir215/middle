@@ -291,4 +291,15 @@ namespace middle {
 			});
 		return result;
 	}
+	int getMouseIntersectedShape(GameState* gameState)
+	{
+		for (int i = 0; i < gameState->shapes.size(); ++i) {
+			if (!isShapeAlive(gameState, i))
+				continue;
+			if (isMouseIntersectingShape(gameState, i)) {
+				return i;
+			}
+		}
+		return UNASSIGNED;
+	}
 }

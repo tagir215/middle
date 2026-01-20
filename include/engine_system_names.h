@@ -8,6 +8,7 @@ namespace middle{
 		"MouseGrabbingSystem",
 		"MouseSelectionSystem",
 		"EnviromentalFileNavigationSystem",
+		"EditorHotKeySystem",
 	};
 
 	inline std::vector<std::string>engineSystemNamesFrameEnd

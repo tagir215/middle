@@ -16,18 +16,21 @@ namespace middle {
 	std::vector<std::string> split(const std::string& s, char delim) {
 		std::vector<std::string> parts;
 		std::size_t start = 0;
-		std::size_t pos;
+		std::size_t pos = 0;
 
 		if (s == "")
 			return parts;
 
 		while ((pos = s.find(delim, start)) != std::string::npos) {
+			if (pos == start) {
+				break;
+			}
 			parts.push_back(s.substr(start, pos - start));
 			start = pos + 1;
 		}
 
 		std::string lastSegment = s.substr(start);
-		if(lastSegment != "")
+		if(start != pos && lastSegment != "")
 			parts.push_back(lastSegment);  // last segment
 		return parts;
 	}
@@ -369,9 +372,9 @@ namespace middle {
 				continue;
 			}
 
-			if (line[0] == 'v') {
+			if (line[0] == static_cast<char>(FieldType::IdVector)) {
 				parseMode = vectorMode;
-				buffer.push_back(line + '\n');
+				buffer.push_back(line);
 				continue;
 			}
 

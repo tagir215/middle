@@ -5,6 +5,14 @@
 
 namespace components {
 	struct BubbleComponent : public middle::Serializable{
+		float centerX;
+		float centerY;
+		float centerZ;
+		float axisX;
+		float axisY;
+		float axisZ;
+		float length;
+		float width;
 
 		void serialize(std::ostream& ostream) override;
 		void deserialize(const std::vector<std::string>& buffer, int indexOffset) override;

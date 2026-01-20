@@ -32,6 +32,7 @@ class EditorRenderSetupSystem : public middle::MiddleGameplaySystem {
 		Color constraintColor = middle::CONSTRAINT_COLOR;
 		Color referenceColor = middle::REFERENCE_INDICATOR_COLOR;
 		Color loopColor = middle::LOOP_INDICATOR_COLOR;
+		Color loopItemColor = WHITE;
 
 
 		if (gameState->editorState.creationMode == middle::CreationMode::LOOP_MODE) {
@@ -48,7 +49,8 @@ class EditorRenderSetupSystem : public middle::MiddleGameplaySystem {
 
 			auto position = middle::getComponent<components::Position>(shape);
 			auto selectable = middle::getComponent<components::MouseSelectable>(shape);
-			auto loop = middle::getComponent<components::LoopTag>(shape);
+			auto loopTag = middle::getComponent<components::LoopTag>(shape);
+			auto loopSociety = middle::getComponent<components::LoopSociety>(shape);
 			auto intersectable = middle::getComponent<components::MouseIntersectable>(shape);
 
 
@@ -78,7 +80,6 @@ class EditorRenderSetupSystem : public middle::MiddleGameplaySystem {
 					compRefItem.color = hoveredColor;
 				}
 				gameState->renderData.push_back(compRefItem);
-				return;
 			}
 
 
@@ -109,7 +110,6 @@ class EditorRenderSetupSystem : public middle::MiddleGameplaySystem {
 					gameState->renderData.push_back(selectItem);
 				}
 
-				return;
 			}
 
 			auto constraint = middle::getComponent<components::Constraint>(shape);
@@ -140,7 +140,33 @@ class EditorRenderSetupSystem : public middle::MiddleGameplaySystem {
 					selectItem.transform.translation = Vector3Scale(lineItem.linePointA + lineItem.linePointB, 0.5f);
 					gameState->renderData.push_back(selectItem);
 				}
-				return;
+			}
+
+			// render hierarchy indicators, 
+			if (gameState->editorState.creationMode == middle::CreationMode::LOOP_MODE 
+				&& loopSociety 
+				&& intersectable 
+				&& intersectable->intersecting) {
+				for (middle::Id& id : loopSociety->loopMemberIds) {
+					Vector3 childPos = middle::getShapePosition(gameState, id.index);
+					middle::RenderItem childItem;
+					childItem.type = middle::RenderItemType::TEXT;
+					childItem.color = loopItemColor;
+					childItem.center = childPos;
+					childItem.text = "child";
+					gameState->renderData.push_back(childItem);
+				}
+
+				if (loopSociety->parentLoopId.index != middle::UNASSIGNED) {
+					middle::Id& parentId = loopSociety->parentLoopId;
+					Vector3 parentPos = middle::getShapePosition(gameState, parentId.index);
+					middle::RenderItem parentItem;
+					parentItem.type = middle::RenderItemType::TEXT;
+					parentItem.color = loopItemColor;
+					parentItem.center = parentPos;
+					parentItem.text = "parent";
+					gameState->renderData.push_back(parentItem);
+				}
 			}
 
 			auto reference = middle::getComponent<components::Reference>(shape);
@@ -169,10 +195,9 @@ class EditorRenderSetupSystem : public middle::MiddleGameplaySystem {
 					selectItem.color = selectionBoxColor;
 					gameState->renderData.push_back(selectItem);
 				}
-				return;
 			}
 
-			if (!reference && loop) {
+			if (!reference && loopTag) {
 				auto selectable = middle::getComponent<components::MouseSelectable>(shape);
 				middle::RenderItem loopItem;
 				loopItem.type = middle::RenderItemType::SPHERE;
@@ -197,6 +222,7 @@ class EditorRenderSetupSystem : public middle::MiddleGameplaySystem {
 					selectItem.color = selectionBoxColor;
 					gameState->renderData.push_back(selectItem);
 				}
+
 				return;
 			}
 
@@ -227,7 +253,6 @@ class EditorRenderSetupSystem : public middle::MiddleGameplaySystem {
 					selectItem.color = selectionBoxColor;
 					gameState->renderData.push_back(selectItem);
 				}
-				return;
 			}
 
 			});

@@ -36,12 +36,15 @@ class InputSystem : public middle::MiddleGameplaySystem {
 		gameState->input.sphereModeClick = false;
 		gameState->input.constraintModeClick = false;
 		gameState->input.cameraModeClick = false;
+		gameState->input.loopModeClick = false;
 		gameState->input.deleteClick = false;
 		gameState->input.copyClick = false;
 		gameState->input.saveClick = false;
 		gameState->input.navigateToFileClick = false;
 		gameState->input.focus = false;
 		gameState->input.newThing = false;
+		gameState->input.reparentClick = false;
+		gameState->input.seaprateFromParentClick = false;
 
 		if (gameState->inputBlockers.find(middle::InputBlockers::MOUSE_BLOCK) == gameState->inputBlockers.end()) {
 			gameState->input.mouseHeld = IsMouseButtonDown(MOUSE_BUTTON_LEFT);
@@ -66,12 +69,15 @@ class InputSystem : public middle::MiddleGameplaySystem {
 			gameState->input.sphereModeClick = IsKeyPressed(KEY_TWO);
 			gameState->input.constraintModeClick = IsKeyPressed(KEY_THREE);
 			gameState->input.cameraModeClick = IsKeyPressed(KEY_FOUR);
+			gameState->input.loopModeClick = IsKeyPressed(KEY_FIVE);
 			gameState->input.deleteClick = IsKeyPressed(KEY_R);
 			gameState->input.copyClick = IsKeyPressed(KEY_C);
 			gameState->input.saveClick = IsKeyPressed(KEY_P);
 			gameState->input.navigateToFileClick = IsKeyPressed(KEY_SPACE);
 			gameState->input.focus = IsKeyPressed(KEY_F);
-			gameState->input.newThing = IsKeyPressed(KEY_N);
+			gameState->input.newThing = gameState->input.mouseClicked;
+			gameState->input.reparentClick = IsKeyPressed(KEY_E);
+			gameState->input.seaprateFromParentClick = IsKeyPressed(KEY_R);
 		}
 
 		// CAMERA POSITION UPDATE

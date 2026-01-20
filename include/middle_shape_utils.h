@@ -43,6 +43,8 @@ namespace middle {
 	void moveCameraXZ(Camera3D& initCamera, const Vector3& pos);
 	// get shapes selected..
 	std::vector<int>getSelectedShapes(GameState* gameState);
+	// return first shape intersect by mouse
+	int getMouseIntersectedShape(GameState* gameState);
 
 	template<typename F>
 	void loopInstances(GameState* gameState, F func) {

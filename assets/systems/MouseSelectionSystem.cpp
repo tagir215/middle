@@ -16,6 +16,12 @@ namespace MouseSelectionSystem {
 				gameState->editorState.selectChangeCountAfterClick = 0;
 			}
 
+			if (gameState->editorState.creationMode == middle::CreationMode::LOOP_MODE) {
+				if (gameState->input.mouseClicked || gameState->editorState.selectCount > 1) {
+					middle::unselect(gameState);
+				}
+			}
+
 			for (int i = 0; i < gameState->shapes.size(); ++i) {
 				// ghost shapes can't be selected or edited
 				if (middle::isGhostShape(i)) {

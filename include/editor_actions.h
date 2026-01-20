@@ -172,4 +172,25 @@ namespace middle {
 		}
 		void execute(GameState* gameState) override;
 	};
+
+	class EditorActionRemoveFromLoop : public EditorActionContainer {
+	public:
+		int childIndex;
+		EditorActionRemoveFromLoop(int childIndex) {
+			this->childIndex = childIndex;
+		}
+		void execute(GameState* gameState) override;
+	};
+
+	class EditorActionReparent : public EditorActionContainer {
+	public:
+		int parentIndex;
+		int childIndex;
+		EditorActionReparent(int parentIndex, int childIndex) {
+			this->parentIndex = parentIndex;
+			this->childIndex = childIndex;
+		}
+		void execute(GameState* gameState) override;
+	};
+
 }

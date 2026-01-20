@@ -35,6 +35,7 @@ namespace middle {
 		bool sphereModeClick = false;
 		bool constraintModeClick = false;
 		bool cameraModeClick = false;
+		bool loopModeClick = false;
 		bool selectModeClick = false;
 		bool deleteClick = false;
 		bool copyClick = false;
@@ -42,6 +43,8 @@ namespace middle {
 		bool navigateToFileClick = false;
 		bool focus = false;
 		bool newThing = false;
+		bool reparentClick = false;
+		bool seaprateFromParentClick = false;
 	};
 
 

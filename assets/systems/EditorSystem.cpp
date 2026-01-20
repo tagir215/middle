@@ -22,7 +22,6 @@ class EditorSystem : public middle::MiddleGameplaySystem {
 	}
 
 
-
 	// for mental palace. Palace is superior filesystem! TRUST THE PALACE
 	void importEngineSystemReferences(middle::GameState* gameState) {
 		int highestUsedIndex = middle::findHighestUsedIndex(gameState);
@@ -58,20 +57,23 @@ class EditorSystem : public middle::MiddleGameplaySystem {
 			gameState->editorState.editorActions.pop_back();
 		}
 
+
 		if (gameState->startGame) {
 			if (gameState->applicationMode == middle::ApplicationMode::EDITOR_MODE) {
 				middle::loadEditorState(gameState);
 			}
+			loadSceneNames(gameState);
+			loadSystemNames(gameState);
+			loadComponentNames(gameState);
 			gameState->startGame = false;
+
 		}
+
 
 		// update
 		if (gameState->reload) {
 			reset(gameState);
-			loadSceneNames(gameState);
-			loadSystemNames(gameState);
 			importEngineSystemReferences(gameState);
-			loadComponentNames(gameState);
 			if (gameState->sceneNames.size() > 0) {
 				loadScene(gameState, gameState->sceneNames[gameState->activeScene], false);
 			}

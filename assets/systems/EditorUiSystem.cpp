@@ -100,64 +100,27 @@ class EditorUiSystem : public middle::MiddleGameplaySystem {
 			ImGui::Begin("Editor");
 
 			const char* items[] = { "SELECT MODE", "SPHERE MODE", "CONSTRAINT MODE", "CAMERA MODE", "LOOP_MODE"};
-			static int currentItem = 0;
-			if (gameState->input.selectModeClick) {
-				currentItem = 0;
-			}
-			if (gameState->input.sphereModeClick) {
-				currentItem = 1;
-			}
-			if (gameState->input.constraintModeClick) {
-				currentItem = 2;
-			}
-			if (gameState->input.cameraModeClick) {
-				currentItem = 3;
-			}
+			int currentItem = static_cast<int>(gameState->editorState.creationMode);
 			ImGui::Combo("Select things to add", &currentItem, items, IM_ARRAYSIZE(items));
 			gameState->editorState.creationMode = static_cast<middle::CreationMode>(currentItem);
 
 			auto end = gameState->inputBlockers.end();
 			auto& blockers = gameState->inputBlockers;
 
-			if (gameState->editorState.creationMode != middle::CreationMode::SELECT_MODE) {
 
-				if (gameState->editorState.creationMode == middle::CreationMode::SPHERE_MODE && gameState->input.newThing) {
-					gameState->editorState.editorActions.push_back(
-						std::make_unique<middle::EditorActionNewSphere>(gameState->input.mouseXZ_PlanePos)
-					);
-				}
-				if (gameState->editorState.creationMode == middle::CreationMode::CONSTRAINT_MODE) {
-					std::vector<int> selectedIndexes = middle::getSelectedShapes(gameState);
-					if (selectedIndexes.size() == 2) {
-						gameState->editorState.editorActions.push_back(
-							std::make_unique<middle::EditorActionNewConstraint>(selectedIndexes[0], selectedIndexes[1])
-						);
-					}
-
-				}
-				if (gameState->editorState.creationMode == middle::CreationMode::CAMERA_MODE) {
-					if (gameState->input.newThing) {
-						//gameState->editorState.nextEditorAction = middle::EditorAction::NEW_CAMERA;
-					}
-					if (gameState->input.focus) {
-						//gameState->editorState.nextEditorAction = middle::EditorAction::SET_ACTIVE_CAMERA;
-					}
-				}
-			}
-
-			if (ImGui::Button("DELETE OBJECT") || gameState->input.deleteClick) {
+			if (ImGui::Button("DELETE OBJECT")) {
 				gameState->editorState.editorActions.push_back(
 					std::make_unique<middle::EditorActionDelete>(middle::getSelectedShapes(gameState))
 				);
 			}
 
-			if (ImGui::Button("SAVE SCENE") || gameState->input.saveClick) {
+			if (ImGui::Button("SAVE SCENE")) {
 				gameState->editorState.editorActions.push_back(
 					std::make_unique<middle::EditorActionSaveScene>(gameState->sceneNames[gameState->activeScene])
 				);
 			}
 
-			if (ImGui::Button("CREATE LOOP") || gameState->input.loopClick) {
+			if (ImGui::Button("CREATE LOOP")) {
 				gameState->editorState.editorActions.push_back(
 					std::make_unique<middle::EditorActionCreateLoop>(middle::getSelectedShapes(gameState))
 				);
