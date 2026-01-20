@@ -1,6 +1,6 @@
 #pragma once
 #include "game_state.h"
-#include "registrars.h"
+#include "middle_system_registrar.h"
 #include "middle_math.h"
 
 class InputSystem : public middle::MiddleGameplaySystem {

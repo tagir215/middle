@@ -1,6 +1,6 @@
 #pragma once
 #include "game_state.h"
-#include "registrars.h"
+#include "middle_system_registrar.h"
 #include "raymath.h"
 #include "rlImGui.h"
 #include "imgui.h"
@@ -101,6 +101,7 @@ namespace RendererSystem {
 
 			EndDrawing();
 
+			gameState->renderData.clear();
 		}
 	};
 

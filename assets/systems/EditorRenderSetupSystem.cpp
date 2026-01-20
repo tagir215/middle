@@ -1,6 +1,6 @@
 #pragma once
 #include "game_state.h"
-#include "registrars.h"
+#include "middle_system_registrar.h"
 #include "middle_shape_utils.h"
 #include "Sphere.h"
 #include "Position.h"
@@ -42,8 +42,6 @@ class EditorRenderSetupSystem : public middle::MiddleGameplaySystem {
 		}
 		gameState->editorState.backgroundColor = backgroundColor;
 
-
-		gameState->renderData.clear();
 
 		loopInstances(gameState, [&](int i, middle::Shape& shape) {
 

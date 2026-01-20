@@ -1,6 +1,6 @@
 #pragma once
 #include "game_state.h"
-#include "registrars.h"
+#include "middle_system_registrar.h"
 #include "middle_shape_utils.h"
 #include "LoopSociety.h"
 #include "LoopTag.h"
@@ -66,6 +66,8 @@ class BubbleOutlineSystem : public middle::MiddleGameplaySystem {
 	LongestDistanceCouple coupleWithLongestDistanceAtAxis(middle::GameState* gameState, 
 		std::vector<middle::Id>& ids, const Vector3& axis) {
 		LongestDistanceCouple result;
+		Vector3 perpAxis = Vector3CrossProduct(axis, { 0,-1,0 });
+
 		for (int i = 0; i < ids.size(); ++i) {
 			for (int j = i; j < ids.size(); ++j){
 				middle::Id idA = ids[i];
@@ -75,7 +77,10 @@ class BubbleOutlineSystem : public middle::MiddleGameplaySystem {
 				Vector3 posA = middle::getShapePosition(gameState, idA.index);
 				Vector3 posB = middle::getShapePosition(gameState, idB.index);
 				Vector3 dir = posB - posA;
-				float dot = Vector3DotProduct(dir, axis);
+				float dot = Vector3DotProduct(dir, perpAxis);
+				if (dot < 0) {
+					perpAxis = Vector3Negate(perpAxis);
+				}
 				float distSqr = dot * dot;
 
 				if (distSqr > result.distanceSqr) {
@@ -85,11 +90,10 @@ class BubbleOutlineSystem : public middle::MiddleGameplaySystem {
 					result.posB = posB;
 					result.distanceSqr = distSqr;
 					result.initialized = true;
-					result.axis = dir;
+					result.axis = perpAxis;
 				}
 			}
 		}
-		result.axis = Vector3Normalize(result.axis);
 		return result;
 	}
 
@@ -108,13 +112,14 @@ class BubbleOutlineSystem : public middle::MiddleGameplaySystem {
 
 			float length = std::sqrtf(distanceCouple.distanceSqr);
 			float width = std::sqrtf(perpCouple.distanceSqr);
-			Vector3 toCenter1 = distanceCouple.posA + Vector3Scale(distanceCouple.axis, length * 0.5f);
-			Vector3 perpCoupleCentroid = Vector3Scale(perpCouple.posA + perpCouple.posB, 0.5f);
-			Vector3 toPerpFromA = perpCoupleCentroid - distanceCouple.posA;
-			float dot = Vector3DotProduct(toPerpFromA, perpCouple.axis);
-			Vector3 toCenter2 = Vector3Scale(perpCouple.axis, dot);
 
-			Vector3 center = distanceCouple.posA + toCenter1 + toCenter2;
+			Vector3 toPerp = perpCouple.posA - distanceCouple.posA;
+			Vector3 perpAxis = perpCouple.axis;
+			float dot = Vector3DotProduct(toPerp, perpAxis);
+			Vector3 offset = Vector3Scale(perpAxis, dot);
+			Vector3 center = distanceCouple.posA + Vector3Scale(distanceCouple.axis, length * 0.5f) + offset;
+			Vector3 offsetB = Vector3Scale(perpCouple.axis, width * 0.5f);
+			center += offsetB;
 
 			bubble->centerX = center.x;
 			bubble->centerY = center.y;
@@ -124,6 +129,13 @@ class BubbleOutlineSystem : public middle::MiddleGameplaySystem {
 			bubble->axisZ = distanceCouple.axis.z;
 			bubble->length = length;
 			bubble->width = width;
+
+			bubble->aX = perpCouple.posA.x;
+			bubble->aY = perpCouple.posA.y;
+			bubble->aZ = perpCouple.posA.z;
+			bubble->bX = perpCouple.posB.x;
+			bubble->bY = perpCouple.posB.y;
+			bubble->bZ = perpCouple.posB.z;
 			});
 	}
 };

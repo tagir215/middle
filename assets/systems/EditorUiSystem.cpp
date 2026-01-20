@@ -1,7 +1,7 @@
 #pragma once
 #include "game_state.h"
 #include "editor_actions.h"
-#include "registrars.h"
+#include "middle_system_registrar.h"
 #include "imgui.h"
 #include "middle_shape_utils.h"
 

@@ -1,6 +1,6 @@
 #pragma once
 #include "game_state.h"
-#include "registrars.h"
+#include "middle_system_registrar.h"
 
 class TestSystem : public middle::MiddleGameplaySystem {
 	void update(middle::GameState* gameState) override {
