@@ -274,6 +274,16 @@ namespace middle {
 		return gameState->shapes[index];
 	}
 
+	Shape& addGhostShape(GameState* gameState){
+		Shape shape;
+		int index = findNextFreeGhostIndex(gameState);
+		shape.id.generation = gameState->shapes[index].id.generation + 1;
+		shape.id.index = index;
+		gameState->ids[index] = shape.id;
+		gameState->shapes[index] = shape;
+		return gameState->shapes[index];
+	}
+
 	void moveCameraXZ(Camera3D& initCamera, const Vector3& pos)
 	{
 		Vector3 displacement = pos - initCamera.position;

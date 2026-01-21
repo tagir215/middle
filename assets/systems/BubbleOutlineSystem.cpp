@@ -5,6 +5,8 @@
 #include "LoopSociety.h"
 #include "LoopTag.h"
 #include "BubbleComponent.h"
+#include "Sphere.h"
+#include "Position.h"
 
 class BubbleOutlineSystem : public middle::MiddleGameplaySystem {
 
@@ -36,11 +38,24 @@ class BubbleOutlineSystem : public middle::MiddleGameplaySystem {
 		bool initialized = false;
 	};
 
-	LongestDistanceCouple findPointsWithLongestDistanceBetween(middle::GameState* gameState, 
+	middle::Shape& newNodeEntity(middle::GameState* gameState, const Vector3& pos) {
+		const float r = 1;
+
+		middle::Shape& outlineShape = middle::addGhostShape(gameState);
+		auto sphere = middle::addComponent<components::Sphere>(outlineShape);
+		auto posComp = middle::addComponent<components::Position>(outlineShape);
+		posComp->posX = pos.x;
+		posComp->posY = pos.y;
+		posComp->posZ = pos.z;
+		sphere->radius = r;
+		return outlineShape;
+	}
+
+	LongestDistanceCouple findPointsWithLongestDistanceBetween(middle::GameState* gameState,
 		std::vector<middle::Id>& ids) {
 		LongestDistanceCouple result;
 		for (int i = 0; i < ids.size(); ++i) {
-			for (int j = i; j < ids.size(); ++j){
+			for (int j = i; j < ids.size(); ++j) {
 				middle::Id idA = ids[i];
 				middle::Id idB = ids[j];
 				auto& shapeA = middle::getShape(gameState, idA.index);
@@ -63,13 +78,13 @@ class BubbleOutlineSystem : public middle::MiddleGameplaySystem {
 		return result;
 	}
 
-	LongestDistanceCouple coupleWithLongestDistanceAtAxis(middle::GameState* gameState, 
+	LongestDistanceCouple coupleWithLongestDistanceAtAxis(middle::GameState* gameState,
 		std::vector<middle::Id>& ids, const Vector3& axis) {
 		LongestDistanceCouple result;
 		Vector3 perpAxis = Vector3CrossProduct(axis, { 0,-1,0 });
 
 		for (int i = 0; i < ids.size(); ++i) {
-			for (int j = i; j < ids.size(); ++j){
+			for (int j = i; j < ids.size(); ++j) {
 				middle::Id idA = ids[i];
 				middle::Id idB = ids[j];
 				auto& shapeA = middle::getShape(gameState, idA.index);
@@ -107,7 +122,7 @@ class BubbleOutlineSystem : public middle::MiddleGameplaySystem {
 			populateWithChildren(gameState, &shapeList, shape.id);
 
 			LongestDistanceCouple distanceCouple = findPointsWithLongestDistanceBetween(gameState, shapeList);
-			LongestDistanceCouple perpCouple = coupleWithLongestDistanceAtAxis(gameState, 
+			LongestDistanceCouple perpCouple = coupleWithLongestDistanceAtAxis(gameState,
 				shapeList, distanceCouple.axis);
 
 			float length = std::sqrtf(distanceCouple.distanceSqr);
@@ -116,10 +131,10 @@ class BubbleOutlineSystem : public middle::MiddleGameplaySystem {
 			Vector3 toPerp = perpCouple.posA - distanceCouple.posA;
 			Vector3 perpAxis = perpCouple.axis;
 			float dot = Vector3DotProduct(toPerp, perpAxis);
-			Vector3 offset = Vector3Scale(perpAxis, dot);
-			Vector3 center = distanceCouple.posA + Vector3Scale(distanceCouple.axis, length * 0.5f) + offset;
-			Vector3 offsetB = Vector3Scale(perpCouple.axis, width * 0.5f);
-			center += offsetB;
+			Vector3 offsetSide = Vector3Scale(perpAxis, dot);
+			Vector3 center = distanceCouple.posA + Vector3Scale(distanceCouple.axis, length * 0.5f) + offsetSide;
+			Vector3 offsetToCenter = Vector3Scale(perpCouple.axis, width * 0.5f);
+			center += offsetToCenter;
 
 			bubble->centerX = center.x;
 			bubble->centerY = center.y;
@@ -136,6 +151,73 @@ class BubbleOutlineSystem : public middle::MiddleGameplaySystem {
 			bubble->bX = perpCouple.posB.x;
 			bubble->bY = perpCouple.posB.y;
 			bubble->bZ = perpCouple.posB.z;
+
+
+			if (bubble->outline.size() == 0) {
+				const float margin = 10;
+				const float distBetweenNodes = 30;
+
+				Vector3 centerLineEnd = center + Vector3Scale(distanceCouple.axis, bubble->length * 0.5f);
+				float r = width * 0.5f + margin;
+				Vector3 outlineStart = centerLineEnd + Vector3Scale(perpCouple.axis, r);
+				float circumference = 2 * PI * r + 2 * length;
+				int nodeCount = circumference / distBetweenNodes;
+				float adjustedToEvenDistBetweenNodes = circumference / nodeCount;
+				float arcLength = PI * r;
+				float angleBetweenNodes = adjustedToEvenDistBetweenNodes / r;
+				Vector3 dirVec = outlineStart - centerLineEnd;
+				Vector3 rotateAxis = { 0,-1,0 };
+
+				float arcTravelled = 0;
+				Vector3 nextPos = { 0,0,0 };
+				while (arcTravelled < arcLength) {
+					nextPos = centerLineEnd + dirVec;
+					middle::Shape& outlineShape = newNodeEntity(gameState, nextPos);
+
+					dirVec = Vector3RotateByAxisAngle(dirVec, rotateAxis, -angleBetweenNodes);
+					arcTravelled += angleBetweenNodes * r;
+
+					bubble->outline.push_back(outlineShape.id);
+				}
+
+				float lengthTravelled = arcTravelled - arcLength;
+				Vector3 transVec = Vector3Scale(distanceCouple.axis, -adjustedToEvenDistBetweenNodes);
+				nextPos = centerLineEnd + Vector3Scale(perpCouple.axis, -r);
+				nextPos += Vector3Scale(distanceCouple.axis, -lengthTravelled);
+				while (lengthTravelled < length) {
+					middle::Shape& outlineShape = newNodeEntity(gameState, nextPos);
+					bubble->outline.push_back(outlineShape.id);
+					lengthTravelled += adjustedToEvenDistBetweenNodes;
+					nextPos = nextPos + transVec;
+				}
+
+
+				arcTravelled = lengthTravelled - length;
+				centerLineEnd = center - Vector3Scale(distanceCouple.axis, bubble->length * 0.5f);
+				outlineStart = centerLineEnd + Vector3Scale(perpCouple.axis, -r);
+				dirVec = outlineStart - centerLineEnd;
+				float alreadyRotated = arcTravelled / -r;
+				dirVec = Vector3RotateByAxisAngle(dirVec, rotateAxis, alreadyRotated);
+				while (arcTravelled < arcLength) {
+					nextPos = centerLineEnd + dirVec;
+					middle::Shape& outlineShape = newNodeEntity(gameState, nextPos);
+
+					dirVec = Vector3RotateByAxisAngle(dirVec, rotateAxis, -angleBetweenNodes);
+					arcTravelled += angleBetweenNodes * r;
+
+					bubble->outline.push_back(outlineShape.id);
+				}
+
+
+				lengthTravelled = arcTravelled - arcLength;
+				transVec = Vector3Scale(distanceCouple.axis, adjustedToEvenDistBetweenNodes);
+				while (lengthTravelled < length) {
+					nextPos = nextPos + transVec;
+					middle::Shape& outlineShape = newNodeEntity(gameState, nextPos);
+					bubble->outline.push_back(outlineShape.id);
+					lengthTravelled += adjustedToEvenDistBetweenNodes;
+				}
+			}
 			});
 	}
 };
