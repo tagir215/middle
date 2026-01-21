@@ -7,6 +7,8 @@
 #include "BubbleComponent.h"
 #include "Sphere.h"
 #include "Position.h"
+#include "Constraint.h"
+#include "PhysicsData.h"
 
 class BubbleOutlineSystem : public middle::MiddleGameplaySystem {
 
@@ -44,6 +46,7 @@ class BubbleOutlineSystem : public middle::MiddleGameplaySystem {
 		middle::Shape& outlineShape = middle::addGhostShape(gameState);
 		auto sphere = middle::addComponent<components::Sphere>(outlineShape);
 		auto posComp = middle::addComponent<components::Position>(outlineShape);
+		auto physicsComp = middle::addComponent<components::PhysicsData>(outlineShape);
 		posComp->posX = pos.x;
 		posComp->posY = pos.y;
 		posComp->posZ = pos.z;
@@ -81,7 +84,7 @@ class BubbleOutlineSystem : public middle::MiddleGameplaySystem {
 	LongestDistanceCouple coupleWithLongestDistanceAtAxis(middle::GameState* gameState,
 		std::vector<middle::Id>& ids, const Vector3& axis) {
 		LongestDistanceCouple result;
-		Vector3 perpAxis = Vector3CrossProduct(axis, { 0,-1,0 });
+		Vector3 rotateAxis = Vector3CrossProduct(axis, { 0,-1,0 });
 
 		for (int i = 0; i < ids.size(); ++i) {
 			for (int j = i; j < ids.size(); ++j) {
@@ -92,9 +95,9 @@ class BubbleOutlineSystem : public middle::MiddleGameplaySystem {
 				Vector3 posA = middle::getShapePosition(gameState, idA.index);
 				Vector3 posB = middle::getShapePosition(gameState, idB.index);
 				Vector3 dir = posB - posA;
-				float dot = Vector3DotProduct(dir, perpAxis);
+				float dot = Vector3DotProduct(dir, rotateAxis);
 				if (dot < 0) {
-					perpAxis = Vector3Negate(perpAxis);
+					rotateAxis = Vector3Negate(rotateAxis);
 				}
 				float distSqr = dot * dot;
 
@@ -105,7 +108,7 @@ class BubbleOutlineSystem : public middle::MiddleGameplaySystem {
 					result.posB = posB;
 					result.distanceSqr = distSqr;
 					result.initialized = true;
-					result.axis = perpAxis;
+					result.axis = rotateAxis;
 				}
 			}
 		}
@@ -156,10 +159,13 @@ class BubbleOutlineSystem : public middle::MiddleGameplaySystem {
 			if (bubble->outline.size() == 0) {
 				const float margin = 10;
 				const float distBetweenNodes = 30;
+				// 2d perp for now
+				Vector3 perpAxis = { -distanceCouple.axis.z, 0, distanceCouple.axis.x };
 
+				// create first arc
 				Vector3 centerLineEnd = center + Vector3Scale(distanceCouple.axis, bubble->length * 0.5f);
 				float r = width * 0.5f + margin;
-				Vector3 outlineStart = centerLineEnd + Vector3Scale(perpCouple.axis, r);
+				Vector3 outlineStart = centerLineEnd + Vector3Scale(perpAxis, r);
 				float circumference = 2 * PI * r + 2 * length;
 				int nodeCount = circumference / distBetweenNodes;
 				float adjustedToEvenDistBetweenNodes = circumference / nodeCount;
@@ -180,9 +186,10 @@ class BubbleOutlineSystem : public middle::MiddleGameplaySystem {
 					bubble->outline.push_back(outlineShape.id);
 				}
 
+				// create first side
 				float lengthTravelled = arcTravelled - arcLength;
 				Vector3 transVec = Vector3Scale(distanceCouple.axis, -adjustedToEvenDistBetweenNodes);
-				nextPos = centerLineEnd + Vector3Scale(perpCouple.axis, -r);
+				nextPos = centerLineEnd + Vector3Scale(perpAxis, -r);
 				nextPos += Vector3Scale(distanceCouple.axis, -lengthTravelled);
 				while (lengthTravelled < length) {
 					middle::Shape& outlineShape = newNodeEntity(gameState, nextPos);
@@ -192,9 +199,10 @@ class BubbleOutlineSystem : public middle::MiddleGameplaySystem {
 				}
 
 
+				// create second arc
 				arcTravelled = lengthTravelled - length;
 				centerLineEnd = center - Vector3Scale(distanceCouple.axis, bubble->length * 0.5f);
-				outlineStart = centerLineEnd + Vector3Scale(perpCouple.axis, -r);
+				outlineStart = centerLineEnd + Vector3Scale(perpAxis, -r);
 				dirVec = outlineStart - centerLineEnd;
 				float alreadyRotated = arcTravelled / -r;
 				dirVec = Vector3RotateByAxisAngle(dirVec, rotateAxis, alreadyRotated);
@@ -209,15 +217,46 @@ class BubbleOutlineSystem : public middle::MiddleGameplaySystem {
 				}
 
 
+				// create second side
 				lengthTravelled = arcTravelled - arcLength;
+				nextPos = centerLineEnd + Vector3Scale(perpAxis, r);
+				nextPos += Vector3Scale(distanceCouple.axis, lengthTravelled);
 				transVec = Vector3Scale(distanceCouple.axis, adjustedToEvenDistBetweenNodes);
 				while (lengthTravelled < length) {
-					nextPos = nextPos + transVec;
 					middle::Shape& outlineShape = newNodeEntity(gameState, nextPos);
 					bubble->outline.push_back(outlineShape.id);
+					nextPos = nextPos + transVec;
 					lengthTravelled += adjustedToEvenDistBetweenNodes;
 				}
+
+
+
+
+				// generate constraints
+				for (int i = 0; i < bubble->outline.size(); ++i) {
+					int iA = i;
+					int iB = i - 1;
+					if (iB < 0) {
+						iB = bubble->outline.size() - 1;
+					}
+
+					auto& idA = bubble->outline[iA];
+					auto& idB = bubble->outline[iB];
+					Vector3 posA = middle::getShapePosition(gameState, idA.index);
+					Vector3 posB = middle::getShapePosition(gameState, idB.index);
+
+					auto& constraintShape = middle::addGhostShape(gameState);
+					auto constraint = middle::addComponent<components::Constraint>(constraintShape);
+					constraint->targetDistance = Vector3Distance(posA, posB);
+					constraint->idA = idA;
+					constraint->idB = idB;
+				}
 			}
+
+
+
+
+
 			});
 	}
 };

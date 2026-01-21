@@ -6,7 +6,13 @@
 #include "BubbleComponent.h"
 
 class BubbleRenderSetup : public middle::MiddleGameplaySystem {
+
+	bool debugRendering = true;
+
 	void update(middle::GameState* gameState) override {
+		if (!debugRendering)
+			return;
+
 		middle::loopInstances(gameState, [gameState](int i, middle::Shape& shape) {
 
 			auto bubbleComponent = middle::getComponent<components::BubbleComponent>(shape);
