@@ -157,16 +157,19 @@ class BubbleOutlineSystem : public middle::MiddleGameplaySystem {
 
 
 			if (bubble->outline.size() == 0) {
-				const float margin = 10;
-				const float distBetweenNodes = 30;
+				const float widthMargin = 10;
+				float lengthMargin = width;
+				const float distBetweenNodes = 10;
+				float axisLength = length - lengthMargin;
+				if (axisLength < 0) axisLength = 0;
 				// 2d perp for now
 				Vector3 perpAxis = { -distanceCouple.axis.z, 0, distanceCouple.axis.x };
 
 				// create first arc
-				Vector3 centerLineEnd = center + Vector3Scale(distanceCouple.axis, bubble->length * 0.5f);
-				float r = width * 0.5f + margin;
+				Vector3 centerLineEnd = center + Vector3Scale(distanceCouple.axis, axisLength * 0.5f);
+				float r = width * 0.5f + widthMargin;
 				Vector3 outlineStart = centerLineEnd + Vector3Scale(perpAxis, r);
-				float circumference = 2 * PI * r + 2 * length;
+				float circumference = 2 * PI * r + 2 * axisLength;
 				int nodeCount = circumference / distBetweenNodes;
 				float adjustedToEvenDistBetweenNodes = circumference / nodeCount;
 				float arcLength = PI * r;
@@ -176,6 +179,7 @@ class BubbleOutlineSystem : public middle::MiddleGameplaySystem {
 
 				float arcTravelled = 0;
 				Vector3 nextPos = { 0,0,0 };
+
 				while (arcTravelled < arcLength) {
 					nextPos = centerLineEnd + dirVec;
 					middle::Shape& outlineShape = newNodeEntity(gameState, nextPos);
@@ -191,7 +195,7 @@ class BubbleOutlineSystem : public middle::MiddleGameplaySystem {
 				Vector3 transVec = Vector3Scale(distanceCouple.axis, -adjustedToEvenDistBetweenNodes);
 				nextPos = centerLineEnd + Vector3Scale(perpAxis, -r);
 				nextPos += Vector3Scale(distanceCouple.axis, -lengthTravelled);
-				while (lengthTravelled < length) {
+				while (lengthTravelled < axisLength) {
 					middle::Shape& outlineShape = newNodeEntity(gameState, nextPos);
 					bubble->outline.push_back(outlineShape.id);
 					lengthTravelled += adjustedToEvenDistBetweenNodes;
@@ -200,8 +204,8 @@ class BubbleOutlineSystem : public middle::MiddleGameplaySystem {
 
 
 				// create second arc
-				arcTravelled = lengthTravelled - length;
-				centerLineEnd = center - Vector3Scale(distanceCouple.axis, bubble->length * 0.5f);
+				arcTravelled = lengthTravelled - axisLength;
+				centerLineEnd = center - Vector3Scale(distanceCouple.axis, axisLength * 0.5f);
 				outlineStart = centerLineEnd + Vector3Scale(perpAxis, -r);
 				dirVec = outlineStart - centerLineEnd;
 				float alreadyRotated = arcTravelled / -r;
@@ -222,7 +226,7 @@ class BubbleOutlineSystem : public middle::MiddleGameplaySystem {
 				nextPos = centerLineEnd + Vector3Scale(perpAxis, r);
 				nextPos += Vector3Scale(distanceCouple.axis, lengthTravelled);
 				transVec = Vector3Scale(distanceCouple.axis, adjustedToEvenDistBetweenNodes);
-				while (lengthTravelled < length) {
+				while (lengthTravelled < axisLength) {
 					middle::Shape& outlineShape = newNodeEntity(gameState, nextPos);
 					bubble->outline.push_back(outlineShape.id);
 					nextPos = nextPos + transVec;
