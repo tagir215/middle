@@ -40,7 +40,7 @@ class BubbleOutlinePhysics : public middle::MiddleGameplaySystem {
 				auto position = middle::getComponent<components::Position>(node);
 				assert(position);
 
-				const float maxDist = 100;
+				const float maxDist = 50;
 				float maxDistSqr = maxDist * maxDist;
 				const float maxForce = 100000;
 

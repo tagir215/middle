@@ -308,4 +308,21 @@ namespace middle {
 		childLoop->parentLoopId = parentShape.id;
 	}
 
+
+	void EditorActionCopy::execute(GameState* gameState)
+	{
+
+		std::set<int>ogHighestLevelContainers;
+		for (int shapeIndex : selectedShapes) {
+			ogHighestLevelContainers.insert(findHighestLevelContainer(gameState, shapeIndex));
+		}
+
+		for (int shapeIndex : ogHighestLevelContainers) {
+			int parentIndex = UNASSIGNED;
+			//Shape& ogShape = getShape(gameState, shapeIndex);
+			//auto loop = getComponent<components::LoopSociety>(ogShape);
+			deepCopyShape(gameState, shapeIndex, parentIndex);
+		}
+	}
+
 }

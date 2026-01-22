@@ -74,6 +74,9 @@ namespace middle {
 			return UNASSIGNED;
 		Shape& shape = gameState->shapes[index];
 		auto loop = getComponent<components::LoopSociety>(shape);
+		if (!loop) {
+			return UNASSIGNED;
+		}
 		if (loop->parentLoopId.index == UNASSIGNED)
 			return index;
 
@@ -311,5 +314,126 @@ namespace middle {
 			}
 		}
 		return UNASSIGNED;
+	}
+
+
+	Id deepCopyShape(GameState* gameState, int shapeToCopyIndex, int parentIndex) {
+
+		std::vector<FieldInfo> ogFields;
+		std::vector<FieldInfo> copyFields;
+		// resize with 100 probabbly no components with that many fields.. hopefully
+		int maxFieldCount = 100;
+		ogFields.resize(maxFieldCount);
+		copyFields.resize(maxFieldCount);
+
+		Shape& ogShape = getShape(gameState, shapeToCopyIndex);
+
+		int freeIndex = findFreeIndex(gameState);
+		Shape& newShape = addShape(gameState, freeIndex);
+
+		// copy components to the new shape
+		for (auto& pair : ogShape.componentMap) {
+
+			int typeId = pair.first;
+			Component component = pair.second;
+
+			// grow component vector.. add new component for the copy
+			int copyOffset = componentListMap[typeId]->grow();
+
+
+			// get og serializable to get fields
+			Serializable* ogSerializable =
+				componentListMap[typeId]->getSerializable(component.componentOffset);
+
+			// get fields
+			int ogSize = 0;
+			ogSerializable->getFields(ogFields, &ogSize);
+
+
+			// get copy serializable to get fields
+			auto copySerializable = componentListMap[typeId]->getSerializable(copyOffset);
+
+			// create component ref for the shape
+			Component copyComponent;
+			copyComponent.componentOffset = copyOffset;
+			newShape.componentMap[typeId] = copyComponent;
+
+
+			int copySize = 0;
+			copySerializable->getFields(copyFields, &copySize);
+
+			// copy fields to components
+			for (int i = 0; i < ogSize; ++i) {
+				FieldInfo& ogField = ogFields[i];
+				FieldInfo& copyField = copyFields[i];
+				switch (ogField.type) {
+				case FieldType::Bool: {
+					bool* valueptr = static_cast<bool*>(copyField.value);
+					*valueptr = *static_cast<bool*>(ogField.value);
+					break;
+				}
+				case FieldType::Double: {
+					double* valueptr = static_cast<double*>(copyField.value);
+					*valueptr = *static_cast<double*>(ogField.value);
+					break;
+				}
+				case FieldType::Float: {
+					float* valueptr = static_cast<float*>(copyField.value);
+					*valueptr = *static_cast<float*>(ogField.value);
+					break;
+				}
+				case FieldType::Id: {
+					Id* valueptr = static_cast<Id*>(copyField.value);
+					*valueptr = *static_cast<Id*>(ogField.value);
+					break;
+				}
+				case FieldType::IdVector: {
+					std::vector<Id>* valueptr = static_cast<std::vector<Id>*>(copyField.value);
+					*valueptr = *static_cast<std::vector<Id>*>(ogField.value);
+					break;
+				}
+				case FieldType::Int: {
+					int* valueptr = static_cast<int*>(copyField.value);
+					*valueptr = *static_cast<int*>(ogField.value);
+					break;
+				}
+				case FieldType::String: {
+					std::string* valueptr = static_cast<std::string*>(copyField.value);
+					*valueptr = *static_cast<std::string*>(ogField.value);
+					break;
+				}
+				default:
+					assert(true, "not supported");
+				}
+			}
+
+
+		}
+
+		auto copyLoop = getComponent<components::LoopSociety>(newShape);
+		if (copyLoop) {
+
+			auto ogLoop = getComponent<components::LoopSociety>(ogShape);
+
+			if (parentIndex >= 0) {
+				Shape& parentShape = getShape(gameState, parentIndex);
+				copyLoop->parentLoopId = parentShape.id;
+			}
+
+			// clear exact copies from earlier absolute copy
+			copyLoop->loopMemberIds.clear();
+
+			// copy children and assign their ids as children to the new copied shape
+			for (Id& id : ogLoop->loopMemberIds) {
+				Id childCopy = deepCopyShape(gameState, id.index, newShape.id.index);
+				// update pointer since deepcopy might rearrange component vector
+				copyLoop = getComponent<components::LoopSociety>(newShape);
+				copyLoop->loopMemberIds.push_back(childCopy);
+
+			}
+		}
+
+		return newShape.id;
+
 	}
 }

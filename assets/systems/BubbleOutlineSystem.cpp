@@ -9,6 +9,7 @@
 #include "Position.h"
 #include "Constraint.h"
 #include "PhysicsData.h"
+#include <random>
 
 class BubbleOutlineSystem : public middle::MiddleGameplaySystem {
 
@@ -41,7 +42,7 @@ class BubbleOutlineSystem : public middle::MiddleGameplaySystem {
 	};
 
 	middle::Shape& newNodeShape(middle::GameState* gameState, const Vector3& pos) {
-		const float r = 1.2f;
+		const float r = 0.1f;
 
 		middle::Shape& outlineShape = middle::addGhostShape(gameState);
 		auto sphere = middle::addComponent<components::Sphere>(outlineShape);
@@ -118,13 +119,11 @@ class BubbleOutlineSystem : public middle::MiddleGameplaySystem {
 	void removeNode(middle::GameState* gameState, std::vector<middle::Id>& outline, float distBetweenNodes) {
 		const int minNodeCount = 5;
 		if (outline.size() < minNodeCount) {
-			for (auto& id : outline) {
-				middle::deleteShape(gameState, id.index);
-			}
 			return;
 		}
 
-		const int indexToRemove = 1;
+		int random = rand() % (outline.size() - 2) + 1;
+		const int indexToRemove = random;
 		middle::Shape& shapeToRemove = middle::getShape(gameState, outline[indexToRemove].index);
 
 		std::vector<int>connectedConstraints = middle::findConnectedConstraints(gameState, shapeToRemove.id);
@@ -132,7 +131,7 @@ class BubbleOutlineSystem : public middle::MiddleGameplaySystem {
 		middle::deleteShape(gameState, connectedConstraints[1]);
 		middle::Shape& constraintShapeToEdit = middle::getShape(gameState, connectedConstraints[0]);
 
-		middle::deleteShape(gameState, indexToRemove);
+		middle::deleteShape(gameState, outline[indexToRemove].index);
 
 		middle::Id idA = outline[indexToRemove - 1];
 		middle::Id idB = outline[indexToRemove + 1];
@@ -157,15 +156,12 @@ class BubbleOutlineSystem : public middle::MiddleGameplaySystem {
 		int constraintIndex = middle::constraintExistsAt(gameState, leftNeighborShape.id, rightNeighborShape.id);
 		middle::Shape& constraintToBreakShape = middle::getShape(gameState, constraintIndex);
 		auto constraintToEdit = middle::getComponent<components::Constraint>(constraintToBreakShape);
+		constraintToEdit->targetDistance = distBetweenNodes;
 
 		// get center pos 
 		Vector3 posLeft = middle::getShapePosition(gameState, leftNeighborShape.id.index);
 		Vector3 posRight = middle::getShapePosition(gameState, rightNeighborShape.id.index);
 		Vector3 centroid = Vector3Scale(posLeft + posRight, 0.5f);
-
-		if (outline.size() == 42) {
-			int a = 0;
-		}
 
 		// create new node
 		middle::Shape& newNode = newNodeShape(gameState, centroid);

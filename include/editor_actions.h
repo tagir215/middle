@@ -193,4 +193,12 @@ namespace middle {
 		void execute(GameState* gameState) override;
 	};
 
+	class EditorActionCopy : public EditorActionContainer {
+	public:
+		std::vector<int> selectedShapes;
+		EditorActionCopy(std::vector<int>& selectedShapes) {
+			this->selectedShapes = selectedShapes;
+		}
+		void execute(GameState* gameState) override;
+	};
 }

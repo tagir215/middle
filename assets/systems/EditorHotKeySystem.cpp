@@ -77,6 +77,11 @@ class EditorHotKeySystem : public middle::MiddleGameplaySystem {
 			}
 		}
 
+		if (gameState->input.copyClick) {
+			gameState->editorState.editorActions.push_back(
+				std::make_unique<middle::EditorActionCopy>(middle::getSelectedShapes(gameState))
+			);
+		}
 
 		if (gameState->input.deleteClick) {
 			gameState->editorState.editorActions.push_back(

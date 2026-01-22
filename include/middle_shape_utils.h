@@ -47,6 +47,8 @@ namespace middle {
 	std::vector<int>getSelectedShapes(GameState* gameState);
 	// return first shape intersect by mouse
 	int getMouseIntersectedShape(GameState* gameState);
+	// copy shape and its children
+	Id deepCopyShape(GameState* gameState, int shapeToCopyIndex, int parentIndex = UNASSIGNED);
 
 	template<typename F>
 	void loopInstances(GameState* gameState, F func) {
