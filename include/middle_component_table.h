@@ -15,6 +15,7 @@ namespace middle {
 		virtual ~IComponentVectorContainer() = default;
 		virtual int grow() = 0;
 		virtual void shrink(int componentOffset) = 0;
+		virtual Serializable* getSerializable(int componentOffset) = 0;
 	};
 	template<typename T> 
 	struct ComponentVectorContainer : public IComponentVectorContainer {
@@ -24,18 +25,20 @@ namespace middle {
 			if (freeList.size() > 0) {
 				int nextFreeIndex = freeList.back();
 				freeList.pop_back();
-				updateSerializableMap<T>();
 				return nextFreeIndex;
 			}
 
 			int nextFreeIndex = vectorData.size();
 			vectorData.resize(nextFreeIndex+1);
-			updateSerializableMap<T>();
 			return nextFreeIndex;
 		}
 
 		void shrink(int componentOffset) {
 			freeList.push_back(componentOffset);
+		}
+
+		Serializable* getSerializable(int componentOffset) {
+			return static_cast<Serializable*>(&vectorData[componentOffset]);
 		}
 	};
 
@@ -49,7 +52,6 @@ namespace middle {
 	extern std::unordered_map <std::string, int> componentTypeMap;
 	extern std::unordered_map <int, std::string> componentNameMap;
 	extern std::unordered_map <int, std::unique_ptr<IComponentVectorContainer>> componentListMap;
-	extern std::unordered_map <int, std::vector<Serializable*>> componentSerializableRefMap;
 
 	template<typename T>
 	inline ComponentVectorContainer<T>* getComponentVectorContainer() {
@@ -68,8 +70,6 @@ namespace middle {
 		auto vectorContainer = std::make_unique<ComponentVectorContainer<T>>();
 		vectorContainer->vectorData = std::vector<T>();
 		componentListMap[typeId] = std::move(vectorContainer);
-		// serializable
-		componentSerializableRefMap[typeId] = std::vector<Serializable*>();
 	}
 
 	template<typename T>
@@ -84,17 +84,6 @@ namespace middle {
 		return &t;
 	}
 
-	template<typename T>
-	inline void updateSerializableMap() {
-		// add to serializable list
-		int typeId = getTypeId<T>();
-		std::vector<Serializable*>& serVec = componentSerializableRefMap[typeId];
-		ComponentVectorContainer<T>* vectorContainer = getComponentVectorContainer<T>();
-		serVec.resize(vectorContainer->vectorData.size());
-		for (int i = 0; i < serVec.size(); ++i) {
-			serVec[i] = static_cast<Serializable*>(&vectorContainer->vectorData[i]);
-		}
-	}
 
 	template<typename T>
 	inline T* addComponent(Shape& shape) {
@@ -106,7 +95,6 @@ namespace middle {
 		data[nextIndex] = t;
 		shape.componentMap[typeId] = Component();
 		shape.componentMap[typeId].componentOffset = nextIndex;
-		updateSerializableMap<T>();
 		return &data[nextIndex];
 	}
 
@@ -119,5 +107,4 @@ namespace middle {
 		shape.componentMap.erase(typeId);
 	}
 
-	Serializable* getSerializableComponent(Shape& shape, int typeId);
 }

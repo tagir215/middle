@@ -48,7 +48,7 @@ namespace middle {
 		Shape& shapeA = getShape(gameState, indexA);
 		Shape& shapeB = getShape(gameState, indexB);
 
-		if (constraintAlreadyExists(gameState, shapeA.id, shapeB.id)) {
+		if (constraintExistsAt(gameState, shapeA.id, shapeB.id) != UNASSIGNED) {
 			return;
 		}
 

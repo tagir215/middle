@@ -8,7 +8,7 @@ namespace middle {
 	// constraints connected to shape
 	std::vector<int>findConnectedConstraints(GameState* gameState, Id id);
 	// this constraint already exists... don't make duplicates
-	bool constraintAlreadyExists(GameState* gameState, Id indexA, Id indexB);
+	int constraintExistsAt(GameState* gameState, Id idA, Id idB);
 	// unselect selected things
 	void unselect(GameState* gameState);
 	// drag shape and its children

@@ -7,7 +7,7 @@
 
 class BubbleRenderSetup : public middle::MiddleGameplaySystem {
 
-	bool debugRendering = false;
+	bool debugRendering = true;
 
 	void update(middle::GameState* gameState) override {
 		if (!debugRendering)
@@ -51,6 +51,13 @@ class BubbleRenderSetup : public middle::MiddleGameplaySystem {
 			e.type = middle::RenderItemType::SPHERE;
 			e.color = ORANGE;
 			gameState->renderData.push_back(e);
+
+			middle::RenderItem nodeCountText;
+			nodeCountText.center = center;
+			nodeCountText.type = middle::RenderItemType::TEXT;
+			//nodeCountText.text = std::to_string(bubbleComponent->outline.size());
+			nodeCountText.text = std::to_string(bubbleComponent->nodeCountTarget);
+			gameState->renderData.push_back(nodeCountText);
 			});
 	}
 };

@@ -30,7 +30,7 @@ namespace middle {
 		return result;
 	}
 
-	bool constraintAlreadyExists(GameState* gameState, Id idA, Id idB) {
+	int constraintExistsAt(GameState* gameState, Id idA, Id idB) {
 		for (int i = 0; i < gameState->shapes.size(); ++i) {
 			Shape& shape = gameState->shapes[i];
 			if (!isShapeAlive(gameState, i))
@@ -40,13 +40,13 @@ namespace middle {
 				continue;
 
 			if (constraint->idA == idA && constraint->idB == idB)
-				return true;
+				return i;
 
 			if (constraint->idB == idA && constraint->idA == idB)
-				return true;
+				return i;
 		}
 
-		return false;
+		return UNASSIGNED;
 	}
 
 	int findFreeIndex(GameState* gameState)

@@ -31,7 +31,8 @@ class ComponentUiSystem : public middle::MiddleGameplaySystem {
 
 				for (auto& pair : shape.componentMap) {
 					int typeId = pair.first;
-					middle::Serializable* serializable = middle::getSerializableComponent(shape, typeId);
+					int componentOffset = pair.second.componentOffset;
+					middle::Serializable* serializable = middle::componentListMap[typeId]->getSerializable(componentOffset);
 					std::string typeData;
 					const char* componentName = middle::componentNameMap[typeId].c_str();
 					ImGui::Separator();

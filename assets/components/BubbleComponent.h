@@ -22,6 +22,7 @@ namespace components {
 		float bZ;
 
 		std::vector<middle::Id> outline;
+		int nodeCountTarget = 0;
 
 		void serialize(std::ostream& ostream) override;
 		void deserialize(const std::vector<std::string>& buffer, int indexOffset) override;

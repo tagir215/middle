@@ -222,7 +222,8 @@ namespace middle {
 				std::string componentName = componentNameMap[pair.first];
 				outFile << componentName << "\n";
 				int componentTypeId = pair.first;
-				Serializable* serializable = getSerializableComponent(shape, componentTypeId);
+				Component component = pair.second;
+				Serializable* serializable = componentListMap[componentTypeId]->getSerializable(component.componentOffset);
 				serializable->serialize(outFile);
 			}
 		}
@@ -270,7 +271,8 @@ namespace middle {
 	void flushBuffer(GameState* gameState, std::vector<std::string>& buffer, const std::string& componentName, int index, int indexOffset = 0) {
 		int typeId = componentTypeMap[componentName];
 		int componentOffset = componentListMap[typeId]->grow();
-		componentSerializableRefMap[typeId][componentOffset]->deserialize(buffer, indexOffset);
+		Serializable* serializable = componentListMap[typeId]->getSerializable(componentOffset);
+		serializable->deserialize(buffer, indexOffset);
 		auto& shape = gameState->shapes[index + indexOffset];
 		shape.componentMap[typeId].componentOffset = componentOffset;
 		buffer.clear();
