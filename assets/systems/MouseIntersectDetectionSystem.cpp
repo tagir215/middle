@@ -14,6 +14,7 @@
 #include "Reference.h"
 #include "SystemReference.h"
 #include "ComponentReference.h"
+#include "PlacementComponent.h"
 
 namespace MouseIntersectDetectionSystem {
 
@@ -25,6 +26,10 @@ namespace MouseIntersectDetectionSystem {
 					continue;
 
 				middle::Shape& shape = gameState->shapes[i];
+
+				auto placable = middle::getComponent<components::PlacementComponent>(shape);
+				if (placable)
+					continue;
 
 				auto intersectComponent = middle::getComponent<components::MouseIntersectable>(shape);
 				if (!intersectComponent)

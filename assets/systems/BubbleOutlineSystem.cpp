@@ -9,6 +9,7 @@
 #include "Position.h"
 #include "Constraint.h"
 #include "PhysicsData.h"
+#include "PlacementComponent.h"
 #include <random>
 
 class BubbleOutlineSystem : public middle::MiddleGameplaySystem {
@@ -189,11 +190,17 @@ class BubbleOutlineSystem : public middle::MiddleGameplaySystem {
 	}
 
 	void update(middle::GameState* gameState) override {
+
 		std::vector<middle::Id> shapeList;
+
 		middle::loopInstances(gameState, [gameState, &shapeList, this](int i, middle::Shape& shape) {
 			auto bubble = middle::getComponent<components::BubbleComponent>(shape);
 			if (!bubble)
 				return;
+			auto placement = middle::getComponent<components::PlacementComponent>(shape);
+			if (placement)
+				return;
+
 			shapeList.clear();
 			populateWithChildren(gameState, &shapeList, shape.id);
 
@@ -309,8 +316,6 @@ class BubbleOutlineSystem : public middle::MiddleGameplaySystem {
 					nextPos = nextPos + transVec;
 					lengthTravelled += adjustedToEvenDistBetweenNodes;
 				}
-
-
 
 
 				// generate constraints

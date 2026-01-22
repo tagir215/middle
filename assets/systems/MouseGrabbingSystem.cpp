@@ -5,6 +5,7 @@
 #include "middle_shape_utils.h"
 #include "MouseGrabbable.h"
 #include "Position.h"
+#include "PlacementComponent.h"
 #include "LoopSociety.h"
 
 namespace MouseGrabbingSystem {
@@ -14,7 +15,8 @@ namespace MouseGrabbingSystem {
 			for (int i = 0; i < gameState->shapes.size(); ++i) {
 				middle::Shape& shape = gameState->shapes[i];
 				auto grabbable = middle::getComponent<components::MouseGrabbable>(shape);
-				if (!grabbable)
+				auto placable = middle::getComponent<components::PlacementComponent>(shape);
+				if (!grabbable && !placable)
 					continue;
 
 				if (middle::isShapeSelected(gameState, i) && gameState->input.grabDown) {
@@ -24,7 +26,20 @@ namespace MouseGrabbingSystem {
 					grabbable->grabbing = false;
 				}
 
-				if (grabbable->grabbing) {
+				// remove placement component after clicking
+				if (placable && gameState->input.mouseClicked) {
+					middle::deleteComponent<components::PlacementComponent>(shape);
+					std::vector<middle::Id>members;
+					middle::getChildren(gameState, shape.id, members);
+					for (middle::Id& childId : members) {
+						middle::Shape& child = middle::getShape(gameState, childId.index);
+						middle::deleteComponent<components::PlacementComponent>(child);
+					}
+				}
+
+				int containerIndex = middle::findHighestLevelContainer(gameState, shape.id.index);
+
+				if (grabbable->grabbing || (placable && containerIndex == shape.id.index)) {
 					Vector3 pos;
 					auto posComponent = middle::getComponent<components::Position>(shape);
 					if (posComponent) {

@@ -49,6 +49,8 @@ namespace middle {
 	int getMouseIntersectedShape(GameState* gameState);
 	// copy shape and its children
 	Id deepCopyShape(GameState* gameState, int shapeToCopyIndex, int parentIndex = UNASSIGNED);
+	// get children in a flat array
+	void getChildren(GameState* gameState, Id id, std::vector<Id>& result);
 
 	template<typename F>
 	void loopInstances(GameState* gameState, F func) {

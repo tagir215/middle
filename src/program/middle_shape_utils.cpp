@@ -12,6 +12,7 @@
 #include "JointEntity.h"
 #include "LoopEntity.h"
 #include "ComponentRefParent.h"
+#include "PlacementComponent.h"
 
 namespace middle {
 
@@ -429,11 +430,19 @@ namespace middle {
 				// update pointer since deepcopy might rearrange component vector
 				copyLoop = getComponent<components::LoopSociety>(newShape);
 				copyLoop->loopMemberIds.push_back(childCopy);
-
 			}
 		}
 
 		return newShape.id;
 
+	}
+	void getChildren(GameState* gameState, Id id, std::vector<Id>& result)
+	{
+		Shape& shape = getShape(gameState, id.index);
+		auto loop = getComponent<components::LoopSociety>(shape);
+		for (Id& childId : loop->loopMemberIds) {
+			result.push_back(childId);
+			getChildren(gameState, childId, result);
+		}
 	}
 }

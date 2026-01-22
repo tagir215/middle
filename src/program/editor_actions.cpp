@@ -18,6 +18,7 @@
 #include "SystemEntity.h"
 #include "ComponentReference.h"
 #include "ComponentRefParent.h"
+#include "PlacementComponent.h"
 
 namespace middle {
 
@@ -311,17 +312,22 @@ namespace middle {
 
 	void EditorActionCopy::execute(GameState* gameState)
 	{
+		unselect(gameState);
 
-		std::set<int>ogHighestLevelContainers;
 		for (int shapeIndex : selectedShapes) {
-			ogHighestLevelContainers.insert(findHighestLevelContainer(gameState, shapeIndex));
-		}
-
-		for (int shapeIndex : ogHighestLevelContainers) {
 			int parentIndex = UNASSIGNED;
-			//Shape& ogShape = getShape(gameState, shapeIndex);
-			//auto loop = getComponent<components::LoopSociety>(ogShape);
-			deepCopyShape(gameState, shapeIndex, parentIndex);
+			Id& newId = deepCopyShape(gameState, shapeIndex, parentIndex);
+			Shape& newShape = getShape(gameState, newId.index);
+			// placement component until placing is done
+			addComponent<components::PlacementComponent>(newShape);
+
+			// placement componeont to children
+			std::vector<Id>children;
+			getChildren(gameState, newShape.id, children);
+			for (Id& id : children) {
+				Shape& child = getShape(gameState, id.index);
+				addComponent<components::PlacementComponent>(child);
+			}
 		}
 	}
 
