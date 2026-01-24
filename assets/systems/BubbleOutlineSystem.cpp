@@ -14,7 +14,7 @@
 
 class BubbleOutlineSystem : public middle::MiddleGameplaySystem {
 	const float bubbleOutlineWidthMargin = 10;
-	const float distBetweenNodes = 15;
+	const float distBetweenNodes = 5;
 	const float nodeRadius = 0.1f;
 
 	void populateWithChildren(
@@ -56,6 +56,9 @@ class BubbleOutlineSystem : public middle::MiddleGameplaySystem {
 		posComp->posY = pos.y;
 		posComp->posZ = pos.z;
 		sphere->radius = nodeRadius;
+		//physicsComp->damX = 0.1f;
+		//physicsComp->damY = 0.1f;
+		//physicsComp->damZ = 0.1f;
 		return outlineShape;
 	}
 
@@ -271,9 +274,13 @@ class BubbleOutlineSystem : public middle::MiddleGameplaySystem {
 			float bubbleEndPointRadius = adjustedWidth * 0.5f;
 			float circumference = 2 * PI * bubbleEndPointRadius + 2 * axisLength;
 			int nodeCount = circumference / distBetweenNodes;
-			const int maxNodeCount = 40;
+			const int maxNodeCount = 60;
+			const int minNodeCount = 10;
 			if (nodeCount > maxNodeCount) {
 				nodeCount = maxNodeCount;
+			}
+			if (nodeCount < minNodeCount) {
+				nodeCount = minNodeCount;
 			}
 			bubble->nodeCountTarget = nodeCount;
 

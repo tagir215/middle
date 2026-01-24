@@ -5,6 +5,7 @@
 #include "BubbleComponent.h"
 #include "Position.h"
 #include "PhysicsData.h"
+#include "LoopSociety.h"
 
 class BubbleOutlinePhysics : public middle::MiddleGameplaySystem {
 
@@ -46,21 +47,56 @@ class BubbleOutlinePhysics : public middle::MiddleGameplaySystem {
 			if (!bubble)
 				return;
 
-			std::vector<Vector3>fieldPositions = getFieldPositions(gameState, shape);
+			auto bubblePosition = middle::getComponent<components::Position>(shape);
+			assert(bubblePosition);
 
 			Vector3 bubbleCenter = { bubble->centerX, bubble->centerY, bubble->centerZ };
+			Vector3 bubblePos = { bubblePosition->posX, bubblePosition->posY, bubblePosition->posZ };
+
+			// BUBBLE GRAVITY
+
+			auto loopSociety = middle::getComponent<components::LoopSociety>(shape);
+
+			for (middle::Id& childId : loopSociety->loopMemberIds) {
+				middle::Shape& child = middle::getShape(gameState, childId.index);
+				auto physics = middle::getComponent<components::PhysicsData>(child);
+				if (!physics)
+					continue;
+				auto childPosition = middle::getComponent<components::Position>(child);
+				const float gravityForce = 20.2f;
+				Vector3 childPos = { childPosition->posX, childPosition->posY, childPosition->posZ };
+				Vector3 gravityAxis = Vector3Normalize(bubblePos - childPos);
+				if (Vector3LengthSqr(gravityAxis) == 0) {
+					gravityAxis = { 1, 0, 0 };
+				}
+				Vector3 force = Vector3Scale(gravityAxis, gravityForce);
+				//applyForce(gameState, child, force);
+			}
+
+
+			// OUTLINE PHYSICS
+
+			std::vector<Vector3>fieldPositions = getFieldPositions(gameState, shape);
+
 
 			std::vector<middle::Id>& outlineNodes = bubble->outline;
 
 			for (middle::Id& id : outlineNodes) {
 				middle::Shape& node = middle::getShape(gameState, id.index);
 				auto position = middle::getComponent<components::Position>(node);
+				auto nodePhysics = middle::getComponent<components::PhysicsData>(node);
+
+
 				assert(position);
 
-				const float maxDist = bubble->length * 10;
+				const float maxVel = 10000;
 
+				const float maxForce = 10000;
+				float speedSqrt = Vector3LengthSqr({ nodePhysics->velX, nodePhysics->velY, nodePhysics->velZ });
+				float speedRatio = speedSqrt / maxVel;
+
+				float maxDist = bubble->length * 10;
 				float maxDistSqr = maxDist * maxDist;
-				const float maxForce = 20000;
 
 				Vector3 nodePos = { position->posX, position->posY, position->posZ };
 
@@ -83,7 +119,9 @@ class BubbleOutlinePhysics : public middle::MiddleGameplaySystem {
 					float error = maxDist - distance;
 					float normalizedError = error / maxDist;
 
-					float strengthRatio = (std::powf(normalizedError, 90) / 1.0f);
+					int power = 90;
+
+					float strengthRatio = (std::powf(normalizedError, power) / 1.0f);
 
 					Vector3 force = Vector3Scale(axis, strengthRatio * maxForce);
 

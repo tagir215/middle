@@ -1,7 +1,8 @@
 #pragma once
 #include "registrars.h"
 #include "editor_file_utils.h"
-#define MIDDLEBUBBLECOMPONENT(X)
+#define MIDDLEBUBBLECOMPONENT(X) \
+	X(intersecting)
 
 namespace components {
 	struct BubbleComponent : public middle::Serializable{
@@ -20,6 +21,8 @@ namespace components {
 		float bX;
 		float bY;
 		float bZ;
+
+		bool intersecting = false;
 
 		std::vector<middle::Id> outline;
 		int nodeCountTarget = 0;

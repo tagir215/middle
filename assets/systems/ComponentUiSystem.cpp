@@ -44,9 +44,10 @@ class ComponentUiSystem : public middle::MiddleGameplaySystem {
 					}
 					ImGui::PopID();
 					ImGui::SameLine();
-					if (ImGui::CollapsingHeader(componentName)) {
-						int size = 0;
-						serializable->getFields(gameState->fields, &size);
+					int size = 0;
+					serializable->getFields(gameState->fields, &size);
+
+					if (size > 0 && ImGui::CollapsingHeader(componentName)) {
 						for (int fieldIndex = 0; fieldIndex < size; ++fieldIndex) {
 							middle::FieldInfo field = gameState->fields[fieldIndex];
 							if(field.type == middle::FieldType::Bool){
@@ -67,6 +68,9 @@ class ComponentUiSystem : public middle::MiddleGameplaySystem {
 								ImGui::Text(field.name);
 							}
 						}
+					}
+					else if (size == 0){
+						ImGui::Text(componentName);
 					}
 
 				};
