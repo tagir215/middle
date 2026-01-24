@@ -2,15 +2,15 @@
 
 namespace descart {
 
-	void SolveDistanceConstraint(Constraint& initConstraint, std::vector<PhysicsBody>& bodies)
+	void SolveDistanceConstraint(Constraint& constraint, std::vector<PhysicsBody>& bodies, float time)
 	{
-		PhysicsBody& bodyA = bodies[initConstraint.indexA];
-		PhysicsBody& bodyB = bodies[initConstraint.indexB];
+		PhysicsBody& bodyA = bodies[constraint.indexA];
+		PhysicsBody& bodyB = bodies[constraint.indexB];
 
-		assert(initConstraint.targetDistance != 0);
+		assert(constraint.targetDistance != 0);
 
 		Vec deltaPos = SubV(bodyB.position, bodyA.position);
-		float posError = MagV(deltaPos) - initConstraint.targetDistance;
+		float posError = MagV(deltaPos) - constraint.targetDistance;
 		// if posError == 0 default to this axis
 		Vec axis = { 1,0,0 };
 		if (MagSqV(deltaPos) != 0) {
@@ -21,7 +21,7 @@ namespace descart {
 
 		float invMass = bodyA.invMass + bodyB.invMass;
 
-		Vec biasV = ScaleV(posErrorV, -initConstraint.biasFactor);
+		Vec biasV = ScaleV(posErrorV, -constraint.biasFactor);
 		Vec totalError = AddV(velError, posErrorV);
 		Vec impulse = NegateV(DivideV(totalError, invMass));
 
@@ -30,6 +30,14 @@ namespace descart {
 
 		bodyA.linearVel = ScaleV(AddV(bodyA.linearVel, NegateV(impulse)), bodyA.invMass);
 		bodyB.linearVel = ScaleV(AddV(bodyB.linearVel, impulse), bodyB.invMass);
+
+		if (posError * 1.1f > constraint.targetDistance) {
+			const float idk = 0.0001f;
+			bodyA.position = AddV(bodyA.position, ScaleV(bodyA.linearVel, time * idk));
+			bodyB.position = AddV(bodyB.position, ScaleV(bodyB.linearVel, time * idk));
+			bodyA.timeLeft = 0;
+			bodyB.timeLeft = 0;
+		}
 
 		AssertNanVec(bodyA.linearVel);
 		AssertNanVec(bodyB.linearVel);

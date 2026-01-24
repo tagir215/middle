@@ -25,7 +25,7 @@ namespace descart {
 		float toi;
 	};
 
-	void SolveDistanceConstraint(Constraint& initConstraint, std::vector<PhysicsBody>& bodies);
+	void SolveDistanceConstraint(Constraint& initConstraint, std::vector<PhysicsBody>& bodies, float time);
 
 	void SolveCollisionConstraint(Constraint& initConstraint, std::vector<PhysicsBody>& bodies);
 

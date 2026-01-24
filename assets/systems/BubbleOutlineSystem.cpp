@@ -14,7 +14,7 @@
 
 class BubbleOutlineSystem : public middle::MiddleGameplaySystem {
 	const float bubbleOutlineWidthMargin = 10;
-	const float distBetweenNodes = 20;
+	const float distBetweenNodes = 15;
 	const float nodeRadius = 0.1f;
 
 	void populateWithChildren(
@@ -235,7 +235,6 @@ class BubbleOutlineSystem : public middle::MiddleGameplaySystem {
 			float length = std::sqrtf(distanceCouple.distanceSqr);
 			float width = std::sqrtf(perpCouple.distanceSqr);
 
-
 			Vector3 toPerp = perpCouple.posA - distanceCouple.posA;
 			Vector3 perpAxis = perpCouple.axis;
 			float dot = Vector3DotProduct(toPerp, perpAxis);
@@ -272,6 +271,10 @@ class BubbleOutlineSystem : public middle::MiddleGameplaySystem {
 			float bubbleEndPointRadius = adjustedWidth * 0.5f;
 			float circumference = 2 * PI * bubbleEndPointRadius + 2 * axisLength;
 			int nodeCount = circumference / distBetweenNodes;
+			const int maxNodeCount = 40;
+			if (nodeCount > maxNodeCount) {
+				nodeCount = maxNodeCount;
+			}
 			bubble->nodeCountTarget = nodeCount;
 
 			// bubble initialization
@@ -365,8 +368,8 @@ class BubbleOutlineSystem : public middle::MiddleGameplaySystem {
 					constraint->targetDistance = Vector3Distance(posA, posB);
 					constraint->idA = idA;
 					constraint->idB = idB;
-					constraint->stiffness = 1;
-					constraint->biasFactor = 1;
+					constraint->stiffness = 1.0f;
+					constraint->biasFactor = 0.2f;
 				}
 			}
 

@@ -3,9 +3,9 @@
 
 namespace descart {
 
-	void SubLoop(float frameTime, std::vector<BodyPair>& pairs, std::vector<Constraint>& constraints, std::vector<PhysicsBody>& bodies) {
+	void SubLoop(float frameTime, std::vector<BodyPair>& pairs, std::vector<Constraint>& constraints, std::vector<PhysicsBody>& bodies, int iterations) {
 
-		SolveConstraints(constraints, bodies);
+		SolveConstraints(frameTime, constraints, bodies, iterations);
 
 		for (BodyPair& pair : pairs) {
 			PhysicsBody& bodyA = bodies[pair.indexA];
@@ -54,13 +54,14 @@ namespace descart {
 
 	}
 
-	void SolveConstraints(std::vector<Constraint>& constraints, std::vector<PhysicsBody>& bodies) {
+	void SolveConstraints(float frameTime, std::vector<Constraint>& constraints, std::vector<PhysicsBody>& bodies, int iterations) {
+		float time = frameTime / iterations;
 		for (Constraint& initConstraint : constraints) {
 			switch (initConstraint.type) {
 			case ConstraintType::collision:
 				break;
 			case ConstraintType::distance:
-				SolveDistanceConstraint(initConstraint, bodies);
+				SolveDistanceConstraint(initConstraint, bodies, iterations);
 				break;
 			}
 		}
@@ -92,8 +93,8 @@ namespace descart {
 		}
 
 		for (int i = 0; i < iterations; ++i) {
-			SubLoop(frameTime, pairs, constraints, bodies);
-			SubLoop(frameTime, pairs, constraints, bodies);
+			SubLoop(frameTime, pairs, constraints, bodies, iterations);
+			SubLoop(frameTime, pairs, constraints, bodies, iterations);
 		}
 
 		for (auto& body : bodies) {
@@ -118,7 +119,8 @@ namespace descart {
 		for (PhysicsBody& body : bodies) {
 			if (!body.active)
 				continue;
-			body.position = AddV(ScaleV(body.linearVel, frameTime * body.normalizedTimeElapsed), body.position);
+			float time = frameTime * body.timeLeft;
+			body.position = AddV(ScaleV(body.linearVel, time * body.normalizedTimeElapsed), body.position);
 			body.transform = MatTranslate(body.position);
 			body.linearVel = ScaleV(body.linearVel, (1 - body.linearDamping));
 			AssertBody(body);

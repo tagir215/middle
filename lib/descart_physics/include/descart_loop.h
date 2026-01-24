@@ -8,7 +8,7 @@ namespace descart {
 
 	void DescLoop(float frameTime, std::vector<BodyPair>& pairs, std::vector<Constraint>& constraints, std::vector<PhysicsBody>& bodies, int iterations);
 
-	void SolveConstraints(std::vector<Constraint>& constraints, std::vector<PhysicsBody>& bodies);
+	void SolveConstraints(float frameTime, std::vector<Constraint>& constraints, std::vector<PhysicsBody>& bodies, int iterations);
 
 	void EulerIntegrate(float frameTime, std::vector<PhysicsBody>& bodies);
 

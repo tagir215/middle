@@ -23,6 +23,7 @@ namespace descart{
 		bool infiniteMass = false;
 		bool collided = false;
 		float normalizedTimeElapsed = 0;
+		float timeLeft = 1;
 
 		Vec position;
 		Vec PointA;

@@ -60,6 +60,7 @@ class MiddlePhysicsSystem : public middle::MiddleGameplaySystem {
 				body.linearVel = { pcomp->velX, pcomp->velY, pcomp->velZ };
 				body.linearDamping = pcomp->damY;
 				body.position = { pos->posX, pos->posY, pos->posZ };
+				body.timeLeft = 1;
 			}
 		}
 
