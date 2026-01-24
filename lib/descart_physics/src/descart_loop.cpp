@@ -66,7 +66,7 @@ namespace descart {
 		}
 	}
 
-	void DescLoop(float frameTime, std::vector<BodyPair>& pairs, std::vector<Constraint>& constraints, std::vector<PhysicsBody>& bodies)
+	void DescLoop(float frameTime, std::vector<BodyPair>& pairs, std::vector<Constraint>& constraints, std::vector<PhysicsBody>& bodies, int iterations)
 	{
 		for (auto& body : bodies) {
 			if (!body.active)
@@ -91,8 +91,10 @@ namespace descart {
 			bodyB.normalizedTimeElapsed = 0;
 		}
 
-		SubLoop(frameTime, pairs, constraints, bodies);
-		SubLoop(frameTime, pairs, constraints, bodies);
+		for (int i = 0; i < iterations; ++i) {
+			SubLoop(frameTime, pairs, constraints, bodies);
+			SubLoop(frameTime, pairs, constraints, bodies);
+		}
 
 		for (auto& body : bodies) {
 			if (!body.active)

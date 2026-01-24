@@ -315,15 +315,33 @@ namespace middle {
 		unselect(gameState);
 
 		for (int shapeIndex : selectedShapes) {
-			int parentIndex = UNASSIGNED;
-			Id& newId = deepCopyShape(gameState, shapeIndex, parentIndex);
-			Shape& newShape = getShape(gameState, newId.index);
-			// placement component until placing is done
-			addComponent<components::PlacementComponent>(newShape);
+			// create new shape
+			auto& ogShape = getShape(gameState, shapeIndex);
 
-			// placement componeont to children
+			// store parent id
+			middle::Id parentId;
+			auto loop = getComponent<components::LoopSociety>(ogShape);
+			if (loop) {
+				parentId = loop->parentLoopId;
+			}
+
+			Id& newId = deepCopyShape(gameState, shapeIndex, parentId.index);
+			auto& copyShape = getShape(gameState, newId.index);
+
+			// add new copy as child to parent of the shape that was copied
+			if (parentId.index != UNASSIGNED) {
+				auto& parentShape = getShape(gameState, parentId.index);
+				auto parentLoop = getComponent<components::LoopSociety>(parentShape);
+				parentLoop->loopMemberIds.push_back(newId);
+			}
+
+			// placement component until placing is done
+			auto placable = addComponent<components::PlacementComponent>(copyShape);
+			placable->grabbing = true;
+
+			// placement component to children
 			std::vector<Id>children;
-			getChildren(gameState, newShape.id, children);
+			getChildren(gameState, copyShape.id, children);
 			for (Id& id : children) {
 				Shape& child = getShape(gameState, id.index);
 				addComponent<components::PlacementComponent>(child);

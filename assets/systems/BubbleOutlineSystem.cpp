@@ -13,11 +13,15 @@
 #include <random>
 
 class BubbleOutlineSystem : public middle::MiddleGameplaySystem {
+	const float bubbleOutlineWidthMargin = 10;
+	const float distBetweenNodes = 20;
+	const float nodeRadius = 0.1f;
 
 	void populateWithChildren(
 		middle::GameState* gameState, std::vector<middle::Id>* shapeList, middle::Id& id) {
 		auto& shape = middle::getShape(gameState, id.index);
 		auto loopSociety = middle::getComponent<components::LoopSociety>(shape);
+		auto bubble = middle::getComponent<components::BubbleComponent>(shape);
 		assert(loopSociety);
 
 		for (middle::Id& childId : loopSociety->loopMemberIds) {
@@ -43,7 +47,6 @@ class BubbleOutlineSystem : public middle::MiddleGameplaySystem {
 	};
 
 	middle::Shape& newNodeShape(middle::GameState* gameState, const Vector3& pos) {
-		const float r = 0.1f;
 
 		middle::Shape& outlineShape = middle::addGhostShape(gameState);
 		auto sphere = middle::addComponent<components::Sphere>(outlineShape);
@@ -52,13 +55,14 @@ class BubbleOutlineSystem : public middle::MiddleGameplaySystem {
 		posComp->posX = pos.x;
 		posComp->posY = pos.y;
 		posComp->posZ = pos.z;
-		sphere->radius = r;
+		sphere->radius = nodeRadius;
 		return outlineShape;
 	}
 
 	LongestDistanceCouple findPointsWithLongestDistanceBetween(middle::GameState* gameState,
 		std::vector<middle::Id>& ids) {
 		LongestDistanceCouple result;
+
 		for (int i = 0; i < ids.size(); ++i) {
 			for (int j = i; j < ids.size(); ++j) {
 				middle::Id idA = ids[i];
@@ -67,6 +71,7 @@ class BubbleOutlineSystem : public middle::MiddleGameplaySystem {
 				auto& shapeB = middle::getShape(gameState, idB.index);
 				Vector3 posA = middle::getShapePosition(gameState, idA.index);
 				Vector3 posB = middle::getShapePosition(gameState, idB.index);
+
 				float distSqr = Vector3DistanceSqr(posA, posB);
 				if (distSqr > result.distanceSqr) {
 					result.idA = idA;
@@ -181,11 +186,30 @@ class BubbleOutlineSystem : public middle::MiddleGameplaySystem {
 		middle::Shape& newConstraintShape = middle::addGhostShape(gameState);
 		auto newConstraint = middle::addComponent<components::Constraint>(newConstraintShape);
 		// update pointer after resizing array  
-		constraintToEdit = middle::getComponent<components::Constraint>(constraintToBreakShape); 
+		constraintToEdit = middle::getComponent<components::Constraint>(constraintToBreakShape);
 
 		newConstraint->idA = newNode.id;
 		newConstraint->idB = rightNeighborShape.id;
 		newConstraint->targetDistance = constraintToEdit->targetDistance;
+
+	}
+
+	void calculateMargin(middle::GameState* gameState, middle::Id& id, float& result) {
+		middle::Shape& shape = middle::getShape(gameState, id.index);
+		auto loop = middle::getComponent<components::LoopSociety>(shape);
+		auto bubble = middle::getComponent<components::BubbleComponent>(shape);
+		assert(loop);
+		assert(bubble);
+
+		result += bubbleOutlineWidthMargin * 2;
+
+		for (middle::Id childId : loop->loopMemberIds) {
+			middle::Shape& childShape = middle::getShape(gameState, childId.index);
+			auto childBubble = middle::getComponent<components::BubbleComponent>(childShape);
+			if (childBubble) {
+				calculateMargin(gameState, childId, result);
+			}
+		}
 
 	}
 
@@ -211,6 +235,7 @@ class BubbleOutlineSystem : public middle::MiddleGameplaySystem {
 			float length = std::sqrtf(distanceCouple.distanceSqr);
 			float width = std::sqrtf(perpCouple.distanceSqr);
 
+
 			Vector3 toPerp = perpCouple.posA - distanceCouple.posA;
 			Vector3 perpAxis = perpCouple.axis;
 			float dot = Vector3DotProduct(toPerp, perpAxis);
@@ -235,12 +260,16 @@ class BubbleOutlineSystem : public middle::MiddleGameplaySystem {
 			bubble->bY = perpCouple.posB.y;
 			bubble->bZ = perpCouple.posB.z;
 
+			// extra mragin from inner bubbles outlines
+			float extraMargin = 0;
+			calculateMargin(gameState, shape.id, extraMargin);
 
-			const float widthMargin = 10;
-			const float distBetweenNodes = 10;
-			float lengthMargin = width;
-			float axisLength = length - lengthMargin;
-			float bubbleEndPointRadius = width * 0.5f + widthMargin;
+			const float adjustedWidth = width + extraMargin;
+			const float adjustedLength = length + extraMargin;
+
+			float lengthMargin = adjustedWidth;
+			float axisLength = length + adjustedWidth - lengthMargin;
+			float bubbleEndPointRadius = adjustedWidth * 0.5f;
 			float circumference = 2 * PI * bubbleEndPointRadius + 2 * axisLength;
 			int nodeCount = circumference / distBetweenNodes;
 			bubble->nodeCountTarget = nodeCount;
@@ -336,6 +365,8 @@ class BubbleOutlineSystem : public middle::MiddleGameplaySystem {
 					constraint->targetDistance = Vector3Distance(posA, posB);
 					constraint->idA = idA;
 					constraint->idB = idB;
+					constraint->stiffness = 1;
+					constraint->biasFactor = 1;
 				}
 			}
 

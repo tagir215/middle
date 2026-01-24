@@ -7,7 +7,7 @@
 
 class BubbleRenderSetup : public middle::MiddleGameplaySystem {
 
-	bool debugRendering = false;
+	bool debugRendering = true;
 
 	void update(middle::GameState* gameState) override {
 		if (!debugRendering)

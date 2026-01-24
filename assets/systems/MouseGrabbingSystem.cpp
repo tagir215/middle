@@ -37,9 +37,7 @@ namespace MouseGrabbingSystem {
 					}
 				}
 
-				int containerIndex = middle::findHighestLevelContainer(gameState, shape.id.index);
-
-				if (grabbable->grabbing || (placable && containerIndex == shape.id.index)) {
+				if (grabbable->grabbing || (placable && placable->grabbing)) {
 					Vector3 pos;
 					auto posComponent = middle::getComponent<components::Position>(shape);
 					if (posComponent) {

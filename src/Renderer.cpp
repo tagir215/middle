@@ -36,24 +36,24 @@ namespace RendererSystem {
 			const float visibleGridRadius = 10;
 			float visibleGridRadiusSq = visibleGridRadius * visibleGridRadius * gameState->editorState.gridSize * gameState->editorState.gridSize;
 			float gridSphereRadius = 0.10f * gameState->editorState.gridSize;
-			for (float x = -axisLength; x < axisLength; x += gameState->editorState.gridSize) {
-				for (float z = -axisLength; z < axisLength; z += gameState->editorState.gridSize) {
-					float deltaX = mouseX - x;
-					float deltaZ = mouseZ - z;
-					float distSq = deltaX * deltaX + deltaZ * deltaZ;
-					float ratio = distSq / visibleGridRadiusSq;
-					if (distSq < visibleGridRadiusSq) {
-						DrawSphere({ x,0,z }, gridSphereRadius, ColorAlpha(CartesianColor, (1 - ratio)));
-					}
-				}
-			}
+			//for (float x = -axisLength; x < axisLength; x += gameState->editorState.gridSize) {
+			//	for (float z = -axisLength; z < axisLength; z += gameState->editorState.gridSize) {
+			//		float deltaX = mouseX - x;
+			//		float deltaZ = mouseZ - z;
+			//		float distSq = deltaX * deltaX + deltaZ * deltaZ;
+			//		float ratio = distSq / visibleGridRadiusSq;
+			//		if (distSq < visibleGridRadiusSq) {
+			//			DrawSphere({ x,0,z }, gridSphereRadius, ColorAlpha(CartesianColor, (1 - ratio)));
+			//		}
+			//	}
+			//}
 
 
 			for(int i=0; i<gameState->renderData.size(); ++i){
 				middle::RenderItem item = gameState->renderData[i];
 
 				if (item.type == middle::RenderItemType::SPHERE) {
-					DrawSphere(item.center, item.radius, item.color);
+					DrawSphereEx(item.center, item.radius, 5, 5, item.color);
 				}
 
 				if (item.type == middle::RenderItemType::RECTANGLE) {

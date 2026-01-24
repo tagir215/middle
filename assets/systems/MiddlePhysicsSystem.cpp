@@ -63,7 +63,8 @@ class MiddlePhysicsSystem : public middle::MiddleGameplaySystem {
 			}
 		}
 
-		DescLoop(gameState->frameTime, pairs, constraints, gameState->physicsBodies);
+		const int iterations = 12;
+		DescLoop(gameState->frameTime, pairs, constraints, gameState->physicsBodies, iterations);
 
 		loopInstances(gameState, [&](int i, middle::Shape& shape) {
 			auto pcomp = middle::getComponent<components::PhysicsData>(shape);

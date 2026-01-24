@@ -6,7 +6,7 @@
 
 namespace descart {
 
-	void DescLoop(float frameTime, std::vector<BodyPair>& pairs, std::vector<Constraint>& constraints, std::vector<PhysicsBody>& bodies);
+	void DescLoop(float frameTime, std::vector<BodyPair>& pairs, std::vector<Constraint>& constraints, std::vector<PhysicsBody>& bodies, int iterations);
 
 	void SolveConstraints(std::vector<Constraint>& constraints, std::vector<PhysicsBody>& bodies);
 
