@@ -43,16 +43,6 @@ namespace middle{
 
 	void physicsUpdate(GameState* gameState) {
 
-		if (gameState->applicationMode == ApplicationMode::GAME_MODE) {
-
-			// TODO for now just uses editor camera
-			Shape& activeCamera = getShape(gameState, gameState->activeCameraIndex);
-			auto pos = getComponent<components::Position>(activeCamera);
-			assert(pos != nullptr);
-			Vector3 p = { pos->posX, pos->posY, pos->posZ };
-			moveCameraXZ(gameState->editorState.camera, p);
-		}
-
 		for (auto& system : gameState->engineSystemsFrameStart) {
 			system->update(gameState);
 		}

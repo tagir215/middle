@@ -9,6 +9,7 @@ namespace middle{
 		"MouseSelectionSystem",
 		"EnviromentalFileNavigationSystem",
 		"EditorHotKeySystem",
+		"CameraSystem",
 	};
 
 	inline std::vector<std::string>engineSystemNamesFrameEnd

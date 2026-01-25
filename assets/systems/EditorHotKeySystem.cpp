@@ -41,10 +41,16 @@ class EditorHotKeySystem : public middle::MiddleGameplaySystem {
 			}
 			if (gameState->editorState.creationMode == middle::CreationMode::CAMERA_MODE) {
 				if (gameState->input.newThing) {
-					//gameState->editorState.nextEditorAction = middle::EditorAction::NEW_CAMERA;
+					Camera camera = gameState->editorState.camera;
+					gameState->editorState.editorActions.push_back(
+						std::make_unique<middle::EditorActionNewCamera>(camera.position, camera.target, camera.up, camera.fovy, camera.projection)
+					);
 				}
 				if (gameState->input.focus) {
-					//gameState->editorState.nextEditorAction = middle::EditorAction::SET_ACTIVE_CAMERA;
+					std::vector<int>selectedIndexes = middle::getSelectedShapes(gameState);
+					gameState->editorState.editorActions.push_back(
+						std::make_unique<middle::EditorActionSelectCamera>(selectedIndexes[0])
+					);
 				}
 			}
 

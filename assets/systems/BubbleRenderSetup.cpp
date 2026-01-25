@@ -4,6 +4,8 @@
 #include "middle_shape_utils.h"
 #include "middle_component_table.h"
 #include "BubbleComponent.h"
+#include "BubbleMultiplyComponent.h"
+#include "Position.h"
 
 class BubbleRenderSetup : public middle::MiddleGameplaySystem {
 
@@ -14,12 +16,22 @@ class BubbleRenderSetup : public middle::MiddleGameplaySystem {
 		middle::loopInstances(gameState, [gameState, this](int i, middle::Shape& shape) {
 
 			auto bubbleComponent = middle::getComponent<components::BubbleComponent>(shape);
-			if (!bubbleComponent)
+			auto multiplyComponent = middle::getComponent<components::BubbleMultiplyComponent>(shape);
+			if (!bubbleComponent && !multiplyComponent)
 				return;
 
+			if (multiplyComponent) {
+				auto pos = middle::getComponent<components::Position>(shape);
+				middle::RenderItem multiplyItem;
+				multiplyItem.center = { pos->posX, pos->posY, pos->posZ };
+				multiplyItem.text = "X";
+				multiplyItem.fontSize = 20;
+				multiplyItem.type = middle::RenderItemType::TEXT;
+				gameState->renderData.push_back(multiplyItem);
+			}
 
 
-			if (debugRendering) {
+			if (bubbleComponent && debugRendering) {
 
 				Vector3 axis = { bubbleComponent->axisX, bubbleComponent->axisY, bubbleComponent->axisZ };
 				Vector3 center = { bubbleComponent->centerX, bubbleComponent->centerY, bubbleComponent->centerZ };

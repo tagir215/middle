@@ -128,8 +128,17 @@ namespace middle {
 	class EditorActionNewCamera : public EditorActionContainer {
 	public:
 		Vector3 position;
-		EditorActionNewCamera(const Vector3& position) {
+		Vector3 up;
+		Vector3 target;
+		float fieldOfView;
+		// projection 0 or 1
+		int projection;
+		EditorActionNewCamera(const Vector3& position, const Vector3& targetPos, const Vector3& up, float fovy, int projection) {
 			this->position = position;
+			this->up = up;
+			this->target = targetPos;
+			this->fieldOfView = fovy;
+			this->projection = projection;
 		}
 		void execute(GameState* gameState) override;
 	};

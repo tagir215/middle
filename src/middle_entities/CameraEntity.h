@@ -8,14 +8,16 @@
 #include "LoopSociety.h"
 #include "MouseGrabbable.h"
 #include "PhysicsData.h"
+#include "middle_shape_utils.h"
+#include "CameraComponent.h"
 
 namespace entities{
 
-    void initCamera(middle::GameState* gameState, int index, const Vector3& position){
+    void initCamera(middle::GameState* gameState, int index, const Vector3& position, const Vector3& up, const Vector3& target, float fovy, int projection){
 		auto& shape = middle::addShape(gameState,index);
 		components::Sphere* sphere = middle::addComponent<components::Sphere>(shape);
 		components::Position* pos = middle::addComponent<components::Position>(shape);
-		components::PhysicsData* physics = middle::addComponent<components::PhysicsData>(shape);
+		components::CameraComponent* camera = middle::addComponent<components::CameraComponent>(shape);
 		middle::addComponent<components::MouseSelectable>(shape);
 		middle::addComponent<components::MouseGrabbable>(shape);
 		middle::addComponent<components::MouseIntersectable>(shape);
@@ -24,12 +26,13 @@ namespace entities{
 		pos->posX = position.x;
 		pos->posY = position.y;
 		pos->posZ = position.z;
-		physics->mass = 1;
-		physics->invMass = 1;
-		physics->momentOfInertia = 1;
-		physics->invMomentOfInertia = 1;
-		physics->damX = middle::DEF_DAMPING;
-		physics->damY = middle::DEF_DAMPING;
-		physics->damZ = middle::DEF_DAMPING;
+		camera->targetX = target.x;
+		camera->targetY = target.y;
+		camera->targetZ = target.z;
+		camera->upX = up.x;
+		camera->upY = up.y;
+		camera->upZ = up.z;
+		camera->projection = projection;
+		camera->fovy = fovy;
     }
 }

@@ -97,6 +97,7 @@ namespace middle {
 		bool systemsRegistered = false;
 		ApplicationMode applicationMode = ApplicationMode::EDITOR_MODE;
 		EditorState editorState;
+		Camera activeCamera;
 		std::array<Id, MAX_SHAPE_COUNT>ids;
 		std::array<Shape, MAX_SHAPE_COUNT>shapes;
 		std::array<Vector3, MAX_VERTEX_COUNT> vertexArray;
@@ -109,7 +110,7 @@ namespace middle {
 		Matrix oldWorldM;
 		Matrix screenOrientorM;
 		int activeScene = 0;
-		int activeCameraIndex = 0;
+		int activeCameraIndex = UNASSIGNED;
 		int vertexIndex = 0;
 		int loopIndex = 0;
 		int uniqueComponentCount = 0;

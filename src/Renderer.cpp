@@ -20,7 +20,9 @@ namespace RendererSystem {
 			// 89, 135, 168
 			ClearBackground(gameState->editorState.backgroundColor);
 
-			BeginMode3D(gameState->editorState.camera);
+			Camera camera = gameState->activeCamera;
+
+			BeginMode3D(camera);
 
 			// center indicator
 			DrawCube({ 0,5,0 }, 5, 5, 5, BLACK);
@@ -79,13 +81,13 @@ namespace RendererSystem {
 			for (int i = 0; i < gameState->renderData.size(); ++i) {
 				middle::RenderItem item = gameState->renderData[i];
 				if (item.type == middle::RenderItemType::TEXT) {
-					Vector2 pos = GetWorldToScreen(item.center, gameState->editorState.camera);
+					Vector2 pos = GetWorldToScreen(item.center, camera);
 					DrawText(item.text.c_str(), pos.x, pos.y, item.fontSize, item.color);
 				}
 			}
 
 			Vector3 center = { 0,0,0 };
-			Vector2 center2d = GetWorldToScreen(center, gameState->editorState.camera);
+			Vector2 center2d = GetWorldToScreen(center, camera);
 			if (gameState->sceneNames.size() > 0) {
 				DrawText(gameState->sceneNames[gameState->activeScene].c_str(), center2d.x, center2d.y, 1, WHITE);
 			}

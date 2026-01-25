@@ -81,26 +81,6 @@ class EditorSystem : public middle::MiddleGameplaySystem {
 		}
 
 
-		// camera controls
-		const float maxCameraSpeed = 60;
-		float mouseCamRatio = gameState->input.mousePos.y / gameState->screenHeight;
-		const float cameraSpeed = mouseCamRatio * mouseCamRatio * mouseCamRatio * maxCameraSpeed;
-		Vector3 cameraMovementDir = { 0,0,0 };
-		if (!gameState->input.altDown && gameState->input.w)
-			cameraMovementDir += Vector3Normalize(gameState->editorState.camera.target - gameState->editorState.camera.position);
-		if (!gameState->input.altDown && gameState->input.s)
-			cameraMovementDir += Vector3Negate(Vector3Normalize(gameState->editorState.camera.target - gameState->editorState.camera.position));
-		if (gameState->input.altDown && gameState->input.w)
-			cameraMovementDir += { 0, 0, 1 };
-		if (gameState->input.altDown && gameState->input.s)
-			cameraMovementDir += { 0, 0, -1 };
-		if (gameState->input.d)
-			cameraMovementDir += Vector3Negate(Vector3Normalize(Vector3CrossProduct(gameState->editorState.camera.up, gameState->editorState.camera.target - gameState->editorState.camera.position)));
-		if (gameState->input.a)
-			cameraMovementDir += Vector3Normalize(Vector3CrossProduct(gameState->editorState.camera.up, gameState->editorState.camera.target - gameState->editorState.camera.position));
-
-		gameState->editorState.camera.position += cameraMovementDir * cameraSpeed;
-		gameState->editorState.camera.target += cameraMovementDir * cameraSpeed;
 
 
 	}

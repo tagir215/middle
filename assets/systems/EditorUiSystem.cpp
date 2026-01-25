@@ -6,7 +6,8 @@
 #include "middle_shape_utils.h"
 
 class EditorUiSystem : public middle::MiddleGameplaySystem {
-	void update(middle::GameState* gameState) override {
+
+	void editorUi(middle::GameState* gameState) {
 
 		auto ui = [gameState]() {
 			Vector3 referencePos = { 0,0,0 };
@@ -99,7 +100,7 @@ class EditorUiSystem : public middle::MiddleGameplaySystem {
 
 			ImGui::Begin("Editor");
 
-			const char* items[] = { "SELECT MODE", "SPHERE MODE", "CONSTRAINT MODE", "CAMERA MODE", "LOOP_MODE"};
+			const char* items[] = { "SELECT MODE", "SPHERE MODE", "CONSTRAINT MODE", "CAMERA MODE", "LOOP_MODE" };
 			int currentItem = static_cast<int>(gameState->editorState.creationMode);
 			ImGui::Combo("Select things to add", &currentItem, items, IM_ARRAYSIZE(items));
 			gameState->editorState.creationMode = static_cast<middle::CreationMode>(currentItem);
@@ -326,7 +327,31 @@ class EditorUiSystem : public middle::MiddleGameplaySystem {
 			};
 
 
-			gameState->uiSetups.push_back(ui);
+		gameState->uiSetups.push_back(ui);
+	}
+
+	void gameEditorUi(middle::GameState* gameState) {
+
+		auto ui = [gameState]() {
+			ImGui::Begin("Control");
+			if (ImGui::Button("Edit")) {
+				gameState->applicationMode = middle::ApplicationMode::EDITOR_MODE;
+			}
+			ImGui::End();
+			};
+
+		gameState->uiSetups.push_back(ui);
+	}
+
+	void update(middle::GameState* gameState) override {
+
+
+		if (gameState->applicationMode == middle::ApplicationMode::EDITOR_MODE) {
+			editorUi(gameState);
+		}
+		if (gameState->applicationMode == middle::ApplicationMode::GAME_MODE) {
+			gameEditorUi(gameState);
+		}
 	}
 
 };

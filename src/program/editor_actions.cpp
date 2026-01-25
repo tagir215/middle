@@ -19,6 +19,7 @@
 #include "ComponentReference.h"
 #include "ComponentRefParent.h"
 #include "PlacementComponent.h"
+#include "CameraEntity.h"
 
 namespace middle {
 
@@ -221,7 +222,7 @@ namespace middle {
 	{
 		int freeIndex = findFreeIndex(gameState);
 		Vector3& pos = gameState->editorState.camera.position;
-		//initCamera(gameState, freeIndex, pos);
+		entities::initCamera(gameState, freeIndex, pos, up, target, fieldOfView, projection);
 	}
 
 	void EditorActionSelectCamera::execute(GameState* gameState)
