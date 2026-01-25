@@ -84,8 +84,8 @@ namespace MouseIntersectDetectionSystem {
 				}
 
 				Vector3 intersectPos;
-				bool isIntersecting = middle::RayCastLineSphere(pos, radius, gameState->editorState.camera.position,
-					gameState->editorState.camera.position + gameState->input.mouseDir, intersectPos);
+				bool isIntersecting = middle::RayCastLineSphere(pos, radius, gameState->activeCamera.position,
+					gameState->activeCamera.position + gameState->input.mouseDir, intersectPos);
 				intersectComponent->intersecting = isIntersecting;
 			}
 		}
