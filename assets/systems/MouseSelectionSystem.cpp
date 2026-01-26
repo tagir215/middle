@@ -10,6 +10,11 @@
 namespace MouseSelectionSystem {
 
 	class MouseSelectionSystem : public middle::MiddleGameplaySystem {
+	public:
+		MouseSelectionSystem() {
+			systemUpdateType = middle::SystemUpdateType::PREFRAME;
+			systemModeType = middle::SystemModeType::EDITOR;
+		}
 		void update(middle::GameState* gameState) override {
 
 			if (gameState->input.mouseClicked) {

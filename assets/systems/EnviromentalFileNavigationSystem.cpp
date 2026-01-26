@@ -13,6 +13,12 @@
 #include "editor_actions.h"
 
 class EnviromentalFileNavigationSystem : public middle::MiddleGameplaySystem {
+public:
+	EnviromentalFileNavigationSystem() {
+		systemUpdateType = middle::SystemUpdateType::PREFRAME;
+		systemModeType = middle::SystemModeType::EDITOR;
+	}
+
 	void update(middle::GameState* gameState) override {
 		middle::loopInstances(gameState, [gameState](int i, middle::Shape& shape) {
 			auto system = middle::getComponent<components::SystemReference>(shape);

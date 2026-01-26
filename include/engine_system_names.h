@@ -1,7 +1,7 @@
 #pragma once
 
 namespace middle{
-	inline std::vector<std::string>engineSystemNamesFrameStart
+	inline std::vector<std::string>engineSystemNames
 	{
 		"EditorSystem",
 		"MouseIntersectDetectionSystem",
@@ -10,16 +10,10 @@ namespace middle{
 		"EnviromentalFileNavigationSystem",
 		"EditorHotKeySystem",
 		"CameraSystem",
-	};
-
-	inline std::vector<std::string>engineSystemNamesFrameEnd
-	{
 		"MiddlePhysicsSystem",
-	};
-
-	inline std::vector<std::string>engineRendererSystemNames{
 		"EditorRenderSetupSystem",
 		"EditorUiSystem",
 		"ComponentUiSystem",
 	};
+
 }

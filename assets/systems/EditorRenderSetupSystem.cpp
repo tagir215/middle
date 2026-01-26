@@ -21,6 +21,12 @@
 #include "Text.h"
 
 class EditorRenderSetupSystem : public middle::MiddleGameplaySystem {
+public:
+	EditorRenderSetupSystem() {
+		systemUpdateType = middle::SystemUpdateType::RENDERING;
+		systemModeType = middle::SystemModeType::EDITOR;
+	}
+
 	void update(middle::GameState* gameState) override {
 
 		Color textColor = WHITE;

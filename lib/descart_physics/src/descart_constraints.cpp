@@ -31,13 +31,13 @@ namespace descart {
 		bodyA.linearVel = ScaleV(AddV(bodyA.linearVel, NegateV(impulse)), bodyA.invMass);
 		bodyB.linearVel = ScaleV(AddV(bodyB.linearVel, impulse), bodyB.invMass);
 
-		if (posError * 1.1f > constraint.targetDistance) {
-			const float idk = 0.0001f;
-			bodyA.position = AddV(bodyA.position, ScaleV(bodyA.linearVel, time * idk));
-			bodyB.position = AddV(bodyB.position, ScaleV(bodyB.linearVel, time * idk));
-			bodyA.timeLeft = 0;
-			bodyB.timeLeft = 0;
-		}
+		//if (posError * 1.1f > constraint.targetDistance) {
+		//	const float idk = 0.0001f;
+		//	bodyA.position = AddV(bodyA.position, ScaleV(bodyA.linearVel, time * idk));
+		//	bodyB.position = AddV(bodyB.position, ScaleV(bodyB.linearVel, time * idk));
+		//	bodyA.timeLeft = 0;
+		//	bodyB.timeLeft = 0;
+		//}
 
 		AssertNanVec(bodyA.linearVel);
 		AssertNanVec(bodyB.linearVel);

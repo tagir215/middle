@@ -6,6 +6,12 @@
 #include "middle_shape_utils.h"
 
 class CameraSystem : public middle::MiddleGameplaySystem {
+public:
+	CameraSystem() {
+		systemUpdateType = middle::SystemUpdateType::PREFRAME;
+		systemModeType = middle::SystemModeType::ENGINE;
+	}
+
 	void update(middle::GameState* gameState) override {
 		if (gameState->applicationMode == middle::ApplicationMode::EDITOR_MODE) {
 			// camera controls

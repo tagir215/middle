@@ -6,6 +6,11 @@
 #include "middle_shape_utils.h"
 
 class EditorUiSystem : public middle::MiddleGameplaySystem {
+public:
+	EditorUiSystem() {
+		systemUpdateType = middle::SystemUpdateType::RENDERING;
+		systemModeType = middle::SystemModeType::ENGINE;
+	}
 
 	void editorUi(middle::GameState* gameState) {
 

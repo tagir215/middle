@@ -107,8 +107,7 @@ class BubbleOutlinePhysics : public middle::MiddleGameplaySystem {
 					Vector3 axis = Vector3Normalize(nodePos - fieldPos);
 
 					if (Vector3DotProduct(axisFromCenter, axis) < 0) {
-						sqrDistance = 0.1f;
-						axis = axisFromCenter;
+						continue;
 					}
 
 					if (sqrDistance > maxDistSqr) {

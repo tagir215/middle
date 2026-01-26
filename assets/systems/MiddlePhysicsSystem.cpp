@@ -8,6 +8,12 @@
 #include "Position.h"
 
 class MiddlePhysicsSystem : public middle::MiddleGameplaySystem {
+public:
+	MiddlePhysicsSystem() {
+		systemUpdateType = middle::SystemUpdateType::POSTFRAME;
+		systemModeType = middle::SystemModeType::ENGINE;
+	}
+
 	void update(middle::GameState* gameState) override {
 
 		// shape phsyics stuff

@@ -6,6 +6,7 @@
 #include "BubbleComponent.h"
 #include "BubbleMultiplyComponent.h"
 #include "Position.h"
+#include "Sphere.h"
 
 class BubbleRenderSetup : public middle::MiddleGameplaySystem {
 
@@ -17,17 +18,58 @@ class BubbleRenderSetup : public middle::MiddleGameplaySystem {
 
 			auto bubbleComponent = middle::getComponent<components::BubbleComponent>(shape);
 			auto multiplyComponent = middle::getComponent<components::BubbleMultiplyComponent>(shape);
-			if (!bubbleComponent && !multiplyComponent)
+			auto sphere = middle::getComponent<components::Sphere>(shape);
+			if (!bubbleComponent && !multiplyComponent && !sphere)
 				return;
 
-			if (multiplyComponent) {
-				auto pos = middle::getComponent<components::Position>(shape);
-				middle::RenderItem multiplyItem;
-				multiplyItem.center = { pos->posX, pos->posY, pos->posZ };
-				multiplyItem.text = "X";
-				multiplyItem.fontSize = 20;
-				multiplyItem.type = middle::RenderItemType::TEXT;
-				gameState->renderData.push_back(multiplyItem);
+			if (gameState->applicationMode == middle::ApplicationMode::GAME_MODE) {
+
+				if (sphere) {
+					auto pos = middle::getComponent<components::Position>(shape);
+					middle::RenderItem particle;
+					particle.center = { pos->posX, pos->posY, pos->posZ };
+					particle.type = middle::RenderItemType::SPHERE;
+					particle.radius = sphere->radius;
+					particle.color = middle::UGLY_PINK;
+					gameState->renderData.push_back(particle);
+				}
+
+				if (multiplyComponent) {
+					auto pos = middle::getComponent<components::Position>(shape);
+					middle::RenderItem multiplyItem;
+					multiplyItem.center = { pos->posX, pos->posY, pos->posZ };
+					multiplyItem.text = "X";
+					multiplyItem.fontSize = 20;
+					multiplyItem.type = middle::RenderItemType::TEXT;
+					gameState->renderData.push_back(multiplyItem);
+				}
+
+				if (bubbleComponent) {
+					for (int index = 0; index < bubbleComponent->outline.size(); ++index) {
+						int indexA = index - 1;
+						int indexB = index;
+						if (index == 0) {
+							indexA = bubbleComponent->outline.size() - 1;
+						}
+						middle::Id nodeIdA = bubbleComponent->outline[indexA];
+						middle::Id nodeIdB = bubbleComponent->outline[indexB];
+						Vector3 posA = middle::getShapePosition(gameState, nodeIdA.index);
+						Vector3 posB = middle::getShapePosition(gameState, nodeIdB.index);
+
+						middle::RenderItem outlineItem;
+						outlineItem.type = middle::RenderItemType::LINE;
+						outlineItem.linePointA = posA;
+						outlineItem.linePointB = posB;
+						if (bubbleComponent->intersecting) {
+							outlineItem.color = WHITE;
+						}
+						else {
+							outlineItem.color = middle::UGLY_PINK;
+						}
+						gameState->renderData.push_back(outlineItem);
+					}
+				}
+
 			}
 
 

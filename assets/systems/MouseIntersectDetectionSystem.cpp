@@ -19,6 +19,12 @@
 namespace MouseIntersectDetectionSystem {
 
 	class MouseIntersectDetectionSystem : public middle::MiddleGameplaySystem {
+	public:
+		MouseIntersectDetectionSystem() {
+			systemUpdateType = middle::SystemUpdateType::PREFRAME;
+			systemModeType = middle::SystemModeType::EDITOR;
+		}
+
 		void update(middle::GameState* gameState) override {
 
 			for (int i = 0; i < gameState->shapes.size(); ++i) {

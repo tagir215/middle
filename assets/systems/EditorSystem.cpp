@@ -14,6 +14,11 @@
 #include "engine_system_names.h"
 
 class EditorSystem : public middle::MiddleGameplaySystem {
+public:
+	EditorSystem() {
+		systemUpdateType = middle::SystemUpdateType::PREFRAME;
+		systemModeType = middle::SystemModeType::EDITOR;
+	}
 
 	void reset(middle::GameState* gameState) {
 		for (int i = 0; i < gameState->shapes.size(); ++i) {
@@ -27,10 +32,7 @@ class EditorSystem : public middle::MiddleGameplaySystem {
 		int highestUsedIndex = middle::findHighestUsedIndex(gameState);
 		int index = highestUsedIndex + 1;
 		index = highestUsedIndex > middle::GHOST_INDEX_OFFSET ? highestUsedIndex : middle::GHOST_INDEX_OFFSET;
-		std::vector<std::string>systemNames;
-		systemNames.insert(systemNames.end(), middle::engineSystemNamesFrameStart.begin(), middle::engineSystemNamesFrameStart.end());
-		systemNames.insert(systemNames.end(), middle::engineSystemNamesFrameEnd.begin(), middle::engineSystemNamesFrameEnd.end());
-		systemNames.insert(systemNames.end(), middle::engineRendererSystemNames.begin(), middle::engineRendererSystemNames.end());
+		std::vector<std::string>systemNames = middle::engineSystemNames;
 
 		int systemCount = systemNames.size();
 		float angleBetween = PI / systemCount;

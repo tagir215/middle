@@ -5,6 +5,11 @@
 #include "middle_shape_utils.h"
 
 class EditorHotKeySystem : public middle::MiddleGameplaySystem {
+public:
+	EditorHotKeySystem() {
+		systemUpdateType = middle::SystemUpdateType::RENDERING;
+		systemModeType = middle::SystemModeType::EDITOR;
+	}
 	void update(middle::GameState* gameState) override {
 
 		if (gameState->input.selectModeClick) {

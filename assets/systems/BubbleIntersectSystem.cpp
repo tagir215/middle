@@ -19,6 +19,19 @@ class BubbleIntersectSystem : public middle::MiddleGameplaySystem {
 			if (!bubble)
 				return;
 
+			// check that children are not already intersecting
+			std::vector<middle::Id>children;
+			middle::getChildren(gameState, shape.id, children);
+			for (auto& childId : children) {
+				auto& childShape = middle::getShape(gameState, childId.index);
+				auto childBubble = middle::getComponent<components::BubbleComponent>(childShape);
+				if (childBubble && childBubble->intersecting) {
+					bubble->intersecting = false;
+					return;
+				}
+			}
+
+			// update intersecting status
 			Vector3 mousePos = gameState->input.mouseXZ_PlanePos;
 			bool intersecting = bubble::pointIntersectBubble(gameState, shape, mousePos);
 			bubble->intersecting = intersecting;

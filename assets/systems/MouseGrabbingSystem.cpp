@@ -11,6 +11,11 @@
 namespace MouseGrabbingSystem {
 
 	class MouseGrabbingSystem : public middle::MiddleGameplaySystem {
+	public:
+		MouseGrabbingSystem() {
+			systemUpdateType = middle::SystemUpdateType::PREFRAME;
+			systemModeType = middle::SystemModeType::EDITOR;
+		}
 		void update(middle::GameState* gameState) override {
 			for (int i = 0; i < gameState->shapes.size(); ++i) {
 				middle::Shape& shape = gameState->shapes[i];

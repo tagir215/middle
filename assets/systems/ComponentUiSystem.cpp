@@ -8,6 +8,12 @@
 
 class ComponentUiSystem : public middle::MiddleGameplaySystem {
 
+public:
+	ComponentUiSystem() {
+		systemUpdateType = middle::SystemUpdateType::PREFRAME;
+		systemModeType = middle::SystemModeType::EDITOR;
+	}
+
 	const int maxFieldCount = 100;
 
 	void update(middle::GameState* gameState) override {
@@ -50,10 +56,10 @@ class ComponentUiSystem : public middle::MiddleGameplaySystem {
 					if (size > 0 && ImGui::CollapsingHeader(componentName)) {
 						for (int fieldIndex = 0; fieldIndex < size; ++fieldIndex) {
 							middle::FieldInfo field = gameState->fields[fieldIndex];
-							if(field.type == middle::FieldType::Bool){
+							if (field.type == middle::FieldType::Bool) {
 								ImGui::Checkbox(field.name, static_cast<bool*>(field.value));
 							}
-							else if(field.type == middle::FieldType::Float){
+							else if (field.type == middle::FieldType::Float) {
 								ImGui::InputFloat(field.name, static_cast<float*>(field.value));
 							}
 							else if (field.type == middle::FieldType::Id) {
@@ -64,12 +70,12 @@ class ComponentUiSystem : public middle::MiddleGameplaySystem {
 								std::string* string = static_cast<std::string*>(field.value);
 								//ImGui::InputText(field.name, , string);
 							}
-							else{
+							else {
 								ImGui::Text(field.name);
 							}
 						}
 					}
-					else if (size == 0){
+					else if (size == 0) {
 						ImGui::Text(componentName);
 					}
 

@@ -15,26 +15,24 @@ namespace middle{
 	void registerSystems(middle::GameState* gameState) {
 		auto& systemMap = middle::getSystemMap();
 
-		// register engine systems
-		for (auto& name : middle::engineSystemNamesFrameStart) {
-			auto& ptr = systemMap[name];
-			gameState->engineSystemsFrameStart.push_back(std::move(ptr));
-		}
-		for (auto& name : middle::engineSystemNamesFrameEnd) {
-			gameState->engineSystemsFrameEnd.push_back(std::move(systemMap[name]));
-		}
-		for (auto& name : middle::engineRendererSystemNames) {
-			gameState->engineRendererSystems.push_back(std::move(systemMap[name]));
-		}
-
 		// register gameplay systems
 		for (auto& pair : systemMap) {
 			std::string name = pair.first;
-			// check that the system still exists
-			auto sysptr = pair.second.get();
-			if (sysptr) {
-				gameState->gameplaySystems[name] = std::move(pair.second);
+			auto& sysptr = pair.second;
+
+			if (sysptr->systemUpdateType == SystemUpdateType::PREFRAME) {
+				gameState->engineSystemsFrameStart.push_back(std::move(sysptr));
 			}
+			else if (sysptr->systemUpdateType == SystemUpdateType::IMPORTED) {
+				gameState->gameplaySystems[name] = std::move(sysptr);
+			}
+			else if (sysptr->systemUpdateType == SystemUpdateType::POSTFRAME) {
+				gameState->engineSystemsFrameEnd.push_back(std::move(sysptr));
+			}
+			else if (sysptr->systemUpdateType == SystemUpdateType::RENDERING) {
+				gameState->engineRendererSystems.push_back(std::move(sysptr));
+			}
+
 		}
 
 		gameState->systemsRegistered = true;
@@ -44,6 +42,12 @@ namespace middle{
 	void physicsUpdate(GameState* gameState) {
 
 		for (auto& system : gameState->engineSystemsFrameStart) {
+
+			if (gameState->applicationMode == ApplicationMode::GAME_MODE
+				&& system->systemModeType == SystemModeType::EDITOR) {
+				continue;
+			}
+
 			system->update(gameState);
 		}
 
@@ -53,15 +57,29 @@ namespace middle{
 			if (isGhostShape(i))
 				return;
 
+
+
 			auto sysRef = getComponent<components::SystemReference>(shape);
 			if (sysRef != nullptr) {
 				auto systemName = sysRef->systemName;
 				auto& system = gameState->gameplaySystems[systemName];
+
+				if (gameState->applicationMode == ApplicationMode::GAME_MODE
+					&& system->systemModeType == SystemModeType::EDITOR) {
+					return;
+				}
+
 				system->update(gameState);
 			}
 			});
 
 		for (auto& system : gameState->engineSystemsFrameEnd) {
+
+			if (gameState->applicationMode == ApplicationMode::GAME_MODE
+				&& system->systemModeType == SystemModeType::EDITOR) {
+				continue;
+			}
+
 			system->update(gameState);
 		}
 
@@ -96,6 +114,12 @@ extern "C" {
 		}
 
 		for (auto& renderSystem : gameState->engineRendererSystems) {
+
+			if (gameState->applicationMode == ApplicationMode::GAME_MODE
+				&& renderSystem->systemModeType == SystemModeType::EDITOR) {
+				continue;
+			}
+
 			renderSystem->update(gameState);
 		}
 
