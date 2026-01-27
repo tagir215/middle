@@ -13,6 +13,10 @@
 #include <random>
 
 class BubbleOutlineSystem : public middle::MiddleGameplaySystem {
+public:
+	BubbleOutlineSystem(){
+		systemModeType = middle::SystemModeType::ENGINE;
+	}
 	const float bubbleOutlineWidthMargin = 10;
 	const float distBetweenNodes = 5;
 	const float nodeRadius = 0.1f;
@@ -231,6 +235,10 @@ class BubbleOutlineSystem : public middle::MiddleGameplaySystem {
 			shapeList.clear();
 			populateWithChildren(gameState, &shapeList, shape.id);
 
+			if (shapeList.size() == 0) {
+				return;
+			}
+
 			LongestDistanceCouple distanceCouple = findPointsWithLongestDistanceBetween(gameState, shapeList);
 			LongestDistanceCouple perpCouple = coupleWithLongestDistanceAtAxis(gameState,
 				shapeList, distanceCouple.axis);
@@ -245,6 +253,8 @@ class BubbleOutlineSystem : public middle::MiddleGameplaySystem {
 			Vector3 center = distanceCouple.posA + Vector3Scale(distanceCouple.axis, length * 0.5f) + offsetSide;
 			Vector3 offsetToCenter = Vector3Scale(perpCouple.axis, width * 0.5f);
 			center += offsetToCenter;
+
+			assert(!std::isnan(center.x));
 
 			bubble->centerX = center.x;
 			bubble->centerY = center.y;

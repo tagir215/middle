@@ -48,6 +48,11 @@ namespace middle{
 				continue;
 			}
 
+			if (gameState->applicationMode == ApplicationMode::EDITOR_MODE
+				&& system->systemModeType == SystemModeType::GAMEPLAY) {
+				continue;
+			}
+
 			system->update(gameState);
 		}
 
@@ -64,8 +69,14 @@ namespace middle{
 				auto systemName = sysRef->systemName;
 				auto& system = gameState->gameplaySystems[systemName];
 
+
 				if (gameState->applicationMode == ApplicationMode::GAME_MODE
 					&& system->systemModeType == SystemModeType::EDITOR) {
+					return;
+				}
+
+				if (gameState->applicationMode == ApplicationMode::EDITOR_MODE
+					&& system->systemModeType == SystemModeType::GAMEPLAY) {
 					return;
 				}
 
@@ -117,6 +128,11 @@ extern "C" {
 
 			if (gameState->applicationMode == ApplicationMode::GAME_MODE
 				&& renderSystem->systemModeType == SystemModeType::EDITOR) {
+				continue;
+			}
+
+			if (gameState->applicationMode == ApplicationMode::EDITOR_MODE
+				&& renderSystem->systemModeType == SystemModeType::GAMEPLAY) {
 				continue;
 			}
 

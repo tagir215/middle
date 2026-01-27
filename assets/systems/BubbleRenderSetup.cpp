@@ -34,6 +34,7 @@ class BubbleRenderSetup : public middle::MiddleGameplaySystem {
 					gameState->renderData.push_back(particle);
 				}
 
+
 				if (multiplyComponent) {
 					auto pos = middle::getComponent<components::Position>(shape);
 					middle::RenderItem multiplyItem;

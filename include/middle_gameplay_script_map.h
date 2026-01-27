@@ -5,6 +5,7 @@
 
 class MiddleGameplaySystem;
 
+
 namespace middle {
 	inline auto& getSystemMap() {
 		static std::unordered_map <std::string, std::unique_ptr<MiddleGameplaySystem>> systemMap;

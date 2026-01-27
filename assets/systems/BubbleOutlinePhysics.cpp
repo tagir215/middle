@@ -8,6 +8,10 @@
 #include "LoopSociety.h"
 
 class BubbleOutlinePhysics : public middle::MiddleGameplaySystem {
+public:
+	BubbleOutlinePhysics() {
+		systemModeType = middle::SystemModeType::ENGINE;
+	}
 
 	void applyForce(middle::GameState* gameState, middle::Shape& node, const Vector3& force) {
 		auto pData = middle::getComponent<components::PhysicsData>(node);
@@ -133,6 +137,26 @@ class BubbleOutlinePhysics : public middle::MiddleGameplaySystem {
 					applyForce(gameState, node, force);
 				}
 
+			}
+
+
+			// translate bubble nodes toward centroid
+			Vector3 outlineCentroid = { 0,0,0 };
+			for (auto& id : outlineNodes) {
+				auto& node = middle::getShape(gameState, id.index);
+				auto position = middle::getComponent<components::Position>(node);
+				outlineCentroid += {position->posX, position->posY, position->posZ};
+			}
+			outlineCentroid = outlineCentroid / outlineNodes.size();
+
+			Vector3 displacement = bubbleCenter - outlineCentroid;
+
+			for (auto& id : outlineNodes) {
+				auto& node = middle::getShape(gameState, id.index);
+				auto position = middle::getComponent<components::Position>(node);
+				position->posX += displacement.x;
+				position->posY += displacement.y;
+				position->posZ += displacement.z;
 			}
 
 			});

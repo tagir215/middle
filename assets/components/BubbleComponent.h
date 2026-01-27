@@ -23,6 +23,7 @@ namespace components {
 		float bZ;
 
 		bool intersecting = false;
+		bool hidden = false;
 
 		std::vector<middle::Id> outline;
 		int nodeCountTarget = 0;

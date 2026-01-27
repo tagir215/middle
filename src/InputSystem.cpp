@@ -52,32 +52,40 @@ class InputSystem : public middle::MiddleGameplaySystem {
 			gameState->input.mouseReleased = IsMouseButtonReleased(MOUSE_BUTTON_LEFT);
 		}
 
-		if (gameState->inputBlockers.find(middle::InputBlockers::KEYBOARD_BLOCK) == gameState->inputBlockers.end()) {
-			gameState->input.w = IsKeyDown(KEY_W);
-			gameState->input.s = IsKeyDown(KEY_S);
-			gameState->input.a = IsKeyDown(KEY_A);
-			gameState->input.d = IsKeyDown(KEY_D);
-			gameState->input.q = IsKeyDown(KEY_Q);
-			gameState->input.e = IsKeyDown(KEY_E);
-			gameState->input.altDown = IsKeyDown(KEY_LEFT_ALT);
-			gameState->input.grabDown = IsKeyDown(KEY_G);
-			gameState->input.grabReleased = IsKeyReleased(KEY_G);
-			gameState->input.grabReleased = IsKeyReleased(KEY_G);
-			gameState->input.infoClick = IsKeyPressed(KEY_I);
-			gameState->input.loopClick = IsKeyPressed(KEY_L);
-			gameState->input.selectModeClick = IsKeyPressed(KEY_ONE);
-			gameState->input.sphereModeClick = IsKeyPressed(KEY_TWO);
-			gameState->input.constraintModeClick = IsKeyPressed(KEY_THREE);
-			gameState->input.cameraModeClick = IsKeyPressed(KEY_FOUR);
-			gameState->input.loopModeClick = IsKeyPressed(KEY_FIVE);
-			gameState->input.deleteClick = IsKeyPressed(KEY_R);
-			gameState->input.copyClick = IsKeyPressed(KEY_C);
-			gameState->input.saveClick = IsKeyPressed(KEY_P);
-			gameState->input.navigateToFileClick = IsKeyPressed(KEY_SPACE);
-			gameState->input.focus = IsKeyPressed(KEY_F);
-			gameState->input.newThing = gameState->input.mouseClicked;
-			gameState->input.reparentClick = IsKeyPressed(KEY_E);
-			gameState->input.seaprateFromParentClick = IsKeyPressed(KEY_R);
+		if (gameState->applicationMode == middle::ApplicationMode::EDITOR_MODE) {
+			if (gameState->inputBlockers.find(middle::InputBlockers::KEYBOARD_BLOCK) == gameState->inputBlockers.end()) {
+				gameState->input.w = IsKeyDown(KEY_W);
+				gameState->input.s = IsKeyDown(KEY_S);
+				gameState->input.a = IsKeyDown(KEY_A);
+				gameState->input.d = IsKeyDown(KEY_D);
+				gameState->input.q = IsKeyDown(KEY_Q);
+				gameState->input.e = IsKeyDown(KEY_E);
+				gameState->input.altDown = IsKeyDown(KEY_LEFT_ALT);
+				gameState->input.grabDown = IsKeyDown(KEY_G);
+				gameState->input.grabReleased = IsKeyReleased(KEY_G);
+				gameState->input.grabReleased = IsKeyReleased(KEY_G);
+				gameState->input.infoClick = IsKeyPressed(KEY_I);
+				gameState->input.loopClick = IsKeyPressed(KEY_L);
+				gameState->input.selectModeClick = IsKeyPressed(KEY_ONE);
+				gameState->input.sphereModeClick = IsKeyPressed(KEY_TWO);
+				gameState->input.constraintModeClick = IsKeyPressed(KEY_THREE);
+				gameState->input.cameraModeClick = IsKeyPressed(KEY_FOUR);
+				gameState->input.loopModeClick = IsKeyPressed(KEY_FIVE);
+				gameState->input.deleteClick = IsKeyPressed(KEY_R);
+				gameState->input.copyClick = IsKeyPressed(KEY_C);
+				gameState->input.saveClick = IsKeyPressed(KEY_P);
+				gameState->input.navigateToFileClick = IsKeyPressed(KEY_SPACE);
+				gameState->input.focus = IsKeyPressed(KEY_F);
+				gameState->input.newThing = gameState->input.mouseClicked;
+				gameState->input.reparentClick = IsKeyPressed(KEY_E);
+				gameState->input.seaprateFromParentClick = IsKeyPressed(KEY_R);
+			}
+		}
+
+		if (gameState->applicationMode == middle::ApplicationMode::GAME_MODE) {
+			if (gameState->inputBlockers.find(middle::InputBlockers::KEYBOARD_BLOCK) == gameState->inputBlockers.end()) {
+
+			}
 		}
 
 		// CAMERA POSITION UPDATE

@@ -27,7 +27,7 @@ namespace MouseGrabbingSystem {
 				if (middle::isShapeSelected(gameState, i) && gameState->input.grabDown) {
 					grabbable->grabbing = true;
 				}
-				else {
+				else if (!gameState->input.grabDown){
 					grabbable->grabbing = false;
 				}
 

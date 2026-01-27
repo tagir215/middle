@@ -6,12 +6,12 @@
 #include "BubbleComponent.h"
 #include "Position.h"
 #include "bubble_utils.h"
+#include "MouseGrabbable.h"
 
 class BubbleIntersectSystem : public middle::MiddleGameplaySystem {
 
 
 	void update(middle::GameState* gameState) override {
-
 
 		middle::loopInstances(gameState, [gameState, this](int i, middle::Shape& shape) {
 
@@ -19,13 +19,18 @@ class BubbleIntersectSystem : public middle::MiddleGameplaySystem {
 			if (!bubble)
 				return;
 
-			// check that children are not already intersecting
+			// check that children are not already intersecting or grabbing 
 			std::vector<middle::Id>children;
 			middle::getChildren(gameState, shape.id, children);
 			for (auto& childId : children) {
 				auto& childShape = middle::getShape(gameState, childId.index);
 				auto childBubble = middle::getComponent<components::BubbleComponent>(childShape);
 				if (childBubble && childBubble->intersecting) {
+					bubble->intersecting = false;
+					return;
+				}
+				auto grabbable = middle::getComponent<components::MouseGrabbable>(childShape);
+				if (grabbable && grabbable->grabbing) {
 					bubble->intersecting = false;
 					return;
 				}

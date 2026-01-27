@@ -48,6 +48,7 @@ namespace middle {
 		virtual void execute(GameState* gameState) = 0;
 	};
 
+
 	struct EditorState {
 		CreationMode creationMode;
 		Camera3D camera;
@@ -83,6 +84,11 @@ namespace middle {
 		float height;
 		int fontSize;
 		std::string text = "";
+	};
+
+	struct BubbleAlgebraState {
+		int bubblesGrabbed = 0;
+		middle::Id bubbleToDelete;
 	};
 
 	struct GameState {
@@ -129,6 +135,8 @@ namespace middle {
 		std::vector<PhysicsBody>physicsBodies;
 		std::vector<std::function<void()>>uiSetups;
 		std::vector<middle::FieldInfo>fields;
+
+		BubbleAlgebraState bubbleAlgebraState;
 	};
 
 }

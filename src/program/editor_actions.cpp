@@ -194,7 +194,7 @@ namespace middle {
 	{
 		std::string name = systemName;
 		shell_open_file("../assets/systems/" + systemName + ".cpp");
-		gameState->quit = true;
+		gameState->closeGame = true;
 	}
 
 	void EditorActionNewSystem::execute(GameState* gameState)
@@ -262,7 +262,7 @@ namespace middle {
 	{
 		shell_open_file("../assets/components/" + componentName + ".h");
 		unselect(gameState);
-		gameState->quit = true;
+		gameState->closeGame = true;
 	}
 
 	void EditorActionRemoveFromLoop::execute(GameState* gameState)
