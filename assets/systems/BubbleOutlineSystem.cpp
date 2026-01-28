@@ -294,6 +294,9 @@ public:
 			}
 			bubble->nodeCountTarget = nodeCount;
 
+			bubble->distBetweenNodes = distBetweenNodes;
+			bubble->endRadius = bubbleEndPointRadius;
+
 			// bubble initialization
 			if (bubble->outline.size() == 0) {
 				if (axisLength < 0) axisLength = 0;
@@ -304,8 +307,10 @@ public:
 				Vector3 centerLineEnd = center + Vector3Scale(distanceCouple.axis, axisLength * 0.5f);
 				Vector3 outlineStart = centerLineEnd + Vector3Scale(perpAxis, bubbleEndPointRadius);
 				float adjustedToEvenDistBetweenNodes = circumference / nodeCount;
+
+
 				float arcLength = PI * bubbleEndPointRadius;
-				float angleBetweenNodes = adjustedToEvenDistBetweenNodes / bubbleEndPointRadius;
+				float angleBetweenNodes = bubble->distBetweenNodes / bubbleEndPointRadius;
 				Vector3 dirVec = outlineStart - centerLineEnd;
 				Vector3 rotateAxis = { 0,-1,0 };
 

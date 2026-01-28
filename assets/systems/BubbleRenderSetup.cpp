@@ -7,6 +7,7 @@
 #include "BubbleMultiplyComponent.h"
 #include "Position.h"
 #include "Sphere.h"
+#include "BubbleUnit.h"
 
 class BubbleRenderSetup : public middle::MiddleGameplaySystem {
 
@@ -19,8 +20,16 @@ class BubbleRenderSetup : public middle::MiddleGameplaySystem {
 			auto bubbleComponent = middle::getComponent<components::BubbleComponent>(shape);
 			auto multiplyComponent = middle::getComponent<components::BubbleMultiplyComponent>(shape);
 			auto sphere = middle::getComponent<components::Sphere>(shape);
+			auto unit = middle::getComponent<components::BubbleUnit>(shape);
 			if (!bubbleComponent && !multiplyComponent && !sphere)
 				return;
+
+			if (bubbleComponent && bubbleComponent->hidden) {
+				return;
+			}
+			if (unit && unit->hidden) {
+				return;
+			}
 
 			if (gameState->applicationMode == middle::ApplicationMode::GAME_MODE) {
 
@@ -80,7 +89,6 @@ class BubbleRenderSetup : public middle::MiddleGameplaySystem {
 				Vector3 center = { bubbleComponent->centerX, bubbleComponent->centerY, bubbleComponent->centerZ };
 				float l = bubbleComponent->length;
 				float w = bubbleComponent->width;
-
 
 
 				middle::RenderItem p1;

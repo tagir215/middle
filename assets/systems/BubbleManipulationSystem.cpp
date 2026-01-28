@@ -48,6 +48,25 @@ namespace bubbleActions{
 		middle::deleteShapeRecursive(gameState, id.index);
 	}
 
+	void hideBubble(middle::GameState* gameState, middle::Id& id) {
+		middle::Shape& shape = middle::getShape(gameState, id.index);
+		auto grabbedBubble = middle::getComponent<components::BubbleComponent>(shape);
+		grabbedBubble->hidden = true;
+		std::vector<middle::Id>children;
+		middle::getChildren(gameState, shape.id, children);
+		for (middle::Id& childId : children) {
+			middle::Shape& childShape = middle::getShape(gameState, childId.index);
+			auto childBubble = middle::getComponent<components::BubbleComponent>(childShape);
+			if (childBubble) {
+				childBubble->hidden = true;
+			}
+			auto childUnit = middle::getComponent<components::BubbleUnit>(childShape);
+			if (childUnit) {
+				childUnit->hidden = true;
+			}
+		}
+	}
+
 	class Multiply : public BubbleAction {
 	public:
 		middle::Id shapeToCopyId;
@@ -145,14 +164,20 @@ class BubbleManipulationSystem : public middle::MiddleGameplaySystem {
 				&& gameState->bubbleAlgebraState.bubblesGrabbed == 1
 				&& bubble->intersecting) {
 				middle::Id grabbedId = findGrabbedBubble(gameState);
+
+				// multiply action
 				auto mulAction = bubbleActions::Multiply(grabbedId, shape.id);
 				mulAction.execute(gameState);
+
+				// mark currently grabbed bubble for deletion
 				gameState->bubbleAlgebraState.bubbleToDelete = grabbedId;
+
+				bubbleActions::hideBubble(gameState, grabbedId);
 			}
 
-			if (gameState->bubbleAlgebraState.bubbleToDelete.index != middle::UNASSIGNED 
+			if (gameState->bubbleAlgebraState.bubbleToDelete.index != middle::UNASSIGNED
 				&& gameState->input.mouseReleased) {
-				middle::Shape& grabbedShape = middle::getShape(gameState, 
+				middle::Shape& grabbedShape = middle::getShape(gameState,
 					gameState->bubbleAlgebraState.bubbleToDelete.index);
 				middle::deleteShapeRecursive(gameState, grabbedShape.id.index);
 				gameState->bubbleAlgebraState.bubbleToDelete = middle::Id();

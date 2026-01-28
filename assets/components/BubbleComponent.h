@@ -2,7 +2,8 @@
 #include "registrars.h"
 #include "editor_file_utils.h"
 #define MIDDLEBUBBLECOMPONENT(X) \
-	X(intersecting)
+	X(intersecting) 
+
 
 namespace components {
 	struct BubbleComponent : public middle::Serializable{
@@ -14,6 +15,8 @@ namespace components {
 		float axisZ;
 		float length;
 		float width;
+		float distBetweenNodes;
+		float endRadius;
 
 		float aX;
 		float aY;
