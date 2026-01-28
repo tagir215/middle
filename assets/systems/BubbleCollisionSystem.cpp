@@ -62,6 +62,10 @@ class BubbleCollisionSystem : public middle::MiddleGameplaySystem {
 			auto shapeB = middle::getShape(gameState, pair.idB.index);
 			auto bubbleA = middle::getComponent<components::BubbleComponent>(shapeA);
 			auto bubbleB = middle::getComponent<components::BubbleComponent>(shapeB);
+			auto loopA = middle::getComponent<components::LoopSociety>(shapeA);
+			auto loopB = middle::getComponent<components::LoopSociety>(shapeB);
+			auto unitA = middle::getComponent<components::BubbleUnit>(shapeA);
+			auto unitB = middle::getComponent<components::BubbleUnit>(shapeB);
 			auto posA = middle::getComponent<components::Position>(shapeA);
 			auto posB = middle::getComponent<components::Position>(shapeB);
 			Vector3 positionA = { posA->posX, posA->posY, posA->posZ };
