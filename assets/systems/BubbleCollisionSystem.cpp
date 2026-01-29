@@ -26,13 +26,13 @@ class BubbleCollisionSystem : public middle::MiddleGameplaySystem {
 
 	void update(middle::GameState* gameState) override {
 
+
 		// get bubbles
 		std::vector<middle::Id> bubbleList;
 		middle::loopInstances(gameState, [gameState, &bubbleList](int i, middle::Shape& shape) {
 
 			auto bubble = middle::getComponent<components::BubbleComponent>(shape);
-			auto grabbable = middle::getComponent<components::MouseGrabbable>(shape);
-			if (bubble && grabbable && !grabbable->grabbing) {
+			if (bubble) {
 				bubbleList.push_back(shape.id);
 			}
 			});
@@ -48,6 +48,14 @@ class BubbleCollisionSystem : public middle::MiddleGameplaySystem {
 				for (int j = i + 1; j < size; ++j) {
 					auto& idA = bubbleLoop->loopMemberIds[i];
 					auto& idB = bubbleLoop->loopMemberIds[j];
+					auto& childA = middle::getShape(gameState, idA.index);
+					auto& childB = middle::getShape(gameState, idB.index);
+					auto grabbableA = middle::getComponent<components::MouseGrabbable>(childA);
+					auto grabbableB = middle::getComponent<components::MouseGrabbable>(childB);
+					if (grabbableA->grabbing)
+						continue;
+					if (grabbableB->grabbing)
+						continue;
 					pairs.push_back({ idA, idB });
 					continue;
 				}
@@ -56,16 +64,11 @@ class BubbleCollisionSystem : public middle::MiddleGameplaySystem {
 
 		// detect collisions
 		std::vector<CollisionManifold>manifolds;
-		float inversePi2 = 1.0f / (2 * PI);
 		for (const CollisionPair& pair : pairs) {
 			auto shapeA = middle::getShape(gameState, pair.idA.index);
 			auto shapeB = middle::getShape(gameState, pair.idB.index);
 			auto bubbleA = middle::getComponent<components::BubbleComponent>(shapeA);
 			auto bubbleB = middle::getComponent<components::BubbleComponent>(shapeB);
-			auto loopA = middle::getComponent<components::LoopSociety>(shapeA);
-			auto loopB = middle::getComponent<components::LoopSociety>(shapeB);
-			auto unitA = middle::getComponent<components::BubbleUnit>(shapeA);
-			auto unitB = middle::getComponent<components::BubbleUnit>(shapeB);
 			auto posA = middle::getComponent<components::Position>(shapeA);
 			auto posB = middle::getComponent<components::Position>(shapeB);
 			Vector3 positionA = { posA->posX, posA->posY, posA->posZ };
@@ -76,8 +79,8 @@ class BubbleCollisionSystem : public middle::MiddleGameplaySystem {
 				float radiusA = bubbleA->length + bubbleDistanceMargin;
 				float radiusB = bubbleB->length + bubbleDistanceMargin;
 				float distSqr = Vector3DistanceSqr(positionA, positionB);
-				float superRadius = radiusA + radiusB;
-				if (distSqr < superRadius * superRadius) {
+				float totalRadius = radiusA + radiusB;
+				if (distSqr < totalRadius * totalRadius) {
 					CollisionManifold manifold;
 					manifold.idA = shapeA.id;
 					manifold.idB = shapeB.id;
@@ -99,8 +102,14 @@ class BubbleCollisionSystem : public middle::MiddleGameplaySystem {
 			Vector3 velA = Vector3Scale(manifold.normal, -speed);
 			Vector3 velB = Vector3Scale(manifold.normal, speed);
 
-			moveShape(gameState, manifold.idA.index, velA);
-			moveShape(gameState, manifold.idB.index, velB);
+			auto bubbleA = middle::getComponent<components::BubbleComponent>(shapeA);
+			auto bubbleB = middle::getComponent<components::BubbleComponent>(shapeB);
+
+
+			if(!bubbleA->infiniteMass)
+				moveShape(gameState, manifold.idA.index, velA);
+			if(!bubbleB->infiniteMass)
+				moveShape(gameState, manifold.idB.index, velB);
 		}
 	}
 };

@@ -43,7 +43,6 @@ public:
 
 	void update(middle::GameState* gameState) override {
 
-
 		middle::loopInstances(gameState, [gameState, this](int i, middle::Shape& shape) {
 
 
@@ -90,6 +89,15 @@ public:
 				auto position = middle::getComponent<components::Position>(node);
 				auto nodePhysics = middle::getComponent<components::PhysicsData>(node);
 
+				float magSqr = 
+					nodePhysics->velX * nodePhysics->velX 
+					+ nodePhysics->velY * nodePhysics->velY 
+					+ nodePhysics->velZ * nodePhysics->velZ;
+
+
+				nodePhysics->damX = 0.1f;
+				nodePhysics->damY = 0.1f;
+				nodePhysics->damZ = 0.1f;
 
 				assert(position);
 

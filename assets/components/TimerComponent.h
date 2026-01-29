@@ -1,14 +1,12 @@
 #pragma once
 #include "registrars.h"
 #include "editor_file_utils.h"
-#define MIDDLEBUBBLEMULTIPLYCOMPONENT(X) \
-	X(idA) \
-	X(idB) 
+#define MIDDLETIMERCOMPONENT(X) \
+	X(timeLeft)
 
 namespace components {
-	struct BubbleMultiplyComponent : public middle::Serializable{
-		middle::Id idA;
-		middle::Id idB;
+	struct TimerComponent : public middle::Serializable{
+		float timeLeft = 0;
 
 		void serialize(std::ostream& ostream) override;
 		void deserialize(const std::vector<std::string>& buffer, int indexOffset) override;
@@ -17,7 +15,7 @@ namespace components {
 		template<typename V>
 		void reflect(V& v) {
 #define X(f) v(#f, f);
-			MIDDLEBUBBLEMULTIPLYCOMPONENT(X)
+			MIDDLETIMERCOMPONENT(X)
 #undef X
 		}
 	};

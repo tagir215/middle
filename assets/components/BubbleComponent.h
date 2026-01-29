@@ -2,7 +2,8 @@
 #include "registrars.h"
 #include "editor_file_utils.h"
 #define MIDDLEBUBBLECOMPONENT(X) \
-	X(intersecting) 
+	X(intersectingTop)  \
+	X(intersectingBelow)  
 
 
 namespace components {
@@ -25,8 +26,11 @@ namespace components {
 		float bY;
 		float bZ;
 
-		bool intersecting = false;
+		bool intersectingBelow = false;
+		bool intersectingTop = false;
 		bool hidden = false;
+
+		bool infiniteMass = false;
 
 		std::vector<middle::Id> outline;
 		int nodeCountTarget = 0;

@@ -5,6 +5,7 @@
 #include "MouseSelectable.h"
 #include "imgui.h"
 #include "editor_actions.h"
+#include <string>
 
 class ComponentUiSystem : public middle::MiddleGameplaySystem {
 
@@ -34,6 +35,8 @@ public:
 
 			auto ui = [&shape, gameState]() {
 				ImGui::Begin("ComponentEditor");
+				std::string idText = "index: " + std::to_string(shape.id.index);
+				ImGui::Text(idText.c_str());
 
 				for (auto& pair : shape.componentMap) {
 					int typeId = pair.first;

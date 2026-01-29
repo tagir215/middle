@@ -258,8 +258,10 @@ namespace middle {
 		Shape& shape = gameState->shapes[index];
 		auto loop = getComponent<components::LoopSociety>(shape);
 		if (loop) {
-			for (Id childIndex : loop->loopMemberIds) {
-				deleteShapeRecursive(gameState, childIndex.index);
+			int size = loop->loopMemberIds.size();
+			for (int i = size - 1; i >= 0; --i) {
+				middle::Id& childId = loop->loopMemberIds[i];
+				deleteShapeRecursive(gameState, childId.index);
 			}
 		}
 		std::vector<int> connectedConstraints = findConnectedConstraints(gameState, shape.id);

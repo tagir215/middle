@@ -8,12 +8,10 @@
 #include "PhysicsData.h"
 #include "BubbleUnit.h"
 #include "LoopSociety.h"
+#include "MouseIntersectable.h"
+#include "TimerComponent.h"
 
 namespace bubbleActions{
-	class BubbleAction {
-		virtual void execute(middle::GameState* gameState) = 0;
-		virtual void undo(middle::GameState* gameState) = 0;
-	};
 
 	middle::Id createReplacementBubble(middle::GameState* gameState, middle::Shape& bubbleToReplace, middle::Shape& replacingBubble) {
 		auto pos = middle::getComponent<components::Position>(bubbleToReplace);
@@ -48,29 +46,39 @@ namespace bubbleActions{
 		middle::deleteShapeRecursive(gameState, id.index);
 	}
 
-	void hideBubble(middle::GameState* gameState, middle::Id& id) {
+	void setBubbleHidden(middle::GameState* gameState, middle::Id& id, bool hidden) {
 		middle::Shape& shape = middle::getShape(gameState, id.index);
-		auto grabbedBubble = middle::getComponent<components::BubbleComponent>(shape);
-		grabbedBubble->hidden = true;
+		auto bubbleComponent = middle::getComponent<components::BubbleComponent>(shape);
+		auto bubbleUnit = middle::getComponent<components::BubbleUnit>(shape);
+		if (bubbleUnit) {
+			bubbleUnit->hidden = hidden;
+			return;
+		}
+
+		if(bubbleComponent)
+			bubbleComponent->hidden = hidden;
+
 		std::vector<middle::Id>children;
 		middle::getChildren(gameState, shape.id, children);
 		for (middle::Id& childId : children) {
 			middle::Shape& childShape = middle::getShape(gameState, childId.index);
 			auto childBubble = middle::getComponent<components::BubbleComponent>(childShape);
 			if (childBubble) {
-				childBubble->hidden = true;
+				childBubble->hidden = hidden;
 			}
 			auto childUnit = middle::getComponent<components::BubbleUnit>(childShape);
 			if (childUnit) {
-				childUnit->hidden = true;
+				childUnit->hidden = hidden;
 			}
 		}
 	}
 
-	class Multiply : public BubbleAction {
+	class Multiply : public middle::GameplayAction {
 	public:
 		middle::Id shapeToCopyId;
 		middle::Id shapeToCopyIntoId;
+		std::vector<middle::Id>bubblesToDelete;
+		std::vector<middle::Id>newReplacingBubbles;
 
 		Multiply(middle::Id shapeToCopyId, middle::Id shapeToCopyIntoId) {
 			this->shapeToCopyId = shapeToCopyId;
@@ -82,9 +90,11 @@ namespace bubbleActions{
 			auto& shapeToCopy = middle::getShape(gameState, shapeToCopyId.index);
 
 			auto loop = middle::getComponent<components::LoopSociety>(shapeToCopyInto);
+			auto copyLoop = middle::getComponent<components::LoopSociety>(shapeToCopy);
+
+			assert(loop->parentLoopId == copyLoop->parentLoopId);
+
 			int size = loop->loopMemberIds.size();
-			std::vector<middle::Id>duplicates;
-			std::vector<middle::Id>bubblesToDelete;
 
 			// create replacements to the positions of the old units
 			for (int index = 0; index < size; ++index) {
@@ -93,25 +103,37 @@ namespace bubbleActions{
 				middle::Id& childId = loop->loopMemberIds[index];
 				middle::Shape& childShape = middle::getShape(gameState, childId.index);
 				middle::Id copy = createReplacementBubble(gameState, childShape, shapeToCopy);
-				duplicates.push_back(copy);
+				newReplacingBubbles.push_back(copy);
 				bubblesToDelete.push_back(childId);
 			}
 
 			for (int index = 0; index < size; ++index) {
-				deleteBubble(gameState, bubblesToDelete[index]);
+				setBubbleHidden(gameState, bubblesToDelete[index], true);
 			}
 
 			// add copies to parent
 			loop = middle::getComponent<components::LoopSociety>(shapeToCopyInto);
-			for (middle::Id& id : duplicates) {
+			for (middle::Id& id : newReplacingBubbles) {
 				loop->loopMemberIds.push_back(id);
 			}
 
 		}
-		void undo(middle::GameState* gameState) {
 
+		void undo(middle::GameState* gameState) {
+			for (middle::Id& id : newReplacingBubbles) {
+				deleteBubble(gameState, id);
+			}
+			for (middle::Id& id : bubblesToDelete) {
+				setBubbleHidden(gameState, id, false);
+			}
+			setBubbleHidden(gameState, shapeToCopyId, false);
 		}
 
+		void finalize(middle::GameState* gameState) {
+			for (middle::Id& id : bubblesToDelete) {
+				deleteBubble(gameState, id);
+			}
+		}
 
 	};
 
@@ -130,7 +152,7 @@ class BubbleManipulationSystem : public middle::MiddleGameplaySystem {
 			assert(grabbable);
 
 
-			if (gameState->bubbleAlgebraState.bubblesGrabbed == 0 && bubble->intersecting && gameState->input.mouseHeld) {
+			if (gameState->bubbleAlgebraState.bubblesGrabbed == 0 && bubble->intersectingTop && gameState->input.mouseHeld) {
 				grabbable->grabbing = true;
 				++gameState->bubbleAlgebraState.bubblesGrabbed;
 			}
@@ -159,28 +181,52 @@ class BubbleManipulationSystem : public middle::MiddleGameplaySystem {
 			}
 
 			// bubble multiplication
-			if (gameState->bubbleAlgebraState.bubbleToDelete.index == middle::UNASSIGNED
+			if (gameState->bubbleAlgebraState.mulAction == nullptr
 				&& !grabbable->grabbing
 				&& gameState->bubbleAlgebraState.bubblesGrabbed == 1
-				&& bubble->intersecting) {
+				&& bubble->intersectingTop) {
 				middle::Id grabbedId = findGrabbedBubble(gameState);
 
+				// turn on infinite mass 
+				bubble->infiniteMass = true;
+
 				// multiply action
-				auto mulAction = bubbleActions::Multiply(grabbedId, shape.id);
-				mulAction.execute(gameState);
+				auto& mulAction = gameState->bubbleAlgebraState.mulAction;
+				mulAction = std::make_unique<bubbleActions::Multiply>(grabbedId, shape.id);
+				mulAction->execute(gameState);
 
-				// mark currently grabbed bubble for deletion
-				gameState->bubbleAlgebraState.bubbleToDelete = grabbedId;
+				bubbleActions::setBubbleHidden(gameState, grabbedId, true);
 
-				bubbleActions::hideBubble(gameState, grabbedId);
+				auto time = middle::addComponent<components::TimerComponent>(shape);
+				time->timeLeft = 1;
 			}
 
-			if (gameState->bubbleAlgebraState.bubbleToDelete.index != middle::UNASSIGNED
+			if (gameState->bubbleAlgebraState.mulAction != nullptr) {
+				auto mulAction = static_cast<bubbleActions::Multiply*>(gameState->bubbleAlgebraState.mulAction.get());
+				auto& containerShape = middle::getShape(gameState, mulAction->shapeToCopyIntoId.index);
+				auto containerBubble = middle::getComponent<components::BubbleComponent>(containerShape);
+				auto timer = middle::getComponent<components::TimerComponent>(containerShape);
+				if (!containerBubble->intersectingBelow && !timer) {
+					mulAction->undo(gameState);
+					gameState->bubbleAlgebraState.mulAction.release();
+				}
+			}
+
+			// mouse release after multiplication
+			if (gameState->bubbleAlgebraState.mulAction != nullptr
 				&& gameState->input.mouseReleased) {
-				middle::Shape& grabbedShape = middle::getShape(gameState,
-					gameState->bubbleAlgebraState.bubbleToDelete.index);
+				auto mulAction = static_cast<bubbleActions::Multiply*>(gameState->bubbleAlgebraState.mulAction.get());
+				mulAction->finalize(gameState);
+
+				middle::Shape& grabbedShape = middle::getShape(gameState, mulAction->shapeToCopyId.index);
 				middle::deleteShapeRecursive(gameState, grabbedShape.id.index);
-				gameState->bubbleAlgebraState.bubbleToDelete = middle::Id();
+
+				// turn off infinite mass mode
+				auto& container = middle::getShape(gameState, mulAction->shapeToCopyIntoId.index);
+				auto containerBubble = middle::getComponent<components::BubbleComponent>(container);
+				containerBubble->infiniteMass = false;
+
+				gameState->bubbleAlgebraState.mulAction.release();
 				gameState->bubbleAlgebraState.bubblesGrabbed = 0;
 			}
 

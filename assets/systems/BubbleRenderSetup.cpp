@@ -70,7 +70,7 @@ class BubbleRenderSetup : public middle::MiddleGameplaySystem {
 						outlineItem.type = middle::RenderItemType::LINE;
 						outlineItem.linePointA = posA;
 						outlineItem.linePointB = posB;
-						if (bubbleComponent->intersecting) {
+						if (bubbleComponent->intersectingTop) {
 							outlineItem.color = WHITE;
 						}
 						else {

@@ -86,9 +86,15 @@ namespace middle {
 		std::string text = "";
 	};
 
+	class GameplayAction {
+	public:
+		virtual void execute(middle::GameState* gameState) = 0;
+		virtual void undo(middle::GameState* gameState) = 0;
+	};
+
 	struct BubbleAlgebraState {
 		int bubblesGrabbed = 0;
-		middle::Id bubbleToDelete;
+		std::unique_ptr<GameplayAction>mulAction;
 	};
 
 	struct GameState {
