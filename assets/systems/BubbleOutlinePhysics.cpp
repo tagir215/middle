@@ -60,21 +60,21 @@ public:
 
 			auto loopSociety = middle::getComponent<components::LoopSociety>(shape);
 
-			for (middle::Id& childId : loopSociety->loopMemberIds) {
-				middle::Shape& child = middle::getShape(gameState, childId.index);
-				auto physics = middle::getComponent<components::PhysicsData>(child);
-				if (!physics)
-					continue;
-				auto childPosition = middle::getComponent<components::Position>(child);
-				const float gravityForce = 20.2f;
-				Vector3 childPos = { childPosition->posX, childPosition->posY, childPosition->posZ };
-				Vector3 gravityAxis = Vector3Normalize(bubblePos - childPos);
-				if (Vector3LengthSqr(gravityAxis) == 0) {
-					gravityAxis = { 1, 0, 0 };
-				}
-				Vector3 force = Vector3Scale(gravityAxis, gravityForce);
-				//applyForce(gameState, child, force);
-			}
+			//for (middle::Id& childId : loopSociety->loopMemberIds) {
+			//	middle::Shape& child = middle::getShape(gameState, childId.index);
+			//	auto physics = middle::getComponent<components::PhysicsData>(child);
+			//	if (!physics)
+			//		continue;
+			//	auto childPosition = middle::getComponent<components::Position>(child);
+			//	const float gravityForce = 20.2f;
+			//	Vector3 childPos = { childPosition->posX, childPosition->posY, childPosition->posZ };
+			//	Vector3 gravityAxis = Vector3Normalize(bubblePos - childPos);
+			//	if (Vector3LengthSqr(gravityAxis) == 0) {
+			//		gravityAxis = { 1, 0, 0 };
+			//	}
+			//	Vector3 force = Vector3Scale(gravityAxis, gravityForce);
+			//	//applyForce(gameState, child, force);
+			//}
 
 
 			// OUTLINE PHYSICS
@@ -89,10 +89,11 @@ public:
 				auto position = middle::getComponent<components::Position>(node);
 				auto nodePhysics = middle::getComponent<components::PhysicsData>(node);
 
-				float magSqr = 
-					nodePhysics->velX * nodePhysics->velX 
-					+ nodePhysics->velY * nodePhysics->velY 
-					+ nodePhysics->velZ * nodePhysics->velZ;
+				// TODO
+				//float magSqr = 
+				//	nodePhysics->velX * nodePhysics->velX 
+				//	+ nodePhysics->velY * nodePhysics->velY 
+				//	+ nodePhysics->velZ * nodePhysics->velZ;
 
 
 				nodePhysics->damX = 0.1f;
