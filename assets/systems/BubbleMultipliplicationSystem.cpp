@@ -10,6 +10,7 @@
 #include "LoopSociety.h"
 #include "BubbleUnit.h"
 #include "TimerComponent.h"
+#include "MultiplicationTag.h"
 
 namespace bubbleActions{
 
@@ -105,6 +106,8 @@ namespace bubbleActions{
 				middle::Id& childId = loop->loopMemberIds[index];
 				middle::Shape& childShape = middle::getShape(gameState, childId.index);
 				middle::Id copy = createReplacementBubble(gameState, childShape, shapeToCopy);
+				auto& copyShape = middle::getShape(gameState, copy.index);
+				middle::deleteComponent<components::MultiplicationTag>(copyShape);
 				newReplacingBubbles.push_back(copy);
 				bubblesToDelete.push_back(childId);
 			}
@@ -136,24 +139,92 @@ namespace bubbleActions{
 				deleteBubble(gameState, id);
 			}
 
+			auto& shapeToCopyInto = middle::getShape(gameState, shapeToCopyIntoId.index);
+			middle::deleteComponent<components::MultiplicationTag>(shapeToCopyInto);
+
 			middle::deleteShape(gameState, multiplyShapeId.index);
 		}
 
 	};
 
+
+	class Combine : public middle::GameplayAction {
+		middle::Id idA;
+		middle::Id idB;
+	};
+
+	class Pop : public middle::GameplayAction {
+	public:
+		middle::Id id;
+
+		Pop(middle::Id id) {
+			this->id = id;
+		}
+
+		void execute(middle::GameState* gameState) override {
+			middle::Shape& shape = middle::getShape(gameState, id.index);
+			// check that there is a parent
+			auto loop = middle::getComponent<components::LoopSociety>(shape);
+			if (loop->parentLoopId.index == middle::UNASSIGNED) {
+				return;
+			}
+
+			// delete outline
+			auto bubble = middle::getComponent<components::BubbleComponent>(shape);
+			for (middle::Id outlineId : bubble->outline) {
+				middle::deleteShape(gameState, outlineId.index);
+			}
+
+			middle::Shape& parentShape = middle::getShape(gameState, loop->parentLoopId.index);
+
+			std::vector<middle::Id>children = loop->loopMemberIds;
+			middle::deleteShape(gameState, shape.id.index);
+
+			for (middle::Id& childId : loop->loopMemberIds) {
+				auto& childShape = middle::getShape(gameState, childId.index);
+				auto childLoop = middle::getComponent<components::LoopSociety>(childShape);
+				childLoop->parentLoopId = parentShape.id;
+				auto parentLoop = middle::getComponent<components::LoopSociety>(parentShape);
+				parentLoop->loopMemberIds.push_back(childShape.id);
+			}
+
+		}
+
+		void undo(middle::GameState* gameState) override {
+
+		}
+	};
 }
 
 class BubbleMultipliplicationSystem : public middle::MiddleGameplaySystem {
+
+	Vector3 closestPointOnOutlineToPoint(middle::GameState* gameState, 
+		const Vector3& point, const std::vector<middle::Id>& outline) {
+		float minDistSq = std::numeric_limits<float>::max();
+		Vector3 outlinePos;
+		for (const middle::Id& outlineId : outline) {
+			Vector3 nodePos = middle::getShapePosition(gameState, outlineId.index);
+			float distSq = Vector3DistanceSqr(point, nodePos);
+			if (distSq < minDistSq) {
+				minDistSq = distSq;
+				outlinePos = nodePos;
+			}
+		}
+		return outlinePos;
+	}
+
+
 	void update(middle::GameState* gameState) override {
 		// multiplications
 		std::vector<middle::Id> multiplications;
+
 		middle::loopInstances(gameState, [gameState, this, &multiplications](int i, middle::Shape& shape) {
 			auto multiplication = middle::getComponent<components::BubbleMultiplyComponent>(shape);
 			if (multiplication) {
 				multiplications.push_back(shape.id);
 			}
-
 			});
+
 		for (middle::Id& mulId : multiplications) {
 			auto& mulShape = middle::getShape(gameState, mulId.index);
 			auto multiplication = middle::getComponent<components::BubbleMultiplyComponent>(mulShape);
@@ -163,6 +234,29 @@ class BubbleMultipliplicationSystem : public middle::MiddleGameplaySystem {
 			auto bubbleB = middle::getComponent<components::BubbleComponent>(shapeB);
 			auto grabbableA = middle::getComponent<components::MouseGrabbable>(shapeA);
 			auto grabbableB = middle::getComponent<components::MouseGrabbable>(shapeB);
+			if (!middle::getComponent<components::MultiplicationTag>(shapeA)) {
+				middle::addComponent<components::MultiplicationTag>(shapeA);
+			}
+			if (!middle::getComponent<components::MultiplicationTag>(shapeB)) {
+				middle::addComponent<components::MultiplicationTag>(shapeB);
+			}
+
+			// set render item
+			Vector3 posA = middle::getShapePosition(gameState, shapeA.id.index);
+			Vector3 posB = middle::getShapePosition(gameState, shapeB.id.index);
+			Vector3 connectingLinePosA = closestPointOnOutlineToPoint(gameState, posB, bubbleA->outline);
+			Vector3 connectingLinePosB = closestPointOnOutlineToPoint(gameState, posA, bubbleB->outline);
+			Vector3 connectionCenter = Vector3Scale(connectingLinePosA + connectingLinePosB, 0.5f);
+			middle::RenderItem connectingLine;
+			connectingLine.type = middle::RenderItemType::LINE;
+			connectingLine.linePointA = connectingLinePosA;
+			connectingLine.linePointB = connectingLinePosB;
+			gameState->renderData.push_back(connectingLine);
+			auto mulpos = middle::getComponent<components::Position>(mulShape);
+			mulpos->posX = connectionCenter.x;
+			mulpos->posY = connectionCenter.y;
+			mulpos->posZ = connectionCenter.z;
+
 
 			if (!grabbableA->grabbing && !grabbableB->grabbing) {
 				continue;
@@ -227,6 +321,26 @@ class BubbleMultipliplicationSystem : public middle::MiddleGameplaySystem {
 			gameState->bubbleAlgebraState.bubblesGrabbed = 0;
 		}
 
+
+
+		// additions
+		middle::loopInstances(gameState, [gameState](int i, middle::Shape& shape) {
+
+			auto multiplicationTag = middle::getComponent<components::MultiplicationTag>(shape);
+			if (multiplicationTag) {
+				return;
+			}
+			auto bubble = middle::getComponent<components::BubbleComponent>(shape);
+			if (!bubble) {
+				return;
+			}
+
+			if (bubble->intersectingTop && gameState->gameInput.pop) {
+				auto popAction = std::make_unique<bubbleActions::Pop>(shape.id);
+				popAction->execute(gameState);
+			}
+
+			});
 
 	}
 };

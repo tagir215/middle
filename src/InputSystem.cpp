@@ -21,30 +21,6 @@ class InputSystem : public middle::MiddleGameplaySystem {
 		gameState->input.mouseHeld = false;
 		gameState->input.mouseClicked = false;
 		gameState->input.mouseReleased = false;
-		gameState->input.w = false;
-		gameState->input.s = false;
-		gameState->input.a = false;
-		gameState->input.d = false;
-		gameState->input.q = false;
-		gameState->input.e = false;
-		gameState->input.grabDown = false;
-		gameState->input.grabReleased = false;
-		gameState->input.grabReleased = false;
-		gameState->input.infoClick = false;
-		gameState->input.loopClick = false;
-		gameState->input.selectModeClick = false;
-		gameState->input.sphereModeClick = false;
-		gameState->input.constraintModeClick = false;
-		gameState->input.cameraModeClick = false;
-		gameState->input.loopModeClick = false;
-		gameState->input.deleteClick = false;
-		gameState->input.copyClick = false;
-		gameState->input.saveClick = false;
-		gameState->input.navigateToFileClick = false;
-		gameState->input.focus = false;
-		gameState->input.newThing = false;
-		gameState->input.reparentClick = false;
-		gameState->input.seaprateFromParentClick = false;
 
 		if (gameState->inputBlockers.find(middle::InputBlockers::MOUSE_BLOCK) == gameState->inputBlockers.end()) {
 			gameState->input.mouseHeld = IsMouseButtonDown(MOUSE_BUTTON_LEFT);
@@ -53,6 +29,31 @@ class InputSystem : public middle::MiddleGameplaySystem {
 		}
 
 		if (gameState->applicationMode == middle::ApplicationMode::EDITOR_MODE) {
+			gameState->input.w = false;
+			gameState->input.s = false;
+			gameState->input.a = false;
+			gameState->input.d = false;
+			gameState->input.q = false;
+			gameState->input.e = false;
+			gameState->input.grabDown = false;
+			gameState->input.grabReleased = false;
+			gameState->input.grabReleased = false;
+			gameState->input.infoClick = false;
+			gameState->input.loopClick = false;
+			gameState->input.selectModeClick = false;
+			gameState->input.sphereModeClick = false;
+			gameState->input.constraintModeClick = false;
+			gameState->input.cameraModeClick = false;
+			gameState->input.loopModeClick = false;
+			gameState->input.deleteClick = false;
+			gameState->input.copyClick = false;
+			gameState->input.saveClick = false;
+			gameState->input.navigateToFileClick = false;
+			gameState->input.focus = false;
+			gameState->input.newThing = false;
+			gameState->input.reparentClick = false;
+			gameState->input.seaprateFromParentClick = false;
+
 			if (gameState->inputBlockers.find(middle::InputBlockers::KEYBOARD_BLOCK) == gameState->inputBlockers.end()) {
 				gameState->input.w = IsKeyDown(KEY_W);
 				gameState->input.s = IsKeyDown(KEY_S);
@@ -83,8 +84,10 @@ class InputSystem : public middle::MiddleGameplaySystem {
 		}
 
 		if (gameState->applicationMode == middle::ApplicationMode::GAME_MODE) {
-			if (gameState->inputBlockers.find(middle::InputBlockers::KEYBOARD_BLOCK) == gameState->inputBlockers.end()) {
+			gameState->gameInput.pop = false;
 
+			if (gameState->inputBlockers.find(middle::InputBlockers::KEYBOARD_BLOCK) == gameState->inputBlockers.end()) {
+				gameState->gameInput.pop = IsKeyPressed(KEY_B);
 			}
 		}
 

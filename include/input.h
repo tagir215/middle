@@ -47,5 +47,8 @@ namespace middle {
 		bool seaprateFromParentClick = false;
 	};
 
+	struct GameInput {
+		bool pop;
+	};
 
 }

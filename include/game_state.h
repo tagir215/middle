@@ -130,6 +130,7 @@ namespace middle {
 		std::vector<std::string>systemNames;
 		std::vector<std::string>componentNames;
 		EditorInput input;
+		GameInput gameInput;
 		std::set<InputBlockers> inputBlockers;
 		bool paused = false;
 		bool closeGame = false;
