@@ -93,9 +93,11 @@ namespace middle {
 	};
 
 	struct BubbleAlgebraState {
-		int bubblesGrabbed = 0;
+		middle::Id grabbedId;
 		std::unique_ptr<GameplayAction>mulAction;
+		std::unique_ptr<GameplayAction>addAction;
 	};
+
 
 	struct GameState {
 	public:

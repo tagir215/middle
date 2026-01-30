@@ -149,8 +149,42 @@ namespace bubbleActions{
 
 
 	class Combine : public middle::GameplayAction {
-		middle::Id idA;
-		middle::Id idB;
+	public:
+		middle::Id shapeToAddId;
+		middle::Id shapeToAddIntoId;
+		std::vector<middle::Id>copyBubbles;
+
+		Combine(middle::Id shapeToAddId, middle::Id shapeToAddIntoId) {
+			this->shapeToAddId = shapeToAddId;
+			this->shapeToAddIntoId = shapeToAddIntoId;
+		}
+
+		void execute(middle::GameState* gameState) override {
+			auto& shapeToAdd = middle::getShape(gameState, shapeToAddId.index);
+			auto& shapeToAddInto = middle::getShape(gameState, shapeToAddIntoId.index);
+			auto addLoop = middle::getComponent<components::LoopSociety>(shapeToAdd);
+
+			// add members from frombubble to intobubble
+			for (middle::Id& id : addLoop->loopMemberIds) {
+				auto copyId = middle::deepCopyShape(gameState, id.index, shapeToAddInto.id.index);
+				copyBubbles.push_back(copyId);
+				auto intoLoop = middle::getComponent<components::LoopSociety>(shapeToAddInto);
+				intoLoop->loopMemberIds.push_back(copyId);
+			}
+
+			setBubbleHidden(gameState, shapeToAdd.id, true);
+		}
+
+		void undo(middle::GameState* gameState) override {
+			for (middle::Id id : copyBubbles) {
+				deleteBubble(gameState, id);
+			}
+			setBubbleHidden(gameState, shapeToAddId, false);
+		}
+
+		void finalize(middle::GameState* gameState) {
+			deleteBubble(gameState, shapeToAddId);
+		}
 	};
 
 	class Pop : public middle::GameplayAction {
@@ -197,6 +231,8 @@ namespace bubbleActions{
 }
 
 class BubbleMultipliplicationSystem : public middle::MiddleGameplaySystem {
+
+	// MULTIPLICATIONS
 
 	Vector3 closestPointOnOutlineToPoint(middle::GameState* gameState, 
 		const Vector3& point, const std::vector<middle::Id>& outline) {
@@ -271,7 +307,7 @@ class BubbleMultipliplicationSystem : public middle::MiddleGameplaySystem {
 			// bubble multiplication
 			if (
 				gameState->bubbleAlgebraState.mulAction == nullptr
-				&& gameState->bubbleAlgebraState.bubblesGrabbed == 1
+				&& gameState->bubbleAlgebraState.grabbedId.index != middle::UNASSIGNED
 				&& bubbleToCopyInto->intersectingTop
 				) {
 
@@ -318,13 +354,26 @@ class BubbleMultipliplicationSystem : public middle::MiddleGameplaySystem {
 			containerBubble->infiniteMass = false;
 
 			gameState->bubbleAlgebraState.mulAction.release();
-			gameState->bubbleAlgebraState.bubblesGrabbed = 0;
+			gameState->bubbleAlgebraState.grabbedId = middle::Id();
 		}
 
 
 
-		// additions
-		middle::loopInstances(gameState, [gameState](int i, middle::Shape& shape) {
+		// ADDITIONS
+
+		// get grabbable if somethign is grabbed
+		components::MouseGrabbable* grabbable = nullptr;
+		components::LoopSociety* grabbableLoop = nullptr;
+		if (gameState->bubbleAlgebraState.grabbedId.index != middle::UNASSIGNED) {
+			auto& grabbedShape = middle::getShape(gameState, gameState->bubbleAlgebraState.grabbedId.index);
+			auto mulTag = middle::getComponent<components::MultiplicationTag>(grabbedShape);
+			if (!mulTag) {
+				grabbable = middle::getComponent<components::MouseGrabbable>(grabbedShape);
+				grabbableLoop = middle::getComponent<components::LoopSociety>(grabbedShape);
+			}
+		}
+
+		middle::loopInstances(gameState, [gameState, grabbable, grabbableLoop](int i, middle::Shape& shape) {
 
 			auto multiplicationTag = middle::getComponent<components::MultiplicationTag>(shape);
 			if (multiplicationTag) {
@@ -335,12 +384,61 @@ class BubbleMultipliplicationSystem : public middle::MiddleGameplaySystem {
 				return;
 			}
 
+			// pop action
 			if (bubble->intersectingTop && gameState->gameInput.pop) {
 				auto popAction = std::make_unique<bubbleActions::Pop>(shape.id);
 				popAction->execute(gameState);
 			}
 
+			// if not grabbing anything can continue
+			if (!grabbable) {
+				return;
+			}
+			// if already adding can continue
+			if (gameState->bubbleAlgebraState.addAction != nullptr) {
+				return;
+			}
+			// if not grabbing something from same parents can continue
+			auto loop = middle::getComponent<components::LoopSociety>(shape);
+			if (loop->parentLoopId != grabbableLoop->parentLoopId) {
+				return;
+			}
+			// if the grabbed one is the same one as in this iteration we can continue
+			if (shape.id == gameState->bubbleAlgebraState.grabbedId) {
+				return;
+			}
+
+
+			// if intersecting while grabbing do addition
+			if (bubble->intersectingTop) {
+				auto& addAction = gameState->bubbleAlgebraState.addAction;
+				addAction = std::make_unique<bubbleActions::Combine>(gameState->bubbleAlgebraState.grabbedId, shape.id);
+				addAction->execute(gameState);
+				auto time = middle::addComponent<components::TimerComponent>(shape);
+				time->timeLeft = 1;
+			}
+
 			});
+
+
+		if (gameState->bubbleAlgebraState.addAction != nullptr) {
+			auto addAction = static_cast<bubbleActions::Combine*>(gameState->bubbleAlgebraState.addAction.get());
+			auto& shapeToAddInto = middle::getShape(gameState, addAction->shapeToAddIntoId.index);
+			auto bubbleToAddInto = middle::getComponent<components::BubbleComponent>(shapeToAddInto);
+			auto timer = middle::getComponent<components::TimerComponent>(shapeToAddInto);
+			if (!bubbleToAddInto->intersectingBelow && !timer) {
+				addAction->undo(gameState);
+				gameState->bubbleAlgebraState.addAction.release();
+			}
+		}
+
+		if (gameState->bubbleAlgebraState.addAction != nullptr) {
+			if (gameState->input.mouseReleased) {
+				auto addAction = static_cast<bubbleActions::Combine*>(gameState->bubbleAlgebraState.addAction.get());
+				addAction->finialize(gameState);
+				gameState->bubbleAlgebraState.addAction.release();
+			}
+		}
 
 	}
 };

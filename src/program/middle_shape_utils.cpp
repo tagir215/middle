@@ -213,14 +213,16 @@ namespace middle {
 		// remove parent indexes if deleting loops from children
 		auto loop = getComponent<components::LoopSociety>(gameState->shapes[index]);
 		if (loop) {
+			// remove childs references to this shape
 			for (Id childId : loop->loopMemberIds) {
-				auto& childShape = gameState->shapes[childId.index];
 				if (isShapeAlive(gameState, childId.index)) {
+					auto& childShape = gameState->shapes[childId.index];
 					auto childLoop = getComponent<components::LoopSociety>(childShape);
 					childLoop->parentLoopId.index = UNASSIGNED;
 				}
 			}
 
+			// remove parent refernce to this shape
 			if (loop->parentLoopId.index != UNASSIGNED && isShapeAlive(gameState, loop->parentLoopId.index)) {
 				auto& parentShape = getShape(gameState, loop->parentLoopId.index);
 				auto parentLoop = getComponent<components::LoopSociety>(parentShape);
@@ -232,8 +234,6 @@ namespace middle {
 					}
 				}
 			}
-
-
 		}
 
 		auto componentRefParent = getComponent<components::ComponentRefParent>(gameState->shapes[index]);

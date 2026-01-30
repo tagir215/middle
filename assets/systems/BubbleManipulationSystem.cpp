@@ -26,14 +26,14 @@ class BubbleManipulationSystem : public middle::MiddleGameplaySystem {
 			assert(grabbable);
 
 
-			if (gameState->bubbleAlgebraState.bubblesGrabbed == 0 && bubble->intersectingTop && gameState->input.mouseHeld) {
+			if (gameState->bubbleAlgebraState.grabbedId.index == middle::UNASSIGNED && bubble->intersectingTop && gameState->input.mouseHeld) {
 				grabbable->grabbing = true;
-				++gameState->bubbleAlgebraState.bubblesGrabbed;
+				gameState->bubbleAlgebraState.grabbedId = shape.id;
 			}
 
-			if (gameState->bubbleAlgebraState.bubblesGrabbed == 1 && grabbable->grabbing && !gameState->input.mouseHeld) {
+			if (gameState->bubbleAlgebraState.grabbedId.index != middle::UNASSIGNED && grabbable->grabbing && !gameState->input.mouseHeld) {
 				grabbable->grabbing = false;
-				--gameState->bubbleAlgebraState.bubblesGrabbed;
+				gameState->bubbleAlgebraState.grabbedId = middle::Id();
 			}
 
 
@@ -57,19 +57,6 @@ class BubbleManipulationSystem : public middle::MiddleGameplaySystem {
 
 			});
 
-	}
-
-	middle::Id findGrabbedBubble(middle::GameState* gameState) {
-		for (int i = 0; i < gameState->shapes.size(); ++i) {
-			if (!middle::isShapeAlive(gameState, i))
-				continue;
-			auto& shape = middle::getShape(gameState, i);
-			auto grabbable = middle::getComponent<components::MouseGrabbable>(shape);
-			if (grabbable && grabbable->grabbing) {
-				return shape.id;
-			}
-		}
-		return middle::Id();
 	}
 
 };
