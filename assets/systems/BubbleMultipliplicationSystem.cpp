@@ -414,6 +414,11 @@ class BubbleMultipliplicationSystem : public middle::MiddleGameplaySystem {
 				auto& addAction = gameState->bubbleAlgebraState.addAction;
 				addAction = std::make_unique<bubbleActions::Combine>(gameState->bubbleAlgebraState.grabbedId, shape.id);
 				addAction->execute(gameState);
+
+				// infinite mass
+				auto bubbleToAddInto = middle::getComponent<components::BubbleComponent>(shape);
+				bubbleToAddInto->infiniteMass = true;
+
 				auto time = middle::addComponent<components::TimerComponent>(shape);
 				time->timeLeft = 1;
 			}
@@ -429,13 +434,17 @@ class BubbleMultipliplicationSystem : public middle::MiddleGameplaySystem {
 			if (!bubbleToAddInto->intersectingBelow && !timer) {
 				addAction->undo(gameState);
 				gameState->bubbleAlgebraState.addAction.release();
+				bubbleToAddInto->infiniteMass = false;
 			}
 		}
 
 		if (gameState->bubbleAlgebraState.addAction != nullptr) {
 			if (gameState->input.mouseReleased) {
 				auto addAction = static_cast<bubbleActions::Combine*>(gameState->bubbleAlgebraState.addAction.get());
-				addAction->finialize(gameState);
+				auto& shapeToAddInto = middle::getShape(gameState, addAction->shapeToAddIntoId.index);
+				auto bubbleToAddInto = middle::getComponent<components::BubbleComponent>(shapeToAddInto);
+				bubbleToAddInto->infiniteMass = false;
+				addAction->finalize(gameState);
 				gameState->bubbleAlgebraState.addAction.release();
 			}
 		}
