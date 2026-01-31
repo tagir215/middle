@@ -2,13 +2,11 @@
 #include "registrars.h"
 #include "editor_file_utils.h"
 #define MIDDLEBUBBLEMULTIPLYCOMPONENT(X) \
-	X(idA) \
-	X(idB) 
+	X(bubbleIds)
 
 namespace components {
 	struct BubbleMultiplyComponent : public middle::Serializable{
-		middle::Id idA;
-		middle::Id idB;
+		std::vector<middle::Id> bubbleIds;
 
 		void serialize(std::ostream& ostream) override;
 		void deserialize(const std::vector<std::string>& buffer, int indexOffset) override;

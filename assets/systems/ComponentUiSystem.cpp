@@ -81,6 +81,26 @@ public:
 								std::string* string = static_cast<std::string*>(field.value);
 								//ImGui::InputText(field.name, , string);
 							}
+							else if (field.type == middle::FieldType::IdVector) {
+								ImGui::Text(field.name);
+								auto vector = static_cast<std::vector<middle::Id>*>(field.value);
+								int size = vector->size();
+								for (int index = 0; index < size; ++index) {
+									ImGui::PushID((char)index);
+									if(ImGui::Button("(D)")) {
+										vector->erase(vector->begin() + index);
+										ImGui::PopID();
+										break;
+									}
+									ImGui::PopID();
+									ImGui::SameLine();
+									middle::Id* id = &(*vector)[index];
+									ImGui::InputInt(std::to_string(index).c_str(), &id->index);
+								}
+								if (ImGui::Button("Add")) {
+									vector->resize(size + 1);
+								}
+							}
 							else {
 								ImGui::Text(field.name);
 							}

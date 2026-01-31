@@ -76,6 +76,27 @@ namespace bubbleActions{
 		}
 	}
 
+	middle::Shape createMultiplyShape(middle::GameState* gameState, middle::Id idA, middle::Id idB) {
+		middle::Shape& mulShape = middle::addShape(gameState, middle::findFreeIndex(gameState));
+		auto mulComponent = middle::addComponent<components::BubbleMultiplyComponent>(mulShape);
+		middle::addComponent<components::Position>(mulShape);
+		auto sphere = middle::addComponent<components::Sphere>(mulShape);
+		auto text = middle::addComponent<components::Text>(mulShape);
+		sphere->radius = 2;
+		text->text = "x";
+		//mulComponent->idA = idA;
+		//mulComponent->idB = idB;
+		return mulShape;
+	}
+
+	void deleteMultiplyShape(middle::GameState* gameState, middle::Id id) {
+		middle::Shape& mulShape = middle::getShape(gameState, id.index);
+		auto mulComp = middle::getComponent<components::BubbleMultiplyComponent>(mulShape);
+		assert(mulComp);
+		//middle::Shape& shapeA = middle::getShape(gameState, mulComp->idA.index);
+		//middle::Shape& shapeB = middle::getShape(gameState, mulComp->idB.index);
+	}
+
 	class Multiply : public middle::GameplayAction {
 	public:
 		middle::Id multiplyShapeId;
@@ -108,40 +129,35 @@ namespace bubbleActions{
 				loop = middle::getComponent<components::LoopSociety>(shapeToCopyInto);
 				middle::Id& childId = loop->loopMemberIds[index];
 				middle::Shape& childShape = middle::getShape(gameState, childId.index);
-				middle::Id copy = createReplacementBubble(gameState, childShape, shapeToCopy);
-				auto& copyShape = middle::getShape(gameState, copy.index);
-				// delete multiplication tag from the copy shape
-				middle::deleteComponent<components::MultiplicationTag>(copyShape);
-
-				auto childBubble = middle::getComponent < components::BubbleComponent>(childShape);
 
 				// if its a bubble with multiplication tag we need to copy multiplication shape only to one of the linked multiplications
 				// so we add only to idA and skip idBs
 				auto mulTag = middle::getComponent<components::MultiplicationTag>(childShape);
 				if (mulTag) {
-					auto& mulShape = middle::getShape(gameState, mulTag->multiplicationShapeId.index);
-					auto mulComp = middle::getComponent<components::BubbleMultiplyComponent>(mulShape);
-					if (mulComp->idA != childShape.id)
-						continue;
+					//auto& mulShape = middle::getShape(gameState, mulTag->parentA.index);
+					//auto mulComp = middle::getComponent<components::BubbleMultiplyComponent>(mulShape);
+					//if (mulComp->idA != childShape.id)
+					//	continue;
 				}
+
+				auto childBubble = middle::getComponent < components::BubbleComponent>(childShape);
+
+				middle::Id copyId = createReplacementBubble(gameState, childShape, shapeToCopy);
+				auto& copyShape = middle::getShape(gameState, copyId.index);
+				// delete multiplication tag from the copy shape
+				middle::deleteComponent<components::MultiplicationTag>(copyShape);
+
+
+
+				newReplacingBubbles.push_back(copyId);
 
 				// if is a bubble we create new multiplication link
 				if (childBubble) {
-					newReplacingBubbles.push_back(copy);
-					middle::Shape& mulShape = middle::addShape(gameState, middle::findFreeIndex(gameState));
-					auto mulComponent = middle::addComponent<components::BubbleMultiplyComponent>(mulShape);
-					middle::addComponent<components::Position>(mulShape);
-					auto sphere = middle::addComponent<components::Sphere>(mulShape);
-					auto text = middle::addComponent<components::Text>(mulShape);
-					sphere->radius = 2;
-					text->text = "x";
-					mulComponent->idA = copyShape.id;
-					mulComponent->idB = childShape.id;
+					auto& mulShape = createMultiplyShape(gameState, copyId, childId);
 					newMultiplicationShapes.push_back(mulShape.id);
 				}
 				// if is unit then we replace the unit with the copy bubble
 				else {
-					newReplacingBubbles.push_back(copy);
 					bubblesToDelete.push_back(childId);
 				}
 
@@ -161,9 +177,14 @@ namespace bubbleActions{
 		}
 
 		void undo(middle::GameState* gameState) {
+			//delete
 			for (middle::Id& id : newReplacingBubbles) {
 				deleteBubble(gameState, id);
 			}
+			for (middle::Id& id : newMultiplicationShapes) {
+				middle::deleteShapeRecursive(gameState, id.index);
+			}
+			//unhide
 			for (middle::Id& id : bubblesToDelete) {
 				setBubbleHidden(gameState, id, false);
 			}
@@ -268,9 +289,6 @@ namespace bubbleActions{
 
 class BubbleMultipliplicationSystem : public middle::MiddleGameplaySystem {
 public:
-	BubbleMultipliplicationSystem() {
-		//systemModeType = middle::SystemModeType::ENGINE;
-	}
 
 	// MULTIPLICATIONS
 
@@ -304,21 +322,34 @@ public:
 		for (middle::Id& mulId : multiplications) {
 			auto& mulShape = middle::getShape(gameState, mulId.index);
 			auto multiplication = middle::getComponent<components::BubbleMultiplyComponent>(mulShape);
-			auto& shapeA = middle::getShape(gameState, multiplication->idA.index);
-			auto& shapeB = middle::getShape(gameState, multiplication->idB.index);
+			auto& shapeA = middle::getShape(gameState, multiplication->bubbleIds[0].index);
+			auto& shapeB = middle::getShape(gameState, multiplication->bubbleIds[1].index);
 			auto bubbleA = middle::getComponent<components::BubbleComponent>(shapeA);
 			auto bubbleB = middle::getComponent<components::BubbleComponent>(shapeB);
 			auto grabbableA = middle::getComponent<components::MouseGrabbable>(shapeA);
 			auto grabbableB = middle::getComponent<components::MouseGrabbable>(shapeB);
+
 			// here we add the multags at runtime, so they don't need to be added at manually
-			if (!middle::getComponent<components::MultiplicationTag>(shapeA)) {
-				auto tag = middle::addComponent<components::MultiplicationTag>(shapeA);
-				tag->multiplicationShapeId = mulShape.id;
-			}
-			if (!middle::getComponent<components::MultiplicationTag>(shapeB)) {
-				auto tag = middle::addComponent<components::MultiplicationTag>(shapeB);
-				tag->multiplicationShapeId = mulShape.id;
-			}
+			auto mulTagA = middle::getComponent<components::MultiplicationTag>(shapeA);
+			auto mulTagB = middle::getComponent<components::MultiplicationTag>(shapeB);
+			//if (!mulTagA) {
+			//	mulTagA->parentA = mulShape.id;
+			//}
+			//else if (mulTagA) {
+			//	if(mulTagA->parentA == middle::NILID)
+			//		mulTagA->parentA = mulShape.id;
+			//	if (mulTagA->parentB == middle::NILID)
+			//		mulTagA->parentB = mulShape.id;
+			//}
+			//if (!mulTagB) {
+			//	mulTagB->parentA = mulShape.id;
+			//}
+			//else if (mulTagB) {
+			//	if(mulTagB->parentA == middle::NILID)
+			//		mulTagB->parentA = mulShape.id;
+			//	if (mulTagB->parentB == middle::NILID)
+			//		mulTagB->parentB = mulShape.id;
+			//}
 
 			// set render item
 			Vector3 posA = middle::getShapePosition(gameState, shapeA.id.index);
