@@ -46,11 +46,19 @@ public:
 					const char* componentName = middle::componentNameMap[typeId].c_str();
 					ImGui::Separator();
 					ImGui::PushID((char)pair.first);
-					if (ImGui::Button(".")) {
+					if (ImGui::Button("(o)")) {
 						gameState->editorState.editorActions.push_back(
 							std::make_unique<middle::EditorActionOpenComponent>(componentName)
 						);
 					}
+					ImGui::SameLine();
+					if (ImGui::Button("(d)")) {
+						gameState->editorState.editorActions.push_back(
+							std::make_unique<middle::EditorActionRemoveComponent>(componentName, middle::getSelectedShapes(gameState))
+						);
+					}
+
+
 					ImGui::PopID();
 					ImGui::SameLine();
 					int size = 0;
@@ -81,6 +89,7 @@ public:
 					else if (size == 0) {
 						ImGui::Text(componentName);
 					}
+
 
 				};
 

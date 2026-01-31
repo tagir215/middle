@@ -258,6 +258,18 @@ namespace middle {
 		};
 	}
 
+	void EditorActionRemoveComponent::execute(GameState* gameState)
+	{
+		for (int i : selectedIndexes) {
+			auto& shape = gameState->shapes[i];
+			int componentTypeId = componentTypeMap[componentName];
+			assert(shape.componentMap.find(componentTypeId) != shape.componentMap.end());
+
+			shape.componentMap.erase(componentTypeId);
+		};
+	}
+
+
 	void EditorActionOpenComponent::execute(GameState* gameState)
 	{
 		shell_open_file("../assets/components/" + componentName + ".h");

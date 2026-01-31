@@ -173,6 +173,17 @@ namespace middle {
 		void execute(GameState* gameState) override;
 	};
 
+	class EditorActionRemoveComponent : public EditorActionContainer {
+	public:
+		std::string componentName;
+		std::vector<int>selectedIndexes;
+		EditorActionRemoveComponent(const std::string& componentName, std::vector<int>selectedIndexes) {
+			this->componentName = componentName;
+			this->selectedIndexes = selectedIndexes;
+		}
+		void execute(GameState* gameState) override;
+	};
+
 	class EditorActionOpenComponent : public EditorActionContainer {
 	public:
 		std::string componentName;

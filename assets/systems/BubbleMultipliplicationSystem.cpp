@@ -11,6 +11,8 @@
 #include "BubbleUnit.h"
 #include "TimerComponent.h"
 #include "MultiplicationTag.h"
+#include "Sphere.h"
+#include "Text.h"
 
 namespace bubbleActions{
 
@@ -81,6 +83,7 @@ namespace bubbleActions{
 		middle::Id shapeToCopyIntoId;
 		std::vector<middle::Id>bubblesToDelete;
 		std::vector<middle::Id>newReplacingBubbles;
+		std::vector<middle::Id>newMultiplicationShapes;
 
 		Multiply(middle::Id multiplyShapeId, middle::Id shapeToCopyId, middle::Id shapeToCopyIntoId) {
 			this->multiplyShapeId = multiplyShapeId;
@@ -107,12 +110,45 @@ namespace bubbleActions{
 				middle::Shape& childShape = middle::getShape(gameState, childId.index);
 				middle::Id copy = createReplacementBubble(gameState, childShape, shapeToCopy);
 				auto& copyShape = middle::getShape(gameState, copy.index);
+				// delete multiplication tag from the copy shape
 				middle::deleteComponent<components::MultiplicationTag>(copyShape);
-				newReplacingBubbles.push_back(copy);
-				bubblesToDelete.push_back(childId);
+
+				auto childBubble = middle::getComponent < components::BubbleComponent>(childShape);
+
+				// if its a bubble with multiplication tag we need to copy multiplication shape only to one of the linked multiplications
+				// so we add only to idA and skip idBs
+				auto mulTag = middle::getComponent<components::MultiplicationTag>(childShape);
+				if (mulTag) {
+					auto& mulShape = middle::getShape(gameState, mulTag->multiplicationShapeId.index);
+					auto mulComp = middle::getComponent<components::BubbleMultiplyComponent>(mulShape);
+					if (mulComp->idA != childShape.id)
+						continue;
+				}
+
+				// if is a bubble we create new multiplication link
+				if (childBubble) {
+					newReplacingBubbles.push_back(copy);
+					middle::Shape& mulShape = middle::addShape(gameState, middle::findFreeIndex(gameState));
+					auto mulComponent = middle::addComponent<components::BubbleMultiplyComponent>(mulShape);
+					middle::addComponent<components::Position>(mulShape);
+					auto sphere = middle::addComponent<components::Sphere>(mulShape);
+					auto text = middle::addComponent<components::Text>(mulShape);
+					sphere->radius = 2;
+					text->text = "x";
+					mulComponent->idA = copyShape.id;
+					mulComponent->idB = childShape.id;
+					newMultiplicationShapes.push_back(mulShape.id);
+				}
+				// if is unit then we replace the unit with the copy bubble
+				else {
+					newReplacingBubbles.push_back(copy);
+					bubblesToDelete.push_back(childId);
+				}
+
 			}
 
-			for (int index = 0; index < size; ++index) {
+			int deleteSize = bubblesToDelete.size();
+			for (int index = 0; index < deleteSize; ++index) {
 				setBubbleHidden(gameState, bubblesToDelete[index], true);
 			}
 
@@ -231,10 +267,14 @@ namespace bubbleActions{
 }
 
 class BubbleMultipliplicationSystem : public middle::MiddleGameplaySystem {
+public:
+	BubbleMultipliplicationSystem() {
+		//systemModeType = middle::SystemModeType::ENGINE;
+	}
 
 	// MULTIPLICATIONS
 
-	Vector3 closestPointOnOutlineToPoint(middle::GameState* gameState, 
+	Vector3 closestPointOnOutlineToPoint(middle::GameState* gameState,
 		const Vector3& point, const std::vector<middle::Id>& outline) {
 		float minDistSq = std::numeric_limits<float>::max();
 		Vector3 outlinePos;
@@ -270,11 +310,14 @@ class BubbleMultipliplicationSystem : public middle::MiddleGameplaySystem {
 			auto bubbleB = middle::getComponent<components::BubbleComponent>(shapeB);
 			auto grabbableA = middle::getComponent<components::MouseGrabbable>(shapeA);
 			auto grabbableB = middle::getComponent<components::MouseGrabbable>(shapeB);
+			// here we add the multags at runtime, so they don't need to be added at manually
 			if (!middle::getComponent<components::MultiplicationTag>(shapeA)) {
-				middle::addComponent<components::MultiplicationTag>(shapeA);
+				auto tag = middle::addComponent<components::MultiplicationTag>(shapeA);
+				tag->multiplicationShapeId = mulShape.id;
 			}
 			if (!middle::getComponent<components::MultiplicationTag>(shapeB)) {
-				middle::addComponent<components::MultiplicationTag>(shapeB);
+				auto tag = middle::addComponent<components::MultiplicationTag>(shapeB);
+				tag->multiplicationShapeId = mulShape.id;
 			}
 
 			// set render item
@@ -426,6 +469,7 @@ class BubbleMultipliplicationSystem : public middle::MiddleGameplaySystem {
 			});
 
 
+		// undo if moved to add shape out
 		if (gameState->bubbleAlgebraState.addAction != nullptr) {
 			auto addAction = static_cast<bubbleActions::Combine*>(gameState->bubbleAlgebraState.addAction.get());
 			auto& shapeToAddInto = middle::getShape(gameState, addAction->shapeToAddIntoId.index);
@@ -438,6 +482,7 @@ class BubbleMultipliplicationSystem : public middle::MiddleGameplaySystem {
 			}
 		}
 
+		// finialize addition if releasing mouse
 		if (gameState->bubbleAlgebraState.addAction != nullptr) {
 			if (gameState->input.mouseReleased) {
 				auto addAction = static_cast<bubbleActions::Combine*>(gameState->bubbleAlgebraState.addAction.get());

@@ -13,8 +13,8 @@ namespace components {
 
 	void MultiplicationTag::getFields(std::vector<middle::FieldInfo>& fields, int* size)
 	{
-		//middle::FieldCollector collector{ fields, size };
-		//reflect(collector);
+		middle::FieldCollector collector{ fields, size };
+		reflect(collector);
 	}
 
 	static middle::ComponentRegistrar<MultiplicationTag>reg("MultiplicationTag");

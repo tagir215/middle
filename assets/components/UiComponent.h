@@ -1,12 +1,10 @@
 #pragma once
 #include "registrars.h"
 #include "editor_file_utils.h"
-#define MIDDLEMULTIPLICATIONTAG(X) \
-	X(multiplicationShapeId)
+#define MIDDLEUICOMPONENT(X)
 
 namespace components {
-	struct MultiplicationTag : public middle::Serializable{
-		middle::Id multiplicationShapeId;
+	struct UiComponent : public middle::Serializable{
 
 		void serialize(std::ostream& ostream) override;
 		void deserialize(const std::vector<std::string>& buffer, int indexOffset) override;
@@ -15,7 +13,7 @@ namespace components {
 		template<typename V>
 		void reflect(V& v) {
 #define X(f) v(#f, f);
-			MIDDLEMULTIPLICATIONTAG(X)
+			MIDDLEUICOMPONENT(X)
 #undef X
 		}
 	};
