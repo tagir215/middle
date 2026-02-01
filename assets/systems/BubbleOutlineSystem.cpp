@@ -392,6 +392,7 @@ public:
 					constraint->idB = idB;
 					constraint->stiffness = 1.0f;
 					constraint->biasFactor = 0.2f;
+					assert(constraint->targetDistance > 0);
 				}
 			}
 

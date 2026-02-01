@@ -29,19 +29,28 @@ namespace bubbleActions{
 		// containe copies in a new multiplication
 		if (bubbleComp) {
 			auto& newMulShape = middle::addShape(gameState, middle::findFreeIndex(gameState));
-			middle::addComponent<components::Position>(newMulShape);
+			middle::Id newMulShapeId = newMulShape.id;
+			auto position = middle::addComponent<components::Position>(newMulShape);
 			middle::addComponent<components::BubbleMultiplyComponent>(newMulShape);
-			auto newMulLoop = middle::addComponent<components::LoopSociety>(newMulShape);
+			auto sphere = middle::addComponent<components::Sphere>(newMulShape);
+			sphere->radius = 2;
+			auto text = middle::addComponent<components::Text>(newMulShape);
+			text->text = "x";
 			// deep copy to replace and replacing
-			middle::Id copyId = middle::deepCopyShape(gameState, replacingShape.id.index, newMulShape.id.index);
-			middle::Id toReplaceCopyId = middle::deepCopyShape(gameState, shapeToReplaceId.index, newMulShape.id.index);
+			middle::Id copyId = middle::deepCopyShape(gameState, replacingShape.id.index, newMulShapeId.index);
+			middle::Id toReplaceCopyId = middle::deepCopyShape(gameState, shapeToReplaceId.index, newMulShapeId.index);
+
+			auto newMulLoop = middle::addComponent<components::LoopSociety>(newMulShape);
 			newMulLoop->loopMemberIds.push_back(copyId);
 			newMulLoop->loopMemberIds.push_back(toReplaceCopyId);
 			// compute displacmenet from replacing shape to shapeToReplace position
-			Vector3 replacingShapePos = middle::getShapePosition(gameState, newMulShape.id.index);
+			Vector3 replacingShapePos = middle::getShapePosition(gameState, newMulShapeId.index);
 			Vector3 displacement = targetPos - replacingShapePos;
-			middle::moveShape(gameState, newMulShape.id.index, displacement);
-			return newMulShape.id;
+			position = middle::getComponent<components::Position>(newMulShape);
+			position->posX = targetPos.x;
+			position->posY = targetPos.y;
+			position->posZ = targetPos.z;
+			return newMulShapeId;
 		}
 
 		// if shape to replace is already a multiplicaiton
@@ -208,16 +217,6 @@ namespace bubbleActions{
 			}
 			deleteBubble(gameState, copyShapeToCopyId);
 
-			// remove dangling pointers from loopmembers
-			operationContainer = middle::getShape(gameState, operationContainerId.index);
-			operationContainerLoop = middle::getComponent<components::LoopSociety>(operationContainer);
-			int sizeEnd = operationContainerLoop->loopMemberIds.size();
-			for (int i = sizeEnd - 1; i >= 0; --i) {
-				if (!middle::isShapeAlive(gameState, i)) {
-					operationContainerLoop->loopMemberIds.erase(operationContainerLoop->loopMemberIds.begin() + i);
-				}
-			}
-
 			// if there's no multiplications left remove the multiplication shape
 			auto containerLoop = middle::getComponent<components::LoopSociety>(operationContainer);
 			if (containerLoop->loopMemberIds.size() < 2) {
@@ -240,6 +239,9 @@ namespace bubbleActions{
 			if(loop->parentLoopId.index != middle::UNASSIGNED) {
 				auto reparentAction = middle::EditorActionReparent(loop->parentLoopId.index, operationContainerId.index);
 				reparentAction.execute(gameState);
+			}
+			else {
+				loop->parentLoopId = middle::Id();
 			}
 
 			deleteBubble(gameState, multiplyShapeId);
