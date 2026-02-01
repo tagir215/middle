@@ -38,8 +38,6 @@ namespace middle {
 		}
 	};
 
-	static Id NILID = Id();
-
 	struct Component {
 		// offset where the shapes component is in component vector in middle_component_table (currently)
 		int componentOffset;

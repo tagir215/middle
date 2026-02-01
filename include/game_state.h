@@ -46,6 +46,7 @@ namespace middle {
 	public:
 		virtual ~EditorActionContainer() = default;
 		virtual void execute(GameState* gameState) = 0;
+		virtual void undo(GameState* gameState) = 0;
 	};
 
 
@@ -112,13 +113,16 @@ namespace middle {
 		ApplicationMode applicationMode = ApplicationMode::EDITOR_MODE;
 		EditorState editorState;
 		Camera activeCamera;
+		// shapes
 		std::array<Id, MAX_SHAPE_COUNT>ids;
 		std::array<Shape, MAX_SHAPE_COUNT>shapes;
-		std::array<Vector3, MAX_VERTEX_COUNT> vertexArray;
+		// systems
 		std::unordered_map<std::string, std::unique_ptr<MiddleGameplaySystem>> gameplaySystems;
 		std::vector<std::unique_ptr<MiddleGameplaySystem>> engineSystemsFrameStart;
 		std::vector<std::unique_ptr<MiddleGameplaySystem>> engineSystemsFrameEnd;
 		std::vector<std::unique_ptr<MiddleGameplaySystem>> engineRendererSystems;
+
+		std::array<Vector3, MAX_VERTEX_COUNT> vertexArray;
 		Matrix worldM;
 		Vector2 mouseDragPos;
 		Matrix oldWorldM;

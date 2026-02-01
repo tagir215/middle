@@ -1,12 +1,10 @@
 #pragma once
 #include "registrars.h"
 #include "editor_file_utils.h"
-#define MIDDLEBUBBLEMULTIPLYCOMPONENT(X) \
-	X(bubbleIds)
+#define MIDDLEBUBBLEMULTIPLYCOMPONENT(X) 
 
 namespace components {
 	struct BubbleMultiplyComponent : public middle::Serializable{
-		std::vector<middle::Id> bubbleIds;
 
 		void serialize(std::ostream& ostream) override;
 		void deserialize(const std::vector<std::string>& buffer, int indexOffset) override;

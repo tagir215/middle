@@ -11,6 +11,7 @@ namespace middle {
 			this->position = position;
 		}
 		void execute(GameState* gameState) override;
+		void undo(GameState* gameState) override;
 	};
 
 	// creation of new constraints happened here
@@ -23,6 +24,7 @@ namespace middle {
 			this->indexB = indexB;
 		}
 		void execute(GameState* gameState) override;
+		void undo(GameState* gameState) override;
 	};
 
 	// deletion of selected things happening here actually
@@ -33,6 +35,7 @@ namespace middle {
 			this->selectedIndexes = selectedIndexes;
 		}
 		void execute(GameState* gameState) override;
+		void undo(GameState* gameState) override;
 	};
 
 	// time to save positions, please don't forget to do it
@@ -43,6 +46,7 @@ namespace middle {
 			this->sceneName = sceneName;
 		}
 		void execute(GameState* gameState) override;
+		void undo(GameState* gameState) override;
 	};
 
 	// build from the editor.  hopefully no crashes...
@@ -52,6 +56,7 @@ namespace middle {
 
 		}
 		void execute(GameState* gameState) override;
+		void undo(GameState* gameState) override;
 	};
 
 	// load scene new exiting start
@@ -62,6 +67,7 @@ namespace middle {
 			this->sceneName = sceneName;
 		}
 		void execute(GameState* gameState) override;
+		void undo(GameState* gameState) override;
 	};
 
 	// create loops, 
@@ -72,6 +78,7 @@ namespace middle {
 			memberIndexes = selectedIndexes;
 		}
 		void execute(GameState* gameState) override;
+		void undo(GameState* gameState) override;
 	};
 
 	// new scene, new world
@@ -82,6 +89,7 @@ namespace middle {
 			this->sceneName = sceneName;
 		}
 		void execute(GameState* gameState) override;
+		void undo(GameState* gameState) override;
 	};
 
 	// what is import scene? it's so that you can import scenes as objects, or loops 
@@ -92,6 +100,7 @@ namespace middle {
 			this->sceneName = sceneName;
 		}
 		void execute(GameState* gameState) override;
+		void undo(GameState* gameState) override;
 	};
 
 	// it is so much work to find scripts. Finding things from list of files is not smart. You need to use the editor
@@ -102,6 +111,7 @@ namespace middle {
 			this->systemName = systemName;
 		}
 		void execute(GameState* gameState) override;
+		void undo(GameState* gameState) override;
 	};
 
 	// create new script
@@ -112,6 +122,7 @@ namespace middle {
 			this->systemName = systemName;
 		}
 		void execute(GameState* gameState) override;
+		void undo(GameState* gameState) override;
 	};
 
 	// import script, the code already exists
@@ -122,6 +133,7 @@ namespace middle {
 			this->systemName = systemName;
 		}
 		void execute(GameState* gameState) override;
+		void undo(GameState* gameState) override;
 	};
 
 	// new perspective 
@@ -141,6 +153,7 @@ namespace middle {
 			this->projection = projection;
 		}
 		void execute(GameState* gameState) override;
+		void undo(GameState* gameState) override;
 	};
 
 	// we are directors now
@@ -151,6 +164,7 @@ namespace middle {
 			this->cameraIndex = cameraIndex;
 		}
 		void execute(GameState* gameState) override;
+		void undo(GameState* gameState) override;
 	};
 
 	class EditorActionNewComponent : public EditorActionContainer {
@@ -160,6 +174,7 @@ namespace middle {
 			this->componentName = componentName;
 		}
 		void execute(GameState* gameState) override;
+		void undo(GameState* gameState) override;
 	};
 
 	class EditorActionImportComponent : public EditorActionContainer {
@@ -171,6 +186,7 @@ namespace middle {
 			this->selectedIndexes = selectedIndexes;
 		}
 		void execute(GameState* gameState) override;
+		void undo(GameState* gameState) override;
 	};
 
 	class EditorActionRemoveComponent : public EditorActionContainer {
@@ -182,6 +198,7 @@ namespace middle {
 			this->selectedIndexes = selectedIndexes;
 		}
 		void execute(GameState* gameState) override;
+		void undo(GameState* gameState) override;
 	};
 
 	class EditorActionOpenComponent : public EditorActionContainer {
@@ -191,6 +208,7 @@ namespace middle {
 			this->componentName = componentName;
 		}
 		void execute(GameState* gameState) override;
+		void undo(GameState* gameState) override;
 	};
 
 	class EditorActionRemoveFromLoop : public EditorActionContainer {
@@ -200,6 +218,7 @@ namespace middle {
 			this->childIndex = childIndex;
 		}
 		void execute(GameState* gameState) override;
+		void undo(GameState* gameState) override;
 	};
 
 	class EditorActionReparent : public EditorActionContainer {
@@ -211,6 +230,7 @@ namespace middle {
 			this->childIndex = childIndex;
 		}
 		void execute(GameState* gameState) override;
+		void undo(GameState* gameState) override;
 	};
 
 	class EditorActionCopy : public EditorActionContainer {
@@ -220,5 +240,6 @@ namespace middle {
 			this->selectedShapes = selectedShapes;
 		}
 		void execute(GameState* gameState) override;
+		void undo(GameState* gameState) override;
 	};
 }

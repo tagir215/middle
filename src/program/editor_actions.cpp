@@ -30,7 +30,11 @@ namespace middle {
 
 		Vector3 xzPos = gameState->input.mouseXZ_PlanePos;
 		entities::initJoint(gameState, freeIndex, xzPos);
-	};
+	}
+	void EditorActionNewSphere::undo(GameState* gameState)
+	{
+	}
+	;
 
 	void EditorActionNewConstraint::execute(GameState* gameState) {
 		auto& shapes = gameState->shapes;
@@ -71,6 +75,10 @@ namespace middle {
 
 	}
 
+	void EditorActionNewConstraint::undo(GameState* gameState)
+	{
+	}
+
 	void EditorActionDelete::execute(GameState* gameState) {
 		// loops of deleted spheres that belong to loops
 		std::set<int>deteledLoopMembersParentLoops;
@@ -104,13 +112,25 @@ namespace middle {
 
 	}
 
+	void EditorActionDelete::undo(GameState* gameState)
+	{
+	}
+
 	void EditorActionSaveScene::execute(GameState* gameState) {
 		saveScene(gameState, sceneName);
+	}
+
+	void EditorActionSaveScene::undo(GameState* gameState)
+	{
 	}
 
 	void EditorActionBuild::execute(GameState* gameState) {
 		std::string command = "python ../src/editor_scripts/build_project.py";
 		system(command.c_str());
+	}
+
+	void EditorActionBuild::undo(GameState* gameState)
+	{
 	}
 
 	void EditorActionCreateLoop::execute(GameState* gameState) {
@@ -151,6 +171,10 @@ namespace middle {
 		unselect(gameState);
 	}
 
+	void EditorActionCreateLoop::undo(GameState* gameState)
+	{
+	}
+
 
 	void EditorActionLoadScene::execute(GameState* gameState)
 	{
@@ -170,6 +194,10 @@ namespace middle {
 		gameState->loopIndex = 0;
 	}
 
+	void EditorActionLoadScene::undo(GameState* gameState)
+	{
+	}
+
 	void EditorActionNewScene::execute(GameState* gameState)
 	{
 		// DELETE EVERYTHING
@@ -184,9 +212,17 @@ namespace middle {
 		saveScene(gameState, sceneName);
 	}
 
+	void EditorActionNewScene::undo(GameState* gameState)
+	{
+	}
+
 	void EditorActionImportScene::execute(GameState* gameState)
 	{
 		loadScene(gameState, sceneName, true, {0,0,0}, findFreeIndex(gameState));
+	}
+
+	void EditorActionImportScene::undo(GameState* gameState)
+	{
 	}
 
 
@@ -195,6 +231,10 @@ namespace middle {
 		std::string name = systemName;
 		shell_open_file("../assets/systems/" + systemName + ".cpp");
 		gameState->closeGame = true;
+	}
+
+	void EditorActionOpenSystem::undo(GameState* gameState)
+	{
 	}
 
 	void EditorActionNewSystem::execute(GameState* gameState)
@@ -212,10 +252,18 @@ namespace middle {
 		gameState->closeGame = true;
 	}
 
+	void EditorActionNewSystem::undo(GameState* gameState)
+	{
+	}
+
 	void EditorActionImportSystem::execute(GameState* gameState) 
 	{
 		int freeIndex = findFreeIndex(gameState);
 		entities::initSystem(gameState, freeIndex, { 0,0,0 }, systemName);
+	}
+
+	void EditorActionImportSystem::undo(GameState* gameState)
+	{
 	}
 
 	void EditorActionNewCamera::execute(GameState* gameState)
@@ -225,9 +273,17 @@ namespace middle {
 		entities::initCamera(gameState, freeIndex, pos, up, target, fieldOfView, projection);
 	}
 
+	void EditorActionNewCamera::undo(GameState* gameState)
+	{
+	}
+
 	void EditorActionSelectCamera::execute(GameState* gameState)
 	{
 
+	}
+
+	void EditorActionSelectCamera::undo(GameState* gameState)
+	{
 	}
 
 
@@ -245,6 +301,10 @@ namespace middle {
 		gameState->closeGame = true;
 	}
 
+	void EditorActionNewComponent::undo(GameState* gameState)
+	{
+	}
+
 	void EditorActionImportComponent::execute(GameState* gameState)
 	{
 		for (int i : selectedIndexes) {
@@ -258,6 +318,10 @@ namespace middle {
 		};
 	}
 
+	void EditorActionImportComponent::undo(GameState* gameState)
+	{
+	}
+
 	void EditorActionRemoveComponent::execute(GameState* gameState)
 	{
 		for (int i : selectedIndexes) {
@@ -269,12 +333,20 @@ namespace middle {
 		};
 	}
 
+	void EditorActionRemoveComponent::undo(GameState* gameState)
+	{
+	}
+
 
 	void EditorActionOpenComponent::execute(GameState* gameState)
 	{
 		shell_open_file("../assets/components/" + componentName + ".h");
 		unselect(gameState);
 		gameState->closeGame = true;
+	}
+
+	void EditorActionOpenComponent::undo(GameState* gameState)
+	{
 	}
 
 	void EditorActionRemoveFromLoop::execute(GameState* gameState)
@@ -299,8 +371,13 @@ namespace middle {
 		}
 	}
 
+	void EditorActionRemoveFromLoop::undo(GameState* gameState)
+	{
+	}
+
 	void EditorActionReparent::execute(GameState* gameState)
 	{
+		assert(parentIndex != childIndex);
 		Shape& parentShape = getShape(gameState, parentIndex);
 		Shape& childShape = getShape(gameState, childIndex);
 		auto parentLoop = getComponent<components::LoopSociety>(parentShape);
@@ -321,6 +398,10 @@ namespace middle {
 
 		parentLoop->loopMemberIds.push_back(childShape.id);
 		childLoop->parentLoopId = parentShape.id;
+	}
+
+	void EditorActionReparent::undo(GameState* gameState)
+	{
 	}
 
 
@@ -361,6 +442,10 @@ namespace middle {
 				addComponent<components::PlacementComponent>(child);
 			}
 		}
+	}
+
+	void EditorActionCopy::undo(GameState* gameState)
+	{
 	}
 
 }

@@ -52,9 +52,9 @@ class BubbleCollisionSystem : public middle::MiddleGameplaySystem {
 					auto& childB = middle::getShape(gameState, idB.index);
 					auto grabbableA = middle::getComponent<components::MouseGrabbable>(childA);
 					auto grabbableB = middle::getComponent<components::MouseGrabbable>(childB);
-					if (grabbableA->grabbing)
+					if (grabbableA && grabbableA->grabbing)
 						continue;
-					if (grabbableB->grabbing)
+					if (grabbableB && grabbableB->grabbing)
 						continue;
 					pairs.push_back({ idA, idB });
 					continue;

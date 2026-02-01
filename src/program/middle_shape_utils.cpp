@@ -319,9 +319,7 @@ namespace middle {
 		return UNASSIGNED;
 	}
 
-
-	Id deepCopyShape(GameState* gameState, int shapeToCopyIndex, int parentIndex) {
-
+	Id copyShape(GameState* gameState, int shapeToCopyIndex, int parentIndex) {
 		std::vector<FieldInfo> ogFields;
 		std::vector<FieldInfo> copyFields;
 		// resize with 100 probabbly no components with that many fields.. hopefully
@@ -413,6 +411,17 @@ namespace middle {
 
 		}
 
+		return newShape.id;
+	}
+
+
+	Id deepCopyShape(GameState* gameState, int shapeToCopyIndex, int parentIndex) {
+
+		Shape& ogShape = getShape(gameState, shapeToCopyIndex);
+
+		middle::Id newShapeId = copyShape(gameState, shapeToCopyIndex, parentIndex);
+		auto& newShape = middle::getShape(gameState, newShapeId.index);
+
 		auto copyLoop = getComponent<components::LoopSociety>(newShape);
 		if (copyLoop) {
 
@@ -437,6 +446,10 @@ namespace middle {
 
 		return newShape.id;
 
+	}
+	Id deepCopyShapeToStorage(GameState* gameState, int shapeToCopyIndex, int parentIndex)
+	{
+		return Id();
 	}
 	void getChildren(GameState* gameState, Id id, std::vector<Id>& result)
 	{
