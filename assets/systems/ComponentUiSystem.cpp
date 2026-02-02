@@ -70,6 +70,9 @@ public:
 							if (field.type == middle::FieldType::Bool) {
 								ImGui::Checkbox(field.name, static_cast<bool*>(field.value));
 							}
+							if (field.type == middle::FieldType::Int) {
+								ImGui::InputInt(field.name, static_cast<int*>(field.value));
+							}
 							else if (field.type == middle::FieldType::Float) {
 								ImGui::InputFloat(field.name, static_cast<float*>(field.value));
 							}

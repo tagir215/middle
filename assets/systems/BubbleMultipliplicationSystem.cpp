@@ -13,8 +13,38 @@
 #include "Sphere.h"
 #include "Text.h"
 #include "editor_actions.h"
+#include "FractionalComponent.h"
 
 namespace bubbleActions{
+
+	void deleteBubble(middle::GameState* gameState, middle::Id& id) {
+		middle::Shape& shape = middle::getShape(gameState, id.index);
+
+		// delete outline
+		auto bubble = middle::getComponent<components::BubbleComponent>(shape);
+		if (bubble) {
+			for (middle::Id& outlineId : bubble->outlineNodes) {
+				middle::deleteShape(gameState, outlineId.index);
+			}
+			for (middle::Id& constraintId : bubble->outlineConstraints) {
+				middle::deleteShape(gameState, constraintId.index);
+			}
+		}
+
+		auto loop = middle::getComponent<components::LoopSociety>(shape);
+		if (loop) {
+			int size = loop->loopMemberIds.size();
+			for (int i = size - 1; i >= 0; --i) {
+				middle::Id childId = loop->loopMemberIds[i];
+				if (!middle::isShapeAlive(gameState, childId.index)) {
+					assert(false);
+				}
+				deleteBubble(gameState, childId);
+			}
+		}
+
+		middle::deleteShape(gameState, id.index);
+	}
 
 	middle::Id createMultiplicationReplacementShape(middle::GameState* gameState, middle::Id shapeToReplaceId, middle::Id replacingShapeId) {
 		auto& shapeToReplace = middle::getShape(gameState, shapeToReplaceId.index);
@@ -25,6 +55,8 @@ namespace bubbleActions{
 
 		auto bubbleComp = middle::getComponent<components::BubbleComponent>(shapeToReplace);
 		auto mulComp = middle::getComponent<components::BubbleMultiplyComponent>(shapeToReplace);
+		auto fraction = middle::getComponent<components::FractionalComponent>(shapeToReplace);
+		auto unit = middle::getComponent<components::BubbleUnit>(shapeToReplace);
 
 		// containe copies in a new multiplication
 		if (bubbleComp) {
@@ -67,9 +99,42 @@ namespace bubbleActions{
 			return copyMulShape.id;
 		}
 
+		if (fraction) {
+			middle::Id& copyFractionId = middle::deepCopyShape(gameState, shapeToReplace.id.index);
+			auto& copyFraction = middle::getShape(gameState, copyFractionId.index);
+			// compute displacmenet from replacing shape to shapeToReplace position
+			Vector3 replacingShapePos = middle::getShapePosition(gameState, copyFraction.id.index);
+			Vector3 displacement = targetPos - replacingShapePos;
+			middle::moveShape(gameState, copyFraction.id.index, displacement);
+			std::vector<middle::Id> shapesToDelete;
+			auto loop = middle::getComponent<components::LoopSociety>(copyFraction);
+			assert(loop);
+			int size = loop->loopMemberIds.size();
+			for (int i = 0; i < size; ++i) {
+				middle::Id& id = loop->loopMemberIds[i];
+				shapesToDelete.push_back(id);
+				middle::Id copyId = createMultiplicationReplacementShape(gameState, id, replacingShape.id);
+				auto reparentAction = middle::EditorActionReparent(copyFractionId.index, copyId.index);
+				reparentAction.execute(gameState);
+			}
+			for (middle::Id& id : shapesToDelete) {
+				deleteBubble(gameState, id);
+			}
+			loop = middle::getComponent<components::LoopSociety>(copyFraction);
+			return copyFractionId;
+		}
+
 		// if shape to replace is a unit
+		if (unit)
 		{
-			middle::Id copyId = middle::deepCopyShape(gameState, replacingShape.id.index, middle::UNASSIGNED);
+			middle::Id shapeToCopyId;
+			if (unit->value == 1) {
+				shapeToCopyId = replacingShape.id;
+			}
+			if (unit->value == 0) {
+				shapeToCopyId = shapeToReplace.id;
+			}
+			middle::Id copyId = middle::deepCopyShape(gameState, shapeToCopyId.index, middle::UNASSIGNED);
 			// compute displacmenet from replacing shape to shapeToReplace position
 			Vector3 replacingShapePos = middle::getShapePosition(gameState, copyId.index);
 			Vector3 displacement = targetPos - replacingShapePos;
@@ -80,34 +145,6 @@ namespace bubbleActions{
 
 	}
 
-	void deleteBubble(middle::GameState* gameState, middle::Id& id) {
-		middle::Shape& shape = middle::getShape(gameState, id.index);
-
-		// delete outline
-		auto bubble = middle::getComponent<components::BubbleComponent>(shape);
-		if (bubble) {
-			for (middle::Id& outlineId : bubble->outlineNodes) {
-				middle::deleteShape(gameState, outlineId.index);
-			}
-			for (middle::Id& constraintId : bubble->outlineConstraints) {
-				middle::deleteShape(gameState, constraintId.index);
-			}
-		}
-
-		auto loop = middle::getComponent<components::LoopSociety>(shape);
-		if (loop) {
-			int size = loop->loopMemberIds.size();
-			for (int i = size - 1; i >= 0; --i) {
-				middle::Id childId = loop->loopMemberIds[i];
-				if (!middle::isShapeAlive(gameState, childId.index)) {
-					assert(false);
-				}
-				deleteBubble(gameState, childId);
-			}
-		}
-
-		middle::deleteShape(gameState, id.index);
-	}
 
 	void setBubbleHidden(middle::GameState* gameState, middle::Id& id, bool hidden) {
 		middle::Shape& shape = middle::getShape(gameState, id.index);
@@ -204,6 +241,7 @@ namespace bubbleActions{
 				copyIntoLoop = middle::getComponent<components::LoopSociety>(copyShapeToCopyInto);
 				middle::Id& childId = copyIntoLoop->loopMemberIds[index];
 				bubblesToDelete.push_back(childId);
+
 				// replace unit with new copy bubble
 				middle::Id copyId = createMultiplicationReplacementShape(gameState, childId, copyShapeToCopyId);
 				auto& copyShpae = middle::getShape(gameState, copyId.index);
@@ -238,7 +276,7 @@ namespace bubbleActions{
 
 			auto& multiplyShape = middle::getShape(gameState, multiplyShapeId.index);
 			auto loop = middle::getComponent<components::LoopSociety>(multiplyShape);
-			if(loop->parentLoopId.index != middle::UNASSIGNED) {
+			if (loop->parentLoopId.index != middle::UNASSIGNED) {
 				auto reparentAction = middle::EditorActionReparent(loop->parentLoopId.index, operationContainerId.index);
 				reparentAction.execute(gameState);
 			}

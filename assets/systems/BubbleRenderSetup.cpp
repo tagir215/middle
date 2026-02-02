@@ -8,6 +8,8 @@
 #include "Position.h"
 #include "Sphere.h"
 #include "BubbleUnit.h"
+#include "FractionalComponent.h"
+#include "LoopSociety.h"
 
 class BubbleRenderSetup : public middle::MiddleGameplaySystem {
 
@@ -19,9 +21,9 @@ class BubbleRenderSetup : public middle::MiddleGameplaySystem {
 
 			auto bubbleComponent = middle::getComponent<components::BubbleComponent>(shape);
 			auto multiplyComponent = middle::getComponent<components::BubbleMultiplyComponent>(shape);
-			auto sphere = middle::getComponent<components::Sphere>(shape);
 			auto unit = middle::getComponent<components::BubbleUnit>(shape);
-			if (!bubbleComponent && !multiplyComponent && !sphere)
+			auto fraction = middle::getComponent<components::FractionalComponent>(shape);
+			if (!bubbleComponent && !multiplyComponent && !unit && !fraction)
 				return;
 
 			if (bubbleComponent && bubbleComponent->hidden) {
@@ -33,16 +35,21 @@ class BubbleRenderSetup : public middle::MiddleGameplaySystem {
 
 			if (gameState->applicationMode == middle::ApplicationMode::GAME_MODE) {
 
-				if (sphere) {
+				if (unit) {
 					auto pos = middle::getComponent<components::Position>(shape);
 					middle::RenderItem particle;
 					particle.center = { pos->posX, pos->posY, pos->posZ };
 					particle.type = middle::RenderItemType::SPHERE;
-					particle.radius = sphere->radius;
-					particle.color = middle::UGLY_PINK;
+					const float unitRadius = 2;
+					particle.radius = unitRadius;
+					if (unit->value == 1) {
+						particle.color = middle::UGLY_PINK;
+					}
+					if (unit->value == 0) {
+						particle.color = { 255,255,255, 60 };
+					}
 					gameState->renderData.push_back(particle);
 				}
-
 
 				if (multiplyComponent) {
 					auto pos = middle::getComponent<components::Position>(shape);
@@ -80,6 +87,20 @@ class BubbleRenderSetup : public middle::MiddleGameplaySystem {
 					}
 				}
 
+				if (fraction) {
+					auto loop = middle::getComponent<components::LoopSociety>(shape);
+					int size = loop->loopMemberIds.size();
+					for (int x = 0; x < size; ++x) {
+						for (int y = x + 1; y < size; ++y) {
+							middle::RenderItem fractionLine;
+							fractionLine.type = middle::RenderItemType::LINE;
+							fractionLine.linePointA = middle::getShapePosition(gameState, loop->loopMemberIds[x].index);
+							fractionLine.linePointB = middle::getShapePosition(gameState, loop->loopMemberIds[y].index);
+							fractionLine.color = { 255,255,255,50 };
+							gameState->renderData.push_back(fractionLine);
+						}
+					}
+				}
 			}
 
 
@@ -89,7 +110,6 @@ class BubbleRenderSetup : public middle::MiddleGameplaySystem {
 				Vector3 center = { bubbleComponent->centerX, bubbleComponent->centerY, bubbleComponent->centerZ };
 				float l = bubbleComponent->length;
 				float w = bubbleComponent->width;
-
 
 				middle::RenderItem p1;
 				p1.linePointA = center + axis * l * 0.5f;
