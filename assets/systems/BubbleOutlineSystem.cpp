@@ -129,42 +129,62 @@ public:
 		return result;
 	}
 
-	void removeNode(middle::GameState* gameState, std::vector<middle::Id>& outline, float distBetweenNodes) {
+	void removeNode(middle::GameState* gameState, components::BubbleComponent* bubble, float distBetweenNodes) {
 		const int minNodeCount = 5;
-		if (outline.size() < minNodeCount) {
+		if (bubble->outlineConstraints.size() < minNodeCount) {
 			return;
 		}
 
-		int random = rand() % (outline.size() - 2) + 1;
-		const int indexToRemove = random;
-		middle::Shape& shapeToRemove = middle::getShape(gameState, outline[indexToRemove].index);
+		int size = bubble->outlineConstraints.size();
+		int random = rand() % (size - 2) + 1;
+		const int constraintIndexToRemove = random;
 
-		std::vector<int>connectedConstraints = middle::findConnectedConstraints(gameState, shapeToRemove.id);
-		assert(connectedConstraints.size() == 2);
-		middle::deleteShape(gameState, connectedConstraints[1]);
-		middle::Shape& constraintShapeToEdit = middle::getShape(gameState, connectedConstraints[0]);
+		int constraintIndexToEdit = constraintIndexToRemove + 1;
+		if (constraintIndexToEdit >= size) {
+			constraintIndexToEdit = 0;
+		}
 
-		middle::deleteShape(gameState, outline[indexToRemove].index);
+		middle::Shape& constraintShapeToRemove = middle::getShape(gameState, bubble->outlineConstraints[constraintIndexToRemove].index);
+		middle::Shape& constraintShapeToEdit = middle::getShape(gameState, bubble->outlineConstraints[constraintIndexToEdit].index);
 
-		middle::Id idA = outline[indexToRemove - 1];
-		middle::Id idB = outline[indexToRemove + 1];
-		middle::Shape& shapeA = middle::getShape(gameState, idA.index);
-		middle::Shape& shapeB = middle::getShape(gameState, idB.index);
+		auto constraintToRemove = middle::getComponent<components::Constraint>(constraintShapeToRemove);
+		auto constraintToEdit = middle::getComponent<components::Constraint>(constraintShapeToEdit);
 
-		auto constraint = middle::getComponent<components::Constraint>(constraintShapeToEdit);
-		assert(constraint);
-		constraint->idA = shapeA.id;
-		constraint->idB = shapeB.id;
+		middle::Id nodeIdToRemove;
+		if (constraintToRemove->idA == constraintToEdit->idA || constraintToRemove->idA == constraintToEdit->idB) {
+			nodeIdToRemove = constraintToRemove->idA;
+		}
+		else {
+			nodeIdToRemove = constraintToRemove->idB;
+		}
+		int nodesSize = bubble->outlineNodes.size();
+		int nodeIndexToRemove = 0;
+		for (int i = 0; i < nodesSize; ++i) {
+			if (bubble->outlineNodes[i] == nodeIdToRemove) {
+				nodeIndexToRemove = i;
+			}
+		}
 
-		outline.erase(outline.begin() + indexToRemove);
+		middle::deleteShape(gameState, constraintShapeToRemove.id.index);
+		middle::deleteShape(gameState, nodeIdToRemove.index);
+
+		middle::Id idA = bubble->outlineNodes[nodeIndexToRemove - 1];
+		middle::Id idB = bubble->outlineNodes[nodeIndexToRemove + 1];
+
+		assert(constraintToEdit);
+		constraintToEdit->idA = idA;
+		constraintToEdit->idB = idB;
+
+		bubble->outlineNodes.erase(bubble->outlineNodes.begin() + nodeIndexToRemove);
+		bubble->outlineConstraints.erase(bubble->outlineConstraints.begin() + constraintIndexToRemove);
 	}
 
 
-	void addNode(middle::GameState* gameState, std::vector<middle::Id>& outline, float distBetweenNodes) {
+	void addNode(middle::GameState* gameState, components::BubbleComponent* bubble, float distBetweenNodes) {
 
 		// get constraint to break
-		middle::Shape& leftNeighborShape = middle::getShape(gameState, outline.back().index);
-		middle::Shape& rightNeighborShape = middle::getShape(gameState, outline.front().index);
+		middle::Shape& leftNeighborShape = middle::getShape(gameState, bubble->outlineNodes.back().index);
+		middle::Shape& rightNeighborShape = middle::getShape(gameState, bubble->outlineNodes.front().index);
 
 		int constraintIndex = middle::constraintExistsAt(gameState, leftNeighborShape.id, rightNeighborShape.id);
 		middle::Shape& constraintToBreakShape = middle::getShape(gameState, constraintIndex);
@@ -178,7 +198,7 @@ public:
 
 		// create new node
 		middle::Shape& newNode = newNodeShape(gameState, centroid);
-		outline.push_back(newNode.id);
+		bubble->outlineNodes.push_back(newNode.id);
 
 
 		// edit old constraint
@@ -198,6 +218,8 @@ public:
 		newConstraint->idA = newNode.id;
 		newConstraint->idB = rightNeighborShape.id;
 		newConstraint->targetDistance = constraintToEdit->targetDistance;
+
+		bubble->outlineConstraints.push_back(newConstraintShape.id);
 
 	}
 
@@ -298,7 +320,7 @@ public:
 			bubble->endRadius = bubbleEndPointRadius;
 
 			// bubble initialization
-			if (bubble->outline.size() == 0) {
+			if (bubble->outlineNodes.size() == 0) {
 				if (axisLength < 0) axisLength = 0;
 				// 2d perp for now
 				Vector3 perpAxis = { -distanceCouple.axis.z, 0, distanceCouple.axis.x };
@@ -324,7 +346,7 @@ public:
 					dirVec = Vector3RotateByAxisAngle(dirVec, rotateAxis, -angleBetweenNodes);
 					arcTravelled += angleBetweenNodes * bubbleEndPointRadius;
 
-					bubble->outline.push_back(outlineShape.id);
+					bubble->outlineNodes.push_back(outlineShape.id);
 				}
 
 				// create first side
@@ -334,7 +356,7 @@ public:
 				nextPos += Vector3Scale(distanceCouple.axis, -lengthTravelled);
 				while (lengthTravelled < axisLength) {
 					middle::Shape& outlineShape = newNodeShape(gameState, nextPos);
-					bubble->outline.push_back(outlineShape.id);
+					bubble->outlineNodes.push_back(outlineShape.id);
 					lengthTravelled += adjustedToEvenDistBetweenNodes;
 					nextPos = nextPos + transVec;
 				}
@@ -354,7 +376,7 @@ public:
 					dirVec = Vector3RotateByAxisAngle(dirVec, rotateAxis, -angleBetweenNodes);
 					arcTravelled += angleBetweenNodes * bubbleEndPointRadius;
 
-					bubble->outline.push_back(outlineShape.id);
+					bubble->outlineNodes.push_back(outlineShape.id);
 				}
 
 
@@ -366,26 +388,27 @@ public:
 				// stop one early to avoid duplicating the first node
 				while (lengthTravelled < axisLength - adjustedToEvenDistBetweenNodes) {
 					middle::Shape& outlineShape = newNodeShape(gameState, nextPos);
-					bubble->outline.push_back(outlineShape.id);
+					bubble->outlineNodes.push_back(outlineShape.id);
 					nextPos = nextPos + transVec;
 					lengthTravelled += adjustedToEvenDistBetweenNodes;
 				}
 
 
 				// generate constraints
-				for (int i = 0; i < bubble->outline.size(); ++i) {
+				for (int i = 0; i < bubble->outlineNodes.size(); ++i) {
 					int iA = i;
 					int iB = i - 1;
 					if (iB < 0) {
-						iB = bubble->outline.size() - 1;
+						iB = bubble->outlineNodes.size() - 1;
 					}
 
-					auto& idA = bubble->outline[iA];
-					auto& idB = bubble->outline[iB];
+					auto& idA = bubble->outlineNodes[iA];
+					auto& idB = bubble->outlineNodes[iB];
 					Vector3 posA = middle::getShapePosition(gameState, idA.index);
 					Vector3 posB = middle::getShapePosition(gameState, idB.index);
 
 					auto& constraintShape = middle::addGhostShape(gameState);
+					bubble->outlineConstraints.push_back(constraintShape.id);
 					auto constraint = middle::addComponent<components::Constraint>(constraintShape);
 					constraint->targetDistance = Vector3Distance(posA, posB);
 					constraint->idA = idA;
@@ -398,12 +421,12 @@ public:
 
 
 
-			if (nodeCount - 1 < bubble->outline.size()) {
-				removeNode(gameState, bubble->outline, distBetweenNodes);
+			if (nodeCount - 1 < bubble->outlineNodes.size()) {
+				removeNode(gameState, bubble, distBetweenNodes);
 			}
 
-			if (nodeCount - 1 > bubble->outline.size()) {
-				addNode(gameState, bubble->outline, distBetweenNodes);
+			if (nodeCount - 1 > bubble->outlineNodes.size()) {
+				addNode(gameState, bubble, distBetweenNodes);
 			}
 
 

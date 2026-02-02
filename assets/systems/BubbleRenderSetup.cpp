@@ -55,14 +55,14 @@ class BubbleRenderSetup : public middle::MiddleGameplaySystem {
 				}
 
 				if (bubbleComponent) {
-					for (int index = 0; index < bubbleComponent->outline.size(); ++index) {
+					for (int index = 0; index < bubbleComponent->outlineNodes.size(); ++index) {
 						int indexA = index - 1;
 						int indexB = index;
 						if (index == 0) {
-							indexA = bubbleComponent->outline.size() - 1;
+							indexA = bubbleComponent->outlineNodes.size() - 1;
 						}
-						middle::Id nodeIdA = bubbleComponent->outline[indexA];
-						middle::Id nodeIdB = bubbleComponent->outline[indexB];
+						middle::Id nodeIdA = bubbleComponent->outlineNodes[indexA];
+						middle::Id nodeIdB = bubbleComponent->outlineNodes[indexB];
 						Vector3 posA = middle::getShapePosition(gameState, nodeIdA.index);
 						Vector3 posB = middle::getShapePosition(gameState, nodeIdB.index);
 

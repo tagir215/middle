@@ -9,15 +9,15 @@ namespace bubble {
 	{
 		auto bubbleComponent = middle::getComponent<components::BubbleComponent>(bubbleShape);
 
-		for (int i = 0; i < bubbleComponent->outline.size(); ++i) {
+		for (int i = 0; i < bubbleComponent->outlineNodes.size(); ++i) {
 			int indexA = i - 1;
 			int indexB = i;
 			if (i == 0) {
-				indexA = bubbleComponent->outline.size() - 1;
+				indexA = bubbleComponent->outlineNodes.size() - 1;
 			}
 
-			auto& idA = bubbleComponent->outline[indexA];
-			auto& idB = bubbleComponent->outline[indexB];
+			auto& idA = bubbleComponent->outlineNodes[indexA];
+			auto& idB = bubbleComponent->outlineNodes[indexB];
 			Vector3 posA = middle::getShapePosition(gameState, idA.index);
 			Vector3 posB = middle::getShapePosition(gameState, idB.index);
 			Vector3 dir = posB - posA;

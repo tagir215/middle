@@ -57,8 +57,8 @@ namespace bubbleActions{
 		if (mulComp) {
 			middle::Id& copyMulShapeId = middle::deepCopyShape(gameState, shapeToReplace.id.index);
 			auto& copyMulShape = middle::getShape(gameState, copyMulShapeId.index);
-			auto copyMulLoop = middle::getComponent<components::LoopSociety>(copyMulShape);
 			middle::Id copyId = middle::deepCopyShape(gameState, replacingShape.id.index, copyMulShape.id.index);
+			auto copyMulLoop = middle::getComponent<components::LoopSociety>(copyMulShape);
 			copyMulLoop->loopMemberIds.push_back(copyId);
 			// compute displacmenet from replacing shape to shapeToReplace position
 			Vector3 replacingShapePos = middle::getShapePosition(gameState, copyMulShape.id.index);
@@ -86,8 +86,11 @@ namespace bubbleActions{
 		// delete outline
 		auto bubble = middle::getComponent<components::BubbleComponent>(shape);
 		if (bubble) {
-			for (middle::Id& outlineId : bubble->outline) {
-				middle::deleteShapeRecursive(gameState, outlineId.index);
+			for (middle::Id& outlineId : bubble->outlineNodes) {
+				middle::deleteShape(gameState, outlineId.index);
+			}
+			for (middle::Id& constraintId : bubble->outlineConstraints) {
+				middle::deleteShape(gameState, constraintId.index);
 			}
 		}
 
@@ -107,7 +110,6 @@ namespace bubbleActions{
 	}
 
 	void setBubbleHidden(middle::GameState* gameState, middle::Id& id, bool hidden) {
-		return;
 		middle::Shape& shape = middle::getShape(gameState, id.index);
 		auto bubbleComponent = middle::getComponent<components::BubbleComponent>(shape);
 		auto bubbleUnit = middle::getComponent<components::BubbleUnit>(shape);
@@ -307,7 +309,7 @@ namespace bubbleActions{
 
 			// delete outline
 			auto bubble = middle::getComponent<components::BubbleComponent>(shape);
-			for (middle::Id outlineId : bubble->outline) {
+			for (middle::Id outlineId : bubble->outlineNodes) {
 				middle::deleteShape(gameState, outlineId.index);
 			}
 
@@ -335,6 +337,7 @@ namespace bubbleActions{
 class BubbleMultipliplicationSystem : public middle::MiddleGameplaySystem {
 public:
 
+	const float timerTime = 0.2f;
 	// MULTIPLICATIONS
 
 	Vector3 closestPointOnOutlineToPoint(middle::GameState* gameState,
@@ -392,8 +395,8 @@ public:
 				// set render item
 				Vector3 posA = middle::getShapePosition(gameState, shapeA.id.index);
 				Vector3 posB = middle::getShapePosition(gameState, shapeB.id.index);
-				Vector3 connectingLinePosA = closestPointOnOutlineToPoint(gameState, posB, bubbleA->outline);
-				Vector3 connectingLinePosB = closestPointOnOutlineToPoint(gameState, posA, bubbleB->outline);
+				Vector3 connectingLinePosA = closestPointOnOutlineToPoint(gameState, posB, bubbleA->outlineNodes);
+				Vector3 connectingLinePosB = closestPointOnOutlineToPoint(gameState, posA, bubbleB->outlineNodes);
 				Vector3 connectionCenter = Vector3Scale(connectingLinePosA + connectingLinePosB, 0.5f);
 				middle::RenderItem connectingLine;
 				connectingLine.type = middle::RenderItemType::LINE;
@@ -441,7 +444,7 @@ public:
 					// get new reference to shapetopcopyinto because it mulaction might change vectors causing dangling pointers
 					auto& shapeToCopyInto = middle::getShape(gameState, shapeToCopyIntoId.index);
 					auto time = middle::addComponent<components::TimerComponent>(shapeToCopyInto);
-					time->timeLeft = 1;
+					time->timeLeft = timerTime;
 				}
 
 			}
@@ -492,7 +495,7 @@ public:
 			}
 		}
 
-		middle::loopInstances(gameState, [gameState, grabbable, grabbableLoop](int i, middle::Shape& shape) {
+		middle::loopInstances(gameState, [gameState, grabbable, grabbableLoop, this](int i, middle::Shape& shape) {
 
 			auto loop = middle::getComponent<components::LoopSociety>(shape);
 			if (!loop)
@@ -545,7 +548,7 @@ public:
 				bubbleToAddInto->infiniteMass = true;
 
 				auto time = middle::addComponent<components::TimerComponent>(shape);
-				time->timeLeft = 1;
+				time->timeLeft = timerTime;
 			}
 
 			});

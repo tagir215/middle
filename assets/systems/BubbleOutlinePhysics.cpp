@@ -82,7 +82,7 @@ public:
 			std::vector<Vector3>fieldPositions = getFieldPositions(gameState, shape);
 
 
-			std::vector<middle::Id>& outlineNodes = bubble->outline;
+			std::vector<middle::Id>& outlineNodes = bubble->outlineNodes;
 
 			for (middle::Id& id : outlineNodes) {
 				middle::Shape& node = middle::getShape(gameState, id.index);

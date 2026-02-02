@@ -32,7 +32,8 @@ namespace components {
 
 		bool infiniteMass = false;
 
-		std::vector<middle::Id> outline;
+		std::vector<middle::Id> outlineNodes;
+		std::vector<middle::Id> outlineConstraints;
 		int nodeCountTarget = 0;
 
 		void serialize(std::ostream& ostream) override;
