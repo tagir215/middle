@@ -9,6 +9,7 @@
 #include "BubbleUnit.h"
 #include "PhysicsData.h"
 #include "MouseGrabbable.h"
+#include "BubbleMultiplyComponent.h"
 
 class BubbleCollisionSystem : public middle::MiddleGameplaySystem {
 	struct CollisionPair {
@@ -26,13 +27,13 @@ class BubbleCollisionSystem : public middle::MiddleGameplaySystem {
 
 	void update(middle::GameState* gameState) override {
 
-
 		// get bubbles
 		std::vector<middle::Id> bubbleList;
 		middle::loopInstances(gameState, [gameState, &bubbleList](int i, middle::Shape& shape) {
 
 			auto bubble = middle::getComponent<components::BubbleComponent>(shape);
-			if (bubble) {
+			auto mulComp = middle::getComponent<components::BubbleMultiplyComponent>(shape);
+			if (bubble || mulComp) {
 				bubbleList.push_back(shape.id);
 			}
 			});
@@ -42,12 +43,28 @@ class BubbleCollisionSystem : public middle::MiddleGameplaySystem {
 		for (middle::Id id : bubbleList) {
 			auto bubbleShape = middle::getShape(gameState, id.index);
 			auto bubbleLoop = middle::getComponent<components::LoopSociety>(bubbleShape);
+			auto mulComp = middle::getComponent<components::BubbleMultiplyComponent>(bubbleShape);
+			std::vector<middle::Id>candidates;
 
-			int size = bubbleLoop->loopMemberIds.size();
+			for (middle::Id& id : bubbleLoop->loopMemberIds) {
+				auto& shape = middle::getShape(gameState, id.index);
+				auto mulComp = middle::getComponent<components::BubbleMultiplyComponent>(shape);
+				if (mulComp) {
+					auto loop = middle::getComponent<components::LoopSociety>(shape);
+					for (middle::Id& childId : loop->loopMemberIds) {
+						candidates.push_back(childId);
+					}
+				}
+				else {
+					candidates.push_back(id);
+				}
+			}
+
+			int size = candidates.size();
 			for (int i = 0; i < size; ++i) {
 				for (int j = i + 1; j < size; ++j) {
-					auto& idA = bubbleLoop->loopMemberIds[i];
-					auto& idB = bubbleLoop->loopMemberIds[j];
+					auto& idA = candidates[i];
+					auto& idB = candidates[j];
 					auto& childA = middle::getShape(gameState, idA.index);
 					auto& childB = middle::getShape(gameState, idB.index);
 					auto grabbableA = middle::getComponent<components::MouseGrabbable>(childA);
@@ -80,18 +97,21 @@ class BubbleCollisionSystem : public middle::MiddleGameplaySystem {
 				float radiusB = bubbleB->length + bubbleDistanceMargin;
 				float distSqr = Vector3DistanceSqr(positionA, positionB);
 				float totalRadius = radiusA + radiusB;
+				Vector3 normal = Vector3Normalize(positionB - positionA);
+				if (Vector3LengthSqr(normal) == 0) {
+					normal = { 1,0,0 };
+				}
 				if (distSqr < totalRadius * totalRadius) {
 					CollisionManifold manifold;
 					manifold.idA = shapeA.id;
 					manifold.idB = shapeB.id;
-					manifold.normal = Vector3Normalize(positionB - positionA);
+					manifold.normal = normal;
 					manifold.maxDepth = radiusA > radiusB ? radiusA : radiusB;
 					float dist = std::sqrtf(distSqr);
 					manifold.depth = radiusA + radiusB - dist;
 					manifolds.push_back(manifold);
 				}
 			}
-
 		}
 
 
