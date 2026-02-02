@@ -811,6 +811,50 @@ Position
 f  -74.370087
 f  0.000000
 f  -185.729248
+__35__
+LoopTag
+BubbleComponent
+LoopSociety
+q  -1
+p  
+36
+43
+44
+Position
+f  75.285576
+f  0.000091
+f  -248.707535
+MouseSelectable
+MouseIntersectable
+MouseGrabbable
+__36__
+MouseGrabbable
+BubbleUnit
+Sphere
+f  2.000000
+Position
+f  66.059830
+f  0.000087
+f  -245.769882
+LoopSociety
+q  35
+p  
+PhysicsData
+f  1.000000
+f  1.000000
+f  1.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.800000
+f  0.800000
+f  0.800000
+f  0.000000
+f  0.000000
+f  0.000000
+b  0
+MouseSelectable
+MouseIntersectable
 __37__
 MouseIntersectable
 Text
@@ -949,3 +993,59 @@ MouseSelectable
 MouseIntersectable
 MouseGrabbable
 UiComponent
+__43__
+MouseGrabbable
+BubbleUnit
+Sphere
+f  2.000000
+Position
+f  85.735909
+f  0.000100
+f  -250.014801
+LoopSociety
+q  35
+p  
+PhysicsData
+f  1.000000
+f  1.000000
+f  1.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.800000
+f  0.800000
+f  0.800000
+f  0.000000
+f  0.000000
+f  0.000000
+b  0
+MouseSelectable
+MouseIntersectable
+__44__
+MouseGrabbable
+BubbleUnit
+Sphere
+f  2.000000
+Position
+f  71.118431
+f  0.000068
+f  -258.319214
+LoopSociety
+q  35
+p  
+PhysicsData
+f  1.000000
+f  1.000000
+f  1.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.800000
+f  0.800000
+f  0.800000
+f  0.000000
+f  0.000000
+f  0.000000
+b  0
+MouseSelectable
+MouseIntersectable

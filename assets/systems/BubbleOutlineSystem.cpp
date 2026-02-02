@@ -135,48 +135,45 @@ public:
 			return;
 		}
 
-		int size = bubble->outlineConstraints.size();
-		int random = rand() % (size - 2) + 1;
-		const int constraintIndexToRemove = random;
+		int outlineNodesSize = bubble->outlineNodes.size();
+		int random = rand() % (outlineNodesSize - 2) + 1;
+		const int nodeToRemoveIndex = random;
+		middle::Id nodeIdToRemove = bubble->outlineNodes[nodeToRemoveIndex];
 
-		int constraintIndexToEdit = constraintIndexToRemove + 1;
-		if (constraintIndexToEdit >= size) {
-			constraintIndexToEdit = 0;
-		}
+		std::vector<int>connectedIndexes = middle::findConnectedConstraints(gameState, nodeIdToRemove);
 
-		middle::Shape& constraintShapeToRemove = middle::getShape(gameState, bubble->outlineConstraints[constraintIndexToRemove].index);
-		middle::Shape& constraintShapeToEdit = middle::getShape(gameState, bubble->outlineConstraints[constraintIndexToEdit].index);
-
+		assert(connectedIndexes.size() == 2);
+		auto& constraintShapeToRemove = middle::getShape(gameState, connectedIndexes[0]);
+		auto& constraintShapeToEdit = middle::getShape(gameState, connectedIndexes[1]);
 		auto constraintToRemove = middle::getComponent<components::Constraint>(constraintShapeToRemove);
 		auto constraintToEdit = middle::getComponent<components::Constraint>(constraintShapeToEdit);
 
-		middle::Id nodeIdToRemove;
-		if (constraintToRemove->idA == constraintToEdit->idA || constraintToRemove->idA == constraintToEdit->idB) {
-			nodeIdToRemove = constraintToRemove->idA;
+		middle::Id nodeToReplace = constraintToRemove->idA == nodeIdToRemove ? constraintToRemove->idB : constraintToRemove->idA;
+		if (constraintToEdit->idA == nodeIdToRemove) {
+			constraintToEdit->idA = nodeToReplace;
 		}
-		else {
-			nodeIdToRemove = constraintToRemove->idB;
-		}
-		int nodesSize = bubble->outlineNodes.size();
-		int nodeIndexToRemove = 0;
-		for (int i = 0; i < nodesSize; ++i) {
-			if (bubble->outlineNodes[i] == nodeIdToRemove) {
-				nodeIndexToRemove = i;
-			}
+		if (constraintToEdit->idB == nodeIdToRemove) {
+			constraintToEdit->idB = nodeToReplace;
 		}
 
 		middle::deleteShape(gameState, constraintShapeToRemove.id.index);
 		middle::deleteShape(gameState, nodeIdToRemove.index);
 
-		middle::Id idA = bubble->outlineNodes[nodeIndexToRemove - 1];
-		middle::Id idB = bubble->outlineNodes[nodeIndexToRemove + 1];
 
-		assert(constraintToEdit);
-		constraintToEdit->idA = idA;
-		constraintToEdit->idB = idB;
-
-		bubble->outlineNodes.erase(bubble->outlineNodes.begin() + nodeIndexToRemove);
-		bubble->outlineConstraints.erase(bubble->outlineConstraints.begin() + constraintIndexToRemove);
+		for (int i = 0; i < outlineNodesSize; ++i) {
+			if (!middle::isShapeAlive(gameState, bubble->outlineNodes[i].index)) {
+				bubble->outlineNodes.erase(bubble->outlineNodes.begin() + i);
+				break;
+			}
+		}
+		int constraintsSize = bubble->outlineConstraints.size();
+		for (int i = 0; i < constraintsSize; ++i) {
+			if (!middle::isShapeAlive(gameState, bubble->outlineConstraints[i].index)) {
+				bubble->outlineConstraints.erase(bubble->outlineConstraints.begin() + i);
+				break;
+			}
+		}
+		
 	}
 
 
