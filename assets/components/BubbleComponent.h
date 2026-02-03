@@ -1,9 +1,7 @@
 #pragma once
 #include "registrars.h"
 #include "editor_file_utils.h"
-#define MIDDLEBUBBLECOMPONENT(X) \
-	X(intersectingTop)  \
-	X(intersectingBelow)  
+#define MIDDLEBUBBLECOMPONENT(X) 
 
 
 namespace components {
@@ -26,8 +24,6 @@ namespace components {
 		float bY;
 		float bZ;
 
-		bool intersectingBelow = false;
-		bool intersectingTop = false;
 		bool hidden = false;
 
 		bool infiniteMass = false;

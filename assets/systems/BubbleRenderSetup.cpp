@@ -10,6 +10,7 @@
 #include "BubbleUnit.h"
 #include "FractionalComponent.h"
 #include "LoopSociety.h"
+#include "MouseIntersectable.h"
 
 class BubbleRenderSetup : public middle::MiddleGameplaySystem {
 
@@ -77,7 +78,9 @@ class BubbleRenderSetup : public middle::MiddleGameplaySystem {
 						outlineItem.type = middle::RenderItemType::LINE;
 						outlineItem.linePointA = posA;
 						outlineItem.linePointB = posB;
-						if (bubbleComponent->intersectingTop) {
+						
+						auto intersectable = middle::getComponent<components::MouseIntersectable>(shape);
+						if (intersectable->intersectingTop) {
 							outlineItem.color = WHITE;
 						}
 						else {

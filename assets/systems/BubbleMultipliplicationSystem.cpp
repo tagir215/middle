@@ -14,6 +14,7 @@
 #include "Text.h"
 #include "editor_actions.h"
 #include "FractionalComponent.h"
+#include "MouseIntersectable.h"
 
 namespace bubbleActions{
 
@@ -464,9 +465,12 @@ public:
 				auto bubbleToCopy = grabbableA->grabbing ? bubbleA : bubbleB;
 				auto bubbleToCopyInto = grabbableA->grabbing ? bubbleB : bubbleA;
 
+				auto& shapeToCopyInto = middle::getShape(gameState, shapeToCopyIntoId.index);
+				auto intersectable = middle::getComponent<components::MouseIntersectable>(shapeToCopyInto);
+
 				if (
 					gameState->bubbleAlgebraState.grabbedId.index != middle::UNASSIGNED
-					&& bubbleToCopyInto->intersectingTop
+					&& intersectable->intersectingTop
 					) {
 
 					// turn on infinite mass 
@@ -479,7 +483,6 @@ public:
 
 					bubbleActions::setBubbleHidden(gameState, shapeToCopyId, true);
 
-					// get new reference to shapetopcopyinto because it mulaction might change vectors causing dangling pointers
 					auto& shapeToCopyInto = middle::getShape(gameState, shapeToCopyIntoId.index);
 					auto time = middle::addComponent<components::TimerComponent>(shapeToCopyInto);
 					time->timeLeft = timerTime;
@@ -492,9 +495,10 @@ public:
 		if (gameState->bubbleAlgebraState.mulAction != nullptr) {
 			auto mulAction = static_cast<bubbleActions::Multiply*>(gameState->bubbleAlgebraState.mulAction.get());
 			auto& containerShape = middle::getShape(gameState, mulAction->shapeToCopyIntoId.index);
+			auto intersectable = middle::getComponent<components::MouseIntersectable>(containerShape);
 			auto containerBubble = middle::getComponent<components::BubbleComponent>(containerShape);
 			auto timer = middle::getComponent<components::TimerComponent>(containerShape);
-			if (!containerBubble->intersectingBelow && !timer) {
+			if (!intersectable->intersecting && !timer) {
 				mulAction->undo(gameState);
 				gameState->bubbleAlgebraState.mulAction.release();
 			}
@@ -551,8 +555,10 @@ public:
 				return;
 			}
 
+			auto intersectable = middle::getComponent<components::MouseIntersectable>(shape);
+
 			// pop action
-			if (bubble->intersectingTop && gameState->gameInput.pop) {
+			if (intersectable->intersectingTop && gameState->gameInput.pop) {
 				auto popAction = std::make_unique<bubbleActions::Pop>(shape.id);
 				popAction->execute(gameState);
 			}
@@ -574,9 +580,10 @@ public:
 				return;
 			}
 
+			intersectable = middle::getComponent<components::MouseIntersectable>(shape);
 
 			// if intersecting while grabbing do addition
-			if (bubble->intersectingTop) {
+			if (intersectable->intersectingTop) {
 				auto& addAction = gameState->bubbleAlgebraState.addAction;
 				addAction = std::make_unique<bubbleActions::Combine>(gameState->bubbleAlgebraState.grabbedId, shape.id);
 				addAction->execute(gameState);
@@ -596,9 +603,10 @@ public:
 		if (gameState->bubbleAlgebraState.addAction != nullptr) {
 			auto addAction = static_cast<bubbleActions::Combine*>(gameState->bubbleAlgebraState.addAction.get());
 			auto& shapeToAddInto = middle::getShape(gameState, addAction->shapeToAddIntoId.index);
+			auto intersectable = middle::getComponent<components::MouseIntersectable>(shapeToAddInto);
 			auto bubbleToAddInto = middle::getComponent<components::BubbleComponent>(shapeToAddInto);
 			auto timer = middle::getComponent<components::TimerComponent>(shapeToAddInto);
-			if (!bubbleToAddInto->intersectingBelow && !timer) {
+			if (!intersectable->intersecting && !timer) {
 				addAction->undo(gameState);
 				gameState->bubbleAlgebraState.addAction.release();
 				bubbleToAddInto->infiniteMass = false;

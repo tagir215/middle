@@ -8,9 +8,28 @@
 #include "PhysicsData.h"
 #include "LoopSociety.h"
 #include "MouseIntersectable.h"
-
+#include "BubbleUnit.h"
+#include "FractionalComponent.h"
 
 class BubbleManipulationSystem : public middle::MiddleGameplaySystem {
+
+	bool isIntersecting(middle::GameState* gameState, middle::Shape& shape) {
+		auto fraction = middle::getComponent<components::FractionalComponent>(shape);
+		auto intersectable = middle::getComponent<components::MouseIntersectable>(shape);
+
+		if (fraction) {
+			auto loop = middle::getComponent<components::LoopSociety>(shape);
+			for (middle::Id id : loop->loopMemberIds) {
+				middle::Shape& shape = middle::getShape(gameState, id.index);
+				if (isIntersecting(gameState, shape)) {
+					return true;
+				}
+			}
+			return false;
+		}
+
+		return intersectable->intersecting;
+	}
 
 	void update(middle::GameState* gameState) override {
 
@@ -18,15 +37,14 @@ class BubbleManipulationSystem : public middle::MiddleGameplaySystem {
 		// mouse movement
 		middle::loopInstances(gameState, [gameState, this](int i, middle::Shape& shape) {
 
-			auto bubble = middle::getComponent<components::BubbleComponent>(shape);
-			if (!bubble)
-				return;
-
 			auto grabbable = middle::getComponent<components::MouseGrabbable>(shape);
-			assert(grabbable);
+			if (!grabbable) {
+				return;
+			}
 
+			bool intersecting = isIntersecting(gameState, shape);
 
-			if (gameState->bubbleAlgebraState.grabbedId.index == middle::UNASSIGNED && bubble->intersectingTop && gameState->input.mouseHeld) {
+			if (intersecting && gameState->bubbleAlgebraState.grabbedId.index == middle::UNASSIGNED && gameState->input.mouseHeld) {
 				grabbable->grabbing = true;
 				gameState->bubbleAlgebraState.grabbedId = shape.id;
 			}

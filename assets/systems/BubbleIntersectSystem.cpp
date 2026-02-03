@@ -7,6 +7,7 @@
 #include "Position.h"
 #include "bubble_utils.h"
 #include "MouseGrabbable.h"
+#include "MouseIntersectable.h"
 
 class BubbleIntersectSystem : public middle::MiddleGameplaySystem {
 
@@ -19,21 +20,25 @@ class BubbleIntersectSystem : public middle::MiddleGameplaySystem {
 			if (!bubble)
 				return;
 
+			auto intersectable = middle::getComponent<components::MouseIntersectable>(shape);
+			assert(intersectable);
+
 			// check that children are not already intersecting or grabbing 
 			bool alreadyIntersecting = false;
 			std::vector<middle::Id>children;
 			middle::getChildren(gameState, shape.id, children);
 			for (auto& childId : children) {
 				auto& childShape = middle::getShape(gameState, childId.index);
+				auto childIntersectable = middle::getComponent<components::MouseIntersectable>(childShape);
 				auto childBubble = middle::getComponent<components::BubbleComponent>(childShape);
-				if (childBubble && childBubble->intersectingTop) {
-					bubble->intersectingTop = false;
+				if (childBubble && childIntersectable->intersectingTop) {
+					intersectable->intersectingTop = false;
 					alreadyIntersecting = true;
 					break;
 				}
 				auto grabbable = middle::getComponent<components::MouseGrabbable>(childShape);
 				if (grabbable && grabbable->grabbing) {
-					bubble->intersectingTop = false;
+					intersectable->intersectingTop = false;
 					alreadyIntersecting = true;
 				}
 			}
@@ -41,9 +46,9 @@ class BubbleIntersectSystem : public middle::MiddleGameplaySystem {
 			// update intersecting status
 			Vector3 mousePos = gameState->input.mouseXZ_PlanePos;
 			bool intersecting = bubble::pointIntersectBubble(gameState, shape, mousePos);
-			bubble->intersectingBelow = intersecting;
+			intersectable->intersecting = intersecting;
 			if (!alreadyIntersecting) {
-				bubble->intersectingTop = intersecting;
+				intersectable->intersectingTop = intersecting;
 			}
 
 			});
