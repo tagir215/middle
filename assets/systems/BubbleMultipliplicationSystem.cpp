@@ -15,6 +15,7 @@
 #include "editor_actions.h"
 #include "FractionalComponent.h"
 #include "MouseIntersectable.h"
+#include "LoopTag.h"
 
 namespace bubbleActions{
 
@@ -148,6 +149,68 @@ namespace bubbleActions{
 		}
 
 
+	}
+
+	middle::Shape& newBubble(middle::GameState* gameState, const Vector3& targetPos) {
+		auto& newBubbleShape = middle::addShape(gameState, middle::findFreeIndex(gameState));
+		middle::addComponent<components::BubbleComponent>(newBubbleShape);
+		middle::addComponent<components::MouseGrabbable>(newBubbleShape);
+		middle::addComponent<components::MouseIntersectable>(newBubbleShape);
+		middle::addComponent<components::LoopTag>(newBubbleShape);
+		middle::addComponent<components::Position>(newBubbleShape);
+		Vector3 pos = middle::getShapePosition(gameState, newBubbleShape.id.index);
+		middle::moveShape(gameState, newBubbleShape.id.index, targetPos - pos);
+		return newBubbleShape;
+	}
+
+	middle::Id createAdditionReplacementShape(middle::GameState* gameState, middle::Id idA, middle::Id idB) {
+		auto& shapeA = middle::getShape(gameState, idA.index);
+		auto& shapeB = middle::getShape(gameState, idB.index);
+
+		auto unitA = middle::getComponent<components::BubbleUnit>(shapeA);
+		auto unitB = middle::getComponent<components::BubbleUnit>(shapeB);
+		auto bubbleA = middle::getComponent<components::BubbleComponent>(shapeA);
+		auto bubbleB = middle::getComponent<components::BubbleComponent>(shapeB);
+
+		middle::Id replacementId;
+
+		// UNIT CASE
+		if (unitA && unitB) {
+			Vector3 targetPos = middle::getShapePosition(gameState, idA.index);
+			middle::Shape& newBubbleShape = newBubble(gameState, targetPos);
+			middle::moveShape(gameState, idA.index, { 5,0,0 });
+			middle::moveShape(gameState, idB.index, { -5,0,0 });
+			auto newLoop = middle::addComponent<components::LoopSociety>(newBubbleShape);
+			auto reparentActionA = middle::EditorActionReparent(newBubbleShape.id.index, idA.index);
+			auto reparentActionB = middle::EditorActionReparent(newBubbleShape.id.index, idB.index);
+			reparentActionA.execute(gameState);
+			reparentActionB.execute(gameState);
+			newLoop = middle::getComponent<components::LoopSociety>(newBubbleShape);
+			replacementId = newBubbleShape.id;
+		}
+		// BUBBLE CASE
+		// add members from frombubble to intobubble
+		else if(bubbleA && bubbleB) {
+			auto loopA = middle::getComponent<components::LoopSociety>(shapeA);
+			for (middle::Id& id : loopA->loopMemberIds) {
+				auto copyId = middle::deepCopyShape(gameState, id.index, idB.index);
+				auto loopB = middle::getComponent<components::LoopSociety>(shapeB);
+				loopB->loopMemberIds.push_back(copyId);
+			}
+			deleteBubble(gameState, idA);
+			replacementId = idB;
+		}
+		// BUBBLE & UNIT CASE
+		else {
+			assert(unitA && bubbleB || unitB && bubbleA);
+			auto& unitShape = unitA != nullptr ? shapeA : shapeB;
+			auto& bubbleShape = bubbleA != nullptr ? shapeA : shapeB;
+			auto reparentAction = middle::EditorActionReparent(bubbleShape.id.index, unitShape.id.index);
+			reparentAction.execute(gameState);
+			replacementId = bubbleShape.id;
+		}
+
+		return replacementId;
 	}
 
 
@@ -311,28 +374,64 @@ namespace bubbleActions{
 			auto& shapeToAddInto = middle::getShape(gameState, shapeToAddIntoId.index);
 			auto addLoop = middle::getComponent<components::LoopSociety>(shapeToAdd);
 
-			operationContainerId = middle::deepCopyShape(gameState, shapeToAddInto.id.index, addLoop->parentLoopId.index);
-			middle::Id copyShapeToAddId = middle::deepCopyShape(gameState, shapeToAdd.id.index, addLoop->parentLoopId.index);
-			middle::Shape& operationContainer = middle::getShape(gameState, operationContainerId.index);
-			middle::Shape& copyShapeToAdd = middle::getShape(gameState, copyShapeToAddId.index);
-			auto copyAddLoop = middle::getComponent<components::LoopSociety>(copyShapeToAdd);
+			middle::Id idA = middle::deepCopyShape(gameState, shapeToAdd.id.index, addLoop->parentLoopId.index);
+			middle::Id idB = middle::deepCopyShape(gameState, shapeToAddInto.id.index, addLoop->parentLoopId.index);
+			middle::Shape& copyShapeA = middle::getShape(gameState, idA.index);
+			middle::Shape& copyShapeB = middle::getShape(gameState, idB.index);
+			auto copyAddLoop = middle::getComponent<components::LoopSociety>(copyShapeA);
+			auto fractionA = middle::getComponent<components::FractionalComponent>(copyShapeA);
+			auto fractionB = middle::getComponent<components::FractionalComponent>(copyShapeB);
 
-			std::vector<middle::Id>copyBubbles;
+			// FRACTION CASE
+			if (fractionA && fractionB) {
+				auto loopA = middle::getComponent<components::LoopSociety>(copyShapeA);
+				auto loopB = middle::getComponent<components::LoopSociety>(copyShapeB);
+				// can't add fractions of different fractions 
+				int size = loopA->loopMemberIds.size();
+				if (size != loopB->loopMemberIds.size()) {
+					return;
+				}
+				// find non zero indexes
+				int indexA, indexB;
+				for (int i = 0; i < size; ++i) {
+					auto& childShapeA = middle::getShape(gameState, loopA->loopMemberIds[i].index);
+					auto& childShapeB = middle::getShape(gameState, loopB->loopMemberIds[i].index);
+					auto unitA = middle::getComponent<components::BubbleUnit>(childShapeA);
+					auto unitB = middle::getComponent<components::BubbleUnit>(childShapeB);
+					auto bubbleA = middle::getComponent<components::BubbleComponent>(childShapeA);
+					auto bubbleB = middle::getComponent<components::BubbleComponent>(childShapeB);
+					if (unitA && unitA->value == 1 || bubbleA) {
+						indexA = i;
+					}
+					if (unitB && unitB->value == 1 || bubbleB) {
+						indexB = i;
+					}
+				}
+				middle::Id childIdA = loopA->loopMemberIds[indexA];
+				middle::Id childIdB = loopB->loopMemberIds[indexB];
 
-			// add members from frombubble to intobubble
-			for (middle::Id& id : copyAddLoop->loopMemberIds) {
-				auto copyId = middle::deepCopyShape(gameState, id.index, operationContainerId.index);
-				copyBubbles.push_back(copyId);
-				auto intoLoop = middle::getComponent<components::LoopSociety>(operationContainer);
-				intoLoop->loopMemberIds.push_back(copyId);
+				middle::Id replacementId = bubbleActions::createAdditionReplacementShape(gameState, childIdA, childIdB);
+				loopA = middle::getComponent<components::LoopSociety>(copyShapeA);
+				auto reparentAction = middle::EditorActionReparent(copyShapeA.id.index, replacementId.index);
+				reparentAction.execute(gameState);
+
+				operationContainerId = copyShapeA.id;
+				deleteBubble(gameState, copyShapeB.id);
+
+			}
+			// NORMAL AVERAGE BASIC CASE
+			else {
+				operationContainerId = bubbleActions::createAdditionReplacementShape(gameState, idA, idB);
 			}
 
 			setBubbleHidden(gameState, shapeToAdd.id, true);
-			deleteBubble(gameState, copyShapeToAddId);
+			setBubbleHidden(gameState, shapeToAddInto.id, true);
+
 		}
 
 		void undo(middle::GameState* gameState) override {
 			setBubbleHidden(gameState, shapeToAddId, false);
+			setBubbleHidden(gameState, shapeToAddIntoId, false);
 			deleteBubble(gameState, operationContainerId);
 		}
 
@@ -393,6 +492,24 @@ namespace bubbleActions{
 
 class BubbleMultipliplicationSystem : public middle::MiddleGameplaySystem {
 public:
+
+	bool isIntersecting(middle::GameState* gameState, middle::Shape& shape) {
+		auto fraction = middle::getComponent<components::FractionalComponent>(shape);
+		auto intersectable = middle::getComponent<components::MouseIntersectable>(shape);
+
+		if (fraction) {
+			auto loop = middle::getComponent<components::LoopSociety>(shape);
+			for (middle::Id id : loop->loopMemberIds) {
+				middle::Shape& shape = middle::getShape(gameState, id.index);
+				if (isIntersecting(gameState, shape)) {
+					return true;
+				}
+			}
+			return false;
+		}
+
+		return intersectable->intersectingTop;
+	}
 
 	const float timerTime = 0.2f;
 	// MULTIPLICATIONS
@@ -574,7 +691,12 @@ public:
 				return;
 			}
 
-			middle::Id shapeParentId;
+			auto bubble = middle::getComponent<components::BubbleComponent>(shape);
+			auto unit = middle::getComponent<components::BubbleUnit>(shape);
+			auto fraction = middle::getComponent<components::FractionalComponent>(shape);
+			if (!bubble && !unit && !fraction) {
+				return;
+			}
 
 			if (loop->parentLoopId.index != middle::UNASSIGNED) {
 				auto& parentShape = middle::getShape(gameState, loop->parentLoopId.index);
@@ -583,25 +705,9 @@ public:
 					return;
 				}
 				auto mulComp = middle::getComponent<components::BubbleMultiplyComponent>(parentShape);
-				//if fraction: parent is parents parent
-				auto fraction = middle::getComponent<components::FractionalComponent>(parentShape);
-				if (fraction) {
-					auto parentLoop = middle::getComponent<components::LoopSociety>(parentShape);
-					shapeParentId = parentLoop->parentLoopId;
-				}
-				else {
-					shapeParentId = loop->parentLoopId;
-				}
-
 				if (mulComp) {
 					return;
 				}
-			}
-
-			auto bubble = middle::getComponent<components::BubbleComponent>(shape);
-			auto unit = middle::getComponent<components::BubbleUnit>(shape);
-			if (!bubble && !unit) {
-				return;
 			}
 
 			auto intersectable = middle::getComponent<components::MouseIntersectable>(shape);
@@ -621,7 +727,7 @@ public:
 				return;
 			}
 			// if not grabbing something from same parents can continue
-			if (shapeParentId != grabbedParentId) {
+			if (loop->parentLoopId != grabbedParentId) {
 				return;
 			}
 			// if the grabbed one is the same one as in this iteration we can continue
@@ -631,8 +737,10 @@ public:
 
 			intersectable = middle::getComponent<components::MouseIntersectable>(shape);
 
+			bool isIntersecting = this->isIntersecting(gameState, shape);
+
 			// if intersecting while grabbing do addition
-			if (intersectable->intersectingTop) {
+			if (isIntersecting) {
 				auto& addAction = gameState->bubbleAlgebraState.addAction;
 				addAction = std::make_unique<bubbleActions::Combine>(gameState->bubbleAlgebraState.grabbedId, shape.id);
 				addAction->execute(gameState);
@@ -669,7 +777,6 @@ public:
 				auto addAction = static_cast<bubbleActions::Combine*>(gameState->bubbleAlgebraState.addAction.get());
 				auto& shapeToAddInto = middle::getShape(gameState, addAction->shapeToAddIntoId.index);
 				auto bubbleToAddInto = middle::getComponent<components::BubbleComponent>(shapeToAddInto);
-				bubbleToAddInto->infiniteMass = false;
 				addAction->finalize(gameState);
 				gameState->bubbleAlgebraState.addAction.release();
 			}

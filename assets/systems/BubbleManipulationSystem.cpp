@@ -68,7 +68,7 @@ class BubbleManipulationSystem : public middle::MiddleGameplaySystem {
 			auto bubble = middle::getComponent<components::BubbleComponent>(shape);
 
 			// bubble moving
-			if ((bubble || fraction) && grabbable->grabbing) {
+			if ((bubble || fraction || unit) && grabbable->grabbing) {
 				Vector3 pos;
 				auto posComponent = middle::getComponent<components::Position>(shape);
 				if (posComponent) {

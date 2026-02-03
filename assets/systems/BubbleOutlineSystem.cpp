@@ -254,7 +254,7 @@ public:
 			shapeList.clear();
 			populateWithChildren(gameState, &shapeList, shape.id);
 
-			if (shapeList.size() == 0) {
+			if (shapeList.size() < 2) {
 				return;
 			}
 
