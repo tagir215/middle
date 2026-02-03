@@ -69,6 +69,8 @@ namespace bubbleActions{
 			sphere->radius = 2;
 			auto text = middle::addComponent<components::Text>(newMulShape);
 			text->text = "x";
+			middle::addComponent<components::MouseIntersectable>(newMulShape);
+			middle::addComponent<components::MouseGrabbable>(newMulShape);
 			// deep copy to replace and replacing
 			middle::Id copyId = middle::deepCopyShape(gameState, replacingShape.id.index, newMulShapeId.index);
 			middle::Id toReplaceCopyId = middle::deepCopyShape(gameState, shapeToReplaceId.index, newMulShapeId.index);
@@ -112,6 +114,8 @@ namespace bubbleActions{
 			assert(loop);
 			int size = loop->loopMemberIds.size();
 			for (int i = 0; i < size; ++i) {
+				// referesh loop pointer...
+				loop = middle::getComponent<components::LoopSociety>(copyFraction);
 				middle::Id& id = loop->loopMemberIds[i];
 				shapesToDelete.push_back(id);
 				middle::Id copyId = createMultiplicationReplacementShape(gameState, id, replacingShape.id);
@@ -360,8 +364,10 @@ namespace bubbleActions{
 
 			// delete outline
 			auto bubble = middle::getComponent<components::BubbleComponent>(shape);
-			for (middle::Id outlineId : bubble->outlineNodes) {
-				middle::deleteShape(gameState, outlineId.index);
+			int size = bubble->outlineNodes.size();
+			for (int i = size - 1; i >= 0; --i) {
+				middle::Id& id = bubble->outlineNodes[i];
+				middle::deleteShape(gameState, id.index);
 			}
 
 			middle::Shape& parentShape = middle::getShape(gameState, loop->parentLoopId.index);
@@ -531,46 +537,77 @@ public:
 
 		// get grabbable if somethign is grabbed
 		components::MouseGrabbable* grabbable = nullptr;
-		components::LoopSociety* grabbableLoop = nullptr;
+		middle::Id grabbedParentId;
+
 		if (gameState->bubbleAlgebraState.grabbedId.index != middle::UNASSIGNED) {
 			auto& grabbedShape = middle::getShape(gameState, gameState->bubbleAlgebraState.grabbedId.index);
-			grabbableLoop = middle::getComponent<components::LoopSociety>(grabbedShape);
+			auto grabbableLoop = middle::getComponent<components::LoopSociety>(grabbedShape);
 			if (grabbableLoop->parentLoopId.index == middle::UNASSIGNED) {
 				return;
 			}
 
 			auto& parentShape = middle::getShape(gameState, grabbableLoop->parentLoopId.index);
 			auto mulComp = middle::getComponent<components::BubbleMultiplyComponent>(parentShape);
+
+			// if not multiplciation component we can probably add them together
 			if (!mulComp) {
 				grabbable = middle::getComponent<components::MouseGrabbable>(grabbedShape);
 			}
 			else {
 				return;
 			}
+			// set parent.. if fraction we use parents parent, since that is then the same level as the units we would be intersecting
+			auto fraction = middle::getComponent<components::FractionalComponent>(parentShape);
+			if (fraction) {
+				auto parentLoop = middle::getComponent<components::LoopSociety>(parentShape);
+				grabbedParentId = parentLoop->parentLoopId;
+			}
+			else {
+				grabbedParentId = parentShape.id;
+			}
 		}
 
-		middle::loopInstances(gameState, [gameState, grabbable, grabbableLoop, this](int i, middle::Shape& shape) {
+		middle::loopInstances(gameState, [gameState, grabbable, this, &grabbedParentId](int i, middle::Shape& shape) {
 
 			auto loop = middle::getComponent<components::LoopSociety>(shape);
-			if (!loop)
+			if (!loop) {
 				return;
+			}
+
+			middle::Id shapeParentId;
+
 			if (loop->parentLoopId.index != middle::UNASSIGNED) {
 				auto& parentShape = middle::getShape(gameState, loop->parentLoopId.index);
+				// if grabbing units parent is same as grabbed one we can skip
+				if (parentShape.id == gameState->bubbleAlgebraState.grabbedId) {
+					return;
+				}
 				auto mulComp = middle::getComponent<components::BubbleMultiplyComponent>(parentShape);
+				//if fraction: parent is parents parent
+				auto fraction = middle::getComponent<components::FractionalComponent>(parentShape);
+				if (fraction) {
+					auto parentLoop = middle::getComponent<components::LoopSociety>(parentShape);
+					shapeParentId = parentLoop->parentLoopId;
+				}
+				else {
+					shapeParentId = loop->parentLoopId;
+				}
+
 				if (mulComp) {
 					return;
 				}
 			}
 
 			auto bubble = middle::getComponent<components::BubbleComponent>(shape);
-			if (!bubble) {
+			auto unit = middle::getComponent<components::BubbleUnit>(shape);
+			if (!bubble && !unit) {
 				return;
 			}
 
 			auto intersectable = middle::getComponent<components::MouseIntersectable>(shape);
 
 			// pop action
-			if (intersectable->intersectingTop && gameState->gameInput.pop) {
+			if (bubble && intersectable->intersectingTop && gameState->gameInput.pop) {
 				auto popAction = std::make_unique<bubbleActions::Pop>(shape.id);
 				popAction->execute(gameState);
 			}
@@ -584,7 +621,7 @@ public:
 				return;
 			}
 			// if not grabbing something from same parents can continue
-			if (loop->parentLoopId != grabbableLoop->parentLoopId) {
+			if (shapeParentId != grabbedParentId) {
 				return;
 			}
 			// if the grabbed one is the same one as in this iteration we can continue
@@ -602,7 +639,9 @@ public:
 
 				// infinite mass
 				auto bubbleToAddInto = middle::getComponent<components::BubbleComponent>(shape);
-				bubbleToAddInto->infiniteMass = true;
+				if (bubbleToAddInto) {
+					bubbleToAddInto->infiniteMass = true;
+				}
 
 				auto time = middle::addComponent<components::TimerComponent>(shape);
 				time->timeLeft = timerTime;
@@ -621,7 +660,6 @@ public:
 			if (!intersectable->intersecting && !timer) {
 				addAction->undo(gameState);
 				gameState->bubbleAlgebraState.addAction.release();
-				bubbleToAddInto->infiniteMass = false;
 			}
 		}
 

@@ -33,7 +33,6 @@ class BubbleManipulationSystem : public middle::MiddleGameplaySystem {
 
 	void update(middle::GameState* gameState) override {
 
-
 		// mouse movement
 		middle::loopInstances(gameState, [gameState, this](int i, middle::Shape& shape) {
 
@@ -42,7 +41,19 @@ class BubbleManipulationSystem : public middle::MiddleGameplaySystem {
 				return;
 			}
 
+			auto unit = middle::getComponent<components::BubbleUnit>(shape);
+			if (unit) {
+				auto loop = middle::getComponent<components::LoopSociety>(shape);
+				auto& parentShape = middle::getShape(gameState, loop->parentLoopId.index);
+				auto parentFraction = middle::getComponent<components::FractionalComponent>(parentShape);
+				if (parentFraction) {
+					return;
+				}
+			}
+
 			bool intersecting = isIntersecting(gameState, shape);
+
+			auto fraction = middle::getComponent<components::FractionalComponent>(shape);
 
 			if (intersecting && gameState->bubbleAlgebraState.grabbedId.index == middle::UNASSIGNED && gameState->input.mouseHeld) {
 				grabbable->grabbing = true;
@@ -54,8 +65,10 @@ class BubbleManipulationSystem : public middle::MiddleGameplaySystem {
 				gameState->bubbleAlgebraState.grabbedId = middle::Id();
 			}
 
+			auto bubble = middle::getComponent<components::BubbleComponent>(shape);
+
 			// bubble moving
-			if (grabbable->grabbing) {
+			if ((bubble || fraction) && grabbable->grabbing) {
 				Vector3 pos;
 				auto posComponent = middle::getComponent<components::Position>(shape);
 				if (posComponent) {
@@ -68,9 +81,8 @@ class BubbleManipulationSystem : public middle::MiddleGameplaySystem {
 				if (yDistance == 0)
 					yDistance = 0.001f;
 				Vector3 xzVel = Vector3Scale(gameState->input.mouseXZ_PlaneVelocity, objYDistance / yDistance);
-				dragShape(gameState, i, xzVel);
+				moveShape(gameState, i, Vector3Scale(xzVel, gameState->frameTime));
 			}
-
 
 			});
 
