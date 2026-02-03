@@ -295,7 +295,7 @@ namespace bubbleActions{
 	public:
 		middle::Id shapeToAddId;
 		middle::Id shapeToAddIntoId;
-		std::vector<middle::Id>copyBubbles;
+		middle::Id operationContainerId;
 
 		Combine(middle::Id shapeToAddId, middle::Id shapeToAddIntoId) {
 			this->shapeToAddId = shapeToAddId;
@@ -307,26 +307,38 @@ namespace bubbleActions{
 			auto& shapeToAddInto = middle::getShape(gameState, shapeToAddIntoId.index);
 			auto addLoop = middle::getComponent<components::LoopSociety>(shapeToAdd);
 
+			operationContainerId = middle::deepCopyShape(gameState, shapeToAddInto.id.index, addLoop->parentLoopId.index);
+			middle::Id copyShapeToAddId = middle::deepCopyShape(gameState, shapeToAdd.id.index, addLoop->parentLoopId.index);
+			middle::Shape& operationContainer = middle::getShape(gameState, operationContainerId.index);
+			middle::Shape& copyShapeToAdd = middle::getShape(gameState, copyShapeToAddId.index);
+			auto copyAddLoop = middle::getComponent<components::LoopSociety>(copyShapeToAdd);
+
+			std::vector<middle::Id>copyBubbles;
+
 			// add members from frombubble to intobubble
-			for (middle::Id& id : addLoop->loopMemberIds) {
-				auto copyId = middle::deepCopyShape(gameState, id.index, shapeToAddInto.id.index);
+			for (middle::Id& id : copyAddLoop->loopMemberIds) {
+				auto copyId = middle::deepCopyShape(gameState, id.index, operationContainerId.index);
 				copyBubbles.push_back(copyId);
-				auto intoLoop = middle::getComponent<components::LoopSociety>(shapeToAddInto);
+				auto intoLoop = middle::getComponent<components::LoopSociety>(operationContainer);
 				intoLoop->loopMemberIds.push_back(copyId);
 			}
 
 			setBubbleHidden(gameState, shapeToAdd.id, true);
+			deleteBubble(gameState, copyShapeToAddId);
 		}
 
 		void undo(middle::GameState* gameState) override {
-			for (middle::Id id : copyBubbles) {
-				deleteBubble(gameState, id);
-			}
 			setBubbleHidden(gameState, shapeToAddId, false);
+			deleteBubble(gameState, operationContainerId);
 		}
 
 		void finalize(middle::GameState* gameState) {
+			auto& shapeToAddInto = middle::getShape(gameState, shapeToAddIntoId.index);
+			auto loop = middle::getComponent<components::LoopSociety>(shapeToAddInto);
+			auto reparentAction = middle::EditorActionReparent(loop->parentLoopId.index, operationContainerId.index);
+			reparentAction.execute(gameState);
 			deleteBubble(gameState, shapeToAddId);
+			deleteBubble(gameState, shapeToAddIntoId);
 		}
 	};
 

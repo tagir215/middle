@@ -49,6 +49,11 @@ class BubbleRenderSetup : public middle::MiddleGameplaySystem {
 					if (unit->value == 0) {
 						particle.color = { 255,255,255, 60 };
 					}
+
+					auto intersectable = middle::getComponent<components::MouseIntersectable>(shape);
+					if (intersectable->intersectingTop) {
+						particle.color = WHITE;
+					}
 					gameState->renderData.push_back(particle);
 				}
 
@@ -78,7 +83,7 @@ class BubbleRenderSetup : public middle::MiddleGameplaySystem {
 						outlineItem.type = middle::RenderItemType::LINE;
 						outlineItem.linePointA = posA;
 						outlineItem.linePointB = posB;
-						
+
 						auto intersectable = middle::getComponent<components::MouseIntersectable>(shape);
 						if (intersectable->intersectingTop) {
 							outlineItem.color = WHITE;

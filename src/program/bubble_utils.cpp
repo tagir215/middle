@@ -8,6 +8,7 @@ namespace bubble {
 	bool pointIntersectBubble(middle::GameState* gameState, middle::Shape& bubbleShape, const Vector3& point)
 	{
 		auto bubbleComponent = middle::getComponent<components::BubbleComponent>(bubbleShape);
+		assert(bubbleComponent);
 
 		for (int i = 0; i < bubbleComponent->outlineNodes.size(); ++i) {
 			int indexA = i - 1;

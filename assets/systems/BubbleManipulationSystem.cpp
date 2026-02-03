@@ -28,7 +28,7 @@ class BubbleManipulationSystem : public middle::MiddleGameplaySystem {
 			return false;
 		}
 
-		return intersectable->intersecting;
+		return intersectable->intersectingTop;
 	}
 
 	void update(middle::GameState* gameState) override {
@@ -53,7 +53,6 @@ class BubbleManipulationSystem : public middle::MiddleGameplaySystem {
 				grabbable->grabbing = false;
 				gameState->bubbleAlgebraState.grabbedId = middle::Id();
 			}
-
 
 			// bubble moving
 			if (grabbable->grabbing) {

@@ -8,6 +8,10 @@
 #include "bubble_utils.h"
 #include "MouseGrabbable.h"
 #include "MouseIntersectable.h"
+#include "BubbleUnit.h"
+#include "FractionalComponent.h"
+#include "middle_math.h"
+#include "Sphere.h"
 
 class BubbleIntersectSystem : public middle::MiddleGameplaySystem {
 
@@ -17,7 +21,8 @@ class BubbleIntersectSystem : public middle::MiddleGameplaySystem {
 		middle::loopInstances(gameState, [gameState, this](int i, middle::Shape& shape) {
 
 			auto bubble = middle::getComponent<components::BubbleComponent>(shape);
-			if (!bubble)
+			auto unit = middle::getComponent<components::BubbleUnit>(shape);
+			if (!bubble && !unit)
 				return;
 
 			auto intersectable = middle::getComponent<components::MouseIntersectable>(shape);
@@ -30,14 +35,13 @@ class BubbleIntersectSystem : public middle::MiddleGameplaySystem {
 			for (auto& childId : children) {
 				auto& childShape = middle::getShape(gameState, childId.index);
 				auto childIntersectable = middle::getComponent<components::MouseIntersectable>(childShape);
-				auto childBubble = middle::getComponent<components::BubbleComponent>(childShape);
-				if (childBubble && childIntersectable->intersectingTop) {
+				if (childIntersectable && childIntersectable->intersectingTop) {
 					intersectable->intersectingTop = false;
 					alreadyIntersecting = true;
 					break;
 				}
 				auto grabbable = middle::getComponent<components::MouseGrabbable>(childShape);
-				if (grabbable && grabbable->grabbing) {
+				if (childIntersectable && grabbable->grabbing) {
 					intersectable->intersectingTop = false;
 					alreadyIntersecting = true;
 				}
@@ -45,7 +49,19 @@ class BubbleIntersectSystem : public middle::MiddleGameplaySystem {
 
 			// update intersecting status
 			Vector3 mousePos = gameState->input.mouseXZ_PlanePos;
-			bool intersecting = bubble::pointIntersectBubble(gameState, shape, mousePos);
+			bool intersecting = false;
+			if (bubble) {
+				intersecting = bubble::pointIntersectBubble(gameState, shape, mousePos);
+			}
+			if (unit) {
+				auto position = middle::getComponent<components::Position>(shape);
+				auto sphere = middle::getComponent<components::Sphere>(shape);
+				assert(position && sphere);
+				Vector3 pos = { position->posX , position->posY, position->posZ };
+				Vector3 intersectPos;
+				intersecting = middle::RayCastLineSphere(pos, sphere->radius, gameState->activeCamera.position,
+					gameState->activeCamera.position + gameState->input.mouseDir, intersectPos);
+			}
 			intersectable->intersecting = intersecting;
 			if (!alreadyIntersecting) {
 				intersectable->intersectingTop = intersecting;
