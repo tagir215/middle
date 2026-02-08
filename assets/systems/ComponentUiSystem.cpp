@@ -6,6 +6,7 @@
 #include "imgui.h"
 #include "editor_actions.h"
 #include <string>
+#include <misc/cpp/imgui_stdlib.cpp>
 
 class ComponentUiSystem : public middle::MiddleGameplaySystem {
 
@@ -37,6 +38,10 @@ public:
 				ImGui::Begin("ComponentEditor");
 				std::string idText = "index: " + std::to_string(shape.id.index);
 				ImGui::Text(idText.c_str());
+
+				if (ImGui::IsWindowHovered()) {
+					gameState->inputBlockers.insert(middle::InputBlockers::KEYBOARD_BLOCK);
+				}
 
 				for (auto& pair : shape.componentMap) {
 					int typeId = pair.first;
@@ -82,7 +87,7 @@ public:
 							}
 							else if (field.type == middle::FieldType::String) {
 								std::string* string = static_cast<std::string*>(field.value);
-								//ImGui::InputText(field.name, , string);
+								ImGui::InputText(field.name, string);
 							}
 							else if (field.type == middle::FieldType::IdVector) {
 								ImGui::Text(field.name);
@@ -90,7 +95,7 @@ public:
 								int size = vector->size();
 								for (int index = 0; index < size; ++index) {
 									ImGui::PushID((char)index);
-									if(ImGui::Button("(D)")) {
+									if (ImGui::Button("(D)")) {
 										vector->erase(vector->begin() + index);
 										ImGui::PopID();
 										break;
