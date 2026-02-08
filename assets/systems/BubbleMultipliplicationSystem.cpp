@@ -171,11 +171,15 @@ namespace bubbleActions{
 		auto unitB = middle::getComponent<components::BubbleUnit>(shapeB);
 		auto bubbleA = middle::getComponent<components::BubbleComponent>(shapeA);
 		auto bubbleB = middle::getComponent<components::BubbleComponent>(shapeB);
+		auto fractionA = middle::getComponent<components::FractionalComponent>(shapeA);
+		auto fractionB = middle::getComponent<components::FractionalComponent>(shapeB);
 
 		middle::Id replacementId;
 
-		// UNIT CASE
-		if (unitA && unitB) {
+		// note same scale fractions are handled separatedly
+
+		// UNIT CASE, or different scale fractions
+		if ((unitA && unitB) || (fractionA && fractionB) || (unitA && fractionB) || (unitB && fractionA)) {
 			Vector3 targetPos = middle::getShapePosition(gameState, idA.index);
 			middle::Shape& newBubbleShape = newBubble(gameState, targetPos);
 			middle::moveShape(gameState, idA.index, { 5,0,0 });
@@ -201,11 +205,18 @@ namespace bubbleActions{
 			replacementId = idB;
 		}
 		// BUBBLE & UNIT CASE
-		else {
-			assert(unitA && bubbleB || unitB && bubbleA);
+		else if(unitA && bubbleB || unitB && bubbleA){
 			auto& unitShape = unitA != nullptr ? shapeA : shapeB;
 			auto& bubbleShape = bubbleA != nullptr ? shapeA : shapeB;
 			auto reparentAction = middle::EditorActionReparent(bubbleShape.id.index, unitShape.id.index);
+			reparentAction.execute(gameState);
+			replacementId = bubbleShape.id;
+		}
+		// BUBBLE & FRACTION CASE
+		else if(fractionA && bubbleB || fractionB && bubbleA){
+			auto& fractionShape = fractionA != nullptr ? shapeA : shapeB;
+			auto& bubbleShape = bubbleA != nullptr ? shapeA : shapeB;
+			auto reparentAction = middle::EditorActionReparent(bubbleShape.id.index, fractionShape.id.index);
 			reparentAction.execute(gameState);
 			replacementId = bubbleShape.id;
 		}
@@ -381,19 +392,17 @@ namespace bubbleActions{
 			auto copyAddLoop = middle::getComponent<components::LoopSociety>(copyShapeA);
 			auto fractionA = middle::getComponent<components::FractionalComponent>(copyShapeA);
 			auto fractionB = middle::getComponent<components::FractionalComponent>(copyShapeB);
+			auto loopA = middle::getComponent<components::LoopSociety>(copyShapeA);
+			auto loopB = middle::getComponent<components::LoopSociety>(copyShapeB);
+			// can't add fractions of different fractions 
+			int sizeA = loopA->loopMemberIds.size();
+			int sizeB = loopB->loopMemberIds.size();
 
 			// FRACTION CASE
-			if (fractionA && fractionB) {
-				auto loopA = middle::getComponent<components::LoopSociety>(copyShapeA);
-				auto loopB = middle::getComponent<components::LoopSociety>(copyShapeB);
-				// can't add fractions of different fractions 
-				int size = loopA->loopMemberIds.size();
-				if (size != loopB->loopMemberIds.size()) {
-					return;
-				}
+			if (fractionA && fractionB && sizeA == sizeB) {
 				// find non zero indexes
 				int indexA, indexB;
-				for (int i = 0; i < size; ++i) {
+				for (int i = 0; i < sizeA; ++i) {
 					auto& childShapeA = middle::getShape(gameState, loopA->loopMemberIds[i].index);
 					auto& childShapeB = middle::getShape(gameState, loopB->loopMemberIds[i].index);
 					auto unitA = middle::getComponent<components::BubbleUnit>(childShapeA);
@@ -411,12 +420,38 @@ namespace bubbleActions{
 				middle::Id childIdB = loopB->loopMemberIds[indexB];
 
 				middle::Id replacementId = bubbleActions::createAdditionReplacementShape(gameState, childIdA, childIdB);
-				loopA = middle::getComponent<components::LoopSociety>(copyShapeA);
+
+				// reparent
 				auto reparentAction = middle::EditorActionReparent(copyShapeA.id.index, replacementId.index);
 				reparentAction.execute(gameState);
-
 				operationContainerId = copyShapeA.id;
+
+
+				// if value is filled,  like 3/3  then turn into 1
+				{
+					int value = 0;
+					auto& replacementShape = middle::getShape(gameState, replacementId.index);
+					auto replacementLoop = middle::getComponent<components::LoopSociety>(replacementShape);
+					for (middle::Id& childId : replacementLoop->loopMemberIds) {
+						auto& newChild = middle::getShape(gameState, childId.index);
+						auto unit = middle::getComponent<components::BubbleUnit>(newChild);
+						if (unit) {
+							value += unit->value;
+						}
+					}
+					if (value == sizeA) {
+						middle::Id someUnitId = replacementLoop->loopMemberIds[0];
+						middle::Id unitCopyId = middle::deepCopyShape(gameState, someUnitId.index, middle::UNASSIGNED);
+						deleteBubble(gameState, copyShapeA.id);
+						auto& unitShape = middle::getShape(gameState, unitCopyId.index);
+						auto unitLoop = middle::getComponent<components::LoopSociety>(unitShape);
+						unitLoop->parentLoopId = middle::Id();
+						operationContainerId = unitCopyId;
+					}
+				}
+
 				deleteBubble(gameState, copyShapeB.id);
+
 
 			}
 			// NORMAL AVERAGE BASIC CASE

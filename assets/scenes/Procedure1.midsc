@@ -1,0 +1,108 @@
+#scene
+s  Procedure1
+#activeCamera
+i  -1
+__0__
+MouseGrabbable
+Sphere
+f  2.000000
+Position
+f  -38.757969
+f  0.000000
+f  -43.302956
+MouseSelectable
+MouseIntersectable
+CodeBlock
+LoopSociety
+q  -1
+p  
+Rectangle
+f  20.000000
+f  10.000000
+__1__
+MouseGrabbable
+Sphere
+f  2.000000
+CodeFunction
+Position
+f  3.867424
+f  0.000000
+f  -83.762238
+MouseSelectable
+MouseIntersectable
+Rectangle
+f  20.000000
+f  10.000000
+LoopSociety
+q  -1
+p  
+Text
+s  Text
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  1.000000
+b  1
+__2__
+Text
+s  CodeBlockSystem
+f  255.000000
+f  255.000000
+f  255.000000
+f  255.000000
+f  2.000000
+f  0.000000
+f  10.000000
+f  10.000000
+b  1
+MouseSelectable
+MouseGrabbable
+SystemReference
+s  CodeBlockSystem
+MouseIntersectable
+Position
+f  -142.526047
+f  -0.000000
+f  -73.838837
+__3__
+Sphere
+f  2.000000
+MouseGrabbable
+Inventory
+Position
+f  57.931252
+f  0.000000
+f  -13.134920
+MouseSelectable
+MouseIntersectable
+LoopSociety
+q  -1
+p  
+Rectangle
+f  20.000000
+f  20.000000
+__4__
+MouseSelectable
+Text
+s  UiRenderSetup
+f  255.000000
+f  255.000000
+f  255.000000
+f  255.000000
+f  2.000000
+f  0.000000
+f  10.000000
+f  10.000000
+b  1
+MouseGrabbable
+MouseIntersectable
+SystemReference
+s  UiRenderSetup
+Position
+f  -145.842865
+f  -0.000061
+f  -103.377304

@@ -44,10 +44,12 @@ class BubbleManipulationSystem : public middle::MiddleGameplaySystem {
 			auto unit = middle::getComponent<components::BubbleUnit>(shape);
 			if (unit) {
 				auto loop = middle::getComponent<components::LoopSociety>(shape);
-				auto& parentShape = middle::getShape(gameState, loop->parentLoopId.index);
-				auto parentFraction = middle::getComponent<components::FractionalComponent>(parentShape);
-				if (parentFraction) {
-					return;
+				if (loop->parentLoopId.index != middle::UNASSIGNED) {
+					auto& parentShape = middle::getShape(gameState, loop->parentLoopId.index);
+					auto parentFraction = middle::getComponent<components::FractionalComponent>(parentShape);
+					if (parentFraction) {
+						return;
+					}
 				}
 			}
 

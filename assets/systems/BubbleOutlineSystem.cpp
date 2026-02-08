@@ -254,13 +254,25 @@ public:
 			shapeList.clear();
 			populateWithChildren(gameState, &shapeList, shape.id);
 
-			if (shapeList.size() < 2) {
+			LongestDistanceCouple distanceCouple;
+			LongestDistanceCouple perpCouple;
+			if (shapeList.size() >= 2) {
+				distanceCouple = findPointsWithLongestDistanceBetween(gameState, shapeList);
+				perpCouple = coupleWithLongestDistanceAtAxis(gameState, shapeList, distanceCouple.axis);
+			}
+			else if(shapeList.size() == 1) {
+				const float minRadiusSq = 4;
+				distanceCouple.axis = { 1,0,0 };
+				distanceCouple.distanceSqr = minRadiusSq;
+				distanceCouple.initialized = true;
+				perpCouple.axis = { 0,0,1 };
+				perpCouple.distanceSqr = minRadiusSq;
+				perpCouple.initialized = true;
+			}
+			else {
 				return;
 			}
 
-			LongestDistanceCouple distanceCouple = findPointsWithLongestDistanceBetween(gameState, shapeList);
-			LongestDistanceCouple perpCouple = coupleWithLongestDistanceAtAxis(gameState,
-				shapeList, distanceCouple.axis);
 
 			float length = std::sqrtf(distanceCouple.distanceSqr);
 			float width = std::sqrtf(perpCouple.distanceSqr);
@@ -272,6 +284,10 @@ public:
 			Vector3 center = distanceCouple.posA + Vector3Scale(distanceCouple.axis, length * 0.5f) + offsetSide;
 			Vector3 offsetToCenter = Vector3Scale(perpCouple.axis, width * 0.5f);
 			center += offsetToCenter;
+
+			if (shapeList.size() == 1) {
+				center = middle::getShapePosition(gameState, shapeList[0].index);
+			}
 
 			assert(!std::isnan(center.x));
 
