@@ -62,7 +62,7 @@ namespace middle {
 		int selectCount = 0;
 		int selectChangeCountAfterClick = 0;
 		Color backgroundColor = BACKGROUND_COLOR;
-		std::vector<std::unique_ptr<EditorActionContainer>>editorActions;
+		std::vector<std::unique_ptr<EditorActionContainer>> editorActions;
 	};
 
 	enum RenderItemType {

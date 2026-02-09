@@ -361,11 +361,11 @@ namespace middle {
 		auto parentLoop = getComponent<components::LoopSociety>(parentShape);
 		assert(parentLoop);
 
+		childLoop->parentLoopId = Id();
 		for (int i = 0; i < parentLoop->loopMemberIds.size(); ++i) {
 			auto& id = parentLoop->loopMemberIds[i];
 			if (id == childShape.id) {
 				parentLoop->loopMemberIds.erase(parentLoop->loopMemberIds.begin() + i);
-				childLoop->parentLoopId = Id();
 				return;
 			}
 		}
