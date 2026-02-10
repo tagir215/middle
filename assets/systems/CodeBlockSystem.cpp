@@ -14,6 +14,7 @@
 #include "ProcedureComponent.h"
 #include "editor_actions.h"
 #include "MouseGrabbable.h"
+#include "CodeFunction.h"
 
 class CodeBlockSystem : public middle::MiddleGameplaySystem {
 public:
@@ -28,7 +29,6 @@ public:
 
 			auto procedure = middle::getComponent<components::ProcedureComponent>(shape);
 
-
 			// procedure block child position updates
 			if (procedure) {
 				auto rectangle = middle::getComponent<components::Rectangle>(shape);
@@ -40,7 +40,6 @@ public:
 					auto childRect = middle::getComponent<components::Rectangle>(childShape);
 					totalHeight += childRect->height + zmargin;
 				}
-
 				const float minHeight = 40;
 				rectangle->height = totalHeight > minHeight ? totalHeight : minHeight;
 				Vector3 referencePos;
@@ -51,17 +50,16 @@ public:
 				else {
 					referencePos = middle::getShapePosition(gameState, shape.id.index);
 				}
-
+				// move code block inside procedure container
 				for (middle::Id& childId : loop->loopMemberIds) {
 					auto& childShape = middle::getShape(gameState, childId.index);
 					auto position = middle::getComponent<components::Position>(childShape);
 					auto childRect = middle::getComponent<components::Rectangle>(childShape);
-					position->posX = referencePos.x;
-					position->posY = referencePos.y;
-					position->posZ = referencePos.z;
+					Vector3 currPos = { position->posX, position->posY, position->posZ };
+					middle::moveShape(gameState, childId.index, referencePos - currPos);
 					referencePos.z -= childRect->height + zmargin;
 				}
-
+				// move procedure container
 				if (size > 1) {
 					auto& child0Shape = middle::getShape(gameState, loop->loopMemberIds[0].index);
 					Vector3 child0Pos = middle::getShapePosition(gameState, loop->loopMemberIds[0].index);
@@ -76,13 +74,29 @@ public:
 					procPosition->posY = center.y;
 					procPosition->posZ = center.z;
 				}
+			}
 
+
+			// moving procedurefunctions
+			auto containerCodeBlock = middle::getComponent<components::CodeBlock>(shape);
+			if (containerCodeBlock) {
+				auto rectangle = middle::getComponent<components::Rectangle>(shape);
+				auto loop = middle::getComponent<components::LoopSociety>(shape);
+				float totalHeight = 0;
+				const float zmargin = 4;
+				Vector3 targetPos = middle::getShapePosition(gameState, shape.id.index);
+
+				if (loop->loopMemberIds.size() > 0) {
+					assert(loop->loopMemberIds.size() == 1);
+					auto& childShape = middle::getShape(gameState, loop->loopMemberIds[0].index);
+					auto childRect = middle::getComponent<components::Rectangle>(childShape);
+					Vector3 childPos = middle::getShapePosition(gameState, childShape.id.index);
+					middle::moveShape(gameState, childShape.id.index, targetPos - childPos);
+				}
 			}
 
 			auto placement = middle::getComponent<components::PlacementComponent>(shape);
 			auto grabbable = middle::getComponent<components::MouseGrabbable>(shape);
-			auto intersectable = middle::getComponent<components::MouseIntersectable>(shape);
-
 
 			// code block moving
 			if ((placement && placement->grabbing) || (grabbable && grabbable->grabbing)) {
@@ -94,11 +108,14 @@ public:
 			// add and remove from/to procedure container 
 			middle::Id grabbedId = gameState->bubbleAlgebraState.grabbedId;
 			if (procedure && grabbedId.index != middle::UNASSIGNED && shape.id != grabbedId) {
-				auto intersectable = middle::getComponent<components::MouseIntersectable>(shape);
-				std::vector<middle::Id>children;
-				middle::getChildren(gameState, shape.id, children);
+				auto procedureIntersectable = middle::getComponent<components::MouseIntersectable>(shape);
+				auto procedureLoop = middle::getComponent<components::LoopSociety>(shape);
+
+				// removes from loop while grabbing and moving out of container
 				// if grabbing while not intersecting remove from loop
-				if (!intersectable->intersectingTop) {
+				if (!procedureIntersectable->intersecting) {
+					std::vector<middle::Id>children;
+					middle::getChildren(gameState, shape.id, children);
 					for (middle::Id& childId : children) {
 						auto& childShape = middle::getShape(gameState, childId.index);
 						// if moving away while placing cancel the addition by removing from loop
@@ -106,29 +123,65 @@ public:
 						if (childPlacement) {
 							auto removeFromLoop = middle::EditorActionRemoveFromLoop(childId.index);
 							removeFromLoop.execute(gameState);
+							break;
 						}
 					}
 				}
-				// 1 or first is added directly to the proc, others are added as siblings dragging on top of each sibling
-				int childrenSize = children.size();
-				if (childrenSize == 0 && intersectable->intersectingTop) {
-					auto reparent = middle::EditorActionReparent(shape.id.index, gameState->bubbleAlgebraState.grabbedId.index);
-					reparent.execute(gameState);
-				}
-				// blocks (subject) after first one are added by intersecting children
-				if (childrenSize > 0) {
-					for (int index = 0; index < childrenSize; ++index) {
-						middle::Id& childId = children[index];
-						middle::Shape& childShape = middle::getShape(gameState, childId.index);
-						auto intersectableChild = middle::getComponent<components::MouseIntersectable>(childShape);
-						if (intersectableChild->intersecting) {
-							auto reparent = middle::EditorActionReparent(shape.id.index, grabbedId.index);
-							reparent.execute(gameState);
-							auto moveIndex = middle::EditorActionChangeLoopMemberIndex(shape.id.index, grabbedId.index, index + 1);
-							moveIndex.execute(gameState);
+				else {
+
+					auto& grabbedShape = middle::getShape(gameState, grabbedId.index);
+					auto grabbedCodeBlock = middle::getComponent<components::CodeBlock>(grabbedShape);
+					auto grabbedCodeFunction = middle::getComponent<components::CodeFunction>(grabbedShape);
+
+					// CODEBLOCK
+					// 1 or first is added directly to the proc, others are added as siblings dragging on top of each sibling
+					int childrenSize = procedureLoop->loopMemberIds.size();
+					if (grabbedCodeBlock && childrenSize == 0 && procedureIntersectable->intersectingTop) {
+						auto reparent = middle::EditorActionReparent(shape.id.index, gameState->bubbleAlgebraState.grabbedId.index);
+						reparent.execute(gameState);
+					}
+					// blocks (subject) after first one are added by intersecting children
+					if (grabbedCodeBlock && childrenSize > 0) {
+						for (int index = 0; index < childrenSize; ++index) {
+							middle::Id& childId = procedureLoop->loopMemberIds[index];
+							assert(childrenSize == procedureLoop->loopMemberIds.size());
+							middle::Shape& childShape = middle::getShape(gameState, childId.index);
+							auto intersectableChild = middle::getComponent<components::MouseIntersectable>(childShape);
+							if (intersectableChild->intersecting) {
+								auto reparent = middle::EditorActionReparent(shape.id.index, grabbedId.index);
+								reparent.execute(gameState);
+								procedureLoop = middle::getComponent<components::LoopSociety>(shape);
+								assert(procedureLoop->loopMemberIds.size() >= childrenSize);
+
+								int newIndex = index + 1;
+								// new index can't go behind anything if its last
+								if (newIndex == procedureLoop->loopMemberIds.size()) {
+									newIndex = index;
+								}
+								auto moveIndex = middle::EditorActionChangeLoopMemberIndex(shape.id.index, grabbedId.index, newIndex);
+								moveIndex.execute(gameState);
+								break;
+							}
 						}
 					}
+					// CODEFUNCTION
+					// if function is hovered above code block snap to it
+					if (grabbedCodeFunction) {
+						for (int index = 0; index < childrenSize; ++index) {
+							middle::Id& childId = procedureLoop->loopMemberIds[index];
+							middle::Shape& childShape = middle::getShape(gameState, childId.index);
+							auto intersectableChild = middle::getComponent<components::MouseIntersectable>(childShape);
+							auto loopChild = middle::getComponent<components::LoopSociety>(childShape);
+							if (loopChild->loopMemberIds.size() == 0 && intersectableChild->intersecting) {
+								auto reparent = middle::EditorActionReparent(childId.index, grabbedId.index);
+								reparent.execute(gameState);
+								break;
+							}
+						}
+					}
+
 				}
+
 			}
 
 			// grab placed component
@@ -142,7 +195,7 @@ public:
 					auto childGrabbable = middle::getComponent<components::MouseGrabbable>(childShape);
 					auto childIntersectable = middle::getComponent<components::MouseIntersectable>(childShape);
 					assert(childGrabbable);
-					if (gameState->input.mouseHeld 
+					if (gameState->input.mouseHeld
 						&& childIntersectable->intersectingTop
 						&& gameState->bubbleAlgebraState.grabbedId.index == middle::UNASSIGNED) {
 
@@ -153,9 +206,6 @@ public:
 					}
 				}
 			}
-
-
-
 
 			// copy from inventory
 			auto inventory = middle::getComponent<components::Inventory>(shape);
@@ -181,21 +231,21 @@ public:
 			});
 
 
-			// delete shape if havent added to container
-			if (gameState->input.mouseReleased && gameState->bubbleAlgebraState.grabbedId.index != middle::UNASSIGNED) {
-				auto& grabbedShape = middle::getShape(gameState, gameState->bubbleAlgebraState.grabbedId.index);
-				auto loop = middle::getComponent<components::LoopSociety>(grabbedShape);
-				if (loop->parentLoopId.index == middle::UNASSIGNED) {
-					middle::deleteShape(gameState, grabbedShape.id.index);
-				}
-				else {
-					middle::deleteComponent<components::PlacementComponent>(grabbedShape);
-				}
-				gameState->bubbleAlgebraState.grabbedId = middle::Id();
+		// delete shape if havent added to container
+		if (gameState->input.mouseReleased && gameState->bubbleAlgebraState.grabbedId.index != middle::UNASSIGNED) {
+			auto& grabbedShape = middle::getShape(gameState, gameState->bubbleAlgebraState.grabbedId.index);
+			auto loop = middle::getComponent<components::LoopSociety>(grabbedShape);
+			if (loop->parentLoopId.index == middle::UNASSIGNED) {
+				middle::deleteShapeRecursive(gameState, grabbedShape.id.index);
 			}
-
-
+			else {
+				middle::deleteComponent<components::PlacementComponent>(grabbedShape);
 			}
-	};
+			gameState->bubbleAlgebraState.grabbedId = middle::Id();
+		}
 
-	static middle::SystemRegistrar<CodeBlockSystem> reg("CodeBlockSystem");
+
+	}
+};
+
+static middle::SystemRegistrar<CodeBlockSystem> reg("CodeBlockSystem");

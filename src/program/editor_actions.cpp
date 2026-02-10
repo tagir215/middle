@@ -419,7 +419,7 @@ namespace middle {
 			}
 		}
 		assert(childLoopIndex != -1);
-		 
+
 		loop->loopMemberIds.erase(loop->loopMemberIds.begin() + childLoopIndex);
 		assert(newLoopIndex <= loop->loopMemberIds.size());
 		loop->loopMemberIds.insert(loop->loopMemberIds.begin() + newLoopIndex, childShape.id);
