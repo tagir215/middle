@@ -25,7 +25,10 @@ namespace MouseIntersectDetectionSystem {
 			systemModeType = middle::SystemModeType::EDITOR;
 		}
 
+
 		void update(middle::GameState* gameState) override {
+
+			bool foundIntersecting = false;
 
 			for (int i = 0; i < gameState->shapes.size(); ++i) {
 				if (!middle::isShapeAlive(gameState, i))
@@ -93,6 +96,16 @@ namespace MouseIntersectDetectionSystem {
 				bool isIntersecting = middle::RayCastLineSphere(pos, radius, gameState->activeCamera.position,
 					gameState->activeCamera.position + gameState->input.mouseDir, intersectPos);
 				intersectComponent->intersecting = isIntersecting;
+
+				if (isIntersecting) {
+					if (!foundIntersecting) {
+						intersectComponent->intersectingTop = true;
+					}
+					foundIntersecting = true;
+				}
+				else {
+					intersectComponent->intersectingTop = false;
+				}
 			}
 		}
 	};

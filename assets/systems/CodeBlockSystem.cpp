@@ -22,7 +22,6 @@ public:
 		systemModeType = middle::SystemModeType::ENGINE;
 	}
 
-
 	void update(middle::GameState* gameState) override {
 
 		middle::loopInstances(gameState, [gameState](int i, middle::Shape& shape) {

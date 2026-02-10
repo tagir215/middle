@@ -51,19 +51,19 @@ namespace MouseSelectionSystem {
 				}
 
 				// when holding down, don't immediatedly toggle once when starting intersect
-				if (!intersectable->wasIntersecting && intersectable->intersecting && gameState->input.mouseHeld) {
+				if (!intersectable->wasIntersecting && intersectable->intersectingTop && gameState->input.mouseHeld) {
 					selectable->selected = !selectable->selected;
 					++gameState->editorState.selectChangeCountAfterClick;
 				}
 
 				// toggle selection when clicking
-				if (intersectable->intersecting && gameState->input.mouseClicked) {
+				if (intersectable->intersectingTop && gameState->input.mouseClicked) {
 					selectable->selected = !selectable->selected;
 					++gameState->editorState.selectChangeCountAfterClick;
 				}
 
 				// grabbing activates selected if there's no selections yet, except can't grab constraints
-				if (intersectable->intersecting && gameState->input.grabDown && gameState->editorState.selectCount == 0 && constraint == nullptr) {
+				if (intersectable->intersectingTop && gameState->input.grabDown && gameState->editorState.selectCount == 0 && constraint == nullptr) {
 					selectable->selected = true;
 					++gameState->editorState.selectCount;
 					++gameState->editorState.selectChangeCountAfterClick;
