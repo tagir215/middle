@@ -4,6 +4,7 @@
 #include "Rectangle.h"
 #include "middle_shape_utils.h"
 #include "MouseIntersectable.h"
+#include "PlacementComponent.h"
 
 class RectangleIntersectionSystem : public middle::MiddleGameplaySystem {
 	void update(middle::GameState* gameState) override {
@@ -24,6 +25,12 @@ class RectangleIntersectionSystem : public middle::MiddleGameplaySystem {
 				mouseXZ.z > position.z - axisZ && mouseXZ.z < position.z + axisZ;
 
 			intersectable->intersectingTop = false;
+
+			auto placement = middle::getComponent<components::PlacementComponent>(shape);
+			if (placement) {
+				intersectable->intersecting = false;
+				return;
+			}
 
 			// check that not intersecting children as well
 			if (intersectable->intersecting) {

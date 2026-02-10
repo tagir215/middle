@@ -233,6 +233,20 @@ namespace middle {
 		void undo(GameState* gameState) override;
 	};
 
+	class EditorActionChangeLoopMemberIndex : public EditorActionContainer {
+	public:
+		int parentIndex;
+		int childIndex;
+		int newLoopIndex;
+		EditorActionChangeLoopMemberIndex(int parentIndex, int childIndex, int newLoopIndex) {
+			this->parentIndex = parentIndex;
+			this->childIndex = childIndex;
+			this->newLoopIndex = newLoopIndex;
+		}
+		void execute(GameState* gameState) override;
+		void undo(GameState* gameState) override;
+	};
+
 	class EditorActionCopy : public EditorActionContainer {
 	public:
 		std::vector<int> selectedShapes;

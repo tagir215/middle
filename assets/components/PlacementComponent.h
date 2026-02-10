@@ -5,7 +5,7 @@
 
 namespace components {
 	struct PlacementComponent : public middle::Serializable{
-		bool grabbing = false;
+		bool grabbing = true;
 
 		void serialize(std::ostream& ostream) override;
 		void deserialize(const std::vector<std::string>& buffer, int indexOffset) override;

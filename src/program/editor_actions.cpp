@@ -404,6 +404,30 @@ namespace middle {
 	{
 	}
 
+	void EditorActionChangeLoopMemberIndex::execute(GameState* gameState)
+	{
+		auto& parentShape = middle::getShape(gameState, parentIndex);
+		auto& childShape = middle::getShape(gameState, childIndex);
+		auto loop = middle::getComponent<components::LoopSociety>(parentShape);
+		assert(loop);
+
+		int childLoopIndex = -1;
+		int loopSize = loop->loopMemberIds.size();
+		for (int i = 0; i < loopSize; ++i) {
+			if (loop->loopMemberIds[i] == childShape.id) {
+				childLoopIndex = i;
+			}
+		}
+		assert(childLoopIndex != -1);
+		 
+		loop->loopMemberIds.erase(loop->loopMemberIds.begin() + childLoopIndex);
+		assert(newLoopIndex <= loop->loopMemberIds.size());
+		loop->loopMemberIds.insert(loop->loopMemberIds.begin() + newLoopIndex, childShape.id);
+	}
+
+	void EditorActionChangeLoopMemberIndex::undo(GameState* gameState)
+	{
+	}
 
 	void EditorActionCopy::execute(GameState* gameState)
 	{
@@ -447,5 +471,6 @@ namespace middle {
 	void EditorActionCopy::undo(GameState* gameState)
 	{
 	}
+
 
 }

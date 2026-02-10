@@ -1,7 +1,7 @@
 #scene
 s  Procedure1
 #activeCamera
-i  17
+i  -1
 __0__
 Text
 s  InventorySystem
@@ -14,9 +14,9 @@ f  0.000000
 f  10.000000
 f  10.000000
 b  1
+MouseSelectable
 SystemReference
 s  InventorySystem
-MouseSelectable
 MouseGrabbable
 MouseIntersectable
 Position
@@ -24,14 +24,14 @@ f  -153.211395
 f  -0.000000
 f  -145.606277
 __1__
-MouseIntersectable
 Sphere
 f  2.000000
+MouseIntersectable
 MouseGrabbable
+CodeFunction
 Rectangle
 f  20.000000
 f  10.000000
-CodeFunction
 Position
 f  133.862900
 f  0.000183
@@ -52,9 +52,9 @@ f  0.000000
 f  1.000000
 b  1
 __2__
+MouseSelectable
 SystemReference
 s  CodeBlockSystem
-MouseSelectable
 Text
 s  CodeBlockSystem
 f  255.000000
@@ -74,14 +74,14 @@ f  -0.000000
 f  -119.627991
 __3__
 MouseGrabbable
-MouseIntersectable
 Sphere
 f  2.000000
-Inventory
+MouseIntersectable
 Position
 f  133.862900
 f  0.000183
 f  24.625734
+Inventory
 MouseSelectable
 Rectangle
 f  24.000000
@@ -109,9 +109,9 @@ f  0.000000
 f  10.000000
 f  10.000000
 b  1
+MouseSelectable
 SystemReference
 s  UiRenderSetup
-MouseSelectable
 MouseGrabbable
 MouseIntersectable
 Position
@@ -120,13 +120,13 @@ f  -0.000061
 f  -103.377304
 __5__
 MouseGrabbable
-MouseIntersectable
 Sphere
 f  2.000000
+MouseIntersectable
+CodeFunction
 Rectangle
 f  20.000000
 f  10.000000
-CodeFunction
 Position
 f  133.862900
 f  0.000183
@@ -147,14 +147,14 @@ f  0.000000
 f  1.000000
 b  1
 __6__
-MouseIntersectable
 Sphere
 f  2.000000
+MouseIntersectable
 MouseGrabbable
+CodeFunction
 Rectangle
 f  20.000000
 f  10.000000
-CodeFunction
 Position
 f  133.862900
 f  0.000183
@@ -176,13 +176,13 @@ f  1.000000
 b  1
 __7__
 MouseGrabbable
-MouseIntersectable
 Sphere
 f  2.000000
+MouseIntersectable
+CodeFunction
 Rectangle
 f  20.000000
 f  10.000000
-CodeFunction
 Position
 f  133.862900
 f  0.000183
@@ -203,14 +203,14 @@ f  0.000000
 f  1.000000
 b  1
 __8__
-MouseIntersectable
 Sphere
 f  2.000000
+MouseIntersectable
 MouseGrabbable
+CodeFunction
 Rectangle
 f  20.000000
 f  10.000000
-CodeFunction
 Position
 f  133.862900
 f  0.000183
@@ -232,13 +232,13 @@ f  1.000000
 b  1
 __9__
 MouseGrabbable
-MouseIntersectable
 Sphere
 f  2.000000
+MouseIntersectable
+CodeFunction
 Rectangle
 f  20.000000
 f  10.000000
-CodeFunction
 Position
 f  133.862900
 f  0.000183
@@ -259,14 +259,14 @@ f  0.000000
 f  1.000000
 b  1
 __10__
-MouseIntersectable
 Sphere
 f  2.000000
+MouseIntersectable
 MouseGrabbable
+CodeFunction
 Rectangle
 f  20.000000
 f  10.000000
-CodeFunction
 Position
 f  133.862900
 f  0.000183
@@ -288,13 +288,13 @@ f  1.000000
 b  1
 __11__
 MouseGrabbable
-MouseIntersectable
 Sphere
 f  2.000000
+MouseIntersectable
+CodeFunction
 Rectangle
 f  20.000000
 f  10.000000
-CodeFunction
 Position
 f  133.862900
 f  0.000183
@@ -315,15 +315,15 @@ f  0.000000
 f  1.000000
 b  1
 __12__
-MouseIntersectable
 Sphere
 f  2.000000
+MouseIntersectable
 MouseGrabbable
+Inventory
 Position
 f  85.418610
 f  0.000153
 f  75.064552
-Inventory
 MouseSelectable
 LoopSociety
 q  -1
@@ -334,9 +334,9 @@ Rectangle
 f  44.000000
 f  60.000000
 __13__
-MouseIntersectable
 Sphere
 f  2.000000
+MouseIntersectable
 MouseGrabbable
 Position
 f  85.418610
@@ -363,9 +363,9 @@ f  20.000000
 CodeBlock
 __14__
 MouseGrabbable
-MouseIntersectable
 Sphere
 f  2.000000
+MouseIntersectable
 Position
 f  85.418610
 f  0.000153
@@ -400,9 +400,9 @@ f  0.000000
 f  10.000000
 f  10.000000
 b  1
+MouseSelectable
 SystemReference
 s  RectangleIntersectionSystem
-MouseSelectable
 MouseGrabbable
 MouseIntersectable
 Position
@@ -411,25 +411,29 @@ f  -0.000061
 f  -78.059967
 __16__
 MouseGrabbable
-MouseIntersectable
 Sphere
 f  2.000000
+MouseIntersectable
 Position
-f  0.634093
-f  0.000107
-f  0.143695
+f  2.224379
+f  0.000000
+f  84.895035
 MouseSelectable
 Rectangle
 f  70.000000
-f  50.000000
-ProcedureComponent
+f  40.000000
 LoopSociety
 q  -1
 p  
+ProcedureComponent
 __17__
-MouseIntersectable
 Sphere
 f  2.000000
+MouseIntersectable
+Position
+f  7.131055
+f  -360.045990
+f  12.534300
 CameraComponent
 f  7.131055
 f  -260.045959
@@ -440,10 +444,6 @@ f  1.000000
 f  45.000000
 i  0
 b  1
-Position
-f  7.131055
-f  -360.045990
-f  12.534300
 MouseSelectable
 MouseGrabbable
 LoopSociety
