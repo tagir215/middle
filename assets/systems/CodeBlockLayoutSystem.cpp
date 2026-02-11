@@ -16,58 +16,106 @@ public:
 		systemModeType = middle::SystemModeType::ENGINE;
 	}
 
-	float calculateTotalHeight(middle::GameState* gameState, components::LoopSociety* loop, float zmargin, float minHeight) {
-		float totalHeight = 0;
-		for (middle::Id& childId : loop->loopMemberIds) {
-			auto& childShape = middle::getShape(gameState, childId.index);
-			auto childRect = middle::getComponent<components::Rectangle>(childShape);
-			totalHeight += childRect->height + zmargin;
-		}
-		return totalHeight > minHeight ? totalHeight : minHeight;
-	}
-
 	const float zmargin = 4;
-	const float minHeight = 40;
+	const float minProcedureHeight = 30;
+	const float minProcedureWidth = 60;
+	const float minCodeBlockHeight = 20;
+	const float minCodeBlockWidth = 40;
+	const float minFunctionHeight = 10;
+	const float minFunctionWidth = 20;
 	const float ifmargin = 20;
 	const float ifoffset = 70;
+
+	void updateRectSize(middle::GameState* gameState, middle::Shape& shape, float minW, float minH) {
+		components::Rectangle* rect = middle::getComponent<components::Rectangle>(shape);
+		rect->width = 0;
+		rect->height = 0;
+		float left = 100000; float right = -100000; float bottom = left; float top = right;
+		middle::loopRectBoundingBox(gameState, shape.id, &left, &right, &bottom, &top);
+		float newWidth = right - left;
+		float newHeight = top - bottom;
+		if (newWidth < minW) {
+			newWidth = minW;
+		}
+		if (newHeight < minH) {
+			newHeight = minH;
+		}
+		rect->width = newWidth;
+		rect->height = newHeight;
+	}
+
+	void updateRectSizeRecursive(middle::GameState* gameState, middle::Shape& shape) {
+		auto procedure = middle::getComponent<components::ProcedureComponent>(shape);
+		auto codeBlock = middle::getComponent<components::CodeBlock>(shape);
+		auto function = middle::getComponent<components::CodeFunction>(shape);
+		auto loop = middle::getComponent<components::LoopSociety>(shape);
+
+		float minW = 0;
+		float minH = 0;
+		if (procedure) {
+			minW = minProcedureWidth;
+			minH = minProcedureHeight;
+		}
+		if (codeBlock) {
+			minW = minCodeBlockWidth;
+			minH = minCodeBlockHeight;
+		}
+		if (function) {
+			return;
+		}
+		updateRectSize(gameState, shape, minW, minH);
+
+		for (middle::Id& id : loop->loopMemberIds) {
+			auto& child = middle::getShape(gameState, id.index);
+			updateRectSizeRecursive(gameState, child);
+		}
+	}
 
 	void update(middle::GameState* gameState) override {
 
 		middle::loopInstances(gameState, [gameState, this](int i, middle::Shape& shape) {
 
-			// procedure block child position updates
+
+			// procedure block child position and size updates
 			auto procedure = middle::getComponent<components::ProcedureComponent>(shape);
 			if (procedure) {
-				auto rectangle = middle::getComponent<components::Rectangle>(shape);
-				auto loop = middle::getComponent<components::LoopSociety>(shape);
-				float totalHeight = calculateTotalHeight(gameState, loop, zmargin, minHeight);
-				rectangle->height = totalHeight;
+
+				updateRectSizeRecursive(gameState, shape);
+
+				auto procRect = middle::getComponent<components::Rectangle>(shape);
+				auto procLoop = middle::getComponent<components::LoopSociety>(shape);
+
+				float totalHeight = procRect->height;
+				int size = procLoop->loopMemberIds.size();
 
 				Vector3 referencePos;
-				int size = loop->loopMemberIds.size();
 				if (size > 1) {
-					referencePos = middle::getShapePosition(gameState, loop->loopMemberIds[0].index);
+					referencePos = middle::getShapePosition(gameState, procLoop->loopMemberIds[0].index);
 				}
 				else {
 					referencePos = middle::getShapePosition(gameState, shape.id.index);
 				}
 				// move code block inside procedure container
-				for (middle::Id& childId : loop->loopMemberIds) {
+				for (int index = 0; index < size; ++index) {
+					middle::Id childId = procLoop->loopMemberIds[index];
 					auto& childShape = middle::getShape(gameState, childId.index);
 					auto position = middle::getComponent<components::Position>(childShape);
 					auto childRect = middle::getComponent<components::Rectangle>(childShape);
 					Vector3 currPos = { position->posX, position->posY, position->posZ };
+
+					if(index > 0)
+						referencePos.z -= childRect->height * 0.5f + zmargin * 0.5f;
 					middle::moveShape(gameState, childId.index, referencePos - currPos);
-					referencePos.z -= childRect->height + zmargin;
+					referencePos.z -= childRect->height * 0.5f + zmargin * 0.5f;
 				}
 				// move procedure container
 				if (size > 1) {
-					auto& child0Shape = middle::getShape(gameState, loop->loopMemberIds[0].index);
-					Vector3 child0Pos = middle::getShapePosition(gameState, loop->loopMemberIds[0].index);
+					auto& child0Shape = middle::getShape(gameState, procLoop->loopMemberIds[0].index);
+					Vector3 child0Pos = middle::getShapePosition(gameState, procLoop->loopMemberIds[0].index);
 					auto child0Rect = middle::getComponent<components::Rectangle>(child0Shape);
 
-					Vector3 top = child0Pos + Vector3{ 0,0,child0Rect->height * 0.5f };
-					Vector3 toCenter = Vector3{ 0,0,-totalHeight * 0.5f + zmargin * 0.5f };
+					Vector3 top = child0Pos + Vector3{ 0,0, child0Rect->height * 0.5f };
+					Vector3 toCenter = Vector3{ 0,0,-totalHeight * 0.5f };
 					Vector3 center = top + toCenter;
 
 					auto procPosition = middle::getComponent<components::Position>(shape);
@@ -77,49 +125,46 @@ public:
 				}
 			}
 
-			// moving procedurefunctions
+			// code block size and position updates
 			auto containerCodeBlock = middle::getComponent<components::CodeBlock>(shape);
 			if (containerCodeBlock) {
-				auto rectangle = middle::getComponent<components::Rectangle>(shape);
 				auto loop = middle::getComponent<components::LoopSociety>(shape);
-				float totalHeight = 0;
+				auto codeBlockRect = middle::getComponent<components::Rectangle>(shape);
 				const float zmargin = 4;
 				Vector3 targetPos = middle::getShapePosition(gameState, shape.id.index);
 
 				if (loop->loopMemberIds.size() > 0) {
 					assert(loop->loopMemberIds.size() == 1);
 					auto& childShape = middle::getShape(gameState, loop->loopMemberIds[0].index);
-					auto childRect = middle::getComponent<components::Rectangle>(childShape);
 					Vector3 childPos = middle::getShapePosition(gameState, childShape.id.index);
 					middle::moveShape(gameState, childShape.id.index, targetPos - childPos);
 				}
 			}
 
-			// moving functions
+
+			// if block layout
 			auto ifBlock = middle::getComponent<components::IfComponent>(shape);
 			if (ifBlock) {
 				auto loop = middle::getComponent<components::LoopSociety>(shape);
 				assert(loop->loopMemberIds.size() == 2);
 				middle::Id childA = loop->loopMemberIds[0];
 				middle::Id childB = loop->loopMemberIds[1];
-				float totalHeight = calculateTotalHeight(gameState, loop, ifmargin, minHeight);
+
 				Vector3 ifPosition = middle::getShapePosition(gameState, shape.id.index);
 
-				if (loop->parentLoopId.index != middle::UNASSIGNED) {
-					middle::Shape& parentShape = middle::getShape(gameState, loop->parentLoopId.index);
-					auto parentRect = middle::getComponent<components::Rectangle>(parentShape);
-					parentRect->height = totalHeight;
-				}
+				float left = 100000; float right = -100000; float bottom = left; float top = right;
+				middle::loopRectBoundingBox(gameState, shape.id, &left, &right, &bottom, &top);
+				float totalHeight = top - bottom;
 
 				Vector3 referencePos = ifPosition + Vector3{ ifoffset,0,totalHeight * 0.5f };
 				for (middle::Id& id : loop->loopMemberIds) {
 					auto& childShape = middle::getShape(gameState, id.index);
 					auto childRect = middle::getComponent<components::Rectangle>(childShape);
-					referencePos.z = referencePos.z - childRect->height * 0.5f - ifmargin * 0.5f;
+					referencePos.z = referencePos.z - childRect->height * 0.5f;
 					Vector3 targetPos = referencePos;
 					Vector3 currentPos = middle::getShapePosition(gameState, id.index);
 					middle::moveShape(gameState, id.index, targetPos - currentPos);
-					referencePos.z = referencePos.z - childRect->height * 0.5f - ifmargin * 0.5f;
+					referencePos.z = referencePos.z - childRect->height * 0.5f - ifmargin;
 				}
 			}
 

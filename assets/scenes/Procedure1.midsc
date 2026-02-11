@@ -24,6 +24,7 @@ f  -153.211395
 f  -0.000000
 f  -145.606277
 __1__
+MouseSelectable
 Sphere
 f  2.000000
 MouseIntersectable
@@ -31,15 +32,14 @@ MouseGrabbable
 Rectangle
 f  20.000000
 f  10.000000
+CodeFunction
 LoopSociety
 q  3
 p  
-CodeFunction
 Position
-f  133.862900
-f  0.000183
-f  94.625732
-MouseSelectable
+f  188.256073
+f  0.000000
+f  108.275055
 Text
 s  COMBINE
 f  0.000000
@@ -74,18 +74,18 @@ f  -0.000061
 f  -182.489532
 __3__
 MouseGrabbable
+MouseSelectable
 Sphere
 f  2.000000
 MouseIntersectable
-Position
-f  133.862900
-f  0.000183
-f  24.625734
 Inventory
-MouseSelectable
+Position
+f  188.256073
+f  0.000000
+f  10.775057
 Rectangle
-f  24.000000
-f  160.000000
+f  104.000000
+f  120.000000
 LoopSociety
 q  -1
 p  
@@ -97,6 +97,7 @@ p
 8
 11
 9
+18
 __4__
 Text
 s  UiRenderSetup
@@ -120,21 +121,21 @@ f  -0.000061
 f  -103.377304
 __5__
 MouseGrabbable
+MouseSelectable
 Sphere
 f  2.000000
 MouseIntersectable
 Rectangle
 f  20.000000
 f  10.000000
+CodeFunction
 LoopSociety
 q  3
 p  
-CodeFunction
 Position
-f  133.862900
-f  0.000183
-f  74.625732
-MouseSelectable
+f  188.256073
+f  0.000000
+f  88.275055
 Text
 s  FIND_BUBBLE
 f  0.000000
@@ -147,6 +148,7 @@ f  0.000000
 f  1.000000
 b  1
 __6__
+MouseSelectable
 Sphere
 f  2.000000
 MouseIntersectable
@@ -154,15 +156,14 @@ MouseGrabbable
 Rectangle
 f  20.000000
 f  10.000000
+CodeFunction
 LoopSociety
 q  3
 p  
-CodeFunction
 Position
-f  133.862900
-f  0.000183
-f  34.625732
-MouseSelectable
+f  188.256073
+f  0.000000
+f  48.275055
 Text
 s  POP
 f  0.000000
@@ -176,21 +177,21 @@ f  1.000000
 b  1
 __7__
 MouseGrabbable
+MouseSelectable
 Sphere
 f  2.000000
 MouseIntersectable
 Rectangle
 f  20.000000
 f  10.000000
+CodeFunction
 LoopSociety
 q  3
 p  
-CodeFunction
 Position
-f  133.862900
-f  0.000183
-f  14.625732
-MouseSelectable
+f  188.256073
+f  0.000000
+f  28.275055
 Text
 s  EXIT_LOOP
 f  0.000000
@@ -203,6 +204,7 @@ f  0.000000
 f  1.000000
 b  1
 __8__
+MouseSelectable
 Sphere
 f  2.000000
 MouseIntersectable
@@ -210,15 +212,14 @@ MouseGrabbable
 Rectangle
 f  20.000000
 f  10.000000
+CodeFunction
 LoopSociety
 q  3
 p  
-CodeFunction
 Position
-f  133.862900
-f  0.000183
-f  -5.374268
-MouseSelectable
+f  188.256073
+f  0.000000
+f  8.275055
 Text
 s  ADD_MULTIPLICATION_TERM
 f  0.000000
@@ -232,21 +233,21 @@ f  1.000000
 b  1
 __9__
 MouseGrabbable
+MouseSelectable
 Sphere
 f  2.000000
 MouseIntersectable
 Rectangle
 f  20.000000
 f  10.000000
+CodeFunction
 LoopSociety
 q  3
 p  
-CodeFunction
 Position
-f  133.862900
-f  0.000183
-f  -45.374268
-MouseSelectable
+f  188.256073
+f  0.000000
+f  -31.724945
 Text
 s  INVERSE
 f  0.000000
@@ -259,6 +260,7 @@ f  0.000000
 f  1.000000
 b  1
 __10__
+MouseSelectable
 Sphere
 f  2.000000
 MouseIntersectable
@@ -266,15 +268,14 @@ MouseGrabbable
 Rectangle
 f  20.000000
 f  10.000000
+CodeFunction
 LoopSociety
 q  3
 p  
-CodeFunction
 Position
-f  133.862900
-f  0.000183
-f  54.625732
-MouseSelectable
+f  188.256073
+f  0.000000
+f  68.275055
 Text
 s  FIND_FRACTION
 f  0.000000
@@ -288,21 +289,21 @@ f  1.000000
 b  1
 __11__
 MouseGrabbable
+MouseSelectable
 Sphere
 f  2.000000
 MouseIntersectable
 Rectangle
 f  20.000000
 f  10.000000
+CodeFunction
 LoopSociety
 q  3
 p  
-CodeFunction
 Position
-f  133.862900
-f  0.000183
-f  -25.374268
-MouseSelectable
+f  188.256073
+f  0.000000
+f  -11.724945
 Text
 s  ADD_TERM
 f  0.000000
@@ -315,16 +316,16 @@ f  0.000000
 f  1.000000
 b  1
 __12__
+MouseSelectable
 Sphere
 f  2.000000
 MouseIntersectable
 MouseGrabbable
-Inventory
 Position
 f  85.418610
 f  0.000153
 f  75.064552
-MouseSelectable
+Inventory
 LoopSociety
 q  -1
 p  
@@ -334,6 +335,7 @@ Rectangle
 f  44.000000
 f  60.000000
 __13__
+MouseSelectable
 Sphere
 f  2.000000
 MouseIntersectable
@@ -342,7 +344,6 @@ Position
 f  85.418610
 f  0.000153
 f  90.064552
-MouseSelectable
 Text
 s  
 f  0.000000
@@ -363,6 +364,7 @@ f  20.000000
 CodeBlock
 __14__
 MouseGrabbable
+MouseSelectable
 Sphere
 f  2.000000
 MouseIntersectable
@@ -370,7 +372,6 @@ Position
 f  85.418610
 f  0.000153
 f  60.064552
-MouseSelectable
 Text
 s  LOOP
 f  0.000000
@@ -411,6 +412,7 @@ f  -0.000061
 f  -78.059967
 __16__
 MouseGrabbable
+MouseSelectable
 Sphere
 f  2.000000
 MouseIntersectable
@@ -418,15 +420,15 @@ Position
 f  2.224379
 f  0.000000
 f  84.895035
-MouseSelectable
 Rectangle
 f  70.000000
 f  40.000000
+ProcedureComponent
 LoopSociety
 q  -1
 p  
-ProcedureComponent
 __17__
+MouseSelectable
 Sphere
 f  2.000000
 MouseIntersectable
@@ -444,30 +446,29 @@ Position
 f  7.131055
 f  -360.045990
 f  12.534300
-MouseSelectable
 MouseGrabbable
 LoopSociety
 q  -1
 p  
 __18__
 MouseIntersectable
+MouseSelectable
 Sphere
 f  2.000000
 MouseGrabbable
+CodeFunction
 LoopSociety
-q  -1
+q  3
 p  
 19
 20
-CodeFunction
 Rectangle
 f  20.000000
 f  10.000000
 Position
-f  1.660053
-f  0.000031
-f  -23.896542
-MouseSelectable
+f  188.256073
+f  0.000000
+f  -51.724945
 Text
 s  FIND_BUBBLE
 f  0.000000
@@ -484,49 +485,49 @@ i  0
 __19__
 MouseGrabbable
 MouseIntersectable
+MouseSelectable
 Sphere
 f  2.000000
 Position
-f  71.759186
-f  0.000031
-f  -1.588558
-MouseSelectable
+f  258.256073
+f  0.000000
+f  -21.724945
 Rectangle
 f  70.000000
 f  40.000000
-ProcedureComponent
 LoopSociety
 q  18
 p  
 21
+ProcedureComponent
 __20__
 MouseGrabbable
+MouseSelectable
 Sphere
 f  2.000000
 MouseIntersectable
 Position
-f  70.896820
-f  0.000031
-f  -48.777657
-MouseSelectable
+f  258.256073
+f  0.000000
+f  -81.724945
 Rectangle
 f  70.000000
 f  40.000000
+ProcedureComponent
 LoopSociety
 q  18
 p  
 22
-ProcedureComponent
 __21__
 MouseIntersectable
+MouseSelectable
 Sphere
 f  2.000000
 MouseGrabbable
 Position
-f  71.759186
-f  0.000031
-f  -1.588558
-MouseSelectable
+f  258.256073
+f  0.000000
+f  -21.724945
 Text
 s  CODE_BLOCK
 f  0.000000
@@ -546,15 +547,15 @@ f  40.000000
 f  20.000000
 CodeBlock
 __22__
+MouseSelectable
 Sphere
 f  2.000000
 MouseIntersectable
 MouseGrabbable
 Position
-f  70.896820
-f  0.000031
-f  -48.777657
-MouseSelectable
+f  258.256073
+f  0.000000
+f  -81.724945
 Text
 s  CODE_BLOCK
 f  0.000000

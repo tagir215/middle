@@ -13,6 +13,7 @@
 #include "LoopEntity.h"
 #include "ComponentRefParent.h"
 #include "PlacementComponent.h"
+#include "Rectangle.h"
 
 namespace middle {
 
@@ -459,5 +460,36 @@ namespace middle {
 			result.push_back(childId);
 			getChildren(gameState, childId, result);
 		}
+	}
+
+	void loopRectBoundingBox(GameState* gameState, const Id& shapeId, float* leftX, float* rightX, float* bottomZ, float* topZ)
+	{
+		auto& shape = middle::getShape(gameState, shapeId.index);
+		auto loop = middle::getComponent<components::LoopSociety>(shape);
+		auto pos = middle::getComponent<components::Position>(shape);
+		auto rect = middle::getComponent<components::Rectangle>(shape);
+
+		float top = pos->posZ + rect->height * 0.5f;
+		float bottom = pos->posZ - rect->height * 0.5f;
+		float left = pos->posX - rect->width * 0.5f;
+		float right = pos->posX + rect->width * 0.5f;
+		if (top > *topZ) {
+			*topZ = top;
+		}
+		if (bottom < *bottomZ) {
+			*bottomZ = bottom;
+		}
+		if (left < *leftX) {
+			*leftX = left;
+		}
+		if (right > *rightX) {
+			*rightX = right;
+		}
+
+		for (const middle::Id& childId : loop->loopMemberIds) {
+			loopRectBoundingBox(gameState, childId, leftX, rightX, bottomZ, topZ);
+		}
+
+
 	}
 }
