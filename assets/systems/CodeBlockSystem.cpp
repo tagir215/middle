@@ -26,76 +26,10 @@ public:
 
 		middle::loopInstances(gameState, [gameState](int i, middle::Shape& shape) {
 
-			auto procedure = middle::getComponent<components::ProcedureComponent>(shape);
-
-			// procedure block child position updates
-			if (procedure) {
-				auto rectangle = middle::getComponent<components::Rectangle>(shape);
-				auto loop = middle::getComponent<components::LoopSociety>(shape);
-				float totalHeight = 0;
-				const float zmargin = 4;
-				for (middle::Id& childId : loop->loopMemberIds) {
-					auto& childShape = middle::getShape(gameState, childId.index);
-					auto childRect = middle::getComponent<components::Rectangle>(childShape);
-					totalHeight += childRect->height + zmargin;
-				}
-				const float minHeight = 40;
-				rectangle->height = totalHeight > minHeight ? totalHeight : minHeight;
-				Vector3 referencePos;
-				int size = loop->loopMemberIds.size();
-				if (size > 1) {
-					referencePos = middle::getShapePosition(gameState, loop->loopMemberIds[0].index);
-				}
-				else {
-					referencePos = middle::getShapePosition(gameState, shape.id.index);
-				}
-				// move code block inside procedure container
-				for (middle::Id& childId : loop->loopMemberIds) {
-					auto& childShape = middle::getShape(gameState, childId.index);
-					auto position = middle::getComponent<components::Position>(childShape);
-					auto childRect = middle::getComponent<components::Rectangle>(childShape);
-					Vector3 currPos = { position->posX, position->posY, position->posZ };
-					middle::moveShape(gameState, childId.index, referencePos - currPos);
-					referencePos.z -= childRect->height + zmargin;
-				}
-				// move procedure container
-				if (size > 1) {
-					auto& child0Shape = middle::getShape(gameState, loop->loopMemberIds[0].index);
-					Vector3 child0Pos = middle::getShapePosition(gameState, loop->loopMemberIds[0].index);
-					auto child0Rect = middle::getComponent<components::Rectangle>(child0Shape);
-
-					Vector3 top = child0Pos + Vector3{0,0,child0Rect->height * 0.5f};
-					Vector3 toCenter = Vector3{ 0,0,-totalHeight * 0.5f + zmargin * 0.5f };
-					Vector3 center = top + toCenter;
-
-					auto procPosition = middle::getComponent<components::Position>(shape);
-					procPosition->posX = center.x;
-					procPosition->posY = center.y;
-					procPosition->posZ = center.z;
-				}
-			}
-
-
-			// moving procedurefunctions
-			auto containerCodeBlock = middle::getComponent<components::CodeBlock>(shape);
-			if (containerCodeBlock) {
-				auto rectangle = middle::getComponent<components::Rectangle>(shape);
-				auto loop = middle::getComponent<components::LoopSociety>(shape);
-				float totalHeight = 0;
-				const float zmargin = 4;
-				Vector3 targetPos = middle::getShapePosition(gameState, shape.id.index);
-
-				if (loop->loopMemberIds.size() > 0) {
-					assert(loop->loopMemberIds.size() == 1);
-					auto& childShape = middle::getShape(gameState, loop->loopMemberIds[0].index);
-					auto childRect = middle::getComponent<components::Rectangle>(childShape);
-					Vector3 childPos = middle::getShapePosition(gameState, childShape.id.index);
-					middle::moveShape(gameState, childShape.id.index, targetPos - childPos);
-				}
-			}
 
 			auto placement = middle::getComponent<components::PlacementComponent>(shape);
 			auto grabbable = middle::getComponent<components::MouseGrabbable>(shape);
+			auto procedure = middle::getComponent<components::ProcedureComponent>(shape);
 
 			// code block moving
 			if ((placement && placement->grabbing) || (grabbable && grabbable->grabbing)) {
