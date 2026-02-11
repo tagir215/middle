@@ -32,7 +32,7 @@ public:
 		rect->height = 0;
 		float left = 100000; float right = -100000; float bottom = left; float top = right;
 		middle::loopRectBoundingBox(gameState, shape.id, &left, &right, &bottom, &top);
-		float newWidth = right - left;
+		float newWidth = right - left + 5;
 		float newHeight = top - bottom;
 		if (newWidth < minW) {
 			newWidth = minW;
@@ -42,6 +42,11 @@ public:
 		}
 		rect->width = newWidth;
 		rect->height = newHeight;
+
+		auto pos = middle::getComponent<components::Position>(shape);
+		pos->posX = (left + right) * 0.5f;
+		pos->posY = 0;
+		pos->posZ = (top + bottom) * 0.5f;
 	}
 
 	void updateRectSizeRecursive(middle::GameState* gameState, middle::Shape& shape) {
@@ -86,6 +91,7 @@ public:
 				auto procLoop = middle::getComponent<components::LoopSociety>(shape);
 
 				float totalHeight = procRect->height;
+				float totalWidth = procRect->width;
 				int size = procLoop->loopMemberIds.size();
 
 				Vector3 referencePos;
@@ -114,12 +120,13 @@ public:
 					Vector3 child0Pos = middle::getShapePosition(gameState, procLoop->loopMemberIds[0].index);
 					auto child0Rect = middle::getComponent<components::Rectangle>(child0Shape);
 
-					Vector3 top = child0Pos + Vector3{ 0,0, child0Rect->height * 0.5f };
-					Vector3 toCenter = Vector3{ 0,0,-totalHeight * 0.5f };
-					Vector3 center = top + toCenter;
+					float z = child0Pos.z + child0Rect->height * 0.5f;
+					float centerZ = z - totalHeight * 0.5f;
+
+					Vector3 center = { child0Pos.x, child0Pos.y, centerZ };
 
 					auto procPosition = middle::getComponent<components::Position>(shape);
-					procPosition->posX = center.x;
+					//procPosition->posX = center.x;
 					procPosition->posY = center.y;
 					procPosition->posZ = center.z;
 				}
@@ -137,7 +144,7 @@ public:
 					assert(loop->loopMemberIds.size() == 1);
 					auto& childShape = middle::getShape(gameState, loop->loopMemberIds[0].index);
 					Vector3 childPos = middle::getShapePosition(gameState, childShape.id.index);
-					middle::moveShape(gameState, childShape.id.index, targetPos - childPos);
+					//middle::moveShape(gameState, childShape.id.index, targetPos - childPos);
 				}
 			}
 
