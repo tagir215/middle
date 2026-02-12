@@ -89,6 +89,61 @@ public:
 								std::string* string = static_cast<std::string*>(field.value);
 								ImGui::InputText(field.name, string);
 							}
+							else if (field.type == middle::FieldType::Vector3) {
+								Vector3* vector = static_cast<Vector3*>(field.value);
+								ImGui::Text(field.name);
+								ImGui::PushID("x");
+								ImGui::PushID("y");
+								ImGui::PushID("z");
+								ImGui::InputFloat("x", &vector->x);
+								ImGui::InputFloat("y", &vector->y);
+								ImGui::InputFloat("z", &vector->z);
+								ImGui::PopID();
+								ImGui::PopID();
+								ImGui::PopID();
+							}
+							else if (field.type == middle::FieldType::Vector2) {
+								Vector2* vector = static_cast<Vector2*>(field.value);
+								ImGui::Text(field.name);
+								ImGui::PushID("x");
+								ImGui::PushID("y");
+								ImGui::InputFloat("x", &vector->x);
+								ImGui::InputFloat("y", &vector->y);
+								ImGui::PopID();
+								ImGui::PopID();
+							}
+							else if (field.type == middle::FieldType::Quaternion) {
+								Quaternion* vector = static_cast<Quaternion*>(field.value);
+								ImGui::Text(field.name);
+								ImGui::PushID("x");
+								ImGui::PushID("y");
+								ImGui::PushID("z");
+								ImGui::PushID("2");
+								ImGui::InputFloat("x", &vector->x);
+								ImGui::InputFloat("y", &vector->y);
+								ImGui::InputFloat("z", &vector->z);
+								ImGui::InputFloat("w", &vector->w);
+								ImGui::PopID();
+								ImGui::PopID();
+								ImGui::PopID();
+								ImGui::PopID();
+							}
+							else if (field.type == middle::FieldType::Color) {
+								Color* color = static_cast<Color*>(field.value);
+								ImGui::Text(field.name);
+								int r = static_cast<int>(color->r);
+								int g = static_cast<int>(color->g);
+								int b = static_cast<int>(color->b);
+								int a = static_cast<int>(color->a);
+								ImGui::SliderInt("r", &r, 0, 255);
+								ImGui::SliderInt("g", &g, 0, 255);
+								ImGui::SliderInt("b", &b, 0, 255);
+								ImGui::SliderInt("a", &a, 0, 255);
+								color->r = static_cast<unsigned char>(r);
+								color->g = static_cast<unsigned char>(g);
+								color->b = static_cast<unsigned char>(b);
+								color->a = static_cast<unsigned char>(a);
+							}
 							else if (field.type == middle::FieldType::IdVector) {
 								ImGui::Text(field.name);
 								auto vector = static_cast<std::vector<middle::Id>*>(field.value);

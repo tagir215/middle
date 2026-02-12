@@ -58,6 +58,9 @@ namespace middle {
 		else if (field.type() == typeid(Vector2)) {
 			return FieldType::Vector2;
 		}
+		else if (field.type() == typeid(Quaternion)) {
+			return FieldType::Quaternion;
+		}
 		else if (field.type() == typeid(Color)) {
 			return FieldType::Color;
 		}
@@ -83,6 +86,15 @@ namespace middle {
 		std::string result = "\n";
 		result += std::to_string(v.x) + "\n";
 		result += std::to_string(v.y);
+		return result;
+	}
+
+	std::string QuaternionToString(const Quaternion& q) {
+		std::string result = "\n";
+		result += std::to_string(q.x) + "\n";
+		result += std::to_string(q.y) + "\n";
+		result += std::to_string(q.z) + "\n";
+		result += std::to_string(q.w) + "\n";
 		return result;
 	}
 
@@ -123,6 +135,8 @@ namespace middle {
 			return result + Vector3ToString(std::any_cast<Vector3>(field)) + '\n';
 		case FieldType::Vector2:
 			return result + Vector2ToString(std::any_cast<Vector2>(field)) + '\n';
+		case FieldType::Quaternion:
+			return result + QuaternionToString(std::any_cast<Quaternion>(field)) + '\n';
 		case FieldType::Color:
 			return result + ColorToString(std::any_cast<Color>(field)) + '\n';
 		case FieldType::Id:
@@ -185,6 +199,15 @@ namespace middle {
 			Vector2* vptr = static_cast<Vector2*>(field);
 			vptr->x = std::stof(values[0]);
 			vptr->y = std::stof(values[1]);
+			return;
+		}
+		case static_cast<char>(FieldType::Quaternion): {
+			std::vector<std::string> values = split(valueStr, '\n');
+			Quaternion* vptr = static_cast<Quaternion*>(field);
+			vptr->x = std::stof(values[0]);
+			vptr->y = std::stof(values[1]);
+			vptr->z = std::stof(values[2]);
+			vptr->w = std::stof(values[3]);
 			return;
 		}
 		case static_cast<char>(FieldType::Color): {
@@ -370,6 +393,7 @@ namespace middle {
 		return typeC == static_cast<char>(FieldType::IdVector)
 			|| typeC == static_cast<char>(FieldType::Vector3)
 			|| typeC == static_cast<char>(FieldType::Vector2)
+			|| typeC == static_cast<char>(FieldType::Quaternion)
 			|| typeC == static_cast<char>(FieldType::Color);
 	}
 

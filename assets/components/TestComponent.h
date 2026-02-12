@@ -4,7 +4,8 @@
 #define MIDDLETESTCOMPONENT(X) \
 	X(testVector3) \
 	X(testVector2) \
-	X(testColor) 
+	X(testColor) \
+	X(testRotation)
 
 
 namespace components {
@@ -12,6 +13,7 @@ namespace components {
 		Vector3 testVector3;
 		Vector2 testVector2;
 		Color testColor;
+		Quaternion testRotation;
 
 		void serialize(std::ostream& ostream) override;
 		void deserialize(const std::vector<std::string>& buffer, int indexOffset) override;
