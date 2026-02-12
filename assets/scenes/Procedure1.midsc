@@ -1,8 +1,12 @@
 #scene
 s  Procedure1
 #activeCamera
-i  17
+i  -1
 __0__
+Position
+f  -153.211395
+f  -0.000000
+f  -145.606277
 Text
 s  InventorySystem
 f  255.000000
@@ -19,26 +23,22 @@ SystemReference
 s  InventorySystem
 MouseGrabbable
 MouseIntersectable
-Position
-f  -153.211395
-f  -0.000000
-f  -145.606277
 __1__
 Sphere
 f  2.000000
 MouseSelectable
 MouseIntersectable
-MouseGrabbable
 Rectangle
 f  20.000000
 f  10.000000
-LoopSociety
-q  3
-p  
+MouseGrabbable
 Position
 f  188.256073
 f  0.000000
 f  108.275055
+LoopSociety
+q  3
+p  
 CodeFunction
 Text
 s  COMBINE
@@ -59,6 +59,10 @@ __2__
 MouseSelectable
 SystemReference
 s  CodeBlockSystem
+Position
+f  -72.548660
+f  -0.000061
+f  -182.489532
 Text
 s  CodeBlockSystem
 f  255.000000
@@ -72,23 +76,15 @@ f  10.000000
 b  1
 MouseGrabbable
 MouseIntersectable
-Position
-f  -72.548660
-f  -0.000061
-f  -182.489532
 __3__
-MouseGrabbable
 Rectangle
-f  150.000000
+f  140.000000
 f  205.000000
+MouseGrabbable
 Sphere
 f  2.000000
 MouseSelectable
 MouseIntersectable
-Position
-f  188.256073
-f  0.000000
-f  10.775057
 LoopSociety
 q  -1
 p  
@@ -101,8 +97,16 @@ p
 11
 9
 18
+Position
+f  188.256073
+f  0.000000
+f  10.775057
 Inventory
 __4__
+Position
+f  -145.842865
+f  -0.000061
+f  -103.377304
 Text
 s  UiRenderSetup
 f  255.000000
@@ -119,26 +123,22 @@ SystemReference
 s  UiRenderSetup
 MouseGrabbable
 MouseIntersectable
-Position
-f  -145.842865
-f  -0.000061
-f  -103.377304
 __5__
-MouseGrabbable
 Rectangle
 f  20.000000
 f  10.000000
+MouseGrabbable
 Sphere
 f  2.000000
 MouseSelectable
 MouseIntersectable
-LoopSociety
-q  3
-p  
 Position
 f  188.256073
 f  0.000000
 f  88.275055
+LoopSociety
+q  3
+p  
 CodeFunction
 Text
 s  FIND_BUBBLE
@@ -160,17 +160,17 @@ Sphere
 f  2.000000
 MouseSelectable
 MouseIntersectable
-MouseGrabbable
 Rectangle
 f  20.000000
 f  10.000000
-LoopSociety
-q  3
-p  
+MouseGrabbable
 Position
 f  188.256073
 f  0.000000
 f  48.275055
+LoopSociety
+q  3
+p  
 CodeFunction
 Text
 s  POP
@@ -188,21 +188,21 @@ f  0.000000
 f  0.000000
 f  0.000000
 __7__
-MouseGrabbable
 Rectangle
 f  20.000000
 f  10.000000
+MouseGrabbable
 Sphere
 f  2.000000
 MouseSelectable
 MouseIntersectable
-LoopSociety
-q  3
-p  
 Position
 f  188.256073
 f  0.000000
 f  28.275055
+LoopSociety
+q  3
+p  
 CodeFunction
 Text
 s  EXIT_LOOP
@@ -224,17 +224,17 @@ Sphere
 f  2.000000
 MouseSelectable
 MouseIntersectable
-MouseGrabbable
 Rectangle
 f  20.000000
 f  10.000000
-LoopSociety
-q  3
-p  
+MouseGrabbable
 Position
 f  188.256073
 f  0.000000
 f  8.275055
+LoopSociety
+q  3
+p  
 CodeFunction
 Text
 s  ADD_MULTIPLICATION_TERM
@@ -252,21 +252,21 @@ f  0.000000
 f  0.000000
 f  0.000000
 __9__
-MouseGrabbable
 Rectangle
 f  20.000000
 f  10.000000
+MouseGrabbable
 Sphere
 f  2.000000
 MouseSelectable
 MouseIntersectable
-LoopSociety
-q  3
-p  
 Position
 f  188.256073
 f  0.000000
 f  -31.724945
+LoopSociety
+q  3
+p  
 CodeFunction
 Text
 s  INVERSE
@@ -288,17 +288,17 @@ Sphere
 f  2.000000
 MouseSelectable
 MouseIntersectable
-MouseGrabbable
 Rectangle
 f  20.000000
 f  10.000000
-LoopSociety
-q  3
-p  
+MouseGrabbable
 Position
 f  188.256073
 f  0.000000
 f  68.275055
+LoopSociety
+q  3
+p  
 CodeFunction
 Text
 s  FIND_FRACTION
@@ -316,21 +316,21 @@ f  0.000000
 f  0.000000
 f  0.000000
 __11__
-MouseGrabbable
 Rectangle
 f  20.000000
 f  10.000000
+MouseGrabbable
 Sphere
 f  2.000000
 MouseSelectable
 MouseIntersectable
-LoopSociety
-q  3
-p  
 Position
 f  188.256073
 f  0.000000
 f  -11.724945
+LoopSociety
+q  3
+p  
 CodeFunction
 Text
 s  ADD_TERM
@@ -352,36 +352,29 @@ Sphere
 f  2.000000
 MouseSelectable
 MouseIntersectable
-MouseGrabbable
 Rectangle
 f  40.000000
 f  50.000000
+MouseGrabbable
 Inventory
-Position
-f  85.418610
-f  0.000153
-f  75.064552
 LoopSociety
 q  -1
 p  
 13
 14
+Position
+f  85.418610
+f  0.000153
+f  75.064552
 __13__
 Sphere
 f  2.000000
 MouseSelectable
 MouseIntersectable
-MouseGrabbable
 Rectangle
 f  40.000000
 f  20.000000
-Position
-f  85.418610
-f  0.000153
-f  90.064552
-LoopSociety
-q  12
-p  
+MouseGrabbable
 Text
 s  
 f  0.000000
@@ -393,27 +386,27 @@ f  0.000000
 f  0.000000
 f  1.000000
 b  1
+LoopSociety
+q  12
+p  
+Position
+f  85.418610
+f  0.000153
+f  90.064552
 CodeBlock
 Offset
 f  0.000000
 f  0.000000
 f  0.000000
 __14__
-MouseGrabbable
 Rectangle
 f  40.000000
 f  20.000000
+MouseGrabbable
 Sphere
 f  2.000000
 MouseSelectable
 MouseIntersectable
-Position
-f  85.418610
-f  0.000153
-f  60.064552
-LoopSociety
-q  12
-p  
 Text
 s  LOOP
 f  0.000000
@@ -425,11 +418,22 @@ f  0.000000
 f  0.000000
 f  1.000000
 b  1
+LoopSociety
+q  12
+p  
+Position
+f  85.418610
+f  0.000153
+f  60.064552
 Offset
 f  0.000000
 f  0.000000
 f  0.000000
 __15__
+Position
+f  -106.786812
+f  -0.000061
+f  -78.059967
 Text
 s  RectangleIntersectionSystem
 f  255.000000
@@ -446,26 +450,22 @@ SystemReference
 s  RectangleIntersectionSystem
 MouseGrabbable
 MouseIntersectable
-Position
-f  -106.786812
-f  -0.000061
-f  -78.059967
 __16__
-MouseGrabbable
 Rectangle
 f  60.000000
 f  30.000000
+MouseGrabbable
 Sphere
 f  2.000000
 MouseSelectable
 MouseIntersectable
-Position
-f  -70.107483
-f  0.000000
-f  84.943756
 LoopSociety
 q  -1
 p  
+Position
+f  -170.122513
+f  0.000000
+f  88.398346
 ProcedureComponent
 Offset
 f  0.000000
@@ -474,6 +474,7 @@ f  0.000000
 __17__
 Sphere
 f  2.000000
+MouseSelectable
 CameraComponent
 f  7.131055
 f  -260.045959
@@ -484,34 +485,33 @@ f  1.000000
 f  45.000000
 i  0
 b  1
-MouseSelectable
 MouseIntersectable
+LoopSociety
+q  -1
+p  
 Position
 f  7.131055
 f  -360.045990
 f  12.534300
-LoopSociety
-q  -1
-p  
 MouseGrabbable
 __18__
 MouseIntersectable
 Sphere
 f  2.000000
 MouseSelectable
-MouseGrabbable
 Rectangle
 f  20.000000
 f  10.000000
+MouseGrabbable
+Position
+f  188.256073
+f  0.000000
+f  -51.724945
 LoopSociety
 q  3
 p  
 19
 20
-Position
-f  188.256073
-f  0.000000
-f  -51.724945
 CodeFunction
 Text
 s  FIND_BUBBLE
@@ -531,47 +531,47 @@ f  0.000000
 f  0.000000
 f  0.000000
 __19__
-MouseGrabbable
 Rectangle
 f  60.000000
 f  30.000000
+MouseGrabbable
 MouseIntersectable
 Sphere
 f  2.000000
 MouseSelectable
-Position
-f  288.256073
-f  0.000000
-f  -26.724945
 LoopSociety
 q  18
 p  
 21
+Position
+f  268.256073
+f  0.000000
+f  -26.724945
 ProcedureComponent
 Offset
-f  0.000000
+f  20.000000
 f  0.000000
 f  0.000000
 __20__
-MouseGrabbable
 Rectangle
 f  60.000000
 f  30.000000
+MouseGrabbable
 Sphere
 f  2.000000
 MouseSelectable
 MouseIntersectable
-Position
-f  288.256073
-f  0.000000
-f  -76.724945
 LoopSociety
 q  18
 p  
 22
+Position
+f  268.256073
+f  0.000000
+f  -76.724945
 ProcedureComponent
 Offset
-f  0.000000
+f  20.000000
 f  0.000000
 f  0.000000
 __21__
@@ -579,17 +579,10 @@ MouseIntersectable
 Sphere
 f  2.000000
 MouseSelectable
-MouseGrabbable
 Rectangle
 f  40.000000
 f  20.000000
-Position
-f  288.256073
-f  0.000000
-f  -26.724945
-LoopSociety
-q  19
-p  
+MouseGrabbable
 Text
 s  CODE_BLOCK
 f  0.000000
@@ -601,6 +594,13 @@ f  0.000000
 f  0.000000
 f  1.000000
 b  1
+LoopSociety
+q  19
+p  
+Position
+f  268.256073
+f  0.000000
+f  -26.724945
 CodeBlock
 Offset
 f  20.000000
@@ -611,17 +611,10 @@ Sphere
 f  2.000000
 MouseSelectable
 MouseIntersectable
-MouseGrabbable
 Rectangle
 f  40.000000
 f  20.000000
-Position
-f  288.256073
-f  0.000000
-f  -76.724945
-LoopSociety
-q  20
-p  
+MouseGrabbable
 Text
 s  CODE_BLOCK
 f  0.000000
@@ -633,6 +626,13 @@ f  0.000000
 f  0.000000
 f  1.000000
 b  1
+LoopSociety
+q  20
+p  
+Position
+f  268.256073
+f  0.000000
+f  -76.724945
 CodeBlock
 Offset
 f  20.000000
@@ -644,10 +644,6 @@ s  CodeBlockLayoutSystem
 MouseSelectable
 MouseGrabbable
 MouseIntersectable
-Position
-f  -74.347687
-f  0.000000
-f  -165.289261
 Text
 s  CodeBlockLayoutSystem
 f  255.000000
@@ -659,3 +655,7 @@ f  0.000000
 f  10.000000
 f  10.000000
 b  1
+Position
+f  -74.347687
+f  0.000000
+f  -165.289261

@@ -376,6 +376,15 @@ namespace middle {
 	{
 	}
 
+	void checkCircularReferences(GameState* gameState, middle::Id& parentId, middle::Id& id) {
+		auto& parent = getShape(gameState, parentId.index);
+		assert(parentId != id);
+		auto loop = getComponent<components::LoopSociety>(parent);
+		if (loop->parentLoopId.index != UNASSIGNED) {
+			checkCircularReferences(gameState, loop->parentLoopId, id);
+		}
+	}
+
 	void EditorActionReparent::execute(GameState* gameState)
 	{
 		assert(parentIndex != childIndex);
@@ -399,6 +408,8 @@ namespace middle {
 
 		parentLoop->loopMemberIds.push_back(childShape.id);
 		childLoop->parentLoopId = parentShape.id;
+
+		checkCircularReferences(gameState, parentShape.id, childShape.id);
 	}
 
 	void EditorActionReparent::undo(GameState* gameState)

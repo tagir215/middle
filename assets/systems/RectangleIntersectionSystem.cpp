@@ -5,10 +5,25 @@
 #include "middle_shape_utils.h"
 #include "MouseIntersectable.h"
 #include "PlacementComponent.h"
+#include "LoopSociety.h"
 
 class RectangleIntersectionSystem : public middle::MiddleGameplaySystem {
+
+	bool isPlacedRecursive(middle::GameState* gameState, middle::Id& id) {
+		auto& shape = middle::getShape(gameState, id.index);
+		auto placement = middle::getComponent<components::PlacementComponent>(shape);
+		if (placement) {
+			return true;
+		}
+		auto loop = middle::getComponent<components::LoopSociety>(shape);
+		if (loop->parentLoopId.index != middle::UNASSIGNED) {
+			return isPlacedRecursive(gameState, loop->parentLoopId);
+		}
+		return false;
+	}
+
 	void update(middle::GameState* gameState) override {
-		middle::loopInstances(gameState, [gameState](int i, middle::Shape& shape) {
+		middle::loopInstances(gameState, [gameState, this](int i, middle::Shape& shape) {
 			auto rectangle = middle::getComponent<components::Rectangle>(shape);
 			auto intersectable = middle::getComponent<components::MouseIntersectable>(shape);
 			if (!rectangle || !intersectable) {
@@ -26,8 +41,7 @@ class RectangleIntersectionSystem : public middle::MiddleGameplaySystem {
 
 			intersectable->intersectingTop = false;
 
-			auto placement = middle::getComponent<components::PlacementComponent>(shape);
-			if (placement) {
+			if (isPlacedRecursive(gameState, shape.id)) {
 				intersectable->intersecting = false;
 				return;
 			}

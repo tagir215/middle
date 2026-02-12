@@ -23,6 +23,8 @@ namespace middle {
 	int findNextFreeGhostIndex(GameState* gameState);
 	// is the shape real editable thing or a ghost (reference from other scene)
 	bool isGhostShape(int index);
+	// check that if the child belong to the parent or parents children
+	bool isRecursiveChildOf(GameState* gameState, int childIndex, int parentIndex);
 	// is the shape selected via mouse
 	bool isShapeSelected(GameState* gameState, int index);
 	// is the mouse intersecting this shape

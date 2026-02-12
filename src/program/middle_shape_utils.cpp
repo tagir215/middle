@@ -155,6 +155,21 @@ namespace middle {
 		return index >= GHOST_INDEX_OFFSET;
 	}
 
+	bool isRecursiveChildOf(GameState* gameState, int childIndex, int parentIndex)
+	{
+		auto& parent = getShape(gameState, parentIndex);
+		auto loop = getComponent<components::LoopSociety>(parent);
+		for (Id& id : loop->loopMemberIds) {
+			if (id.index == childIndex) {
+				return true;
+			}
+			if (isRecursiveChildOf(gameState, childIndex, id.index)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
 	bool isEntityOfType(GameState* gameState, int index, const std::vector<int>& entity)
 	{
 		auto& shape = getShape(gameState, index);
