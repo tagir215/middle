@@ -5,6 +5,7 @@
 #include "Rectangle.h"
 #include "Text.h"
 #include "MouseIntersectable.h"
+#include "Offset.h"
 
 class UiRenderSetup : public middle::MiddleGameplaySystem {
 public:
@@ -22,7 +23,7 @@ public:
 				Vector3 position = middle::getShapePosition(gameState, shape.id.index);
 
 				auto intersectable = middle::getComponent<components::MouseIntersectable>(shape);
-				Color color = intersectable->intersectingTop ? WHITE : Color{200,200,200,200};
+				Color color = intersectable->intersectingTop ? WHITE : Color{ 200,200,200,200 };
 
 				middle::RenderItem line1;
 				line1.type = middle::RenderItemType::LINE;

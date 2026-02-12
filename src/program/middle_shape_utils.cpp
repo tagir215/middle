@@ -14,6 +14,7 @@
 #include "ComponentRefParent.h"
 #include "PlacementComponent.h"
 #include "Rectangle.h"
+#include "Offset.h"
 
 namespace middle {
 
@@ -196,7 +197,14 @@ namespace middle {
 		auto& shape = getShape(gameState, index);
 		auto position = getComponent<components::Position>(shape);
 		assert(position);
-		return { position->posX, position->posY, position->posZ };
+		Vector3 result = { position->posX, position->posY, position->posZ };
+		auto offset = getComponent<components::Offset>(shape);
+		if (offset) {
+			result.x += offset->offsetX;
+			result.y += offset->offsetY;
+			result.z += offset->offsetZ;
+		}
+		return result;
 	}
 
 	Shape& getShape(GameState* gameState, int index)
@@ -464,15 +472,37 @@ namespace middle {
 
 	void loopRectBoundingBox(GameState* gameState, const Id& shapeId, float* leftX, float* rightX, float* bottomZ, float* topZ)
 	{
+		*leftX = 100000; 
+		*rightX = -100000; 
+		*bottomZ = *leftX; 
+		*topZ = *rightX;
+		loopRectBoundingBoxInternal(gameState, shapeId, leftX, rightX, bottomZ, topZ);
+	}
+
+	void loopChildrenOnlyRectBoundingBox(GameState* gameState, const Id& shapeId, float* leftX, float* rightX, float* bottomZ, float* topZ)
+	{
 		auto& shape = middle::getShape(gameState, shapeId.index);
 		auto loop = middle::getComponent<components::LoopSociety>(shape);
-		auto pos = middle::getComponent<components::Position>(shape);
+		*leftX = 100000; 
+		*rightX = -100000; 
+		*bottomZ = *leftX; 
+		*topZ = *rightX;
+		for (const middle::Id& childId : loop->loopMemberIds) {
+			loopRectBoundingBoxInternal(gameState, childId, leftX, rightX, bottomZ, topZ);
+		}
+	}
+
+	void loopRectBoundingBoxInternal(GameState* gameState, const Id& shapeId, float* leftX, float* rightX, float* bottomZ, float* topZ)
+	{
+		auto& shape = middle::getShape(gameState, shapeId.index);
+		auto loop = middle::getComponent<components::LoopSociety>(shape);
+		Vector3 pos = middle::getShapePosition(gameState, shapeId.index);
 		auto rect = middle::getComponent<components::Rectangle>(shape);
 
-		float top = pos->posZ + rect->height * 0.5f;
-		float bottom = pos->posZ - rect->height * 0.5f;
-		float left = pos->posX - rect->width * 0.5f;
-		float right = pos->posX + rect->width * 0.5f;
+		float top = pos.z + rect->height * 0.5f;
+		float bottom = pos.z - rect->height * 0.5f;
+		float left = pos.x - rect->width * 0.5f;
+		float right = pos.x + rect->width * 0.5f;
 		if (top > *topZ) {
 			*topZ = top;
 		}
@@ -487,7 +517,7 @@ namespace middle {
 		}
 
 		for (const middle::Id& childId : loop->loopMemberIds) {
-			loopRectBoundingBox(gameState, childId, leftX, rightX, bottomZ, topZ);
+			loopRectBoundingBoxInternal(gameState, childId, leftX, rightX, bottomZ, topZ);
 		}
 
 

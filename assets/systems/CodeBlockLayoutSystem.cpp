@@ -9,6 +9,7 @@
 #include "CodeBlock.h"
 #include "CodeFunction.h"
 #include "IfComponent.h"
+#include "Offset.h"
 
 class CodeBlockLayoutSystem : public middle::MiddleGameplaySystem {
 public:
@@ -24,14 +25,13 @@ public:
 	const float minFunctionHeight = 10;
 	const float minFunctionWidth = 20;
 	const float ifmargin = 20;
+	const float blockMarginX = 10;
 	const float ifoffset = 70;
 
 	void updateRectSize(middle::GameState* gameState, middle::Shape& shape, float minW, float minH) {
 		components::Rectangle* rect = middle::getComponent<components::Rectangle>(shape);
-		rect->width = 0;
-		rect->height = 0;
-		float left = 100000; float right = -100000; float bottom = left; float top = right;
-		middle::loopRectBoundingBox(gameState, shape.id, &left, &right, &bottom, &top);
+		float left, right, bottom, top;
+		middle::loopChildrenOnlyRectBoundingBox(gameState, shape.id, &left, &right, &bottom, &top);
 		float newWidth = right - left + 5;
 		float newHeight = top - bottom;
 		if (newWidth < minW) {
@@ -42,17 +42,13 @@ public:
 		}
 		rect->width = newWidth;
 		rect->height = newHeight;
-
-		auto pos = middle::getComponent<components::Position>(shape);
-		pos->posX = (left + right) * 0.5f;
-		pos->posY = 0;
-		pos->posZ = (top + bottom) * 0.5f;
 	}
 
 	void updateRectSizeRecursive(middle::GameState* gameState, middle::Shape& shape) {
 		auto procedure = middle::getComponent<components::ProcedureComponent>(shape);
 		auto codeBlock = middle::getComponent<components::CodeBlock>(shape);
 		auto function = middle::getComponent<components::CodeFunction>(shape);
+		auto ifBlock = middle::getComponent<components::IfComponent>(shape);
 		auto loop = middle::getComponent<components::LoopSociety>(shape);
 
 		float minW = 0;
@@ -64,6 +60,9 @@ public:
 		if (codeBlock) {
 			minW = minCodeBlockWidth;
 			minH = minCodeBlockHeight;
+		}
+		if (ifBlock) {
+			return;
 		}
 		if (function) {
 			return;
@@ -78,10 +77,13 @@ public:
 
 	void update(middle::GameState* gameState) override {
 
+		if (gameState->bubbleAlgebraState.grabbedId.index != middle::UNASSIGNED) {
+			return;
+		}
+
 		middle::loopInstances(gameState, [gameState, this](int i, middle::Shape& shape) {
 
-
-			// procedure block child position and size updates
+			// procedure block layout
 			auto procedure = middle::getComponent<components::ProcedureComponent>(shape);
 			if (procedure) {
 
@@ -89,18 +91,15 @@ public:
 
 				auto procRect = middle::getComponent<components::Rectangle>(shape);
 				auto procLoop = middle::getComponent<components::LoopSociety>(shape);
+				auto procPosition = middle::getComponent<components::Position>(shape);
 
 				float totalHeight = procRect->height;
 				float totalWidth = procRect->width;
 				int size = procLoop->loopMemberIds.size();
 
-				Vector3 referencePos;
-				if (size > 1) {
-					referencePos = middle::getShapePosition(gameState, procLoop->loopMemberIds[0].index);
-				}
-				else {
-					referencePos = middle::getShapePosition(gameState, shape.id.index);
-				}
+				Vector3 procPos = { procPosition->posX, procPosition->posY, procPosition->posZ };
+				Vector3 referencePos = procPos;
+
 				// move code block inside procedure container
 				for (int index = 0; index < size; ++index) {
 					middle::Id childId = procLoop->loopMemberIds[index];
@@ -109,10 +108,15 @@ public:
 					auto childRect = middle::getComponent<components::Rectangle>(childShape);
 					Vector3 currPos = { position->posX, position->posY, position->posZ };
 
-					if(index > 0)
+					if (index > 0)
 						referencePos.z -= childRect->height * 0.5f + zmargin * 0.5f;
 					middle::moveShape(gameState, childId.index, referencePos - currPos);
 					referencePos.z -= childRect->height * 0.5f + zmargin * 0.5f;
+
+					auto offset = middle::getComponent<components::Offset>(childShape);
+					if (offset) {
+						offset->offsetX = childRect->width * 0.5f;
+					}
 				}
 				// move procedure container
 				if (size > 1) {
@@ -120,31 +124,36 @@ public:
 					Vector3 child0Pos = middle::getShapePosition(gameState, procLoop->loopMemberIds[0].index);
 					auto child0Rect = middle::getComponent<components::Rectangle>(child0Shape);
 
-					float z = child0Pos.z + child0Rect->height * 0.5f;
-					float centerZ = z - totalHeight * 0.5f;
+					float left, right, bottom, top;
+					middle::loopChildrenOnlyRectBoundingBox(gameState, shape.id, &left, &right, &bottom, &top);
+					Vector3 center = { (left + right) * 0.5f, 0, (bottom + top) * 0.5f };
 
-					Vector3 center = { child0Pos.x, child0Pos.y, centerZ };
-
-					auto procPosition = middle::getComponent<components::Position>(shape);
-					//procPosition->posX = center.x;
-					procPosition->posY = center.y;
-					procPosition->posZ = center.z;
+					auto procOffset = middle::getComponent<components::Offset>(shape);
+					procOffset->offsetX = center.x - procPos.x;
+					procOffset->offsetY = center.y - procPos.y;
+					procOffset->offsetZ = center.z - procPos.z;
 				}
 			}
 
-			// code block size and position updates
-			auto containerCodeBlock = middle::getComponent<components::CodeBlock>(shape);
-			if (containerCodeBlock) {
+			// code block layout
+			auto codeBlock = middle::getComponent<components::CodeBlock>(shape);
+			if (codeBlock) {
 				auto loop = middle::getComponent<components::LoopSociety>(shape);
-				auto codeBlockRect = middle::getComponent<components::Rectangle>(shape);
-				const float zmargin = 4;
-				Vector3 targetPos = middle::getShapePosition(gameState, shape.id.index);
+				float left, right, bottom, top;
 
-				if (loop->loopMemberIds.size() > 0) {
-					assert(loop->loopMemberIds.size() == 1);
-					auto& childShape = middle::getShape(gameState, loop->loopMemberIds[0].index);
-					Vector3 childPos = middle::getShapePosition(gameState, childShape.id.index);
-					//middle::moveShape(gameState, childShape.id.index, targetPos - childPos);
+				auto codeBlockRect = middle::getComponent < components::Rectangle>(shape);
+				Vector3 codeBlockPos = middle::getShapePosition(gameState, shape.id.index);
+				float leftAlignmentX = codeBlockPos.x- codeBlockRect->width * 0.5f;
+				float targetX = leftAlignmentX + blockMarginX;
+				float targetZ = codeBlockPos.z;
+
+				for (middle::Id& childId : loop->loopMemberIds) {
+					auto& childShape = middle::getShape(gameState, childId.index);
+					auto childRect = middle::getComponent<components::Rectangle>(childShape);
+					auto pos = middle::getComponent<components::Position>(childShape);
+					auto offset = middle::getComponent<components::Offset>(childShape);
+					pos->posX = targetX + childRect->width * 0.5f;
+					pos->posZ = targetZ;
 				}
 			}
 
@@ -159,17 +168,23 @@ public:
 
 				Vector3 ifPosition = middle::getShapePosition(gameState, shape.id.index);
 
-				float left = 100000; float right = -100000; float bottom = left; float top = right;
-				middle::loopRectBoundingBox(gameState, shape.id, &left, &right, &bottom, &top);
+				float left, right, bottom, top;
+				middle::loopChildrenOnlyRectBoundingBox(gameState, shape.id, &left, &right, &bottom, &top);
 				float totalHeight = top - bottom;
+
+				float targetLeftX = ifPosition.x + ifoffset;
 
 				Vector3 referencePos = ifPosition + Vector3{ ifoffset,0,totalHeight * 0.5f };
 				for (middle::Id& id : loop->loopMemberIds) {
 					auto& childShape = middle::getShape(gameState, id.index);
 					auto childRect = middle::getComponent<components::Rectangle>(childShape);
 					referencePos.z = referencePos.z - childRect->height * 0.5f;
-					Vector3 targetPos = referencePos;
+
 					Vector3 currentPos = middle::getShapePosition(gameState, id.index);
+					float sizeOffset = childRect->width * 0.5f;
+
+					Vector3 targetPos = referencePos;
+					targetPos.x += sizeOffset;
 					middle::moveShape(gameState, id.index, targetPos - currentPos);
 					referencePos.z = referencePos.z - childRect->height * 0.5f - ifmargin;
 				}

@@ -26,7 +26,6 @@ public:
 
 		middle::loopInstances(gameState, [gameState](int i, middle::Shape& shape) {
 
-
 			auto placement = middle::getComponent<components::PlacementComponent>(shape);
 			auto grabbable = middle::getComponent<components::MouseGrabbable>(shape);
 			auto procedure = middle::getComponent<components::ProcedureComponent>(shape);

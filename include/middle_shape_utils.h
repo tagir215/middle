@@ -55,6 +55,8 @@ namespace middle {
 	void getChildren(GameState* gameState, Id id, std::vector<Id>& result);
 	// get left right top bottom of a rect containing rect children 
 	void loopRectBoundingBox(GameState* gameState, const Id& shapeId, float* leftX, float* rightX, float* bottomZ, float* topZ);
+	void loopChildrenOnlyRectBoundingBox(GameState* gameState, const Id& shapeId, float* leftX, float* rightX, float* bottomZ, float* topZ);
+	void loopRectBoundingBoxInternal(GameState* gameState, const Id& shapeId, float* leftX, float* rightX, float* bottomZ, float* topZ);
 
 	template<typename F>
 	void loopInstances(GameState* gameState, F func) {
