@@ -52,6 +52,15 @@ namespace middle {
 		else if (field.type() == typeid(bool)) {
 			return FieldType::Bool;
 		}
+		else if (field.type() == typeid(Vector3)) {
+			return FieldType::Vector3;
+		}
+		else if (field.type() == typeid(Vector2)) {
+			return FieldType::Vector2;
+		}
+		else if (field.type() == typeid(Color)) {
+			return FieldType::Color;
+		}
 		else if (field.type() == typeid(Id)) {
 			return FieldType::Id;
 		}
@@ -62,6 +71,38 @@ namespace middle {
 		assert(false, "no we are not supporting this");
 	}
 
+	std::string Vector3ToString(const Vector3& v) {
+		std::string result = "\n";
+		result += std::to_string(v.x) + "\n";
+		result += std::to_string(v.y) + "\n";
+		result += std::to_string(v.z);
+		return result;
+	}
+
+	std::string Vector2ToString(const Vector2& v) {
+		std::string result = "\n";
+		result += std::to_string(v.x) + "\n";
+		result += std::to_string(v.y);
+		return result;
+	}
+
+	std::string ColorToString(const Color& c) {
+		std::string result = "\n";
+		result += std::to_string(c.r) + "\n";
+		result += std::to_string(c.g) + "\n";
+		result += std::to_string(c.b) + "\n";
+		result += std::to_string(c.a) + "\n";
+		return result;
+	}
+
+	// DEPRECATED
+	std::string coordToLines(const Vector3& position) {
+		auto x = "f  " + std::to_string(position.x) + "\n";
+		auto y = "f  " + std::to_string(position.y) + "\n";
+		auto z = "f  " + std::to_string(position.z) + "\n";
+		return x + y + z;
+	}
+	
 
 	std::string fieldToString(const std::any& field) {
 		FieldType type = fieldToType(field);
@@ -78,6 +119,12 @@ namespace middle {
 			return result + std::to_string(std::any_cast<double>(field)) + '\n';
 		case FieldType::Bool:
 			return result + std::to_string(std::any_cast<bool>(field)) + '\n';
+		case FieldType::Vector3:
+			return result + Vector3ToString(std::any_cast<Vector3>(field)) + '\n';
+		case FieldType::Vector2:
+			return result + Vector2ToString(std::any_cast<Vector2>(field)) + '\n';
+		case FieldType::Color:
+			return result + ColorToString(std::any_cast<Color>(field)) + '\n';
 		case FieldType::Id:
 			return result + std::to_string(std::any_cast<Id>(field).index) + '\n';
 		case FieldType::IdVector:
@@ -125,6 +172,30 @@ namespace middle {
 			*boolptr = std::stoi(valueStr);
 			return;
 		}
+		case static_cast<char>(FieldType::Vector3): {
+			std::vector<std::string> values = split(valueStr, '\n');
+			Vector3* vptr = static_cast<Vector3*>(field);
+			vptr->x = std::stof(values[0]);
+			vptr->y = std::stof(values[1]);
+			vptr->z = std::stof(values[2]);
+			return;
+		}
+		case static_cast<char>(FieldType::Vector2): {
+			std::vector<std::string> values = split(valueStr, '\n');
+			Vector2* vptr = static_cast<Vector2*>(field);
+			vptr->x = std::stof(values[0]);
+			vptr->y = std::stof(values[1]);
+			return;
+		}
+		case static_cast<char>(FieldType::Color): {
+			std::vector<std::string> values = split(valueStr, '\n');
+			Color* vptr = static_cast<Color*>(field);
+			vptr->r = std::stof(values[0]);
+			vptr->g = std::stof(values[1]);
+			vptr->b = std::stof(values[2]);
+			vptr->a = std::stof(values[3]);
+			return;
+		}
 		case static_cast<char>(FieldType::Id): {
 			Id* id = static_cast<Id*>(field);
 			// Offset by indexOffset. This is used when importing scenes into other scenes, offsetting imported scenes indexes to ghost area
@@ -148,14 +219,7 @@ namespace middle {
 		}
 		}
 
-		assert("nope not supported");
-	}
-
-	std::string coordToLines(const Vector3& position) {
-		auto x = "f  " + std::to_string(position.x) + "\n";
-		auto y = "f  " + std::to_string(position.y) + "\n";
-		auto z = "f  " + std::to_string(position.z) + "\n";
-		return x + y + z;
+		assert("not supported");
 	}
 
 	bool isEmptyOrWhitespace(const std::string& s) {
@@ -302,6 +366,13 @@ namespace middle {
 		assert("something wrong about data");
 	}
 
+	bool isVectorType(char typeC) {
+		return typeC == static_cast<char>(FieldType::IdVector)
+			|| typeC == static_cast<char>(FieldType::Vector3)
+			|| typeC == static_cast<char>(FieldType::Vector2)
+			|| typeC == static_cast<char>(FieldType::Color);
+	}
+
 	void loadScene(GameState* gameState, const std::string& sceneName, bool import, const Vector3& pos, int sceneReferenceIndex) {
 		std::string filename = "../assets/scenes/" + sceneName + ".midsc";
 
@@ -374,7 +445,9 @@ namespace middle {
 				continue;
 			}
 
-			if (line[0] == static_cast<char>(FieldType::IdVector)) {
+			// type is first character
+			char typeC = line[0];
+			if (isVectorType(typeC)) {
 				parseMode = vectorMode;
 				buffer.push_back(line);
 				continue;

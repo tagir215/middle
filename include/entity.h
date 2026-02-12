@@ -54,6 +54,9 @@ namespace middle {
 		String = 's',
 		Float = 'f',
 		Double = 'd',
+		Vector3 = 'v',
+		Vector2 = 'z',
+		Color = 'c',
 		Id = 'q',
 		IdVector = 'p',
 	};
