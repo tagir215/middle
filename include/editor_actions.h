@@ -256,4 +256,22 @@ namespace middle {
 		void execute(GameState* gameState) override;
 		void undo(GameState* gameState) override;
 	};
+
+	class EditorActionHide : public EditorActionContainer {
+	public:
+		std::vector<int> selectedShapes;
+		EditorActionHide(std::vector<int>& selectedShapes) {
+			this->selectedShapes = selectedShapes;
+		}
+		void execute(GameState* gameState) override;
+		void undo(GameState* gameState) override;
+	};
+
+	class EditorActionUnhide : public EditorActionContainer {
+	public:
+		EditorActionUnhide() {
+		}
+		void execute(GameState* gameState) override;
+		void undo(GameState* gameState) override;
+	};
 }

@@ -20,6 +20,7 @@
 #include "ComponentRefParent.h"
 #include "PlacementComponent.h"
 #include "CameraEntity.h"
+#include "HiddenTag.h"
 
 namespace middle {
 
@@ -472,5 +473,30 @@ namespace middle {
 	{
 	}
 
+
+	void EditorActionHide::execute(GameState* gameState)
+	{
+		for (int index : selectedShapes) {
+			auto& shape = middle::getShape(gameState, index);
+			addComponent<components::HiddenTag>(shape);
+		}
+	}
+
+	void EditorActionHide::undo(GameState* gameState)
+	{
+	}
+
+	void EditorActionUnhide::execute(GameState* gameState)
+	{
+		loopInstances(gameState, [](int i, middle::Shape& shape) {
+			if (middle::getComponent<components::HiddenTag>(shape)) {
+				deleteComponent<components::HiddenTag>(shape);
+			}
+			});
+	}
+
+	void EditorActionUnhide::undo(GameState* gameState)
+	{
+	}
 
 }

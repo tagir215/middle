@@ -19,6 +19,7 @@
 #include "SystemReference.h"
 #include "ComponentReference.h"
 #include "Text.h"
+#include "HiddenTag.h"
 
 class EditorRenderSetupSystem : public middle::MiddleGameplaySystem {
 public:
@@ -50,6 +51,10 @@ public:
 
 
 		loopInstances(gameState, [&](int i, middle::Shape& shape) {
+
+			auto hidden = middle::getComponent<components::HiddenTag>(shape);
+			if (hidden)
+				return;
 
 			auto position = middle::getComponent<components::Position>(shape);
 			auto selectable = middle::getComponent<components::MouseSelectable>(shape);

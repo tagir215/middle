@@ -33,6 +33,7 @@ namespace middle {
 		bool infoClick = false;
 		bool loopClick = false;
 		bool sphereModeClick = false;
+		bool hideClick = false;
 		bool constraintModeClick = false;
 		bool cameraModeClick = false;
 		bool loopModeClick = false;

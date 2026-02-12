@@ -15,6 +15,7 @@
 #include "SystemReference.h"
 #include "ComponentReference.h"
 #include "PlacementComponent.h"
+#include "HiddenTag.h"
 
 namespace MouseIntersectDetectionSystem {
 
@@ -33,8 +34,11 @@ namespace MouseIntersectDetectionSystem {
 			for (int i = 0; i < gameState->shapes.size(); ++i) {
 				if (!middle::isShapeAlive(gameState, i))
 					continue;
-
 				middle::Shape& shape = gameState->shapes[i];
+
+				auto hidden = middle::getComponent<components::HiddenTag>(shape);
+				if (hidden)
+					continue;
 
 				auto placable = middle::getComponent<components::PlacementComponent>(shape);
 				if (placable)

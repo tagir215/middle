@@ -111,6 +111,20 @@ public:
 				std::make_unique<middle::EditorActionCreateLoop>(middle::getSelectedShapes(gameState))
 			);
 		}
+
+		if (gameState->input.hideClick) {
+			std::vector<int>selectedShapes = middle::getSelectedShapes(gameState);
+			if (selectedShapes.size() > 0) {
+				gameState->editorState.editorActions.push_back(
+					std::make_unique<middle::EditorActionHide>(selectedShapes)
+				);
+			}
+			else {
+				gameState->editorState.editorActions.push_back(
+					std::make_unique<middle::EditorActionUnhide>()
+				);
+			}
+		}
 	}
 };
 

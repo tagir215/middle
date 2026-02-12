@@ -110,7 +110,9 @@ public:
 
 					if (index > 0)
 						referencePos.z -= childRect->height * 0.5f + zmargin * 0.5f;
-					middle::moveShape(gameState, childId.index, referencePos - currPos);
+					position->posX = referencePos.x;
+					position->posY = referencePos.y;
+					position->posZ = referencePos.z;
 					referencePos.z -= childRect->height * 0.5f + zmargin * 0.5f;
 
 					auto offset = middle::getComponent<components::Offset>(childShape);

@@ -42,6 +42,7 @@ class InputSystem : public middle::MiddleGameplaySystem {
 			gameState->input.loopClick = false;
 			gameState->input.selectModeClick = false;
 			gameState->input.sphereModeClick = false;
+			gameState->input.hideClick = false;
 			gameState->input.constraintModeClick = false;
 			gameState->input.cameraModeClick = false;
 			gameState->input.loopModeClick = false;
@@ -69,6 +70,7 @@ class InputSystem : public middle::MiddleGameplaySystem {
 				gameState->input.loopClick = IsKeyPressed(KEY_L);
 				gameState->input.selectModeClick = IsKeyPressed(KEY_ONE);
 				gameState->input.sphereModeClick = IsKeyPressed(KEY_TWO);
+				gameState->input.hideClick = IsKeyPressed(KEY_H);
 				gameState->input.constraintModeClick = IsKeyPressed(KEY_THREE);
 				gameState->input.cameraModeClick = IsKeyPressed(KEY_FOUR);
 				gameState->input.loopModeClick = IsKeyPressed(KEY_FIVE);
