@@ -6,6 +6,7 @@
 #include "Text.h"
 #include "MouseIntersectable.h"
 #include "Offset.h"
+#include "Circle.h"
 
 class UiRenderSetup : public middle::MiddleGameplaySystem {
 public:
@@ -18,6 +19,7 @@ public:
 		middle::loopInstances(gameState, [gameState, this](int i, middle::Shape& shape) {
 			auto rectangle = middle::getComponent<components::Rectangle>(shape);
 			auto text = middle::getComponent<components::Text>(shape);
+			auto circle = middle::getComponent<components::Circle>(shape);
 
 			if (rectangle) {
 				Vector3 position = middle::getShapePosition(gameState, shape.id.index);
@@ -60,7 +62,14 @@ public:
 				}
 			}
 
-
+			if (circle) {
+				middle::RenderItem circleItem;
+				circleItem.type = middle::RenderItemType::CIRCLE;
+				circleItem.color = WHITE;
+				circleItem.radius = circle->radius;
+				circleItem.center = middle::getShapePosition(gameState, shape.id.index);
+				gameState->renderData.push_back(circleItem);
+			}
 
 			});
 	}

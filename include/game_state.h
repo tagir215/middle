@@ -69,6 +69,7 @@ namespace middle {
 		SPHERE,
 		LINE,
 		RECTANGLE,
+		CIRCLE,
 		TEXT,
 	};
 

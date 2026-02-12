@@ -15,6 +15,7 @@
 #include "editor_actions.h"
 #include "MouseGrabbable.h"
 #include "CodeFunction.h"
+#include "IfComponent.h"
 
 class CodeBlockSystem : public middle::MiddleGameplaySystem {
 public:
@@ -122,6 +123,15 @@ public:
 				middle::getChildren(gameState, shape.id, children);
 				for (middle::Id& childId : children) {
 					auto& childShape = middle::getShape(gameState, childId.index);
+
+					// check that parent is not an if block, cause then can't grab it
+					auto childLoop = middle::getComponent<components::LoopSociety>(childShape);
+					auto parentShape = middle::getShape(gameState, childLoop->parentLoopId.index);
+					auto ifBlock = middle::getComponent<components::IfComponent>(parentShape);
+					if (ifBlock) {
+						continue;
+					}
+
 
 					// if grabbing child from procedure, can reorder it
 					auto childGrabbable = middle::getComponent<components::MouseGrabbable>(childShape);

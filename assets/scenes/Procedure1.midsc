@@ -29,8 +29,8 @@ f  2.000000
 MouseSelectable
 MouseIntersectable
 Rectangle
+f  25.000000
 f  20.000000
-f  10.000000
 MouseGrabbable
 Position
 f  188.256073
@@ -39,6 +39,8 @@ f  108.275055
 LoopSociety
 q  3
 p  
+24
+25
 CodeFunction
 Text
 s  COMBINE
@@ -78,8 +80,8 @@ MouseGrabbable
 MouseIntersectable
 __3__
 Rectangle
-f  140.000000
-f  205.000000
+f  142.500000
+f  215.000000
 MouseGrabbable
 Sphere
 f  2.000000
@@ -135,7 +137,7 @@ MouseIntersectable
 Position
 f  188.256073
 f  0.000000
-f  88.275055
+f  83.275055
 LoopSociety
 q  3
 p  
@@ -167,7 +169,7 @@ MouseGrabbable
 Position
 f  188.256073
 f  0.000000
-f  48.275055
+f  43.275055
 LoopSociety
 q  3
 p  
@@ -199,7 +201,7 @@ MouseIntersectable
 Position
 f  188.256073
 f  0.000000
-f  28.275055
+f  23.275055
 LoopSociety
 q  3
 p  
@@ -231,7 +233,7 @@ MouseGrabbable
 Position
 f  188.256073
 f  0.000000
-f  8.275055
+f  3.275055
 LoopSociety
 q  3
 p  
@@ -263,7 +265,7 @@ MouseIntersectable
 Position
 f  188.256073
 f  0.000000
-f  -31.724945
+f  -36.724945
 LoopSociety
 q  3
 p  
@@ -295,7 +297,7 @@ MouseGrabbable
 Position
 f  188.256073
 f  0.000000
-f  68.275055
+f  63.275055
 LoopSociety
 q  3
 p  
@@ -327,7 +329,7 @@ MouseIntersectable
 Position
 f  188.256073
 f  0.000000
-f  -11.724945
+f  -16.724945
 LoopSociety
 q  3
 p  
@@ -354,7 +356,7 @@ MouseSelectable
 MouseIntersectable
 Rectangle
 f  40.000000
-f  50.000000
+f  60.000000
 MouseGrabbable
 Inventory
 LoopSociety
@@ -373,7 +375,7 @@ MouseSelectable
 MouseIntersectable
 Rectangle
 f  40.000000
-f  20.000000
+f  25.000000
 MouseGrabbable
 Text
 s  
@@ -392,7 +394,7 @@ p
 Position
 f  85.418610
 f  0.000153
-f  90.064552
+f  92.564552
 CodeBlock
 Offset
 f  0.000000
@@ -401,7 +403,7 @@ f  0.000000
 __14__
 Rectangle
 f  40.000000
-f  20.000000
+f  25.000000
 MouseGrabbable
 Sphere
 f  2.000000
@@ -424,7 +426,7 @@ p
 Position
 f  85.418610
 f  0.000153
-f  60.064552
+f  57.564552
 Offset
 f  0.000000
 f  0.000000
@@ -506,7 +508,7 @@ MouseGrabbable
 Position
 f  188.256073
 f  0.000000
-f  -51.724945
+f  -56.724945
 LoopSociety
 q  3
 p  
@@ -546,7 +548,7 @@ p
 Position
 f  268.256073
 f  0.000000
-f  -26.724945
+f  -31.724945
 ProcedureComponent
 Offset
 f  20.000000
@@ -568,7 +570,7 @@ p
 Position
 f  268.256073
 f  0.000000
-f  -76.724945
+f  -81.724945
 ProcedureComponent
 Offset
 f  20.000000
@@ -600,7 +602,7 @@ p
 Position
 f  268.256073
 f  0.000000
-f  -26.724945
+f  -31.724945
 CodeBlock
 Offset
 f  20.000000
@@ -632,7 +634,7 @@ p
 Position
 f  268.256073
 f  0.000000
-f  -76.724945
+f  -81.724945
 CodeBlock
 Offset
 f  20.000000
@@ -659,3 +661,37 @@ Position
 f  -74.347687
 f  0.000000
 f  -165.289261
+__24__
+Sphere
+f  2.000000
+Position
+f  163.486679
+f  0.000000
+f  113.967598
+LoopSociety
+q  1
+p  
+MouseSelectable
+Circle
+f  4.000000
+MouseGrabbable
+MouseIntersectable
+VariabelComponent
+q  -1
+__25__
+Sphere
+f  2.000000
+LoopSociety
+q  1
+p  
+Position
+f  163.486679
+f  0.000008
+f  102.758568
+Circle
+f  4.000000
+MouseSelectable
+MouseGrabbable
+VariabelComponent
+q  -1
+MouseIntersectable

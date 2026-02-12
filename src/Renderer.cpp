@@ -73,6 +73,9 @@ namespace RendererSystem {
 					DrawLine3D(item.linePointA, item.linePointB, item.color);
 				}
 
+				if (item.type == middle::CIRCLE) {
+					DrawCircle3D(item.center, item.radius, { 1,0,0 }, 90, item.color);
+				}
 			}
 
 

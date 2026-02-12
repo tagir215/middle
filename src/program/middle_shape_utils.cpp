@@ -513,6 +513,9 @@ namespace middle {
 		auto loop = middle::getComponent<components::LoopSociety>(shape);
 		Vector3 pos = middle::getShapePosition(gameState, shapeId.index);
 		auto rect = middle::getComponent<components::Rectangle>(shape);
+		if (!rect) {
+			return;
+		}
 
 		float top = pos.z + rect->height * 0.5f;
 		float bottom = pos.z - rect->height * 0.5f;
