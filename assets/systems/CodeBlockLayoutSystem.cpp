@@ -121,7 +121,7 @@ public:
 					}
 				}
 				// move procedure container
-				if (size > 1) {
+				if (size > 0) {
 					auto& child0Shape = middle::getShape(gameState, procLoop->loopMemberIds[0].index);
 					Vector3 child0Pos = middle::getShapePosition(gameState, procLoop->loopMemberIds[0].index);
 					auto child0Rect = middle::getComponent<components::Rectangle>(child0Shape);
