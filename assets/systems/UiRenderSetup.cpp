@@ -56,7 +56,6 @@ public:
 				line4.linePointB = vertices[0];
 				line4.color = color;
 				gameState->renderData.push_back(line4);
-
 			}
 
 			if (text) {

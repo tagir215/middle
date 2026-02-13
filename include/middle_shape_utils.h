@@ -59,7 +59,10 @@ namespace middle {
 	void loopRectBoundingBox(GameState* gameState, const Id& shapeId, float* leftX, float* rightX, float* bottomZ, float* topZ);
 	void loopChildrenOnlyRectBoundingBox(GameState* gameState, const Id& shapeId, float* leftX, float* rightX, float* bottomZ, float* topZ);
 	void loopRectBoundingBoxInternal(GameState* gameState, const Id& shapeId, float* leftX, float* rightX, float* bottomZ, float* topZ);
+	// get vertices of rectangles
 	std::vector<Vector3>getRectVertices(GameState* gameState, const Id& shapeId);
+	// get scale and multiply it with all the parents scales
+	Vector3 getTotalScale(GameState* gameState, const Id& shapeId);
 
 	template<typename F>
 	void loopInstances(GameState* gameState, F func) {

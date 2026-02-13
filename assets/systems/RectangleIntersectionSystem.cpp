@@ -34,10 +34,11 @@ class RectangleIntersectionSystem : public middle::MiddleGameplaySystem {
 
 			Vector3 mouseXZ = gameState->input.mouseXZ_PlanePos;
 			Vector3 position = middle::getShapePosition(gameState, shape.id.index);
+			Vector3 scale = middle::getTotalScale(gameState, shape.id);
 
 			if (rectangle) {
-				float axisX = rectangle->width * 0.5f;
-				float axisZ = rectangle->height * 0.5f;
+				float axisX = rectangle->width * 0.5f * scale.x;
+				float axisZ = rectangle->height * 0.5f * scale.z;
 				intersectable->intersecting =
 					mouseXZ.x > position.x - axisX && mouseXZ.x < position.x + axisX &&
 					mouseXZ.z > position.z - axisZ && mouseXZ.z < position.z + axisZ;

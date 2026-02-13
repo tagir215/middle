@@ -37,6 +37,12 @@ public:
 			float totalWidth = rightX - leftX;
 			float totalHeight = topZ - bottomZ;
 
+			// TODO REMOVE
+			if (totalWidth <= 0) {
+				totalWidth = 10;
+				totalHeight = 10;
+			}
+
 			inventoryRect->width = totalWidth;
 			inventoryRect->height = totalHeight;
 

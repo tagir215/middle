@@ -517,11 +517,7 @@ namespace middle {
 		if (!rect) {
 			return;
 		}
-		auto scale = middle::getComponent<components::Scale>(shape);
-		Vector3 s = { 1,1,1 };
-		if (scale) {
-			s = scale->scale;
-		}
+		Vector3 s = getTotalScale(gameState, shape.id);
 
 		float top = pos.z + rect->height * 0.5f * s.z;
 		float bottom = pos.z - rect->height * 0.5f * s.z;
@@ -550,12 +546,8 @@ namespace middle {
 	{
 		auto& shape = getShape(gameState, shapeId.index);
 		auto rect = getComponent<components::Rectangle>(shape);
-		auto scale = getComponent<components::Scale>(shape);
 		Vector3 position = getShapePosition(gameState, shapeId.index);
-		Vector3 s = { 1,1,1 };
-		if (scale) {
-			s = scale->scale;
-		}
+		Vector3 s = getTotalScale(gameState, shapeId);
 		std::vector<Vector3> vertices;
 		vertices.resize(4);
 		vertices[0] = { -rect->width * 0.5f * s.x, 0, rect->height * 0.5f * s.z };
@@ -567,5 +559,18 @@ namespace middle {
 		vertices[2] += position;
 		vertices[3] += position;
 		return vertices;
+	}
+	Vector3 getTotalScale(GameState* gameState, const Id& shapeId)
+	{
+		auto& shape = getShape(gameState, shapeId.index);
+		auto scale = middle::getComponent<components::Scale>(shape);
+		if (!scale) {
+			return { 1,1,1 };
+		}
+		auto loop = middle::getComponent<components::LoopSociety>(shape);
+		if (loop->parentLoopId.index != middle::UNASSIGNED) {
+			return scale->scale * getTotalScale(gameState, loop->parentLoopId);
+		}
+		return scale->scale;
 	}
 }
