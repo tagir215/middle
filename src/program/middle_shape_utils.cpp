@@ -15,6 +15,7 @@
 #include "PlacementComponent.h"
 #include "Rectangle.h"
 #include "Offset.h"
+#include "Scale.h"
 
 namespace middle {
 
@@ -516,11 +517,16 @@ namespace middle {
 		if (!rect) {
 			return;
 		}
+		auto scale = middle::getComponent<components::Scale>(shape);
+		Vector3 s = { 1,1,1 };
+		if (scale) {
+			s = scale->scale;
+		}
 
-		float top = pos.z + rect->height * 0.5f;
-		float bottom = pos.z - rect->height * 0.5f;
-		float left = pos.x - rect->width * 0.5f;
-		float right = pos.x + rect->width * 0.5f;
+		float top = pos.z + rect->height * 0.5f * s.z;
+		float bottom = pos.z - rect->height * 0.5f * s.z;
+		float left = pos.x - rect->width * 0.5f * s.x;
+		float right = pos.x + rect->width * 0.5f * s.x;
 		if (top > *topZ) {
 			*topZ = top;
 		}
@@ -539,5 +545,27 @@ namespace middle {
 		}
 
 
+	}
+	std::vector<Vector3> getRectVertices(GameState* gameState, const Id& shapeId)
+	{
+		auto& shape = getShape(gameState, shapeId.index);
+		auto rect = getComponent<components::Rectangle>(shape);
+		auto scale = getComponent<components::Scale>(shape);
+		Vector3 position = getShapePosition(gameState, shapeId.index);
+		Vector3 s = { 1,1,1 };
+		if (scale) {
+			s = scale->scale;
+		}
+		std::vector<Vector3> vertices;
+		vertices.resize(4);
+		vertices[0] = { -rect->width * 0.5f * s.x, 0, rect->height * 0.5f * s.z };
+		vertices[1] = { -rect->width * 0.5f * s.x, 0, -rect->height * 0.5f * s.z };
+		vertices[2] = { rect->width * 0.5f * s.x, 0, -rect->height * 0.5f * s.z };
+		vertices[3] = { rect->width * 0.5f * s.x, 0, rect->height * 0.5f * s.z };
+		vertices[0] += position;
+		vertices[1] += position;
+		vertices[2] += position;
+		vertices[3] += position;
+		return vertices;
 	}
 }

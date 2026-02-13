@@ -16,7 +16,6 @@ public:
 	}
 
 
-
 	void update(middle::GameState* gameState) override {
 		middle::loopInstances(gameState, [gameState, this](int i, middle::Shape& shape) {
 			auto inventory = middle::getComponent<components::Inventory>(shape);
@@ -27,20 +26,14 @@ public:
 			std::vector<middle::Id>items = loop->loopMemberIds;
 
 			Vector3 inventoryPosition = middle::getShapePosition(gameState, shape.id.index);
-			const float zmargin = 10;
+			const float zspacing = 10;
 			const float xmargin = 4;
 
 			auto inventoryRect = middle::getComponent<components::Rectangle>(shape);
-			// reset 
-			inventoryRect->width = 0;
-			inventoryRect->height = 0;
 
 			// calculate total height
-			float leftX = 1000000;
-			float rightX = -1000000;
-			float bottomZ = leftX;
-			float topZ = rightX;
-			middle::loopRectBoundingBox(gameState, shape.id, &leftX, &rightX, &bottomZ, &topZ);
+			float leftX, rightX, bottomZ, topZ;
+			middle::loopChildrenOnlyRectBoundingBox(gameState, shape.id, &leftX, &rightX, &bottomZ, &topZ);
 			float totalWidth = rightX - leftX;
 			float totalHeight = topZ - bottomZ;
 
@@ -48,7 +41,7 @@ public:
 			inventoryRect->height = totalHeight;
 
 			Vector3 referencePos = inventoryPosition;
-			referencePos.z += totalHeight * 0.5f + zmargin * 0.5f;
+			referencePos.z += totalHeight * 0.5f + zspacing * 0.5f;
 
 			for (middle::Id& childId : items) {
 				middle::Shape& child = middle::getShape(gameState, childId.index);
@@ -56,18 +49,18 @@ public:
 				auto circle = middle::getComponent<components::Circle>(child);
 				auto position = middle::getComponent<components::Position>(child);
 				if (rect) {
-					referencePos.z -= rect->height * 0.5f + zmargin * 0.5f;
+					referencePos.z -= rect->height * 0.5f + zspacing * 0.5f;
 					position->posX = referencePos.x;
 					position->posY = referencePos.y;
 					position->posZ = referencePos.z;
-					referencePos.z -= rect->height * 0.5f + zmargin * 0.5f;
+					referencePos.z -= rect->height * 0.5f + zspacing * 0.5f;
 				}
 				if (circle) {
-					referencePos.z -= circle->radius + zmargin * 0.5f;
+					referencePos.z -= circle->radius + zspacing * 0.5f;
 					position->posX = referencePos.x;
 					position->posY = referencePos.y;
 					position->posZ = referencePos.z;
-					referencePos.z -= circle->radius + zmargin * 0.5f;
+					referencePos.z -= circle->radius + zspacing * 0.5f;
 				}
 			}
 

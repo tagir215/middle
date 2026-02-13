@@ -59,6 +59,7 @@ namespace middle {
 	void loopRectBoundingBox(GameState* gameState, const Id& shapeId, float* leftX, float* rightX, float* bottomZ, float* topZ);
 	void loopChildrenOnlyRectBoundingBox(GameState* gameState, const Id& shapeId, float* leftX, float* rightX, float* bottomZ, float* topZ);
 	void loopRectBoundingBoxInternal(GameState* gameState, const Id& shapeId, float* leftX, float* rightX, float* bottomZ, float* topZ);
+	std::vector<Vector3>getRectVertices(GameState* gameState, const Id& shapeId);
 
 	template<typename F>
 	void loopInstances(GameState* gameState, F func) {

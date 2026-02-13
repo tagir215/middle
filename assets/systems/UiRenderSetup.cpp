@@ -30,28 +30,30 @@ public:
 				auto intersectable = middle::getComponent<components::MouseIntersectable>(shape);
 				Color color = intersectable->intersectingTop ? WHITE : Color{ 200,200,200,200 };
 
+				std::vector<Vector3>vertices = middle::getRectVertices(gameState, shape.id);
+
 				middle::RenderItem line1;
 				line1.type = middle::RenderItemType::LINE;
-				line1.linePointA = { position.x - rectangle->width * 0.5f, 0, position.z + rectangle->height * 0.5f };
-				line1.linePointB = { position.x - rectangle->width * 0.5f, 0, position.z - rectangle->height * 0.5f };
+				line1.linePointA = vertices[0];
+				line1.linePointB = vertices[1];
 				line1.color = color;
 				gameState->renderData.push_back(line1);
 				middle::RenderItem line2;
 				line2.type = middle::RenderItemType::LINE;
-				line2.linePointA = { position.x + rectangle->width * 0.5f, 0, position.z + rectangle->height * 0.5f };
-				line2.linePointB = { position.x + rectangle->width * 0.5f, 0, position.z - rectangle->height * 0.5f };
+				line2.linePointA = vertices[1];
+				line2.linePointB = vertices[2];
 				line2.color = color;
 				gameState->renderData.push_back(line2);
 				middle::RenderItem line3;
 				line3.type = middle::RenderItemType::LINE;
-				line3.linePointA = { position.x - rectangle->width * 0.5f, 0, position.z - rectangle->height * 0.5f };
-				line3.linePointB = { position.x + rectangle->width * 0.5f, 0, position.z - rectangle->height * 0.5f };
+				line3.linePointA = vertices[2];
+				line3.linePointB = vertices[3];
 				line3.color = color;
 				gameState->renderData.push_back(line3);
 				middle::RenderItem line4;
 				line4.type = middle::RenderItemType::LINE;
-				line4.linePointA = { position.x - rectangle->width * 0.5f, 0, position.z + rectangle->height * 0.5f };
-				line4.linePointB = { position.x + rectangle->width * 0.5f, 0, position.z + rectangle->height * 0.5f };
+				line4.linePointA = vertices[3];
+				line4.linePointB = vertices[0];
 				line4.color = color;
 				gameState->renderData.push_back(line4);
 
