@@ -11,11 +11,11 @@
 #include "CodeBlock.h"
 #include "Inventory.h"
 #include "MouseIntersectable.h"
-#include "ProcedureComponent.h"
 #include "editor_actions.h"
 #include "MouseGrabbable.h"
 #include "CodeFunction.h"
 #include "IfComponent.h"
+#include "ScopeComponent.h"
 
 class CodeBlockSystem : public middle::MiddleGameplaySystem {
 public:
@@ -29,7 +29,7 @@ public:
 
 			auto placement = middle::getComponent<components::PlacementComponent>(shape);
 			auto grabbable = middle::getComponent<components::MouseGrabbable>(shape);
-			auto procedure = middle::getComponent<components::ProcedureComponent>(shape);
+			auto scope = middle::getComponent<components::ScopeComponent>(shape);
 
 			// code block moving
 			if ((placement && placement->grabbing) || (grabbable && grabbable->grabbing)) {
@@ -38,15 +38,15 @@ public:
 				middle::moveShape(gameState, shape.id.index, targetPos - currentPos);
 			}
 
-			// add and remove from/to procedure container 
+			// add and remove from/to scope container 
 			middle::Id grabbedId = gameState->bubbleAlgebraState.grabbedId;
-			if (procedure && grabbedId.index != middle::UNASSIGNED && shape.id != grabbedId) {
-				auto procedureIntersectable = middle::getComponent<components::MouseIntersectable>(shape);
-				auto procedureLoop = middle::getComponent<components::LoopSociety>(shape);
+			if (scope && grabbedId.index != middle::UNASSIGNED && shape.id != grabbedId) {
+				auto scopeIntersectable = middle::getComponent<components::MouseIntersectable>(shape);
+				auto scopeLoop = middle::getComponent<components::LoopSociety>(shape);
 
 				// removes from loop while grabbing and moving out of container
 				// if grabbing while not intersecting remove from loop
-				if (!procedureIntersectable->intersecting) {
+				if (!scopeIntersectable->intersecting) {
 					std::vector<middle::Id>children;
 					middle::getChildren(gameState, shape.id, children);
 					for (middle::Id& childId : children) {
@@ -67,28 +67,28 @@ public:
 					auto grabbedCodeFunction = middle::getComponent<components::CodeFunction>(grabbedShape);
 
 					// CODEBLOCK
-					// 1 or first is added directly to the proc, others are added as siblings dragging on top of each sibling
-					int childrenSize = procedureLoop->loopMemberIds.size();
-					if (grabbedCodeBlock && childrenSize == 0 && procedureIntersectable->intersectingTop) {
+					// 1 or first is added directly to the scope, others are added as siblings dragging on top of each sibling
+					int childrenSize = scopeLoop->loopMemberIds.size();
+					if (grabbedCodeBlock && childrenSize == 0 && scopeIntersectable->intersectingTop) {
 						auto reparent = middle::EditorActionReparent(shape.id.index, gameState->bubbleAlgebraState.grabbedId.index);
 						reparent.execute(gameState);
 					}
 					// blocks (subject) after first one are added by intersecting children
 					if (grabbedCodeBlock && childrenSize > 0) {
 						for (int index = 0; index < childrenSize; ++index) {
-							middle::Id& childId = procedureLoop->loopMemberIds[index];
-							assert(childrenSize == procedureLoop->loopMemberIds.size());
+							middle::Id& childId = scopeLoop->loopMemberIds[index];
+							assert(childrenSize == scopeLoop->loopMemberIds.size());
 							middle::Shape& childShape = middle::getShape(gameState, childId.index);
 							auto intersectableChild = middle::getComponent<components::MouseIntersectable>(childShape);
 							if (intersectableChild->intersecting) {
 								auto reparent = middle::EditorActionReparent(shape.id.index, grabbedId.index);
 								reparent.execute(gameState);
-								procedureLoop = middle::getComponent<components::LoopSociety>(shape);
-								assert(procedureLoop->loopMemberIds.size() >= childrenSize);
+								scopeLoop = middle::getComponent<components::LoopSociety>(shape);
+								assert(scopeLoop->loopMemberIds.size() >= childrenSize);
 
 								int newIndex = index + 1;
 								// new index can't go behind anything if its last
-								if (newIndex == procedureLoop->loopMemberIds.size()) {
+								if (newIndex == scopeLoop->loopMemberIds.size()) {
 									newIndex = index;
 								}
 								auto moveIndex = middle::EditorActionChangeLoopMemberIndex(shape.id.index, grabbedId.index, newIndex);
@@ -101,7 +101,7 @@ public:
 					// if function is hovered above code block snap to it
 					if (grabbedCodeFunction) {
 						for (int index = 0; index < childrenSize; ++index) {
-							middle::Id& childId = procedureLoop->loopMemberIds[index];
+							middle::Id& childId = scopeLoop->loopMemberIds[index];
 							middle::Shape& childShape = middle::getShape(gameState, childId.index);
 							auto intersectableChild = middle::getComponent<components::MouseIntersectable>(childShape);
 							auto loopChild = middle::getComponent<components::LoopSociety>(childShape);
@@ -118,7 +118,7 @@ public:
 			}
 
 			// grab placed component
-			if (procedure && grabbedId.index == middle::UNASSIGNED) {
+			if (scope && grabbedId.index == middle::UNASSIGNED) {
 				std::vector<middle::Id>children;
 				middle::getChildren(gameState, shape.id, children);
 				for (middle::Id& childId : children) {
@@ -133,7 +133,7 @@ public:
 					}
 
 
-					// if grabbing child from procedure, can reorder it
+					// if grabbing child from scope, can reorder it
 					auto childGrabbable = middle::getComponent<components::MouseGrabbable>(childShape);
 					auto childIntersectable = middle::getComponent<components::MouseIntersectable>(childShape);
 					assert(childGrabbable);
