@@ -10,6 +10,8 @@
 #include "CodeFunction.h"
 #include "IfComponent.h"
 #include "Offset.h"
+#include "InputVariable.h"
+#include "OutputVariable.h"
 
 class CodeBlockLayoutSystem : public middle::MiddleGameplaySystem {
 public:
@@ -18,15 +20,17 @@ public:
 	}
 
 	const float zmargin = 4;
-	const float minProcedureHeight = 30;
+	const float minProcedureHeight = 40;
 	const float minProcedureWidth = 60;
-	const float minCodeBlockHeight = 20;
-	const float minCodeBlockWidth = 40;
+	const float minCodeBlockHeight = 30;
+	const float minCodeBlockWidth = 60;
 	const float minFunctionHeight = 10;
 	const float minFunctionWidth = 20;
 	const float ifmargin = 20;
-	const float blockMarginX = 10;
+	const float blockMarginX = 20;
 	const float ifoffset = 70;
+	const float variableSpacingZ = 10;
+	const float variableSpacingX = 10;
 
 	void updateRectSize(middle::GameState* gameState, middle::Shape& shape, float minW, float minH) {
 		components::Rectangle* rect = middle::getComponent<components::Rectangle>(shape);
@@ -190,6 +194,52 @@ public:
 					middle::moveShape(gameState, id.index, targetPos - currentPos);
 					referencePos.z = referencePos.z - childRect->height * 0.5f - ifmargin;
 				}
+			}
+
+			// function and its variables layout
+			auto function = middle::getComponent<components::CodeFunction>(shape);
+			if (function) {
+				auto loop = middle::getComponent<components::LoopSociety>(shape);
+				int inputChildCount = 0;
+				for (middle::Id& childId : loop->loopMemberIds) {
+					auto& childShape = middle::getShape(gameState, childId.index);
+					auto input = middle::getComponent<components::InputVariable>(childShape);
+					if (input) {
+						++inputChildCount;
+					}
+				}
+
+				if (inputChildCount > 0) {
+					auto funcRect = middle::getComponent<components::Rectangle>(shape);
+					Vector3 funcPosition = middle::getShapePosition(gameState, shape.id.index);
+
+					Vector3 referencePosRight = funcPosition;
+					referencePosRight.x += funcRect->width * 0.5f + variableSpacingX;
+
+					Vector3 referencePosLeft = funcPosition;
+					float totalHeight = (inputChildCount - 1) * variableSpacingZ;
+					referencePosLeft.x -= funcRect->width * 0.5f + variableSpacingX;
+					referencePosLeft.z += totalHeight * 0.5f;
+
+					for (middle::Id& childId : loop->loopMemberIds) {
+						auto& childShape = middle::getShape(gameState, childId.index);
+						auto input = middle::getComponent<components::InputVariable>(childShape);
+						auto output = middle::getComponent<components::OutputVariable>(childShape);
+						auto pos = middle::getComponent<components::Position>(childShape);
+						if (input) {
+							pos->posX = referencePosLeft.x;
+							pos->posY = referencePosLeft.y;
+							pos->posZ = referencePosLeft.z;
+							referencePosLeft.z -= variableSpacingZ;
+						}
+						if (output) {
+							pos->posX = referencePosRight.x;
+							pos->posY = referencePosRight.y;
+							pos->posZ = referencePosRight.z;
+						}
+					}
+				}
+
 			}
 
 			});

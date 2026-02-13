@@ -1,12 +1,12 @@
 #pragma once
 #include "registrars.h"
 #include "editor_file_utils.h"
-#define MIDDLEVARIABELCOMPONENT(X) \
-	X(bubbleRef)
+#define MIDDLEINPUTVARIABLE(X) \
+	X(unitRef)
 
 namespace components {
-	struct VariabelComponent : public middle::Serializable{
-		middle::Id bubbleRef;
+	struct InputVariable : public middle::Serializable{
+		middle::Id unitRef;
 
 		void serialize(std::ostream& ostream) override;
 		void deserialize(const std::vector<std::string>& buffer, int indexOffset) override;
@@ -15,7 +15,7 @@ namespace components {
 		template<typename V>
 		void reflect(V& v) {
 #define X(f) v(#f, f);
-			MIDDLEVARIABELCOMPONENT(X)
+			MIDDLEINPUTVARIABLE(X)
 #undef X
 		}
 	};

@@ -21,6 +21,9 @@ public:
 			auto text = middle::getComponent<components::Text>(shape);
 			auto circle = middle::getComponent<components::Circle>(shape);
 
+			if (!rectangle && !circle)
+				return;
+
 			if (rectangle) {
 				Vector3 position = middle::getShapePosition(gameState, shape.id.index);
 
@@ -52,14 +55,16 @@ public:
 				line4.color = color;
 				gameState->renderData.push_back(line4);
 
-				if (text) {
-					middle::RenderItem textItem;
-					Vector3 pos = middle::getShapePosition(gameState, shape.id.index);
-					textItem.type = middle::RenderItemType::TEXT;
-					textItem.text = text->text;
-					textItem.center = pos;
-					gameState->renderData.push_back(textItem);
-				}
+			}
+
+			if (text) {
+				middle::RenderItem textItem;
+				Vector3 pos = middle::getShapePosition(gameState, shape.id.index);
+				textItem.type = middle::RenderItemType::TEXT;
+				textItem.text = text->text;
+				Vector3 offset = { text->offsetX, text->offsetY, text->offsetZ };
+				textItem.center = pos + offset;
+				gameState->renderData.push_back(textItem);
 			}
 
 			if (circle) {
