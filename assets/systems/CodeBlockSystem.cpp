@@ -16,6 +16,8 @@
 #include "CodeFunction.h"
 #include "IfComponent.h"
 #include "ScopeComponent.h"
+#include "ProcedureComponent.h"
+#include "InputVariable.h"
 
 class CodeBlockSystem : public middle::MiddleGameplaySystem {
 public:
@@ -30,6 +32,7 @@ public:
 			auto placement = middle::getComponent<components::PlacementComponent>(shape);
 			auto grabbable = middle::getComponent<components::MouseGrabbable>(shape);
 			auto scope = middle::getComponent<components::ScopeComponent>(shape);
+			auto procedure = middle::getComponent<components::ProcedureComponent>(shape);
 
 			// code block moving
 			if ((placement && placement->grabbing) || (grabbable && grabbable->grabbing)) {
@@ -38,8 +41,20 @@ public:
 				middle::moveShape(gameState, shape.id.index, targetPos - currentPos);
 			}
 
-			// add and remove from/to scope container 
 			middle::Id grabbedId = gameState->bubbleAlgebraState.grabbedId;
+
+			// add variable to procedure container
+			if (procedure && grabbedId.index != middle::UNASSIGNED && shape.id != grabbedId) {
+				auto grabbedShape = middle::getShape(gameState, grabbedId.index);
+				auto inputVariable = middle::getComponent<components::InputVariable>(grabbedShape);
+				auto intersectable = middle::getComponent<components::MouseIntersectable>(shape);
+				if (intersectable->intersecting && inputVariable) {
+					auto reparent = middle::EditorActionReparent(shape.id.index, grabbedId.index);
+					reparent.execute(gameState);
+				}
+			}
+
+			// add and remove from/to scope container 
 			if (scope && grabbedId.index != middle::UNASSIGNED && shape.id != grabbedId) {
 				auto scopeIntersectable = middle::getComponent<components::MouseIntersectable>(shape);
 				auto scopeLoop = middle::getComponent<components::LoopSociety>(shape);

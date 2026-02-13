@@ -12,6 +12,7 @@
 #include "InputVariable.h"
 #include "OutputVariable.h"
 #include "ScopeComponent.h"
+#include "ProcedureComponent.h"
 
 class CodeBlockLayoutSystem : public middle::MiddleGameplaySystem {
 public:
@@ -28,13 +29,16 @@ public:
 	const float minFunctionWidth = 20;
 	const float ifmargin = 20;
 	const float blockMarginX = 20;
-	const float blockMarginY = 4;
+	const float blockMarginZ = 4;
 	const float ifoffset = 70;
 	const float variableSpacingZ = 10;
 	const float variableSpacingX = 10;
 
 	void updateRectSize(middle::GameState* gameState, middle::Shape& shape, float minW, float minH, float marginX, float marginY) {
 		components::Rectangle* rect = middle::getComponent<components::Rectangle>(shape);
+		if (!rect) {
+			return;
+		}
 		float left, right, bottom, top;
 		middle::loopChildrenOnlyRectBoundingBox(gameState, shape.id, &left, &right, &bottom, &top);
 		float newWidth = right - left;
@@ -72,7 +76,7 @@ public:
 		if (function) {
 			return;
 		}
-		updateRectSize(gameState, shape, minW, minH, blockMarginX * 2, blockMarginY * 2);
+		updateRectSize(gameState, shape, minW, minH, blockMarginX * 2, blockMarginZ * 2);
 
 		for (middle::Id& id : loop->loopMemberIds) {
 			auto& child = middle::getShape(gameState, id.index);
@@ -87,6 +91,29 @@ public:
 		}
 
 		middle::loopInstances(gameState, [gameState, this](int i, middle::Shape& shape) {
+
+			auto procedure = middle::getComponent<components::ProcedureComponent>(shape);
+			if (procedure) {
+				Vector3 procPos = middle::getShapePosition(gameState, shape.id.index);
+				auto procRect = middle::getComponent<components::Rectangle>(shape);
+				Vector3 referencePos = procPos;
+				referencePos.x -= procRect->width * 0.5f + variableSpacingX;
+				referencePos.z += procRect->height * 0.5f - variableSpacingZ;
+
+				auto loop = middle::getComponent<components::LoopSociety>(shape);
+				for (middle::Id& childId : loop->loopMemberIds) {
+					auto& childShape = middle::getShape(gameState, childId.index);
+					auto inputVariable = middle::getComponent<components::InputVariable>(childShape);
+					if (!inputVariable)
+						continue;
+
+					auto inputPos = middle::getComponent<components::Position>(childShape);
+					inputPos->posX = referencePos.x;
+					inputPos->posY = referencePos.y;
+					inputPos->posZ = referencePos.z;
+					referencePos.z -= variableSpacingZ;
+				}
+			}
 
 			// scope block layout
 			auto scope = middle::getComponent<components::ScopeComponent>(shape);
@@ -109,8 +136,11 @@ public:
 				for (int index = 0; index < size; ++index) {
 					middle::Id childId = scopeLoop->loopMemberIds[index];
 					auto& childShape = middle::getShape(gameState, childId.index);
-					auto position = middle::getComponent<components::Position>(childShape);
 					auto childRect = middle::getComponent<components::Rectangle>(childShape);
+					if (!childRect) {
+						continue;
+					}
+					auto position = middle::getComponent<components::Position>(childShape);
 					Vector3 currPos = { position->posX, position->posY, position->posZ };
 
 					if (index > 0)

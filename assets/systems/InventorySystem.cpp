@@ -6,6 +6,7 @@
 #include "middle_shape_utils.h"
 #include "Rectangle.h"
 #include "Position.h"
+#include "Circle.h"
 
 class InventorySystem : public middle::MiddleGameplaySystem {
 
@@ -52,12 +53,22 @@ public:
 			for (middle::Id& childId : items) {
 				middle::Shape& child = middle::getShape(gameState, childId.index);
 				auto rect = middle::getComponent<components::Rectangle>(child);
+				auto circle = middle::getComponent<components::Circle>(child);
 				auto position = middle::getComponent<components::Position>(child);
-				referencePos.z -= rect->height * 0.5f + zmargin * 0.5f;
-				position->posX = referencePos.x;
-				position->posY = referencePos.y;
-				position->posZ = referencePos.z;
-				referencePos.z -= rect->height * 0.5f + zmargin * 0.5f;
+				if (rect) {
+					referencePos.z -= rect->height * 0.5f + zmargin * 0.5f;
+					position->posX = referencePos.x;
+					position->posY = referencePos.y;
+					position->posZ = referencePos.z;
+					referencePos.z -= rect->height * 0.5f + zmargin * 0.5f;
+				}
+				if (circle) {
+					referencePos.z -= circle->radius + zmargin * 0.5f;
+					position->posX = referencePos.x;
+					position->posY = referencePos.y;
+					position->posZ = referencePos.z;
+					referencePos.z -= circle->radius + zmargin * 0.5f;
+				}
 			}
 
 			});

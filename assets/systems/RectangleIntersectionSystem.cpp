@@ -6,6 +6,7 @@
 #include "MouseIntersectable.h"
 #include "PlacementComponent.h"
 #include "LoopSociety.h"
+#include "Circle.h"
 
 class RectangleIntersectionSystem : public middle::MiddleGameplaySystem {
 
@@ -25,19 +26,25 @@ class RectangleIntersectionSystem : public middle::MiddleGameplaySystem {
 	void update(middle::GameState* gameState) override {
 		middle::loopInstances(gameState, [gameState, this](int i, middle::Shape& shape) {
 			auto rectangle = middle::getComponent<components::Rectangle>(shape);
+			auto circle = middle::getComponent<components::Circle>(shape);
 			auto intersectable = middle::getComponent<components::MouseIntersectable>(shape);
-			if (!rectangle || !intersectable) {
+			if ((!rectangle && !circle) || !intersectable) {
 				return;
 			}
 
 			Vector3 mouseXZ = gameState->input.mouseXZ_PlanePos;
 			Vector3 position = middle::getShapePosition(gameState, shape.id.index);
 
-			float axisX = rectangle->width * 0.5f;
-			float axisZ = rectangle->height* 0.5f;
-			intersectable->intersecting = 
-				mouseXZ.x > position.x - axisX && mouseXZ.x < position.x + axisX &&
-				mouseXZ.z > position.z - axisZ && mouseXZ.z < position.z + axisZ;
+			if (rectangle) {
+				float axisX = rectangle->width * 0.5f;
+				float axisZ = rectangle->height * 0.5f;
+				intersectable->intersecting =
+					mouseXZ.x > position.x - axisX && mouseXZ.x < position.x + axisX &&
+					mouseXZ.z > position.z - axisZ && mouseXZ.z < position.z + axisZ;
+			}
+			if (circle) {
+				intersectable->intersecting = Vector3DistanceSqr(mouseXZ, position) < circle->radius * circle->radius;
+			}
 
 			intersectable->intersectingTop = false;
 

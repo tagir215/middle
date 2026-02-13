@@ -68,9 +68,12 @@ public:
 			}
 
 			if (circle) {
+				auto intersectable = middle::getComponent<components::MouseIntersectable>(shape);
+				Color color = intersectable->intersectingTop ? WHITE : Color{ 200,200,200,200 };
+
 				middle::RenderItem circleItem;
 				circleItem.type = middle::RenderItemType::CIRCLE;
-				circleItem.color = WHITE;
+				circleItem.color = color;
 				circleItem.radius = circle->radius;
 				circleItem.center = middle::getShapePosition(gameState, shape.id.index);
 				gameState->renderData.push_back(circleItem);
