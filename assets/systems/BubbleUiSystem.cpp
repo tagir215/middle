@@ -7,6 +7,7 @@
 #include "Constraint.h"
 #include "LoopSociety.h"
 #include "Position.h"
+#include "bubble_algebra_buttons.h"
 
 class BubbleUiSystem : public middle::MiddleGameplaySystem {
 public:

@@ -10,6 +10,7 @@
 #include <set>
 #include "LoopSociety.h"
 #include "ReferenceEntity.h"
+#include <stack>
 
 namespace middle {
 
@@ -281,10 +282,6 @@ namespace middle {
 	}
 
 	void saveScene(GameState* gameState, const std::string& sceneName) {
-		std::string line;
-
-		int maxIndex = findHighestUsedIndex(gameState);
-
 		std::string filename = "../assets/scenes/" + sceneName + ".midsc";
 		std::ofstream outFile(filename);
 		if (!outFile.is_open()) {
@@ -319,6 +316,50 @@ namespace middle {
 		outFile.close();
 	}
 
+	void saveShape(GameState* gameState, Id& idToSave, const std::string& folder, const std::string& shapeName)
+	{
+		auto& shapeToSave = getShape(gameState, idToSave.index);
+		std::string path = folder + shapeName + ".midsc";
+		std::ofstream outFile(path);
+		if (!outFile.is_open()) {
+			std::cerr << "failed to open to write\n";
+		}
+
+		std::stack<middle::Id> idStack;
+		idStack.push(idToSave);
+		while (idStack.size() > 0) {
+			Id currentId = idStack.top();
+			idStack.pop();
+
+			auto& shape = getShape(gameState, currentId.index);
+
+			outFile << "__" << std::to_string(shape.id.index) << "__" << std::endl;
+			for (auto& pair : shape.componentMap) {
+				std::string componentName = componentNameMap[pair.first];
+				outFile << componentName << "\n";
+				int componentTypeId = pair.first;
+				Component component = pair.second;
+				Serializable* serializable = componentListMap[componentTypeId]->getSerializable(component.componentOffset);
+				serializable->serialize(outFile);
+			}
+
+			auto loop = getComponent<components::LoopSociety>(shape);
+			for (Id& id : loop->loopMemberIds) {
+				idStack.push(id);
+			}
+		}
+
+		outFile.flush();
+		outFile.close();
+	}
+
+	middle::Id loadShape(GameState* gameState, const std::string& folder, const std::string& sceneName, const Vector3& pos) {
+		int freeIndex = findFreeIndex(gameState);
+		loadScene(gameState, folder, sceneName, true, pos, freeIndex);
+		auto& shape = getShape(gameState, freeIndex);
+		return shape.id;
+	}
+
 
 	void saveEditorState(GameState* gameState)
 	{
@@ -350,7 +391,7 @@ namespace middle {
 			posComponent->posX = 0;
 			posComponent->posY = 0;
 			posComponent->posZ = 0;
-			loadScene(gameState, referenceComponent->sceneName, true, pos, index);
+			loadScene(gameState, referenceComponent->folder, referenceComponent->sceneName, true, pos, index);
 		}
 	}
 
@@ -397,17 +438,15 @@ namespace middle {
 			|| typeC == static_cast<char>(FieldType::Color);
 	}
 
-	void loadScene(GameState* gameState, const std::string& sceneName, bool import, const Vector3& pos, int sceneReferenceIndex) {
-		std::string filename = "../assets/scenes/" + sceneName + ".midsc";
+	void loadScene(GameState* gameState, const std::string& folder, const std::string& sceneName, bool import, const Vector3& pos, int sceneReferenceIndex) {
+		std::string path = folder + sceneName +".midsc";
 
 		int indexOffset = 0;
 
-		std::ifstream inputFile(filename);
+		std::ifstream inputFile(path);
 		if (!inputFile.is_open()) {
-			std::cerr << "Failed to open file to write";
-			return;
+			throw std::runtime_error("Faile to open file to open");
 		}
-
 		std::string line;
 
 		// all import indexes are shifted by half of total allowed shape count
@@ -534,7 +573,7 @@ namespace middle {
 
 			// if reference doesn't exist yet, when importing from editor, create new reference
 			if (!isShapeAlive(gameState, sceneReferenceIndex)) {
-				entities::initReference(gameState, sceneReferenceIndex, members, sceneName);
+				entities::initReference(gameState, sceneReferenceIndex, members, folder, sceneName);
 			}
 			// if reference already exists, when deserializing, just update the container loop, since its refence objects are not stored to the file
 			else {

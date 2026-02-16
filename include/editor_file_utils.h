@@ -10,7 +10,9 @@ namespace middle {
 	void loadSystemNames(GameState* gameState);
 	void loadComponentNames(GameState* gameState);
 	void saveScene(GameState* gameState, const std::string& sceneName);
-	void loadScene(GameState* gameState, const std::string& name, bool import, const Vector3& pos ={0,0,0}, int referenceIndex = 0);
+	void saveShape(GameState* gameState, Id& idToSave, const std::string& folder, const std::string& shapeName);
+	void loadScene(GameState* gameState, const std::string& folder, const std::string& sceneName, bool import, const Vector3& pos ={0,0,0}, int referenceIndex = 0);
+	middle::Id loadShape(GameState* gameState, const std::string& folder, const std::string& sceneName, const Vector3& pos = {0,0,0});
 	void saveEditorState(GameState* gameState);
 	void loadEditorState(GameState* gameState);
 	void newSystemFile(GameState* gameState, const std::string& scriptName);

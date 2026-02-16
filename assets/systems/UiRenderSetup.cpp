@@ -7,6 +7,7 @@
 #include "MouseIntersectable.h"
 #include "Offset.h"
 #include "Circle.h"
+#include "UiComponent.h"
 
 class UiRenderSetup : public middle::MiddleGameplaySystem {
 public:
@@ -20,8 +21,9 @@ public:
 			auto rectangle = middle::getComponent<components::Rectangle>(shape);
 			auto text = middle::getComponent<components::Text>(shape);
 			auto circle = middle::getComponent<components::Circle>(shape);
+			auto uiComponent = middle::getComponent<components::UiComponent>(shape);
 
-			if (!rectangle && !circle)
+			if (!rectangle && !circle && !uiComponent)
 				return;
 
 			if (rectangle) {

@@ -1,22 +1,22 @@
 #pragma once
 #include "registrars.h"
 #include "editor_file_utils.h"
-#define MIDDLEREFERENCE(X) \
-	X(sceneName) \
-	X(folder)
+#define MIDDLEBUTTON(X) \
+	X(function)
+
 
 namespace components {
-	struct Reference : public middle::Serializable{
-		std::string sceneName;
-		std::string folder;
+	struct Button : public middle::Serializable{
+		int function = middle::UNASSIGNED;
 
 		void serialize(std::ostream& ostream) override;
 		void deserialize(const std::vector<std::string>& buffer, int indexOffset) override;
 		void getFields(std::vector<middle::FieldInfo>& fields, int* size) override;
+
 		template<typename V>
 		void reflect(V& v) {
 #define X(f) v(#f, f);
-			MIDDLEREFERENCE(X)
+			MIDDLEBUTTON(X)
 #undef X
 		}
 	};

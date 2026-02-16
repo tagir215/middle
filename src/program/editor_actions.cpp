@@ -219,7 +219,7 @@ namespace middle {
 
 	void EditorActionImportScene::execute(GameState* gameState)
 	{
-		loadScene(gameState, sceneName, true, {0,0,0}, findFreeIndex(gameState));
+		loadScene(gameState, "../assets/scenes/", sceneName, true, {0,0,0}, findFreeIndex(gameState));
 	}
 
 	void EditorActionImportScene::undo(GameState* gameState)

@@ -58,17 +58,14 @@ namespace middle{
 
 		// run gameplay systems
 		loopInstances(gameState, [gameState](int i, Shape& shape) {
-			// don't update systems in ghost shapes
-			if (isGhostShape(i))
-				return;
-
-
 
 			auto sysRef = getComponent<components::SystemReference>(shape);
 			if (sysRef != nullptr) {
 				auto systemName = sysRef->systemName;
 				auto& system = gameState->gameplaySystems[systemName];
 
+				if (!system)
+					return;
 
 				if (gameState->applicationMode == ApplicationMode::GAME_MODE
 					&& system->systemModeType == SystemModeType::EDITOR) {
