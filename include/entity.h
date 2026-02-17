@@ -74,8 +74,12 @@ namespace middle {
 		const std::vector<std::string>& buffer;
 		int indexOffset;
 		int index = 0;
+		int bufferSize = buffer.size();
 		template<typename T>
 		void operator()(const char* name, T& value) {
+			if(index >= bufferSize){
+				return;
+			}
 			middle::fillField(&value, buffer[index++], indexOffset);
 		}
 	};

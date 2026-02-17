@@ -189,6 +189,13 @@ public:
 		if (gameState->input.mouseReleased && gameState->bubbleAlgebraState.grabbedId.index != middle::UNASSIGNED) {
 			auto& grabbedShape = middle::getShape(gameState, gameState->bubbleAlgebraState.grabbedId.index);
 			auto loop = middle::getComponent<components::LoopSociety>(grabbedShape);
+
+			auto codeBlock = middle::getComponent<components::CodeBlock>(grabbedShape);
+			auto functionBlock = middle::getComponent<components::CodeFunction>(grabbedShape);
+
+			if (!codeBlock && !functionBlock)
+				return;
+
 			if (loop->parentLoopId.index == middle::UNASSIGNED) {
 				middle::deleteShapeRecursive(gameState, grabbedShape.id.index);
 			}

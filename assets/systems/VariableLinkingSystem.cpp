@@ -16,8 +16,24 @@ class VariableLinkingSystem : public middle::MiddleGameplaySystem {
 
 			if (grabbedId.index != middle::UNASSIGNED) {
 				auto& shape = middle::getShape(gameState, gameState->bubbleAlgebraState.grabbedId.index);
-				auto inputVariable = middle::getComponent<components::InputVariable>(shape);
-				if (inputVariable) {
+				auto grabbedInputVariable = middle::getComponent<components::InputVariable>(shape);
+
+				if (grabbedInputVariable) {
+					// variable transfer
+					middle::loopInstances(gameState, [gameState, &grabbedId, grabbedInputVariable](int i, middle::Shape& shape) {
+						if (shape.id == grabbedId)
+							return;
+						auto otherInputVariable = middle::getComponent<components::InputVariable>(shape);
+						if (!otherInputVariable)
+							return;
+						auto otherIntersectable = middle::getComponent<components::MouseIntersectable>(shape);
+						assert(otherIntersectable);
+						if (otherIntersectable->intersecting) {
+							otherInputVariable->unitRef = grabbedInputVariable->unitRef;
+							otherInputVariable->label = grabbedInputVariable->label;
+						}
+						});
+
 					middle::deleteShape(gameState, shape.id.index);
 					gameState->bubbleAlgebraState.grabbedId = middle::Id();
 				}
@@ -33,6 +49,8 @@ class VariableLinkingSystem : public middle::MiddleGameplaySystem {
 				Vector3 currentPos = middle::getShapePosition(gameState, grabbedId.index);
 				middle::moveShape(gameState, grabbedId.index, targetPos - currentPos);
 			}
+
+
 			return;
 		}
 

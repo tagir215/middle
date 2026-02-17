@@ -8,6 +8,7 @@
 #include "Offset.h"
 #include "Circle.h"
 #include "UiComponent.h"
+#include "InputVariable.h"
 
 class UiRenderSetup : public middle::MiddleGameplaySystem {
 public:
@@ -22,9 +23,14 @@ public:
 			auto text = middle::getComponent<components::Text>(shape);
 			auto circle = middle::getComponent<components::Circle>(shape);
 			auto uiComponent = middle::getComponent<components::UiComponent>(shape);
+			auto inputVariable = middle::getComponent<components::InputVariable>(shape);
 
-			if (!rectangle && !circle && !uiComponent)
+			if (!rectangle && !circle && !uiComponent && !inputVariable)
 				return;
+
+			if (inputVariable) {
+				text->text = inputVariable->label;
+			}
 
 			if (rectangle) {
 				Vector3 position = middle::getShapePosition(gameState, shape.id.index);
