@@ -215,9 +215,17 @@ public:
 			auto ifBlock = middle::getComponent<components::IfComponent>(shape);
 			if (ifBlock) {
 				auto loop = middle::getComponent<components::LoopSociety>(shape);
-				assert(loop->loopMemberIds.size() == 2);
-				middle::Id childA = loop->loopMemberIds[0];
-				middle::Id childB = loop->loopMemberIds[1];
+
+				std::vector<middle::Id>scopeChildren;
+				for (middle::Id& childId : loop->loopMemberIds) {
+					middle::Shape& childShape = middle::getShape(gameState, childId.index);
+					auto scope = middle::getComponent<components::ScopeComponent>(childShape);
+					if (scope) {
+						scopeChildren.push_back(childId);
+					}
+				}
+
+				assert(scopeChildren.size() == 2);
 
 				Vector3 ifPosition = middle::getShapePosition(gameState, shape.id.index);
 
@@ -244,7 +252,7 @@ public:
 
 				Vector3 referencePos = ifPosition + Vector3{ ifoffset * targetScale.x,0, totalHeight * 0.5f };
 
-				for (middle::Id& id : loop->loopMemberIds) {
+				for (middle::Id& id : scopeChildren) {
 					auto& childShape = middle::getShape(gameState, id.index);
 					auto childRect = middle::getComponent<components::Rectangle>(childShape);
 					auto childScale = middle::getComponent<components::Scale>(childShape);

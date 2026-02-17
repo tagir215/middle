@@ -15,6 +15,7 @@ public:
 		systemModeType = middle::SystemModeType::ENGINE;
 	}
 
+	const float margin = 30.0f;
 
 	void update(middle::GameState* gameState) override {
 		middle::loopInstances(gameState, [gameState, this](int i, middle::Shape& shape) {
@@ -34,8 +35,8 @@ public:
 			// calculate total height
 			float leftX, rightX, bottomZ, topZ;
 			middle::loopChildrenOnlyRectBoundingBox(gameState, shape.id, &leftX, &rightX, &bottomZ, &topZ);
-			float totalWidth = rightX - leftX;
-			float totalHeight = topZ - bottomZ;
+			float totalWidth = rightX - leftX + margin;
+			float totalHeight = topZ - bottomZ + margin;
 
 			// TODO REMOVE
 			if (totalWidth <= 0) {
@@ -48,6 +49,7 @@ public:
 
 			Vector3 referencePos = inventoryPosition;
 			referencePos.z += totalHeight * 0.5f + zspacing * 0.5f;
+			referencePos.z -= margin * 0.5f;
 
 			for (middle::Id& childId : items) {
 				middle::Shape& child = middle::getShape(gameState, childId.index);
