@@ -22,7 +22,7 @@
 class CodeBlockSystem : public middle::MiddleGameplaySystem {
 public:
 	CodeBlockSystem() {
-		systemModeType = middle::SystemModeType::ENGINE;
+		systemModeType = middle::SystemModeType::GAMEPLAY;
 	}
 
 	void update(middle::GameState* gameState) override {
@@ -33,6 +33,7 @@ public:
 			auto grabbable = middle::getComponent<components::MouseGrabbable>(shape);
 			auto scope = middle::getComponent<components::ScopeComponent>(shape);
 			auto procedure = middle::getComponent<components::ProcedureComponent>(shape);
+			auto codeBlock = middle::getComponent<components::CodeBlock>(shape);
 
 			// code block moving
 			if ((placement && placement->grabbing) || (grabbable && grabbable->grabbing)) {
@@ -42,17 +43,6 @@ public:
 			}
 
 			middle::Id grabbedId = gameState->bubbleAlgebraState.grabbedId;
-
-			// add variable to procedure container
-			if (procedure && grabbedId.index != middle::UNASSIGNED && shape.id != grabbedId) {
-				auto grabbedShape = middle::getShape(gameState, grabbedId.index);
-				auto inputVariable = middle::getComponent<components::InputVariable>(grabbedShape);
-				auto intersectable = middle::getComponent<components::MouseIntersectable>(shape);
-				if (intersectable->intersecting && inputVariable) {
-					auto reparent = middle::EditorActionReparent(shape.id.index, grabbedId.index);
-					reparent.execute(gameState);
-				}
-			}
 
 			// add and remove from/to scope container 
 			if (scope && grabbedId.index != middle::UNASSIGNED && shape.id != grabbedId) {
@@ -139,6 +129,12 @@ public:
 				for (middle::Id& childId : children) {
 					auto& childShape = middle::getShape(gameState, childId.index);
 
+					// only codeblock and functions can be moved
+					auto codeBlock = middle::getComponent<components::CodeBlock>(childShape);
+					auto codeFunction = middle::getComponent<components::CodeFunction>(childShape);
+					if (!codeBlock && !codeFunction)
+						continue;
+
 					// check that parent is not an if block, cause then can't grab it
 					auto childLoop = middle::getComponent<components::LoopSociety>(childShape);
 					auto parentShape = middle::getShape(gameState, childLoop->parentLoopId.index);
@@ -172,6 +168,7 @@ public:
 
 				for (middle::Id childId : children) {
 					auto& child = middle::getShape(gameState, childId.index);
+					auto codeBlock = middle::getComponent<components::CodeBlock>(child);
 					auto intersectable = middle::getComponent<components::MouseIntersectable>(child);
 					if (intersectable->intersectingTop && gameState->input.mouseClicked) {
 						middle::Id copyId = middle::deepCopyShape(gameState, childId.index, middle::UNASSIGNED);
