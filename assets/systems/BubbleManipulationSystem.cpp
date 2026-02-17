@@ -41,7 +41,13 @@ class BubbleManipulationSystem : public middle::MiddleGameplaySystem {
 				return;
 			}
 
+			auto bubble = middle::getComponent<components::BubbleComponent>(shape);
 			auto unit = middle::getComponent<components::BubbleUnit>(shape);
+
+			if (!bubble && !unit) {
+				return;
+			}
+
 			if (unit) {
 				auto loop = middle::getComponent<components::LoopSociety>(shape);
 				if (loop->parentLoopId.index != middle::UNASSIGNED) {
@@ -67,7 +73,6 @@ class BubbleManipulationSystem : public middle::MiddleGameplaySystem {
 				gameState->bubbleAlgebraState.grabbedId = middle::Id();
 			}
 
-			auto bubble = middle::getComponent<components::BubbleComponent>(shape);
 
 			// bubble moving
 			if ((bubble || fraction || unit) && grabbable->grabbing) {

@@ -98,6 +98,15 @@ public:
 
 		middle::loopInstances(gameState, [gameState, this](int i, middle::Shape& shape) {
 
+			// move input variables to bubbles they reference
+			auto inputVar = middle::getComponent<components::InputVariable>(shape);
+			if (inputVar && inputVar->unitRef.index != middle::UNASSIGNED) {
+				Vector3 currentPos = middle::getShapePosition(gameState, shape.id.index);
+				Vector3 refShapePosition = middle::getShapePosition(gameState, inputVar->unitRef.index);
+				middle::moveShape(gameState, shape.id.index, refShapePosition - currentPos);
+			}
+
+			// procedure layout
 			auto procedure = middle::getComponent<components::ProcedureComponent>(shape);
 			if (procedure) {
 				Vector3 procPos = middle::getShapePosition(gameState, shape.id.index);

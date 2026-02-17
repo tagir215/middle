@@ -6,6 +6,8 @@
 #include "MouseIntersectable.h"
 #include "LoopSociety.h"
 #include "PlacementComponent.h"
+#include "BubbleComponent.h"
+#include "editor_actions.h"
 
 class VariableLinkingSystem : public middle::MiddleGameplaySystem {
 	void update(middle::GameState* gameState) override {
@@ -19,22 +21,38 @@ class VariableLinkingSystem : public middle::MiddleGameplaySystem {
 				auto grabbedInputVariable = middle::getComponent<components::InputVariable>(shape);
 
 				if (grabbedInputVariable) {
+
+					bool doDelete = true;
+
 					// variable transfer
-					middle::loopInstances(gameState, [gameState, &grabbedId, grabbedInputVariable](int i, middle::Shape& shape) {
+					middle::loopInstances(gameState, [gameState, &grabbedId, grabbedInputVariable, &doDelete](int i, middle::Shape& shape) {
 						if (shape.id == grabbedId)
 							return;
 						auto otherInputVariable = middle::getComponent<components::InputVariable>(shape);
-						if (!otherInputVariable)
+						auto otherBubble = middle::getComponent<components::BubbleComponent>(shape);
+						if (!otherInputVariable && !otherBubble)
 							return;
+
 						auto otherIntersectable = middle::getComponent<components::MouseIntersectable>(shape);
 						assert(otherIntersectable);
-						if (otherIntersectable->intersecting) {
+						if (!otherIntersectable->intersectingTop) {
+							return;
+						}
+
+						if (otherInputVariable) {
 							otherInputVariable->unitRef = grabbedInputVariable->unitRef;
 							otherInputVariable->label = grabbedInputVariable->label;
 						}
+						else if (otherBubble) {
+							grabbedInputVariable->unitRef = shape.id;
+							doDelete = false;
+						}
 						});
 
-					middle::deleteShape(gameState, shape.id.index);
+					if (doDelete) {
+						middle::deleteShape(gameState, shape.id.index);
+					}
+
 					gameState->bubbleAlgebraState.grabbedId = middle::Id();
 				}
 			}
