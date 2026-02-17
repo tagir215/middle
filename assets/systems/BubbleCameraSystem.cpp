@@ -23,6 +23,14 @@ class BubbleCameraSystem : public middle::MiddleGameplaySystem {
 			camera->targetY = target.y;
 			camera->targetZ = target.z;
 
+			const float zoomSpeed = 2;
+			if (gameState->gameInput.zoomIn) {
+				middle::moveShape(gameState, shape.id.index, { 0,zoomSpeed,0 });
+			}
+			if (gameState->gameInput.zoomOut) {
+				middle::moveShape(gameState, shape.id.index, { 0,-zoomSpeed,0 });
+			}
+
 			});
 	}
 };

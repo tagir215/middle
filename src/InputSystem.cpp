@@ -87,9 +87,13 @@ class InputSystem : public middle::MiddleGameplaySystem {
 
 		if (gameState->applicationMode == middle::ApplicationMode::GAME_MODE) {
 			gameState->gameInput.pop = false;
+			gameState->gameInput.zoomIn = false;
+			gameState->gameInput.zoomOut = false;
 
 			if (gameState->inputBlockers.find(middle::InputBlockers::KEYBOARD_BLOCK) == gameState->inputBlockers.end()) {
 				gameState->gameInput.pop = IsKeyPressed(KEY_B);
+				gameState->gameInput.zoomIn = IsKeyDown(KEY_W);
+				gameState->gameInput.zoomOut = IsKeyDown(KEY_S);
 			}
 		}
 

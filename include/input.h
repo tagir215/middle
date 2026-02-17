@@ -50,6 +50,8 @@ namespace middle {
 
 	struct GameInput {
 		bool pop;
+		bool zoomIn;
+		bool zoomOut;
 	};
 
 }

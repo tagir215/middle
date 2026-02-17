@@ -9,6 +9,7 @@
 #include "Circle.h"
 #include "UiComponent.h"
 #include "InputVariable.h"
+#include "OutputVariable.h"
 
 class UiRenderSetup : public middle::MiddleGameplaySystem {
 public:
@@ -24,12 +25,16 @@ public:
 			auto circle = middle::getComponent<components::Circle>(shape);
 			auto uiComponent = middle::getComponent<components::UiComponent>(shape);
 			auto inputVariable = middle::getComponent<components::InputVariable>(shape);
+			auto outputVariable = middle::getComponent<components::OutputVariable>(shape);
 
-			if (!rectangle && !circle && !uiComponent && !inputVariable)
+			if (!rectangle && !circle && !uiComponent && !inputVariable && !outputVariable)
 				return;
 
 			if (inputVariable) {
 				text->text = inputVariable->label;
+			}
+			if (outputVariable) {
+				text->text = outputVariable->label;
 			}
 
 			if (rectangle) {

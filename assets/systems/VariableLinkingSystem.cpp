@@ -8,6 +8,7 @@
 #include "PlacementComponent.h"
 #include "BubbleComponent.h"
 #include "editor_actions.h"
+#include "OutputVariable.h"
 
 class VariableLinkingSystem : public middle::MiddleGameplaySystem {
 	void update(middle::GameState* gameState) override {
@@ -18,14 +19,16 @@ class VariableLinkingSystem : public middle::MiddleGameplaySystem {
 
 			if (grabbedId.index != middle::UNASSIGNED) {
 				auto& shape = middle::getShape(gameState, gameState->bubbleAlgebraState.grabbedId.index);
-				auto grabbedInputVariable = middle::getComponent<components::InputVariable>(shape);
 
-				if (grabbedInputVariable) {
+				auto grabbedInputVariable = middle::getComponent<components::InputVariable>(shape);
+				auto grabbedOutputVariable = middle::getComponent<components::OutputVariable>(shape);
+
+				if (grabbedInputVariable || grabbedOutputVariable) {
 
 					bool doDelete = true;
 
 					// variable transfer
-					middle::loopInstances(gameState, [gameState, &grabbedId, grabbedInputVariable, &doDelete](int i, middle::Shape& shape) {
+					middle::loopInstances(gameState, [gameState, &grabbedId, &doDelete, grabbedInputVariable, grabbedOutputVariable](int i, middle::Shape& shape) {
 						if (shape.id == grabbedId)
 							return;
 						auto otherInputVariable = middle::getComponent<components::InputVariable>(shape);
@@ -39,11 +42,15 @@ class VariableLinkingSystem : public middle::MiddleGameplaySystem {
 							return;
 						}
 
-						if (otherInputVariable) {
+						if (otherInputVariable && grabbedInputVariable) {
 							otherInputVariable->unitRef = grabbedInputVariable->unitRef;
 							otherInputVariable->label = grabbedInputVariable->label;
 						}
-						else if (otherBubble) {
+						else if (otherInputVariable && grabbedOutputVariable) {
+							otherInputVariable->unitRef = grabbedOutputVariable->unitRef;
+							otherInputVariable->label = grabbedOutputVariable->label;
+						}
+						else if (otherBubble && grabbedInputVariable) {
 							grabbedInputVariable->unitRef = shape.id;
 							doDelete = false;
 						}
@@ -59,23 +66,26 @@ class VariableLinkingSystem : public middle::MiddleGameplaySystem {
 			return;
 		}
 
+		// dragging grabbed variable
 		if (grabbedId.index != middle::UNASSIGNED) {
 			auto& shape = middle::getShape(gameState, gameState->bubbleAlgebraState.grabbedId.index);
 			auto inputVariable = middle::getComponent<components::InputVariable>(shape);
-			if (inputVariable) {
+			auto outputVariable = middle::getComponent<components::OutputVariable>(shape);
+			if (inputVariable || outputVariable) {
 				Vector3 targetPos = gameState->input.mouseXZ_PlanePos;
 				Vector3 currentPos = middle::getShapePosition(gameState, grabbedId.index);
 				middle::moveShape(gameState, grabbedId.index, targetPos - currentPos);
 			}
 
-
 			return;
 		}
 
+		// copy and set as grabbed
 		middle::loopInstances(gameState, [gameState, this](int i, middle::Shape& shape) {
 			auto inputVariable = middle::getComponent<components::InputVariable>(shape);
+			auto outputVariable = middle::getComponent<components::OutputVariable>(shape);
 
-			if (!inputVariable)
+			if (!inputVariable && !outputVariable)
 				return;
 
 			auto intersectable = middle::getComponent<components::MouseIntersectable>(shape);

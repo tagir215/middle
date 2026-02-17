@@ -2,11 +2,13 @@
 #include "registrars.h"
 #include "editor_file_utils.h"
 #define MIDDLEOUTPUTVARIABLE(X) \
-	X(unitRef)
+	X(unitRef) \
+	X(label)
 
 namespace components {
 	struct OutputVariable : public middle::Serializable{
 		middle::Id unitRef;
+		std::string label = "";
 
 		void serialize(std::ostream& ostream) override;
 		void deserialize(const std::vector<std::string>& buffer, int indexOffset) override;
