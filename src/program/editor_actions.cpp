@@ -359,6 +359,7 @@ namespace middle {
 	{
 		Shape& childShape = getShape(gameState, childIndex);
 		auto childLoop = getComponent<components::LoopSociety>(childShape);
+		oldParentIndex = childLoop->parentLoopId.index;
 		assert(childLoop);
 		if (childLoop->parentLoopId.index == UNASSIGNED) {
 			return;
@@ -379,6 +380,8 @@ namespace middle {
 
 	void EditorActionRemoveFromLoop::undo(GameState* gameState)
 	{
+		auto reparent = EditorActionReparent(oldParentIndex, childIndex);
+		reparent.execute(gameState);
 	}
 
 	void checkCircularReferences(GameState* gameState, middle::Id& parentId, middle::Id& id) {
@@ -393,17 +396,9 @@ namespace middle {
 	void EditorActionReparent::execute(GameState* gameState)
 	{
 		assert(parentIndex != childIndex);
-		Shape& parentShape = getShape(gameState, parentIndex);
 		Shape& childShape = getShape(gameState, childIndex);
-		auto parentLoop = getComponent<components::LoopSociety>(parentShape);
 		auto childLoop = getComponent<components::LoopSociety>(childShape);
-		assert(parentLoop);
-		assert(childLoop);
-		for (Id id : parentLoop->loopMemberIds) {
-			if (id == childShape.id) {
-				return;
-			}
-		}
+		oldParentIndex = childLoop->parentLoopId.index;
 
 		// remove from old parent 
 		if (childLoop->parentLoopId.index != UNASSIGNED) {
@@ -411,14 +406,30 @@ namespace middle {
 			removeAction.execute(gameState);
 		}
 
-		parentLoop->loopMemberIds.push_back(childShape.id);
-		childLoop->parentLoopId = parentShape.id;
+		if (parentIndex != UNASSIGNED) {
+			Shape& parentShape = getShape(gameState, parentIndex);
+			auto parentLoop = getComponent<components::LoopSociety>(parentShape);
+			for (Id id : parentLoop->loopMemberIds) {
+				if (id == childShape.id) {
+					return;
+				}
+			}
 
-		checkCircularReferences(gameState, parentShape.id, childShape.id);
+			parentLoop->loopMemberIds.push_back(childShape.id);
+			childLoop->parentLoopId = parentShape.id;
+			checkCircularReferences(gameState, parentShape.id, childShape.id);
+		}
+		// set parent as unassigned
+		else {
+			childLoop->parentLoopId = middle::Id();
+		}
+
 	}
 
 	void EditorActionReparent::undo(GameState* gameState)
 	{
+		auto metaReparent = EditorActionReparent(oldParentIndex, childIndex);
+		metaReparent.execute(gameState);
 	}
 
 	void EditorActionChangeLoopMemberIndex::execute(GameState* gameState)
@@ -428,22 +439,24 @@ namespace middle {
 		auto loop = middle::getComponent<components::LoopSociety>(parentShape);
 		assert(loop);
 
-		int childLoopIndex = -1;
+		oldLoopIndex = UNASSIGNED;
 		int loopSize = loop->loopMemberIds.size();
 		for (int i = 0; i < loopSize; ++i) {
 			if (loop->loopMemberIds[i] == childShape.id) {
-				childLoopIndex = i;
+				oldLoopIndex = i;
 			}
 		}
-		assert(childLoopIndex != -1);
+		assert(oldLoopIndex != UNASSIGNED);
 
-		loop->loopMemberIds.erase(loop->loopMemberIds.begin() + childLoopIndex);
+		loop->loopMemberIds.erase(loop->loopMemberIds.begin() + oldLoopIndex);
 		assert(newLoopIndex <= loop->loopMemberIds.size());
 		loop->loopMemberIds.insert(loop->loopMemberIds.begin() + newLoopIndex, childShape.id);
 	}
 
 	void EditorActionChangeLoopMemberIndex::undo(GameState* gameState)
 	{
+		auto metaChangeIndex = EditorActionChangeLoopMemberIndex(parentIndex, childIndex, oldLoopIndex);
+		metaChangeIndex.execute(gameState);
 	}
 
 	void EditorActionCopy::execute(GameState* gameState)
@@ -463,6 +476,7 @@ namespace middle {
 
 			Id& newId = deepCopyShape(gameState, shapeIndex, parentId.index);
 			auto& copyShape = getShape(gameState, newId.index);
+			newCopyShapes.push_back(newId.index);
 
 			// add new copy as child to parent of the shape that was copied
 			if (parentId.index != UNASSIGNED) {
@@ -487,6 +501,9 @@ namespace middle {
 
 	void EditorActionCopy::undo(GameState* gameState)
 	{
+		for (int shapeIndex : newCopyShapes) {
+			deleteShape(gameState, shapeIndex);
+		}
 	}
 
 
@@ -500,19 +517,27 @@ namespace middle {
 
 	void EditorActionHide::undo(GameState* gameState)
 	{
+		for (int index : selectedShapes) {
+			auto& shape = middle::getShape(gameState, index);
+			deleteComponent<components::HiddenTag>(shape);
+		}
 	}
 
 	void EditorActionUnhide::execute(GameState* gameState)
 	{
-		loopInstances(gameState, [](int i, middle::Shape& shape) {
+		std::vector<int>& unhidded = unhidIndexes;
+		loopInstances(gameState, [&unhidded](int i, middle::Shape& shape) {
 			if (middle::getComponent<components::HiddenTag>(shape)) {
 				deleteComponent<components::HiddenTag>(shape);
+				unhidded.push_back(shape.id.index);
 			}
 			});
 	}
 
 	void EditorActionUnhide::undo(GameState* gameState)
 	{
+		auto hide = EditorActionHide(unhidIndexes);
+		hide.execute(gameState);
 	}
 
 	void EditorActionMove::execute(GameState* gameState)

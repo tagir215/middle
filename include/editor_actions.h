@@ -220,6 +220,7 @@ namespace middle {
 	class EditorActionRemoveFromLoop : public EditorActionContainer {
 	public:
 		int childIndex;
+		int oldParentIndex;
 		EditorActionRemoveFromLoop(int childIndex) {
 			this->childIndex = childIndex;
 		}
@@ -231,6 +232,7 @@ namespace middle {
 	public:
 		int parentIndex;
 		int childIndex;
+		int oldParentIndex;
 		EditorActionReparent(int parentIndex, int childIndex) {
 			this->parentIndex = parentIndex;
 			this->childIndex = childIndex;
@@ -244,6 +246,7 @@ namespace middle {
 		int parentIndex;
 		int childIndex;
 		int newLoopIndex;
+		int oldLoopIndex;
 		EditorActionChangeLoopMemberIndex(int parentIndex, int childIndex, int newLoopIndex) {
 			this->parentIndex = parentIndex;
 			this->childIndex = childIndex;
@@ -256,6 +259,7 @@ namespace middle {
 	class EditorActionCopy : public EditorActionContainer {
 	public:
 		std::vector<int> selectedShapes;
+		std::vector<int> newCopyShapes;
 		EditorActionCopy(std::vector<int>& selectedShapes) {
 			this->selectedShapes = selectedShapes;
 		}
@@ -275,6 +279,7 @@ namespace middle {
 
 	class EditorActionUnhide : public EditorActionContainer {
 	public:
+		std::vector<int> unhidIndexes;
 		EditorActionUnhide() {
 		}
 		void execute(GameState* gameState) override;
