@@ -344,8 +344,10 @@ namespace middle {
 			}
 
 			auto loop = getComponent<components::LoopSociety>(shape);
-			for (Id& id : loop->loopMemberIds) {
-				idStack.push(id);
+			if (loop) {
+				for (Id& id : loop->loopMemberIds) {
+					idStack.push(id);
+				}
 			}
 		}
 

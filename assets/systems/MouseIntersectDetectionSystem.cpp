@@ -65,6 +65,7 @@ namespace MouseIntersectDetectionSystem {
 					bool mouseIntersect = middle::PointIntersectLineZX_Plane(gameState->input.mouseXZ_PlanePos, posA, posB, middle::DEF_LINE_PADDING_H, middle::DEF_LINE_PADDING_V);
 					auto intersectComponent = middle::getComponent<components::MouseIntersectable>(shape);
 					intersectComponent->intersecting = mouseIntersect;
+					intersectComponent->intersectingTop = mouseIntersect;
 					continue;
 				}
 

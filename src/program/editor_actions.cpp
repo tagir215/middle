@@ -90,11 +90,9 @@ namespace middle {
 			std::vector<int> connectedConstraints = findConnectedConstraints(gameState, shape.id);
 
 			// set all connected constraints as selected
-			for (int id : connectedConstraints) {
-				Shape& constraintShape = getShape(gameState, id);
-				auto selectable = getComponent<components::MouseSelectable>(constraintShape);
-				assert(selectable);
-				selectable->selected = true;
+			for (int connectedIndex : connectedConstraints) {
+				deletedConstraints.push_back(connectedIndex);
+				saveShape(gameState, gameState->ids[connectedIndex], "../src/editor_data/temp/", "delshape" + std::to_string(connectedIndex));
 			}
 
 			auto loop = middle::getComponent<components::LoopSociety>(shape);
@@ -102,12 +100,14 @@ namespace middle {
 				deletedIndexesParents[i] = loop->parentLoopId.index;
 			}
 
-
 			saveShape(gameState, shape.id, "../src/editor_data/temp/", "delshape" + std::to_string(index));
 
 			deleteShapeRecursive(gameState, index);
 		}
 
+		for (int i : deletedConstraints) {
+			deleteShape(gameState, i);
+		}
 	}
 
 	void EditorActionDelete::undo(GameState* gameState)
@@ -123,6 +123,11 @@ namespace middle {
 				auto reparent = EditorActionReparent(deletedIndexesParents[i], index);
 				reparent.execute(gameState);
 			}
+		}
+
+		for (int i = 0; i < deletedConstraints.size(); ++i) {
+			int index = deletedConstraints[i];
+			loadShape(gameState, "../src/editor_data/temp/", "delshape" + std::to_string(index), false);
 		}
 	}
 
@@ -229,7 +234,7 @@ namespace middle {
 	void EditorActionImportScene::execute(GameState* gameState)
 	{
 		newIndex = findFreeIndex(gameState);
-		loadScene(gameState, "../assets/scenes/", sceneName, true, {0,0,0}, newIndex);
+		loadScene(gameState, "../assets/scenes/", sceneName, true, { 0,0,0 }, newIndex);
 	}
 
 	void EditorActionImportScene::undo(GameState* gameState)
@@ -268,7 +273,7 @@ namespace middle {
 	{
 	}
 
-	void EditorActionImportSystem::execute(GameState* gameState) 
+	void EditorActionImportSystem::execute(GameState* gameState)
 	{
 		newIndex = findFreeIndex(gameState);
 		entities::initSystem(gameState, newIndex, { 0,0,0 }, systemName);

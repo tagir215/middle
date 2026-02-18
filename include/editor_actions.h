@@ -34,6 +34,7 @@ namespace middle {
 	public:
 		std::vector<int>selectedIndexes;
 		std::vector<int>deletedIndexesParents;
+		std::vector<int>deletedConstraints;
 		EditorActionDelete(std::vector<int> selectedIndexes) {
 			this->selectedIndexes = selectedIndexes;
 		}
