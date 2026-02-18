@@ -7,7 +7,7 @@ namespace middle {
 	class EditorActionNewSphere : public EditorActionContainer {
 	public:
 		Vector3 position;
-		int newIndex = -1;
+		int newIndex = UNASSIGNED;
 		EditorActionNewSphere(const Vector3& position) {
 			this->position = position;
 		}
@@ -20,6 +20,7 @@ namespace middle {
 	public:
 		int indexA;
 		int indexB;
+		int newIndex = UNASSIGNED;
 		EditorActionNewConstraint(int indexA, int indexB) {
 			this->indexA = indexA;
 			this->indexB = indexB;
@@ -75,6 +76,8 @@ namespace middle {
 	class EditorActionCreateLoop : public EditorActionContainer {
 	public:
 		std::vector<int>memberIndexes;
+		std::vector<middle::Id>oldParents;
+		int newIndex = UNASSIGNED;
 		EditorActionCreateLoop(const std::vector<int>& selectedIndexes) {
 			memberIndexes = selectedIndexes;
 		}
@@ -97,6 +100,7 @@ namespace middle {
 	class EditorActionImportScene : public EditorActionContainer {
 	public:
 		std::string sceneName;
+		int newIndex = UNASSIGNED;
 		EditorActionImportScene(const std::string& sceneName) {
 			this->sceneName = sceneName;
 		}
@@ -130,6 +134,7 @@ namespace middle {
 	class EditorActionImportSystem : public EditorActionContainer {
 	public:
 		std::string systemName;
+		int newIndex = UNASSIGNED;
 		EditorActionImportSystem(const std::string& systemName) {
 			this->systemName = systemName;
 		}
@@ -271,6 +276,18 @@ namespace middle {
 	class EditorActionUnhide : public EditorActionContainer {
 	public:
 		EditorActionUnhide() {
+		}
+		void execute(GameState* gameState) override;
+		void undo(GameState* gameState) override;
+	};
+
+	class EditorActionMove : public EditorActionContainer {
+	public:
+		std::vector<int> selectedShapes;
+		std::vector<Vector3>oldPositions;
+		std::vector<Vector3>newPositions;
+		EditorActionMove(std::vector<int>& selectedShapes) {
+			this->selectedShapes = selectedShapes;
 		}
 		void execute(GameState* gameState) override;
 		void undo(GameState* gameState) override;

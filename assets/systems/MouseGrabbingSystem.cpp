@@ -7,6 +7,7 @@
 #include "Position.h"
 #include "PlacementComponent.h"
 #include "LoopSociety.h"
+#include "editor_actions.h"
 
 namespace MouseGrabbingSystem {
 
@@ -17,6 +18,16 @@ namespace MouseGrabbingSystem {
 			systemModeType = middle::SystemModeType::EDITOR;
 		}
 		void update(middle::GameState* gameState) override {
+
+			// setup editor action for movement
+			if (gameState->editorState.selectCount > 0 && gameState->input.grabDown && !gameState->editorState.grabbing) {
+				gameState->editorState.editorActions.push_back(
+					std::make_unique<middle::EditorActionMove>(middle::getSelectedShapes(gameState))
+				);
+				gameState->editorState.grabbing = true;
+				return;
+			}
+
 			for (int i = 0; i < gameState->shapes.size(); ++i) {
 				middle::Shape& shape = gameState->shapes[i];
 				auto grabbable = middle::getComponent<components::MouseGrabbable>(shape);
@@ -56,6 +67,21 @@ namespace MouseGrabbingSystem {
 						yDistance = 0.001f;
 					Vector3 xzVel = Vector3Scale(gameState->input.mouseXZ_PlaneVelocity, objYDistance / yDistance);
 					dragShape(gameState, i, xzVel);
+				}
+
+				if (gameState->input.grabReleased && gameState->editorState.grabbing) {
+					// update move action with new positions for redo to work
+					auto& actions = gameState->editorState.editorActions;
+					middle::EditorActionContainer* lastAction = actions[actions.size() - 1].get();
+					auto lastMoveAction = static_cast<middle::EditorActionMove*>(lastAction);
+					assert(lastMoveAction);
+					lastMoveAction->newPositions.resize(lastMoveAction->selectedShapes.size());
+					for (int j = 0; j < lastMoveAction->selectedShapes.size(); ++j) {
+						auto& selectedShape = middle::getShape(gameState, lastMoveAction->selectedShapes[j]);
+						auto position = middle::getComponent<components::Position>(selectedShape);
+						lastMoveAction->newPositions[j] = { position->posX, position->posY, position->posZ };
+					}
+					gameState->editorState.grabbing = false;
 				}
 
 				if (gameState->input.grabReleased && gameState->editorState.selectCount == 1) {

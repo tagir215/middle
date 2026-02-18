@@ -69,25 +69,20 @@ namespace middle {
 
 			// auto unselect
 			unselect(gameState);
-
 		}
 
 	}
 
 	void EditorActionNewConstraint::undo(GameState* gameState)
 	{
+		deleteShape(gameState, newIndex);
 	}
 
 	void EditorActionDelete::execute(GameState* gameState) {
 		// loops of deleted spheres that belong to loops
 		std::set<int>deteledLoopMembersParentLoops;
 
-		for (int i = 0; i < gameState->shapes.size(); ++i) {
-			if (!isShapeAlive(gameState, i))
-				continue;
-			if(!isShapeSelected(gameState, i))
-				continue;
-
+		for (int i : selectedIndexes) {
 			Shape& shape = getShape(gameState, i);
 
 			// delete all connected constraints
@@ -106,6 +101,8 @@ namespace middle {
 				selectable->selected = true;
 			}
 
+			saveShape(gameState, shape.id, "../src/editor_data/temp/", "delshape" + std::to_string(i));
+
 			deleteShape(gameState, i);
 		}
 
@@ -113,6 +110,9 @@ namespace middle {
 
 	void EditorActionDelete::undo(GameState* gameState)
 	{
+		for (int i : selectedIndexes) {
+			loadShape(gameState, "../src/editor_data/temp/", "delshape" + std::to_string(i), false);
+		}
 	}
 
 	void EditorActionSaveScene::execute(GameState* gameState) {
@@ -133,38 +133,32 @@ namespace middle {
 	}
 
 	void EditorActionCreateLoop::execute(GameState* gameState) {
-		int freeIndex = findFreeIndex(gameState);
+		newIndex = findFreeIndex(gameState);
 		int loopIndex = gameState->loopIndex;
 
-		// find selected items 
-		std::vector<Id>memberIds;
-		for (int i = 0; i < gameState->shapes.size(); ++i) {
-			if (!isShapeAlive(gameState, i))
-				continue;
-			auto loop = getComponent<components::LoopTag>(gameState->shapes[i]);
-			auto sphere = getComponent<components::Sphere>(gameState->shapes[i]);
-			auto reference = getComponent<components::Reference>(gameState->shapes[i]);
-			if ((sphere || loop || reference) && isShapeSelected(gameState, i)) {
-				memberIds.push_back(gameState->shapes[i].id);
-			}
+		std::vector<Id>ids;
+		for (int i : memberIndexes) {
+			ids.push_back(gameState->ids[i]);
+			auto& memberShape = middle::getShape(gameState, i);
+			auto loop = middle::getComponent<components::LoopSociety>(memberShape);
+			oldParents.push_back(loop->parentLoopId);
 		}
 
-		// loops must have at least 2 things
-		if (memberIds.size() == 0) {
-			entities::initLoop(gameState, freeIndex, memberIds, gameState->input.mouseXZ_PlanePos);
+		// set position to mouse pos
+		if (memberIndexes.size() == 0) {
+			entities::initLoop(gameState, newIndex, ids, gameState->input.mouseXZ_PlanePos);
 		}
+		// set position to centroid
 		else {
 			Vector3 centroid = { 0,0,0 };
-			for (int i = 0; i < memberIds.size(); ++i) {
-				auto& shape = getShape(gameState, memberIds[i].index);
+			for (int i = 0; i < ids.size(); ++i) {
+				auto& shape = getShape(gameState, ids[i].index);
 				auto pos = getComponent<components::Position>(shape);
 				centroid += { pos->posX, pos->posY, pos->posZ };
 			}
-			centroid *= 1.0f / memberIds.size();
-			entities::initLoop(gameState, freeIndex, memberIds, centroid);
+			centroid *= 1.0f / ids.size();
+			entities::initLoop(gameState, newIndex, ids, centroid);
 		}
-
-		// create 
 
 		// auto unselect
 		unselect(gameState);
@@ -172,6 +166,12 @@ namespace middle {
 
 	void EditorActionCreateLoop::undo(GameState* gameState)
 	{
+		for (int i = 0; i < memberIndexes.size(); ++i) {
+			auto reparent = EditorActionReparent(oldParents[i].index, memberIndexes[i]);
+			reparent.execute(gameState);
+		}
+
+		deleteShape(gameState, newIndex);
 	}
 
 
@@ -217,11 +217,13 @@ namespace middle {
 
 	void EditorActionImportScene::execute(GameState* gameState)
 	{
-		loadScene(gameState, "../assets/scenes/", sceneName, true, {0,0,0}, findFreeIndex(gameState));
+		newIndex = findFreeIndex(gameState);
+		loadScene(gameState, "../assets/scenes/", sceneName, true, {0,0,0}, newIndex);
 	}
 
 	void EditorActionImportScene::undo(GameState* gameState)
 	{
+		deleteShape(gameState, newIndex);
 	}
 
 
@@ -257,12 +259,13 @@ namespace middle {
 
 	void EditorActionImportSystem::execute(GameState* gameState) 
 	{
-		int freeIndex = findFreeIndex(gameState);
-		entities::initSystem(gameState, freeIndex, { 0,0,0 }, systemName);
+		newIndex = findFreeIndex(gameState);
+		entities::initSystem(gameState, newIndex, { 0,0,0 }, systemName);
 	}
 
 	void EditorActionImportSystem::undo(GameState* gameState)
 	{
+		deleteShape(gameState, newIndex);
 	}
 
 	void EditorActionNewCamera::execute(GameState* gameState)
@@ -310,7 +313,6 @@ namespace middle {
 			auto& shape = gameState->shapes[i];
 			int componentTypeId = componentTypeMap[componentName];
 			assert(shape.componentMap.find(componentTypeId) == shape.componentMap.end());
-
 			Component component;
 			component.componentOffset = componentListMap[componentTypeId]->grow();
 			shape.componentMap[componentTypeId] = component;
@@ -319,21 +321,26 @@ namespace middle {
 
 	void EditorActionImportComponent::undo(GameState* gameState)
 	{
-	}
-
-	void EditorActionRemoveComponent::execute(GameState* gameState)
-	{
 		for (int i : selectedIndexes) {
 			auto& shape = gameState->shapes[i];
 			int componentTypeId = componentTypeMap[componentName];
 			assert(shape.componentMap.find(componentTypeId) != shape.componentMap.end());
-
+			Component component = shape.componentMap[componentTypeId];
+			componentListMap[componentTypeId]->shrink(component.componentOffset);
 			shape.componentMap.erase(componentTypeId);
-		};
+		}
+	}
+
+	void EditorActionRemoveComponent::execute(GameState* gameState)
+	{
+		auto importAction = EditorActionImportComponent(componentName, selectedIndexes);
+		importAction.undo(gameState);
 	}
 
 	void EditorActionRemoveComponent::undo(GameState* gameState)
 	{
+		auto importAction = EditorActionImportComponent(componentName, selectedIndexes);
+		importAction.execute(gameState);
 	}
 
 
@@ -506,6 +513,33 @@ namespace middle {
 
 	void EditorActionUnhide::undo(GameState* gameState)
 	{
+	}
+
+	void EditorActionMove::execute(GameState* gameState)
+	{
+		oldPositions.resize(selectedShapes.size());
+
+		for (int i = 0; i < selectedShapes.size(); ++i) {
+			auto& shape = getShape(gameState, selectedShapes[i]);
+			auto position = getComponent<components::Position>(shape);
+			oldPositions[i] = { position->posX, position->posY, position->posZ };
+		}
+
+		for (int i = 0; i < newPositions.size(); ++i) {
+			Vector3 displacement = newPositions[i] - oldPositions[i];
+			middle::moveShape(gameState, selectedShapes[i], displacement);
+		}
+	}
+
+	void EditorActionMove::undo(GameState* gameState)
+	{
+		for (int i = 0; i < selectedShapes.size(); ++i) {
+			auto& shape = getShape(gameState, selectedShapes[i]);
+			auto position = getComponent<components::Position>(shape);
+			Vector3 currentPos = { position->posX, position->posY, position->posZ };
+			Vector3 displacement = currentPos - oldPositions[i];
+			middle::moveShape(gameState, selectedShapes[i], Vector3Negate(displacement));
+		}
 	}
 
 }

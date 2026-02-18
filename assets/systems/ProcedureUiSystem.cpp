@@ -53,7 +53,7 @@ class ProcedureUiSystem : public middle::MiddleGameplaySystem {
 				std::string folder = "../bubbleData/procedures/";
 				std::string shapeName = "procedure1";
 				Vector3 mouseXZ = gameState->input.mouseXZ_PlanePos;
-				middle::Id loadedProcId = middle::loadShape(gameState, folder, shapeName, mouseXZ);
+				middle::Id loadedProcId = middle::loadShape(gameState, folder, shapeName, true, mouseXZ);
 				auto& procedureShape = middle::getShape(gameState, loadedProcId.index);
 				//middle::addComponent<components::PlacementComponent>(procedureShape);
 			}

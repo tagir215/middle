@@ -65,6 +65,7 @@ namespace middle {
 		std::vector<std::unique_ptr<EditorActionContainer>> editorActions;
 		int previousSize = 0;
 		int actionPointer = 0;
+		bool grabbing = false;
 	};
 
 	enum RenderItemType {

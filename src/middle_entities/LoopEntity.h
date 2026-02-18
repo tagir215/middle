@@ -6,6 +6,7 @@
 #include "LoopSociety.h"
 #include "LoopTag.h"
 #include "Position.h"
+#include "editor_actions.h"
 
 namespace entities{
 
@@ -27,7 +28,8 @@ namespace entities{
 			auto& member = gameState->shapes[loopMember.index];
 			assert(member.id == gameState->ids[loopMember.index]);
 			auto memberLoop = middle::getComponent<components::LoopSociety>(member);
-			memberLoop->parentLoopId = shape.id;
+			auto reparentAction = middle::EditorActionReparent(shape.id.index, loopMember.index);
+			reparentAction.execute(gameState);
 		}
     }
 }

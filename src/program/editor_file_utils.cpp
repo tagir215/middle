@@ -353,9 +353,9 @@ namespace middle {
 		outFile.close();
 	}
 
-	middle::Id loadShape(GameState* gameState, const std::string& folder, const std::string& sceneName, const Vector3& pos) {
+	middle::Id loadShape(GameState* gameState, const std::string& folder, const std::string& sceneName, bool import, const Vector3& pos) {
 		int freeIndex = findFreeIndex(gameState);
-		loadScene(gameState, folder, sceneName, true, pos, freeIndex);
+		loadScene(gameState, folder, sceneName, import, pos, freeIndex);
 		auto& shape = getShape(gameState, freeIndex);
 		return shape.id;
 	}
