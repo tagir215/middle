@@ -79,20 +79,16 @@ namespace middle {
 	}
 
 	void EditorActionDelete::execute(GameState* gameState) {
-		// loops of deleted spheres that belong to loops
-		std::set<int>deteledLoopMembersParentLoops;
 
-		for (int i : selectedIndexes) {
-			Shape& shape = getShape(gameState, i);
+		deletedIndexesParents.resize(selectedIndexes.size());
+
+		for (int i = 0; i < selectedIndexes.size(); ++i) {
+			int index = selectedIndexes[i];
+			Shape& shape = getShape(gameState, index);
 
 			// delete all connected constraints
 			std::vector<int> connectedConstraints = findConnectedConstraints(gameState, shape.id);
 
-
-			if(getComponent<components::Reference>(shape)){
-				deleteShapeRecursive(gameState, i);
-			}
-             
 			// set all connected constraints as selected
 			for (int id : connectedConstraints) {
 				Shape& constraintShape = getShape(gameState, id);
@@ -101,17 +97,32 @@ namespace middle {
 				selectable->selected = true;
 			}
 
-			saveShape(gameState, shape.id, "../src/editor_data/temp/", "delshape" + std::to_string(i));
+			auto loop = middle::getComponent<components::LoopSociety>(shape);
+			if (loop) {
+				deletedIndexesParents[i] = loop->parentLoopId.index;
+			}
 
-			deleteShape(gameState, i);
+
+			saveShape(gameState, shape.id, "../src/editor_data/temp/", "delshape" + std::to_string(index));
+
+			deleteShapeRecursive(gameState, index);
 		}
 
 	}
 
 	void EditorActionDelete::undo(GameState* gameState)
 	{
-		for (int i : selectedIndexes) {
-			loadShape(gameState, "../src/editor_data/temp/", "delshape" + std::to_string(i), false);
+		for (int i = 0; i < selectedIndexes.size(); ++i) {
+			int index = selectedIndexes[i];
+			loadShape(gameState, "../src/editor_data/temp/", "delshape" + std::to_string(index), false);
+			auto& shape = middle::getShape(gameState, index);
+			auto loop = middle::getComponent<components::LoopSociety>(shape);
+			// reparent to old parent
+			if (loop) {
+				loop->parentLoopId = middle::Id();
+				auto reparent = EditorActionReparent(deletedIndexesParents[i], index);
+				reparent.execute(gameState);
+			}
 		}
 	}
 

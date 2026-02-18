@@ -356,8 +356,11 @@ namespace middle {
 	middle::Id loadShape(GameState* gameState, const std::string& folder, const std::string& sceneName, bool import, const Vector3& pos) {
 		int freeIndex = findFreeIndex(gameState);
 		loadScene(gameState, folder, sceneName, import, pos, freeIndex);
-		auto& shape = getShape(gameState, freeIndex);
-		return shape.id;
+		if (import) {
+			auto& shape = getShape(gameState, freeIndex);
+			return shape.id;
+		}
+		return middle::Id();
 	}
 
 
@@ -439,7 +442,7 @@ namespace middle {
 	}
 
 	void loadScene(GameState* gameState, const std::string& folder, const std::string& sceneName, bool import, const Vector3& pos, int sceneReferenceIndex) {
-		std::string path = folder + sceneName +".midsc";
+		std::string path = folder + sceneName + ".midsc";
 
 		int indexOffset = 0;
 
@@ -461,7 +464,6 @@ namespace middle {
 		if (!import) {
 			gameState->loopIndex = 0;
 		}
-
 
 		std::vector<std::string>buffer;
 		std::string field = "";

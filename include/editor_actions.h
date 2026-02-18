@@ -33,6 +33,7 @@ namespace middle {
 	class EditorActionDelete : public EditorActionContainer {
 	public:
 		std::vector<int>selectedIndexes;
+		std::vector<int>deletedIndexesParents;
 		EditorActionDelete(std::vector<int> selectedIndexes) {
 			this->selectedIndexes = selectedIndexes;
 		}
