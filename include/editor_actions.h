@@ -7,6 +7,7 @@ namespace middle {
 	class EditorActionNewSphere : public EditorActionContainer {
 	public:
 		Vector3 position;
+		int newIndex = -1;
 		EditorActionNewSphere(const Vector3& position) {
 			this->position = position;
 		}

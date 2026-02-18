@@ -52,6 +52,10 @@ namespace middle {
 		bool pop;
 		bool zoomIn;
 		bool zoomOut;
+		bool panDown;
+		bool panUp;
+		bool panLeft;
+		bool panRight;
 	};
 
 }

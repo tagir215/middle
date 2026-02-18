@@ -26,16 +26,14 @@ namespace middle {
 
 	void EditorActionNewSphere::execute(GameState* gameState) {
 		auto& shapes = gameState->shapes;
-
 		int freeIndex = findFreeIndex(gameState);
-
-		Vector3 xzPos = gameState->input.mouseXZ_PlanePos;
-		entities::initJoint(gameState, freeIndex, xzPos);
+		entities::initJoint(gameState, freeIndex, position);
+		newIndex = freeIndex;
 	}
 	void EditorActionNewSphere::undo(GameState* gameState)
 	{
+		deleteShape(gameState, newIndex);
 	}
-	;
 
 	void EditorActionNewConstraint::execute(GameState* gameState) {
 		auto& shapes = gameState->shapes;

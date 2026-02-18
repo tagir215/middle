@@ -80,7 +80,7 @@ namespace MouseIntersectDetectionSystem {
 				auto system = middle::getComponent<components::SystemReference>(shape);
 				auto compRef = middle::getComponent<components::ComponentReference>(shape);
 				auto loopTag = middle::getComponent<components::LoopTag>(shape);
-				Vector3 pos = { position->posX, position->posY, position->posZ };
+				Vector3 pos = middle::getShapePosition(gameState, shape.id.index);
 
 				float radius = 0;
 				if (sphere) {

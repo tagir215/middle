@@ -7,6 +7,7 @@
 #include "Rectangle.h"
 #include "Position.h"
 #include "Circle.h"
+#include "Offset.h"
 
 class InventorySystem : public middle::MiddleGameplaySystem {
 
@@ -27,6 +28,14 @@ public:
 			std::vector<middle::Id>items = loop->loopMemberIds;
 
 			Vector3 inventoryPosition = middle::getShapePosition(gameState, shape.id.index);
+			Vector3 cameraPos = gameState->activeCamera.position;
+
+			auto offset = middle::getComponent<components::Offset>(shape);
+			assert(offset);
+			Vector3 inventoryTargetOffset = {offset->offsetX, offset->offsetY, offset->offsetZ};
+			Vector3 targetPos = cameraPos + inventoryTargetOffset;
+			middle::moveShape(gameState, shape.id.index, targetPos - inventoryPosition);
+
 			const float zspacing = 10;
 			const float xmargin = 4;
 
@@ -71,6 +80,7 @@ public:
 					referencePos.z -= circle->radius + zspacing * 0.5f;
 				}
 			}
+
 
 			});
 	}

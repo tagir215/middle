@@ -7,6 +7,7 @@
 #include "PlacementComponent.h"
 #include "LoopSociety.h"
 #include "Circle.h"
+#include "middle_math.h"
 
 class RectangleIntersectionSystem : public middle::MiddleGameplaySystem {
 
@@ -32,9 +33,13 @@ class RectangleIntersectionSystem : public middle::MiddleGameplaySystem {
 				return;
 			}
 
-			Vector3 mouseXZ = gameState->input.mouseXZ_PlanePos;
 			Vector3 position = middle::getShapePosition(gameState, shape.id.index);
 			Vector3 scale = middle::getTotalScale(gameState, shape.id);
+
+			Vector3 uiPlaneIntersectPoint = middle::RayCastLinePlane(position, { 0,-1,0 }, 
+				gameState->input.mouseNearPlanePos, gameState->input.mouseDir);
+			Vector3 mouseXZ = uiPlaneIntersectPoint;
+
 
 			if (rectangle) {
 				float axisX = rectangle->width * 0.5f * scale.x;
@@ -46,6 +51,7 @@ class RectangleIntersectionSystem : public middle::MiddleGameplaySystem {
 			if (circle) {
 				intersectable->intersecting = Vector3DistanceSqr(mouseXZ, position) < circle->radius * circle->radius;
 			}
+
 
 			intersectable->intersectingTop = false;
 

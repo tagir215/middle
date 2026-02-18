@@ -63,6 +63,8 @@ namespace middle {
 		int selectChangeCountAfterClick = 0;
 		Color backgroundColor = BACKGROUND_COLOR;
 		std::vector<std::unique_ptr<EditorActionContainer>> editorActions;
+		int previousSize = 0;
+		int actionPointer = 0;
 	};
 
 	enum RenderItemType {
@@ -149,7 +151,6 @@ namespace middle {
 		std::vector<PhysicsBody>physicsBodies;
 		std::vector<std::function<void()>>uiSetups;
 		std::vector<middle::FieldInfo>fields;
-
 		BubbleAlgebraState bubbleAlgebraState;
 	};
 

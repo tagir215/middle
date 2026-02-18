@@ -26,7 +26,6 @@ public:
 		}
 	}
 
-
 	// for mental palace. Palace is superior filesystem! TRUST THE PALACE
 	void importEngineSystemReferences(middle::GameState* gameState) {
 		int highestUsedIndex = middle::findHighestUsedIndex(gameState);
@@ -50,15 +49,20 @@ public:
 		}
 	}
 
-
 	void update(middle::GameState* gameState) override {
 
-		// process editor actions
-		while (gameState->editorState.editorActions.size() > 0) {
-			gameState->editorState.editorActions.back()->execute(gameState);
-			gameState->editorState.editorActions.pop_back();
+		int& actionPointer = gameState->editorState.actionPointer;
+		int& previousSize = gameState->editorState.previousSize;
+		auto& actions = gameState->editorState.editorActions;
+		if (actions.size() > previousSize) {
+			// remove redoable actions when new action is added
+			while (actions.size() > actionPointer + 1) {
+				actions.erase(actions.begin() + actionPointer);
+			}
+			actions[actionPointer]->execute(gameState);
+			++actionPointer;
+			previousSize = actions.size();
 		}
-
 
 		if (gameState->startGame) {
 			if (gameState->applicationMode == middle::ApplicationMode::EDITOR_MODE) {
@@ -68,7 +72,6 @@ public:
 			loadSystemNames(gameState);
 			loadComponentNames(gameState);
 			gameState->startGame = false;
-
 		}
 
 

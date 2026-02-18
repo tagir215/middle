@@ -59,6 +59,20 @@ public:
 				if (ImGui::Button("pause")) {
 					gameState->paused = true;
 				}
+				if (ImGui::Button("undo")) {
+					int& actionPointer = gameState->editorState.actionPointer;
+					if (actionPointer >= 1) {
+						gameState->editorState.editorActions[actionPointer - 1]->undo(gameState);
+						--actionPointer;
+					}
+				}
+				if (ImGui::Button("redo")) {
+					int& actionPointer = gameState->editorState.actionPointer;
+					if (actionPointer < gameState->editorState.editorActions.size()) {
+						gameState->editorState.editorActions[actionPointer]->execute(gameState);
+						++actionPointer;
+					}
+				}
 			}
 			else {
 				if (ImGui::Button("continue")) {

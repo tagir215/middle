@@ -183,7 +183,6 @@ public:
 
 					auto scopeOffset = middle::getComponent<components::Offset>(shape);
 					scopeOffset->offsetX = (center.x - scopePos.x) * scopeScale.x;
-					scopeOffset->offsetY = (center.y - scopePos.y) * scopeScale.y;
 					scopeOffset->offsetZ = (center.z - scopePos.z) * scopeScale.z;
 				}
 			}
@@ -256,6 +255,7 @@ public:
 					auto& childShape = middle::getShape(gameState, id.index);
 					auto childRect = middle::getComponent<components::Rectangle>(childShape);
 					auto childScale = middle::getComponent<components::Scale>(childShape);
+					auto childPos = middle::getComponent<components::Position>(childShape);
 					childScale->scale = targetScale;
 					referencePos.z -= childRect->height * 0.5f * targetScale.z;
 
@@ -264,7 +264,9 @@ public:
 
 					Vector3 targetPos = referencePos;
 					targetPos.x += sizeOffset;
-					middle::moveShape(gameState, id.index, targetPos - currentPos);
+					childPos->posX = targetPos.x;
+					childPos->posY = targetPos.y;
+					childPos->posZ = targetPos.z;
 					referencePos.z = referencePos.z - childRect->height * 0.5f * targetScale.z - spacingZ;
 				}
 			}

@@ -89,11 +89,19 @@ class InputSystem : public middle::MiddleGameplaySystem {
 			gameState->gameInput.pop = false;
 			gameState->gameInput.zoomIn = false;
 			gameState->gameInput.zoomOut = false;
+			gameState->gameInput.panUp = false;
+			gameState->gameInput.panDown = false;
+			gameState->gameInput.panLeft = false;
+			gameState->gameInput.panRight = false;
 
 			if (gameState->inputBlockers.find(middle::InputBlockers::KEYBOARD_BLOCK) == gameState->inputBlockers.end()) {
 				gameState->gameInput.pop = IsKeyPressed(KEY_B);
 				gameState->gameInput.zoomIn = IsKeyDown(KEY_W);
 				gameState->gameInput.zoomOut = IsKeyDown(KEY_S);
+				gameState->gameInput.panUp = IsKeyDown(KEY_E);
+				gameState->gameInput.panDown = IsKeyDown(KEY_Q);
+				gameState->gameInput.panLeft = IsKeyDown(KEY_A);
+				gameState->gameInput.panRight = IsKeyDown(KEY_D);
 			}
 		}
 
