@@ -480,17 +480,19 @@ namespace middle {
 	{
 		Shape& shape = getShape(gameState, id.index);
 		auto loop = getComponent<components::LoopSociety>(shape);
-		for (Id& childId : loop->loopMemberIds) {
-			result.push_back(childId);
-			getChildren(gameState, childId, result);
+		if (loop) {
+			for (Id& childId : loop->loopMemberIds) {
+				result.push_back(childId);
+				getChildren(gameState, childId, result);
+			}
 		}
 	}
 
 	void loopRectBoundingBox(GameState* gameState, const Id& shapeId, float* leftX, float* rightX, float* bottomZ, float* topZ)
 	{
-		*leftX = 100000; 
-		*rightX = -100000; 
-		*bottomZ = *leftX; 
+		*leftX = 100000;
+		*rightX = -100000;
+		*bottomZ = *leftX;
 		*topZ = *rightX;
 		loopRectBoundingBoxInternal(gameState, shapeId, leftX, rightX, bottomZ, topZ);
 	}
@@ -499,9 +501,9 @@ namespace middle {
 	{
 		auto& shape = middle::getShape(gameState, shapeId.index);
 		auto loop = middle::getComponent<components::LoopSociety>(shape);
-		*leftX = 100000; 
-		*rightX = -100000; 
-		*bottomZ = *leftX; 
+		*leftX = 100000;
+		*rightX = -100000;
+		*bottomZ = *leftX;
 		*topZ = *rightX;
 		for (const middle::Id& childId : loop->loopMemberIds) {
 			loopRectBoundingBoxInternal(gameState, childId, leftX, rightX, bottomZ, topZ);

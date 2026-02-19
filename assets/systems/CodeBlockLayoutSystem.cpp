@@ -153,7 +153,8 @@ public:
 					middle::Id childId = scopeLoop->loopMemberIds[index];
 					auto& childShape = middle::getShape(gameState, childId.index);
 					auto childRect = middle::getComponent<components::Rectangle>(childShape);
-					if (!childRect) {
+					auto codeBlock = middle::getComponent<components::CodeBlock>(childShape);
+					if (!codeBlock) {
 						continue;
 					}
 					auto position = middle::getComponent<components::Position>(childShape);

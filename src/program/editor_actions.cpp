@@ -37,19 +37,7 @@ namespace middle {
 
 	void EditorActionNewConstraint::execute(GameState* gameState) {
 		auto& shapes = gameState->shapes;
-		std::vector<int> selectedIndexes;
-		for (int i = 0; i < gameState->shapes.size(); ++i) {
-			if (!getComponent<components::Sphere>(shapes[i]))
-				continue;
-			if (isShapeAlive(gameState, i) && isShapeSelected(gameState, i))
-				selectedIndexes.push_back(i);
-		}
-		// must have 2 constraints selected 
-		if (selectedIndexes.size() != 2)
-			return;
 
-		int indexA = selectedIndexes[0];
-		int indexB = selectedIndexes[1];
 		Shape& shapeA = getShape(gameState, indexA);
 		Shape& shapeB = getShape(gameState, indexB);
 
@@ -57,7 +45,7 @@ namespace middle {
 			return;
 		}
 
-		int freeIndex = findFreeIndex(gameState);
+		newIndex = findFreeIndex(gameState);
 
 		if (indexA != indexB) {
 			auto& shapeA = shapes[indexA];
@@ -65,7 +53,7 @@ namespace middle {
 			auto posA = getShapePosition(gameState, indexA);
 			auto posB = getShapePosition(gameState, indexB);
 			float distBetween = Vector3Distance(posA, posB);
-			entities::initConstraint(gameState, freeIndex, indexA, indexB, distBetween);
+			entities::initConstraint(gameState, newIndex, indexA, indexB, distBetween);
 
 			// auto unselect
 			unselect(gameState);
@@ -84,6 +72,9 @@ namespace middle {
 
 		for (int i = 0; i < selectedIndexes.size(); ++i) {
 			int index = selectedIndexes[i];
+			if (!isShapeAlive(gameState, index)) {
+				continue;
+			}
 			Shape& shape = getShape(gameState, index);
 
 			// delete all connected constraints
@@ -502,8 +493,11 @@ namespace middle {
 			}
 
 			// placement component until placing is done
-			auto placable = addComponent<components::PlacementComponent>(copyShape);
-			placable->grabbing = true;
+			auto position = middle::getComponent<components::Position>(copyShape);
+			if (position) {
+				auto placable = addComponent<components::PlacementComponent>(copyShape);
+				placable->grabbing = true;
+			}
 
 			// placement component to children
 			std::vector<Id>children;
@@ -518,7 +512,7 @@ namespace middle {
 	void EditorActionCopy::undo(GameState* gameState)
 	{
 		for (int shapeIndex : newCopyShapes) {
-			deleteShape(gameState, shapeIndex);
+			deleteShapeRecursive(gameState, shapeIndex);
 		}
 	}
 

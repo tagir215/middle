@@ -1,75 +1,21 @@
-__6__
+__42__
 LoopTag
 Position
-f  60.898941
-f  -0.000031
-f  6.699512
+f  2.103355
+f  0.000015
+f  -251.772720
 LoopSociety
 q  -1
 p  
-7
-8
-9
-10
-11
+29
+30
+31
+32
 MouseSelectable
+UiComponent
 MouseIntersectable
 MouseGrabbable
-__11__
-PhysicsData
-f  1.000000
-f  1.000000
-f  1.000000
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.800000
-f  0.800000
-f  0.800000
-f  0.000000
-f  0.000000
-f  0.000000
-b  0
-Sphere
-f  2.000000
-Position
-f  76.889839
-f  -0.000061
-f  -23.249073
-MouseSelectable
-MouseGrabbable
-MouseIntersectable
-LoopSociety
-q  6
-p  
-__10__
-PhysicsData
-f  1.000000
-f  1.000000
-f  1.000000
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.800000
-f  0.800000
-f  0.800000
-f  0.000000
-f  0.000000
-f  0.000000
-b  0
-Sphere
-f  2.000000
-Position
-f  43.505047
-f  -0.000000
-f  -16.305046
-MouseSelectable
-MouseGrabbable
-MouseIntersectable
-LoopSociety
-q  6
-p  
-__9__
+__32__
 Sphere
 f  2.000000
 PhysicsData
@@ -86,17 +32,17 @@ f  0.000000
 f  0.000000
 f  0.000000
 b  0
-Position
-f  36.490101
-f  -0.000061
-f  6.700156
-MouseSelectable
 MouseGrabbable
-MouseIntersectable
+Position
+f  -295.470642
+f  0.000061
+f  -286.028198
 LoopSociety
-q  6
+q  42
 p  
-__8__
+MouseSelectable
+MouseIntersectable
+__31__
 Sphere
 f  2.000000
 PhysicsData
@@ -113,17 +59,19 @@ f  0.000000
 f  0.000000
 f  0.000000
 b  0
-Position
-f  61.741241
-f  -0.000061
-f  33.632668
-MouseSelectable
 MouseGrabbable
-MouseIntersectable
+Position
+f  302.219177
+f  0.000000
+f  -291.076477
 LoopSociety
-q  6
+q  42
 p  
-__7__
+MouseSelectable
+MouseIntersectable
+__30__
+Sphere
+f  2.000000
 PhysicsData
 f  1.000000
 f  1.000000
@@ -138,15 +86,40 @@ f  0.000000
 f  0.000000
 f  0.000000
 b  0
+MouseGrabbable
+Position
+f  298.298279
+f  0.000122
+f  -212.141266
+LoopSociety
+q  42
+p  
+MouseSelectable
+MouseIntersectable
+__29__
 Sphere
 f  2.000000
-Position
-f  85.586807
-f  -0.000031
-f  19.885752
-MouseSelectable
+PhysicsData
+f  1.000000
+f  1.000000
+f  1.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.800000
+f  0.800000
+f  0.800000
+f  0.000000
+f  0.000000
+f  0.000000
+b  0
 MouseGrabbable
-MouseIntersectable
+Position
+f  -296.633392
+f  -0.000122
+f  -217.844940
 LoopSociety
-q  6
+q  42
 p  
+MouseSelectable
+MouseIntersectable

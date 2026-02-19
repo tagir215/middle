@@ -27,25 +27,23 @@ public:
 			auto loop = middle::getComponent<components::LoopSociety>(shape);
 			std::vector<middle::Id>items = loop->loopMemberIds;
 
-			Vector3 inventoryPosition = middle::getShapePosition(gameState, shape.id.index);
-			Vector3 cameraPos = gameState->activeCamera.position;
-
 			auto offset = middle::getComponent<components::Offset>(shape);
 			assert(offset);
-			Vector3 inventoryTargetOffset = {offset->offsetX, offset->offsetY, offset->offsetZ};
-			Vector3 targetPos = cameraPos + inventoryTargetOffset;
-			middle::moveShape(gameState, shape.id.index, targetPos - inventoryPosition);
+
+			Vector3 inventoryPosition = middle::getShapePosition(gameState, shape.id.index);
+			Vector3 cameraPos = gameState->activeCamera.position;
+			Vector3 offsetVec = { offset->offsetX, offset->offsetY, offset->offsetZ };
+			Vector3 displacement = (cameraPos + offsetVec) - inventoryPosition;
+
+			middle::moveShape(gameState, shape.id.index, displacement);
 
 			const float zspacing = 10;
 			const float xmargin = 4;
 
 			auto inventoryRect = middle::getComponent<components::Rectangle>(shape);
 
-			// calculate total height
-			float leftX, rightX, bottomZ, topZ;
-			middle::loopChildrenOnlyRectBoundingBox(gameState, shape.id, &leftX, &rightX, &bottomZ, &topZ);
-			float totalWidth = rightX - leftX + margin;
-			float totalHeight = topZ - bottomZ + margin;
+			float totalWidth =  inventoryRect->width;
+			float totalHeight = inventoryRect->height;
 
 			// TODO REMOVE
 			if (totalWidth <= 0) {
@@ -53,31 +51,53 @@ public:
 				totalHeight = 10;
 			}
 
-			inventoryRect->width = totalWidth;
-			inventoryRect->height = totalHeight;
-
 			Vector3 referencePos = inventoryPosition;
-			referencePos.z += totalHeight * 0.5f + zspacing * 0.5f;
-			referencePos.z -= margin * 0.5f;
+			if (inventory->horizontal) {
+				referencePos.x -= totalWidth * 0.5f + zspacing * 0.5f;
+				referencePos.x += margin * 0.5f;
+			}
+			else {
+				referencePos.z += totalHeight * 0.5f + zspacing * 0.5f;
+				referencePos.z -= margin * 0.5f;
+			}
 
 			for (middle::Id& childId : items) {
 				middle::Shape& child = middle::getShape(gameState, childId.index);
 				auto rect = middle::getComponent<components::Rectangle>(child);
 				auto circle = middle::getComponent<components::Circle>(child);
 				auto position = middle::getComponent<components::Position>(child);
-				if (rect) {
-					referencePos.z -= rect->height * 0.5f + zspacing * 0.5f;
-					position->posX = referencePos.x;
-					position->posY = referencePos.y;
-					position->posZ = referencePos.z;
-					referencePos.z -= rect->height * 0.5f + zspacing * 0.5f;
+
+				if (inventory->horizontal) {
+					if (rect) {
+						referencePos.x -= rect->width * 0.5f + zspacing * 0.5f;
+						position->posX = referencePos.x;
+						position->posY = referencePos.y;
+						position->posZ = referencePos.z;
+						referencePos.x -= rect->width * 0.5f + zspacing * 0.5f;
+					}
+					if (circle) {
+						referencePos.x -= circle->radius + zspacing * 0.5f;
+						position->posX = referencePos.x;
+						position->posY = referencePos.y;
+						position->posZ = referencePos.z;
+						referencePos.x -= circle->radius + zspacing * 0.5f;
+					}
 				}
-				if (circle) {
-					referencePos.z -= circle->radius + zspacing * 0.5f;
-					position->posX = referencePos.x;
-					position->posY = referencePos.y;
-					position->posZ = referencePos.z;
-					referencePos.z -= circle->radius + zspacing * 0.5f;
+				else {
+					if (rect) {
+						referencePos.z -= rect->height * 0.5f + zspacing * 0.5f;
+						position->posX = referencePos.x;
+						position->posY = referencePos.y;
+						position->posZ = referencePos.z;
+						referencePos.z -= rect->height * 0.5f + zspacing * 0.5f;
+					}
+					if (circle) {
+						referencePos.z -= circle->radius + zspacing * 0.5f;
+						position->posX = referencePos.x;
+						position->posY = referencePos.y;
+						position->posZ = referencePos.z;
+						referencePos.z -= circle->radius + zspacing * 0.5f;
+					}
 				}
 			}
 

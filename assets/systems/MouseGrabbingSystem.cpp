@@ -32,13 +32,17 @@ namespace MouseGrabbingSystem {
 				middle::Shape& shape = gameState->shapes[i];
 				auto grabbable = middle::getComponent<components::MouseGrabbable>(shape);
 				auto placable = middle::getComponent<components::PlacementComponent>(shape);
+				auto position = middle::getComponent<components::Position>(shape);
+				if (!position)
+					continue;
 				if (!grabbable && !placable)
 					continue;
+				
 
-				if (middle::isShapeSelected(gameState, i) && gameState->input.grabDown) {
+				if (grabbable && middle::isShapeSelected(gameState, i) && gameState->input.grabDown) {
 					grabbable->grabbing = true;
 				}
-				else if (!gameState->input.grabDown){
+				else if (grabbable && !gameState->input.grabDown){
 					grabbable->grabbing = false;
 				}
 
@@ -53,7 +57,7 @@ namespace MouseGrabbingSystem {
 					}
 				}
 
-				if (grabbable->grabbing || (placable && placable->grabbing)) {
+				if ((grabbable && grabbable->grabbing) || (placable && placable->grabbing)) {
 					Vector3 pos;
 					auto posComponent = middle::getComponent<components::Position>(shape);
 					if (posComponent) {

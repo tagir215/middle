@@ -1,10 +1,12 @@
 #pragma once
 #include "registrars.h"
 #include "editor_file_utils.h"
-#define MIDDLEINVENTORY(X)
+#define MIDDLEINVENTORY(X) \
+	X(horizontal)
 
 namespace components {
 	struct Inventory : public middle::Serializable{
+		bool horizontal = false;
 
 		void serialize(std::ostream& ostream) override;
 		void deserialize(const std::vector<std::string>& buffer, int indexOffset) override;

@@ -1,6 +1,4 @@
 __29__
-Sphere
-f  2.000000
 PhysicsData
 f  1.000000
 f  1.000000
@@ -15,13 +13,19 @@ f  0.000000
 f  0.000000
 f  0.000000
 b  0
-MouseGrabbable
+Sphere
+f  2.000000
 Position
-f  -296.633392
-f  -0.000122
-f  -217.844940
-LoopSociety
-q  42
-p  
+f  -17.750782
+f  -0.000031
+f  -233.211548
 MouseSelectable
+MouseGrabbable
+Rectangle
+f  10.000000
+f  10.000000
 MouseIntersectable
+LoopSociety
+q  -1
+p  
+Inventory
