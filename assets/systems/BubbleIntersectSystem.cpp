@@ -12,6 +12,7 @@
 #include "FractionalComponent.h"
 #include "middle_math.h"
 #include "Sphere.h"
+#include "middle_math.h"
 
 class BubbleIntersectSystem : public middle::MiddleGameplaySystem {
 
@@ -48,16 +49,18 @@ class BubbleIntersectSystem : public middle::MiddleGameplaySystem {
 			}
 
 			// update intersecting status
-			Vector3 mousePos = gameState->input.mouseXZ_PlanePos;
+
+			auto position = middle::getComponent<components::Position>(shape);
+			Vector3 pos = middle::getShapePosition(gameState, shape.id.index);
+			Vector3 mousePos = middle::RayCastLinePlane(pos, { 0,1,0 }, gameState->activeCamera.position, gameState->input.mouseDir);
+
 			bool intersecting = false;
 			if (bubble) {
 				intersecting = bubble::pointIntersectBubble(gameState, shape, mousePos);
 			}
 			if (unit) {
-				auto position = middle::getComponent<components::Position>(shape);
 				auto sphere = middle::getComponent<components::Sphere>(shape);
 				assert(position && sphere);
-				Vector3 pos = { position->posX , position->posY, position->posZ };
 				Vector3 intersectPos;
 				intersecting = middle::RayCastLineSphere(pos, sphere->radius, gameState->activeCamera.position,
 					gameState->activeCamera.position + gameState->input.mouseDir, intersectPos);

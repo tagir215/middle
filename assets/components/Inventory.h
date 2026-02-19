@@ -2,7 +2,7 @@
 #include "registrars.h"
 #include "editor_file_utils.h"
 #define MIDDLEINVENTORY(X) \
-	X(horizontal)
+	X(horizontal) \
 
 namespace components {
 	struct Inventory : public middle::Serializable{

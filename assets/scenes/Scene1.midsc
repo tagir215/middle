@@ -680,12 +680,33 @@ Position
 f  226.402679
 f  0.000031
 f  -253.224670
+__29__
+MouseSelectable
+MouseGrabbable
+Text
+s  InventorySystem
+f  255.000000
+f  255.000000
+f  255.000000
+f  255.000000
+f  2.000000
+f  0.000000
+f  10.000000
+f  10.000000
+b  1
+MouseIntersectable
+SystemReference
+s  InventorySystem
+Position
+f  0.000000
+f  0.000000
+f  0.000000
 __30__
 LoopTag
 Position
-f  -81.704292
-f  0.000030
-f  -234.213669
+f  -54.865822
+f  -1206.814209
+f  -79.456116
 MouseSelectable
 BubbleComponent
 MouseIntersectable
@@ -720,9 +741,9 @@ p
 BubbleUnit
 i  1
 Position
-f  -90.930046
-f  0.000026
-f  -231.276016
+f  -64.091560
+f  -1206.814209
+f  -76.518463
 MouseSelectable
 MouseIntersectable
 __32__
@@ -749,9 +770,9 @@ p
 BubbleUnit
 i  1
 Position
-f  -71.253960
-f  0.000039
-f  -235.520920
+f  -44.415474
+f  -1206.814087
+f  -80.763367
 MouseSelectable
 MouseIntersectable
 __33__
@@ -799,16 +820,16 @@ p
 BubbleUnit
 i  1
 Position
-f  -85.871452
-f  0.000007
-f  -243.825317
+f  -59.032997
+f  -1206.814209
+f  -89.067764
 MouseSelectable
 MouseIntersectable
 __35__
 Position
-f  67.465080
-f  0.000091
-f  -235.494446
+f  94.303535
+f  -1206.814087
+f  -80.736893
 LoopTag
 BubbleComponent
 MouseSelectable
@@ -845,9 +866,9 @@ LoopSociety
 q  35
 p  
 Position
-f  58.239265
-f  0.000087
-f  -232.556793
+f  85.077766
+f  -1206.814087
+f  -77.799240
 MouseSelectable
 MouseIntersectable
 __37__
@@ -895,9 +916,9 @@ LoopSociety
 q  35
 p  
 Position
-f  77.915398
-f  0.000100
-f  -236.801697
+f  104.753883
+f  -1206.814087
+f  -82.044144
 MouseSelectable
 MouseIntersectable
 __39__
@@ -924,16 +945,16 @@ LoopSociety
 q  35
 p  
 Position
-f  63.297867
-f  0.000068
-f  -245.106140
+f  90.136330
+f  -1206.814087
+f  -90.348587
 MouseSelectable
 MouseIntersectable
 __40__
 Position
-f  -12.604442
-f  -0.000000
-f  -239.091476
+f  14.234016
+f  -1206.814209
+f  -84.333923
 LoopTag
 LoopSociety
 q  -1
@@ -947,10 +968,11 @@ f  300.000000
 f  60.000000
 MouseGrabbable
 Inventory
+b  1
 Offset
 f  0.000000
-f  0.000000
-f  0.000000
+f  500.000000
+f  -150.000000
 __46__
 MouseSelectable
 Text

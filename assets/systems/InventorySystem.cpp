@@ -8,6 +8,7 @@
 #include "Position.h"
 #include "Circle.h"
 #include "Offset.h"
+#include "BubbleComponent.h"
 
 class InventorySystem : public middle::MiddleGameplaySystem {
 
@@ -37,67 +38,41 @@ public:
 
 			middle::moveShape(gameState, shape.id.index, displacement);
 
-			const float zspacing = 10;
-			const float xmargin = 4;
+			inventoryPosition = middle::getShapePosition(gameState, shape.id.index);
+
 
 			auto inventoryRect = middle::getComponent<components::Rectangle>(shape);
 
 			float totalWidth =  inventoryRect->width;
 			float totalHeight = inventoryRect->height;
 
-			// TODO REMOVE
-			if (totalWidth <= 0) {
-				totalWidth = 10;
-				totalHeight = 10;
-			}
+			float spacing = 0;
 
 			Vector3 referencePos = inventoryPosition;
 			if (inventory->horizontal) {
-				referencePos.x -= totalWidth * 0.5f + zspacing * 0.5f;
-				referencePos.x += margin * 0.5f;
+				spacing = totalWidth / (items.size() + 1);
+				referencePos.x -= totalWidth * 0.5f - spacing;
 			}
 			else {
-				referencePos.z += totalHeight * 0.5f + zspacing * 0.5f;
-				referencePos.z -= margin * 0.5f;
+				spacing = totalHeight / (items.size() + 1);
+				referencePos.z += totalHeight * 0.5f - spacing;
 			}
+
 
 			for (middle::Id& childId : items) {
 				middle::Shape& child = middle::getShape(gameState, childId.index);
 				auto rect = middle::getComponent<components::Rectangle>(child);
 				auto circle = middle::getComponent<components::Circle>(child);
 				auto position = middle::getComponent<components::Position>(child);
+				auto bubble = middle::getComponent<components::BubbleComponent>(child);
 
+				Vector3 displacement = referencePos - middle::getShapePosition(gameState, child.id.index);
+				middle::moveShape(gameState, child.id.index, displacement);
 				if (inventory->horizontal) {
-					if (rect) {
-						referencePos.x -= rect->width * 0.5f + zspacing * 0.5f;
-						position->posX = referencePos.x;
-						position->posY = referencePos.y;
-						position->posZ = referencePos.z;
-						referencePos.x -= rect->width * 0.5f + zspacing * 0.5f;
-					}
-					if (circle) {
-						referencePos.x -= circle->radius + zspacing * 0.5f;
-						position->posX = referencePos.x;
-						position->posY = referencePos.y;
-						position->posZ = referencePos.z;
-						referencePos.x -= circle->radius + zspacing * 0.5f;
-					}
+					referencePos.x += spacing;
 				}
 				else {
-					if (rect) {
-						referencePos.z -= rect->height * 0.5f + zspacing * 0.5f;
-						position->posX = referencePos.x;
-						position->posY = referencePos.y;
-						position->posZ = referencePos.z;
-						referencePos.z -= rect->height * 0.5f + zspacing * 0.5f;
-					}
-					if (circle) {
-						referencePos.z -= circle->radius + zspacing * 0.5f;
-						position->posX = referencePos.x;
-						position->posY = referencePos.y;
-						position->posZ = referencePos.z;
-						referencePos.z -= circle->radius + zspacing * 0.5f;
-					}
+					referencePos.z -= spacing;
 				}
 			}
 
