@@ -1,10 +1,12 @@
 #pragma once
 #include "registrars.h"
 #include "editor_file_utils.h"
-#define MIDDLEINVENTORYITEM(X)
+#define MIDDLEINVENTORYITEM(X) \
+	X(itemType)
 
 namespace components {
 	struct InventoryItem : public middle::Serializable{
+		int itemType = 0;
 
 		void serialize(std::ostream& ostream) override;
 		void deserialize(const std::vector<std::string>& buffer, int indexOffset) override;

@@ -98,7 +98,7 @@ public:
 				middle::RenderItem sphereItem;
 				sphereItem.type = middle::RenderItemType::SPHERE;
 				sphereItem.radius = sphere->radius;
-				sphereItem.center = { position->posX, position->posY, position->posZ };
+				sphereItem.center = middle::getShapePosition(gameState, shape.id.index);
 				sphereItem.color = jointColor;
 				if (intersectable && intersectable->intersecting) {
 					sphereItem.color = hoveredColor;
