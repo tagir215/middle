@@ -10,6 +10,7 @@
 #include "MouseIntersectable.h"
 #include "BubbleUnit.h"
 #include "FractionalComponent.h"
+#include "InventoryItem.h"
 
 class BubbleManipulationSystem : public middle::MiddleGameplaySystem {
 
@@ -68,8 +69,16 @@ class BubbleManipulationSystem : public middle::MiddleGameplaySystem {
 				gameState->bubbleAlgebraState.grabbedId = shape.id;
 			}
 
+			if (grabbable->grabbing && shape.id != gameState->bubbleAlgebraState.grabbedId) {
+				grabbable->grabbing = false;
+			}
+
 			if (gameState->bubbleAlgebraState.grabbedId.index != middle::UNASSIGNED && grabbable->grabbing && !gameState->input.mouseHeld) {
 				grabbable->grabbing = false;
+				auto inventoryItem = middle::getComponent<components::InventoryItem>(shape);
+				if (inventoryItem) {
+					middle::deleteShapeRecursive(gameState, shape.id.index);
+				}
 				gameState->bubbleAlgebraState.grabbedId = middle::Id();
 			}
 

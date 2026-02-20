@@ -6,9 +6,7 @@
 #include "middle_shape_utils.h"
 #include "Rectangle.h"
 #include "Position.h"
-#include "Circle.h"
 #include "Offset.h"
-#include "BubbleComponent.h"
 
 class InventorySystem : public middle::MiddleGameplaySystem {
 
@@ -61,10 +59,6 @@ public:
 
 			for (middle::Id& childId : items) {
 				middle::Shape& child = middle::getShape(gameState, childId.index);
-				auto rect = middle::getComponent<components::Rectangle>(child);
-				auto circle = middle::getComponent<components::Circle>(child);
-				auto position = middle::getComponent<components::Position>(child);
-				auto bubble = middle::getComponent<components::BubbleComponent>(child);
 
 				Vector3 displacement = referencePos - middle::getShapePosition(gameState, child.id.index);
 				middle::moveShape(gameState, child.id.index, displacement);
