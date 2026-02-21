@@ -50,7 +50,7 @@ namespace MouseGrabbingSystem {
 				if (placable && gameState->input.mouseClicked) {
 					middle::deleteComponent<components::PlacementComponent>(shape);
 					std::vector<middle::Id>members;
-					middle::getChildren(gameState, shape.id, members);
+					middle::getAllChildren(gameState, shape.id, members);
 					for (middle::Id& childId : members) {
 						middle::Shape& child = middle::getShape(gameState, childId.index);
 						middle::deleteComponent<components::PlacementComponent>(child);

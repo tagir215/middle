@@ -32,7 +32,7 @@ class BubbleIntersectSystem : public middle::MiddleGameplaySystem {
 			// check that children are not already intersecting or grabbing 
 			bool alreadyIntersecting = false;
 			std::vector<middle::Id>children;
-			middle::getChildren(gameState, shape.id, children);
+			middle::getAllChildren(gameState, shape.id, children);
 			for (auto& childId : children) {
 				auto& childShape = middle::getShape(gameState, childId.index);
 				auto childIntersectable = middle::getComponent<components::MouseIntersectable>(childShape);

@@ -53,8 +53,6 @@ namespace middle {
 	Id copyShape(GameState* gameState, int shapeToCopyIndex, int parentIndex = UNASSIGNED);
 	// copy shape and its children
 	Id deepCopyShape(GameState* gameState, int shapeToCopyIndex, int parentIndex = UNASSIGNED);
-	// get children in a flat array
-	void getChildren(GameState* gameState, Id id, std::vector<Id>& result);
 	// get left right top bottom of a rect containing rect children 
 	void loopRectBoundingBox(GameState* gameState, const Id& shapeId, float* leftX, float* rightX, float* bottomZ, float* topZ);
 	void loopChildrenOnlyRectBoundingBox(GameState* gameState, const Id& shapeId, float* leftX, float* rightX, float* bottomZ, float* topZ);
@@ -63,6 +61,13 @@ namespace middle {
 	std::vector<Vector3>getRectVertices(GameState* gameState, const Id& shapeId);
 	// get scale and multiply it with all the parents scales
 	Vector3 getTotalScale(GameState* gameState, const Id& shapeId);
+	// get parent of shape with loopSocietyComponent
+	Id getParent(GameState* gameState, Id& id);
+	// get children in a flat array
+	void getChildren(GameState* gameState, Id id, std::vector<Id>& result);
+	// get children in a flat array
+	void getAllChildren(GameState* gameState, Id id, std::vector<Id>& result);
+
 
 	template<typename F>
 	void loopInstances(GameState* gameState, F func) {

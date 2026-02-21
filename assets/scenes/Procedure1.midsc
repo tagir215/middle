@@ -30,9 +30,9 @@ LoopSociety
 q  5
 p  
 Position
-f  50.301559
-f  -682.718506
-f  -131.107697
+f  212.558685
+f  -683.637207
+f  -3.393044
 MouseIntersectable
 Text
 s  
@@ -86,13 +86,12 @@ p
 18
 6
 31
-45
 27
 52
 Position
-f  -109.698441
-f  -982.718506
-f  -211.107697
+f  52.558685
+f  -983.637207
+f  -81.170822
 Offset
 f  140.000000
 f  300.000000
@@ -127,11 +126,12 @@ MouseGrabbable
 Sphere
 f  2.000000
 CodeFunction
+i  0
 MouseSelectable
 Position
-f  30.301559
-f  -682.718506
-f  -131.107697
+f  192.558685
+f  -683.637207
+f  -3.393044
 LoopSociety
 q  3
 p  
@@ -162,11 +162,12 @@ MouseGrabbable
 Sphere
 f  2.000000
 CodeFunction
+i  4
 MouseSelectable
 Position
-f  30.301559
-f  -682.718506
-f  -211.107697
+f  192.558685
+f  -683.637207
+f  -92.281929
 LoopSociety
 q  3
 p  
@@ -195,9 +196,9 @@ LoopSociety
 q  6
 p  
 Position
-f  50.301559
-f  -682.718506
-f  -211.107697
+f  212.558685
+f  -683.637207
+f  -92.281929
 MouseGrabbable
 Text
 s  
@@ -224,9 +225,9 @@ LoopSociety
 q  6
 p  
 Position
-f  10.301559
-f  -682.718506
-f  -206.107697
+f  172.558685
+f  -683.637207
+f  -87.281929
 MouseGrabbable
 Text
 s  
@@ -255,11 +256,12 @@ MouseGrabbable
 Sphere
 f  2.000000
 CodeFunction
+i  2
 MouseSelectable
 Position
-f  30.301559
-f  -682.718506
-f  -171.107697
+f  192.558685
+f  -683.637207
+f  -47.837486
 LoopSociety
 q  3
 p  
@@ -284,9 +286,9 @@ __10__
 Sphere
 f  2.000000
 Position
-f  10.301559
-f  -682.718506
-f  -216.107697
+f  172.558685
+f  -683.637207
+f  -97.281929
 LoopSociety
 q  6
 p  
@@ -318,11 +320,12 @@ MouseGrabbable
 Sphere
 f  2.000000
 CodeFunction
+i  1
 MouseSelectable
 Position
-f  30.301559
-f  -682.718506
-f  -151.107697
+f  192.558685
+f  -683.637207
+f  -25.615265
 LoopSociety
 q  3
 p  
@@ -360,9 +363,9 @@ p
 13
 14
 Position
-f  -109.698441
-f  -982.718506
-f  -211.107697
+f  52.558693
+f  -983.637207
+f  -81.170822
 Offset
 f  60.000000
 f  300.000000
@@ -391,9 +394,9 @@ LoopSociety
 q  12
 p  
 Position
-f  -49.698441
-f  -682.718506
-f  -136.107697
+f  112.558693
+f  -683.637207
+f  -6.170822
 CodeBlock
 Offset
 f  0.000000
@@ -423,9 +426,9 @@ LoopSociety
 q  12
 p  
 Position
-f  -49.698441
-f  -682.718506
-f  -166.107697
+f  112.558693
+f  -683.637207
+f  -36.170822
 Offset
 f  0.000000
 f  0.000000
@@ -467,6 +470,7 @@ f  88.000000
 MouseIntersectable
 MouseGrabbable
 ProcedureComponent
+b  0
 Sphere
 f  2.000000
 MouseSelectable
@@ -527,12 +531,13 @@ f  10.000000
 Sphere
 f  2.000000
 CodeFunction
+i  3
 MouseSelectable
 MouseGrabbable
 Position
-f  30.301559
-f  -682.718506
-f  -191.107697
+f  192.558685
+f  -683.637207
+f  -70.059708
 LoopSociety
 q  3
 p  
@@ -571,9 +576,9 @@ q  18
 p  
 21
 Position
-f  39.601559
-f  -682.718506
-f  -187.707687
+f  201.858688
+f  -683.637207
+f  -66.659706
 Offset
 f  0.300000
 f  0.000000
@@ -598,9 +603,9 @@ q  18
 p  
 22
 Position
-f  39.601559
-f  -682.718506
-f  -194.507675
+f  201.858688
+f  -683.637207
+f  -73.459709
 Offset
 f  0.300000
 f  0.000000
@@ -625,9 +630,9 @@ LoopSociety
 q  19
 p  
 Position
-f  39.601559
-f  -682.718506
-f  -187.707687
+f  201.858688
+f  -683.637207
+f  -66.659706
 Offset
 f  3.000000
 f  0.000000
@@ -651,9 +656,9 @@ LoopSociety
 q  20
 p  
 Position
-f  39.601559
-f  -682.718506
-f  -194.507675
+f  201.858688
+f  -683.637207
+f  -73.459709
 Offset
 f  3.000000
 f  0.000000
@@ -696,9 +701,9 @@ __24__
 Sphere
 f  2.000000
 Position
-f  10.301559
-f  -682.718506
-f  -136.107697
+f  172.558685
+f  -683.637207
+f  -8.393044
 LoopSociety
 q  5
 p  
@@ -728,9 +733,9 @@ LoopSociety
 q  5
 p  
 Position
-f  10.301559
-f  -682.718506
-f  -126.107697
+f  172.558685
+f  -683.637207
+f  1.606956
 MouseIntersectable
 Text
 s  
@@ -780,11 +785,12 @@ MouseGrabbable
 Sphere
 f  2.000000
 CodeFunction
+i  6
 MouseSelectable
 Position
-f  30.301559
-f  -682.718506
-f  -271.107697
+f  192.558685
+f  -683.637207
+f  -136.726379
 LoopSociety
 q  3
 p  
@@ -809,9 +815,9 @@ __28__
 Sphere
 f  2.000000
 Position
-f  10.301559
-f  -682.718506
-f  -191.107697
+f  172.558685
+f  -683.637207
+f  -70.059708
 LoopSociety
 q  18
 p  
@@ -838,9 +844,9 @@ __29__
 Sphere
 f  2.000000
 Position
-f  10.301559
-f  -682.718506
-f  -271.107697
+f  172.558685
+f  -683.637207
+f  -136.726379
 LoopSociety
 q  27
 p  
@@ -867,9 +873,9 @@ __30__
 Sphere
 f  2.000000
 Position
-f  50.301559
-f  -682.718506
-f  -191.107697
+f  212.558685
+f  -683.637207
+f  -70.059708
 LoopSociety
 q  18
 p  
@@ -901,11 +907,12 @@ MouseGrabbable
 Sphere
 f  2.000000
 CodeFunction
+i  5
 MouseSelectable
 Position
-f  30.301559
-f  -682.718506
-f  -231.107697
+f  192.558685
+f  -683.637207
+f  -114.504150
 LoopSociety
 q  3
 p  
@@ -929,9 +936,9 @@ __32__
 Sphere
 f  2.000000
 Position
-f  10.301559
-f  -682.718506
-f  -231.107697
+f  172.558685
+f  -683.637207
+f  -114.504150
 LoopSociety
 q  31
 p  
@@ -1164,9 +1171,9 @@ __40__
 Sphere
 f  2.000000
 Position
-f  50.301559
-f  -682.718506
-f  -271.107697
+f  212.558685
+f  -683.637207
+f  -136.726379
 LoopSociety
 q  27
 p  
@@ -1193,9 +1200,9 @@ __41__
 Sphere
 f  2.000000
 Position
-f  10.301559
-f  -682.718506
-f  -151.107697
+f  172.558685
+f  -683.637207
+f  -25.615265
 LoopSociety
 q  11
 p  
@@ -1222,9 +1229,9 @@ __42__
 Sphere
 f  2.000000
 Position
-f  10.301559
-f  -682.718506
-f  -171.107697
+f  172.558685
+f  -683.637207
+f  -47.837486
 LoopSociety
 q  9
 p  
@@ -1251,9 +1258,9 @@ __43__
 Sphere
 f  2.000000
 Position
-f  50.301559
-f  -682.718506
-f  -171.107697
+f  212.558685
+f  -683.637207
+f  -47.837486
 LoopSociety
 q  9
 p  
@@ -1280,213 +1287,11 @@ __44__
 Sphere
 f  2.000000
 Position
-f  50.301559
-f  -682.718506
-f  -151.107697
+f  212.558685
+f  -683.637207
+f  -25.615265
 LoopSociety
 q  11
-p  
-MouseSelectable
-MouseGrabbable
-Text
-s  
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-f  3.000000
-b  1
-Circle
-f  4.000000
-MouseIntersectable
-OutputVariable
-q  -1
-s  
-__45__
-Rectangle
-f  20.000000
-f  10.000000
-MouseIntersectable
-Sphere
-f  2.000000
-CodeFunction
-MouseSelectable
-MouseGrabbable
-Position
-f  30.301559
-f  -682.718506
-f  -251.107697
-LoopSociety
-q  3
-p  
-46
-48
-50
-51
-Text
-s  FIND_FRACTION
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-f  1.000000
-b  1
-IfComponent
-i  0
-Offset
-f  0.000000
-f  0.000000
-f  0.000000
-__46__
-MouseIntersectable
-Rectangle
-f  46.000000
-f  48.000000
-MouseGrabbable
-Sphere
-f  2.000000
-MouseSelectable
-LoopSociety
-q  45
-p  
-47
-Position
-f  39.601559
-f  -682.718506
-f  -247.707687
-Offset
-f  0.300000
-f  0.000000
-f  0.000000
-ScopeComponent
-Scale
-v  
-0.100000
-0.100000
-0.100000
-__47__
-CodeBlock
-Rectangle
-f  60.000000
-f  38.000000
-MouseIntersectable
-Sphere
-f  2.000000
-MouseSelectable
-MouseGrabbable
-LoopSociety
-q  46
-p  
-Position
-f  39.601559
-f  -682.718506
-f  -247.707687
-Offset
-f  3.000000
-f  0.000000
-f  0.000000
-Scale
-v  
-1.000000
-1.000000
-1.000000
-__48__
-MouseIntersectable
-Rectangle
-f  46.000000
-f  48.000000
-MouseGrabbable
-Sphere
-f  2.000000
-MouseSelectable
-LoopSociety
-q  45
-p  
-49
-Position
-f  39.601559
-f  -682.718506
-f  -254.507675
-Offset
-f  0.300000
-f  0.000000
-f  -0.000002
-ScopeComponent
-Scale
-v  
-0.100000
-0.100000
-0.100000
-__49__
-Sphere
-f  2.000000
-MouseSelectable
-Rectangle
-f  60.000000
-f  38.000000
-MouseIntersectable
-CodeBlock
-MouseGrabbable
-LoopSociety
-q  48
-p  
-Position
-f  39.601559
-f  -682.718506
-f  -254.507675
-Offset
-f  3.000000
-f  0.000000
-f  0.000000
-Scale
-v  
-1.000000
-1.000000
-1.000000
-__50__
-Sphere
-f  2.000000
-Position
-f  10.301559
-f  -682.718506
-f  -251.107697
-LoopSociety
-q  45
-p  
-MouseSelectable
-MouseIntersectable
-Text
-s  
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-f  3.000000
-b  1
-MouseGrabbable
-Circle
-f  4.000000
-InputVariable
-q  -1
-s  
-__51__
-Sphere
-f  2.000000
-Position
-f  50.301559
-f  -682.718506
-f  -251.107697
-LoopSociety
-q  45
 p  
 MouseSelectable
 MouseGrabbable
@@ -1516,11 +1321,12 @@ MouseGrabbable
 Sphere
 f  2.000000
 CodeFunction
+i  7
 MouseSelectable
 Position
-f  30.301559
-f  -682.718506
-f  -291.107697
+f  192.558685
+f  -683.637207
+f  -158.948608
 LoopSociety
 q  3
 p  

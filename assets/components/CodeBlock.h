@@ -1,10 +1,12 @@
 #pragma once
 #include "registrars.h"
 #include "editor_file_utils.h"
-#define MIDDLECODEBLOCK(X) 
+#define MIDDLECODEBLOCK(X) \
+	X(type)
 
 namespace components {
 	struct CodeBlock : public middle::Serializable{
+		int type = 0;
 		middle::Id nextBlock;
 
 		void serialize(std::ostream& ostream) override;
@@ -18,4 +20,9 @@ namespace components {
 #undef X
 		}
 	};
+}
+
+namespace codeBlockTypes {
+	inline int BLOCK = 0; 
+	inline int LOOP_BLOCK = 1;
 }

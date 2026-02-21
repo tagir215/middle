@@ -11,6 +11,16 @@
 #include "OutputVariable.h"
 
 class VariableLinkingSystem : public middle::MiddleGameplaySystem {
+
+	void updateVariable(middle::GameState* gameState, middle::Id& newUnitRef, const std::string& label) {
+		middle::loopInstances(gameState, [gameState, &label, &newUnitRef](int i, middle::Shape& shape) {
+			auto inputVariable = middle::getComponent<components::InputVariable>(shape);
+			if (inputVariable && inputVariable->label == label) {
+				inputVariable->unitRef = newUnitRef;
+			}
+			});
+	}
+
 	void update(middle::GameState* gameState) override {
 
 		middle::Id& grabbedId = gameState->bubbleAlgebraState.grabbedId;
@@ -28,7 +38,7 @@ class VariableLinkingSystem : public middle::MiddleGameplaySystem {
 					bool doDelete = true;
 
 					// variable transfer
-					middle::loopInstances(gameState, [gameState, &grabbedId, &doDelete, grabbedInputVariable, grabbedOutputVariable](int i, middle::Shape& shape) {
+					middle::loopInstances(gameState, [gameState, this, &grabbedId, &doDelete, grabbedInputVariable, grabbedOutputVariable](int i, middle::Shape& shape) {
 						if (shape.id == grabbedId)
 							return;
 						auto otherInputVariable = middle::getComponent<components::InputVariable>(shape);
@@ -52,6 +62,7 @@ class VariableLinkingSystem : public middle::MiddleGameplaySystem {
 						}
 						else if (otherBubble && grabbedInputVariable) {
 							grabbedInputVariable->unitRef = shape.id;
+							updateVariable(gameState, shape.id, grabbedInputVariable->label);
 							doDelete = false;
 						}
 						});

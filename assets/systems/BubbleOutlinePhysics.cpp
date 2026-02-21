@@ -24,7 +24,7 @@ public:
 	std::vector<Vector3> getFieldPositions(middle::GameState* gameState, middle::Shape& bubble) {
 		std::vector<Vector3>fieldPositions;
 		std::vector<middle::Id>children;
-		middle::getChildren(gameState, bubble.id, children);
+		middle::getAllChildren(gameState, bubble.id, children);
 
 		for(middle::Id& id : children){
 			middle::Shape& shape = middle::getShape(gameState, id.index);

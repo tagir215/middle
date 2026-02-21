@@ -101,6 +101,10 @@ public:
 			// move input variables to bubbles they reference
 			auto inputVar = middle::getComponent<components::InputVariable>(shape);
 			if (inputVar && inputVar->unitRef.index != middle::UNASSIGNED) {
+				if (!middle::isShapeAlive(gameState, inputVar->unitRef.index)) {
+					middle::deleteShape(gameState, shape.id.index);
+					return;
+				}
 				Vector3 currentPos = middle::getShapePosition(gameState, shape.id.index);
 				Vector3 refShapePosition = middle::getShapePosition(gameState, inputVar->unitRef.index);
 				middle::moveShape(gameState, shape.id.index, refShapePosition - currentPos);

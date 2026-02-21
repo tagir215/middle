@@ -476,17 +476,6 @@ namespace middle {
 	{
 		return Id();
 	}
-	void getChildren(GameState* gameState, Id id, std::vector<Id>& result)
-	{
-		Shape& shape = getShape(gameState, id.index);
-		auto loop = getComponent<components::LoopSociety>(shape);
-		if (loop) {
-			for (Id& childId : loop->loopMemberIds) {
-				result.push_back(childId);
-				getChildren(gameState, childId, result);
-			}
-		}
-	}
 
 	void loopRectBoundingBox(GameState* gameState, const Id& shapeId, float* leftX, float* rightX, float* bottomZ, float* topZ)
 	{
@@ -574,5 +563,34 @@ namespace middle {
 			return scale->scale * getTotalScale(gameState, loop->parentLoopId);
 		}
 		return scale->scale;
+	}
+	Id getParent(GameState* gameState, Id& id)
+	{
+		Shape& shape = getShape(gameState, id.index);
+		auto loopSociety = middle::getComponent<components::LoopSociety>(shape);
+		assert(loopSociety);
+		return loopSociety->parentLoopId;
+	}
+	void getChildren(GameState* gameState, Id id, std::vector<Id>& result)
+	{
+		Shape& shape = getShape(gameState, id.index);
+		auto loop = getComponent<components::LoopSociety>(shape);
+		if (loop) {
+			for (Id& childId : loop->loopMemberIds) {
+				result.push_back(childId);
+			}
+		}
+	}
+
+	void getAllChildren(GameState* gameState, Id id, std::vector<Id>& result)
+	{
+		Shape& shape = getShape(gameState, id.index);
+		auto loop = getComponent<components::LoopSociety>(shape);
+		if (loop) {
+			for (Id& childId : loop->loopMemberIds) {
+				result.push_back(childId);
+				getAllChildren(gameState, childId, result);
+			}
+		}
 	}
 }

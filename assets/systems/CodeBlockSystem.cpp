@@ -53,7 +53,7 @@ public:
 				// if grabbing while not intersecting remove from loop
 				if (!scopeIntersectable->intersecting) {
 					std::vector<middle::Id>children;
-					middle::getChildren(gameState, shape.id, children);
+					middle::getAllChildren(gameState, shape.id, children);
 					for (middle::Id& childId : children) {
 						auto& childShape = middle::getShape(gameState, childId.index);
 						// if moving away while placing cancel the addition by removing from loop
@@ -125,7 +125,7 @@ public:
 			// grab placed component
 			if (scope && grabbedId.index == middle::UNASSIGNED) {
 				std::vector<middle::Id>children;
-				middle::getChildren(gameState, shape.id, children);
+				middle::getAllChildren(gameState, shape.id, children);
 				for (middle::Id& childId : children) {
 					auto& childShape = middle::getShape(gameState, childId.index);
 
@@ -164,7 +164,7 @@ public:
 			auto inventory = middle::getComponent<components::Inventory>(shape);
 			if (inventory) {
 				std::vector < middle::Id>children;
-				middle::getChildren(gameState, shape.id, children);
+				middle::getAllChildren(gameState, shape.id, children);
 
 				for (middle::Id childId : children) {
 					auto& child = middle::getShape(gameState, childId.index);

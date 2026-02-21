@@ -501,7 +501,7 @@ namespace middle {
 
 			// placement component to children
 			std::vector<Id>children;
-			getChildren(gameState, copyShape.id, children);
+			getAllChildren(gameState, copyShape.id, children);
 			for (Id& id : children) {
 				Shape& child = getShape(gameState, id.index);
 				addComponent<components::PlacementComponent>(child);

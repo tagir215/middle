@@ -64,7 +64,7 @@ class RectangleIntersectionSystem : public middle::MiddleGameplaySystem {
 			if (intersectable->intersecting) {
 				intersectable->intersectingTop = true;
 				std::vector<middle::Id>children;
-				middle::getChildren(gameState, shape.id, children);
+				middle::getAllChildren(gameState, shape.id, children);
 				for (middle::Id childId : children) {
 					auto& child = middle::getShape(gameState, childId.index);
 					auto intersectableChild = middle::getComponent<components::MouseIntersectable>(child);
