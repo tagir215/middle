@@ -21,17 +21,17 @@ public:
 		systemModeType = middle::SystemModeType::ENGINE;
 	}
 
-	const float zmargin = 4;
-	const float minScopeHeight = 40;
+	const float zmargin = 0;
+	const float minScopeHeight = 30;
 	const float minScopeWidth = 60;
 	const float minCodeBlockHeight = 30;
 	const float minCodeBlockWidth = 20;
 	const float minFunctionHeight = 10;
 	const float minFunctionWidth = 20;
-	const float ifspacing = 20;
+	const float ifspacing = 0;
 	const float blockMarginX = 20;
 	const float blockMarginZ = 0;
-	const float ifoffset = 40;
+	const float ifoffset = 90;
 	const float variableSpacingZ = 10;
 	const float variableSpacingX = 10;
 
@@ -260,21 +260,29 @@ public:
 
 				for (middle::Id& id : scopeChildren) {
 					auto& childShape = middle::getShape(gameState, id.index);
-					auto childRect = middle::getComponent<components::Rectangle>(childShape);
-					auto childScale = middle::getComponent<components::Scale>(childShape);
-					auto childPos = middle::getComponent<components::Position>(childShape);
-					childScale->scale = targetScale;
-					referencePos.z -= childRect->height * 0.5f * targetScale.z;
+					auto scopeRect = middle::getComponent<components::Rectangle>(childShape);
+					auto scopeScale = middle::getComponent<components::Scale>(childShape);
+					auto scopePos = middle::getComponent<components::Position>(childShape);
+					auto scopeLoop = middle::getComponent<components::LoopSociety>(childShape);
+					scopeScale->scale = targetScale;
 
-					Vector3 currentPos = middle::getShapePosition(gameState, id.index);
-					float sizeOffset = childRect->width * 0.5f * targetScale.x;
+					// if no children use the scopes height, otherwise use the first childs height
+					float scopeOffsetZ = scopeRect->height * 0.5f;
+					if (scopeLoop->loopMemberIds.size() > 0) {
+						auto& scopeChildShape = middle::getShape(gameState, scopeLoop->loopMemberIds[0].index);
+						auto scopeChildRect = middle::getComponent<components::Rectangle>(scopeChildShape);
+						scopeOffsetZ = scopeChildRect->height * 0.5f;
+					}
+
+					float nextZ = referencePos.z - scopeRect->height * targetScale.z;
+					referencePos.z -= scopeOffsetZ * targetScale.z;
 
 					Vector3 targetPos = referencePos;
-					targetPos.x += sizeOffset;
-					childPos->posX = targetPos.x;
-					childPos->posY = targetPos.y;
-					childPos->posZ = targetPos.z;
-					referencePos.z = referencePos.z - childRect->height * 0.5f * targetScale.z;
+					scopePos->posX = targetPos.x;
+					scopePos->posY = targetPos.y;
+					scopePos->posZ = targetPos.z;
+
+					referencePos.z = nextZ;
 				}
 			}
 
