@@ -249,20 +249,22 @@ namespace bubbleActions{
 		return middle::Id();
 	}
 
-	middle::Id topLevelBubble(middle::GameState* gameState, middle::Id& id)
+	middle::Id topLevelBubble(middle::GameState* gameState)
 	{
-		middle::loopInstances(gameState, [gameState](int i, middle::Shape& shape) {
+		middle::Id resultId;
+		middle::loopInstances(gameState, [gameState, &resultId](int i, middle::Shape& shape) {
 			auto bubble = middle::getComponent<components::BubbleComponent>(shape);
 			if (!bubble) {
 				return true;
 			}
 			middle::Id& parentId = middle::getParent(gameState, shape.id);
 			if (parentId.index == middle::UNASSIGNED) {
+				resultId = shape.id;
 				return false;
 			}
 			return true;
 			});
-		return middle::Id();
+		return resultId;
 	}
 
 	void setBubbleHidden(middle::GameState* gameState, middle::Id& id, bool hidden) {

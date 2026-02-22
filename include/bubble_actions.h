@@ -22,7 +22,7 @@ namespace bubbleActions{
 	void setBubbleHidden(middle::GameState* gameState, middle::Id& id, bool hidden);
 	void updateVariable(middle::GameState* gameState, middle::Id& newUnitRef, const std::string& label);
 	middle::Id inverseBubble(middle::GameState* gameState, middle::Id& id);
-	middle::Id topLevelBubble(middle::GameState* gameState, middle::Id& id);
+	middle::Id topLevelBubble(middle::GameState* gameState);
 
 
 	class CreateMulitiplicationReplacementShape : public middle::GameplayAction {

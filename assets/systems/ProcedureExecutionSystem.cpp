@@ -266,14 +266,31 @@ class ProcedureExecutionSystem : public middle::MiddleGameplaySystem {
 
 		}
 
+		// add new term
+		else if (function->type == functionTypes::NEW_TERM) {
+			components::InputVariable input;
+			components::OutputVariable output;
+			getOneInput(gameState, funcShape, input);
+			getOutput(gameState, funcShape, output);
+			assert(input.unitRef.index != middle::UNASSIGNED);
+			middle::Id topBubbleId = bubbleActions::topLevelBubble(gameState);
+			middle::Id copy = middle::deepCopyShape(gameState, funcShape.id.index, topBubbleId.index);
+			auto reparent = middle::EditorActionReparent(topBubbleId.index, copy.index);
+			reparent.execute(gameState);
+			bubbleActions::updateVariable(gameState, copy, output.label);
+		}
+
 		else if (function->type == functionTypes::NEW_MULTERM) {
 			components::InputVariable input;
 			components::OutputVariable output;
 			getOneInput(gameState, funcShape, input);
 			getOutput(gameState, funcShape, output);
 			assert(input.unitRef.index != middle::UNASSIGNED);
-			int highestContainerIndex = middle::findHighestLevelContainer(gameState, input.unitRef.index);
-			middle::deepCopyShape(gameState, funcShape.id.index, highestContainerIndex);
+			middle::Id topBubbleId = bubbleActions::topLevelBubble(gameState);
+			middle::Id copy = middle::deepCopyShape(gameState, funcShape.id.index, topBubbleId.index);
+			auto replacement = bubbleActions::CreateMulitiplicationReplacementShape(topBubbleId, copy);
+			replacement.execute(gameState);
+			bubbleActions::updateVariable(gameState, copy, output.label);
 		}
 	}
 

@@ -49,6 +49,9 @@ class BubbleRenderSetup : public middle::MiddleGameplaySystem {
 					if (unit->value == 0) {
 						particle.color = { 255,255,255, 60 };
 					}
+					if (unit->value == -1) {
+						particle.color = { 0,255,255,255 };
+					}
 
 					auto intersectable = middle::getComponent<components::MouseIntersectable>(shape);
 					if (intersectable->intersectingTop) {
