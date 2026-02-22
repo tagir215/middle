@@ -9,17 +9,10 @@
 #include "BubbleComponent.h"
 #include "editor_actions.h"
 #include "OutputVariable.h"
+#include "bubble_actions.h"
 
 class VariableLinkingSystem : public middle::MiddleGameplaySystem {
 
-	void updateVariable(middle::GameState* gameState, middle::Id& newUnitRef, const std::string& label) {
-		middle::loopInstances(gameState, [gameState, &label, &newUnitRef](int i, middle::Shape& shape) {
-			auto inputVariable = middle::getComponent<components::InputVariable>(shape);
-			if (inputVariable && inputVariable->label == label) {
-				inputVariable->unitRef = newUnitRef;
-			}
-			});
-	}
 
 	void update(middle::GameState* gameState) override {
 
@@ -40,16 +33,16 @@ class VariableLinkingSystem : public middle::MiddleGameplaySystem {
 					// variable transfer
 					middle::loopInstances(gameState, [gameState, this, &grabbedId, &doDelete, grabbedInputVariable, grabbedOutputVariable](int i, middle::Shape& shape) {
 						if (shape.id == grabbedId)
-							return;
+							return true;
 						auto otherInputVariable = middle::getComponent<components::InputVariable>(shape);
 						auto otherBubble = middle::getComponent<components::BubbleComponent>(shape);
 						if (!otherInputVariable && !otherBubble)
-							return;
+							return true;
 
 						auto otherIntersectable = middle::getComponent<components::MouseIntersectable>(shape);
 						assert(otherIntersectable);
 						if (!otherIntersectable->intersectingTop) {
-							return;
+							return true;
 						}
 
 						if (otherInputVariable && grabbedInputVariable) {
@@ -62,9 +55,10 @@ class VariableLinkingSystem : public middle::MiddleGameplaySystem {
 						}
 						else if (otherBubble && grabbedInputVariable) {
 							grabbedInputVariable->snapId = shape.id;
-							updateVariable(gameState, shape.id, grabbedInputVariable->label);
+							bubbleActions::updateVariable(gameState, shape.id, grabbedInputVariable->label);
 							doDelete = false;
 						}
+						return true;
 						});
 
 					if (doDelete) {
@@ -97,11 +91,11 @@ class VariableLinkingSystem : public middle::MiddleGameplaySystem {
 			auto outputVariable = middle::getComponent<components::OutputVariable>(shape);
 
 			if (!inputVariable && !outputVariable)
-				return;
+				return true;
 
 			auto intersectable = middle::getComponent<components::MouseIntersectable>(shape);
 			if (!intersectable)
-				return;
+				return true;
 
 			if (intersectable->intersecting) {
 				middle::Id copyId = middle::deepCopyShape(gameState, shape.id.index, middle::UNASSIGNED);
@@ -114,6 +108,7 @@ class VariableLinkingSystem : public middle::MiddleGameplaySystem {
 				copyLoop->parentLoopId = middle::Id();
 				gameState->bubbleAlgebraState.grabbedId = copyId;
 			}
+			return true;
 			});
 
 	}

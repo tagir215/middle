@@ -13,11 +13,17 @@
 #include "LoopTag.h"
 #include "Sphere.h"
 #include "Text.h"
+#include "InputVariable.h"
+
 
 namespace bubbleActions{
 
 	void deleteBubble(middle::GameState* gameState, middle::Id& id);
 	void setBubbleHidden(middle::GameState* gameState, middle::Id& id, bool hidden);
+	void updateVariable(middle::GameState* gameState, middle::Id& newUnitRef, const std::string& label);
+	middle::Id inverseBubble(middle::GameState* gameState, middle::Id& id);
+	middle::Id topLevelBubble(middle::GameState* gameState, middle::Id& id);
+
 
 	class CreateMulitiplicationReplacementShape : public middle::GameplayAction {
 	public:
@@ -42,7 +48,6 @@ namespace bubbleActions{
 		void execute(middle::GameState* gameState) override;
 		void undo(middle::GameState* gameState) override;
 	};
-
 
 	struct MultiplyPair {
 		middle::Id parentId;

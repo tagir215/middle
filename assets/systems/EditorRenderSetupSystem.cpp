@@ -54,7 +54,7 @@ public:
 
 			auto hidden = middle::getComponent<components::HiddenTag>(shape);
 			if (hidden)
-				return;
+				return true;
 
 			auto position = middle::getComponent<components::Position>(shape);
 			auto selectable = middle::getComponent<components::MouseSelectable>(shape);
@@ -232,7 +232,7 @@ public:
 					gameState->renderData.push_back(selectItem);
 				}
 
-				return;
+				return true;
 			}
 
 			auto system = middle::getComponent<components::SystemReference>(shape);
@@ -264,6 +264,7 @@ public:
 				}
 			}
 
+			return true;
 			});
 
 

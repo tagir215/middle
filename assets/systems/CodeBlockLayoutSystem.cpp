@@ -103,7 +103,7 @@ public:
 			if (inputVar && inputVar->snapId.index != middle::UNASSIGNED) {
 				if (!middle::isShapeAlive(gameState, inputVar->snapId.index)) {
 					middle::deleteShape(gameState, shape.id.index);
-					return;
+					return true;
 				}
 				Vector3 currentPos = middle::getShapePosition(gameState, shape.id.index);
 				Vector3 refShapePosition = middle::getShapePosition(gameState, inputVar->snapId.index);
@@ -332,6 +332,7 @@ public:
 
 			}
 
+			return true;
 			});
 	}
 };

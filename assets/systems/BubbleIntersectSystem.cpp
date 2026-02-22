@@ -24,7 +24,7 @@ class BubbleIntersectSystem : public middle::MiddleGameplaySystem {
 			auto bubble = middle::getComponent<components::BubbleComponent>(shape);
 			auto unit = middle::getComponent<components::BubbleUnit>(shape);
 			if (!bubble && !unit)
-				return;
+				return true;
 
 			auto intersectable = middle::getComponent<components::MouseIntersectable>(shape);
 			assert(intersectable);
@@ -70,6 +70,7 @@ class BubbleIntersectSystem : public middle::MiddleGameplaySystem {
 				intersectable->intersectingTop = intersecting;
 			}
 
+			return true;
 			});
 	}
 };

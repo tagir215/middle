@@ -246,10 +246,10 @@ public:
 		middle::loopInstances(gameState, [gameState, &shapeList, this](int i, middle::Shape& shape) {
 			auto bubble = middle::getComponent<components::BubbleComponent>(shape);
 			if (!bubble)
-				return;
+				return true;
 			auto placement = middle::getComponent<components::PlacementComponent>(shape);
 			if (placement)
-				return;
+				return true;
 
 			shapeList.clear();
 			populateWithChildren(gameState, &shapeList, shape.id);
@@ -270,7 +270,7 @@ public:
 				perpCouple.initialized = true;
 			}
 			else {
-				return;
+				return true;
 			}
 
 
@@ -442,7 +442,7 @@ public:
 				addNode(gameState, bubble, distBetweenNodes);
 			}
 
-
+			return true;
 			});
 	}
 };

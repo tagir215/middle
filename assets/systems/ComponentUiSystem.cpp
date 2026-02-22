@@ -31,7 +31,7 @@ public:
 		middle::loopInstances(gameState, [gameState](int i, middle::Shape& shape) {
 			auto selected = middle::getComponent<components::MouseSelectable>(shape);
 			if (!selected || !selected->selected)
-				return;
+				return true;
 
 
 			auto ui = [&shape, gameState]() {
@@ -180,6 +180,7 @@ public:
 				};
 
 			gameState->uiSetups.push_back(ui);
+			return true;
 			});
 	}
 };

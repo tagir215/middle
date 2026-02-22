@@ -36,6 +36,7 @@ class BubbleCollisionSystem : public middle::MiddleGameplaySystem {
 			if (bubble || mulComp) {
 				bubbleList.push_back(shape.id);
 			}
+			return true;
 			});
 
 		// create pairs of bubbles children

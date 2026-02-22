@@ -234,6 +234,36 @@ namespace bubbleActions{
 	void CreateAdditionReplacementShape::undo(middle::GameState* gameState) {
 	}
 
+	void updateVariable(middle::GameState* gameState, middle::Id& newUnitRef, const std::string& label) {
+		middle::loopInstances(gameState, [gameState, &label, &newUnitRef](int i, middle::Shape& shape) {
+			auto inputVariable = middle::getComponent<components::InputVariable>(shape);
+			if (inputVariable && inputVariable->label == label) {
+				inputVariable->unitRef = newUnitRef;
+			}
+			return true;
+			});
+	}
+
+	middle::Id inverseBubble(middle::GameState* gameState, middle::Id& id)
+	{
+		return middle::Id();
+	}
+
+	middle::Id topLevelBubble(middle::GameState* gameState, middle::Id& id)
+	{
+		middle::loopInstances(gameState, [gameState](int i, middle::Shape& shape) {
+			auto bubble = middle::getComponent<components::BubbleComponent>(shape);
+			if (!bubble) {
+				return true;
+			}
+			middle::Id& parentId = middle::getParent(gameState, shape.id);
+			if (parentId.index == middle::UNASSIGNED) {
+				return false;
+			}
+			return true;
+			});
+		return middle::Id();
+	}
 
 	void setBubbleHidden(middle::GameState* gameState, middle::Id& id, bool hidden) {
 		middle::Shape& shape = middle::getShape(gameState, id.index);

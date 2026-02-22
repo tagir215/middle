@@ -39,14 +39,14 @@ class BubbleManipulationSystem : public middle::MiddleGameplaySystem {
 
 			auto grabbable = middle::getComponent<components::MouseGrabbable>(shape);
 			if (!grabbable) {
-				return;
+				return true;
 			}
 
 			auto bubble = middle::getComponent<components::BubbleComponent>(shape);
 			auto unit = middle::getComponent<components::BubbleUnit>(shape);
 
 			if (!bubble && !unit) {
-				return;
+				return true;
 			}
 
 			if (unit) {
@@ -55,7 +55,7 @@ class BubbleManipulationSystem : public middle::MiddleGameplaySystem {
 					auto& parentShape = middle::getShape(gameState, loop->parentLoopId.index);
 					auto parentFraction = middle::getComponent<components::FractionalComponent>(parentShape);
 					if (parentFraction) {
-						return;
+						return true;
 					}
 				}
 			}
@@ -100,6 +100,7 @@ class BubbleManipulationSystem : public middle::MiddleGameplaySystem {
 				moveShape(gameState, i, Vector3Scale(xzVel, gameState->frameTime));
 			}
 
+			return true;
 			});
 
 	}

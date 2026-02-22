@@ -42,7 +42,7 @@ public:
 			middle::loopInstances(gameState, [gameState](int i, middle::Shape& shape) {
 				auto cameraComponent = middle::getComponent<components::CameraComponent>(shape);
 				if (!cameraComponent)
-					return;
+					return true;
 
 				if (cameraComponent->active) {
 					gameState->activeCameraIndex = i;
@@ -57,6 +57,7 @@ public:
 					gameState->activeCamera = camera;
 				}
 
+				return true;
 				});
 
 		}

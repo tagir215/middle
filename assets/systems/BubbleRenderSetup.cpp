@@ -25,13 +25,13 @@ class BubbleRenderSetup : public middle::MiddleGameplaySystem {
 			auto unit = middle::getComponent<components::BubbleUnit>(shape);
 			auto fraction = middle::getComponent<components::FractionalComponent>(shape);
 			if (!bubbleComponent && !multiplyComponent && !unit && !fraction)
-				return;
+				return true;
 
 			if (bubbleComponent && bubbleComponent->hidden) {
-				return;
+				return true;
 			}
 			if (unit && unit->hidden) {
-				return;
+				return true;
 			}
 
 			if (gameState->applicationMode == middle::ApplicationMode::GAME_MODE) {
@@ -155,6 +155,7 @@ class BubbleRenderSetup : public middle::MiddleGameplaySystem {
 				gameState->renderData.push_back(nodeCountText);
 
 			}
+			return true;
 			});
 	}
 };

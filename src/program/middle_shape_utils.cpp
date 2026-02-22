@@ -329,6 +329,7 @@ namespace middle {
 			if (selectable && selectable->selected) {
 				result.push_back(i);
 			}
+			return true;
 			});
 		return result;
 	}

@@ -15,7 +15,7 @@ class OutputVariableSystem : public middle::MiddleGameplaySystem {
 		middle::loopInstances(gameState, [gameState](int i, middle::Shape& shape) {
 			auto procedure = middle::getComponent<components::ProcedureComponent>(shape);
 			if (!procedure)
-				return;
+				return true;
 
 			std::stack<middle::Id>idStack;
 			idStack.push(shape.id);
@@ -34,6 +34,7 @@ class OutputVariableSystem : public middle::MiddleGameplaySystem {
 				}
 			}
 
+			return true;
 			});
 	}
 };

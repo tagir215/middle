@@ -60,6 +60,7 @@ public:
 			if (multiplication) {
 				multiplications.push_back(shape.id);
 			}
+			return true;
 			});
 
 		// init and render TODO separate
@@ -159,18 +160,19 @@ public:
 			if (inventoryItem && (inventoryItem->itemType == mulType || inventoryItem->itemType == addType)) {
 				middle::loopInstances(gameState, [gameState, &topBubbleId, &intersecting](int i, middle::Shape& shape) {
 					if (shape.id == gameState->bubbleAlgebraState.grabbedId) {
-						return;
+						return true;
 					}
 					auto bubble = middle::getComponent<components::BubbleComponent>(shape);
 					auto mul = middle::getComponent<components::BubbleMultiplyComponent>(shape);
 					if (!bubble && !mul) {
-						return;
+						return true;
 					}
 					auto loop = middle::getComponent<components::LoopSociety>(shape);
 					assert(loop);
 					if (loop->parentLoopId.index == middle::UNASSIGNED) {
 						topBubbleId = shape.id;
 					}
+					return true;
 					});
 
 				bool intersecting = false;
@@ -272,26 +274,27 @@ public:
 
 			auto loop = middle::getComponent<components::LoopSociety>(shape);
 			if (!loop) {
-				return;
+				return true;
 			}
 
 			auto bubble = middle::getComponent<components::BubbleComponent>(shape);
 			auto unit = middle::getComponent<components::BubbleUnit>(shape);
 			auto fraction = middle::getComponent<components::FractionalComponent>(shape);
 			if (!bubble && !unit && !fraction) {
-				return;
+				return true;
 			}
 
 			if (loop->parentLoopId.index != middle::UNASSIGNED) {
 				auto& parentShape = middle::getShape(gameState, loop->parentLoopId.index);
 				// if grabbing units parent is same as grabbed one we can skip
 				if (parentShape.id == gameState->bubbleAlgebraState.grabbedId) {
-					return;
+					return true;
 				}
 				auto mulComp = middle::getComponent<components::BubbleMultiplyComponent>(parentShape);
 				if (mulComp) {
-					return;
+					return true;
 				}
+				return true;
 			}
 
 			auto intersectable = middle::getComponent<components::MouseIntersectable>(shape);
@@ -304,19 +307,19 @@ public:
 
 			// if not grabbing anything can continue
 			if (!grabbable) {
-				return;
+				return true;
 			}
 			// if already adding can continue
 			if (gameState->bubbleAlgebraState.addAction != nullptr) {
-				return;
+				return true;
 			}
 			// if not grabbing something from same parents can continue
 			if (loop->parentLoopId != grabbedParentId) {
-				return;
+				return true;
 			}
 			// if the grabbed one is the same one as in this iteration we can continue
 			if (shape.id == gameState->bubbleAlgebraState.grabbedId) {
-				return;
+				return true;
 			}
 
 			intersectable = middle::getComponent<components::MouseIntersectable>(shape);
@@ -339,6 +342,7 @@ public:
 				time->timeLeft = timerTime;
 			}
 
+			return true;
 			});
 
 

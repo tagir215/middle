@@ -11,7 +11,7 @@ class BubbleCameraSystem : public middle::MiddleGameplaySystem {
 		middle::loopInstances(gameState, [gameState](int i, middle::Shape& shape) {
 			auto camera = middle::getComponent<components::CameraComponent>(shape);
 			if (!camera)
-				return;
+				return true;
 
 			auto position = middle::getComponent<components::Position>(shape);
 			Vector3 pos = { position->posX, position->posY, position->posZ };
@@ -43,6 +43,7 @@ class BubbleCameraSystem : public middle::MiddleGameplaySystem {
 				middle::moveShape(gameState, shape.id.index, { cameraSpeed, 0,0 });
 			}
 
+			return true;
 			});
 	}
 };

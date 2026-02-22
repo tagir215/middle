@@ -541,6 +541,7 @@ namespace middle {
 				deleteComponent<components::HiddenTag>(shape);
 				unhidded.push_back(shape.id.index);
 			}
+			return true;
 			});
 	}
 

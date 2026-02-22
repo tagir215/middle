@@ -12,11 +12,12 @@ public:
 		middle::loopInstances(gameState, [gameState](int i, middle::Shape& shape) {
 			auto timer = middle::getComponent<components::TimerComponent>(shape);
 			if (!timer)
-				return;
+				return true;
 			timer->timeLeft -= gameState->frameTime;
 			if (timer->timeLeft < 0) {
 				middle::deleteComponent<components::TimerComponent>(shape);
 			}
+			return true;
 			});
 	}
 };

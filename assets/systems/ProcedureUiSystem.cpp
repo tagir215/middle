@@ -36,12 +36,12 @@ class ProcedureUiSystem : public middle::MiddleGameplaySystem {
 		middle::loopInstances(gameState, [gameState, this](int i, middle::Shape& shape) {
 			auto button = middle::getComponent<components::Button>(shape);
 			if (!button) {
-				return;
+				return true;
 			}
 
 			auto intersectable = middle::getComponent<components::MouseIntersectable>(shape);
 			if (!intersectable->intersecting) {
-				return;
+				return true;
 			}
 
 			if (button->function == bubble::SAVE_BUTTON) {
@@ -58,6 +58,7 @@ class ProcedureUiSystem : public middle::MiddleGameplaySystem {
 				//middle::addComponent<components::PlacementComponent>(procedureShape);
 			}
 
+			return true;
 			});
 	}
 };

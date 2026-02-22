@@ -48,7 +48,7 @@ public:
 
 			auto bubble = middle::getComponent<components::BubbleComponent>(shape);
 			if (!bubble)
-				return;
+				return true;
 
 			auto bubblePosition = middle::getComponent<components::Position>(shape);
 			assert(bubblePosition);
@@ -168,6 +168,7 @@ public:
 				position->posZ += displacement.z;
 			}
 
+			return true;
 			});
 
 	}

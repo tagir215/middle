@@ -21,7 +21,7 @@ public:
 		middle::loopInstances(gameState, [gameState, this](int i, middle::Shape& shape) {
 			auto inventory = middle::getComponent<components::Inventory>(shape);
 			if (!inventory)
-				return;
+				return true;
 
 			auto loop = middle::getComponent<components::LoopSociety>(shape);
 			std::vector<middle::Id>items = loop->loopMemberIds;
@@ -71,6 +71,7 @@ public:
 			}
 
 
+			return true;
 			});
 	}
 };

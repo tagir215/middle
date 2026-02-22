@@ -85,6 +85,7 @@ public:
 				pos->posY = body.position.y;
 				pos->posZ = body.position.z;
 			}
+			return true;
 			});
 	}
 };

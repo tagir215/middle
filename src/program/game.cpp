@@ -65,20 +65,21 @@ namespace middle{
 				auto& system = gameState->gameplaySystems[systemName];
 
 				if (!system)
-					return;
+					return true;
 
 				if (gameState->applicationMode == ApplicationMode::GAME_MODE
 					&& system->systemModeType == SystemModeType::EDITOR) {
-					return;
+					return true;
 				}
 
 				if (gameState->applicationMode == ApplicationMode::EDITOR_MODE
 					&& system->systemModeType == SystemModeType::GAMEPLAY) {
-					return;
+					return true;
 				}
 
 				system->update(gameState);
 			}
+			return true;
 			});
 
 		for (auto& system : gameState->engineSystemsFrameEnd) {

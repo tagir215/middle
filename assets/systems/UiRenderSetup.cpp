@@ -28,7 +28,7 @@ public:
 			auto outputVariable = middle::getComponent<components::OutputVariable>(shape);
 
 			if (!rectangle && !circle && !uiComponent && !inputVariable && !outputVariable)
-				return;
+				return true;
 
 			if (inputVariable) {
 				text->text = inputVariable->label;
@@ -93,6 +93,7 @@ public:
 				gameState->renderData.push_back(circleItem);
 			}
 
+			return true;
 			});
 	}
 };

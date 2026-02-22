@@ -10,8 +10,25 @@
 #include "OutputVariable.h"
 #include <stack>
 #include "CodeBlock.h"
+#include "IfComponent.h"
 
 class ProcedureExecutionSystem : public middle::MiddleGameplaySystem {
+
+	void getOneInput(middle::GameState* gameState, middle::Shape& funcShape, components::InputVariable& inputVariable) {
+		auto variablesLoop = middle::getComponent<components::LoopSociety>(funcShape);
+		assert(variablesLoop);
+		for (middle::Id& childId : variablesLoop->loopMemberIds) {
+			auto& childShape = middle::getShape(gameState, childId.index);
+			auto inputVar = middle::getComponent<components::InputVariable>(childShape);
+			if (!inputVar) {
+				continue;
+			}
+
+			inputVariable = *inputVar;
+			return;
+		}
+		assert(false);
+	}
 
 	void getTwoInputs(middle::GameState* gameState, middle::Shape& funcShape, components::InputVariable& varA, components::InputVariable& varB) {
 		auto variablesLoop = middle::getComponent<components::LoopSociety>(funcShape);
@@ -59,16 +76,24 @@ class ProcedureExecutionSystem : public middle::MiddleGameplaySystem {
 			middle::Id& id = functionStack.top();
 			functionStack.pop();
 			auto& funcShape = middle::getShape(gameState, id.index);
+
 			auto loop = middle::getComponent<components::LoopSociety>(funcShape);
-			auto& codeBlock = middle::getShape(gameState, loop->parentLoopId.index);
-			auto parentLoop = middle::getComponent<components::LoopSociety>(codeBlock);
+			auto& codeBlockShape = middle::getShape(gameState, loop->parentLoopId.index);
+			auto parentLoop = middle::getComponent<components::LoopSociety>(codeBlockShape);
 			auto& scope = middle::getShape(gameState, parentLoop->parentLoopId.index);
 			auto scopeLoop = middle::getComponent<components::LoopSociety>(scope);
 			int nextIndex = -1;
 			for (int i = 0; i < scopeLoop->loopMemberIds.size(); ++i) {
 				middle::Id& id = scopeLoop->loopMemberIds[i];
-				if (id == codeBlock.id) {
-					nextIndex = i + 1;
+				if (id == codeBlockShape.id) {
+					auto codeBlock = middle::getComponent<components::CodeBlock>(codeBlockShape);
+					if (codeBlock->type == codeBlockTypes::BLOCK || codeBlock->exitLoop) {
+						nextIndex = i + 1;
+					}
+					// looptypes don't advance nextIndex
+					else if (codeBlock->type == codeBlockTypes::LOOP_BLOCK) {
+						nextIndex = i;
+					}
 					break;
 				}
 			}
@@ -96,8 +121,50 @@ class ProcedureExecutionSystem : public middle::MiddleGameplaySystem {
 		}
 	}
 
-	void executeFunctions(middle::GameState* gameState, middle::Shape& funcShape) {
+	// result id is first function of one of the conditional blocks, or if those don't contain functions result is -1 unassigned
+	void getConditionalFunc(middle::GameState* gameState, bool isConditionTrue, const middle::Id& ifFunc, middle::Id& resultId) {
+		auto& ifShape = middle::getShape(gameState, ifFunc.index);
+		auto ifComp = middle::getComponent<components::IfComponent>(ifShape);
+		assert(ifComp);
+		std::vector<middle::Id>ifChildren;
+		middle::getChildren(gameState, ifShape.id, ifChildren);
+		assert(ifChildren.size() == 2);
+		const int conditionTrueIndex = 0;
+		const int conditionFalseIndex = 1;
+		middle::Id scopeId;
+		if (isConditionTrue) {
+			scopeId = ifChildren[conditionTrueIndex];
+		}
+		else {
+			scopeId = ifChildren[conditionFalseIndex];
+		}
+		auto& scopeShape = middle::getShape(gameState, scopeId.index);
+		std::vector<middle::Id>scopeChildren;
+		middle::getChildren(gameState, scopeShape.id, scopeChildren);
+		// return UNASSIGNED
+		if (scopeChildren.size() == 0) {
+			resultId = middle::Id();
+			return;
+		}
+		auto& blockShape = middle::getShape(gameState, scopeChildren[0].index);
+		std::vector<middle::Id>blockChildren;
+		middle::getChildren(gameState, blockShape.id, blockChildren);
+		// return UNASSIGNED
+		if (blockChildren.size() == 0) {
+			resultId = middle::Id();
+			return;
+		}
+		// return first function from one of the conditional scopes
+		resultId = blockChildren[0];
+		return;
+	}
+
+	// execute funcId,  landedFuncId is where the latest execution took place
+	void executeFunctions(middle::GameState* gameState, middle::Id& funcId, middle::Id& landedFuncId) {
+		auto& funcShape = middle::getShape(gameState, funcId.index);
 		auto function = middle::getComponent<components::CodeFunction>(funcShape);
+		// assume landedFuncId is same as funcId, however can change due to if statements
+		landedFuncId = funcId;
 
 		// combine functions are either multiplciations or additions
 		if (function->type == functionTypes::COMBINE) {
@@ -124,21 +191,90 @@ class ProcedureExecutionSystem : public middle::MiddleGameplaySystem {
 			}
 		}
 
+		// exit loops
 		else if (function->type == functionTypes::EXIT_LOOP) {
 			middle::Id parentId = middle::getParent(gameState, funcShape.id);
 			std::stack<middle::Id> parentIds;
 			parentIds.push(parentId);
 			while (parentIds.size() > 0) {
-				middle::Id& id = parentIds.top();
+				middle::Id& currentParent = parentIds.top();
 				parentIds.pop();
-				auto& parentShape = middle::getShape(gameState, id.index);
+				auto& parentShape = middle::getShape(gameState, currentParent.index);
 				auto codeBlock = middle::getComponent<components::CodeBlock>(parentShape);
-				if (codeBlock->type == codeBlockTypes::LOOP_BLOCK) {
+				if (codeBlock && codeBlock->type == codeBlockTypes::LOOP_BLOCK) {
 					codeBlock->exitLoop = true;
+				}
+				else {
+					parentIds.push(middle::getParent(gameState, currentParent));
 				}
 			}
 		}
 
+		// find bubbles: store found bubble to output, execute upper scope if found, execute lower scope if didn't find
+		else if (function->type == functionTypes::FIND_BUBBLE) {
+			components::InputVariable input;
+			components::OutputVariable output;
+			getOneInput(gameState, funcShape, input);
+			getOutput(gameState, funcShape, output);
+			std::vector<middle::Id>inputChildren;
+			middle::getChildren(gameState, input.unitRef, inputChildren);
+			bool isConditionTrue = false;
+			for (middle::Id& id : inputChildren) {
+				auto& childShape = middle::getShape(gameState, id.index);
+				auto bubbleComp = middle::getComponent<components::BubbleComponent>(childShape);
+				if (!bubbleComp) {
+					continue;
+				}
+				bubbleActions::updateVariable(gameState, childShape.id, output.label);
+				isConditionTrue = true;
+				break;
+			}
+			middle::Id newLandedFuncId;
+			getConditionalFunc(gameState, isConditionTrue, funcShape.id, newLandedFuncId);
+			if (newLandedFuncId.index != middle::UNASSIGNED) {
+				landedFuncId = newLandedFuncId;
+			}
+		}
+
+		// find fractions: store found bubble to output, execute upper scope if found, execute lower scope if didn't find
+		else if (function->type == functionTypes::FIND_FRACTION) {
+			components::InputVariable input;
+			components::OutputVariable output;
+			getOneInput(gameState, funcShape, input);
+			getOutput(gameState, funcShape, output);
+			std::vector<middle::Id>inputChildren;
+			middle::getChildren(gameState, input.unitRef, inputChildren);
+			bool isConditionTrue = false;
+			for (middle::Id& id : inputChildren) {
+				auto& childShape = middle::getShape(gameState, id.index);
+				auto fractional = middle::getComponent<components::FractionalComponent>(childShape);
+				if (!fractional) {
+					continue;
+				}
+				bubbleActions::updateVariable(gameState, childShape.id, output.label);
+				isConditionTrue = true;
+				break;
+			}
+			middle::Id newLandedFuncId;
+			getConditionalFunc(gameState, isConditionTrue, funcShape.id, newLandedFuncId);
+			if (newLandedFuncId.index != middle::UNASSIGNED) {
+				landedFuncId = newLandedFuncId;
+			}
+		}
+
+		else if (function->type == functionTypes::INVERSE) {
+
+		}
+
+		else if (function->type == functionTypes::NEW_MULTERM) {
+			components::InputVariable input;
+			components::OutputVariable output;
+			getOneInput(gameState, funcShape, input);
+			getOutput(gameState, funcShape, output);
+			assert(input.unitRef.index != middle::UNASSIGNED);
+			int highestContainerIndex = middle::findHighestLevelContainer(gameState, input.unitRef.index);
+			middle::deepCopyShape(gameState, funcShape.id.index, highestContainerIndex);
+		}
 	}
 
 	void update(middle::GameState* gameState) override {
@@ -163,13 +299,14 @@ class ProcedureExecutionSystem : public middle::MiddleGameplaySystem {
 				auto activeLoop = middle::getComponent<components::LoopSociety>(activeBlock);
 				if (activeLoop->loopMemberIds.size() > 0) {
 					assert(activeLoop->loopMemberIds.size() == 1);
-					auto& funcShape = middle::getShape(gameState, activeLoop->loopMemberIds[0].index);
+					middle::Id funcShapeId = activeLoop->loopMemberIds[0];
 
-					executeFunctions(gameState, funcShape);
+					middle::Id landedFunc;
+					executeFunctions(gameState, funcShapeId, landedFunc);
 
 					middle::Id nextId;
 					bool atEnd = false;
-					getNextBlock(gameState, funcShape.id, &nextId, atEnd);
+					getNextBlock(gameState, landedFunc, &nextId, atEnd);
 					if (atEnd) {
 						procedure->executing = false;
 					}
@@ -177,6 +314,7 @@ class ProcedureExecutionSystem : public middle::MiddleGameplaySystem {
 				}
 			}
 
+			return true;
 			});
 	}
 };

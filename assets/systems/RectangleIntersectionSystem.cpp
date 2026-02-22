@@ -30,7 +30,7 @@ class RectangleIntersectionSystem : public middle::MiddleGameplaySystem {
 			auto circle = middle::getComponent<components::Circle>(shape);
 			auto intersectable = middle::getComponent<components::MouseIntersectable>(shape);
 			if ((!rectangle && !circle) || !intersectable) {
-				return;
+				return true;
 			}
 
 			Vector3 position = middle::getShapePosition(gameState, shape.id.index);
@@ -57,7 +57,7 @@ class RectangleIntersectionSystem : public middle::MiddleGameplaySystem {
 
 			if (isPlacedRecursive(gameState, shape.id)) {
 				intersectable->intersecting = false;
-				return;
+				return true;
 			}
 
 			// check that not intersecting children as well
@@ -74,6 +74,7 @@ class RectangleIntersectionSystem : public middle::MiddleGameplaySystem {
 					}
 				}
 			}
+			return true;
 			});
 	}
 };

@@ -34,6 +34,7 @@ class BubbleInventorySystem : public middle::MiddleGameplaySystem {
 					}
 				}
 			}
+			return true;
 			});
 
 

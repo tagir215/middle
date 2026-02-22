@@ -15,7 +15,7 @@ public:
 		middle::loopInstances(gameState, [gameState](int i, middle::Shape& shape) {
 			auto ui = middle::getComponent<components::UiComponent>(shape);
 			if (!ui) {
-				return;
+				return true;
 			}
 
 			auto loop = middle::getComponent<components::LoopSociety>(shape);
@@ -42,6 +42,7 @@ public:
 				gameState->renderData.push_back(renderItem);
 			}
 
+			return true;
 			});
 	}
 };

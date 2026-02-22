@@ -68,13 +68,14 @@ namespace middle {
 	// get children in a flat array
 	void getAllChildren(GameState* gameState, Id id, std::vector<Id>& result);
 
-
 	template<typename F>
 	void loopInstances(GameState* gameState, F func) {
 		for (int i = 0; i < gameState->shapes.size(); ++i) {
 			if (!isShapeAlive(gameState, i))
 				continue;
-			func(i, gameState->shapes[i]);
+			if (!func(i, gameState->shapes[i])) {
+				break;
+			}
 		}
 	}
 }
