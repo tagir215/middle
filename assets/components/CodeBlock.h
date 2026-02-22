@@ -8,6 +8,7 @@ namespace components {
 	struct CodeBlock : public middle::Serializable{
 		int type = 0;
 		middle::Id nextBlock;
+		bool exitLoop = false;
 
 		void serialize(std::ostream& ostream) override;
 		void deserialize(const std::vector<std::string>& buffer, int indexOffset) override;

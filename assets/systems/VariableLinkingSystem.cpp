@@ -61,7 +61,7 @@ class VariableLinkingSystem : public middle::MiddleGameplaySystem {
 							otherInputVariable->label = grabbedOutputVariable->label;
 						}
 						else if (otherBubble && grabbedInputVariable) {
-							grabbedInputVariable->unitRef = shape.id;
+							grabbedInputVariable->snapId = shape.id;
 							updateVariable(gameState, shape.id, grabbedInputVariable->label);
 							doDelete = false;
 						}

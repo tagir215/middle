@@ -30,8 +30,8 @@ public:
 	const float minFunctionWidth = 20;
 	const float ifspacing = 20;
 	const float blockMarginX = 20;
-	const float blockMarginZ = 4;
-	const float ifoffset = 70;
+	const float blockMarginZ = 0;
+	const float ifoffset = 40;
 	const float variableSpacingZ = 10;
 	const float variableSpacingX = 10;
 
@@ -100,13 +100,13 @@ public:
 
 			// move input variables to bubbles they reference
 			auto inputVar = middle::getComponent<components::InputVariable>(shape);
-			if (inputVar && inputVar->unitRef.index != middle::UNASSIGNED) {
-				if (!middle::isShapeAlive(gameState, inputVar->unitRef.index)) {
+			if (inputVar && inputVar->snapId.index != middle::UNASSIGNED) {
+				if (!middle::isShapeAlive(gameState, inputVar->snapId.index)) {
 					middle::deleteShape(gameState, shape.id.index);
 					return;
 				}
 				Vector3 currentPos = middle::getShapePosition(gameState, shape.id.index);
-				Vector3 refShapePosition = middle::getShapePosition(gameState, inputVar->unitRef.index);
+				Vector3 refShapePosition = middle::getShapePosition(gameState, inputVar->snapId.index);
 				middle::moveShape(gameState, shape.id.index, refShapePosition - currentPos);
 			}
 
@@ -252,9 +252,11 @@ public:
 						totalHeight += rect->height * targetScale.z;
 					}
 				}
-				totalHeight += spacingZ;
+				//totalHeight += spacingZ;
 
-				Vector3 referencePos = ifPosition + Vector3{ ifoffset * targetScale.x,0, totalHeight * 0.5f };
+				float offsetZ = totalHeight * 0.5f;
+				float offsetX = ifoffset * targetScale.x;
+				Vector3 referencePos = ifPosition + Vector3{ offsetX ,0, offsetZ };
 
 				for (middle::Id& id : scopeChildren) {
 					auto& childShape = middle::getShape(gameState, id.index);
@@ -272,7 +274,7 @@ public:
 					childPos->posX = targetPos.x;
 					childPos->posY = targetPos.y;
 					childPos->posZ = targetPos.z;
-					referencePos.z = referencePos.z - childRect->height * 0.5f * targetScale.z - spacingZ;
+					referencePos.z = referencePos.z - childRect->height * 0.5f * targetScale.z;
 				}
 			}
 

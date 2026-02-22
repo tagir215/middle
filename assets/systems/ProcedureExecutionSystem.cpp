@@ -8,6 +8,8 @@
 #include "CodeFunction.h"
 #include "InputVariable.h"
 #include "OutputVariable.h"
+#include <stack>
+#include "CodeBlock.h"
 
 class ProcedureExecutionSystem : public middle::MiddleGameplaySystem {
 
@@ -49,28 +51,92 @@ class ProcedureExecutionSystem : public middle::MiddleGameplaySystem {
 	}
 
 
-	void getNextBlock(middle::GameState* gameState, middle::Shape& funcShape, middle::Id* nextId, bool& atEnd) {
-		auto loop = middle::getComponent<components::LoopSociety>(funcShape);
-		auto& codeBlock = middle::getShape(gameState, loop->parentLoopId.index);
-		auto parentLoop = middle::getComponent<components::LoopSociety>(codeBlock);
-		auto& scope = middle::getShape(gameState, parentLoop->parentLoopId.index);
-		auto scopeLoop = middle::getComponent<components::LoopSociety>(scope);
-		int nextIndex = -1;
-		for (int i = 0; i < scopeLoop->loopMemberIds.size(); ++i) {
-			middle::Id& id = scopeLoop->loopMemberIds[i];
-			if (id == codeBlock.id) {
-				nextIndex = i + 1;
-				break;
+	void getNextBlock(middle::GameState* gameState, middle::Id& funcShapeId, middle::Id* nextId, bool& atEnd) {
+
+		std::stack<middle::Id> functionStack;
+		functionStack.push(funcShapeId);
+		while (functionStack.size() > 0) {
+			middle::Id& id = functionStack.top();
+			functionStack.pop();
+			auto& funcShape = middle::getShape(gameState, id.index);
+			auto loop = middle::getComponent<components::LoopSociety>(funcShape);
+			auto& codeBlock = middle::getShape(gameState, loop->parentLoopId.index);
+			auto parentLoop = middle::getComponent<components::LoopSociety>(codeBlock);
+			auto& scope = middle::getShape(gameState, parentLoop->parentLoopId.index);
+			auto scopeLoop = middle::getComponent<components::LoopSociety>(scope);
+			int nextIndex = -1;
+			for (int i = 0; i < scopeLoop->loopMemberIds.size(); ++i) {
+				middle::Id& id = scopeLoop->loopMemberIds[i];
+				if (id == codeBlock.id) {
+					nextIndex = i + 1;
+					break;
+				}
+			}
+
+			if (nextIndex < scopeLoop->loopMemberIds.size()) {
+				atEnd = false;
+				*nextId = scopeLoop->loopMemberIds[nextIndex];
+			}
+			else {
+				// check if the parent is a function, if it is look for code block from its friends
+				middle::Id& parentId = middle::getParent(gameState, scope.id);
+				if (parentId.index != middle::UNASSIGNED) {
+					auto& parentShape = middle::getShape(gameState, parentId.index);
+					auto funcComp = middle::getComponent<components::CodeFunction>(parentShape);
+					if (funcComp) {
+						functionStack.push(parentId);
+						break;
+					}
+				}
+				// in other case we know we are at end 
+				atEnd = true;
+				nextId = nullptr;
+			}
+
+		}
+	}
+
+	void executeFunctions(middle::GameState* gameState, middle::Shape& funcShape) {
+		auto function = middle::getComponent<components::CodeFunction>(funcShape);
+
+		// combine functions are either multiplciations or additions
+		if (function->type == functionTypes::COMBINE) {
+			components::InputVariable varA;
+			components::InputVariable varB;
+			components::OutputVariable output;
+			getTwoInputs(gameState, funcShape, varA, varB);
+			getOutput(gameState, funcShape, output);
+			assert(varA.unitRef.index != middle::UNASSIGNED);
+			assert(varB.unitRef.index != middle::UNASSIGNED);
+			middle::Id& parentId = middle::getParent(gameState, varA.unitRef);
+			auto& parentShape = middle::getShape(gameState, parentId.index);
+			auto bubbleMultiplication = middle::getComponent<components::BubbleMultiplyComponent>(parentShape);
+
+			if (bubbleMultiplication) {
+				auto multiply = bubbleActions::Multiply(parentShape.id, varA.unitRef, varB.unitRef);
+				multiply.execute(gameState);
+				multiply.finalize(gameState);
+			}
+			else {
+				auto combine = bubbleActions::Combine(varA.unitRef, varB.unitRef);
+				combine.execute(gameState);
+				combine.finalize(gameState);
 			}
 		}
 
-		if (nextIndex < scopeLoop->loopMemberIds.size()) {
-			atEnd = false;
-			*nextId = scopeLoop->loopMemberIds[nextIndex];
-		}
-		else {
-			atEnd = true;
-			nextId = nullptr;
+		else if (function->type == functionTypes::EXIT_LOOP) {
+			middle::Id parentId = middle::getParent(gameState, funcShape.id);
+			std::stack<middle::Id> parentIds;
+			parentIds.push(parentId);
+			while (parentIds.size() > 0) {
+				middle::Id& id = parentIds.top();
+				parentIds.pop();
+				auto& parentShape = middle::getShape(gameState, id.index);
+				auto codeBlock = middle::getComponent<components::CodeBlock>(parentShape);
+				if (codeBlock->type == codeBlockTypes::LOOP_BLOCK) {
+					codeBlock->exitLoop = true;
+				}
+			}
 		}
 
 	}
@@ -98,22 +164,12 @@ class ProcedureExecutionSystem : public middle::MiddleGameplaySystem {
 				if (activeLoop->loopMemberIds.size() > 0) {
 					assert(activeLoop->loopMemberIds.size() == 1);
 					auto& funcShape = middle::getShape(gameState, activeLoop->loopMemberIds[0].index);
-					auto function = middle::getComponent<components::CodeFunction>(funcShape);
 
-					if (function->type == functionTypes::COMBINE) {
-						components::InputVariable varA;
-						components::InputVariable varB;
-						components::OutputVariable output;
-						getTwoInputs(gameState, funcShape, varA, varB);
-						getOutput(gameState, funcShape, output);
-						auto combine = bubbleActions::Combine(varA.unitRef, varB.unitRef);
-						combine.execute(gameState);
-						combine.finalize(gameState);
-					}
+					executeFunctions(gameState, funcShape);
 
 					middle::Id nextId;
 					bool atEnd = false;
-					getNextBlock(gameState, funcShape, &nextId, atEnd);
+					getNextBlock(gameState, funcShape.id, &nextId, atEnd);
 					if (atEnd) {
 						procedure->executing = false;
 					}

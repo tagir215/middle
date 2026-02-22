@@ -3,12 +3,14 @@
 #include "editor_file_utils.h"
 #define MIDDLEINPUTVARIABLE(X) \
 	X(unitRef) \
-	X(label)
+	X(label) \
+	X(snapId) 
 
 namespace components {
 	struct InputVariable : public middle::Serializable{
 		middle::Id unitRef;
 		std::string label;
+		middle::Id snapId;
 
 		void serialize(std::ostream& ostream) override;
 		void deserialize(const std::vector<std::string>& buffer, int indexOffset) override;

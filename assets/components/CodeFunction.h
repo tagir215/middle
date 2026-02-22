@@ -23,12 +23,11 @@ namespace components {
 
 namespace functionTypes {
 	inline int COMBINE = 0;
-	inline int ADD_TERM = 1;
-	inline int NEW_TERM = 2;
-	inline int NEW_MULTERM = 3;
-	inline int FIND_BUBBLE = 4;
-	inline int FIND_FRACTION = 5;
-	inline int POP = 6;
-	inline int INVERSE = 7;
-	inline int EXIT_LOOP = 8;
+	inline int NEW_TERM = 1;
+	inline int NEW_MULTERM = 2;
+	inline int FIND_BUBBLE = 3;
+	inline int FIND_FRACTION = 4;
+	inline int POP = 5;
+	inline int INVERSE = 6;
+	inline int EXIT_LOOP = 7;
 }
