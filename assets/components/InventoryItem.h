@@ -20,3 +20,20 @@ namespace components {
 		}
 	};
 }
+
+namespace bubbleInventoryitemType {
+	inline int DEFAULT = 0;
+	inline int MULTIPLICATION = 1;
+	inline int ADD = 2;
+	inline int POP = 3;
+	inline int TIMES_ONE = 4;
+	inline int BREAK_2 = 5;
+	inline int BREAK_3 = 6;
+	inline int BREAK_4 = 7;
+	inline int BREAK_5 = 8;
+	inline int BREAK_6 = 9;
+	inline int BREAK_7 = 10;
+	inline int BREAK_8 = 11;
+	inline int BREAK_9 = 12;
+	inline int BREAK_10 = 13;
+}

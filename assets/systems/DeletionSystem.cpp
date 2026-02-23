@@ -3,6 +3,8 @@
 #include "middle_system_registrar.h"
 #include "DeleteComponent.h"
 #include "middle_shape_utils.h"
+#include "BubbleComponent.h"
+#include "bubble_actions.h"
 
 class DeletionSystem : public middle::MiddleGameplaySystem {
 	void update(middle::GameState* gameState) override {
@@ -11,8 +13,15 @@ class DeletionSystem : public middle::MiddleGameplaySystem {
 			if (!deleteComp)
 				return true;
 
+
 			if (deleteComp->framesUntilDelete <= 0) {
-				middle::deleteShapeRecursive(gameState, shape.id.index);
+				auto bubble = middle::getComponent<components::BubbleComponent>(shape);
+				if (bubble) {
+					bubbleActions::deleteBubble(gameState, shape.id);
+				}
+				else {
+					middle::deleteShapeRecursive(gameState, shape.id.index);
+				}
 			}
 			--deleteComp->framesUntilDelete;
 			});

@@ -11,6 +11,7 @@
 #include "InventoryItem.h"
 #include "Position.h"
 #include "DeleteComponent.h"
+#include "IdRef.h"
 
 class BubbleInventorySystem : public middle::MiddleGameplaySystem {
 	void update(middle::GameState* gameState) override {
@@ -28,19 +29,21 @@ class BubbleInventorySystem : public middle::MiddleGameplaySystem {
 				auto loop = middle::getComponent<components::LoopSociety>(shape);
 				std::vector < middle::Id>children = loop->loopMemberIds;
 
-			for (middle::Id childId : children) {
-				auto& child = middle::getShape(gameState, childId.index);
-				auto intersectable = middle::getComponent<components::MouseIntersectable>(child);
-				if (intersectable->intersectingTop && gameState->input.mouseClicked) {
-					middle::Id copyId = middle::deepCopyShape(gameState, childId.index, middle::UNASSIGNED);
-					auto& copyShape = middle::getShape(gameState, copyId.index);
-					auto grabbable = middle::getComponent<components::MouseGrabbable>(copyShape);
-					grabbable->grabbing = true;
-					auto removeLoop = middle::EditorActionRemoveFromLoop(copyId.index);
-					removeLoop.execute(gameState);
-					gameState->bubbleAlgebraState.grabbedId = copyId;
+				for (middle::Id childId : children) {
+					auto& child = middle::getShape(gameState, childId.index);
+					auto intersectable = middle::getComponent<components::MouseIntersectable>(child);
+					if (intersectable->intersectingTop && gameState->input.mouseClicked) {
+						middle::Id copyId = middle::deepCopyShape(gameState, childId.index, middle::UNASSIGNED);
+						auto& copyShape = middle::getShape(gameState, copyId.index);
+						auto grabbable = middle::getComponent<components::MouseGrabbable>(copyShape);
+						grabbable->grabbing = true;
+						auto removeLoop = middle::EditorActionRemoveFromLoop(copyId.index);
+						removeLoop.execute(gameState);
+						gameState->bubbleAlgebraState.grabbedId = copyId;
+						auto ref = middle::addComponent<components::IdRef>(copyShape);
+						ref->idRef = copyId;
+					}
 				}
-			}
 			}
 
 			auto grabbable = middle::getComponent < components::MouseGrabbable>(shape);

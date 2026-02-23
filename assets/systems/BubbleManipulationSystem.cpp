@@ -84,6 +84,7 @@ class BubbleManipulationSystem : public middle::MiddleGameplaySystem {
 					// set og as reference
 					auto ref = middle::addComponent<components::IdRef>(copyShape);
 					ref->idRef = shape.id;
+					assert(ref->idRef.index != middle::UNASSIGNED);
 				}
 			}
 

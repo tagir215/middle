@@ -136,7 +136,7 @@ public:
 
 					// multiply action
 					auto& mulAction = gameState->bubbleAlgebraState.mulAction;
-					mulAction = std::make_unique<bubbleActions::Multiply>(mulShape.id, shapeToCopyId, shapeToCopyIntoId);
+					mulAction = std::make_unique<bubbleActions::ExecuteMultiplication>(mulShape.id, shapeToCopyId, shapeToCopyIntoId);
 					mulAction->execute(gameState);
 
 					bubbleActions::setBubbleHidden(gameState, shapeToCopyId, true);
@@ -201,7 +201,7 @@ public:
 
 		// undo multiplication if moving the bubble out of intersection
 		if (gameState->bubbleAlgebraState.mulAction != nullptr) {
-			auto mulAction = static_cast<bubbleActions::Multiply*>(gameState->bubbleAlgebraState.mulAction.get());
+			auto mulAction = static_cast<bubbleActions::ExecuteMultiplication*>(gameState->bubbleAlgebraState.mulAction.get());
 			auto& containerShape = middle::getShape(gameState, mulAction->shapeToCopyIntoId.index);
 			auto intersectable = middle::getComponent<components::MouseIntersectable>(containerShape);
 			auto containerBubble = middle::getComponent<components::BubbleComponent>(containerShape);
@@ -215,7 +215,7 @@ public:
 		// mouse release after multiplication, this will finallize the multiplication
 		if (gameState->bubbleAlgebraState.mulAction != nullptr
 			&& gameState->input.mouseReleased) {
-			auto mulAction = static_cast<bubbleActions::Multiply*>(gameState->bubbleAlgebraState.mulAction.get());
+			auto mulAction = static_cast<bubbleActions::ExecuteMultiplication*>(gameState->bubbleAlgebraState.mulAction.get());
 			mulAction->finalize(gameState);
 			gameState->bubbleAlgebraState.mulAction.release();
 			gameState->bubbleAlgebraState.grabbedId = middle::Id();
@@ -316,7 +316,7 @@ public:
 			// if intersecting while grabbing do addition
 			if (isIntersecting) {
 				auto& addAction = gameState->bubbleAlgebraState.addAction;
-				addAction = std::make_unique<bubbleActions::Combine>(gameState->bubbleAlgebraState.grabbedId, shape.id);
+				addAction = std::make_unique<bubbleActions::ExecuteAddition>(gameState->bubbleAlgebraState.grabbedId, shape.id);
 				addAction->execute(gameState);
 
 				// infinite mass
@@ -335,7 +335,7 @@ public:
 
 		// undo if moved to add shape out
 		if (gameState->bubbleAlgebraState.addAction != nullptr) {
-			auto addAction = static_cast<bubbleActions::Combine*>(gameState->bubbleAlgebraState.addAction.get());
+			auto addAction = static_cast<bubbleActions::ExecuteAddition*>(gameState->bubbleAlgebraState.addAction.get());
 			auto& shapeToAddInto = middle::getShape(gameState, addAction->shapeToAddIntoId.index);
 			auto intersectable = middle::getComponent<components::MouseIntersectable>(shapeToAddInto);
 			auto bubbleToAddInto = middle::getComponent<components::BubbleComponent>(shapeToAddInto);
@@ -349,7 +349,7 @@ public:
 		// finialize addition if releasing mouse
 		if (gameState->bubbleAlgebraState.addAction != nullptr) {
 			if (gameState->input.mouseReleased) {
-				auto addAction = static_cast<bubbleActions::Combine*>(gameState->bubbleAlgebraState.addAction.get());
+				auto addAction = static_cast<bubbleActions::ExecuteAddition*>(gameState->bubbleAlgebraState.addAction.get());
 				auto& shapeToAddInto = middle::getShape(gameState, addAction->shapeToAddIntoId.index);
 				auto bubbleToAddInto = middle::getComponent<components::BubbleComponent>(shapeToAddInto);
 				addAction->finalize(gameState);

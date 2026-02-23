@@ -180,12 +180,12 @@ class ProcedureExecutionSystem : public middle::MiddleGameplaySystem {
 			auto bubbleMultiplication = middle::getComponent<components::BubbleMultiplyComponent>(parentShape);
 
 			if (bubbleMultiplication) {
-				auto multiply = bubbleActions::Multiply(parentShape.id, varA.unitRef, varB.unitRef);
+				auto multiply = bubbleActions::ExecuteMultiplication(parentShape.id, varA.unitRef, varB.unitRef);
 				multiply.execute(gameState);
 				multiply.finalize(gameState);
 			}
 			else {
-				auto combine = bubbleActions::Combine(varA.unitRef, varB.unitRef);
+				auto combine = bubbleActions::ExecuteAddition(varA.unitRef, varB.unitRef);
 				combine.execute(gameState);
 				combine.finalize(gameState);
 			}
