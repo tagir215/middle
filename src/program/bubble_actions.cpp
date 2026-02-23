@@ -173,6 +173,8 @@ namespace bubbleActions{
 		middle::addComponent<components::MouseIntersectable>(newUnitShape);
 		middle::addComponent<components::Position>(newUnitShape);
 		middle::addComponent<components::LoopSociety>(newUnitShape);
+		auto sphere = middle::addComponent<components::Sphere>(newUnitShape);
+		sphere->radius = 2;
 		Vector3 pos = middle::getShapePosition(gameState, newUnitShape.id.index);
 		middle::moveShape(gameState, newUnitShape.id.index, targetPos - pos);
 		return newUnitShape;
@@ -568,5 +570,25 @@ namespace bubbleActions{
 
 	void Replace::undo(middle::GameState* gameState)
 	{
+	}
+
+	LinkMultiplicationTerm::LinkMultiplicationTerm(middle::Id recieverShape, middle::Id linkingShape)
+	{
+		this->recieverShapeId = recieverShape;
+		this->linkingShapeId = linkingShape;
+	}
+
+	void LinkMultiplicationTerm::execute(middle::GameState* gameState)
+	{
+		auto createAction = bubbleActions::CreateMulitiplicationReplacementShape(recieverShapeId, linkingShapeId);
+		createAction.execute(gameState);
+		auto replaceAction = bubbleActions::Replace(recieverShapeId, createAction.resultShapeId);
+		replaceAction.execute(gameState);
+		bubbleActions::deleteBubble(gameState, linkingShapeId);
+	}
+
+	void LinkMultiplicationTerm::undo(middle::GameState* gameState)
+	{
+
 	}
 }

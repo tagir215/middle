@@ -50,6 +50,15 @@ namespace bubbleActions{
 		void undo(middle::GameState* gameState) override;
 	};
 
+	class LinkMultiplicationTerm : public middle::GameplayAction {
+	public:
+		middle::Id recieverShapeId;
+		middle::Id linkingShapeId;
+		LinkMultiplicationTerm(middle::Id reciverShapeId, middle::Id linkikngShapeId);
+		void execute(middle::GameState* gameState) override;
+		void undo(middle::GameState* gameState) override;
+	};
+
 
 	struct MultiplyPair {
 		middle::Id parentId;
