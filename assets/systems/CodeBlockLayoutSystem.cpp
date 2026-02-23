@@ -299,7 +299,7 @@ public:
 					}
 				}
 
-				if (inputChildCount > 0) {
+				if (loop->loopMemberIds.size() > 0) {
 					auto funcRect = middle::getComponent<components::Rectangle>(shape);
 					Vector3 funcPosition = middle::getShapePosition(gameState, shape.id.index);
 

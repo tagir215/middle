@@ -167,7 +167,7 @@ class ProcedureExecutionSystem : public middle::MiddleGameplaySystem {
 		landedFuncId = funcId;
 
 		// combine functions are either multiplciations or additions
-		if (function->type == functionTypes::COMBINE) {
+		if (function->type == functionTypes::MULTIPLY) {
 			components::InputVariable varA;
 			components::InputVariable varB;
 			components::OutputVariable output;

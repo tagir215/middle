@@ -11,6 +11,9 @@
 #include "BubbleUnit.h"
 #include "FractionalComponent.h"
 #include "InventoryItem.h"
+#include "MouseSelectable.h"
+#include "DeleteComponent.h"
+#include "IdRef.h"
 
 class BubbleManipulationSystem : public middle::MiddleGameplaySystem {
 
@@ -44,6 +47,11 @@ class BubbleManipulationSystem : public middle::MiddleGameplaySystem {
 
 			auto bubble = middle::getComponent<components::BubbleComponent>(shape);
 			auto unit = middle::getComponent<components::BubbleUnit>(shape);
+			auto inventoryItem = middle::getComponent<components::InventoryItem>(shape);
+
+			if (inventoryItem) {
+				return true;
+			}
 
 			if (!bubble && !unit) {
 				return true;
@@ -65,23 +73,27 @@ class BubbleManipulationSystem : public middle::MiddleGameplaySystem {
 			auto fraction = middle::getComponent<components::FractionalComponent>(shape);
 
 			if (intersecting && gameState->bubbleAlgebraState.grabbedId.index == middle::UNASSIGNED && gameState->input.mouseHeld) {
-				grabbable->grabbing = true;
-				gameState->bubbleAlgebraState.grabbedId = shape.id;
-			}
-
-			if (grabbable->grabbing && shape.id != gameState->bubbleAlgebraState.grabbedId) {
-				grabbable->grabbing = false;
+				middle::Id& parentId = middle::getParent(gameState, shape.id);
+				if (parentId.index != middle::UNASSIGNED) {
+					// copy as grabbed
+					middle::Id copyId = middle::deepCopyShape(gameState, shape.id.index, middle::UNASSIGNED);
+					auto& copyShape = middle::getShape(gameState, copyId.index);
+					auto copyGrabbable = middle::getComponent<components::MouseGrabbable>(copyShape);
+					copyGrabbable->grabbing = true;
+					gameState->bubbleAlgebraState.grabbedId = copyId;
+					// set og as reference
+					auto ref = middle::addComponent<components::IdRef>(copyShape);
+					ref->idRef = shape.id;
+				}
 			}
 
 			if (gameState->bubbleAlgebraState.grabbedId.index != middle::UNASSIGNED && grabbable->grabbing && !gameState->input.mouseHeld) {
+				// set grabbable for deletion
 				grabbable->grabbing = false;
-				auto inventoryItem = middle::getComponent<components::InventoryItem>(shape);
-				if (inventoryItem) {
-					middle::deleteShapeRecursive(gameState, shape.id.index);
-				}
 				gameState->bubbleAlgebraState.grabbedId = middle::Id();
+				auto deleteComp = middle::addComponent<components::DeleteComponent>(shape);
+				deleteComp->framesUntilDelete = 1;
 			}
-
 
 			// bubble moving
 			if ((bubble || fraction || unit) && grabbable->grabbing) {

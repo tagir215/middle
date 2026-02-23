@@ -12,7 +12,7 @@
 #include "FractionalComponent.h"
 #include "middle_math.h"
 #include "Sphere.h"
-#include "middle_math.h"
+#include "MouseGrabbable.h"
 
 class BubbleIntersectSystem : public middle::MiddleGameplaySystem {
 
@@ -25,6 +25,10 @@ class BubbleIntersectSystem : public middle::MiddleGameplaySystem {
 			auto unit = middle::getComponent<components::BubbleUnit>(shape);
 			if (!bubble && !unit)
 				return true;
+			auto grabbable = middle::getComponent<components::MouseGrabbable>(shape);
+			if (grabbable && grabbable->grabbing) {
+				return true;
+			}
 
 			auto intersectable = middle::getComponent<components::MouseIntersectable>(shape);
 			assert(intersectable);
@@ -36,7 +40,7 @@ class BubbleIntersectSystem : public middle::MiddleGameplaySystem {
 			for (auto& childId : children) {
 				auto& childShape = middle::getShape(gameState, childId.index);
 				auto childIntersectable = middle::getComponent<components::MouseIntersectable>(childShape);
-				if (childIntersectable && childIntersectable->intersectingTop) {
+				if (childIntersectable && childIntersectable->intersecting) {
 					intersectable->intersectingTop = false;
 					alreadyIntersecting = true;
 					break;

@@ -52,6 +52,7 @@ public:
 
 
 	void update(middle::GameState* gameState) override {
+		return;
 
 		// multiplications
 		std::vector<middle::Id> multiplications;
@@ -158,22 +159,8 @@ public:
 			const int addType = 1;
 			const int mulType = 2;
 			if (inventoryItem && (inventoryItem->itemType == mulType || inventoryItem->itemType == addType)) {
-				middle::loopInstances(gameState, [gameState, &topBubbleId, &intersecting](int i, middle::Shape& shape) {
-					if (shape.id == gameState->bubbleAlgebraState.grabbedId) {
-						return true;
-					}
-					auto bubble = middle::getComponent<components::BubbleComponent>(shape);
-					auto mul = middle::getComponent<components::BubbleMultiplyComponent>(shape);
-					if (!bubble && !mul) {
-						return true;
-					}
-					auto loop = middle::getComponent<components::LoopSociety>(shape);
-					assert(loop);
-					if (loop->parentLoopId.index == middle::UNASSIGNED) {
-						topBubbleId = shape.id;
-					}
-					return true;
-					});
+
+				middle::Id topBubbleId = bubbleActions::topLevelBubble(gameState);
 
 				bool intersecting = false;
 				auto& topBubbleShape = middle::getShape(gameState, topBubbleId.index);
@@ -284,6 +271,13 @@ public:
 				return true;
 			}
 
+			auto intersectable = middle::getComponent<components::MouseIntersectable>(shape);
+
+			if (bubble && intersectable->intersectingTop && gameState->gameInput.pop) {
+				auto popAction = std::make_unique<bubbleActions::Pop>(shape.id);
+				popAction->execute(gameState);
+			}
+
 			if (loop->parentLoopId.index != middle::UNASSIGNED) {
 				auto& parentShape = middle::getShape(gameState, loop->parentLoopId.index);
 				// if grabbing units parent is same as grabbed one we can skip
@@ -297,13 +291,6 @@ public:
 				return true;
 			}
 
-			auto intersectable = middle::getComponent<components::MouseIntersectable>(shape);
-
-			// pop action
-			if (bubble && intersectable->intersectingTop && gameState->gameInput.pop) {
-				auto popAction = std::make_unique<bubbleActions::Pop>(shape.id);
-				popAction->execute(gameState);
-			}
 
 			// if not grabbing anything can continue
 			if (!grabbable) {
