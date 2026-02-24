@@ -36,4 +36,5 @@ namespace bubbleInventoryitemType {
 	inline int BREAK_8 = 11;
 	inline int BREAK_9 = 12;
 	inline int BREAK_10 = 13;
+	inline int COMPRESS = 14;
 }

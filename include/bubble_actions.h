@@ -27,6 +27,8 @@ namespace bubbleActions{
 	middle::Shape& newUnit(middle::GameState* gameState, const Vector3& targetPos);
 	middle::Shape& newFraction(middle::GameState* gameState, const Vector3& targetPos, int dividend);
 	bool isIntersecting(middle::GameState* gameState, middle::Shape& shape);
+	bool equals(middle::GameState* gameState, middle::Id& bubbleA, middle::Id& bubbleB);
+	float unitValue(middle::GameState* gameState, middle::Id& containerId);
 
 	class CreateMulitiplicationReplacementShape : public middle::GameplayAction {
 	public:
@@ -112,6 +114,15 @@ namespace bubbleActions{
 		middle::Id containerShapeId;
 		int dividend;
 		Break(middle::Id containerShape, int dividend);
+		void execute(middle::GameState* gameState) override;
+		void undo(middle::GameState* gameState) override;
+	};
+
+	class Compress : public middle::GameplayAction {
+	public:
+		middle::Id containerShapeId;
+		middle::Id resultShapeId;
+		Compress(middle::Id containerShape);
 		void execute(middle::GameState* gameState) override;
 		void undo(middle::GameState* gameState) override;
 	};

@@ -325,6 +325,25 @@ class ProcedureExecutionSystem : public middle::MiddleGameplaySystem {
 			auto popAction = bubbleActions::Pop(input.unitRef);
 			popAction.execute(gameState);
 		}
+
+		else if (function->type == functionTypes::BREAK) {
+			components::InputVariable inputA;
+			components::InputVariable inputB;
+			getTwoInputs(gameState, funcShape, inputA, inputB);
+			assert(inputA.unitRef.index != middle::UNASSIGNED);
+			assert(inputB.unitRef.index != middle::UNASSIGNED);
+			int value = (int)bubbleActions::unitValue(gameState, inputB.unitRef);
+			auto breakAction = bubbleActions::Break(inputA.unitRef, value);
+			breakAction.execute(gameState);
+		}
+
+		else if (function->type == functionTypes::COMPRESS) {
+			components::InputVariable input;
+			getOneInput(gameState, funcShape, input);
+			assert(input.unitRef.index != middle::UNASSIGNED);
+			auto compressAction = bubbleActions::Compress(input.unitRef);
+			compressAction.execute(gameState);
+		}
 	}
 
 	void update(middle::GameState* gameState) override {
@@ -370,7 +389,7 @@ class ProcedureExecutionSystem : public middle::MiddleGameplaySystem {
 				}
 
 				timer = middle::addComponent<components::TimerComponent>(shape);
-				timer->timeLeft = 0.4f;
+				timer->timeLeft = 1;
 			}
 
 			return true;

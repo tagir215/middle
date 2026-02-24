@@ -55,6 +55,10 @@ class BubbleModificationSystem : public middle::MiddleGameplaySystem {
 			auto link = bubbleActions::LinkMultiplicationTerm(intersectedShape.id, newBubble.id);
 			link.execute(gameState);
 		}
+		else if (actionType == bubbleInventoryitemType::COMPRESS) {
+			auto compress = bubbleActions::Compress(intersectedShape.id);
+			compress.execute(gameState);
+		}
 		else if (actionType == bubbleInventoryitemType::BREAK_2) {
 			auto break2 = bubbleActions::Break(intersectedShape.id, 2);
 			break2.execute(gameState);

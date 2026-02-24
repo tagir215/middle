@@ -1,3 +1,4 @@
+#include "PhysicsData.h"
 #include "OutputVariable.h"
 #include "bubble_actions.h"
 
@@ -22,6 +23,40 @@ namespace bubbleActions{
 		}
 
 		return intersectable->intersectingTop;
+	}
+
+	bool equals(middle::GameState* gameState, middle::Id& idA, middle::Id& idB)
+	{
+		float valueA = unitValue(gameState, idA);
+		float valueB = unitValue(gameState, idB);
+		const float epsilon = 1e-4f;
+		return std::abs(valueA - valueB) < epsilon;
+	}
+
+	float unitValue(middle::GameState* gameState, middle::Id& containerId)
+	{
+		middle::Shape& containerShape = middle::getShape(gameState, containerId.index);
+		std::vector<middle::Id>children;
+		middle::getChildren(gameState, containerShape.id, children);
+		int childCount = children.size();
+		auto fraction = middle::getComponent<components::FractionalComponent>(containerShape);
+		float value = 0;
+		for (middle::Id childId : children) {
+			middle::Shape& childShape = middle::getShape(gameState, childId.index);
+			auto unit = middle::getComponent<components::BubbleUnit>(childShape);
+			if (unit) {
+				float v = unit->value;
+				if (fraction) {
+					assert(childCount != 0);
+					v / childCount;
+				}
+				value += v;
+			}
+			else {
+				value += unitValue(gameState, childId);
+			}
+		}
+		return value;
 	}
 
 	void deleteBubble(middle::GameState* gameState, middle::Id& id) {
@@ -195,6 +230,7 @@ namespace bubbleActions{
 		middle::addComponent<components::MouseIntersectable>(newUnitShape);
 		middle::addComponent<components::Position>(newUnitShape);
 		middle::addComponent<components::LoopSociety>(newUnitShape);
+		middle::addComponent<components::PhysicsData>(newUnitShape);
 		auto sphere = middle::addComponent<components::Sphere>(newUnitShape);
 		sphere->radius = 2;
 		Vector3 pos = middle::getShapePosition(gameState, newUnitShape.id.index);
@@ -638,10 +674,22 @@ namespace bubbleActions{
 
 	void LinkMultiplicationTerm::execute(middle::GameState* gameState)
 	{
-		auto createAction = bubbleActions::CreateMulitiplicationReplacementShape(recieverShapeId, linkingShapeId);
+		// check if in multiplication, if in multiplication replace the multiplication, otherwise replce the reciever
+		middle::Id& parentId = middle::getParent(gameState, recieverShapeId);
+		middle::Id actualRecieverId = recieverShapeId;
+		if (parentId.index != middle::UNASSIGNED) {
+			auto& parentShape = middle::getShape(gameState, parentId.index);
+			if (middle::getComponent<components::BubbleMultiplyComponent>(parentShape)) {
+				actualRecieverId = parentId;
+			}
+		}
+		// create replacementshape
+		auto createAction = bubbleActions::CreateMulitiplicationReplacementShape(actualRecieverId, linkingShapeId);
 		createAction.execute(gameState);
-		auto replaceAction = bubbleActions::Replace(recieverShapeId, createAction.resultShapeId);
+		// replace
+		auto replaceAction = bubbleActions::Replace(actualRecieverId, createAction.resultShapeId);
 		replaceAction.execute(gameState);
+		// dleete linkingshape since its copied 
 		bubbleActions::deleteBubble(gameState, linkingShapeId);
 		resultShapeId = createAction.resultShapeId;
 	}
@@ -678,6 +726,52 @@ namespace bubbleActions{
 		replace.execute(gameState);
 	}
 	void Break::undo(middle::GameState* gameState)
+	{
+	}
+
+	Compress::Compress(middle::Id containerShape)
+	{
+		this->containerShapeId = containerShape;
+	}
+	void Compress::execute(middle::GameState* gameState)
+	{
+		std::vector<middle::Id>children;
+		middle::getChildren(gameState, containerShapeId, children);
+		middle::Id referenceId = children[0];
+		int childCount = children.size();
+		for (int i = 1; i < childCount; ++i) {
+			// if all children are not the same, can't compress
+			if (!equals(gameState, referenceId, children[i])) {
+				return;
+			}
+		}
+
+		// create bubble with compress count
+		Vector3 targetPos = middle::getShapePosition(gameState, containerShapeId.index);
+		middle::Shape& countBubble = newBubble(gameState, targetPos);
+		Vector3 refPos = targetPos;
+		for (int i = 0; i < childCount; ++i) {
+			middle::Shape& unitShape = newUnit(gameState, refPos);
+			auto reparent = middle::EditorActionReparent(countBubble.id.index, unitShape.id.index);
+			reparent.execute(gameState);
+			refPos.x += 5;
+		}
+
+		// create compressed bubble
+		middle::Shape& compressedBubble = newBubble(gameState, targetPos);
+		middle::Id& copyContentId = middle::deepCopyShape(gameState, referenceId.index);
+		auto reparent = middle::EditorActionReparent(compressedBubble.id.index, copyContentId.index);
+		reparent.execute(gameState);
+
+		// replace container with compressed
+		auto replace = Replace(containerShapeId, compressedBubble.id);
+		replace.execute(gameState);
+
+		// link compress count bubble to compressed bubble
+		auto link = LinkMultiplicationTerm(compressedBubble.id, countBubble.id);
+		link.execute(gameState);
+	}
+	void Compress::undo(middle::GameState* gameState)
 	{
 	}
 }
