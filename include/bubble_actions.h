@@ -61,6 +61,15 @@ namespace bubbleActions{
 		void undo(middle::GameState* gameState) override;
 	};
 
+	class MulOne : public middle::GameplayAction {
+	public:
+		middle::Id recieverShapeId;
+		middle::Id resultShapeId;
+		MulOne(middle::Id recieverShapeId);
+		void execute(middle::GameState* gameState) override;
+		void undo(middle::GameState* gameState) override;
+	};
+
 
 	struct MultiplyPair {
 		middle::Id parentId;
@@ -112,6 +121,7 @@ namespace bubbleActions{
 	class Break : public middle::GameplayAction {
 	public:
 		middle::Id containerShapeId;
+		middle::Id resultShapeId;
 		int dividend;
 		Break(middle::Id containerShape, int dividend);
 		void execute(middle::GameState* gameState) override;

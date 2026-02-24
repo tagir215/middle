@@ -724,7 +724,10 @@ namespace bubbleActions{
 		}
 		auto replace = bubbleActions::Replace(containerShapeId, newBubble.id);
 		replace.execute(gameState);
+
+		resultShapeId = newBubble.id;
 	}
+
 	void Break::undo(middle::GameState* gameState)
 	{
 	}
@@ -770,8 +773,27 @@ namespace bubbleActions{
 		// link compress count bubble to compressed bubble
 		auto link = LinkMultiplicationTerm(compressedBubble.id, countBubble.id);
 		link.execute(gameState);
+
+		resultShapeId = compressedBubble.id;
 	}
 	void Compress::undo(middle::GameState* gameState)
+	{
+	}
+	MulOne::MulOne(middle::Id recieverShapeId)
+	{
+		this->recieverShapeId = recieverShapeId;
+	}
+	void MulOne::execute(middle::GameState* gameState)
+	{
+		Vector3 targetPos = middle::getShapePosition(gameState, recieverShapeId.index);
+		middle::Shape& newBubble = bubbleActions::newBubble(gameState, targetPos);
+		middle::Shape& newUnit = bubbleActions::newUnit(gameState, targetPos);
+		auto reparent = middle::EditorActionReparent(newBubble.id.index, newUnit.id.index);
+		reparent.execute(gameState);
+		auto link = bubbleActions::LinkMultiplicationTerm(recieverShapeId, newBubble.id);
+		link.execute(gameState);
+	}
+	void MulOne::undo(middle::GameState* gameState)
 	{
 	}
 }

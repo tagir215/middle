@@ -47,13 +47,8 @@ class BubbleModificationSystem : public middle::MiddleGameplaySystem {
 			}
 		}
 		else if (actionType == bubbleInventoryitemType::TIMES_ONE) {
-			Vector3 targetPos = middle::getShapePosition(gameState, intersectedShape.id.index);
-			middle::Shape& newBubble = bubbleActions::newBubble(gameState, targetPos);
-			middle::Shape& newUnit = bubbleActions::newUnit(gameState, targetPos);
-			auto reparent = middle::EditorActionReparent(newBubble.id.index, newUnit.id.index);
-			reparent.execute(gameState);
-			auto link = bubbleActions::LinkMultiplicationTerm(intersectedShape.id, newBubble.id);
-			link.execute(gameState);
+			auto timesOne = bubbleActions::MulOne(intersectedShape.id);
+			timesOne.execute(gameState);
 		}
 		else if (actionType == bubbleInventoryitemType::COMPRESS) {
 			auto compress = bubbleActions::Compress(intersectedShape.id);

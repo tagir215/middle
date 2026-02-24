@@ -326,23 +326,39 @@ class ProcedureExecutionSystem : public middle::MiddleGameplaySystem {
 			popAction.execute(gameState);
 		}
 
+		else if (function->type == functionTypes::MUL_ONE) {
+			components::InputVariable input;
+			components::OutputVariable output;
+			getOneInput(gameState, funcShape, input);
+			assert(input.unitRef.index != middle::UNASSIGNED);
+			auto mulOneAction = bubbleActions::MulOne(input.unitRef);
+			mulOneAction.execute(gameState);
+			bubbleActions::updateVariable(gameState, mulOneAction.resultShapeId, output.label);
+		}
+
 		else if (function->type == functionTypes::BREAK) {
 			components::InputVariable inputA;
 			components::InputVariable inputB;
+			components::OutputVariable output;
 			getTwoInputs(gameState, funcShape, inputA, inputB);
 			assert(inputA.unitRef.index != middle::UNASSIGNED);
 			assert(inputB.unitRef.index != middle::UNASSIGNED);
 			int value = (int)bubbleActions::unitValue(gameState, inputB.unitRef);
 			auto breakAction = bubbleActions::Break(inputA.unitRef, value);
 			breakAction.execute(gameState);
+			bubbleActions::updateVariable(gameState, breakAction.resultShapeId, output.label);
 		}
 
 		else if (function->type == functionTypes::COMPRESS) {
 			components::InputVariable input;
+			components::OutputVariable output;
 			getOneInput(gameState, funcShape, input);
+			getOutput(gameState, funcShape, output);
 			assert(input.unitRef.index != middle::UNASSIGNED);
 			auto compressAction = bubbleActions::Compress(input.unitRef);
 			compressAction.execute(gameState);
+
+			output.unitRef = compressAction.resultShapeId;
 		}
 	}
 
