@@ -14,26 +14,10 @@
 #include "MouseSelectable.h"
 #include "DeleteComponent.h"
 #include "IdRef.h"
+#include "bubble_actions.h"
 
 class BubbleManipulationSystem : public middle::MiddleGameplaySystem {
 
-	bool isIntersecting(middle::GameState* gameState, middle::Shape& shape) {
-		auto fraction = middle::getComponent<components::FractionalComponent>(shape);
-		auto intersectable = middle::getComponent<components::MouseIntersectable>(shape);
-
-		if (fraction) {
-			auto loop = middle::getComponent<components::LoopSociety>(shape);
-			for (middle::Id id : loop->loopMemberIds) {
-				middle::Shape& shape = middle::getShape(gameState, id.index);
-				if (isIntersecting(gameState, shape)) {
-					return true;
-				}
-			}
-			return false;
-		}
-
-		return intersectable->intersectingTop;
-	}
 
 	void update(middle::GameState* gameState) override {
 
@@ -47,16 +31,18 @@ class BubbleManipulationSystem : public middle::MiddleGameplaySystem {
 
 			auto bubble = middle::getComponent<components::BubbleComponent>(shape);
 			auto unit = middle::getComponent<components::BubbleUnit>(shape);
+			auto fraction = middle::getComponent<components::FractionalComponent>(shape);
 			auto inventoryItem = middle::getComponent<components::InventoryItem>(shape);
 
 			if (inventoryItem) {
 				return true;
 			}
 
-			if (!bubble && !unit) {
+			if (!bubble && !unit && !fraction) {
 				return true;
 			}
 
+			// skip units that are part of fractions
 			if (unit) {
 				auto loop = middle::getComponent<components::LoopSociety>(shape);
 				if (loop->parentLoopId.index != middle::UNASSIGNED) {
@@ -68,9 +54,8 @@ class BubbleManipulationSystem : public middle::MiddleGameplaySystem {
 				}
 			}
 
-			bool intersecting = isIntersecting(gameState, shape);
+			bool intersecting = bubbleActions::isIntersecting(gameState, shape);
 
-			auto fraction = middle::getComponent<components::FractionalComponent>(shape);
 
 			if (intersecting && gameState->bubbleAlgebraState.grabbedId.index == middle::UNASSIGNED && gameState->input.mouseHeld) {
 				middle::Id& parentId = middle::getParent(gameState, shape.id);

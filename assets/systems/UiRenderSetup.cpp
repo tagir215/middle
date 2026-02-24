@@ -41,7 +41,7 @@ public:
 				Vector3 position = middle::getShapePosition(gameState, shape.id.index);
 
 				auto intersectable = middle::getComponent<components::MouseIntersectable>(shape);
-				Color color = intersectable->intersectingTop ? WHITE : Color{ 200,200,200,200 };
+				Color color = intersectable && intersectable->intersectingTop ? WHITE : Color{ 200,200,200,200 };
 
 				std::vector<Vector3>vertices = middle::getRectVertices(gameState, shape.id);
 
@@ -83,7 +83,9 @@ public:
 
 			if (circle) {
 				auto intersectable = middle::getComponent<components::MouseIntersectable>(shape);
-				Color color = intersectable->intersectingTop ? WHITE : Color{ 200,200,200,200 };
+				bool intersecting = intersectable && intersectable->intersectingTop;
+
+				Color color = intersecting ? WHITE : Color{ 200,200,200,200 };
 
 				middle::RenderItem circleItem;
 				circleItem.type = middle::RenderItemType::CIRCLE;

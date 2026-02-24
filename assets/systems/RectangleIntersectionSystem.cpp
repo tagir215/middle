@@ -25,7 +25,8 @@ class RectangleIntersectionSystem : public middle::MiddleGameplaySystem {
 	}
 
 	void update(middle::GameState* gameState) override {
-		middle::loopInstances(gameState, [gameState, this](int i, middle::Shape& shape) {
+		bool oneIntersect = false;
+		middle::loopInstances(gameState, [gameState, this, &oneIntersect](int i, middle::Shape& shape) {
 			auto rectangle = middle::getComponent<components::Rectangle>(shape);
 			auto circle = middle::getComponent<components::Circle>(shape);
 			auto intersectable = middle::getComponent<components::MouseIntersectable>(shape);
@@ -52,6 +53,9 @@ class RectangleIntersectionSystem : public middle::MiddleGameplaySystem {
 				intersectable->intersecting = Vector3DistanceSqr(mouseXZ, position) < circle->radius * circle->radius;
 			}
 
+			if (intersectable->intersecting) {
+				oneIntersect = true;
+			}
 
 			intersectable->intersectingTop = false;
 
@@ -76,6 +80,8 @@ class RectangleIntersectionSystem : public middle::MiddleGameplaySystem {
 			}
 			return true;
 			});
+
+		gameState->bubbleAlgebraState.intersectingUI = oneIntersect;
 	}
 };
 

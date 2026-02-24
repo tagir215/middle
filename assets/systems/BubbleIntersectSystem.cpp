@@ -33,6 +33,12 @@ class BubbleIntersectSystem : public middle::MiddleGameplaySystem {
 			auto intersectable = middle::getComponent<components::MouseIntersectable>(shape);
 			assert(intersectable);
 
+			if (gameState->bubbleAlgebraState.intersectingUI) {
+				intersectable->intersecting = false;
+				intersectable->intersectingTop = false;
+				return true;
+			}
+
 			// check that children are not already intersecting or grabbing 
 			bool alreadyIntersecting = false;
 			std::vector<middle::Id>children;

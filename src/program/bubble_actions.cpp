@@ -2,6 +2,27 @@
 
 namespace bubbleActions{
 
+	bool isIntersecting(middle::GameState* gameState, middle::Shape& shape) {
+		auto fraction = middle::getComponent<components::FractionalComponent>(shape);
+		auto intersectable = middle::getComponent<components::MouseIntersectable>(shape);
+
+		if (fraction) {
+			auto loop = middle::getComponent<components::LoopSociety>(shape);
+			for (middle::Id id : loop->loopMemberIds) {
+				middle::Shape& shape = middle::getShape(gameState, id.index);
+				if (isIntersecting(gameState, shape)) {
+					return true;
+				}
+			}
+			return false;
+		}
+		else if (!intersectable) {
+			return false;
+		}
+
+		return intersectable->intersectingTop;
+	}
+
 	void deleteBubble(middle::GameState* gameState, middle::Id& id) {
 		middle::Shape& shape = middle::getShape(gameState, id.index);
 
@@ -178,6 +199,38 @@ namespace bubbleActions{
 		Vector3 pos = middle::getShapePosition(gameState, newUnitShape.id.index);
 		middle::moveShape(gameState, newUnitShape.id.index, targetPos - pos);
 		return newUnitShape;
+	}
+
+	middle::Shape& newFraction(middle::GameState* gameState, const Vector3& targetPos, int dividend)
+	{
+		auto& newFractionShape = middle::addShape(gameState, middle::findFreeIndex(gameState));
+		middle::addComponent<components::FractionalComponent>(newFractionShape);
+		middle::addComponent<components::LoopSociety>(newFractionShape);
+		middle::addComponent<components::Position>(newFractionShape);
+		middle::addComponent<components::LoopTag>(newFractionShape);
+		middle::addComponent<components::MouseGrabbable>(newFractionShape);
+		middle::addComponent<components::MouseIntersectable>(newFractionShape);
+		Vector3 pos = middle::getShapePosition(gameState, newFractionShape.id.index);
+		middle::moveShape(gameState, newFractionShape.id.index, targetPos - pos);
+		const float fractionUnitSpacing = 10;
+		float height = fractionUnitSpacing * dividend - dividend;
+		Vector3 referencePos = targetPos;
+		referencePos.z += height * 0.5f;
+		for (int i = 0; i < dividend; ++i) {
+			auto& unit = newUnit(gameState, referencePos);
+			auto unitComp = middle::getComponent<components::BubbleUnit>(unit);
+			// set everything other than bottom one as 0
+			if (i < dividend - 1) {
+				unitComp->value = 0;
+			}
+			else {
+				unitComp->value = 1;
+			}
+			auto reparent = middle::EditorActionReparent(newFractionShape.id.index, unit.id.index);
+			reparent.execute(gameState);
+			referencePos.z -= fractionUnitSpacing;
+		}
+		return newFractionShape;
 	}
 
 
@@ -559,8 +612,22 @@ namespace bubbleActions{
 	{
 		middle::Id containerParent = middle::getParent(gameState, shapeToReplaceId);
 		if (containerParent.index != middle::UNASSIGNED) {
+			std::vector<middle::Id>children;
+			middle::getChildren(gameState, containerParent, children);
+			// find old index to preserve the same index after replacing
+			int oldIndex = middle::UNASSIGNED;
+			for (int i = 0; i < children.size(); ++i) {
+				if (children[i] == shapeToReplaceId) {
+					oldIndex = i;
+				}
+			}
+			assert(oldIndex != middle::UNASSIGNED);
+			// reparent to replaced shapes parent
 			auto reparent = middle::EditorActionReparent(containerParent.index, replacingShapeId.index);
 			reparent.execute(gameState);
+			// set the correct index
+			auto newIndex = middle::EditorActionChangeLoopMemberIndex(containerParent.index, replacingShapeId.index, oldIndex);
+			newIndex.execute(gameState);
 		}
 		Vector3 targetPos = middle::getShapePosition(gameState, shapeToReplaceId.index);
 		Vector3 currentPos = middle::getShapePosition(gameState, replacingShapeId.index);
@@ -585,10 +652,41 @@ namespace bubbleActions{
 		auto replaceAction = bubbleActions::Replace(recieverShapeId, createAction.resultShapeId);
 		replaceAction.execute(gameState);
 		bubbleActions::deleteBubble(gameState, linkingShapeId);
+		resultShapeId = createAction.resultShapeId;
 	}
 
 	void LinkMultiplicationTerm::undo(middle::GameState* gameState)
 	{
 
+	}
+	Break::Break(middle::Id containerShape, int dividend)
+	{
+		this->containerShapeId = containerShape;
+		this->dividend = dividend;
+	}
+	void Break::execute(middle::GameState* gameState)
+	{
+		auto& containerShape = middle::getShape(gameState, containerShapeId.index);
+		auto unit = middle::getComponent<components::BubbleUnit>(containerShape);
+		// works for only units for now
+		if (!unit)
+			return;
+
+		Vector3 containerPos = middle::getShapePosition(gameState, containerShapeId.index);
+
+		auto& newBubble = bubbleActions::newBubble(gameState, containerPos);
+		// replace unit with fractions
+		Vector3 referencePos = containerPos;
+		for (int i = 0; i < dividend; ++i) {
+			auto& newFraction = bubbleActions::newFraction(gameState, referencePos, dividend);
+			auto reparent = middle::EditorActionReparent(newBubble.id.index, newFraction.id.index);
+			reparent.execute(gameState);
+			referencePos.x += 5;
+		}
+		auto replace = bubbleActions::Replace(containerShapeId, newBubble.id);
+		replace.execute(gameState);
+	}
+	void Break::undo(middle::GameState* gameState)
+	{
 	}
 }

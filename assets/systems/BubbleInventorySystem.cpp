@@ -42,6 +42,7 @@ class BubbleInventorySystem : public middle::MiddleGameplaySystem {
 						gameState->bubbleAlgebraState.grabbedId = copyId;
 						auto ref = middle::addComponent<components::IdRef>(copyShape);
 						ref->idRef = copyId;
+						middle::deleteComponent<components::MouseIntersectable>(copyShape);
 					}
 				}
 			}

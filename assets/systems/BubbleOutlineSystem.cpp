@@ -273,6 +273,8 @@ public:
 				return true;
 			}
 
+			assert(distanceCouple.distanceSqr != 0);
+
 
 			float length = std::sqrtf(distanceCouple.distanceSqr);
 			float width = std::sqrtf(perpCouple.distanceSqr);

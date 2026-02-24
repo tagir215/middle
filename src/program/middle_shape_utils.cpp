@@ -457,6 +457,9 @@ namespace middle {
 				Shape& parentShape = getShape(gameState, parentIndex);
 				copyLoop->parentLoopId = parentShape.id;
 			}
+			else {
+				copyLoop->parentLoopId = middle::Id();
+			}
 
 			// clear exact copies from earlier absolute copy
 			copyLoop->loopMemberIds.clear();

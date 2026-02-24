@@ -55,6 +55,42 @@ class BubbleModificationSystem : public middle::MiddleGameplaySystem {
 			auto link = bubbleActions::LinkMultiplicationTerm(intersectedShape.id, newBubble.id);
 			link.execute(gameState);
 		}
+		else if (actionType == bubbleInventoryitemType::BREAK_2) {
+			auto break2 = bubbleActions::Break(intersectedShape.id, 2);
+			break2.execute(gameState);
+		}
+		else if (actionType == bubbleInventoryitemType::BREAK_3) {
+			auto break2 = bubbleActions::Break(intersectedShape.id, 3);
+			break2.execute(gameState);
+		}
+		else if (actionType == bubbleInventoryitemType::BREAK_4) {
+			auto break2 = bubbleActions::Break(intersectedShape.id, 4);
+			break2.execute(gameState);
+		}
+		else if (actionType == bubbleInventoryitemType::BREAK_5) {
+			auto break2 = bubbleActions::Break(intersectedShape.id, 5);
+			break2.execute(gameState);
+		}
+		else if (actionType == bubbleInventoryitemType::BREAK_6) {
+			auto break2 = bubbleActions::Break(intersectedShape.id, 6);
+			break2.execute(gameState);
+		}
+		else if (actionType == bubbleInventoryitemType::BREAK_7) {
+			auto break2 = bubbleActions::Break(intersectedShape.id, 7);
+			break2.execute(gameState);
+		}
+		else if (actionType == bubbleInventoryitemType::BREAK_8) {
+			auto break2 = bubbleActions::Break(intersectedShape.id, 8);
+			break2.execute(gameState);
+		}
+		else if (actionType == bubbleInventoryitemType::BREAK_9) {
+			auto break2 = bubbleActions::Break(intersectedShape.id, 9);
+			break2.execute(gameState);
+		}
+		else if (actionType == bubbleInventoryitemType::BREAK_10) {
+			auto break2 = bubbleActions::Break(intersectedShape.id, 10);
+			break2.execute(gameState);
+		}
 	}
 
 	void update(middle::GameState* gameState) override {
@@ -83,10 +119,10 @@ class BubbleModificationSystem : public middle::MiddleGameplaySystem {
 
 		// search for intersecting shapes, and see if operation can be done
 		middle::loopInstances(gameState, [gameState, this, &refShape, &refParentId, &shapeForDeletion, inventoryItem](int i, middle::Shape& shape) {
-			auto intersectable = middle::getComponent<components::MouseIntersectable>(shape);
-			if (!intersectable || !intersectable->intersectingTop) {
+			if (!bubbleActions::isIntersecting(gameState, shape)) {
 				return true;
 			}
+
 			// skip shapefordeletion (the copy being dragged) and ref shape (shape its copy is pointing to)
 			if (shapeForDeletion.id == shape.id || shape.id == refShape.id) {
 				return true;
