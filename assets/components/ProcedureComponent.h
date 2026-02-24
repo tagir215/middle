@@ -7,7 +7,7 @@
 namespace components {
 	struct ProcedureComponent : public middle::Serializable{
 		bool executing = false;
-		middle::Id activeCodeBlock;
+		middle::Id activeScope;
 
 		void serialize(std::ostream& ostream) override;
 		void deserialize(const std::vector<std::string>& buffer, int indexOffset) override;

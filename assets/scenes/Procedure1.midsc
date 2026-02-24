@@ -1,12 +1,13 @@
 #scene
 s  Procedure1
 #activeCamera
-i  17
+i  -1
 __0__
 Position
 f  -153.211395
 f  -0.000000
 f  -145.606277
+MouseGrabbable
 Text
 s  InventorySystem
 f  255.000000
@@ -18,26 +19,25 @@ f  0.000000
 f  10.000000
 f  10.000000
 b  1
-MouseGrabbable
 MouseSelectable
 SystemReference
 s  InventorySystem
 MouseIntersectable
 __1__
-MouseIntersectable
 Rectangle
 f  20.000000
 f  10.000000
+MouseIntersectable
+CodeFunction
+i  12
 MouseGrabbable
 Sphere
 f  2.000000
-CodeFunction
-i  12
 MouseSelectable
 Position
-f  76.289520
-f  -40.960541
-f  17.325935
+f  80.086807
+f  -162.388062
+f  -22.267006
 LoopSociety
 q  3
 p  
@@ -63,20 +63,20 @@ Position
 f  146.438385
 f  -0.000061
 f  -227.199066
+MouseSelectable
 Reference
 s  ProcedureImports
 s  ../assets/scenes/
-MouseSelectable
 MouseGrabbable
 MouseIntersectable
 LoopSociety
 q  -1
 p  
 __3__
+MouseIntersectable
 Rectangle
 f  55.299999
 f  200.000000
-MouseIntersectable
 MouseGrabbable
 Inventory
 b  0
@@ -95,15 +95,16 @@ p
 20
 1
 Position
-f  -103.710480
-f  -340.960541
-f  95.103706
+f  -99.913193
+f  -462.388062
+f  55.510773
 Offset
 f  180.000000
 f  300.000000
 f  0.000000
 __4__
 MouseSelectable
+MouseGrabbable
 Text
 s  CodeBlockSystem
 f  255.000000
@@ -115,7 +116,6 @@ f  0.000000
 f  10.000000
 f  10.000000
 b  1
-MouseGrabbable
 MouseIntersectable
 SystemReference
 s  CodeBlockSystem
@@ -127,14 +127,15 @@ __5__
 Sphere
 f  2.000000
 Position
-f  56.289520
-f  -40.960541
-f  17.325935
+f  60.086807
+f  -162.388062
+f  -22.267006
+Circle
+f  4.000000
 LoopSociety
 q  1
 p  
 MouseSelectable
-MouseGrabbable
 Text
 s  
 f  0.000000
@@ -146,8 +147,7 @@ f  0.000000
 f  0.000000
 f  3.000000
 b  1
-Circle
-f  4.000000
+MouseGrabbable
 MouseIntersectable
 InputVariable
 q  -1
@@ -157,14 +157,15 @@ __6__
 Sphere
 f  2.000000
 Position
-f  96.289520
-f  -40.960541
-f  17.325935
+f  100.086807
+f  -162.388062
+f  -22.267006
+Circle
+f  4.000000
 LoopSociety
 q  1
 p  
 MouseSelectable
-MouseGrabbable
 Text
 s  
 f  0.000000
@@ -176,27 +177,129 @@ f  0.000000
 f  0.000000
 f  3.000000
 b  1
-Circle
-f  4.000000
+MouseGrabbable
 MouseIntersectable
 OutputVariable
 q  -1
 s  
-__10__
+__7__
+Sphere
+f  2.000000
+MouseSelectable
 MouseIntersectable
+Rectangle
+f  60.000000
+f  30.000000
+MouseGrabbable
+Text
+s  
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  1.000000
+b  1
+LoopSociety
+q  16
+p  
+Position
+f  -165.838593
+f  0.000000
+f  66.582703
+CodeBlock
+i  0
+Offset
+f  30.000000
+f  0.000000
+f  0.000000
+Scale
+v  
+1.000000
+1.000000
+1.000000
+__8__
 Rectangle
 f  20.000000
 f  10.000000
+MouseIntersectable
+MouseGrabbable
+CodeFunction
+i  4
+Sphere
+f  2.000000
+MouseSelectable
+Position
+f  20.086807
+f  -162.388062
+f  1.664639
+LoopSociety
+q  93
+p  
+9
+11
+Text
+s  INVERSE
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  1.000000
+b  1
+Offset
+f  0.000000
+f  0.000000
+f  0.000000
+__9__
+Sphere
+f  2.000000
+Position
+f  0.086807
+f  -162.388062
+f  1.664639
+LoopSociety
+q  8
+p  
+Circle
+f  4.000000
+MouseSelectable
+Text
+s  
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  3.000000
+b  1
+MouseGrabbable
+MouseIntersectable
+InputVariable
+q  -1
+s  
+q  -1
+__10__
+Rectangle
+f  20.000000
+f  10.000000
+MouseIntersectable
+CodeFunction
+i  13
 MouseGrabbable
 Sphere
 f  2.000000
-CodeFunction
-i  14
 MouseSelectable
 Position
-f  76.289520
-f  -40.960541
-f  61.770378
+f  80.086807
+f  -162.388062
+f  22.177437
 LoopSociety
 q  3
 p  
@@ -217,28 +320,20 @@ f  0.000000
 f  0.000000
 f  0.000000
 __11__
-Rectangle
-f  20.000000
-f  10.000000
-MouseIntersectable
-MouseGrabbable
 Sphere
 f  2.000000
-CodeFunction
-i  0
-MouseSelectable
 Position
-f  16.289520
-f  -40.960541
-f  13.285526
+f  40.086807
+f  -162.388062
+f  1.664639
 LoopSociety
-q  93
+q  8
 p  
-18
-21
-24
+Circle
+f  4.000000
+MouseSelectable
 Text
-s  ADD
+s  
 f  0.000000
 f  0.000000
 f  0.000000
@@ -246,22 +341,23 @@ f  0.000000
 f  0.000000
 f  0.000000
 f  0.000000
-f  1.000000
+f  3.000000
 b  1
-Offset
-f  0.000000
-f  0.000000
-f  0.000000
+MouseGrabbable
+MouseIntersectable
+OutputVariable
+q  -1
+s  
 __12__
 Inventory
 b  0
 Sphere
 f  2.000000
 MouseSelectable
-MouseIntersectable
 Rectangle
 f  70.000000
 f  90.000000
+MouseIntersectable
 MouseGrabbable
 LoopSociety
 q  -1
@@ -269,9 +365,9 @@ p
 13
 14
 Position
-f  -103.710480
-f  -340.960541
-f  95.103699
+f  -99.913193
+f  -462.388062
+f  55.510773
 Offset
 f  50.000000
 f  300.000000
@@ -280,11 +376,10 @@ __13__
 Sphere
 f  2.000000
 MouseSelectable
-MouseIntersectable
 Rectangle
 f  40.000000
 f  25.000000
-MouseGrabbable
+MouseIntersectable
 Text
 s  
 f  0.000000
@@ -296,13 +391,14 @@ f  0.000000
 f  0.000000
 f  1.000000
 b  1
+MouseGrabbable
 LoopSociety
 q  12
 p  
 Position
-f  -53.710480
-f  -40.960541
-f  170.103699
+f  -49.913193
+f  -162.388062
+f  130.510773
 CodeBlock
 i  0
 Offset
@@ -315,11 +411,10 @@ v
 1.000000
 1.000000
 __14__
+MouseIntersectable
 Rectangle
 f  40.000000
 f  25.000000
-MouseIntersectable
-MouseGrabbable
 Text
 s  LOOP
 f  0.000000
@@ -331,6 +426,7 @@ f  0.000000
 f  10.000000
 f  1.000000
 b  1
+MouseGrabbable
 Sphere
 f  2.000000
 MouseSelectable
@@ -338,9 +434,9 @@ LoopSociety
 q  12
 p  
 Position
-f  -53.710480
-f  -40.960541
-f  140.103699
+f  -49.913193
+f  -162.388062
+f  100.510773
 Offset
 f  0.000000
 f  0.000000
@@ -360,13 +456,13 @@ f  -195.838593
 f  0.000000
 f  81.582703
 MouseSelectable
+LoopSociety
+q  16
+p  
 Circle
 f  4.000000
 MouseGrabbable
 MouseIntersectable
-LoopSociety
-q  16
-p  
 InputVariable
 q  -1
 s  C
@@ -383,13 +479,13 @@ f  0.000000
 f  1.000000
 b  1
 __16__
+MouseIntersectable
 Rectangle
 f  100.000000
-f  30.000000
-MouseIntersectable
-MouseGrabbable
+f  60.000000
 ProcedureComponent
 b  0
+MouseGrabbable
 Sphere
 f  2.000000
 MouseSelectable
@@ -397,6 +493,7 @@ LoopSociety
 q  -1
 p  
 27
+7
 34
 35
 15
@@ -411,7 +508,7 @@ f  96.582703
 Offset
 f  30.000000
 f  0.000000
-f  0.000000
+f  -15.000000
 ScopeComponent
 Scale
 v  
@@ -419,69 +516,76 @@ v
 1.000000
 1.000000
 __17__
-Sphere
-f  2.000000
-MouseSelectable
-MouseGrabbable
-Position
-f  -62.868942
-f  -316.000000
-f  112.534302
 CameraComponent
-f  -62.868942
-f  9684.000000
-f  112.534302
+f  -128.868942
+f  9800.000000
+f  92.534302
 f  0.000000
 f  0.000000
 f  1.000000
 f  45.000000
 i  0
 b  1
+Sphere
+f  2.000000
+MouseSelectable
+MouseGrabbable
+Position
+f  -128.868942
+f  -200.000000
+f  92.534302
 MouseIntersectable
 LoopSociety
 q  -1
 p  
 __18__
+MouseIntersectable
+Rectangle
+f  20.000000
+f  10.000000
+CodeFunction
+i  4
+MouseGrabbable
 Sphere
 f  2.000000
-LoopSociety
-q  11
-p  
-Position
-f  36.289520
-f  -40.960541
-f  13.285526
-MouseIntersectable
-Text
-s  
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-f  3.000000
-b  1
-MouseGrabbable
-Circle
-f  4.000000
 MouseSelectable
-OutputVariable
-q  -1
-s  
+Position
+f  20.086807
+f  -162.388062
+f  -13.719976
+LoopSociety
+q  93
+p  
+21
+24
+Text
+s  MUL_ONE
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  1.000000
+b  1
+Offset
+f  0.000000
+f  0.000000
+f  0.000000
 __19__
 Sphere
 f  2.000000
 Position
-f  96.289520
-f  -40.960541
-f  61.770378
+f  100.086807
+f  -162.388062
+f  22.177437
+Circle
+f  4.000000
 LoopSociety
 q  10
 p  
 MouseSelectable
-MouseGrabbable
 Text
 s  
 f  0.000000
@@ -493,27 +597,26 @@ f  0.000000
 f  0.000000
 f  3.000000
 b  1
-Circle
-f  4.000000
+MouseGrabbable
 MouseIntersectable
 OutputVariable
 q  -1
 s  
 __20__
+MouseIntersectable
 Rectangle
 f  20.000000
 f  10.000000
-MouseIntersectable
+CodeFunction
+i  14
 MouseGrabbable
 Sphere
 f  2.000000
 MouseSelectable
-CodeFunction
-i  15
 Position
-f  76.289520
-f  -40.960541
-f  39.548157
+f  80.086807
+f  -162.388062
+f  -0.044785
 LoopSociety
 q  3
 p  
@@ -536,29 +639,29 @@ f  0.000000
 __21__
 Sphere
 f  2.000000
-LoopSociety
-q  11
-p  
 Position
-f  -3.710480
-f  -40.960541
-f  18.285526
-MouseIntersectable
+f  0.086807
+f  -162.388062
+f  -13.719976
+Circle
+f  4.000000
+LoopSociety
+q  18
+p  
+MouseSelectable
+MouseGrabbable
 Text
 s  
-f  255.000000
-f  255.000000
-f  255.000000
-f  255.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
 f  0.000000
 f  0.000000
 f  0.000000
 f  3.000000
 b  1
-MouseGrabbable
-Circle
-f  4.000000
-MouseSelectable
+MouseIntersectable
 InputVariable
 q  -1
 s  
@@ -567,15 +670,16 @@ __22__
 Sphere
 f  2.000000
 Position
-f  96.289520
-f  -40.960541
-f  39.548157
+f  100.086807
+f  -162.388062
+f  -0.044785
+Circle
+f  4.000000
 LoopSociety
 q  20
 p  
 MouseSelectable
-Circle
-f  4.000000
+MouseGrabbable
 Text
 s  
 f  0.000000
@@ -587,7 +691,6 @@ f  0.000000
 f  0.000000
 f  3.000000
 b  1
-MouseGrabbable
 MouseIntersectable
 OutputVariable
 q  -1
@@ -600,13 +703,13 @@ f  -195.838593
 f  0.000000
 f  71.582703
 MouseSelectable
+LoopSociety
+q  16
+p  
 Circle
 f  4.000000
 MouseGrabbable
 MouseIntersectable
-LoopSociety
-q  16
-p  
 InputVariable
 q  -1
 s  D
@@ -626,14 +729,16 @@ __24__
 Sphere
 f  2.000000
 Position
-f  -3.710480
-f  -40.960541
-f  8.285526
+f  40.086807
+f  -162.388062
+f  -13.719976
+Circle
+f  4.000000
 LoopSociety
-q  11
+q  18
 p  
 MouseSelectable
-MouseIntersectable
+MouseGrabbable
 Text
 s  
 f  0.000000
@@ -645,16 +750,47 @@ f  0.000000
 f  0.000000
 f  3.000000
 b  1
-MouseGrabbable
-Circle
-f  4.000000
-InputVariable
+MouseIntersectable
+OutputVariable
 q  -1
 s  
-q  -1
+__25__
+Rectangle
+f  20.000000
+f  10.000000
+MouseIntersectable
+MouseGrabbable
+CodeFunction
+i  4
+Sphere
+f  2.000000
+MouseSelectable
+Position
+f  20.086807
+f  -162.388062
+f  -29.104591
+LoopSociety
+q  93
+p  
+28
+29
+Text
+s  BREAK
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  1.000000
+b  1
+Offset
+f  0.000000
+f  0.000000
+f  0.000000
 __26__
 MouseSelectable
-MouseGrabbable
 Text
 s  VariableLinkingSystem
 f  255.000000
@@ -666,6 +802,7 @@ f  0.000000
 f  10.000000
 f  10.000000
 b  1
+MouseGrabbable
 MouseIntersectable
 SystemReference
 s  VariableLinkingSystem
@@ -677,10 +814,11 @@ __27__
 Sphere
 f  2.000000
 MouseSelectable
+MouseIntersectable
 Rectangle
 f  60.000000
 f  30.000000
-MouseIntersectable
+MouseGrabbable
 Text
 s  
 f  0.000000
@@ -692,7 +830,6 @@ f  0.000000
 f  0.000000
 f  1.000000
 b  1
-MouseGrabbable
 LoopSociety
 q  16
 p  
@@ -711,6 +848,65 @@ v
 1.000000
 1.000000
 1.000000
+__28__
+Sphere
+f  2.000000
+Position
+f  0.086807
+f  -162.388062
+f  -29.104591
+LoopSociety
+q  25
+p  
+Circle
+f  4.000000
+MouseSelectable
+Text
+s  
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  3.000000
+b  1
+MouseGrabbable
+MouseIntersectable
+InputVariable
+q  -1
+s  
+q  -1
+__29__
+Sphere
+f  2.000000
+Position
+f  40.086807
+f  -162.388062
+f  -29.104591
+LoopSociety
+q  25
+p  
+Circle
+f  4.000000
+MouseSelectable
+Text
+s  
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  3.000000
+b  1
+MouseGrabbable
+MouseIntersectable
+OutputVariable
+q  -1
+s  
 __34__
 Sphere
 f  2.000000
@@ -719,13 +915,13 @@ f  -195.838593
 f  0.000000
 f  101.582703
 MouseSelectable
+LoopSociety
+q  16
+p  
 Circle
 f  4.000000
 MouseGrabbable
 MouseIntersectable
-LoopSociety
-q  16
-p  
 InputVariable
 q  -1
 s  A
@@ -749,13 +945,13 @@ f  -195.838593
 f  0.000000
 f  91.582703
 MouseSelectable
+LoopSociety
+q  16
+p  
 Circle
 f  4.000000
 MouseGrabbable
 MouseIntersectable
-LoopSociety
-q  16
-p  
 InputVariable
 q  -1
 s  B
@@ -779,6 +975,7 @@ f  0.981966
 f  0.000000
 f  135.230469
 MouseSelectable
+MouseGrabbable
 Text
 s  Save
 f  0.000000
@@ -790,11 +987,10 @@ f  0.000000
 f  0.000000
 f  1.000000
 b  1
-MouseGrabbable
-MouseIntersectable
 Rectangle
 f  20.000000
 f  10.000000
+MouseIntersectable
 LoopSociety
 q  -1
 p  
@@ -811,8 +1007,9 @@ Position
 f  0.229295
 f  -0.000031
 f  149.106903
-MouseSelectable
 UiComponent
+MouseSelectable
+MouseGrabbable
 Text
 s  ProcedureName
 f  0.000000
@@ -824,7 +1021,6 @@ f  0.000000
 f  0.000000
 f  1.000000
 b  1
-MouseGrabbable
 MouseIntersectable
 LoopSociety
 q  -1
@@ -837,13 +1033,13 @@ f  -195.838593
 f  0.000000
 f  61.582703
 MouseSelectable
+LoopSociety
+q  16
+p  
 Circle
 f  4.000000
 MouseGrabbable
 MouseIntersectable
-LoopSociety
-q  16
-p  
 InputVariable
 q  -1
 s  E
@@ -868,12 +1064,12 @@ f  0.000000
 f  51.582703
 MouseSelectable
 MouseGrabbable
-Circle
-f  4.000000
-MouseIntersectable
 LoopSociety
 q  16
 p  
+Circle
+f  4.000000
+MouseIntersectable
 InputVariable
 q  -1
 s  F
@@ -890,20 +1086,20 @@ f  0.000000
 f  1.000000
 b  1
 __48__
-MouseIntersectable
 Rectangle
 f  20.000000
 f  10.000000
+MouseIntersectable
 Sphere
 f  2.000000
-CodeFunction
-i  7
-MouseSelectable
 MouseGrabbable
+CodeFunction
+i  6
+MouseSelectable
 Position
-f  76.289520
-f  -40.960541
-f  172.881485
+f  80.086807
+f  -162.388062
+f  133.288544
 LoopSociety
 q  3
 p  
@@ -930,10 +1126,10 @@ f  0.000000
 f  0.000000
 f  0.000000
 __49__
+MouseIntersectable
 Rectangle
 f  46.000000
 f  3.000000
-MouseIntersectable
 MouseGrabbable
 Sphere
 f  2.000000
@@ -943,9 +1139,9 @@ q  48
 p  
 50
 Position
-f  85.289520
-f  -40.960541
-f  171.681488
+f  89.086807
+f  -162.388062
+f  132.088547
 Offset
 f  0.300000
 f  0.000000
@@ -957,12 +1153,16 @@ v
 0.100000
 0.100000
 __50__
+Position
+f  89.086807
+f  -162.388062
+f  132.088547
 CodeBlock
 i  0
-MouseIntersectable
 Rectangle
 f  60.000000
 f  30.000000
+MouseIntersectable
 Sphere
 f  2.000000
 MouseSelectable
@@ -970,10 +1170,6 @@ MouseGrabbable
 LoopSociety
 q  49
 p  
-Position
-f  85.289520
-f  -40.960541
-f  171.681488
 Offset
 f  3.000000
 f  0.000000
@@ -984,10 +1180,10 @@ v
 1.000000
 1.000000
 __51__
+MouseIntersectable
 Rectangle
 f  46.000000
 f  3.000000
-MouseIntersectable
 MouseGrabbable
 Sphere
 f  2.000000
@@ -997,9 +1193,9 @@ q  48
 p  
 57
 Position
-f  85.289520
-f  -40.960541
-f  171.381485
+f  89.086807
+f  -162.388062
+f  131.788544
 Offset
 f  0.300000
 f  0.000000
@@ -1012,6 +1208,7 @@ v
 0.100000
 __54__
 MouseSelectable
+MouseGrabbable
 Text
 s  BubbleCameraSystem
 f  255.000000
@@ -1023,7 +1220,6 @@ f  0.000000
 f  10.000000
 f  10.000000
 b  1
-MouseGrabbable
 MouseIntersectable
 SystemReference
 s  BubbleCameraSystem
@@ -1033,6 +1229,7 @@ f  -0.000000
 f  -230.122330
 __55__
 MouseSelectable
+MouseGrabbable
 Text
 s  OutputVariableSystem
 f  255.000000
@@ -1044,7 +1241,6 @@ f  0.000000
 f  10.000000
 f  10.000000
 b  1
-MouseGrabbable
 MouseIntersectable
 SystemReference
 s  OutputVariableSystem
@@ -1065,7 +1261,6 @@ f  -195.650818
 f  0.000061
 f  127.044846
 MouseSelectable
-MouseGrabbable
 Text
 s  Start
 f  0.000000
@@ -1077,6 +1272,7 @@ f  0.000000
 f  0.000000
 f  1.000000
 b  1
+MouseGrabbable
 MouseIntersectable
 Offset
 f  0.000000
@@ -1087,10 +1283,14 @@ f  6.000000
 __57__
 Sphere
 f  2.000000
-MouseIntersectable
 Rectangle
 f  60.000000
 f  30.000000
+MouseIntersectable
+Position
+f  89.086807
+f  -162.388062
+f  131.788544
 CodeBlock
 i  0
 MouseSelectable
@@ -1098,10 +1298,6 @@ MouseGrabbable
 LoopSociety
 q  51
 p  
-Position
-f  85.289520
-f  -40.960541
-f  171.381485
 Offset
 f  3.000000
 f  0.000000
@@ -1115,14 +1311,15 @@ __58__
 Sphere
 f  2.000000
 Position
-f  56.289520
-f  -40.960541
-f  177.881485
+f  60.086807
+f  -162.388062
+f  138.288544
+Circle
+f  4.000000
 LoopSociety
 q  48
 p  
 MouseSelectable
-MouseGrabbable
 Text
 s  
 f  0.000000
@@ -1134,8 +1331,7 @@ f  0.000000
 f  0.000000
 f  3.000000
 b  1
-Circle
-f  4.000000
+MouseGrabbable
 MouseIntersectable
 InputVariable
 q  -1
@@ -1145,14 +1341,17 @@ __59__
 Sphere
 f  2.000000
 Position
-f  96.289520
-f  -40.960541
-f  172.881485
+f  100.086807
+f  -162.388062
+f  133.288544
+Circle
+f  4.000000
 LoopSociety
 q  48
 p  
 MouseSelectable
 MouseIntersectable
+MouseGrabbable
 Text
 s  
 f  0.000000
@@ -1164,9 +1363,6 @@ f  0.000000
 f  0.000000
 f  3.000000
 b  1
-MouseGrabbable
-Circle
-f  4.000000
 OutputVariable
 q  -1
 s  
@@ -1174,15 +1370,16 @@ __60__
 Sphere
 f  2.000000
 Position
-f  56.289520
-f  -40.960541
-f  167.881485
+f  60.086807
+f  -162.388062
+f  128.288544
+Circle
+f  4.000000
 LoopSociety
 q  48
 p  
 MouseSelectable
-Circle
-f  4.000000
+MouseGrabbable
 Text
 s  
 f  0.000000
@@ -1194,27 +1391,26 @@ f  0.000000
 f  0.000000
 f  3.000000
 b  1
-MouseGrabbable
 MouseIntersectable
 InputVariable
 q  -1
 s  
 q  -1
 __61__
+MouseIntersectable
 Rectangle
 f  20.000000
 f  10.000000
-MouseIntersectable
 Sphere
 f  2.000000
 MouseSelectable
-CodeFunction
-i  8
 MouseGrabbable
+CodeFunction
+i  7
 Position
-f  76.289520
-f  -40.960541
-f  150.659271
+f  80.086807
+f  -162.388062
+f  111.066322
 LoopSociety
 q  3
 p  
@@ -1241,10 +1437,10 @@ f  0.000000
 f  0.000000
 f  0.000000
 __62__
-MouseIntersectable
 Rectangle
 f  46.000000
 f  3.000000
+MouseIntersectable
 MouseGrabbable
 Sphere
 f  2.000000
@@ -1254,9 +1450,9 @@ q  61
 p  
 63
 Position
-f  85.289520
-f  -40.960541
-f  149.459274
+f  89.086807
+f  -162.388062
+f  109.866325
 Offset
 f  0.300000
 f  0.000000
@@ -1268,10 +1464,14 @@ v
 0.100000
 0.100000
 __63__
+MouseIntersectable
 Rectangle
 f  60.000000
 f  30.000000
-MouseIntersectable
+Position
+f  89.086807
+f  -162.388062
+f  109.866325
 CodeBlock
 i  0
 Sphere
@@ -1281,10 +1481,6 @@ MouseGrabbable
 LoopSociety
 q  62
 p  
-Position
-f  85.289520
-f  -40.960541
-f  149.459274
 Offset
 f  3.000000
 f  0.000000
@@ -1295,10 +1491,10 @@ v
 1.000000
 1.000000
 __64__
-MouseIntersectable
 Rectangle
 f  46.000000
 f  3.000000
+MouseIntersectable
 MouseGrabbable
 Sphere
 f  2.000000
@@ -1308,9 +1504,9 @@ q  61
 p  
 65
 Position
-f  85.289520
-f  -40.960541
-f  149.159271
+f  89.086807
+f  -162.388062
+f  109.566322
 Offset
 f  0.300000
 f  0.000000
@@ -1324,21 +1520,21 @@ v
 __65__
 Sphere
 f  2.000000
+Position
+f  89.086807
+f  -162.388062
+f  109.566322
 CodeBlock
 i  0
+MouseIntersectable
 Rectangle
 f  60.000000
 f  30.000000
-MouseIntersectable
 MouseSelectable
 MouseGrabbable
 LoopSociety
 q  64
 p  
-Position
-f  85.289520
-f  -40.960541
-f  149.159271
 Offset
 f  3.000000
 f  0.000000
@@ -1352,15 +1548,16 @@ __66__
 Sphere
 f  2.000000
 Position
-f  56.289520
-f  -40.960541
-f  155.659271
+f  60.086807
+f  -162.388062
+f  116.066322
+Circle
+f  4.000000
 LoopSociety
 q  61
 p  
 MouseSelectable
-Circle
-f  4.000000
+MouseGrabbable
 Text
 s  
 f  0.000000
@@ -1372,7 +1569,6 @@ f  0.000000
 f  0.000000
 f  3.000000
 b  1
-MouseGrabbable
 MouseIntersectable
 InputVariable
 q  -1
@@ -1382,17 +1578,16 @@ __67__
 Sphere
 f  2.000000
 Position
-f  96.289520
-f  -40.960541
-f  150.659271
+f  100.086807
+f  -162.388062
+f  111.066322
+Circle
+f  4.000000
 LoopSociety
 q  61
 p  
 MouseSelectable
 MouseIntersectable
-Circle
-f  4.000000
-MouseGrabbable
 Text
 s  
 f  0.000000
@@ -1404,6 +1599,7 @@ f  0.000000
 f  0.000000
 f  3.000000
 b  1
+MouseGrabbable
 OutputVariable
 q  -1
 s  
@@ -1411,14 +1607,15 @@ __68__
 Sphere
 f  2.000000
 Position
-f  56.289520
-f  -40.960541
-f  145.659271
+f  60.086807
+f  -162.388062
+f  106.066322
+Circle
+f  4.000000
 LoopSociety
 q  61
 p  
 MouseSelectable
-MouseGrabbable
 Text
 s  
 f  0.000000
@@ -1430,28 +1627,27 @@ f  0.000000
 f  0.000000
 f  3.000000
 b  1
-Circle
-f  4.000000
+MouseGrabbable
 MouseIntersectable
 InputVariable
 q  -1
 s  
 q  -1
 __69__
-MouseIntersectable
 Rectangle
 f  20.000000
 f  10.000000
+MouseIntersectable
 Sphere
 f  2.000000
-CodeFunction
-i  9
-MouseSelectable
 MouseGrabbable
+CodeFunction
+i  8
+MouseSelectable
 Position
-f  76.289520
-f  -40.960541
-f  128.437042
+f  80.086807
+f  -162.388062
+f  88.844101
 LoopSociety
 q  3
 p  
@@ -1478,10 +1674,10 @@ f  0.000000
 f  0.000000
 f  0.000000
 __70__
+MouseIntersectable
 Rectangle
 f  46.000000
 f  3.000000
-MouseIntersectable
 MouseGrabbable
 Sphere
 f  2.000000
@@ -1491,9 +1687,9 @@ q  69
 p  
 71
 Position
-f  85.289520
-f  -40.960541
-f  127.237045
+f  89.086807
+f  -162.388062
+f  87.644104
 Offset
 f  0.300000
 f  0.000000
@@ -1505,12 +1701,16 @@ v
 0.100000
 0.100000
 __71__
+Position
+f  89.086807
+f  -162.388062
+f  87.644104
 CodeBlock
 i  0
-MouseIntersectable
 Rectangle
 f  60.000000
 f  30.000000
+MouseIntersectable
 Sphere
 f  2.000000
 MouseSelectable
@@ -1518,10 +1718,6 @@ MouseGrabbable
 LoopSociety
 q  70
 p  
-Position
-f  85.289520
-f  -40.960541
-f  127.237045
 Offset
 f  3.000000
 f  0.000000
@@ -1532,10 +1728,10 @@ v
 1.000000
 1.000000
 __72__
+MouseIntersectable
 Rectangle
 f  46.000000
 f  3.000000
-MouseIntersectable
 MouseGrabbable
 Sphere
 f  2.000000
@@ -1545,9 +1741,9 @@ q  69
 p  
 73
 Position
-f  85.289520
-f  -40.960541
-f  126.937042
+f  89.086807
+f  -162.388062
+f  87.344101
 Offset
 f  0.300000
 f  0.000000
@@ -1561,10 +1757,14 @@ v
 __73__
 Sphere
 f  2.000000
-MouseIntersectable
 Rectangle
 f  60.000000
 f  30.000000
+MouseIntersectable
+Position
+f  89.086807
+f  -162.388062
+f  87.344101
 CodeBlock
 i  0
 MouseSelectable
@@ -1572,10 +1772,6 @@ MouseGrabbable
 LoopSociety
 q  72
 p  
-Position
-f  85.289520
-f  -40.960541
-f  126.937042
 Offset
 f  3.000000
 f  0.000000
@@ -1589,14 +1785,15 @@ __74__
 Sphere
 f  2.000000
 Position
-f  56.289520
-f  -40.960541
-f  133.437042
+f  60.086807
+f  -162.388062
+f  93.844101
+Circle
+f  4.000000
 LoopSociety
 q  69
 p  
 MouseSelectable
-MouseGrabbable
 Text
 s  
 f  0.000000
@@ -1608,8 +1805,7 @@ f  0.000000
 f  0.000000
 f  3.000000
 b  1
-Circle
-f  4.000000
+MouseGrabbable
 MouseIntersectable
 InputVariable
 q  -1
@@ -1619,14 +1815,17 @@ __75__
 Sphere
 f  2.000000
 Position
-f  96.289520
-f  -40.960541
-f  128.437042
+f  100.086807
+f  -162.388062
+f  88.844101
+Circle
+f  4.000000
 LoopSociety
 q  69
 p  
 MouseSelectable
 MouseIntersectable
+MouseGrabbable
 Text
 s  
 f  0.000000
@@ -1638,9 +1837,6 @@ f  0.000000
 f  0.000000
 f  3.000000
 b  1
-MouseGrabbable
-Circle
-f  4.000000
 OutputVariable
 q  -1
 s  
@@ -1648,15 +1844,16 @@ __76__
 Sphere
 f  2.000000
 Position
-f  56.289520
-f  -40.960541
-f  123.437042
+f  60.086807
+f  -162.388062
+f  83.844101
+Circle
+f  4.000000
 LoopSociety
 q  69
 p  
 MouseSelectable
-Circle
-f  4.000000
+MouseGrabbable
 Text
 s  
 f  0.000000
@@ -1668,27 +1865,26 @@ f  0.000000
 f  0.000000
 f  3.000000
 b  1
-MouseGrabbable
 MouseIntersectable
 InputVariable
 q  -1
 s  
 q  -1
 __77__
+MouseIntersectable
 Rectangle
 f  20.000000
 f  10.000000
-MouseIntersectable
 Sphere
 f  2.000000
 MouseSelectable
-CodeFunction
-i  10
 MouseGrabbable
+CodeFunction
+i  9
 Position
-f  76.289520
-f  -40.960541
-f  106.214821
+f  80.086807
+f  -162.388062
+f  66.621880
 LoopSociety
 q  3
 p  
@@ -1715,10 +1911,10 @@ f  0.000000
 f  0.000000
 f  0.000000
 __78__
-MouseIntersectable
 Rectangle
 f  46.000000
 f  3.000000
+MouseIntersectable
 MouseGrabbable
 Sphere
 f  2.000000
@@ -1728,9 +1924,9 @@ q  77
 p  
 79
 Position
-f  85.289520
-f  -40.960541
-f  105.014824
+f  89.086807
+f  -162.388062
+f  65.421883
 Offset
 f  0.300000
 f  0.000000
@@ -1742,10 +1938,14 @@ v
 0.100000
 0.100000
 __79__
+MouseIntersectable
 Rectangle
 f  60.000000
 f  30.000000
-MouseIntersectable
+Position
+f  89.086807
+f  -162.388062
+f  65.421883
 CodeBlock
 i  0
 Sphere
@@ -1755,10 +1955,6 @@ MouseGrabbable
 LoopSociety
 q  78
 p  
-Position
-f  85.289520
-f  -40.960541
-f  105.014824
 Offset
 f  3.000000
 f  0.000000
@@ -1769,10 +1965,10 @@ v
 1.000000
 1.000000
 __80__
-MouseIntersectable
 Rectangle
 f  46.000000
 f  3.000000
+MouseIntersectable
 MouseGrabbable
 Sphere
 f  2.000000
@@ -1782,9 +1978,9 @@ q  77
 p  
 81
 Position
-f  85.289520
-f  -40.960541
-f  104.714821
+f  89.086807
+f  -162.388062
+f  65.121880
 Offset
 f  0.300000
 f  0.000000
@@ -1798,21 +1994,21 @@ v
 __81__
 Sphere
 f  2.000000
+Position
+f  89.086807
+f  -162.388062
+f  65.121880
 CodeBlock
 i  0
+MouseIntersectable
 Rectangle
 f  60.000000
 f  30.000000
-MouseIntersectable
 MouseSelectable
 MouseGrabbable
 LoopSociety
 q  80
 p  
-Position
-f  85.289520
-f  -40.960541
-f  104.714821
 Offset
 f  3.000000
 f  0.000000
@@ -1826,15 +2022,16 @@ __82__
 Sphere
 f  2.000000
 Position
-f  56.289520
-f  -40.960541
-f  111.214821
+f  60.086807
+f  -162.388062
+f  71.621880
+Circle
+f  4.000000
 LoopSociety
 q  77
 p  
 MouseSelectable
-Circle
-f  4.000000
+MouseGrabbable
 Text
 s  
 f  0.000000
@@ -1846,7 +2043,6 @@ f  0.000000
 f  0.000000
 f  3.000000
 b  1
-MouseGrabbable
 MouseIntersectable
 InputVariable
 q  -1
@@ -1856,17 +2052,16 @@ __83__
 Sphere
 f  2.000000
 Position
-f  96.289520
-f  -40.960541
-f  106.214821
+f  100.086807
+f  -162.388062
+f  66.621880
+Circle
+f  4.000000
 LoopSociety
 q  77
 p  
 MouseSelectable
 MouseIntersectable
-Circle
-f  4.000000
-MouseGrabbable
 Text
 s  
 f  0.000000
@@ -1878,6 +2073,7 @@ f  0.000000
 f  0.000000
 f  3.000000
 b  1
+MouseGrabbable
 OutputVariable
 q  -1
 s  
@@ -1885,14 +2081,15 @@ __84__
 Sphere
 f  2.000000
 Position
-f  56.289520
-f  -40.960541
-f  101.214821
+f  60.086807
+f  -162.388062
+f  61.621880
+Circle
+f  4.000000
 LoopSociety
 q  77
 p  
 MouseSelectable
-MouseGrabbable
 Text
 s  
 f  0.000000
@@ -1904,28 +2101,27 @@ f  0.000000
 f  0.000000
 f  3.000000
 b  1
-Circle
-f  4.000000
+MouseGrabbable
 MouseIntersectable
 InputVariable
 q  -1
 s  
 q  -1
 __85__
-MouseIntersectable
 Rectangle
 f  20.000000
 f  10.000000
+MouseIntersectable
 Sphere
 f  2.000000
-CodeFunction
-i  11
-MouseSelectable
 MouseGrabbable
+CodeFunction
+i  10
+MouseSelectable
 Position
-f  76.289520
-f  -40.960541
-f  83.992599
+f  80.086807
+f  -162.388062
+f  44.399658
 LoopSociety
 q  3
 p  
@@ -1952,10 +2148,10 @@ f  0.000000
 f  0.000000
 f  0.000000
 __86__
+MouseIntersectable
 Rectangle
 f  46.000000
 f  3.000000
-MouseIntersectable
 MouseGrabbable
 Sphere
 f  2.000000
@@ -1965,9 +2161,9 @@ q  85
 p  
 87
 Position
-f  85.289520
-f  -40.960541
-f  82.792603
+f  89.086807
+f  -162.388062
+f  43.199657
 Offset
 f  0.300000
 f  0.000000
@@ -1979,12 +2175,16 @@ v
 0.100000
 0.100000
 __87__
+Position
+f  89.086807
+f  -162.388062
+f  43.199657
 CodeBlock
 i  0
-MouseIntersectable
 Rectangle
 f  60.000000
 f  30.000000
+MouseIntersectable
 Sphere
 f  2.000000
 MouseSelectable
@@ -1992,10 +2192,6 @@ MouseGrabbable
 LoopSociety
 q  86
 p  
-Position
-f  85.289520
-f  -40.960541
-f  82.792603
 Offset
 f  3.000000
 f  0.000000
@@ -2006,10 +2202,10 @@ v
 1.000000
 1.000000
 __88__
+MouseIntersectable
 Rectangle
 f  46.000000
 f  3.000000
-MouseIntersectable
 MouseGrabbable
 Sphere
 f  2.000000
@@ -2019,9 +2215,9 @@ q  85
 p  
 89
 Position
-f  85.289520
-f  -40.960541
-f  82.492599
+f  89.086807
+f  -162.388062
+f  42.899658
 Offset
 f  0.300000
 f  0.000000
@@ -2035,10 +2231,14 @@ v
 __89__
 Sphere
 f  2.000000
-MouseIntersectable
 Rectangle
 f  60.000000
 f  30.000000
+MouseIntersectable
+Position
+f  89.086807
+f  -162.388062
+f  42.899658
 CodeBlock
 i  0
 MouseSelectable
@@ -2046,10 +2246,6 @@ MouseGrabbable
 LoopSociety
 q  88
 p  
-Position
-f  85.289520
-f  -40.960541
-f  82.492599
 Offset
 f  3.000000
 f  0.000000
@@ -2063,14 +2259,15 @@ __90__
 Sphere
 f  2.000000
 Position
-f  56.289520
-f  -40.960541
-f  88.992599
+f  60.086807
+f  -162.388062
+f  49.399658
+Circle
+f  4.000000
 LoopSociety
 q  85
 p  
 MouseSelectable
-MouseGrabbable
 Text
 s  
 f  0.000000
@@ -2082,8 +2279,7 @@ f  0.000000
 f  0.000000
 f  3.000000
 b  1
-Circle
-f  4.000000
+MouseGrabbable
 MouseIntersectable
 InputVariable
 q  -1
@@ -2093,14 +2289,17 @@ __91__
 Sphere
 f  2.000000
 Position
-f  96.289520
-f  -40.960541
-f  83.992599
+f  100.086807
+f  -162.388062
+f  44.399658
+Circle
+f  4.000000
 LoopSociety
 q  85
 p  
 MouseSelectable
 MouseIntersectable
+MouseGrabbable
 Text
 s  
 f  0.000000
@@ -2112,9 +2311,6 @@ f  0.000000
 f  0.000000
 f  3.000000
 b  1
-MouseGrabbable
-Circle
-f  4.000000
 OutputVariable
 q  -1
 s  
@@ -2122,15 +2318,16 @@ __92__
 Sphere
 f  2.000000
 Position
-f  56.289520
-f  -40.960541
-f  78.992599
+f  60.086807
+f  -162.388062
+f  39.399658
+Circle
+f  4.000000
 LoopSociety
 q  85
 p  
 MouseSelectable
-Circle
-f  4.000000
+MouseGrabbable
 Text
 s  
 f  0.000000
@@ -2142,17 +2339,16 @@ f  0.000000
 f  0.000000
 f  3.000000
 b  1
-MouseGrabbable
 MouseIntersectable
 InputVariable
 q  -1
 s  
 q  -1
 __93__
-MouseIntersectable
 Rectangle
 f  55.299999
 f  200.000000
+MouseIntersectable
 MouseGrabbable
 Inventory
 b  0
@@ -2171,30 +2367,34 @@ p
 116
 117
 130
-11
+8
+18
+25
 Position
-f  -103.710480
-f  -340.960541
-f  95.103706
+f  -99.913193
+f  -462.388062
+f  55.510773
 Offset
 f  120.000000
 f  300.000000
 f  0.000000
+CodeFunction
+i  3
 __94__
-MouseIntersectable
 Rectangle
 f  20.000000
 f  10.000000
+MouseIntersectable
+CodeFunction
+i  0
 MouseGrabbable
 Sphere
 f  2.000000
 MouseSelectable
-CodeFunction
-i  1
 Position
-f  16.289520
-f  -40.960541
-f  176.921890
+f  20.086807
+f  -162.388062
+f  140.126160
 LoopSociety
 q  93
 p  
@@ -2202,7 +2402,7 @@ p
 96
 97
 Text
-s  MULTIPLY
+s  COMBINE
 f  0.000000
 f  0.000000
 f  0.000000
@@ -2219,17 +2419,16 @@ f  0.000000
 __95__
 Sphere
 f  2.000000
+Circle
+f  4.000000
 LoopSociety
 q  94
 p  
 Position
-f  36.289520
-f  -40.960541
-f  176.921890
+f  40.086807
+f  -162.388062
+f  140.126160
 MouseIntersectable
-Circle
-f  4.000000
-MouseGrabbable
 Text
 s  
 f  0.000000
@@ -2241,6 +2440,7 @@ f  0.000000
 f  0.000000
 f  3.000000
 b  1
+MouseGrabbable
 MouseSelectable
 OutputVariable
 q  -1
@@ -2248,17 +2448,16 @@ s
 __96__
 Sphere
 f  2.000000
+Circle
+f  4.000000
 LoopSociety
 q  94
 p  
 Position
-f  -3.710480
-f  -40.960541
-f  181.921890
+f  0.086807
+f  -162.388062
+f  145.126160
 MouseIntersectable
-Circle
-f  4.000000
-MouseGrabbable
 Text
 s  
 f  255.000000
@@ -2270,6 +2469,7 @@ f  0.000000
 f  0.000000
 f  3.000000
 b  1
+MouseGrabbable
 MouseSelectable
 InputVariable
 q  -1
@@ -2279,17 +2479,16 @@ __97__
 Sphere
 f  2.000000
 Position
-f  -3.710480
-f  -40.960541
-f  171.921890
+f  0.086807
+f  -162.388062
+f  135.126160
+Circle
+f  4.000000
 LoopSociety
 q  94
 p  
 MouseSelectable
 MouseIntersectable
-Circle
-f  4.000000
-MouseGrabbable
 Text
 s  
 f  0.000000
@@ -2301,25 +2500,26 @@ f  0.000000
 f  0.000000
 f  3.000000
 b  1
+MouseGrabbable
 InputVariable
 q  -1
 s  
 q  -1
 __98__
-MouseIntersectable
 Rectangle
 f  20.000000
 f  10.000000
+MouseIntersectable
+CodeFunction
+i  1
 MouseGrabbable
 Sphere
 f  2.000000
 MouseSelectable
-CodeFunction
-i  2
 Position
-f  16.289520
-f  -40.960541
-f  158.740067
+f  20.086807
+f  -162.388062
+f  124.741547
 LoopSociety
 q  93
 p  
@@ -2344,15 +2544,16 @@ __99__
 Sphere
 f  2.000000
 Position
-f  -3.710480
-f  -40.960541
-f  158.740067
+f  0.086807
+f  -162.388062
+f  124.741547
+Circle
+f  4.000000
 LoopSociety
 q  98
 p  
 MouseSelectable
-Circle
-f  4.000000
+MouseGrabbable
 Text
 s  
 f  0.000000
@@ -2364,7 +2565,6 @@ f  0.000000
 f  0.000000
 f  3.000000
 b  1
-MouseGrabbable
 MouseIntersectable
 InputVariable
 q  -1
@@ -2374,15 +2574,16 @@ __100__
 Sphere
 f  2.000000
 Position
-f  36.289520
-f  -40.960541
-f  158.740067
+f  40.086807
+f  -162.388062
+f  124.741547
+Circle
+f  4.000000
 LoopSociety
 q  98
 p  
 MouseSelectable
-Circle
-f  4.000000
+MouseGrabbable
 Text
 s  
 f  0.000000
@@ -2394,26 +2595,25 @@ f  0.000000
 f  0.000000
 f  3.000000
 b  1
-MouseGrabbable
 MouseIntersectable
 OutputVariable
 q  -1
 s  
 __101__
-MouseIntersectable
 Rectangle
 f  20.000000
 f  10.000000
+MouseIntersectable
+CodeFunction
+i  2
 MouseGrabbable
 Sphere
 f  2.000000
 MouseSelectable
-CodeFunction
-i  3
 Position
-f  16.289520
-f  -40.960541
-f  140.558243
+f  20.086807
+f  -162.388062
+f  109.356934
 LoopSociety
 q  93
 p  
@@ -2438,17 +2638,16 @@ __102__
 Sphere
 f  2.000000
 Position
-f  -3.710480
-f  -40.960541
-f  140.558243
+f  0.086807
+f  -162.388062
+f  109.356934
+Circle
+f  4.000000
 LoopSociety
 q  101
 p  
 MouseSelectable
 MouseIntersectable
-Circle
-f  4.000000
-MouseGrabbable
 Text
 s  
 f  0.000000
@@ -2460,6 +2659,7 @@ f  0.000000
 f  0.000000
 f  3.000000
 b  1
+MouseGrabbable
 InputVariable
 q  -1
 s  
@@ -2468,17 +2668,16 @@ __103__
 Sphere
 f  2.000000
 Position
-f  36.289520
-f  -40.960541
-f  140.558243
+f  40.086807
+f  -162.388062
+f  109.356934
+Circle
+f  4.000000
 LoopSociety
 q  101
 p  
 MouseSelectable
 MouseIntersectable
-Circle
-f  4.000000
-MouseGrabbable
 Text
 s  
 f  0.000000
@@ -2490,24 +2689,25 @@ f  0.000000
 f  0.000000
 f  3.000000
 b  1
+MouseGrabbable
 OutputVariable
 q  -1
 s  
 __104__
+MouseIntersectable
 Rectangle
 f  20.000000
 f  10.000000
-MouseIntersectable
 Sphere
 f  2.000000
 MouseSelectable
-CodeFunction
-i  16
 MouseGrabbable
+CodeFunction
+i  15
 Position
-f  16.289520
-f  -40.960541
-f  122.376427
+f  20.086807
+f  -162.388062
+f  93.972321
 LoopSociety
 q  93
 p  
@@ -2533,10 +2733,10 @@ f  0.000000
 f  0.000000
 f  0.000000
 __105__
-MouseIntersectable
 Rectangle
 f  46.000000
 f  3.000000
+MouseIntersectable
 MouseGrabbable
 Sphere
 f  2.000000
@@ -2546,9 +2746,9 @@ q  104
 p  
 106
 Position
-f  25.289520
-f  -40.960541
-f  121.176430
+f  29.086807
+f  -162.388062
+f  92.772324
 Offset
 f  0.300000
 f  0.000000
@@ -2560,10 +2760,14 @@ v
 0.100000
 0.100000
 __106__
+MouseIntersectable
 Rectangle
 f  60.000000
 f  30.000000
-MouseIntersectable
+Position
+f  29.086807
+f  -162.388062
+f  92.772324
 CodeBlock
 i  0
 Sphere
@@ -2573,10 +2777,6 @@ MouseGrabbable
 LoopSociety
 q  105
 p  
-Position
-f  25.289520
-f  -40.960541
-f  121.176430
 Offset
 f  3.000000
 f  0.000000
@@ -2587,10 +2787,10 @@ v
 1.000000
 1.000000
 __107__
-MouseIntersectable
 Rectangle
 f  46.000000
 f  3.000000
+MouseIntersectable
 MouseGrabbable
 Sphere
 f  2.000000
@@ -2600,9 +2800,9 @@ q  104
 p  
 108
 Position
-f  25.289520
-f  -40.960541
-f  120.876427
+f  29.086807
+f  -162.388062
+f  92.472321
 Offset
 f  0.300000
 f  0.000000
@@ -2616,21 +2816,21 @@ v
 __108__
 Sphere
 f  2.000000
+Position
+f  29.086807
+f  -162.388062
+f  92.472321
 CodeBlock
 i  0
+MouseIntersectable
 Rectangle
 f  60.000000
 f  30.000000
-MouseIntersectable
 MouseSelectable
 MouseGrabbable
 LoopSociety
 q  107
 p  
-Position
-f  25.289520
-f  -40.960541
-f  120.876427
 Offset
 f  3.000000
 f  0.000000
@@ -2644,15 +2844,16 @@ __109__
 Sphere
 f  2.000000
 Position
-f  -3.710480
-f  -40.960541
-f  122.376427
+f  0.086807
+f  -162.388062
+f  93.972321
+Circle
+f  4.000000
 LoopSociety
 q  104
 p  
 MouseSelectable
-Circle
-f  4.000000
+MouseGrabbable
 Text
 s  
 f  0.000000
@@ -2664,7 +2865,6 @@ f  0.000000
 f  0.000000
 f  3.000000
 b  1
-MouseGrabbable
 MouseIntersectable
 InputVariable
 q  -1
@@ -2674,17 +2874,16 @@ __110__
 Sphere
 f  2.000000
 Position
-f  36.289520
-f  -40.960541
-f  122.376427
+f  40.086807
+f  -162.388062
+f  93.972321
+Circle
+f  4.000000
 LoopSociety
 q  104
 p  
 MouseSelectable
 MouseIntersectable
-Circle
-f  4.000000
-MouseGrabbable
 Text
 s  
 f  0.000000
@@ -2696,24 +2895,25 @@ f  0.000000
 f  0.000000
 f  3.000000
 b  1
+MouseGrabbable
 OutputVariable
 q  -1
 s  
 __111__
+MouseIntersectable
 Rectangle
 f  20.000000
 f  10.000000
-MouseIntersectable
+CodeFunction
+i  4
 MouseGrabbable
 Sphere
 f  2.000000
 MouseSelectable
-CodeFunction
-i  4
 Position
-f  16.289520
-f  -40.960541
-f  104.194611
+f  20.086807
+f  -162.388062
+f  78.587708
 LoopSociety
 q  93
 p  
@@ -2737,15 +2937,16 @@ __112__
 Sphere
 f  2.000000
 Position
-f  -3.710480
-f  -40.960541
-f  104.194611
+f  0.086807
+f  -162.388062
+f  78.587708
+Circle
+f  4.000000
 LoopSociety
 q  111
 p  
 MouseSelectable
-Circle
-f  4.000000
+MouseGrabbable
 Text
 s  
 f  0.000000
@@ -2757,27 +2958,26 @@ f  0.000000
 f  0.000000
 f  3.000000
 b  1
-MouseGrabbable
 MouseIntersectable
 InputVariable
 q  -1
 s  
 q  -1
 __113__
+MouseIntersectable
 Rectangle
 f  20.000000
 f  10.000000
-MouseIntersectable
+CodeFunction
+i  4
 MouseGrabbable
 Sphere
 f  2.000000
 MouseSelectable
-CodeFunction
-i  5
 Position
-f  16.289520
-f  -40.960541
-f  86.012794
+f  20.086807
+f  -162.388062
+f  63.203094
 LoopSociety
 q  93
 p  
@@ -2802,15 +3002,16 @@ __114__
 Sphere
 f  2.000000
 Position
-f  -3.710480
-f  -40.960541
-f  86.012794
+f  0.086807
+f  -162.388062
+f  63.203094
+Circle
+f  4.000000
 LoopSociety
 q  113
 p  
 MouseSelectable
-Circle
-f  4.000000
+MouseGrabbable
 Text
 s  
 f  0.000000
@@ -2822,7 +3023,6 @@ f  0.000000
 f  0.000000
 f  3.000000
 b  1
-MouseGrabbable
 MouseIntersectable
 InputVariable
 q  -1
@@ -2832,15 +3032,16 @@ __115__
 Sphere
 f  2.000000
 Position
-f  36.289520
-f  -40.960541
-f  86.012794
+f  40.086807
+f  -162.388062
+f  63.203094
+Circle
+f  4.000000
 LoopSociety
 q  113
 p  
 MouseSelectable
-Circle
-f  4.000000
+MouseGrabbable
 Text
 s  
 f  0.000000
@@ -2852,26 +3053,25 @@ f  0.000000
 f  0.000000
 f  3.000000
 b  1
-MouseGrabbable
 MouseIntersectable
 OutputVariable
 q  -1
 s  
 __116__
-MouseIntersectable
 Rectangle
 f  20.000000
 f  10.000000
+MouseIntersectable
+CodeFunction
+i  5
 MouseGrabbable
 Sphere
 f  2.000000
 MouseSelectable
-CodeFunction
-i  6
 Position
-f  16.289520
-f  -40.960541
-f  67.830978
+f  20.086807
+f  -162.388062
+f  47.818481
 LoopSociety
 q  93
 p  
@@ -2891,20 +3091,20 @@ f  0.000000
 f  0.000000
 f  0.000000
 __117__
-MouseIntersectable
 Rectangle
 f  20.000000
 f  10.000000
+MouseIntersectable
 Sphere
 f  2.000000
-CodeFunction
-i  17
-MouseSelectable
 MouseGrabbable
+CodeFunction
+i  16
+MouseSelectable
 Position
-f  16.289520
-f  -40.960541
-f  49.649162
+f  20.086807
+f  -162.388062
+f  32.433868
 LoopSociety
 q  93
 p  
@@ -2930,10 +3130,10 @@ f  0.000000
 f  0.000000
 f  0.000000
 __118__
+MouseIntersectable
 Rectangle
 f  46.000000
 f  3.000000
-MouseIntersectable
 MouseGrabbable
 Sphere
 f  2.000000
@@ -2943,9 +3143,9 @@ q  117
 p  
 119
 Position
-f  25.289520
-f  -40.960541
-f  48.449162
+f  29.086807
+f  -162.388062
+f  31.233868
 Offset
 f  0.300000
 f  0.000000
@@ -2957,12 +3157,16 @@ v
 0.100000
 0.100000
 __119__
+Position
+f  29.086807
+f  -162.388062
+f  31.233868
 CodeBlock
 i  0
-MouseIntersectable
 Rectangle
 f  60.000000
 f  30.000000
+MouseIntersectable
 Sphere
 f  2.000000
 MouseSelectable
@@ -2970,10 +3174,6 @@ MouseGrabbable
 LoopSociety
 q  118
 p  
-Position
-f  25.289520
-f  -40.960541
-f  48.449162
 Offset
 f  3.000000
 f  0.000000
@@ -2984,10 +3184,10 @@ v
 1.000000
 1.000000
 __120__
+MouseIntersectable
 Rectangle
 f  46.000000
 f  3.000000
-MouseIntersectable
 MouseGrabbable
 Sphere
 f  2.000000
@@ -2997,9 +3197,9 @@ q  117
 p  
 121
 Position
-f  25.289520
-f  -40.960541
-f  48.149162
+f  29.086807
+f  -162.388062
+f  30.933868
 Offset
 f  0.300000
 f  0.000000
@@ -3013,10 +3213,14 @@ v
 __121__
 Sphere
 f  2.000000
-MouseIntersectable
 Rectangle
 f  60.000000
 f  30.000000
+MouseIntersectable
+Position
+f  29.086807
+f  -162.388062
+f  30.933868
 CodeBlock
 i  0
 MouseSelectable
@@ -3024,10 +3228,6 @@ MouseGrabbable
 LoopSociety
 q  120
 p  
-Position
-f  25.289520
-f  -40.960541
-f  48.149162
 Offset
 f  3.000000
 f  0.000000
@@ -3041,14 +3241,15 @@ __122__
 Sphere
 f  2.000000
 Position
-f  -3.710480
-f  -40.960541
-f  49.649162
+f  0.086807
+f  -162.388062
+f  32.433868
+Circle
+f  4.000000
 LoopSociety
 q  117
 p  
 MouseSelectable
-MouseGrabbable
 Text
 s  
 f  0.000000
@@ -3060,8 +3261,7 @@ f  0.000000
 f  0.000000
 f  3.000000
 b  1
-Circle
-f  4.000000
+MouseGrabbable
 MouseIntersectable
 InputVariable
 q  -1
@@ -3071,14 +3271,17 @@ __123__
 Sphere
 f  2.000000
 Position
-f  36.289520
-f  -40.960541
-f  49.649162
+f  40.086807
+f  -162.388062
+f  32.433868
+Circle
+f  4.000000
 LoopSociety
 q  117
 p  
 MouseSelectable
 MouseIntersectable
+MouseGrabbable
 Text
 s  
 f  0.000000
@@ -3090,27 +3293,24 @@ f  0.000000
 f  0.000000
 f  3.000000
 b  1
-MouseGrabbable
-Circle
-f  4.000000
 OutputVariable
 q  -1
 s  
 __130__
-MouseIntersectable
 Rectangle
 f  20.000000
 f  10.000000
+MouseIntersectable
+CodeFunction
+i  12
 MouseGrabbable
 Sphere
 f  2.000000
-CodeFunction
-i  14
 MouseSelectable
 Position
-f  16.289520
-f  -40.960541
-f  31.467344
+f  20.086807
+f  -162.388062
+f  17.049253
 LoopSociety
 q  93
 p  
@@ -3135,14 +3335,15 @@ __131__
 Sphere
 f  2.000000
 Position
-f  -3.710480
-f  -40.960541
-f  36.467346
+f  0.086807
+f  -162.388062
+f  22.049253
+Circle
+f  4.000000
 LoopSociety
 q  130
 p  
 MouseSelectable
-MouseGrabbable
 Text
 s  
 f  0.000000
@@ -3154,8 +3355,7 @@ f  0.000000
 f  0.000000
 f  3.000000
 b  1
-Circle
-f  4.000000
+MouseGrabbable
 MouseIntersectable
 InputVariable
 q  -1
@@ -3165,15 +3365,16 @@ __132__
 Sphere
 f  2.000000
 Position
-f  -3.710480
-f  -40.960541
-f  26.467346
+f  0.086807
+f  -162.388062
+f  12.049253
+Circle
+f  4.000000
 LoopSociety
 q  130
 p  
 MouseSelectable
-Circle
-f  4.000000
+MouseGrabbable
 Text
 s  
 f  0.000000
@@ -3185,7 +3386,6 @@ f  0.000000
 f  0.000000
 f  3.000000
 b  1
-MouseGrabbable
 MouseIntersectable
 InputVariable
 q  -1

@@ -22,23 +22,24 @@ namespace components {
 }
 
 namespace functionTypes {
-	inline int ADD = 0;
-	inline int MULTIPLY = 1;
-	inline int NEW_TERM = 2;
-	inline int NEW_MULTERM = 3;
-	inline int POP = 4;
-	inline int INVERSE = 5;
-	inline int EXIT_LOOP = 6;
-	inline int EQUAL = 7;
-	inline int GREATER = 8;
-	inline int GREATEREQUAL = 9;
-	inline int LESS = 10;
-	inline int LESSEQUAL = 11;
-	inline int NEGATE = 12;
-	inline int COPY = 13;
-	inline int ZERO = 14;
-	inline int ONE = 15;
-	inline int FIND_BUBBLE = 16;
-	inline int FIND_FRACTION = 17;
+	inline int COMBINE = 0;
+	inline int NEW_TERM = 1;
+	inline int NEW_MULTERM = 2;
+	inline int POP = 3;
+	inline int INVERSE = 4;
+	inline int EXIT_LOOP = 5;
+	inline int EQUAL = 6;
+	inline int GREATER = 7;
+	inline int GREATEREQUAL = 8;
+	inline int LESS = 9;
+	inline int LESSEQUAL = 10;
+	inline int NEGATE = 11;
+	inline int COPY = 12;
+	inline int ZERO = 13;
+	inline int ONE = 14;
+	inline int FIND_BUBBLE = 15;
+	inline int FIND_FRACTION = 16;
+	inline int MUL_ONE = 17;
+	inline int BREAK = 18;
 }
 

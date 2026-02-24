@@ -376,9 +376,9 @@ namespace bubbleActions{
 		// copy multiplication container
 		auto& mulShape = middle::getShape(gameState, multiplyShapeId.index);
 		auto mulLoop = middle::getComponent<components::LoopSociety>(mulShape);
-		operationContainerId = middle::deepCopyShape(gameState, mulShape.id.index, mulLoop->parentLoopId.index);
+		resultShapeId = middle::deepCopyShape(gameState, mulShape.id.index, mulLoop->parentLoopId.index);
 		mulLoop = middle::getComponent<components::LoopSociety>(mulShape);
-		auto& operationContainer = middle::getShape(gameState, operationContainerId.index);
+		auto& operationContainer = middle::getShape(gameState, resultShapeId.index);
 		auto ogPos = middle::getComponent<components::Position>(mulShape);
 		auto copyContainerPos = middle::getComponent<components::Position>(operationContainer);
 		Vector3 targetPosition = { ogPos->posX, ogPos->posY, ogPos->posZ };
@@ -440,8 +440,8 @@ namespace bubbleActions{
 		// if there's no multiplications left remove the multiplication shape
 		auto containerLoop = middle::getComponent<components::LoopSociety>(operationContainer);
 		if (containerLoop->loopMemberIds.size() < 2) {
-			middle::deleteShape(gameState, operationContainerId.index);
-			operationContainerId = copyShapeToCopyIntoId;
+			middle::deleteShape(gameState, resultShapeId.index);
+			resultShapeId = copyShapeToCopyIntoId;
 		}
 
 		setBubbleHidden(gameState, multiplyShapeId, true);
@@ -449,11 +449,11 @@ namespace bubbleActions{
 
 	void ExecuteMultiplication::undo(middle::GameState* gameState) {
 		setBubbleHidden(gameState, multiplyShapeId, false);
-		deleteBubble(gameState, operationContainerId);
+		deleteBubble(gameState, resultShapeId);
 	}
 
 	void ExecuteMultiplication::finalize(middle::GameState* gameState) {
-		auto replace = bubbleActions::Replace(multiplyShapeId, operationContainerId);
+		auto replace = bubbleActions::Replace(multiplyShapeId, resultShapeId);
 		replace.execute(gameState);
 	}
 
@@ -509,7 +509,7 @@ namespace bubbleActions{
 			// reparent
 			auto reparentAction = middle::EditorActionReparent(copyShapeA.id.index, replacementId.index);
 			reparentAction.execute(gameState);
-			operationContainerId = copyShapeA.id;
+			resultShapeId = copyShapeA.id;
 
 
 			// if value is filled,  like 3/3  then turn into 1
@@ -531,7 +531,7 @@ namespace bubbleActions{
 					auto& unitShape = middle::getShape(gameState, unitCopyId.index);
 					auto unitLoop = middle::getComponent<components::LoopSociety>(unitShape);
 					unitLoop->parentLoopId = middle::Id();
-					operationContainerId = unitCopyId;
+					resultShapeId = unitCopyId;
 				}
 			}
 
@@ -543,7 +543,7 @@ namespace bubbleActions{
 		else {
 			auto additionAction = bubbleActions::CreateAdditionReplacementShape(idA, idB);
 			additionAction.execute(gameState);
-			operationContainerId = additionAction.resultId;
+			resultShapeId = additionAction.resultId;
 		}
 
 		setBubbleHidden(gameState, shapeToAdd.id, true);
@@ -554,12 +554,12 @@ namespace bubbleActions{
 	void ExecuteAddition::undo(middle::GameState* gameState) {
 		setBubbleHidden(gameState, shapeToAddId, false);
 		setBubbleHidden(gameState, shapeToAddIntoId, false);
-		deleteBubble(gameState, operationContainerId);
+		deleteBubble(gameState, resultShapeId);
 	}
 
 	void ExecuteAddition::finalize(middle::GameState* gameState) {
 		deleteBubble(gameState, shapeToAddId);
-		auto replace = bubbleActions::Replace(shapeToAddIntoId, operationContainerId);
+		auto replace = bubbleActions::Replace(shapeToAddIntoId, resultShapeId);
 		replace.execute(gameState);
 	}
 

@@ -71,7 +71,7 @@ namespace bubbleActions{
 		middle::Id multiplyShapeId;
 		middle::Id shapeToCopyId;
 		middle::Id shapeToCopyIntoId;
-		middle::Id operationContainerId;
+		middle::Id resultShapeId;
 		ExecuteMultiplication(middle::Id multiplyShapeId, middle::Id shapeToCopyId, middle::Id shapeToCopyIntoId);
 		void execute(middle::GameState* gameState);
 		void undo(middle::GameState* gameState) override;
@@ -83,7 +83,7 @@ namespace bubbleActions{
 	public:
 		middle::Id shapeToAddId;
 		middle::Id shapeToAddIntoId;
-		middle::Id operationContainerId;
+		middle::Id resultShapeId;
 		ExecuteAddition(middle::Id shapeToAddId, middle::Id shapeToAddIntoId);
 		void execute(middle::GameState* gameState) override;
 		void undo(middle::GameState* gameState) override;

@@ -36,11 +36,12 @@ class VariableLinkingSystem : public middle::MiddleGameplaySystem {
 							return true;
 						auto otherInputVariable = middle::getComponent<components::InputVariable>(shape);
 						auto otherBubble = middle::getComponent<components::BubbleComponent>(shape);
+						auto otherIntersectable = middle::getComponent<components::MouseIntersectable>(shape);
 						if (!otherInputVariable && !otherBubble)
 							return true;
+						if (!otherIntersectable)
+							return true;
 
-						auto otherIntersectable = middle::getComponent<components::MouseIntersectable>(shape);
-						assert(otherIntersectable);
 						if (!otherIntersectable->intersectingTop) {
 							return true;
 						}
@@ -102,9 +103,7 @@ class VariableLinkingSystem : public middle::MiddleGameplaySystem {
 				auto& copyShape = middle::getShape(gameState, copyId.index);
 				auto copyLoop = middle::getComponent<components::LoopSociety>(copyShape);
 				// set copy intersecting as false since, its copied
-				auto copyIntersectable = middle::getComponent<components::MouseIntersectable>(copyShape);
-				copyIntersectable->intersecting = false;
-				copyIntersectable->intersectingTop = false;
+				middle::deleteComponent<components::MouseIntersectable>(copyShape);
 				copyLoop->parentLoopId = middle::Id();
 				gameState->bubbleAlgebraState.grabbedId = copyId;
 			}
