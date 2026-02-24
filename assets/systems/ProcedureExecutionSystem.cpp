@@ -12,6 +12,7 @@
 #include "CodeBlock.h"
 #include "IfComponent.h"
 #include "ScopeComponent.h"
+#include "TimerComponent.h"
 
 class ProcedureExecutionSystem : public middle::MiddleGameplaySystem {
 
@@ -68,9 +69,9 @@ class ProcedureExecutionSystem : public middle::MiddleGameplaySystem {
 		assert(false);
 	}
 
-	middle::Id findParentScope(middle::GameState* gameState, middle::Id& parentId) {
+	middle::Id findParentScope(middle::GameState* gameState, middle::Id& scopeId) {
 		std::stack<middle::Id>stack;
-		middle::Id id = middle::getParent(gameState, parentId);
+		middle::Id parentId = middle::getParent(gameState, scopeId);
 		if (parentId.index == middle::UNASSIGNED) {
 			return middle::Id();
 		}
@@ -100,14 +101,14 @@ class ProcedureExecutionSystem : public middle::MiddleGameplaySystem {
 		auto scope = middle::getComponent<components::ScopeComponent>(scopeShape);
 		auto& currentBlockShape = middle::getShape(gameState, loop->loopMemberIds[scope->currentIndex].index);
 		auto block = middle::getComponent<components::CodeBlock>(currentBlockShape);
-		if (block->type == codeBlockTypes::BLOCK) {
+		if (block->type == codeBlockTypes::BLOCK || block->exitLoop) {
 			scope->currentIndex += 1;
+			block->exitLoop = false;
 		}
 		if (block->type == codeBlockTypes::LOOP_BLOCK) {
 
 		}
 		if (scope->currentIndex >= loop->loopMemberIds.size()) {
-			scope->currentIndex = 0;
 			return middle::Id();
 		}
 		return loop->loopMemberIds[scope->currentIndex];
@@ -119,7 +120,9 @@ class ProcedureExecutionSystem : public middle::MiddleGameplaySystem {
 		if (nextBlock.index != middle::UNASSIGNED) {
 			return scopeId;
 		}
-		return findParentScope(gameState, scopeId);
+		middle::Id parentScope = findParentScope(gameState, scopeId);
+		updateIndex(gameState, parentScope);
+		return parentScope;
 
 	}
 
@@ -131,6 +134,28 @@ class ProcedureExecutionSystem : public middle::MiddleGameplaySystem {
 		auto codeLoop = middle::getComponent<components::LoopSociety>(codeBlock);
 		if (codeLoop->loopMemberIds.size() > 0) {
 			return codeLoop->loopMemberIds[0];
+		}
+		return middle::Id();
+	}
+
+	// find block loop
+	middle::Id findParentLoopBlock(middle::GameState* gameState, middle::Id& funcId) {
+		std::stack<middle::Id> parents;
+		middle::Id blockParent = middle::getParent(gameState, funcId);
+		parents.push(blockParent);
+		while (parents.size() > 0) {
+			middle::Id id = parents.top();
+			parents.pop();
+			auto& blockShape = middle::getShape(gameState, id.index);
+			auto codeBlock = middle::getComponent<components::CodeBlock>(blockShape);
+			if (codeBlock && codeBlock->type == codeBlockTypes::LOOP_BLOCK) {
+				return blockShape.id;
+			}
+			middle::Id parent = middle::getParent(gameState, id);
+			if (parent.index == middle::UNASSIGNED) {
+				return middle::Id();
+			}
+			parents.push(parent);
 		}
 		return middle::Id();
 	}
@@ -252,21 +277,13 @@ class ProcedureExecutionSystem : public middle::MiddleGameplaySystem {
 
 		// exit loops
 		else if (function->type == functionTypes::EXIT_LOOP) {
-			middle::Id parentId = middle::getParent(gameState, funcShape.id);
-			std::stack<middle::Id> parentIds;
-			parentIds.push(parentId);
-			while (parentIds.size() > 0) {
-				middle::Id& currentParent = parentIds.top();
-				parentIds.pop();
-				auto& parentShape = middle::getShape(gameState, currentParent.index);
-				auto codeBlock = middle::getComponent<components::CodeBlock>(parentShape);
-				if (codeBlock && codeBlock->type == codeBlockTypes::LOOP_BLOCK) {
-					codeBlock->exitLoop = true;
-				}
-				else {
-					parentIds.push(middle::getParent(gameState, currentParent));
-				}
+			middle::Id parentId = findParentLoopBlock(gameState, funcId);
+			if (parentId.index == middle::UNASSIGNED) {
+				return;
 			}
+			auto& loopBlockShape = middle::getShape(gameState, parentId.index);
+			auto block = middle::getComponent<components::CodeBlock>(loopBlockShape);
+			block->exitLoop = true;
 		}
 
 
@@ -300,20 +317,40 @@ class ProcedureExecutionSystem : public middle::MiddleGameplaySystem {
 			replacement.execute(gameState);
 			bubbleActions::updateVariable(gameState, copy, output.label);
 		}
+
+		else if (function->type == functionTypes::POP) {
+			components::InputVariable input;
+			getOneInput(gameState, funcShape, input);
+			assert(input.unitRef.index != middle::UNASSIGNED);
+			auto popAction = bubbleActions::Pop(input.unitRef);
+			popAction.execute(gameState);
+		}
 	}
 
 	void update(middle::GameState* gameState) override {
 		middle::loopInstances(gameState, [gameState, this](int i, middle::Shape& shape) {
 			auto button = middle::getComponent<components::Button>(shape);
+			auto timer =middle::getComponent<components::TimerComponent>(shape);
+			if (timer && timer->timeLeft > 0) {
+				return true;
+			}
 			if (button && button->function == bubble::START_PROCEDURE_BUTTON) {
 				auto intersectable = middle::getComponent<components::MouseIntersectable>(shape);
 				assert(intersectable);
 				if (intersectable->intersectingTop && gameState->input.mouseClicked) {
+					// navigate to procedure scope... 
 					auto loop = middle::getComponent<components::LoopSociety>(shape);
-					auto& procedureShape = middle::getShape(gameState, loop->parentLoopId.index);
-					auto procedure = middle::getComponent<components::ProcedureComponent>(procedureShape);
-					procedure->executing = true;
-					procedure->activeScope = procedureShape.id;
+					std::vector<middle::Id>children;
+					middle::getChildren(gameState, loop->parentLoopId, children);
+					for (middle::Id child : children) {
+						auto& childShape = middle::getShape(gameState, child.index);
+						auto procedure = middle::getComponent<components::ProcedureComponent>(childShape);
+						if (!procedure) {
+							continue;
+						}
+						procedure->executing = true;
+						procedure->activeScope = childShape.id;
+					}
 				}
 			}
 
@@ -324,9 +361,16 @@ class ProcedureExecutionSystem : public middle::MiddleGameplaySystem {
 				middle::Id updatedScope = updateScope(gameState, scope);
 				procedure->activeScope = updatedScope;
 
-				if (updatedScope.index == middle::UNASSIGNED) {
+				auto& procedureShape = middle::getShape(gameState, updatedScope.index);
+				auto scopeComponent = middle::getComponent<components::ScopeComponent>(procedureShape);
+				auto loop = middle::getComponent<components::LoopSociety>(procedureShape);
+
+				if (scopeComponent->currentIndex >= loop->loopMemberIds.size()) {
 					procedure->executing = false;
 				}
+
+				timer = middle::addComponent<components::TimerComponent>(shape);
+				timer->timeLeft = 0.4f;
 			}
 
 			return true;

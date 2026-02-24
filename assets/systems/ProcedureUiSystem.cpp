@@ -6,7 +6,7 @@
 #include "bubble_algebra_buttons.h"
 #include "MouseIntersectable.h"
 #include "editor_file_utils.h"
-#include "ProcedureComponent.h"
+#include "ProcedureContainer.h"
 #include "PlacementComponent.h"
 
 class ProcedureUiSystem : public middle::MiddleGameplaySystem {
@@ -19,7 +19,7 @@ class ProcedureUiSystem : public middle::MiddleGameplaySystem {
 				continue;
 
 			middle::Shape& shape = middle::getShape(gameState, i);
-			auto procedure = middle::getComponent<components::ProcedureComponent>(shape);
+			auto procedure = middle::getComponent<components::ProcedureContainer>(shape);
 			if (procedure) {
 				return shape.id;
 			}

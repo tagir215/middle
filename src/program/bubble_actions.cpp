@@ -1,3 +1,4 @@
+#include "OutputVariable.h"
 #include "bubble_actions.h"
 
 namespace bubbleActions{
@@ -309,6 +310,10 @@ namespace bubbleActions{
 			if (inputVariable && inputVariable->label == label) {
 				inputVariable->unitRef = newUnitRef;
 			}
+			auto outputVariable = middle::getComponent<components::OutputVariable>(shape);
+			if (outputVariable && outputVariable->label == label) {
+				outputVariable->unitRef = newUnitRef;
+			}
 			return true;
 			});
 	}
@@ -570,32 +575,18 @@ namespace bubbleActions{
 	void Pop::execute(middle::GameState* gameState) {
 		middle::Shape& shape = middle::getShape(gameState, id.index);
 		// check that there is a parent
-		auto loop = middle::getComponent<components::LoopSociety>(shape);
-		if (loop->parentLoopId.index == middle::UNASSIGNED) {
+		auto bubble = middle::getComponent<components::BubbleComponent>(shape);
+		if (!bubble) {
 			return;
 		}
-
-		// delete outline
-		auto bubble = middle::getComponent<components::BubbleComponent>(shape);
-		int size = bubble->outlineNodes.size();
-		for (int i = size - 1; i >= 0; --i) {
-			middle::Id& id = bubble->outlineNodes[i];
-			middle::deleteShape(gameState, id.index);
+		middle::Id parentId = middle::getParent(gameState, shape.id);
+		std::vector<middle::Id>children;
+		middle::getChildren(gameState, id, children);
+		for (middle::Id& id : children) {
+			auto reparent = middle::EditorActionReparent(parentId.index, id.index);
+			reparent.execute(gameState);
 		}
-
-		middle::Shape& parentShape = middle::getShape(gameState, loop->parentLoopId.index);
-
-		std::vector<middle::Id>children = loop->loopMemberIds;
-		middle::deleteShape(gameState, shape.id.index);
-
-		for (middle::Id& childId : loop->loopMemberIds) {
-			auto& childShape = middle::getShape(gameState, childId.index);
-			auto childLoop = middle::getComponent<components::LoopSociety>(childShape);
-			childLoop->parentLoopId = parentShape.id;
-			auto parentLoop = middle::getComponent<components::LoopSociety>(parentShape);
-			parentLoop->loopMemberIds.push_back(childShape.id);
-		}
-
+		deleteBubble(gameState, shape.id);
 	}
 
 	void Pop::undo(middle::GameState* gameState) {
