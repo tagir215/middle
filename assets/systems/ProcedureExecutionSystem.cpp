@@ -55,7 +55,7 @@ class ProcedureExecutionSystem : public middle::MiddleGameplaySystem {
 		assert(false);
 	}
 
-	void getOutput(middle::GameState* gameState, middle::Shape& funcShape, components::OutputVariable& var) {
+	void getOneOutput(middle::GameState* gameState, middle::Shape& funcShape, components::OutputVariable& var) {
 		std::vector<middle::Id>children;
 		middle::getChildren(gameState, funcShape.id, children);
 		for (middle::Id& id : children) {
@@ -68,6 +68,31 @@ class ProcedureExecutionSystem : public middle::MiddleGameplaySystem {
 		}
 		assert(false);
 	}
+
+	void getTwoOutputs(middle::GameState* gameState, middle::Shape& funcShape, components::OutputVariable& varA, components::OutputVariable& varB) {
+		auto variablesLoop = middle::getComponent<components::LoopSociety>(funcShape);
+		assert(variablesLoop);
+		bool varAFound = false;
+		for (middle::Id& childId : variablesLoop->loopMemberIds) {
+			auto& childShape = middle::getShape(gameState, childId.index);
+			auto inputVar = middle::getComponent<components::OutputVariable>(childShape);
+			if (!inputVar) {
+				continue;
+			}
+
+			if (!varAFound) {
+				varAFound = true;
+				varA = *inputVar;
+			}
+			else {
+				varB = *inputVar;
+				return;
+			}
+		}
+		assert(false);
+	}
+
+
 
 	middle::Id findParentScope(middle::GameState* gameState, middle::Id& scopeId) {
 		std::stack<middle::Id>stack;
@@ -230,7 +255,7 @@ class ProcedureExecutionSystem : public middle::MiddleGameplaySystem {
 			components::InputVariable input;
 			components::OutputVariable output;
 			getOneInput(gameState, funcShape, input);
-			getOutput(gameState, funcShape, output);
+			getOneOutput(gameState, funcShape, output);
 			middle::Id foundId = searchFromBubble(gameState, input.unitRef, findTypeId);
 			bubbleActions::updateVariable(gameState, foundId, output.label);
 			bool isConditionTrue = foundId.index != middle::UNASSIGNED;
@@ -258,7 +283,7 @@ class ProcedureExecutionSystem : public middle::MiddleGameplaySystem {
 			components::InputVariable varB;
 			components::OutputVariable output;
 			getTwoInputs(gameState, funcShape, varA, varB);
-			getOutput(gameState, funcShape, output);
+			getOneOutput(gameState, funcShape, output);
 			assert(varA.unitRef.index != middle::UNASSIGNED);
 			assert(varB.unitRef.index != middle::UNASSIGNED);
 			middle::Id& parentId = middle::getParent(gameState, varA.unitRef);
@@ -292,7 +317,7 @@ class ProcedureExecutionSystem : public middle::MiddleGameplaySystem {
 			components::InputVariable input;
 			components::OutputVariable output;
 			getOneInput(gameState, funcShape, input);
-			getOutput(gameState, funcShape, output);
+			getOneOutput(gameState, funcShape, output);
 			middle::Id copy = middle::deepCopyShape(gameState, input.unitRef.index);
 			bubbleActions::updateVariable(gameState, copy, output.label);
 		}
@@ -307,7 +332,7 @@ class ProcedureExecutionSystem : public middle::MiddleGameplaySystem {
 			components::InputVariable input;
 			components::OutputVariable output;
 			getOneInput(gameState, funcShape, input);
-			getOutput(gameState, funcShape, output);
+			getOneOutput(gameState, funcShape, output);
 			assert(input.unitRef.index != middle::UNASSIGNED);
 			middle::Id topBubbleId = bubbleActions::topLevelBubble(gameState);
 			middle::Id copy = middle::deepCopyShape(gameState, funcShape.id.index, topBubbleId.index);
@@ -320,7 +345,7 @@ class ProcedureExecutionSystem : public middle::MiddleGameplaySystem {
 			components::InputVariable input;
 			components::OutputVariable output;
 			getOneInput(gameState, funcShape, input);
-			getOutput(gameState, funcShape, output);
+			getOneOutput(gameState, funcShape, output);
 			assert(input.unitRef.index != middle::UNASSIGNED);
 			middle::Id topBubbleId = bubbleActions::topLevelBubble(gameState);
 			middle::Id copy = middle::deepCopyShape(gameState, funcShape.id.index, topBubbleId.index);
@@ -341,7 +366,7 @@ class ProcedureExecutionSystem : public middle::MiddleGameplaySystem {
 			components::InputVariable input;
 			components::OutputVariable output;
 			getOneInput(gameState, funcShape, input);
-			getOutput(gameState, funcShape, output);
+			getOneOutput(gameState, funcShape, output);
 			assert(input.unitRef.index != middle::UNASSIGNED);
 			auto mulOneAction = bubbleActions::MulOne(input.unitRef);
 			mulOneAction.execute(gameState);
@@ -353,6 +378,7 @@ class ProcedureExecutionSystem : public middle::MiddleGameplaySystem {
 			components::InputVariable inputB;
 			components::OutputVariable output;
 			getTwoInputs(gameState, funcShape, inputA, inputB);
+			getOneOutput(gameState, funcShape, output);
 			assert(inputA.unitRef.index != middle::UNASSIGNED);
 			assert(inputB.unitRef.index != middle::UNASSIGNED);
 			int value = (int)bubbleActions::unitValue(gameState, inputB.unitRef);
@@ -363,14 +389,16 @@ class ProcedureExecutionSystem : public middle::MiddleGameplaySystem {
 
 		else if (function->type == functionTypes::COMPRESS) {
 			components::InputVariable input;
-			components::OutputVariable output;
+			components::OutputVariable outputA;
+			components::OutputVariable outputB;
 			getOneInput(gameState, funcShape, input);
-			getOutput(gameState, funcShape, output);
+			getTwoOutputs(gameState, funcShape, outputA, outputB);
 			assert(input.unitRef.index != middle::UNASSIGNED);
 			auto compressAction = bubbleActions::Compress(input.unitRef);
 			compressAction.execute(gameState);
 
-			output.unitRef = compressAction.resultShapeId;
+			outputA.unitRef = compressAction.resultCountBubbleId;
+			outputB.unitRef = compressAction.resultCompressedBubbleId;
 		}
 	}
 

@@ -131,7 +131,8 @@ namespace bubbleActions{
 	class Compress : public middle::GameplayAction {
 	public:
 		middle::Id containerShapeId;
-		middle::Id resultShapeId;
+		middle::Id resultCompressedBubbleId;
+		middle::Id resultCountBubbleId;
 		Compress(middle::Id containerShape);
 		void execute(middle::GameState* gameState) override;
 		void undo(middle::GameState* gameState) override;

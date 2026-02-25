@@ -831,7 +831,8 @@ namespace bubbleActions{
 		auto link = LinkMultiplicationTerm(compressedBubble.id, countBubble.id);
 		link.execute(gameState);
 
-		resultShapeId = compressedBubble.id;
+		resultCompressedBubbleId = compressedBubble.id;
+		resultCountBubbleId = countBubble.id;
 	}
 	void Compress::undo(middle::GameState* gameState)
 	{
