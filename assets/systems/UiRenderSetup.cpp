@@ -10,6 +10,7 @@
 #include "UiComponent.h"
 #include "InputVariable.h"
 #include "OutputVariable.h"
+#include "Triangle.h"
 
 class UiRenderSetup : public middle::MiddleGameplaySystem {
 public:

@@ -14,6 +14,7 @@
 #include "ScopeComponent.h"
 #include "ProcedureComponent.h"
 #include "Scale.h"
+#include "bubble_utils.h"
 
 class CodeBlockLayoutSystem : public middle::MiddleGameplaySystem {
 public:
@@ -42,7 +43,7 @@ public:
 			return;
 		}
 		float left, right, bottom, top;
-		middle::loopChildrenOnlyRectBoundingBox(gameState, shape.id, &left, &right, &bottom, &top);
+		bubble::loopChildrenOnlyRectBoundingBox(gameState, shape.id, &left, &right, &bottom, &top);
 		float newWidth = right - left;
 		float newHeight = top - bottom;
 		Vector3 s = { 1,1,1 };
@@ -183,7 +184,7 @@ public:
 					auto child0Rect = middle::getComponent<components::Rectangle>(child0Shape);
 
 					float left, right, bottom, top;
-					middle::loopChildrenOnlyRectBoundingBox(gameState, shape.id, &left, &right, &bottom, &top);
+					bubble::loopChildrenOnlyRectBoundingBox(gameState, shape.id, &left, &right, &bottom, &top);
 					Vector3 center = { (left + right) * 0.5f, 0, (bottom + top) * 0.5f };
 
 					auto scopeOffset = middle::getComponent<components::Offset>(shape);
@@ -291,11 +292,16 @@ public:
 			if (function) {
 				auto loop = middle::getComponent<components::LoopSociety>(shape);
 				int inputChildCount = 0;
+				int outputChildCount = 0;
 				for (middle::Id& childId : loop->loopMemberIds) {
 					auto& childShape = middle::getShape(gameState, childId.index);
 					auto input = middle::getComponent<components::InputVariable>(childShape);
 					if (input) {
 						++inputChildCount;
+					}
+					auto output = middle::getComponent<components::OutputVariable>(childShape);
+					if (output) {
+						++outputChildCount;
 					}
 				}
 
@@ -304,12 +310,14 @@ public:
 					Vector3 funcPosition = middle::getShapePosition(gameState, shape.id.index);
 
 					Vector3 referencePosRight = funcPosition;
+					float totalHeightRight = (outputChildCount - 1) * variableSpacingZ;
 					referencePosRight.x += funcRect->width * 0.5f + variableSpacingX;
+					referencePosRight.z += totalHeightRight * 0.5f;
 
 					Vector3 referencePosLeft = funcPosition;
-					float totalHeight = (inputChildCount - 1) * variableSpacingZ;
+					float totalHeightLeft = (inputChildCount - 1) * variableSpacingZ;
 					referencePosLeft.x -= funcRect->width * 0.5f + variableSpacingX;
-					referencePosLeft.z += totalHeight * 0.5f;
+					referencePosLeft.z += totalHeightLeft * 0.5f;
 
 					for (middle::Id& childId : loop->loopMemberIds) {
 						auto& childShape = middle::getShape(gameState, childId.index);
@@ -326,6 +334,7 @@ public:
 							pos->posX = referencePosRight.x;
 							pos->posY = referencePosRight.y;
 							pos->posZ = referencePosRight.z;
+							referencePosRight.z -= variableSpacingZ;
 						}
 					}
 				}

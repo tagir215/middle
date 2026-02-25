@@ -22,16 +22,14 @@ class BubbleModificationSystem : public middle::MiddleGameplaySystem {
 	void combine(middle::GameState* gameState, middle::Shape& refParent, middle::Shape& refShape, middle::Shape& intersectedShape) {
 		// is multiplication connection
 		if (isMultiplicationConnection(gameState, refParent)) {
-			auto multiply = bubbleActions::ExecuteMultiplication(refParent.id, refShape.id, intersectedShape.id);
+			auto multiply = bubbleActions::ExecuteMultiplication(refShape.id, intersectedShape.id);
 			multiply.execute(gameState);
-			multiply.finalize(gameState);
 			return;
 		}
 		// else is addition connection
 		else {
 			auto add = bubbleActions::ExecuteAddition(refShape.id, intersectedShape.id);
 			add.execute(gameState);
-			add.finalize(gameState);
 			return;
 		}
 	}
@@ -145,28 +143,28 @@ class BubbleModificationSystem : public middle::MiddleGameplaySystem {
 
 		// TOP BUBBLE STUFF
 		// is inventory item intersecting with top Bubble?
-		inventoryItem = middle::getComponent<components::InventoryItem>(refShape);
-		if (inventoryItem) {
-			middle::Id topBubble = bubbleActions::topLevelBubble(gameState);
-			auto& topBubbleShape = middle::getShape(gameState, topBubble.index);
-			auto intersectable = middle::getComponent<components::MouseIntersectable>(topBubbleShape);
-			if (intersectable->intersecting) {
-				if (inventoryItem->itemType == bubbleInventoryitemType::ADD) {
-					middle::deleteComponent<components::DeleteComponent>(refShape);
-					auto newAddition = bubbleActions::CreateAdditionReplacementShape(topBubbleShape.id, refShape.id);
-					newAddition.execute(gameState);
-					middle::addComponent<components::DeleteComponent>(refShape);
-					middle::addComponent<components::DeleteComponent>(topBubbleShape);
-				}
-				else if (inventoryItem->itemType == bubbleInventoryitemType::MULTIPLICATION) {
-					middle::deleteComponent<components::DeleteComponent>(refShape);
-					auto newMultiplication = bubbleActions::CreateMulitiplicationReplacementShape(topBubbleShape.id, refShape.id);
-					newMultiplication.execute(gameState);
-					middle::addComponent<components::DeleteComponent>(refShape);
-					middle::addComponent<components::DeleteComponent>(topBubbleShape);
-				}
-			}
-		}
+		//inventoryItem = middle::getComponent<components::InventoryItem>(refShape);
+		//if (inventoryItem) {
+		//	middle::Id topBubble = bubbleActions::topLevelBubble(gameState);
+		//	auto& topBubbleShape = middle::getShape(gameState, topBubble.index);
+		//	auto intersectable = middle::getComponent<components::MouseIntersectable>(topBubbleShape);
+		//	if (intersectable->intersecting) {
+		//		if (inventoryItem->itemType == bubbleInventoryitemType::ADD) {
+		//			middle::deleteComponent<components::DeleteComponent>(refShape);
+		//			auto newAddition = bubbleActions::CreateAdditionReplacementShape(topBubbleShape.id, refShape.id);
+		//			newAddition.execute(gameState);
+		//			middle::addComponent<components::DeleteComponent>(refShape);
+		//			middle::addComponent<components::DeleteComponent>(topBubbleShape);
+		//		}
+		//		else if (inventoryItem->itemType == bubbleInventoryitemType::MULTIPLICATION) {
+		//			middle::deleteComponent<components::DeleteComponent>(refShape);
+		//			auto newMultiplication = bubbleActions::CreateMulitiplicationReplacementShape(topBubbleShape.id, refShape.id);
+		//			newMultiplication.execute(gameState);
+		//			middle::addComponent<components::DeleteComponent>(refShape);
+		//			middle::addComponent<components::DeleteComponent>(topBubbleShape);
+		//		}
+		//	}
+		//}
 	}
 };
 

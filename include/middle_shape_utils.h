@@ -53,10 +53,6 @@ namespace middle {
 	Id copyShape(GameState* gameState, int shapeToCopyIndex, int parentIndex = UNASSIGNED);
 	// copy shape and its children
 	Id deepCopyShape(GameState* gameState, int shapeToCopyIndex, int parentIndex = UNASSIGNED);
-	// get left right top bottom of a rect containing rect children 
-	void loopRectBoundingBox(GameState* gameState, const Id& shapeId, float* leftX, float* rightX, float* bottomZ, float* topZ);
-	void loopChildrenOnlyRectBoundingBox(GameState* gameState, const Id& shapeId, float* leftX, float* rightX, float* bottomZ, float* topZ);
-	void loopRectBoundingBoxInternal(GameState* gameState, const Id& shapeId, float* leftX, float* rightX, float* bottomZ, float* topZ);
 	// get vertices of rectangles
 	std::vector<Vector3>getRectVertices(GameState* gameState, const Id& shapeId);
 	// get scale and multiply it with all the parents scales

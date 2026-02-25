@@ -26,6 +26,7 @@ namespace bubbleActions{
 	middle::Shape& newBubble(middle::GameState* gameState, const Vector3& targetPos);
 	middle::Shape& newUnit(middle::GameState* gameState, const Vector3& targetPos);
 	middle::Shape& newFraction(middle::GameState* gameState, const Vector3& targetPos, int dividend);
+	middle::Shape& newMultiplication(middle::GameState* gameState, middle::Id& idA, middle::Id& idB);
 	bool isIntersecting(middle::GameState* gameState, middle::Shape& shape);
 	bool equals(middle::GameState* gameState, middle::Id& bubbleA, middle::Id& bubbleB);
 	float unitValue(middle::GameState* gameState, middle::Id& containerId);
@@ -79,14 +80,12 @@ namespace bubbleActions{
 
 	class ExecuteMultiplication : public middle::GameplayAction {
 	public:
-		middle::Id multiplyShapeId;
 		middle::Id shapeToCopyId;
 		middle::Id shapeToCopyIntoId;
 		middle::Id resultShapeId;
-		ExecuteMultiplication(middle::Id multiplyShapeId, middle::Id shapeToCopyId, middle::Id shapeToCopyIntoId);
+		ExecuteMultiplication(middle::Id shapeToCopyId, middle::Id shapeToCopyIntoId);
 		void execute(middle::GameState* gameState);
 		void undo(middle::GameState* gameState) override;
-		void finalize(middle::GameState* gameState);
 	};
 
 
@@ -98,7 +97,6 @@ namespace bubbleActions{
 		ExecuteAddition(middle::Id shapeToAddId, middle::Id shapeToAddIntoId);
 		void execute(middle::GameState* gameState) override;
 		void undo(middle::GameState* gameState) override;
-		void finalize(middle::GameState* gameState);
 	};
 
 	class Pop : public middle::GameplayAction {
@@ -136,4 +134,5 @@ namespace bubbleActions{
 		void execute(middle::GameState* gameState) override;
 		void undo(middle::GameState* gameState) override;
 	};
+
 }

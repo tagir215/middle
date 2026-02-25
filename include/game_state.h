@@ -102,6 +102,7 @@ namespace middle {
 		std::unique_ptr<GameplayAction>mulAction;
 		std::unique_ptr<GameplayAction>addAction;
 		bool intersectingUI = false;
+		middle::Id idReplacementNews;
 	};
 
 

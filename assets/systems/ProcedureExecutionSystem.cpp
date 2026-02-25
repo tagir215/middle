@@ -120,10 +120,12 @@ class ProcedureExecutionSystem : public middle::MiddleGameplaySystem {
 		if (nextBlock.index != middle::UNASSIGNED) {
 			return scopeId;
 		}
-		middle::Id parentScope = findParentScope(gameState, scopeId);
-		updateIndex(gameState, parentScope);
-		return parentScope;
-
+		middle::Id parentScopeId = findParentScope(gameState, scopeId);
+		if (parentScopeId.index != middle::UNASSIGNED) {
+			updateIndex(gameState, parentScopeId);
+			return parentScopeId;
+		}
+		return scopeId;
 	}
 
 	middle::Id& getActiveFunction(middle::GameState* gameState, middle::Id& scope) {
@@ -262,15 +264,13 @@ class ProcedureExecutionSystem : public middle::MiddleGameplaySystem {
 			auto bubbleMultiplication = middle::getComponent<components::BubbleMultiplyComponent>(parentShape);
 
 			if (bubbleMultiplication) {
-				auto multiply = bubbleActions::ExecuteMultiplication(parentShape.id, varA.unitRef, varB.unitRef);
+				auto multiply = bubbleActions::ExecuteMultiplication(varA.unitRef, varB.unitRef);
 				multiply.execute(gameState);
-				multiply.finalize(gameState);
 				bubbleActions::updateVariable(gameState, multiply.resultShapeId, output.label);
 			}
 			else {
 				auto combine = bubbleActions::ExecuteAddition(varA.unitRef, varB.unitRef);
 				combine.execute(gameState);
-				combine.finalize(gameState);
 				bubbleActions::updateVariable(gameState, combine.resultShapeId, output.label);
 			}
 		}
@@ -284,6 +284,15 @@ class ProcedureExecutionSystem : public middle::MiddleGameplaySystem {
 			auto& loopBlockShape = middle::getShape(gameState, parentId.index);
 			auto block = middle::getComponent<components::CodeBlock>(loopBlockShape);
 			block->exitLoop = true;
+		}
+
+		else if (function->type == functionTypes::COPY) {
+			components::InputVariable input;
+			components::OutputVariable output;
+			getOneInput(gameState, funcShape, input);
+			getOutput(gameState, funcShape, output);
+			middle::Id copy = middle::deepCopyShape(gameState, input.unitRef.index);
+			bubbleActions::updateVariable(gameState, copy, output.label);
 		}
 
 
@@ -330,6 +339,7 @@ class ProcedureExecutionSystem : public middle::MiddleGameplaySystem {
 			components::InputVariable input;
 			components::OutputVariable output;
 			getOneInput(gameState, funcShape, input);
+			getOutput(gameState, funcShape, output);
 			assert(input.unitRef.index != middle::UNASSIGNED);
 			auto mulOneAction = bubbleActions::MulOne(input.unitRef);
 			mulOneAction.execute(gameState);
