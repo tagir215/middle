@@ -38,6 +38,9 @@ class BubbleModificationSystem : public middle::MiddleGameplaySystem {
 		// pop as long as not multiplication
 		if (actionType == bubbleInventoryitemType::POP) {
 			middle::Id& parentId = middle::getParent(gameState, intersectedShape.id);
+			if (parentId.index == middle::UNASSIGNED) {
+				return;
+			}
 			auto& parentShape = middle::getShape(gameState, parentId.index);
 			if (!isMultiplicationConnection(gameState, parentShape)) {
 				auto pop = bubbleActions::Pop(intersectedShape.id);

@@ -59,6 +59,13 @@ namespace bubbleActions{
 		return value;
 	}
 
+	int fractionUnitCount(middle::GameState* gameState, middle::Id& fractionId)
+	{
+		auto& shape = middle::getShape(gameState, fractionId.index);
+		auto loop = middle::getComponent<components::LoopSociety>(shape);
+		return loop->loopMemberIds.size();
+	}
+
 	void deleteBubble(middle::GameState* gameState, middle::Id& id) {
 		middle::Shape& shape = middle::getShape(gameState, id.index);
 
@@ -259,10 +266,28 @@ namespace bubbleActions{
 		return newFractionShape;
 	}
 
-	middle::Shape& shapeToFraction(middle::GameState* gameState, middle::Id shpaeId, const Vector3& targetPos, int dividend)
+	middle::Shape& shapeToFraction(middle::GameState* gameState, middle::Id shapeId, const Vector3& targetPos, int dividend)
 	{
+		auto& shape = middle::getShape(gameState, shapeId.index);
+		auto fraction = middle::getComponent<components::FractionalComponent>(shape);
+		if (fraction) {
+			int fractionSize = fractionUnitCount(gameState, shapeId);
+			dividend *= fractionSize;
+			auto& fractionShape = newFraction(gameState, targetPos, dividend);
+			return fractionShape;
+		}
+
 		auto& fractionShape = newFraction(gameState, targetPos, dividend);
-		// TODO: insert return statement here
+		std::vector<middle::Id> fractionChildren;
+		middle::getChildren(gameState, fractionShape.id, fractionChildren);
+		for (middle::Id& fractionUnitId : fractionChildren) {
+			auto& unitShape = middle::getShape(gameState, fractionUnitId.index);
+			auto unit = middle::getComponent<components::BubbleUnit>(unitShape);
+			if (unit->value == 1) {
+				Replace(fractionUnitId, shapeId).execute(gameState);
+			}
+		}
+		return fractionShape;
 	}
 
 	middle::Shape& newMultiplication(middle::GameState* gameState, middle::Id& idA, middle::Id& idB)
@@ -601,28 +626,48 @@ namespace bubbleActions{
 		middle::Shape& shape = middle::getShape(gameState, id.index);
 		// check that there is a parent
 		auto bubble = middle::getComponent<components::BubbleComponent>(shape);
-		if (!bubble) {
+		auto fraction = middle::getComponent<components::FractionalComponent>(shape);
+		middle::Id parentId = middle::getParent(gameState, shape.id);
+		if (parentId.index == middle::UNASSIGNED) {
 			return;
 		}
-		//auto fraction = middle::getComponent<components::FractionalComponent>(shape);
-		middle::Id parentId = middle::getParent(gameState, shape.id);
-		auto& parentShape = middle::getShape(gameState, parentId.index);
-		bool isFraction = middle::getComponent<components::FractionalComponent>(parentShape) != nullptr;
-		if (isFraction) {
+		if (!bubble && !fraction) {
+			return;
+		}
+		// if it's fraction, the children are converted to fractions when container bubbe
+		// is popped
+		if (fraction) {
+			// calc (initial) fraction dividend, 
 			std::vector<middle::Id>fractionChildren;
 			middle::getChildren(gameState, id, fractionChildren);
 			int dividend = fractionChildren.size();
 
+			Vector3 referencePos = middle::getShapePosition(gameState, fractionChildren[0].index);
+			for (int i = 0; i < dividend; ++i) {
+				middle::Id fractionChildId = fractionChildren[i];
+				auto& fractionChildShape = middle::getShape(gameState, fractionChildId.index);
+				auto bubble = middle::getComponent<components::BubbleComponent>(fractionChildShape);
+				if (!bubble)
+					continue;
 
+				std::vector<middle::Id>bubbleChildren;
+				middle::getChildren(gameState, fractionChildShape.id, bubbleChildren);
+				for (middle::Id& bubbleChild : bubbleChildren) {
+					referencePos.x += 8;
+					auto& replacementFraction = shapeToFraction(gameState, bubbleChild, referencePos, dividend);
+					middle::EditorActionReparent(parentId.index, replacementFraction.id.index).execute(gameState);
+				}
+			}
 		}
-		else {
+		else if (bubble) {
 			std::vector<middle::Id>children;
 			middle::getChildren(gameState, id, children);
 			for (middle::Id& id : children) {
 				middle::EditorActionReparent(parentId.index, id.index).execute(gameState);
 			}
-			deleteBubble(gameState, shape.id);
 		}
+
+		deleteBubble(gameState, shape.id);
 	}
 
 	void Pop::undo(middle::GameState* gameState) {

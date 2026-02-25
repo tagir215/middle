@@ -26,10 +26,12 @@ namespace bubbleActions{
 	middle::Shape& newBubble(middle::GameState* gameState, const Vector3& targetPos);
 	middle::Shape& newUnit(middle::GameState* gameState, const Vector3& targetPos);
 	middle::Shape& newFraction(middle::GameState* gameState, const Vector3& targetPos, int dividend);
+	middle::Shape& shapeToFraction(middle::GameState* gameState, middle::Id shpaeId, const Vector3& targetPos, int dividend);
 	middle::Shape& newMultiplication(middle::GameState* gameState, middle::Id& idA, middle::Id& idB);
 	bool isIntersecting(middle::GameState* gameState, middle::Shape& shape);
 	bool equals(middle::GameState* gameState, middle::Id& bubbleA, middle::Id& bubbleB);
 	float unitValue(middle::GameState* gameState, middle::Id& containerId);
+	int fractionUnitCount(middle::GameState* gameState, middle::Id& fractionId);
 
 	class CreateMulitiplicationReplacementShape : public middle::GameplayAction {
 	public:
