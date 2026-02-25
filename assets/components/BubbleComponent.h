@@ -26,6 +26,8 @@ namespace components {
 
 		bool hidden = false;
 
+		int searchIndex = 0;
+
 		bool infiniteMass = false;
 
 		std::vector<middle::Id> outlineNodes;

@@ -42,5 +42,6 @@ namespace functionTypes {
 	inline int MUL_ONE = 17;
 	inline int BREAK = 18;
 	inline int COMPRESS = 19;
+	inline int FIND_UNIT = 20;
 }
 

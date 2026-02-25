@@ -182,6 +182,29 @@ class ProcedureExecutionSystem : public middle::MiddleGameplaySystem {
 		assert(false);
 	}
 
+	// search type of thing from a bubble
+	middle::Id searchFromBubble(middle::GameState* gameState, middle::Id& bubbleId, int typeId) {
+		auto& bubbleShape = middle::getShape(gameState, bubbleId.index);
+		auto bubbleComp = middle::getComponent<components::BubbleComponent>(bubbleShape);
+		std::vector<middle::Id>children;
+		middle::getChildren(gameState, bubbleId, children);
+		int size = children.size();
+		int index = 0;
+		while (index < size) {
+			middle::Id id = children[bubbleComp->searchIndex];
+			++bubbleComp->searchIndex;
+			auto& shape = middle::getShape(gameState, id.index);
+			if (shape.componentMap.find(typeId) != shape.componentMap.end()) {
+				return id;
+			}
+			if (bubbleComp->searchIndex >= size) {
+				bubbleComp->searchIndex = 0;
+			}
+			++index;
+		}
+		return middle::Id();
+	}
+
 	// returns scope 
 	middle::Id handleConditionals(middle::GameState* gameState, middle::Id& scope) {
 		middle::Id activeFunction = getActiveFunction(gameState, scope);
@@ -191,47 +214,26 @@ class ProcedureExecutionSystem : public middle::MiddleGameplaySystem {
 		auto& funcShape = middle::getShape(gameState, activeFunction.index);
 		auto function = middle::getComponent<components::CodeFunction>(funcShape);
 
-		// find bubbles: store found bubble to output, execute upper scope if found, execute lower scope if didn't find
+		int findTypeId = -1;
 		if (function->type == functionTypes::FIND_BUBBLE) {
-			components::InputVariable input;
-			components::OutputVariable output;
-			getOneInput(gameState, funcShape, input);
-			getOutput(gameState, funcShape, output);
-			std::vector<middle::Id>inputChildren;
-			middle::getChildren(gameState, input.unitRef, inputChildren);
-			bool isConditionTrue = false;
-			for (middle::Id& id : inputChildren) {
-				auto& childShape = middle::getShape(gameState, id.index);
-				auto bubbleComp = middle::getComponent<components::BubbleComponent>(childShape);
-				if (!bubbleComp) {
-					continue;
-				}
-				bubbleActions::updateVariable(gameState, childShape.id, output.label);
-				isConditionTrue = true;
-				break;
-			}
-			return getConditionScope(gameState, funcShape.id, isConditionTrue);
+			findTypeId = middle::getTypeId<components::BubbleComponent>();
+		}
+		if (function->type == functionTypes::FIND_FRACTION) {
+			findTypeId = middle::getTypeId<components::FractionalComponent>();
+		}
+		if (function->type == functionTypes::FIND_UNIT) {
+			findTypeId = middle::getTypeId<components::BubbleUnit>();
 		}
 
-		// find fractions: store found bubble to output, execute upper scope if found, execute lower scope if didn't find
-		else if (function->type == functionTypes::FIND_FRACTION) {
+		// find bubbles: store found bubble to output, execute upper scope if found, execute lower scope if didn't find
+		if (findTypeId >= 0) {
 			components::InputVariable input;
 			components::OutputVariable output;
 			getOneInput(gameState, funcShape, input);
 			getOutput(gameState, funcShape, output);
-			std::vector<middle::Id>inputChildren;
-			middle::getChildren(gameState, input.unitRef, inputChildren);
-			bool isConditionTrue = false;
-			for (middle::Id& id : inputChildren) {
-				auto& childShape = middle::getShape(gameState, id.index);
-				auto fractional = middle::getComponent<components::FractionalComponent>(childShape);
-				if (!fractional) {
-					continue;
-				}
-				bubbleActions::updateVariable(gameState, childShape.id, output.label);
-				isConditionTrue = true;
-				break;
-			}
+			middle::Id foundId = searchFromBubble(gameState, input.unitRef, findTypeId);
+			bubbleActions::updateVariable(gameState, foundId, output.label);
+			bool isConditionTrue = foundId.index != middle::UNASSIGNED;
 			return getConditionScope(gameState, funcShape.id, isConditionTrue);
 		}
 
@@ -375,7 +377,7 @@ class ProcedureExecutionSystem : public middle::MiddleGameplaySystem {
 	void update(middle::GameState* gameState) override {
 		middle::loopInstances(gameState, [gameState, this](int i, middle::Shape& shape) {
 			auto button = middle::getComponent<components::Button>(shape);
-			auto timer =middle::getComponent<components::TimerComponent>(shape);
+			auto timer = middle::getComponent<components::TimerComponent>(shape);
 			if (timer && timer->timeLeft > 0) {
 				return true;
 			}
