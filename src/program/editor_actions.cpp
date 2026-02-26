@@ -225,7 +225,7 @@ namespace middle {
 	void EditorActionImportScene::execute(GameState* gameState)
 	{
 		newIndex = findFreeIndex(gameState);
-		loadScene(gameState, "../assets/scenes/", sceneName, true, { 0,0,0 }, newIndex);
+		loadScene(gameState, path, name, true, { 0,0,0 }, newIndex);
 	}
 
 	void EditorActionImportScene::undo(GameState* gameState)
@@ -576,6 +576,27 @@ namespace middle {
 			Vector3 displacement = currentPos - oldPositions[i];
 			middle::moveShape(gameState, selectedShapes[i], Vector3Negate(displacement));
 		}
+	}
+
+	void EditorActionDeleteSingle::execute(GameState* gameState)
+	{
+		middle::saveTempShape(gameState, id);
+		middle::deleteShapeRecursive(gameState, id.index);
+	}
+
+	void EditorActionDeleteSingle::undo(GameState* gameState)
+	{
+		middle::loadTempShape(gameState, id);
+	}
+
+	void EditorActionCopySingle::execute(GameState* gameState)
+	{
+		resultId = middle::deepCopyShape(gameState, id.index);
+	}
+
+	void EditorActionCopySingle::undo(GameState* gameState)
+	{
+		middle::deleteShapeRecursive(gameState, resultId.index);
 	}
 
 }

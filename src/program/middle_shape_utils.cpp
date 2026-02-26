@@ -541,4 +541,16 @@ namespace middle {
 			}
 		}
 	}
+	middle::Id getFirstChildWithComponent(GameState* gameState, Id& id, int typeId)
+	{
+		std::vector<middle::Id>children;
+		middle::getChildren(gameState, id, children);
+		for (middle::Id& childId : children) {
+			auto& childShape = middle::getShape(gameState, childId.index);
+			if (childShape.componentMap.find(typeId) != childShape.componentMap.end()) {
+				return childId;
+			}
+		}
+		return middle::Id();
+	}
 }

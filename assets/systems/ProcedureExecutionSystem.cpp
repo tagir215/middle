@@ -13,6 +13,8 @@
 #include "IfComponent.h"
 #include "ScopeComponent.h"
 #include "TimerComponent.h"
+#include "ProcedureContainer.h"
+#include "bubble_utils.h"
 
 class ProcedureExecutionSystem : public middle::MiddleGameplaySystem {
 
@@ -409,28 +411,57 @@ class ProcedureExecutionSystem : public middle::MiddleGameplaySystem {
 			if (timer && timer->timeLeft > 0) {
 				return true;
 			}
-			if (button && button->function == bubble::START_PROCEDURE_BUTTON) {
-				auto intersectable = middle::getComponent<components::MouseIntersectable>(shape);
-				assert(intersectable);
-				if (intersectable->intersectingTop && gameState->input.mouseClicked) {
-					// navigate to procedure scope... 
-					auto loop = middle::getComponent<components::LoopSociety>(shape);
-					std::vector<middle::Id>children;
-					middle::getChildren(gameState, loop->parentLoopId, children);
-					for (middle::Id child : children) {
-						auto& childShape = middle::getShape(gameState, child.index);
-						auto procedure = middle::getComponent<components::ProcedureComponent>(childShape);
-						if (!procedure) {
-							continue;
-						}
-						procedure->executing = true;
-						procedure->activeScope = childShape.id;
-					}
+
+			// start
+			if (bubble::buttonClicked(gameState, shape, bubbleButton::START_PROCEDURE_BUTTON)) {
+				// navigate to procedure scope... 
+				middle::Id parentId = middle::getParent(gameState, shape.id);
+				auto& parentShape = middle::getShape(gameState, parentId.index);
+				auto procedureContainer = middle::getComponent<components::ProcedureContainer>(parentShape);
+				procedureContainer->mode = procedureConstants::EXECUTING;
+				procedureContainer->direction = procedureConstants::FORWARD;
+				if (procedureContainer->activeScope.index == middle::UNASSIGNED) {
+					middle::Id scopeChild = middle::getFirstChildWithComponent(
+						gameState, parentId, middle::getTypeId<components::ScopeComponent>());
+					procedureContainer->activeScope = scopeChild;
 				}
 			}
 
-			auto procedure = middle::getComponent<components::ProcedureComponent>(shape);
-			if (procedure && procedure->executing) {
+			// step
+			if (bubble::buttonClicked(gameState, shape, bubbleButton::STEP_FORWARD)) {
+				// navigate to procedure scope... 
+				middle::Id parentId = middle::getParent(gameState, shape.id);
+				auto& parentShape = middle::getShape(gameState, parentId.index);
+				auto procedureContainer = middle::getComponent<components::ProcedureContainer>(parentShape);
+				procedureContainer->mode = procedureConstants::STEPPING;
+				procedureContainer->direction = procedureConstants::FORWARD;
+				if (procedureContainer->activeScope.index == middle::UNASSIGNED) {
+					middle::Id scopeChild = middle::getFirstChildWithComponent(
+						gameState, parentId, middle::getTypeId<components::ScopeComponent>());
+					procedureContainer->activeScope = scopeChild;
+				}
+			}
+
+			// step back
+			if (bubble::buttonClicked(gameState, shape, bubbleButton::STEP_BACKWARD)) {
+				// navigate to procedure scope... 
+				middle::Id parentId = middle::getParent(gameState, shape.id);
+				auto& parentShape = middle::getShape(gameState, parentId.index);
+				auto procedureContainer = middle::getComponent<components::ProcedureContainer>(parentShape);
+				procedureContainer->mode = procedureConstants::STEPPING;
+				procedureContainer->direction = procedureConstants::BACKWARD;
+				if (procedureContainer->activeScope.index == middle::UNASSIGNED) {
+					middle::Id scopeChild = middle::getFirstChildWithComponent(
+						gameState, parentId, middle::getTypeId<components::ScopeComponent>());
+					procedureContainer->activeScope = scopeChild;
+				}
+			}
+
+
+			auto procedure = middle::getComponent<components::ProcedureContainer>(shape);
+			if (procedure &&
+				(procedure->mode == procedureConstants::EXECUTING
+					|| procedure->mode == procedureConstants::STEPPING)) {
 				middle::Id scope = handleConditionals(gameState, procedure->activeScope);
 				executeFunctions(gameState, scope);
 				middle::Id updatedScope = updateScope(gameState, scope);
@@ -440,12 +471,15 @@ class ProcedureExecutionSystem : public middle::MiddleGameplaySystem {
 				auto scopeComponent = middle::getComponent<components::ScopeComponent>(procedureShape);
 				auto loop = middle::getComponent<components::LoopSociety>(procedureShape);
 
-				if (scopeComponent->currentIndex >= loop->loopMemberIds.size()) {
-					procedure->executing = false;
+				if (scopeComponent->currentIndex >= loop->loopMemberIds.size()
+					|| procedure->mode == procedureConstants::STEPPING) {
+					procedure->mode = procedureConstants::IDLE;
 				}
 
-				timer = middle::addComponent<components::TimerComponent>(shape);
-				timer->timeLeft = 1;
+				if (procedure->mode == procedureConstants::EXECUTING) {
+					timer = middle::addComponent<components::TimerComponent>(shape);
+					timer->timeLeft = 1;
+				}
 			}
 
 			return true;

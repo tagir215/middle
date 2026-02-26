@@ -21,3 +21,13 @@ namespace components {
 		}
 	};
 }
+
+
+namespace bubbleButton{
+    inline int SAVE_BUTTON = 0;
+    inline int LOAD_BUTTON = 1;
+    inline int START_PROCEDURE_BUTTON = 2;
+    inline int STEP_FORWARD = 3;
+    inline int STEP_BACKWARD = 4;
+}
+

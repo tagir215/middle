@@ -3,8 +3,20 @@
 #include "editor_file_utils.h"
 #define MIDDLEPROCEDURECONTAINER(X)
 
+namespace procedureConstants {
+	const int FORWARD = 1;
+	const int BACKWARD = -1;
+	const int IDLE = 0;
+	const int EXECUTING = 1;
+	const int STEPPING = 2;
+}
+
 namespace components {
-	struct ProcedureContainer : public middle::Serializable{
+	struct ProcedureContainer : public middle::Serializable {
+		middle::Id activeScope;
+		int mode = procedureConstants::IDLE;
+		int direction = procedureConstants::FORWARD;
+
 
 		void serialize(std::ostream& ostream) override;
 		void deserialize(const std::vector<std::string>& buffer, int indexOffset) override;

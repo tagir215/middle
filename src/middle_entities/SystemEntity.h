@@ -16,6 +16,7 @@ namespace entities{
 		middle::addComponent<components::MouseSelectable>(shape);
 		middle::addComponent<components::MouseGrabbable>(shape);
 		middle::addComponent<components::MouseIntersectable>(shape);
+		middle::addComponent<components::LoopSociety>(shape);
 		auto system = middle::addComponent<components::SystemReference>(shape);
 		auto pos = middle::addComponent<components::Position>(shape);
 		auto text = middle::addComponent<components::Text>(shape);

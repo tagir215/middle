@@ -44,8 +44,8 @@ public:
 
 		if (gameState->editorState.creationMode == middle::CreationMode::LOOP_MODE) {
 			backgroundColor = GRAY;
-			textColor = GRAY;
-			systemColor = GRAY;
+			//textColor = GRAY;
+			//systemColor = GRAY;
 		}
 		gameState->editorState.backgroundColor = backgroundColor;
 

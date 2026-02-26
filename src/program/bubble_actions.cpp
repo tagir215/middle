@@ -1,6 +1,7 @@
 #include "PhysicsData.h"
 #include "OutputVariable.h"
 #include "bubble_actions.h"
+#include <string>
 
 namespace bubbleActions{
 
@@ -202,6 +203,7 @@ namespace bubbleActions{
 
 	void CreateMulitiplicationReplacementShape::undo(middle::GameState* gameState)
 	{
+		bubbleActions::deleteBubble(gameState, resultShapeId);
 	}
 
 
@@ -383,6 +385,7 @@ namespace bubbleActions{
 	}
 
 	void CreateAdditionReplacementShape::undo(middle::GameState* gameState) {
+		bubbleActions::deleteBubble(gameState, resultId);
 	}
 
 	void updateVariable(middle::GameState* gameState, middle::Id& newUnitRef, const std::string& label) {
@@ -463,41 +466,40 @@ namespace bubbleActions{
 		middle::Id idB = middle::deepCopyShape(gameState, shapeToCopyIntoId.index);
 		middle::Shape& copyShapeA = middle::getShape(gameState, idA.index);
 		middle::Shape& copyShapeB = middle::getShape(gameState, idB.index);
-		auto loopB = middle::getComponent<components::LoopSociety>(copyShapeB);
 
-		int intoSize = loopB->loopMemberIds.size();
-
-		std::vector<middle::Id>bubblesToDelete;
+		std::vector<middle::Id>children;
+		middle::getChildren(gameState, copyShapeB.id, children);
 
 		// create replacements to the positions of the old units
-		for (int index = 0; index < intoSize; ++index) {
-			// get new pointer each loop
-			loopB = middle::getComponent<components::LoopSociety>(copyShapeB);
-			middle::Id& childId = loopB->loopMemberIds[index];
-			bubblesToDelete.push_back(childId);
+		for (int i = 0; i < children.size(); ++i) {
+			middle::Id& childId = children[i];
 
 			// replace unit with new copy bubble
-			auto replacingAction = bubbleActions::CreateMulitiplicationReplacementShape(childId, idA);
-			replacingAction.execute(gameState);
-			middle::Id copyId = replacingAction.resultShapeId;
+			auto createMulAction = std::make_unique<bubbleActions::CreateMulitiplicationReplacementShape>(childId, idA);
+			createMulAction->execute(gameState);
+			middle::Id copyId = createMulAction->resultShapeId;
+			actions.push_back(std::move(createMulAction));
 
-			auto& copyShape = middle::getShape(gameState, copyId.index);
-			auto copycopycopyLoop = middle::getComponent<components::LoopSociety>(copyShape);
-			auto reparentAction = middle::EditorActionReparent(idB.index, copyId.index);
-			reparentAction.execute(gameState);
+			auto deleteAction = std::make_unique<middle::EditorActionDeleteSingle>(childId);
+			deleteAction->execute(gameState);
+			actions.push_back(std::move(deleteAction));
+
+			auto reparentAction = std::make_unique<middle::EditorActionReparent>(idB.index, copyId.index);
+			reparentAction->execute(gameState);
+			actions.push_back(std::move(reparentAction));
 		}
 
-		// delete old ones
-		int deleteSize = bubblesToDelete.size();
-		for (int index = 0; index < deleteSize; ++index) {
-			deleteBubble(gameState, bubblesToDelete[index]);
-		}
-		deleteBubble(gameState, idA);
-		deleteBubble(gameState, shapeToCopyId);
+		auto deleteAction1 = std::make_unique<middle::EditorActionDeleteSingle>(idA);
+		deleteAction1->execute(gameState);
+		actions.push_back(std::move(deleteAction1));
+		auto deleteAction2 = std::make_unique<middle::EditorActionDeleteSingle>(shapeToCopyId);
+		deleteAction2->execute(gameState);
+		actions.push_back(std::move(deleteAction2));
 
 		resultShapeId = idB;
-		auto replace = bubbleActions::Replace(shapeToCopyIntoId, resultShapeId);
-		replace.execute(gameState);
+		auto replace = std::make_unique<bubbleActions::Replace>(shapeToCopyIntoId, resultShapeId);
+		replace->execute(gameState);
+		actions.push_back(std::move(replace));
 
 
 		// delete multiplication shape if children size < 2
@@ -508,17 +510,25 @@ namespace bubbleActions{
 			middle::getChildren(gameState, parentId, children);
 			middle::Id parentsParentId = middle::getParent(gameState, parentId);
 			if (children.size() == 1 && parentsParentId.index != middle::UNASSIGNED) {
-				auto reparent = middle::EditorActionReparent(parentsParentId.index, children[0].index);
-				reparent.execute(gameState);
+				auto reparent = std::make_unique<middle::EditorActionReparent>(parentsParentId.index, children[0].index);
+				reparent->execute(gameState);
+				actions.push_back(std::move(reparent));
 			}
 			if (children.size() < 2) {
-				middle::deleteShape(gameState, parentId.index);
+				mulShapeId = parentId;
+				auto deleteAction = std::make_unique<middle::EditorActionDeleteSingle>(parentId);
+				deleteAction->execute(gameState);
+				actions.push_back(std::move(deleteAction));
 			}
 		}
 
 	}
 
 	void ExecuteMultiplication::undo(middle::GameState* gameState) {
+		while (actions.size() > 0){
+			actions.back()->undo(gameState);
+			actions.pop_back();
+		}
 	}
 
 
@@ -695,20 +705,26 @@ namespace bubbleActions{
 			}
 			assert(oldIndex != middle::UNASSIGNED);
 			// reparent to replaced shapes parent
-			auto reparent = middle::EditorActionReparent(containerParent.index, replacingShapeId.index);
-			reparent.execute(gameState);
+			auto reparent = std::make_unique<middle::EditorActionReparent>(containerParent.index, replacingShapeId.index);
+			reparent->execute(gameState);
+			actions.push_back(std::move(reparent));
 			// set the correct index
-			auto newIndex = middle::EditorActionChangeLoopMemberIndex(containerParent.index, replacingShapeId.index, oldIndex);
-			newIndex.execute(gameState);
+			auto newIndex = std::make_unique<middle::EditorActionChangeLoopMemberIndex>(containerParent.index, replacingShapeId.index, oldIndex);
+			newIndex->execute(gameState);
+			actions.push_back(std::move(newIndex));
 		}
-		Vector3 targetPos = middle::getShapePosition(gameState, shapeToReplaceId.index);
-		Vector3 currentPos = middle::getShapePosition(gameState, replacingShapeId.index);
-		middle::moveShape(gameState, shapeToReplaceId.index, targetPos - currentPos);
-		deleteBubble(gameState, shapeToReplaceId);
+
+		auto delAction = std::make_unique<middle::EditorActionDeleteSingle>(shapeToReplaceId);
+		delAction->execute(gameState);
+		actions.push_back(std::move(delAction));
 	}
 
 	void Replace::undo(middle::GameState* gameState)
 	{
+		while (actions.size() > 0){
+			actions.back()->undo(gameState);
+			actions.pop_back();
+		}
 	}
 
 	LinkMultiplicationTerm::LinkMultiplicationTerm(middle::Id recieverShape, middle::Id linkingShape)

@@ -91,16 +91,8 @@ namespace middle {
 		std::string text = "";
 	};
 
-	class GameplayAction {
-	public:
-		virtual void execute(middle::GameState* gameState) = 0;
-		virtual void undo(middle::GameState* gameState) = 0;
-	};
-
 	struct BubbleAlgebraState {
 		middle::Id grabbedId;
-		std::unique_ptr<GameplayAction>mulAction;
-		std::unique_ptr<GameplayAction>addAction;
 		bool intersectingUI = false;
 		middle::Id idReplacementNews;
 	};
@@ -139,6 +131,7 @@ namespace middle {
 		int loopIndex = 0;
 		int uniqueComponentCount = 0;
 		std::vector<std::string>sceneNames;
+		std::vector<std::string>shapeNames;
 		std::vector<std::string>systemNames;
 		std::vector<std::string>componentNames;
 		EditorInput input;

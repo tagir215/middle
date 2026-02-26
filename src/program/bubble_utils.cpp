@@ -6,6 +6,8 @@
 #include "Rectangle.h"
 #include "InputVariable.h"
 #include "OutputVariable.h"
+#include "Button.h"
+#include "MouseIntersectable.h"
 
 namespace bubble {
 
@@ -108,6 +110,26 @@ namespace bubble {
 		}
 
 
+	}
+
+	bool buttonClicked(middle::GameState* gameState, middle::Shape& shape, int function)
+	{
+		if (!gameState->input.mouseClicked) {
+			return false;
+		}
+		auto button = middle::getComponent<components::Button>(shape);
+		if (!button) {
+			return false;
+		}
+		if (button->function != function) {
+			return false;
+		}
+		auto intersectable = middle::getComponent<components::MouseIntersectable>(shape);
+		assert(intersectable);
+		if (intersectable->intersectingTop) {
+			return true;
+		}
+		return false;
 	}
 
 }

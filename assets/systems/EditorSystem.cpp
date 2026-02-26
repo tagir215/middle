@@ -68,7 +68,7 @@ public:
 			if (gameState->applicationMode == middle::ApplicationMode::EDITOR_MODE) {
 				middle::loadEditorState(gameState);
 			}
-			loadSceneNames(gameState);
+			loadSceneAndShapeNames(gameState);
 			loadSystemNames(gameState);
 			loadComponentNames(gameState);
 			gameState->startGame = false;

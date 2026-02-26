@@ -36,7 +36,7 @@ public:
 
 			auto ui = [&shape, gameState]() {
 				ImGui::Begin("ComponentEditor");
-				std::string idText = "index: " + std::to_string(shape.id.index);
+				std::string idText = "index_" + std::to_string(shape.id.index);
 				ImGui::Text(idText.c_str());
 
 				if (ImGui::IsWindowHovered()) {
@@ -176,11 +176,60 @@ public:
 
 				};
 
+				ImGui::Separator();
+
+				if (ImGui::Button("Save")) {
+					ImGui::OpenPopup("Save Shape");
+				}
+
+				// Popup for entering new scene name
+				static char inputtedName[128] = ""; // buffer for scene name input
+				if (ImGui::BeginPopup("Save Shape")) {
+					gameState->inputBlockers.insert(middle::InputBlockers::KEYBOARD_BLOCK);
+
+					ImGui::Text("Save");
+					if (ImGui::Button("(F)")) {
+						ImGui::OpenPopup("Shape name selector");
+					}
+
+					if (ImGui::BeginPopup("Shape name selector")) {
+						for (std::string& name : gameState->shapeNames) {
+							if (ImGui::Button(name.c_str())) {
+								middle::saveShape(gameState, shape.id, "../assets/shapes/", name);
+								ImGui::CloseCurrentPopup();
+								ImGui::CloseCurrentPopup();
+							}
+						}
+						ImGui::EndPopup();
+					}
+					ImGui::Separator();
+
+					ImGui::Text("Enter Shape name:");
+					ImGui::InputText("##inputtedName", inputtedName, IM_ARRAYSIZE(inputtedName));
+					if (ImGui::Button("Save")) {
+						if (strlen(inputtedName) > 0) {
+
+							middle::saveShape(gameState, shape.id, "../assets/shapes/", inputtedName);
+
+							// Clear buffer and close popup
+							inputtedName[0] = '\0';
+							ImGui::CloseCurrentPopup();
+						}
+					}
+					ImGui::SameLine();
+					if (ImGui::Button("Cancel")) {
+						inputtedName[0] = '\0';
+						ImGui::CloseCurrentPopup();
+					}
+
+					ImGui::EndPopup();
+				}
+
 				ImGui::End();
 				};
 
-			gameState->uiSetups.push_back(ui);
-			return true;
+				gameState->uiSetups.push_back(ui);
+				return true;
 			});
 	}
 };

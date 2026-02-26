@@ -1,14 +1,10 @@
 #pragma once
 #include "registrars.h"
 #include "editor_file_utils.h"
-#define MIDDLEPROCEDURECOMPONENT(X) \
-	X(executing)
+#define MIDDLEPROCEDURECOMPONENT(X)
 
 namespace components {
 	struct ProcedureComponent : public middle::Serializable{
-		bool executing = false;
-		middle::Id activeScope;
-
 		void serialize(std::ostream& ostream) override;
 		void deserialize(const std::vector<std::string>& buffer, int indexOffset) override;
 		void getFields(std::vector<middle::FieldInfo>& fields, int* size) override;
@@ -21,3 +17,4 @@ namespace components {
 		}
 	};
 }
+

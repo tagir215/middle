@@ -6,7 +6,7 @@
 #include <string>
 
 namespace middle {
-	void loadSceneNames(GameState* gameState);
+	void loadSceneAndShapeNames(GameState* gameState);
 	void loadSystemNames(GameState* gameState);
 	void loadComponentNames(GameState* gameState);
 	void saveScene(GameState* gameState, const std::string& sceneName);
@@ -20,5 +20,6 @@ namespace middle {
 	std::string fieldToString(const std::any& field);
 	FieldType fieldToType(const std::any& field);
 	void fillField(void* field, const std::string& fieldString, int indexOffset = 0);
-
+	void saveTempShape(GameState* gameState, Id& idToSave);
+	middle::Id loadTempShape(GameState* gameState, Id& idToLoad);
 }

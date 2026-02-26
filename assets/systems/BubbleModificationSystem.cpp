@@ -48,48 +48,37 @@ class BubbleModificationSystem : public middle::MiddleGameplaySystem {
 			}
 		}
 		else if (actionType == bubbleInventoryitemType::TIMES_ONE) {
-			auto timesOne = bubbleActions::MulOne(intersectedShape.id);
-			timesOne.execute(gameState);
+			bubbleActions::MulOne(intersectedShape.id).execute(gameState);
 		}
 		else if (actionType == bubbleInventoryitemType::COMPRESS) {
-			auto compress = bubbleActions::Compress(intersectedShape.id);
-			compress.execute(gameState);
+			bubbleActions::Compress(intersectedShape.id).execute(gameState);
 		}
 		else if (actionType == bubbleInventoryitemType::BREAK_2) {
-			auto break2 = bubbleActions::Break(intersectedShape.id, 2);
-			break2.execute(gameState);
+			bubbleActions::Break(intersectedShape.id, 2).execute(gameState);
 		}
 		else if (actionType == bubbleInventoryitemType::BREAK_3) {
-			auto break2 = bubbleActions::Break(intersectedShape.id, 3);
-			break2.execute(gameState);
+			bubbleActions::Break(intersectedShape.id, 3).execute(gameState);
 		}
 		else if (actionType == bubbleInventoryitemType::BREAK_4) {
-			auto break2 = bubbleActions::Break(intersectedShape.id, 4);
-			break2.execute(gameState);
+			bubbleActions::Break(intersectedShape.id, 4).execute(gameState);
 		}
 		else if (actionType == bubbleInventoryitemType::BREAK_5) {
-			auto break2 = bubbleActions::Break(intersectedShape.id, 5);
-			break2.execute(gameState);
+			bubbleActions::Break(intersectedShape.id, 5).execute(gameState);
 		}
 		else if (actionType == bubbleInventoryitemType::BREAK_6) {
-			auto break2 = bubbleActions::Break(intersectedShape.id, 6);
-			break2.execute(gameState);
+			bubbleActions::Break(intersectedShape.id, 6).execute(gameState);
 		}
 		else if (actionType == bubbleInventoryitemType::BREAK_7) {
-			auto break2 = bubbleActions::Break(intersectedShape.id, 7);
-			break2.execute(gameState);
+			bubbleActions::Break(intersectedShape.id, 7).execute(gameState);
 		}
 		else if (actionType == bubbleInventoryitemType::BREAK_8) {
-			auto break2 = bubbleActions::Break(intersectedShape.id, 8);
-			break2.execute(gameState);
+			bubbleActions::Break(intersectedShape.id, 8).execute(gameState);
 		}
 		else if (actionType == bubbleInventoryitemType::BREAK_9) {
-			auto break2 = bubbleActions::Break(intersectedShape.id, 9);
-			break2.execute(gameState);
+			bubbleActions::Break(intersectedShape.id, 9).execute(gameState);
 		}
 		else if (actionType == bubbleInventoryitemType::BREAK_10) {
-			auto break2 = bubbleActions::Break(intersectedShape.id, 10);
-			break2.execute(gameState);
+			bubbleActions::Break(intersectedShape.id, 10).execute(gameState);
 		}
 	}
 

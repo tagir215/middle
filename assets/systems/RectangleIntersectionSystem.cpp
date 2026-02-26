@@ -72,7 +72,7 @@ class RectangleIntersectionSystem : public middle::MiddleGameplaySystem {
 				for (middle::Id childId : children) {
 					auto& child = middle::getShape(gameState, childId.index);
 					auto intersectableChild = middle::getComponent<components::MouseIntersectable>(child);
-					if (intersectableChild->intersecting) {
+					if (intersectableChild && intersectableChild->intersecting) {
 						intersectable->intersectingTop = false;
 						break;
 					}

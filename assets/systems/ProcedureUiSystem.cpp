@@ -44,12 +44,12 @@ class ProcedureUiSystem : public middle::MiddleGameplaySystem {
 				return true;
 			}
 
-			if (button->function == bubble::SAVE_BUTTON) {
+			if (button->function == bubbleButton::SAVE_BUTTON) {
 				middle::Id procedure = findProcedure(gameState);
 				middle::saveShape(gameState, procedure, "../bubbleData/procedures/", "procedure1");
 			}
 
-			if (button->function == bubble::LOAD_BUTTON) {
+			if (button->function == bubbleButton::LOAD_BUTTON) {
 				std::string folder = "../bubbleData/procedures/";
 				std::string shapeName = "procedure1";
 				Vector3 mouseXZ = gameState->input.mouseXZ_PlanePos;

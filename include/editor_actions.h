@@ -42,6 +42,16 @@ namespace middle {
 		void undo(GameState* gameState) override;
 	};
 
+	class EditorActionDeleteSingle : public EditorActionContainer {
+	public:
+		middle::Id id;
+		EditorActionDeleteSingle(middle::Id& id) {
+			this->id = id;
+		}
+		void execute(GameState* gameState) override;
+		void undo(GameState* gameState) override;
+	};
+
 	// time to save positions, please don't forget to do it
 	class EditorActionSaveScene : public EditorActionContainer {
 	public:
@@ -101,10 +111,12 @@ namespace middle {
 	// what is import scene? it's so that you can import scenes as objects, or loops 
 	class EditorActionImportScene : public EditorActionContainer {
 	public:
-		std::string sceneName;
+		std::string path;
+		std::string name;
 		int newIndex = UNASSIGNED;
-		EditorActionImportScene(const std::string& sceneName) {
-			this->sceneName = sceneName;
+		EditorActionImportScene(const std::string& path, const std::string& name) {
+			this->path = path;
+			this->name = name;
 		}
 		void execute(GameState* gameState) override;
 		void undo(GameState* gameState) override;
@@ -264,6 +276,17 @@ namespace middle {
 		std::vector<int> newCopyShapes;
 		EditorActionCopy(std::vector<int>& selectedShapes) {
 			this->selectedShapes = selectedShapes;
+		}
+		void execute(GameState* gameState) override;
+		void undo(GameState* gameState) override;
+	};
+
+	class EditorActionCopySingle : public EditorActionContainer {
+	public:
+		middle::Id id;
+		middle::Id resultId;
+		EditorActionCopySingle(middle::Id id) {
+			this->id = id;
 		}
 		void execute(GameState* gameState) override;
 		void undo(GameState* gameState) override;

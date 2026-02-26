@@ -21,8 +21,13 @@ namespace entities{
 		reference->sceneName = sceneName;
 		reference->folder = folder;
 		loop->loopMemberIds = members;
-		pos->posX = 0;
-		pos->posY = 0;
-		pos->posZ = 0;
+		Vector3 targetPos = { 0,0,0 };
+		if (members.size() == 1) {
+			targetPos = middle::getShapePosition(gameState, members[0].index);
+		}
+		pos->posX = targetPos.x;
+		pos->posY = targetPos.y;
+		pos->posZ = targetPos.z;
+
     }
 }

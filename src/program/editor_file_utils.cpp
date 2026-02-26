@@ -246,23 +246,43 @@ namespace middle {
 		assert("not supported");
 	}
 
+	void saveTempShape(GameState* gameState, Id& idToSave)
+	{
+		std::string folder = "../src/editor_data/temp/";
+		std::string name = "s" + std::to_string(idToSave.index) + "_" + std::to_string(idToSave.generation);
+		saveShape(gameState, idToSave, folder, name);
+	}
+
+	middle::Id loadTempShape(GameState* gameState, Id& idToLoad)
+	{
+		std::string folder = "../src/editor_data/temp/";
+		std::string name = "s" + std::to_string(idToLoad.index) + "_" + std::to_string(idToLoad.generation);
+		return loadShape(gameState, folder, name, false);
+	}
+
 	bool isEmptyOrWhitespace(const std::string& s) {
 		return s.empty() ||
 			std::all_of(s.begin(), s.end(),
 				[](unsigned char c) { return std::isspace(c); });
 	}
 
-	void loadSceneNames(GameState* gameState)
+	void loadSceneAndShapeNames(GameState* gameState)
 	{
 		namespace fs = std::filesystem;
-		std::vector<std::string>& names = gameState->sceneNames;
-		names.clear();
+		std::vector<std::string>& sceneNames = gameState->sceneNames;
+		sceneNames.clear();
 
 		std::string folder = "../assets/scenes/";
-
 		for (const auto& entry : fs::directory_iterator(folder)) {
 			if (entry.path().extension() == ".midsc") {
-				names.push_back(entry.path().stem().string());
+				sceneNames.push_back(entry.path().stem().string());
+			}
+		}
+		std::vector<std::string>& shapeNames = gameState->shapeNames;
+		std::string folder2 = "../assets/shapes/";
+		for (const auto& entry : fs::directory_iterator(folder2)) {
+			if (entry.path().extension() == ".midsc") {
+				shapeNames.push_back(entry.path().stem().string());
 			}
 		}
 	}
@@ -319,6 +339,15 @@ namespace middle {
 	void saveShape(GameState* gameState, Id& idToSave, const std::string& folder, const std::string& shapeName)
 	{
 		auto& shapeToSave = getShape(gameState, idToSave.index);
+		auto pos = middle::getComponent<components::Position>(shapeToSave);
+		Vector3 displacement = { 0,0,0 };
+		if (pos) {
+			displacement = { pos->posX, pos->posY, pos->posZ };
+			// move shape to origin
+			middle::moveShape(gameState, shapeToSave.id.index, Vector3Negate(displacement));
+		}
+
+
 		std::string path = folder + shapeName + ".midsc";
 		std::ofstream outFile(path);
 		if (!outFile.is_open()) {
@@ -353,6 +382,9 @@ namespace middle {
 
 		outFile.flush();
 		outFile.close();
+
+		// move shape back after save
+		middle::moveShape(gameState, shapeToSave.id.index, displacement);
 	}
 
 	middle::Id loadShape(GameState* gameState, const std::string& folder, const std::string& sceneName, bool import, const Vector3& pos) {

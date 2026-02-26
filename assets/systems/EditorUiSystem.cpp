@@ -191,7 +191,7 @@ public:
 						}
 						if (action == import) {
 							gameState->editorState.editorActions.push_back(
-								std::make_unique<middle::EditorActionImportScene>(name)
+								std::make_unique<middle::EditorActionImportScene>("../assets/scenes/", name)
 							);
 						}
 
@@ -199,6 +199,23 @@ public:
 					}
 				}
 
+				ImGui::EndPopup();
+			}
+
+			if (ImGui::Button("IMPORT SHAPE")) {
+				ImGui::OpenPopup("Shape Selector");
+			}
+
+			if (ImGui::BeginPopup("Shape Selector")) {
+				for (int i = 0; i < gameState->shapeNames.size(); ++i) {
+					auto name = gameState->shapeNames[i];
+					if (ImGui::Button(name.c_str())) {
+						gameState->editorState.editorActions.push_back(
+							std::make_unique<middle::EditorActionImportScene>("../assets/shapes/", name)
+						);
+						ImGui::CloseCurrentPopup();
+					}
+				}
 				ImGui::EndPopup();
 			}
 
@@ -303,7 +320,7 @@ public:
 				gameState->inputBlockers.insert(middle::InputBlockers::KEYBOARD_BLOCK);
 
 				ImGui::Text("Enter new initSystem name:");
-				ImGui::InputText("##newSystemName", newScriptName, IM_ARRAYSIZE(newScriptName));
+				ImGui::InputText("##newScriptName", newScriptName, IM_ARRAYSIZE(newScriptName));
 
 				const char* systemItems[] = { "SYSTEM", "COMPONENT" };
 				static int selectedSystemItem = 0;
@@ -346,7 +363,7 @@ public:
 			};
 
 
-		gameState->uiSetups.push_back(ui);
+			gameState->uiSetups.push_back(ui);
 	}
 
 	void gameEditorUi(middle::GameState* gameState) {

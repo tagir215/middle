@@ -18,7 +18,6 @@ namespace entities{
 		middle::addComponent<components::MouseIntersectable>(shape);
 		middle::addComponent<components::MouseGrabbable>(shape);
 		auto pos = middle::addComponent<components::Position>(shape);
-		loop->loopMemberIds = loopIds;
 		pos->posX = position.x;
 		pos->posY = position.y;
 		pos->posZ = position.z;
