@@ -6,6 +6,8 @@
 #include "Position.h"
 #include "PhysicsData.h"
 #include "LoopSociety.h"
+#include "bubble_utils.h"
+#include "BubbleRef.h"
 
 class BubbleOutlinePhysics : public middle::MiddleGameplaySystem {
 public:
@@ -50,6 +52,12 @@ public:
 			if (!bubble)
 				return true;
 
+			auto bubbleRef = middle::getComponent<components::BubbleRef>(shape);
+			if (!bubbleRef || bubbleRef->idRef.index == middle::UNASSIGNED) {
+				return true;
+			}
+			auto& bubbleContainer = middle::getShape(gameState, bubbleRef->idRef.index);
+
 			auto bubblePosition = middle::getComponent<components::Position>(shape);
 			assert(bubblePosition);
 
@@ -57,8 +65,6 @@ public:
 			Vector3 bubblePos = { bubblePosition->posX, bubblePosition->posY, bubblePosition->posZ };
 
 			// BUBBLE GRAVITY
-
-			auto loopSociety = middle::getComponent<components::LoopSociety>(shape);
 
 			//for (middle::Id& childId : loopSociety->loopMemberIds) {
 			//	middle::Shape& child = middle::getShape(gameState, childId.index);
@@ -81,8 +87,8 @@ public:
 
 			std::vector<Vector3>fieldPositions = getFieldPositions(gameState, shape);
 
-
-			std::vector<middle::Id>& outlineNodes = bubble->outlineNodes;
+			auto containerLoop = middle::getComponent<components::LoopSociety>(bubbleContainer);
+			std::vector<middle::Id> outlineNodes = bubble::getNodes(gameState, containerLoop);
 
 			for (middle::Id& id : outlineNodes) {
 				middle::Shape& node = middle::getShape(gameState, id.index);

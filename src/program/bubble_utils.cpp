@@ -2,12 +2,14 @@
 #include "middle_component_table.h"
 #include "BubbleComponent.h"
 #include "middle_shape_utils.h"
-#include "LoopSociety.h"
 #include "Rectangle.h"
 #include "InputVariable.h"
 #include "OutputVariable.h"
 #include "Button.h"
 #include "MouseIntersectable.h"
+#include "Sphere.h"
+#include "Constraint.h"
+#include "IdRef.h"
 
 namespace bubble {
 
@@ -15,16 +17,24 @@ namespace bubble {
 	{
 		auto bubbleComponent = middle::getComponent<components::BubbleComponent>(bubbleShape);
 		assert(bubbleComponent);
+		auto ref = middle::getComponent<components::IdRef>(bubbleShape);
+		if (!ref || ref->idRef.index == middle::UNASSIGNED) {
+			return false;
+		}
 
-		for (int i = 0; i < bubbleComponent->outlineNodes.size(); ++i) {
+		auto& bubbleContainer = middle::getShape(gameState, ref->idRef.index);
+		components::LoopSociety* loop = middle::getComponent<components::LoopSociety>(bubbleContainer);
+		std::vector<middle::Id> outlineNodes = getNodes(gameState, loop);
+
+		for (int i = 0; i < outlineNodes.size(); ++i) {
 			int indexA = i - 1;
 			int indexB = i;
 			if (i == 0) {
-				indexA = bubbleComponent->outlineNodes.size() - 1;
+				indexA = outlineNodes.size() - 1;
 			}
 
-			auto& idA = bubbleComponent->outlineNodes[indexA];
-			auto& idB = bubbleComponent->outlineNodes[indexB];
+			auto& idA = outlineNodes[indexA];
+			auto& idB = outlineNodes[indexB];
 			Vector3 posA = middle::getShapePosition(gameState, idA.index);
 			Vector3 posB = middle::getShapePosition(gameState, idB.index);
 			Vector3 dir = posB - posA;
@@ -132,4 +142,26 @@ namespace bubble {
 		return false;
 	}
 
+
+	std::vector<middle::Id>getNodes(middle::GameState* gameState, components::LoopSociety* loop) {
+		std::vector<middle::Id>ids;
+		for (middle::Id& id : loop->loopMemberIds) {
+			auto& childShape = middle::getShape(gameState, id.index);
+			if (middle::getComponent<components::Sphere>(childShape)) {
+				ids.push_back(id);
+			}
+		}
+		return ids;
+	}
+
+	std::vector<middle::Id>getConstraints(middle::GameState* gameState, components::LoopSociety* loop) {
+		std::vector<middle::Id>ids;
+		for (middle::Id& id : loop->loopMemberIds) {
+			auto& childShape = middle::getShape(gameState, id.index);
+			if (middle::getComponent<components::Constraint>(childShape)) {
+				ids.push_back(id);
+			}
+		}
+		return ids;
+	}
 }

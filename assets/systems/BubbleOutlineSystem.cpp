@@ -11,6 +11,10 @@
 #include "PhysicsData.h"
 #include "PlacementComponent.h"
 #include <random>
+#include "editor_actions.h"
+#include "BubbleRef.h" 
+#include "DependencyComponent.h"
+#include "bubble_utils.h"
 
 class BubbleOutlineSystem : public middle::MiddleGameplaySystem {
 public:
@@ -20,25 +24,6 @@ public:
 	const float bubbleOutlineWidthMargin = 10;
 	const float distBetweenNodes = 5;
 	const float nodeRadius = 0.1f;
-
-	void populateWithChildren(
-		middle::GameState* gameState, std::vector<middle::Id>* shapeList, middle::Id& id) {
-		auto& shape = middle::getShape(gameState, id.index);
-		auto loopSociety = middle::getComponent<components::LoopSociety>(shape);
-		auto bubble = middle::getComponent<components::BubbleComponent>(shape);
-		assert(loopSociety);
-
-		for (middle::Id& childId : loopSociety->loopMemberIds) {
-			middle::Shape& childShape = middle::getShape(gameState, childId.index);
-			auto childLoopSociety = middle::getComponent<components::LoopSociety>(childShape);
-			if (childLoopSociety->loopMemberIds.size() == 0) {
-				shapeList->push_back(childId);
-			}
-			else {
-				populateWithChildren(gameState, shapeList, childId);
-			}
-		}
-	}
 
 	struct LongestDistanceCouple {
 		middle::Id idA;
@@ -56,6 +41,7 @@ public:
 		auto sphere = middle::addComponent<components::Sphere>(outlineShape);
 		auto posComp = middle::addComponent<components::Position>(outlineShape);
 		auto physicsComp = middle::addComponent<components::PhysicsData>(outlineShape);
+		auto loop = middle::addComponent<components::LoopSociety>(outlineShape);
 		posComp->posX = pos.x;
 		posComp->posY = pos.y;
 		posComp->posZ = pos.z;
@@ -129,16 +115,21 @@ public:
 		return result;
 	}
 
-	void removeNode(middle::GameState* gameState, components::BubbleComponent* bubble, float distBetweenNodes) {
-		const int minNodeCount = 5;
-		if (bubble->outlineConstraints.size() < minNodeCount) {
-			return;
-		}
+	void removeNode(middle::GameState* gameState, middle::Id& id, float distBetweenNodes) {
+		auto& shape = middle::getShape(gameState, id.index);
+		auto bubble = middle::getComponent<components::BubbleComponent>(shape);
+		assert(bubble);
+		auto bubbleRef = middle::getComponent<components::BubbleRef>(shape);
+		auto bubbleContainer = middle::getShape(gameState, bubbleRef->idRef.index);
+		auto loop = middle::getComponent<components::LoopSociety>(bubbleContainer);
 
-		int outlineNodesSize = bubble->outlineNodes.size();
+		const int minNodeCount = 5;
+		std::vector<middle::Id> outlineNodes = bubble::getNodes(gameState, loop);
+
+		int outlineNodesSize = outlineNodes.size();
 		int random = rand() % (outlineNodesSize - 2) + 1;
 		const int nodeToRemoveIndex = random;
-		middle::Id nodeIdToRemove = bubble->outlineNodes[nodeToRemoveIndex];
+		middle::Id nodeIdToRemove = outlineNodes[nodeToRemoveIndex];
 
 		std::vector<int>connectedIndexes = middle::findConnectedConstraints(gameState, nodeIdToRemove);
 
@@ -158,35 +149,28 @@ public:
 
 		middle::deleteShape(gameState, constraintShapeToRemove.id.index);
 		middle::deleteShape(gameState, nodeIdToRemove.index);
-
-
-		for (int i = 0; i < outlineNodesSize; ++i) {
-			if (!middle::isShapeAlive(gameState, bubble->outlineNodes[i].index)) {
-				bubble->outlineNodes.erase(bubble->outlineNodes.begin() + i);
-				break;
-			}
-		}
-		int constraintsSize = bubble->outlineConstraints.size();
-		for (int i = 0; i < constraintsSize; ++i) {
-			if (!middle::isShapeAlive(gameState, bubble->outlineConstraints[i].index)) {
-				bubble->outlineConstraints.erase(bubble->outlineConstraints.begin() + i);
-				break;
-			}
-		}
-		
 	}
 
 
-	void addNode(middle::GameState* gameState, components::BubbleComponent* bubble, float distBetweenNodes) {
+	void addNode(middle::GameState* gameState, middle::Id& id, float distBetweenNodes) {
+		auto& shape = middle::getShape(gameState, id.index);
+		auto bubble = middle::getComponent<components::BubbleComponent>(shape);
+		assert(bubble);
+		auto bubbleRef = middle::getComponent<components::BubbleRef>(shape);
+		auto bubbleContainer = middle::getShape(gameState, bubbleRef->idRef.index);
+		auto loop = middle::getComponent<components::LoopSociety>(bubbleContainer);
 
 		// get constraint to break
-		middle::Shape& leftNeighborShape = middle::getShape(gameState, bubble->outlineNodes.back().index);
-		middle::Shape& rightNeighborShape = middle::getShape(gameState, bubble->outlineNodes.front().index);
+		std::vector<middle::Id>outlineNodes = bubble::getNodes(gameState, loop);
+		std::vector<middle::Id>outlineConstraints = bubble::getConstraints(gameState, loop);
 
-		int constraintIndex = middle::constraintExistsAt(gameState, leftNeighborShape.id, rightNeighborShape.id);
-		middle::Shape& constraintToBreakShape = middle::getShape(gameState, constraintIndex);
-		auto constraintToEdit = middle::getComponent<components::Constraint>(constraintToBreakShape);
-		constraintToEdit->targetDistance = distBetweenNodes;
+		auto& constraintToBreakShape = middle::getShape(gameState, outlineConstraints.back().index);
+		auto constraintToBreak = middle::getComponent<components::Constraint>(constraintToBreakShape);
+		constraintToBreak->targetDistance = distBetweenNodes;
+
+		middle::Shape& leftNeighborShape = middle::getShape(gameState, constraintToBreak->idA.index);
+		middle::Shape& rightNeighborShape = middle::getShape(gameState, constraintToBreak->idB.index);
+
 
 		// get center pos 
 		Vector3 posLeft = middle::getShapePosition(gameState, leftNeighborShape.id.index);
@@ -195,28 +179,28 @@ public:
 
 		// create new node
 		middle::Shape& newNode = newNodeShape(gameState, centroid);
-		bubble->outlineNodes.push_back(newNode.id);
+		middle::EditorActionReparent(bubbleContainer.id.index, newNode.id.index).execute(gameState);
 
 
 		// edit old constraint
-		if (leftNeighborShape.id == constraintToEdit->idA) {
-			constraintToEdit->idB = newNode.id;
+		if (leftNeighborShape.id == constraintToBreak->idA) {
+			constraintToBreak->idB = newNode.id;
 		}
 		else {
-			constraintToEdit->idA = newNode.id;
+			constraintToBreak->idA = newNode.id;
 		}
 
 		// create new constraint
 		middle::Shape& newConstraintShape = middle::addGhostShape(gameState);
 		auto newConstraint = middle::addComponent<components::Constraint>(newConstraintShape);
+		middle::addComponent<components::LoopSociety>(newConstraintShape);
 		// update pointer after resizing array  
-		constraintToEdit = middle::getComponent<components::Constraint>(constraintToBreakShape);
+		constraintToBreak = middle::getComponent<components::Constraint>(constraintToBreakShape);
 
 		newConstraint->idA = newNode.id;
 		newConstraint->idB = rightNeighborShape.id;
-		newConstraint->targetDistance = constraintToEdit->targetDistance;
-
-		bubble->outlineConstraints.push_back(newConstraintShape.id);
+		newConstraint->targetDistance = constraintToBreak->targetDistance;
+		middle::EditorActionReparent(bubbleContainer.id.index, newConstraintShape.id.index).execute(gameState);
 
 	}
 
@@ -239,20 +223,19 @@ public:
 
 	}
 
+
 	void update(middle::GameState* gameState) override {
 
 		std::vector<middle::Id> shapeList;
 
 		middle::loopInstances(gameState, [gameState, &shapeList, this](int i, middle::Shape& shape) {
+			middle::Id shapeId = shape.id;
 			auto bubble = middle::getComponent<components::BubbleComponent>(shape);
 			if (!bubble)
 				return true;
-			auto placement = middle::getComponent<components::PlacementComponent>(shape);
-			if (placement)
-				return true;
 
 			shapeList.clear();
-			populateWithChildren(gameState, &shapeList, shape.id);
+			middle::getAllChildrenWithComp(gameState, shape.id, shapeList, middle::getTypeId<components::Position>());
 
 			LongestDistanceCouple distanceCouple;
 			LongestDistanceCouple perpCouple;
@@ -334,8 +317,27 @@ public:
 			bubble->distBetweenNodes = distBetweenNodes;
 			bubble->endRadius = bubbleEndPointRadius;
 
+			bool initialize = false;
+			auto bubbleRef = middle::getComponent<components::BubbleRef>(shape);
+			if (!bubbleRef) {
+				bubbleRef = middle::addComponent<components::BubbleRef>(shape);
+			}
+
+			if(bubbleRef->idRef.index == middle::UNASSIGNED){
+				initialize = true;
+				middle::Shape& bubbleContainer = middle::addGhostShape(gameState);
+				bubbleRef->idRef = bubbleContainer.id;
+				auto dependency = middle::addComponent<components::DependencyComponent>(bubbleContainer);
+				dependency->idRef = shape.id;
+				middle::addComponent<components::LoopSociety>(bubbleContainer);
+			}
+
+
+			auto& outlineContainer = middle::getShape(gameState, bubbleRef->idRef.index);
+			auto loop = middle::getComponent<components::LoopSociety>(outlineContainer);
+
 			// bubble initialization
-			if (bubble->outlineNodes.size() == 0) {
+			if (initialize) {
 				if (axisLength < 0) axisLength = 0;
 				// 2d perp for now
 				Vector3 perpAxis = { -distanceCouple.axis.z, 0, distanceCouple.axis.x };
@@ -361,7 +363,7 @@ public:
 					dirVec = Vector3RotateByAxisAngle(dirVec, rotateAxis, -angleBetweenNodes);
 					arcTravelled += angleBetweenNodes * bubbleEndPointRadius;
 
-					bubble->outlineNodes.push_back(outlineShape.id);
+					middle::EditorActionReparent(outlineContainer.id.index, outlineShape.id.index).execute(gameState);
 				}
 
 				// create first side
@@ -371,7 +373,7 @@ public:
 				nextPos += Vector3Scale(distanceCouple.axis, -lengthTravelled);
 				while (lengthTravelled < axisLength) {
 					middle::Shape& outlineShape = newNodeShape(gameState, nextPos);
-					bubble->outlineNodes.push_back(outlineShape.id);
+					middle::EditorActionReparent(outlineContainer.id.index, outlineShape.id.index).execute(gameState);
 					lengthTravelled += adjustedToEvenDistBetweenNodes;
 					nextPos = nextPos + transVec;
 				}
@@ -390,8 +392,7 @@ public:
 
 					dirVec = Vector3RotateByAxisAngle(dirVec, rotateAxis, -angleBetweenNodes);
 					arcTravelled += angleBetweenNodes * bubbleEndPointRadius;
-
-					bubble->outlineNodes.push_back(outlineShape.id);
+					middle::EditorActionReparent(outlineContainer.id.index, outlineShape.id.index).execute(gameState);
 				}
 
 
@@ -403,27 +404,29 @@ public:
 				// stop one early to avoid duplicating the first node
 				while (lengthTravelled < axisLength - adjustedToEvenDistBetweenNodes) {
 					middle::Shape& outlineShape = newNodeShape(gameState, nextPos);
-					bubble->outlineNodes.push_back(outlineShape.id);
+					middle::EditorActionReparent(outlineContainer.id.index, outlineShape.id.index).execute(gameState);
 					nextPos = nextPos + transVec;
 					lengthTravelled += adjustedToEvenDistBetweenNodes;
 				}
 
 
+				loop = middle::getComponent<components::LoopSociety>(outlineContainer);
+				std::vector<middle::Id>nodes = bubble::getNodes(gameState, loop);
 				// generate constraints
-				for (int i = 0; i < bubble->outlineNodes.size(); ++i) {
+				for (int i = 0; i < nodes.size(); ++i) {
 					int iA = i;
 					int iB = i - 1;
 					if (iB < 0) {
-						iB = bubble->outlineNodes.size() - 1;
+						iB = nodes.size() - 1;
 					}
 
-					auto& idA = bubble->outlineNodes[iA];
-					auto& idB = bubble->outlineNodes[iB];
+					auto& idA = nodes[iA];
+					auto& idB = nodes[iB];
 					Vector3 posA = middle::getShapePosition(gameState, idA.index);
 					Vector3 posB = middle::getShapePosition(gameState, idB.index);
 
 					auto& constraintShape = middle::addGhostShape(gameState);
-					bubble->outlineConstraints.push_back(constraintShape.id);
+					auto constraintLoop = middle::addComponent<components::LoopSociety>(constraintShape);
 					auto constraint = middle::addComponent<components::Constraint>(constraintShape);
 					constraint->targetDistance = Vector3Distance(posA, posB);
 					constraint->idA = idA;
@@ -431,17 +434,19 @@ public:
 					constraint->stiffness = 1.0f;
 					constraint->biasFactor = 0.2f;
 					assert(constraint->targetDistance > 0);
+					middle::EditorActionReparent(outlineContainer.id.index, constraintShape.id.index).execute(gameState);
 				}
 			}
 
 
+			std::vector<middle::Id>nodes = bubble::getNodes(gameState, loop);
 
-			if (nodeCount - 1 < bubble->outlineNodes.size()) {
-				removeNode(gameState, bubble, distBetweenNodes);
+			if (nodeCount - 1 < nodes.size()) {
+				removeNode(gameState, shapeId, distBetweenNodes);
 			}
 
-			if (nodeCount - 1 > bubble->outlineNodes.size()) {
-				addNode(gameState, bubble, distBetweenNodes);
+			if (nodeCount - 1 > nodes.size()) {
+				addNode(gameState, shapeId, distBetweenNodes);
 			}
 
 			return true;

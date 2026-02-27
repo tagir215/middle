@@ -11,6 +11,8 @@
 #include "FractionalComponent.h"
 #include "LoopSociety.h"
 #include "MouseIntersectable.h"
+#include "bubble_utils.h"
+#include "BubbleRef.h"
 
 class BubbleRenderSetup : public middle::MiddleGameplaySystem {
 
@@ -71,14 +73,25 @@ class BubbleRenderSetup : public middle::MiddleGameplaySystem {
 				}
 
 				if (bubbleComponent) {
-					for (int index = 0; index < bubbleComponent->outlineNodes.size(); ++index) {
+
+					auto ref = middle::getComponent<components::BubbleRef>(shape);
+					if (!ref || ref->idRef.index == middle::UNASSIGNED) {
+						return false;
+					}
+
+					auto& bubbleContainer = middle::getShape(gameState, ref->idRef.index);
+					auto containerLoop = middle::getComponent<components::LoopSociety>(bubbleContainer);
+
+					std::vector<middle::Id>outlineNodes = bubble::getNodes(gameState, containerLoop);
+
+					for (int index = 0; index < outlineNodes.size(); ++index) {
 						int indexA = index - 1;
 						int indexB = index;
 						if (index == 0) {
-							indexA = bubbleComponent->outlineNodes.size() - 1;
+							indexA = outlineNodes.size() - 1;
 						}
-						middle::Id nodeIdA = bubbleComponent->outlineNodes[indexA];
-						middle::Id nodeIdB = bubbleComponent->outlineNodes[indexB];
+						middle::Id nodeIdA = outlineNodes[indexA];
+						middle::Id nodeIdB = outlineNodes[indexB];
 						Vector3 posA = middle::getShapePosition(gameState, nodeIdA.index);
 						Vector3 posB = middle::getShapePosition(gameState, nodeIdB.index);
 

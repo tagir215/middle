@@ -44,22 +44,8 @@ class BubbleCollisionSystem : public middle::MiddleGameplaySystem {
 		for (middle::Id id : bubbleList) {
 			auto bubbleShape = middle::getShape(gameState, id.index);
 			auto bubbleLoop = middle::getComponent<components::LoopSociety>(bubbleShape);
-			auto mulComp = middle::getComponent<components::BubbleMultiplyComponent>(bubbleShape);
 			std::vector<middle::Id>candidates;
-
-			for (middle::Id& id : bubbleLoop->loopMemberIds) {
-				auto& shape = middle::getShape(gameState, id.index);
-				auto mulComp = middle::getComponent<components::BubbleMultiplyComponent>(shape);
-				if (mulComp) {
-					auto loop = middle::getComponent<components::LoopSociety>(shape);
-					for (middle::Id& childId : loop->loopMemberIds) {
-						candidates.push_back(childId);
-					}
-				}
-				else {
-					candidates.push_back(id);
-				}
-			}
+			middle::getAllChildrenWithComp(gameState, id, candidates, middle::getTypeId<components::BubbleComponent>());
 
 			int size = candidates.size();
 			for (int i = 0; i < size; ++i) {
@@ -102,7 +88,7 @@ class BubbleCollisionSystem : public middle::MiddleGameplaySystem {
 				if (Vector3LengthSqr(normal) == 0) {
 					normal = { 1,0,0 };
 				}
-				if (distSqr < totalRadius * totalRadius) {
+				if (distSqr < totalRadius* totalRadius) {
 					CollisionManifold manifold;
 					manifold.idA = shapeA.id;
 					manifold.idB = shapeB.id;
@@ -127,9 +113,9 @@ class BubbleCollisionSystem : public middle::MiddleGameplaySystem {
 			auto bubbleB = middle::getComponent<components::BubbleComponent>(shapeB);
 
 
-			if(!bubbleA->infiniteMass)
+			if (!bubbleA->infiniteMass)
 				moveShape(gameState, manifold.idA.index, velA);
-			if(!bubbleB->infiniteMass)
+			if (!bubbleB->infiniteMass)
 				moveShape(gameState, manifold.idB.index, velB);
 		}
 	}

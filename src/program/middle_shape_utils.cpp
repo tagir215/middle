@@ -411,12 +411,16 @@ namespace middle {
 				}
 				case FieldType::Id: {
 					Id* valueptr = static_cast<Id*>(copyField.value);
-					*valueptr = *static_cast<Id*>(ogField.value);
+					//*valueptr = *static_cast<Id*>(ogField.value);
+					*valueptr = middle::Id();
 					break;
 				}
 				case FieldType::IdVector: {
 					std::vector<Id>* valueptr = static_cast<std::vector<Id>*>(copyField.value);
 					*valueptr = *static_cast<std::vector<Id>*>(ogField.value);
+					for (middle::Id& id : *valueptr) {
+						id = middle::Id();
+					}
 					break;
 				}
 				case FieldType::Int: {
@@ -541,6 +545,25 @@ namespace middle {
 			}
 		}
 	}
+
+	void getAllChildrenWithComp(GameState* gameState, Id id, std::vector<Id>& result, int typeId)
+	{
+		Shape& shape = getShape(gameState, id.index);
+		auto loop = getComponent<components::LoopSociety>(shape);
+		if (loop) {
+			for (Id& childId : loop->loopMemberIds) {
+				auto& child = middle::getShape(gameState, childId.index);
+				if (child.componentMap.find(typeId) != child.componentMap.end()) {
+					result.push_back(childId);
+				}
+				getAllChildrenWithComp(gameState, childId, result, typeId);
+			}
+		}
+
+	}
+
+
+
 	middle::Id getFirstChildWithComponent(GameState* gameState, Id& id, int typeId)
 	{
 		std::vector<middle::Id>children;

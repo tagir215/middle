@@ -67,35 +67,6 @@ namespace bubbleActions{
 		return loop->loopMemberIds.size();
 	}
 
-	void deleteBubble(middle::GameState* gameState, middle::Id& id) {
-		middle::Shape& shape = middle::getShape(gameState, id.index);
-
-		// delete outline
-		auto bubble = middle::getComponent<components::BubbleComponent>(shape);
-		if (bubble) {
-			for (middle::Id& outlineId : bubble->outlineNodes) {
-				middle::deleteShape(gameState, outlineId.index);
-			}
-			for (middle::Id& constraintId : bubble->outlineConstraints) {
-				middle::deleteShape(gameState, constraintId.index);
-			}
-		}
-
-		auto loop = middle::getComponent<components::LoopSociety>(shape);
-		if (loop) {
-			int size = loop->loopMemberIds.size();
-			for (int i = size - 1; i >= 0; --i) {
-				middle::Id childId = loop->loopMemberIds[i];
-				if (!middle::isShapeAlive(gameState, childId.index)) {
-					assert(false);
-				}
-				deleteBubble(gameState, childId);
-			}
-		}
-
-		middle::deleteShape(gameState, id.index);
-	}
-
 
 	CreateMulitiplicationReplacementShape::CreateMulitiplicationReplacementShape(middle::Id shapeToReplace, middle::Id replacingShape)
 	{
@@ -172,7 +143,7 @@ namespace bubbleActions{
 				reparentAction.execute(gameState);
 			}
 			for (middle::Id& id : shapesToDelete) {
-				deleteBubble(gameState, id);
+				deleteShapeRecursive(gameState, id.index);
 			}
 			loop = middle::getComponent<components::LoopSociety>(copyFraction);
 			resultShapeId = copyFractionId;
@@ -203,7 +174,7 @@ namespace bubbleActions{
 
 	void CreateMulitiplicationReplacementShape::undo(middle::GameState* gameState)
 	{
-		bubbleActions::deleteBubble(gameState, resultShapeId);
+		deleteShapeRecursive(gameState, resultShapeId.index);
 	}
 
 
@@ -361,7 +332,7 @@ namespace bubbleActions{
 				auto loopB = middle::getComponent<components::LoopSociety>(shapeB);
 				loopB->loopMemberIds.push_back(copyId);
 			}
-			deleteBubble(gameState, idA);
+			deleteShapeRecursive(gameState, idA.index);
 			replacementId = idB;
 		}
 		// BUBBLE & UNIT CASE
@@ -385,7 +356,7 @@ namespace bubbleActions{
 	}
 
 	void CreateAdditionReplacementShape::undo(middle::GameState* gameState) {
-		bubbleActions::deleteBubble(gameState, resultId);
+		deleteShapeRecursive(gameState, resultId.index);
 	}
 
 
@@ -589,7 +560,7 @@ namespace bubbleActions{
 				if (value == sizeA) {
 					middle::Id someUnitId = replacementLoop->loopMemberIds[0];
 					middle::Id unitCopyId = middle::deepCopyShape(gameState, someUnitId.index, middle::UNASSIGNED);
-					deleteBubble(gameState, copyShapeA.id);
+					deleteShapeRecursive(gameState, copyShapeA.id.index);
 					auto& unitShape = middle::getShape(gameState, unitCopyId.index);
 					auto unitLoop = middle::getComponent<components::LoopSociety>(unitShape);
 					unitLoop->parentLoopId = middle::Id();
@@ -597,7 +568,7 @@ namespace bubbleActions{
 				}
 			}
 
-			deleteBubble(gameState, copyShapeB.id);
+			deleteShapeRecursive(gameState, copyShapeB.id.index);
 
 
 		}
@@ -608,7 +579,7 @@ namespace bubbleActions{
 			resultShapeId = additionAction.resultId;
 		}
 
-		deleteBubble(gameState, shapeToAddId);
+		deleteShapeRecursive(gameState, shapeToAddId.index);
 		auto replace = bubbleActions::Replace(shapeToAddIntoId, resultShapeId);
 		replace.execute(gameState);
 	}
@@ -665,7 +636,7 @@ namespace bubbleActions{
 			}
 		}
 
-		deleteBubble(gameState, shape.id);
+		deleteShapeRecursive(gameState, shape.id.index);
 	}
 
 	void Pop::undo(middle::GameState* gameState) {

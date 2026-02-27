@@ -18,7 +18,6 @@
 
 namespace bubbleActions{
 
-	void deleteBubble(middle::GameState* gameState, middle::Id& id);
 	void setBubbleHidden(middle::GameState* gameState, middle::Id& id, bool hidden);
 	middle::Id inverseBubble(middle::GameState* gameState, middle::Id& id);
 	middle::Id topLevelBubble(middle::GameState* gameState);
