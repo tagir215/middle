@@ -68,57 +68,21 @@ namespace middle {
 
 	void EditorActionDelete::execute(GameState* gameState) {
 
-		deletedIndexesParents.resize(selectedIndexes.size());
-
 		for (int i = 0; i < selectedIndexes.size(); ++i) {
-			int index = selectedIndexes[i];
-			if (!isShapeAlive(gameState, index)) {
-				continue;
+			int shapeIndex = selectedIndexes[i];
+			if (middle::isShapeAlive(gameState, shapeIndex)) {
+				auto delAction = std::make_unique<middle::EditorActionDeleteSingle>(getShape(gameState, shapeIndex).id);
+				delAction->execute(gameState);
+				actions.push_back(std::move(delAction));
 			}
-			Shape& shape = getShape(gameState, index);
-
-			// delete all connected constraints
-			std::vector<int> connectedConstraints = findConnectedConstraints(gameState, shape.id);
-
-			// set all connected constraints as selected
-			for (int connectedIndex : connectedConstraints) {
-				deletedConstraints.push_back(connectedIndex);
-				saveShape(gameState, gameState->ids[connectedIndex], "../src/editor_data/temp/", "delshape" + std::to_string(connectedIndex));
-			}
-
-			auto loop = middle::getComponent<components::LoopSociety>(shape);
-			if (loop) {
-				deletedIndexesParents[i] = loop->parentLoopId.index;
-			}
-
-			saveShape(gameState, shape.id, "../src/editor_data/temp/", "delshape" + std::to_string(index));
-
-			deleteShapeRecursive(gameState, index);
-		}
-
-		for (int i : deletedConstraints) {
-			deleteShape(gameState, i);
 		}
 	}
 
 	void EditorActionDelete::undo(GameState* gameState)
 	{
-		for (int i = 0; i < selectedIndexes.size(); ++i) {
-			int index = selectedIndexes[i];
-			loadShape(gameState, "../src/editor_data/temp/", "delshape" + std::to_string(index), false);
-			auto& shape = middle::getShape(gameState, index);
-			auto loop = middle::getComponent<components::LoopSociety>(shape);
-			// reparent to old parent
-			if (loop) {
-				loop->parentLoopId = middle::Id();
-				auto reparent = EditorActionReparent(deletedIndexesParents[i], index);
-				reparent.execute(gameState);
-			}
-		}
-
-		for (int i = 0; i < deletedConstraints.size(); ++i) {
-			int index = deletedConstraints[i];
-			loadShape(gameState, "../src/editor_data/temp/", "delshape" + std::to_string(index), false);
+		while (actions.size() > 0) {
+			actions.back()->undo(gameState);
+			actions.pop_back();
 		}
 	}
 

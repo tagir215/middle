@@ -456,11 +456,13 @@ class ProcedureExecutionSystem : public middle::MiddleGameplaySystem {
 	}
 
 	procedureConstants::StepStatus stepBackward(middle::GameState* gameState, components::ProcedureContainer* container) {
-		if (container->procedureTransitionStack.size() == 0) {
-			return procedureConstants::CannotStep;
+		if (container->procedureTransitionStack.size() > 0) {
+			container->procedureTransitionStack.pop_back();
 		}
-		container->procedureTransitionStack.pop_back();
-		return procedureConstants::CanStep;
+		if (container->procedureTransitionStack.size() > 0) {
+			return procedureConstants::CanStep;
+		}
+		return procedureConstants::CannotStep;
 
 	}
 
@@ -555,7 +557,7 @@ class ProcedureExecutionSystem : public middle::MiddleGameplaySystem {
 						auto& funcShape = middle::getShape(gameState, funcShapeId.index);
 						undoFunctions(gameState, funcShape);
 					}
-					if (stepBackward(gameState, procedure)) {
+					if (stepBackward(gameState, procedure) == procedureConstants::CanStep) {
 						doStep(procedure);
 					}
 				}

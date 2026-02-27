@@ -29,19 +29,6 @@ namespace middle {
 		void undo(GameState* gameState) override;
 	};
 
-	// deletion of selected things happening here actually
-	class EditorActionDelete : public EditorActionContainer {
-	public:
-		std::vector<int>selectedIndexes;
-		std::vector<int>deletedIndexesParents;
-		std::vector<int>deletedConstraints;
-		EditorActionDelete(std::vector<int> selectedIndexes) {
-			this->selectedIndexes = selectedIndexes;
-		}
-		void execute(GameState* gameState) override;
-		void undo(GameState* gameState) override;
-	};
-
 
 	// time to save positions, please don't forget to do it
 	class EditorActionSaveScene : public EditorActionContainer {
@@ -326,4 +313,17 @@ namespace middle {
 		void execute(GameState* gameState) override;
 		void undo(GameState* gameState) override;
 	};
+
+	// deletion of selected things happening here actually
+	class EditorActionDelete : public EditorActionContainer {
+	public:
+		std::vector<int>selectedIndexes;
+		std::vector < std::unique_ptr<EditorActionDeleteSingle>>actions;
+		EditorActionDelete(std::vector<int> selectedIndexes) {
+			this->selectedIndexes = selectedIndexes;
+		}
+		void execute(GameState* gameState) override;
+		void undo(GameState* gameState) override;
+	};
+
 }

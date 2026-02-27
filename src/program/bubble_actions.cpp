@@ -472,13 +472,9 @@ namespace bubbleActions{
 			middle::Id copyId = createMulAction->resultShapeId;
 			actions.push_back(std::move(createMulAction));
 
-			auto deleteAction = std::make_unique<middle::EditorActionDeleteSingle>(childId);
-			deleteAction->execute(gameState);
-			actions.push_back(std::move(deleteAction));
-
-			auto reparentAction = std::make_unique<middle::EditorActionReparent>(idB.index, copyId.index);
-			reparentAction->execute(gameState);
-			actions.push_back(std::move(reparentAction));
+			auto replaceAction = std::make_unique<bubbleActions::Replace>(childId, copyId);
+			replaceAction->execute(gameState);
+			actions.push_back(std::move(replaceAction));
 		}
 
 		auto deleteAction1 = std::make_unique<middle::EditorActionDeleteSingle>(idA);

@@ -119,6 +119,7 @@ namespace middle {
 		std::vector<std::unique_ptr<MiddleGameplaySystem>> engineSystemsFrameStart;
 		std::vector<std::unique_ptr<MiddleGameplaySystem>> engineSystemsFrameEnd;
 		std::vector<std::unique_ptr<MiddleGameplaySystem>> engineRendererSystems;
+		std::vector<middle::Id>newShapeList;
 
 		std::array<Vector3, MAX_VERTEX_COUNT> vertexArray;
 		Matrix worldM;

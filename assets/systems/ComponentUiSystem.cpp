@@ -7,6 +7,7 @@
 #include "editor_actions.h"
 #include <string>
 #include <misc/cpp/imgui_stdlib.cpp>
+#include <Position.h>
 
 class ComponentUiSystem : public middle::MiddleGameplaySystem {
 
@@ -209,7 +210,18 @@ public:
 					if (ImGui::Button("Save")) {
 						if (strlen(inputtedName) > 0) {
 
+							auto pos = middle::getComponent<components::Position>(shape);
+							Vector3 displacement = { 0,0,0 };
+							if (pos) {
+								displacement = { pos->posX, pos->posY, pos->posZ };
+								// move shape to origin
+								middle::moveShape(gameState, shape.id.index, Vector3Negate(displacement));
+							}
+
 							middle::saveShape(gameState, shape.id, "../assets/shapes/", inputtedName);
+
+							// move shape back after save
+							middle::moveShape(gameState, shape.id.index, displacement);
 
 							// Clear buffer and close popup
 							inputtedName[0] = '\0';

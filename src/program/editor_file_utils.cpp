@@ -339,15 +339,6 @@ namespace middle {
 	void saveShape(GameState* gameState, Id& idToSave, const std::string& folder, const std::string& shapeName)
 	{
 		auto& shapeToSave = getShape(gameState, idToSave.index);
-		auto pos = middle::getComponent<components::Position>(shapeToSave);
-		Vector3 displacement = { 0,0,0 };
-		if (pos) {
-			displacement = { pos->posX, pos->posY, pos->posZ };
-			// move shape to origin
-			middle::moveShape(gameState, shapeToSave.id.index, Vector3Negate(displacement));
-		}
-
-
 		std::string path = folder + shapeName + ".midsc";
 		std::ofstream outFile(path);
 		if (!outFile.is_open()) {
@@ -383,8 +374,6 @@ namespace middle {
 		outFile.flush();
 		outFile.close();
 
-		// move shape back after save
-		middle::moveShape(gameState, shapeToSave.id.index, displacement);
 	}
 
 	middle::Id loadShape(GameState* gameState, const std::string& folder, const std::string& sceneName, bool import, const Vector3& pos) {
@@ -516,6 +505,8 @@ namespace middle {
 		int activeShapeIndex = -1;
 		int parseMode = noParse;
 
+		std::vector<middle::Id>newShapeIds;
+
 		// read objects
 		while (std::getline(inputFile, line)) {
 
@@ -530,7 +521,9 @@ namespace middle {
 				int end = l - 2;
 				std::string digits = line.substr(start, end);
 				activeShapeIndex = std::stoi(digits);
-				addShape(gameState, activeShapeIndex + indexOffset);
+				auto& shape = addShape(gameState, activeShapeIndex + indexOffset);
+				newShapeIds.push_back(shape.id);
+
 				parseMode = noParse;
 			}
 
@@ -568,19 +561,15 @@ namespace middle {
 
 		inputFile.close();
 
-
-
 		int highestUsedIndex = findHighestUsedIndex(gameState);
 
 		// loop added indexes and load all the references 
-		for (int i = indexOffset; i < highestUsedIndex + 1; ++i) {
-			auto& shape = gameState->shapes[i];
+		for (middle::Id& id : newShapeIds) {
+			auto& shape = gameState->shapes[id.index];
 			if (getComponent<components::Reference>(shape)) {
-				loadReferences(gameState, i);
+				loadReferences(gameState, id.index);
 			}
 		}
-
-
 
 		// if we import we contain all the content in a reference loop
 		if (import) {
