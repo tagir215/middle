@@ -103,20 +103,20 @@ public:
 				gameState->renderData.push_back(circleItem);
 			}
 
-			if (procedure) {
-				if (procedure->activeScope.index != middle::UNASSIGNED) {
-					auto& activeScope = middle::getShape(gameState, procedure->activeScope.index);
-					auto scope = middle::getComponent<components::ScopeComponent>(activeScope);
-					std::vector<middle::Id>children;
-					middle::getChildren(gameState, activeScope.id, children);
-					auto& activeBlock = middle::getShape(gameState, children[scope->currentIndex].index);
-					auto rectBlock = middle::getComponent<components::Rectangle>(activeBlock);
-					Vector3 pos = middle::getShapePosition(gameState, activeBlock.id.index);
-					middle::RenderItem rect;
-					std::vector<Vector3>vertices = middle::getRectVertices(gameState, activeBlock.id);
-					drawRect(gameState, vertices, GREEN);
-				}
-			}
+//			if (procedure) {
+//				if (procedure->activeScope.index != middle::UNASSIGNED) {
+//					auto& activeScope = middle::getShape(gameState, procedure->activeScope.index);
+//					auto scope = middle::getComponent<components::ScopeComponent>(activeScope);
+//					std::vector<middle::Id>children;
+//					middle::getChildren(gameState, activeScope.id, children);
+//					auto& activeBlock = middle::getShape(gameState, children[scope->currentIndex].index);
+//					auto rectBlock = middle::getComponent<components::Rectangle>(activeBlock);
+//					Vector3 pos = middle::getShapePosition(gameState, activeBlock.id.index);
+//					middle::RenderItem rect;
+//					std::vector<Vector3>vertices = middle::getRectVertices(gameState, activeBlock.id);
+//					drawRect(gameState, vertices, GREEN);
+//				}
+//			}
 
 			return true;
 			});

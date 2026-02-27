@@ -42,15 +42,6 @@ namespace middle {
 		void undo(GameState* gameState) override;
 	};
 
-	class EditorActionDeleteSingle : public EditorActionContainer {
-	public:
-		middle::Id id;
-		EditorActionDeleteSingle(middle::Id& id) {
-			this->id = id;
-		}
-		void execute(GameState* gameState) override;
-		void undo(GameState* gameState) override;
-	};
 
 	// time to save positions, please don't forget to do it
 	class EditorActionSaveScene : public EditorActionContainer {
@@ -233,8 +224,9 @@ namespace middle {
 
 	class EditorActionRemoveFromLoop : public EditorActionContainer {
 	public:
-		int childIndex;
-		int oldParentIndex;
+		int childIndex = middle::UNASSIGNED;
+		int oldParentIndex = middle::UNASSIGNED;
+		int loopIndex = middle::UNASSIGNED;
 		EditorActionRemoveFromLoop(int childIndex) {
 			this->childIndex = childIndex;
 		}
@@ -318,6 +310,18 @@ namespace middle {
 		std::vector<Vector3>newPositions;
 		EditorActionMove(std::vector<int>& selectedShapes) {
 			this->selectedShapes = selectedShapes;
+		}
+		void execute(GameState* gameState) override;
+		void undo(GameState* gameState) override;
+	};
+
+	class EditorActionDeleteSingle : public EditorActionContainer {
+	public:
+		middle::Id id;
+		int loopIndex = middle::UNASSIGNED;
+		std::unique_ptr<EditorActionRemoveFromLoop>removeFromLoop;
+		EditorActionDeleteSingle(middle::Id& id) {
+			this->id = id;
 		}
 		void execute(GameState* gameState) override;
 		void undo(GameState* gameState) override;

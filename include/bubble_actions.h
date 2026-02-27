@@ -20,7 +20,6 @@ namespace bubbleActions{
 
 	void deleteBubble(middle::GameState* gameState, middle::Id& id);
 	void setBubbleHidden(middle::GameState* gameState, middle::Id& id, bool hidden);
-	void updateVariable(middle::GameState* gameState, middle::Id& newUnitRef, const std::string& label);
 	middle::Id inverseBubble(middle::GameState* gameState, middle::Id& id);
 	middle::Id topLevelBubble(middle::GameState* gameState);
 	middle::Shape& newBubble(middle::GameState* gameState, const Vector3& targetPos);
@@ -32,6 +31,16 @@ namespace bubbleActions{
 	bool equals(middle::GameState* gameState, middle::Id& bubbleA, middle::Id& bubbleB);
 	float unitValue(middle::GameState* gameState, middle::Id& containerId);
 	int fractionUnitCount(middle::GameState* gameState, middle::Id& fractionId);
+
+	class UpdateVariable : public middle::EditorActionContainer {
+	public:
+		std::string label;
+		middle::Id newUnitRef;
+		middle::Id oldUnitRef;
+		UpdateVariable(std::string& label, middle::Id& newUnitRef);
+		void execute(middle::GameState* gameState) override;
+		void undo(middle::GameState* gameState) override;
+	};
 
 	class CreateMulitiplicationReplacementShape : public middle::EditorActionContainer {
 	public:

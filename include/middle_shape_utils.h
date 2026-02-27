@@ -65,6 +65,8 @@ namespace middle {
 	void getAllChildren(GameState* gameState, Id id, std::vector<Id>& result);
 	// iterate children and return first child with component type id
 	middle::Id getFirstChildWithComponent(GameState* gameState, Id& id, int typeId);
+	// get index of child
+	int getLoopIndex(GameState* gameState, Id& parentId, Id& childId);
 
 	template<typename F>
 	void loopInstances(GameState* gameState, F func) {

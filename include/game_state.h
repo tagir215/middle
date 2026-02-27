@@ -94,7 +94,7 @@ namespace middle {
 	struct BubbleAlgebraState {
 		middle::Id grabbedId;
 		bool intersectingUI = false;
-		middle::Id idReplacementNews;
+
 	};
 
 

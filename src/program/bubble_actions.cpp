@@ -388,19 +388,6 @@ namespace bubbleActions{
 		bubbleActions::deleteBubble(gameState, resultId);
 	}
 
-	void updateVariable(middle::GameState* gameState, middle::Id& newUnitRef, const std::string& label) {
-		middle::loopInstances(gameState, [gameState, &label, &newUnitRef](int i, middle::Shape& shape) {
-			auto inputVariable = middle::getComponent<components::InputVariable>(shape);
-			if (inputVariable && inputVariable->label == label) {
-				inputVariable->unitRef = newUnitRef;
-			}
-			auto outputVariable = middle::getComponent<components::OutputVariable>(shape);
-			if (outputVariable && outputVariable->label == label) {
-				outputVariable->unitRef = newUnitRef;
-			}
-			return true;
-			});
-	}
 
 	middle::Id inverseBubble(middle::GameState* gameState, middle::Id& id)
 	{
@@ -462,13 +449,18 @@ namespace bubbleActions{
 
 	void ExecuteMultiplication::execute(middle::GameState* gameState) {
 
-		middle::Id idA = middle::deepCopyShape(gameState, shapeToCopyId.index);
-		middle::Id idB = middle::deepCopyShape(gameState, shapeToCopyIntoId.index);
-		middle::Shape& copyShapeA = middle::getShape(gameState, idA.index);
-		middle::Shape& copyShapeB = middle::getShape(gameState, idB.index);
+		auto copyA = std::make_unique<middle::EditorActionCopySingle>(shapeToCopyId);
+		copyA->execute(gameState);
+		middle::Id idA = copyA->resultId;
+		actions.push_back(std::move(copyA));
+		auto copyB = std::make_unique<middle::EditorActionCopySingle>(shapeToCopyIntoId);
+		copyB->execute(gameState);
+		middle::Id idB = copyB->resultId;
+		actions.push_back(std::move(copyB));
+
 
 		std::vector<middle::Id>children;
-		middle::getChildren(gameState, copyShapeB.id, children);
+		middle::getChildren(gameState, idB, children);
 
 		// create replacements to the positions of the old units
 		for (int i = 0; i < children.size(); ++i) {
@@ -870,5 +862,35 @@ namespace bubbleActions{
 	}
 	void MulOne::undo(middle::GameState* gameState)
 	{
+	}
+	UpdateVariable::UpdateVariable(std::string& label, middle::Id& newUnitRef)
+	{
+		this->label = label;
+		this->newUnitRef = newUnitRef;
+	}
+	void UpdateVariable::execute(middle::GameState* gameState)
+	{
+		std::string& label = this->label;
+		middle::Id& newUnitRef = this->newUnitRef;
+		middle::Id& oldUnitRef = this->oldUnitRef;
+
+		middle::loopInstances(gameState, [gameState, &label, &newUnitRef, &oldUnitRef](int i, middle::Shape& shape) {
+			auto inputVariable = middle::getComponent<components::InputVariable>(shape);
+			if (inputVariable && inputVariable->label == label) {
+				oldUnitRef = inputVariable->unitRef;
+				inputVariable->unitRef = newUnitRef;
+			}
+			auto outputVariable = middle::getComponent<components::OutputVariable>(shape);
+			if (outputVariable && outputVariable->label == label) {
+				oldUnitRef = outputVariable->unitRef;
+				outputVariable->unitRef = newUnitRef;
+			}
+			return true;
+			});
+	}
+	void UpdateVariable::undo(middle::GameState* gameState)
+	{
+		auto update = UpdateVariable(label, oldUnitRef);
+		update.execute(gameState);
 	}
 }

@@ -15,6 +15,7 @@
 #include "TimerComponent.h"
 #include "ProcedureContainer.h"
 #include "bubble_utils.h"
+#include <queue>
 
 class ProcedureExecutionSystem : public middle::MiddleGameplaySystem {
 
@@ -95,120 +96,6 @@ class ProcedureExecutionSystem : public middle::MiddleGameplaySystem {
 	}
 
 
-
-	middle::Id findParentScope(middle::GameState* gameState, middle::Id& scopeId) {
-		std::stack<middle::Id>stack;
-		middle::Id parentId = middle::getParent(gameState, scopeId);
-		if (parentId.index == middle::UNASSIGNED) {
-			return middle::Id();
-		}
-		stack.push(parentId);
-		while (stack.size() > 0) {
-			middle::Id currentId = stack.top();
-			stack.pop();
-			auto& parentShape = middle::getShape(gameState, currentId.index);
-			auto scope = middle::getComponent<components::ScopeComponent>(parentShape);
-			if (scope) {
-				return currentId;
-			}
-			else {
-				middle::Id parentParentId = middle::getParent(gameState, currentId);
-				if (parentParentId.index == middle::UNASSIGNED) {
-					return parentParentId;
-				}
-				stack.push(parentParentId);
-			}
-		}
-	}
-
-	// move scope index forward unless loop
-	middle::Id updateIndex(middle::GameState* gameState, middle::Id& scopeShapeId) {
-		auto& scopeShape = middle::getShape(gameState, scopeShapeId.index);
-		auto loop = middle::getComponent<components::LoopSociety>(scopeShape);
-		auto scope = middle::getComponent<components::ScopeComponent>(scopeShape);
-		auto& currentBlockShape = middle::getShape(gameState, loop->loopMemberIds[scope->currentIndex].index);
-		auto block = middle::getComponent<components::CodeBlock>(currentBlockShape);
-		if (block->type == codeBlockTypes::BLOCK || block->exitLoop) {
-			scope->currentIndex += 1;
-			block->exitLoop = false;
-		}
-		if (block->type == codeBlockTypes::LOOP_BLOCK) {
-
-		}
-		if (scope->currentIndex >= loop->loopMemberIds.size()) {
-			return middle::Id();
-		}
-		return loop->loopMemberIds[scope->currentIndex];
-	}
-
-	// returns scope
-	middle::Id updateScope(middle::GameState* gameState, middle::Id scopeId) {
-		middle::Id nextBlock = updateIndex(gameState, scopeId);
-		if (nextBlock.index != middle::UNASSIGNED) {
-			return scopeId;
-		}
-		middle::Id parentScopeId = findParentScope(gameState, scopeId);
-		if (parentScopeId.index != middle::UNASSIGNED) {
-			updateIndex(gameState, parentScopeId);
-			return parentScopeId;
-		}
-		return scopeId;
-	}
-
-	middle::Id& getActiveFunction(middle::GameState* gameState, middle::Id& scope) {
-		auto& scopeShape = middle::getShape(gameState, scope.index);
-		auto scopeComp = middle::getComponent<components::ScopeComponent>(scopeShape);
-		auto loop = middle::getComponent<components::LoopSociety>(scopeShape);
-		auto& codeBlock = middle::getShape(gameState, loop->loopMemberIds[scopeComp->currentIndex].index);
-		auto codeLoop = middle::getComponent<components::LoopSociety>(codeBlock);
-		if (codeLoop->loopMemberIds.size() > 0) {
-			return codeLoop->loopMemberIds[0];
-		}
-		return middle::Id();
-	}
-
-	// find block loop
-	middle::Id findParentLoopBlock(middle::GameState* gameState, middle::Id& funcId) {
-		std::stack<middle::Id> parents;
-		middle::Id blockParent = middle::getParent(gameState, funcId);
-		parents.push(blockParent);
-		while (parents.size() > 0) {
-			middle::Id id = parents.top();
-			parents.pop();
-			auto& blockShape = middle::getShape(gameState, id.index);
-			auto codeBlock = middle::getComponent<components::CodeBlock>(blockShape);
-			if (codeBlock && codeBlock->type == codeBlockTypes::LOOP_BLOCK) {
-				return blockShape.id;
-			}
-			middle::Id parent = middle::getParent(gameState, id);
-			if (parent.index == middle::UNASSIGNED) {
-				return middle::Id();
-			}
-			parents.push(parent);
-		}
-		return middle::Id();
-	}
-
-	middle::Id getConditionScope(middle::GameState* gameState, middle::Id& condFuncId, bool isConditionTrue) {
-		auto& funcShape = middle::getShape(gameState, condFuncId.index);
-		auto funcLoop = middle::getComponent<components::LoopSociety>(funcShape);
-		bool shouldSkip = !isConditionTrue;
-		for (middle::Id& id : funcLoop->loopMemberIds) {
-			auto& childShape = middle::getShape(gameState, id.index);
-			auto scope = middle::getComponent<components::ScopeComponent>(childShape);
-			if (!scope) {
-				continue;
-			}
-			if (shouldSkip) {
-				shouldSkip = false;
-				continue;
-			}
-			scope->currentIndex = 0;
-			return id;
-		}
-		assert(false);
-	}
-
 	// search type of thing from a bubble
 	middle::Id searchFromBubble(middle::GameState* gameState, middle::Id& bubbleId, int typeId) {
 		auto& bubbleShape = middle::getShape(gameState, bubbleId.index);
@@ -233,12 +120,7 @@ class ProcedureExecutionSystem : public middle::MiddleGameplaySystem {
 	}
 
 	// returns scope 
-	middle::Id handleConditionals(middle::GameState* gameState, middle::Id& scope) {
-		middle::Id activeFunction = getActiveFunction(gameState, scope);
-		if (activeFunction.index == middle::UNASSIGNED) {
-			return scope;
-		}
-		auto& funcShape = middle::getShape(gameState, activeFunction.index);
+	bool checkIfConditionTrue(middle::GameState* gameState, middle::Shape& funcShape) {
 		auto function = middle::getComponent<components::CodeFunction>(funcShape);
 
 		int findTypeId = -1;
@@ -259,24 +141,17 @@ class ProcedureExecutionSystem : public middle::MiddleGameplaySystem {
 			getOneInput(gameState, funcShape, input);
 			getOneOutput(gameState, funcShape, output);
 			middle::Id foundId = searchFromBubble(gameState, input.unitRef, findTypeId);
-			bubbleActions::updateVariable(gameState, foundId, output.label);
+			bubbleActions::UpdateVariable(output.label, foundId).execute(gameState);
 			bool isConditionTrue = foundId.index != middle::UNASSIGNED;
-			return getConditionScope(gameState, funcShape.id, isConditionTrue);
+			return isConditionTrue;
 		}
 
-		return scope;
+		assert(false);
 	}
 
 	// execute funcId,  landedFuncId is where the latest execution took place
-	void executeFunctions(middle::GameState* gameState, middle::Id& scope) {
+	void executeFunctions(middle::GameState* gameState, middle::Shape& funcShape) {
 
-		middle::Id funcId = getActiveFunction(gameState, scope);
-
-		if (funcId.index == middle::UNASSIGNED) {
-			return;
-		}
-
-		auto& funcShape = middle::getShape(gameState, funcId.index);
 		auto function = middle::getComponent<components::CodeFunction>(funcShape);
 
 		// combine functions are either multiplciations or additions
@@ -293,26 +168,26 @@ class ProcedureExecutionSystem : public middle::MiddleGameplaySystem {
 			auto bubbleMultiplication = middle::getComponent<components::BubbleMultiplyComponent>(parentShape);
 
 			if (bubbleMultiplication) {
-				auto multiply = bubbleActions::ExecuteMultiplication(varA.unitRef, varB.unitRef);
-				multiply.execute(gameState);
-				bubbleActions::updateVariable(gameState, multiply.resultShapeId, output.label);
+				auto multiply = std::make_unique<bubbleActions::ExecuteMultiplication>(varA.unitRef, varB.unitRef);
+				multiply->execute(gameState);
+				auto update = std::make_unique<bubbleActions::UpdateVariable>(output.label, multiply->resultShapeId);
+				update->execute(gameState);
+				function->actions.push_back(std::move(multiply));
+				function->actions.push_back(std::move(update));
 			}
 			else {
-				auto combine = bubbleActions::ExecuteAddition(varA.unitRef, varB.unitRef);
-				combine.execute(gameState);
-				bubbleActions::updateVariable(gameState, combine.resultShapeId, output.label);
+				auto combine = std::make_unique<bubbleActions::ExecuteAddition>(varA.unitRef, varB.unitRef);
+				combine->execute(gameState);
+				auto update = std::make_unique<bubbleActions::UpdateVariable>(output.label, combine->resultShapeId);
+				update->execute(gameState);
+				function->actions.push_back(std::move(combine));
+				function->actions.push_back(std::move(update));
 			}
 		}
 
 		// exit loops
 		else if (function->type == functionTypes::EXIT_LOOP) {
-			middle::Id parentId = findParentLoopBlock(gameState, funcId);
-			if (parentId.index == middle::UNASSIGNED) {
-				return;
-			}
-			auto& loopBlockShape = middle::getShape(gameState, parentId.index);
-			auto block = middle::getComponent<components::CodeBlock>(loopBlockShape);
-			block->exitLoop = true;
+
 		}
 
 		else if (function->type == functionTypes::COPY) {
@@ -320,8 +195,12 @@ class ProcedureExecutionSystem : public middle::MiddleGameplaySystem {
 			components::OutputVariable output;
 			getOneInput(gameState, funcShape, input);
 			getOneOutput(gameState, funcShape, output);
-			middle::Id copy = middle::deepCopyShape(gameState, input.unitRef.index);
-			bubbleActions::updateVariable(gameState, copy, output.label);
+			auto copyAction = std::make_unique<middle::EditorActionCopySingle>(input.unitRef);
+			copyAction->execute(gameState);
+			auto update = std::make_unique<bubbleActions::UpdateVariable>(output.label, copyAction->resultId);
+			update->execute(gameState);
+			function->actions.push_back(std::move(copyAction));
+			function->actions.push_back(std::move(update));
 		}
 
 
@@ -338,9 +217,12 @@ class ProcedureExecutionSystem : public middle::MiddleGameplaySystem {
 			assert(input.unitRef.index != middle::UNASSIGNED);
 			middle::Id topBubbleId = bubbleActions::topLevelBubble(gameState);
 			middle::Id copy = middle::deepCopyShape(gameState, funcShape.id.index, topBubbleId.index);
-			auto reparent = middle::EditorActionReparent(topBubbleId.index, copy.index);
-			reparent.execute(gameState);
-			bubbleActions::updateVariable(gameState, copy, output.label);
+			auto reparent = std::make_unique<middle::EditorActionReparent>(topBubbleId.index, copy.index);
+			reparent->execute(gameState);
+			auto update = std::make_unique<bubbleActions::UpdateVariable>(output.label, copy);
+			update->execute(gameState);
+			function->actions.push_back(std::move(reparent));
+			function->actions.push_back(std::move(update));
 		}
 
 		else if (function->type == functionTypes::NEW_MULTERM) {
@@ -351,17 +233,21 @@ class ProcedureExecutionSystem : public middle::MiddleGameplaySystem {
 			assert(input.unitRef.index != middle::UNASSIGNED);
 			middle::Id topBubbleId = bubbleActions::topLevelBubble(gameState);
 			middle::Id copy = middle::deepCopyShape(gameState, funcShape.id.index, topBubbleId.index);
-			auto replacement = bubbleActions::CreateMulitiplicationReplacementShape(topBubbleId, copy);
-			replacement.execute(gameState);
-			bubbleActions::updateVariable(gameState, copy, output.label);
+			auto replacement = std::make_unique<bubbleActions::CreateMulitiplicationReplacementShape>(topBubbleId, copy);
+			replacement->execute(gameState);
+			auto update = std::make_unique<bubbleActions::UpdateVariable>(output.label, copy);
+			update->execute(gameState);
+			function->actions.push_back(std::move(replacement));
+			function->actions.push_back(std::move(update));
 		}
 
 		else if (function->type == functionTypes::POP) {
 			components::InputVariable input;
 			getOneInput(gameState, funcShape, input);
 			assert(input.unitRef.index != middle::UNASSIGNED);
-			auto popAction = bubbleActions::Pop(input.unitRef);
-			popAction.execute(gameState);
+			auto popAction = std::make_unique<bubbleActions::Pop>(input.unitRef);
+			popAction->execute(gameState);
+			function->actions.push_back(std::move(popAction));
 		}
 
 		else if (function->type == functionTypes::MUL_ONE) {
@@ -370,9 +256,12 @@ class ProcedureExecutionSystem : public middle::MiddleGameplaySystem {
 			getOneInput(gameState, funcShape, input);
 			getOneOutput(gameState, funcShape, output);
 			assert(input.unitRef.index != middle::UNASSIGNED);
-			auto mulOneAction = bubbleActions::MulOne(input.unitRef);
-			mulOneAction.execute(gameState);
-			bubbleActions::updateVariable(gameState, mulOneAction.resultShapeId, output.label);
+			auto mulOneAction = std::make_unique<bubbleActions::MulOne>(input.unitRef);
+			mulOneAction->execute(gameState);
+			auto update = std::make_unique<bubbleActions::UpdateVariable>(output.label, mulOneAction->resultShapeId);
+			update->execute(gameState);
+			function->actions.push_back(std::move(mulOneAction));
+			function->actions.push_back(std::move(update));
 		}
 
 		else if (function->type == functionTypes::BREAK) {
@@ -384,9 +273,12 @@ class ProcedureExecutionSystem : public middle::MiddleGameplaySystem {
 			assert(inputA.unitRef.index != middle::UNASSIGNED);
 			assert(inputB.unitRef.index != middle::UNASSIGNED);
 			int value = (int)bubbleActions::unitValue(gameState, inputB.unitRef);
-			auto breakAction = bubbleActions::Break(inputA.unitRef, value);
-			breakAction.execute(gameState);
-			bubbleActions::updateVariable(gameState, breakAction.resultShapeId, output.label);
+			auto breakAction = std::make_unique<bubbleActions::Break>(inputA.unitRef, value);
+			breakAction->execute(gameState);
+			auto update = std::make_unique<bubbleActions::UpdateVariable>(output.label, breakAction->resultShapeId);
+			update->execute(gameState);
+			function->actions.push_back(std::move(breakAction));
+			function->actions.push_back(std::move(update));
 		}
 
 		else if (function->type == functionTypes::COMPRESS) {
@@ -396,11 +288,197 @@ class ProcedureExecutionSystem : public middle::MiddleGameplaySystem {
 			getOneInput(gameState, funcShape, input);
 			getTwoOutputs(gameState, funcShape, outputA, outputB);
 			assert(input.unitRef.index != middle::UNASSIGNED);
-			auto compressAction = bubbleActions::Compress(input.unitRef);
-			compressAction.execute(gameState);
+			auto compressAction = std::make_unique<bubbleActions::Compress>(input.unitRef);
+			compressAction->execute(gameState);
+			auto updateA = std::make_unique<bubbleActions::UpdateVariable>(outputA.label, compressAction->resultCountBubbleId);
+			updateA->execute(gameState);
+			auto updateB = std::make_unique<bubbleActions::UpdateVariable>(outputB.label, compressAction->resultCompressedBubbleId);
+			updateB->execute(gameState);
+			function->actions.push_back(std::move(compressAction));
+			function->actions.push_back(std::move(updateA));
+			function->actions.push_back(std::move(updateB));
+		}
+	}
 
-			outputA.unitRef = compressAction.resultCountBubbleId;
-			outputB.unitRef = compressAction.resultCompressedBubbleId;
+	void undoFunctions(middle::GameState* gameState, middle::Shape& funcShape) {
+		auto function = middle::getComponent<components::CodeFunction>(funcShape);
+		while (function->actions.size() > 0) {
+			function->actions.back()->undo(gameState);
+			function->actions.pop_back();
+		}
+	}
+
+	int currentIndex(middle::GameState* gameState, middle::Id& id, std::vector<middle::Id>& neighbors) {
+		for (int i = 0; i < neighbors.size(); ++i) {
+			if (neighbors[i] == id) {
+				return i;
+			}
+		}
+		return middle::UNASSIGNED;
+	}
+
+	procedureConstants::StepStatus stepSouth(middle::GameState* gameState, components::ProcedureContainer* container) {
+		middle::Id previousId = container->procedureTransitionStack.back().destinationId;
+		if (previousId.index == middle::UNASSIGNED) {
+			return procedureConstants::CannotStep;
+		}
+		middle::Id& parentId = middle::getParent(gameState, previousId);
+		std::vector<middle::Id> neighbors;
+		middle::getChildren(gameState, parentId, neighbors);
+		int index = currentIndex(gameState, previousId, neighbors);
+		if (index + 1 >= neighbors.size()) {
+			return procedureConstants::StepStatus::CannotStep;
+		}
+		middle::Id nextId = neighbors[index + 1];
+		container->procedureTransitionStack.push_back(
+			{ procedureConstants::TransitionType::South, previousId, nextId 
+			});
+		return procedureConstants::StepStatus::CanStep;
+	}
+
+	bool isScope(middle::GameState* gameState, middle::Id& id) {
+		auto& childShape = middle::getShape(gameState, id.index);
+		return middle::getComponent<components::ScopeComponent>(childShape) != nullptr;
+	}
+
+	procedureConstants::StepStatus stepEast(middle::GameState* gameState, components::ProcedureContainer* container, bool isConditionTrue) {
+		middle::Id previousId = container->procedureTransitionStack.back().destinationId;
+		std::queue<middle::Id>stepQueue;
+		stepQueue.push(previousId);
+		int scopeCount = 0;
+		// step down until scope
+		while (stepQueue.size() > 0) {
+			middle::Id id = stepQueue.front();
+			stepQueue.pop();
+			if (isScope(gameState, id)) {
+				++scopeCount;
+				middle::Id nextId = middle::getFirstChildWithComponent(gameState, id, middle::getTypeId<components::CodeBlock>());
+				if (scopeCount == 1 && isConditionTrue) {
+					container->procedureTransitionStack.push_back(
+						{ procedureConstants::TransitionType::NorthEast, previousId, nextId });
+					return procedureConstants::StepStatus::CanStep;
+				}
+				else if (scopeCount == 2 && !isConditionTrue) {
+					container->procedureTransitionStack.push_back(
+						{ procedureConstants::TransitionType::SouthEast, previousId, nextId });
+					return procedureConstants::StepStatus::CanStep;
+				}
+			}
+
+			std::vector<middle::Id>children;
+			middle::getChildren(gameState, id, children);
+			for (middle::Id childId : children) {
+				stepQueue.push(childId);
+			}
+		}
+		return procedureConstants::CannotStep;
+	}
+
+	middle::Id getCodeBlockFunc(middle::GameState* gameState, middle::Id& codeBlockId) {
+		std::vector<middle::Id>children;
+		middle::getChildren(gameState, codeBlockId, children);
+		if (children.size() == 0) {
+			return middle::Id();
+		}
+		// code blocks expect 1 child
+		assert(children.size() == 1);
+		return children[0];
+	}
+
+	void doStep(components::ProcedureContainer* container) {
+		container->activeBlock = container->procedureTransitionStack.back().destinationId;
+	}
+
+
+	procedureConstants::StepStatus stepWest(middle::GameState* gameState, components::ProcedureContainer* container) {
+		middle::Id previousId = container->procedureTransitionStack.back().destinationId;
+		if (previousId.index == middle::UNASSIGNED) {
+			return procedureConstants::CannotStep;
+		}
+		std::stack<middle::Id>stepStack;
+		stepStack.push(previousId);
+		// step up until if comp
+		while (stepStack.size() > 0) {
+			middle::Id id = stepStack.top();
+			stepStack.pop();
+			auto& shape = middle::getShape(gameState, id.index);
+			auto ifComp = middle::getComponent<components::IfComponent>(shape);
+			if (ifComp) {
+				middle::Id nextId = middle::getParent(gameState, id);
+				container->procedureTransitionStack.push_back(
+					{ procedureConstants::TransitionType::West, previousId, nextId });
+				return procedureConstants::StepStatus::CanStep;
+			}
+
+			middle::Id& parentId = middle::getParent(gameState, id);
+			if (parentId.index == middle::UNASSIGNED) {
+				return procedureConstants::CannotStep;
+			}
+			stepStack.push(parentId);
+		}
+		return procedureConstants::CannotStep;
+	}
+
+	procedureConstants::StepStatus stepEnd(middle::GameState* gameState, components::ProcedureContainer* container) {
+		middle::Id previousId = container->procedureTransitionStack.back().destinationId;
+		if (previousId.index != middle::UNASSIGNED) {
+			container->procedureTransitionStack.push_back(
+				{ procedureConstants::TransitionType::End, previousId, middle::Id() }
+			);
+			return procedureConstants::CanStep;
+		}
+		return procedureConstants::CannotStep;
+	}
+
+	procedureConstants::StepStatus stepStart(middle::GameState* gameState, components::ProcedureContainer* container) {
+		container->procedureTransitionStack.push_back(
+			{ procedureConstants::TransitionType::Start, middle::Id(), container->startBlock }
+		);
+		return procedureConstants::CanStep;
+	}
+
+	procedureConstants::StepStatus stepForward(middle::GameState* gameState, components::ProcedureContainer* container) {
+		if (container->reset) {
+			return stepStart(gameState, container);
+		}
+
+		auto statusA = stepSouth(gameState, container);
+		if (statusA == procedureConstants::CanStep) {
+			return statusA;
+		}
+
+		auto statusB = stepWest(gameState, container);
+		if (statusB == procedureConstants::CanStep) {
+			return stepSouth(gameState, container);
+		}
+
+		return stepEnd(gameState, container);
+	}
+
+	procedureConstants::StepStatus stepBackward(middle::GameState* gameState, components::ProcedureContainer* container) {
+		if (container->procedureTransitionStack.size() == 0) {
+			return procedureConstants::CannotStep;
+		}
+		container->procedureTransitionStack.pop_back();
+		return procedureConstants::CanStep;
+
+	}
+
+	procedureConstants::StepStatus potentialConditionalStep(middle::GameState* gameState, components::ProcedureContainer* container) {
+		middle::Id& previousId = container->procedureTransitionStack.back().destinationId;
+		if (previousId.index == middle::UNASSIGNED) {
+			return procedureConstants::CannotStep;
+		}
+		middle::Id id = getCodeBlockFunc(gameState, container->activeBlock);
+		if (id.index == middle::UNASSIGNED) {
+			return procedureConstants::CannotStep;
+		}
+		auto& funcShape = middle::getShape(gameState, id.index);
+		auto ifComp = middle::getComponent<components::IfComponent>(funcShape);
+		if (ifComp) {
+			bool condResult = checkIfConditionTrue(gameState, funcShape);
+			auto status = stepEast(gameState, container, condResult);
+			return status;
 		}
 	}
 
@@ -420,11 +498,8 @@ class ProcedureExecutionSystem : public middle::MiddleGameplaySystem {
 				auto procedureContainer = middle::getComponent<components::ProcedureContainer>(parentShape);
 				procedureContainer->mode = procedureConstants::EXECUTING;
 				procedureContainer->direction = procedureConstants::FORWARD;
-				if (procedureContainer->activeScope.index == middle::UNASSIGNED) {
-					middle::Id scopeChild = middle::getFirstChildWithComponent(
-						gameState, parentId, middle::getTypeId<components::ScopeComponent>());
-					procedureContainer->activeScope = scopeChild;
-				}
+				procedureContainer->reset = true;
+				procedureContainer->procedureTransitionStack.clear();
 			}
 
 			// step
@@ -435,10 +510,8 @@ class ProcedureExecutionSystem : public middle::MiddleGameplaySystem {
 				auto procedureContainer = middle::getComponent<components::ProcedureContainer>(parentShape);
 				procedureContainer->mode = procedureConstants::STEPPING;
 				procedureContainer->direction = procedureConstants::FORWARD;
-				if (procedureContainer->activeScope.index == middle::UNASSIGNED) {
-					middle::Id scopeChild = middle::getFirstChildWithComponent(
-						gameState, parentId, middle::getTypeId<components::ScopeComponent>());
-					procedureContainer->activeScope = scopeChild;
+				if (procedureContainer->procedureTransitionStack.size() == 0) {
+					procedureContainer->reset = true;
 				}
 			}
 
@@ -450,11 +523,6 @@ class ProcedureExecutionSystem : public middle::MiddleGameplaySystem {
 				auto procedureContainer = middle::getComponent<components::ProcedureContainer>(parentShape);
 				procedureContainer->mode = procedureConstants::STEPPING;
 				procedureContainer->direction = procedureConstants::BACKWARD;
-				if (procedureContainer->activeScope.index == middle::UNASSIGNED) {
-					middle::Id scopeChild = middle::getFirstChildWithComponent(
-						gameState, parentId, middle::getTypeId<components::ScopeComponent>());
-					procedureContainer->activeScope = scopeChild;
-				}
 			}
 
 
@@ -462,23 +530,47 @@ class ProcedureExecutionSystem : public middle::MiddleGameplaySystem {
 			if (procedure &&
 				(procedure->mode == procedureConstants::EXECUTING
 					|| procedure->mode == procedureConstants::STEPPING)) {
-				middle::Id scope = handleConditionals(gameState, procedure->activeScope);
-				executeFunctions(gameState, scope);
-				middle::Id updatedScope = updateScope(gameState, scope);
-				procedure->activeScope = updatedScope;
 
-				auto& procedureShape = middle::getShape(gameState, updatedScope.index);
-				auto scopeComponent = middle::getComponent<components::ScopeComponent>(procedureShape);
-				auto loop = middle::getComponent<components::LoopSociety>(procedureShape);
+				if (procedure->direction == procedureConstants::FORWARD) {
+					if (stepForward(gameState, procedure) == procedureConstants::CanStep) {
+						doStep(procedure);
+					}
 
-				if (scopeComponent->currentIndex >= loop->loopMemberIds.size()
-					|| procedure->mode == procedureConstants::STEPPING) {
-					procedure->mode = procedureConstants::IDLE;
+					if (potentialConditionalStep(gameState, procedure) == procedureConstants::CanStep) {
+						doStep(procedure);
+					}
+
+					if (procedure->activeBlock.index != middle::UNASSIGNED) {
+						middle::Id funcShapeId = getCodeBlockFunc(gameState, procedure->activeBlock);
+						if (funcShapeId.index != middle::UNASSIGNED) {
+							auto& funcShape = middle::getShape(gameState, funcShapeId.index);
+							executeFunctions(gameState, funcShape);
+						}
+					}
+				}
+
+				if (procedure->direction == procedureConstants::BACKWARD) {
+					middle::Id funcShapeId = getCodeBlockFunc(gameState, procedure->activeBlock);
+					if (funcShapeId.index != middle::UNASSIGNED) {
+						auto& funcShape = middle::getShape(gameState, funcShapeId.index);
+						undoFunctions(gameState, funcShape);
+					}
+					if (stepBackward(gameState, procedure)) {
+						doStep(procedure);
+					}
+				}
+
+				if (procedure->reset) {
+					procedure->reset = false;
 				}
 
 				if (procedure->mode == procedureConstants::EXECUTING) {
 					timer = middle::addComponent<components::TimerComponent>(shape);
 					timer->timeLeft = 1;
+				}
+
+				if (procedure->mode == procedureConstants::STEPPING) {
+					procedure->mode = procedureConstants::IDLE;
 				}
 			}
 

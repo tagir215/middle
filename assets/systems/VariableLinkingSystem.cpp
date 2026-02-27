@@ -56,7 +56,7 @@ class VariableLinkingSystem : public middle::MiddleGameplaySystem {
 						}
 						else if (otherBubble && grabbedInputVariable) {
 							grabbedInputVariable->snapId = shape.id;
-							bubbleActions::updateVariable(gameState, shape.id, grabbedInputVariable->label);
+							bubbleActions::UpdateVariable(grabbedInputVariable->label, shape.id).execute(gameState);
 							doDelete = false;
 						}
 						return true;

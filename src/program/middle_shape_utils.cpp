@@ -553,4 +553,16 @@ namespace middle {
 		}
 		return middle::Id();
 	}
+	int getLoopIndex(GameState* gameState, Id& parentId, Id& childId)
+	{
+		auto& parentShape = getShape(gameState, parentId.index);
+		std::vector<middle::Id>children;
+		middle::getChildren(gameState, parentId, children);
+		for (int i = 0; i < children.size(); ++i) {
+			if (children[i] == childId) {
+				return i;
+			}
+		}
+		return middle::UNASSIGNED;
+	}
 }
