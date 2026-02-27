@@ -65,7 +65,7 @@ namespace RendererSystem {
 					Matrix M = MatrixMultiply(MatrixMultiply(S, R), T);
 					rlPushMatrix();
 					rlMultMatrixf(MatrixToFloatV(M).v);
-					DrawCube(item.center, item.widht,item.length,item.height, item.color);
+					DrawCube(item.center, item.width,item.length,item.height, item.color);
 					rlPopMatrix();
 				}
 

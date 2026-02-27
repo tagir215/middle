@@ -9,7 +9,7 @@
 #include "MouseIntersectable.h"
 #include "Sphere.h"
 #include "Constraint.h"
-#include "IdRef.h"
+#include "BubbleRef.h"
 
 namespace bubble {
 
@@ -17,29 +17,31 @@ namespace bubble {
 	{
 		auto bubbleComponent = middle::getComponent<components::BubbleComponent>(bubbleShape);
 		assert(bubbleComponent);
-		auto ref = middle::getComponent<components::IdRef>(bubbleShape);
+		auto ref = middle::getComponent<components::BubbleRef>(bubbleShape);
 		if (!ref || ref->idRef.index == middle::UNASSIGNED) {
 			return false;
 		}
+		Vector3 center = { bubbleComponent->centerX, bubbleComponent->centerY, bubbleComponent->centerZ };
 
 		auto& bubbleContainer = middle::getShape(gameState, ref->idRef.index);
 		components::LoopSociety* loop = middle::getComponent<components::LoopSociety>(bubbleContainer);
-		std::vector<middle::Id> outlineNodes = getNodes(gameState, loop);
+		std::vector<middle::Id> outlineConstraints = getConstraints(gameState, loop);
 
-		for (int i = 0; i < outlineNodes.size(); ++i) {
-			int indexA = i - 1;
-			int indexB = i;
-			if (i == 0) {
-				indexA = outlineNodes.size() - 1;
-			}
+		for (int i = 0; i < outlineConstraints.size(); ++i) {
+			auto& constraintShape = middle::getShape(gameState, outlineConstraints[i].index);
+			auto constraint = middle::getComponent<components::Constraint>(constraintShape);
 
-			auto& idA = outlineNodes[indexA];
-			auto& idB = outlineNodes[indexB];
+			auto& idA = constraint->idA;
+			auto& idB = constraint->idB;
 			Vector3 posA = middle::getShapePosition(gameState, idA.index);
 			Vector3 posB = middle::getShapePosition(gameState, idB.index);
 			Vector3 dir = posB - posA;
 			// 2d normal
 			Vector3 normal = { -dir.z, 0 , dir.x };
+			Vector3 toCentroid = center - posA;
+			if (Vector3DotProduct(normal, toCentroid) > 0) {
+				normal = Vector3Negate(normal);
+			}
 
 			Vector3 toPoint = point - posA;
 

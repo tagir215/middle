@@ -112,7 +112,7 @@ public:
 					selectItem.transform.translation = getShapePosition(gameState, i);
 					selectItem.transform.scale = { 1,1,1 };
 					selectItem.transform.rotation = { 0,0,0,0 };
-					selectItem.widht = sphereItem.radius * 4;
+					selectItem.width = sphereItem.radius * 4;
 					selectItem.height = sphereItem.radius * 4;
 					selectItem.length = sphereItem.radius * 4;
 					selectItem.color = selectionBoxColor;
@@ -140,7 +140,7 @@ public:
 					selectItem.center = { 0,0,0 };
 					float height = Vector3Distance(lineItem.linePointA, lineItem.linePointB);
 					Vector3 lineDir = Vector3Normalize(lineItem.linePointB - lineItem.linePointA);
-					selectItem.widht = 1;
+					selectItem.width = 1;
 					selectItem.height = height;
 					selectItem.length = 1;
 					selectItem.color = selectionBoxColor;
@@ -198,7 +198,7 @@ public:
 					selectItem.transform.translation = getShapePosition(gameState, i);
 					selectItem.transform.scale = { 1,1,1 };
 					selectItem.transform.rotation = { 0,0,0,0 };
-					selectItem.widht = refItem.radius * 4;
+					selectItem.width = refItem.radius * 4;
 					selectItem.height = refItem.radius * 4;
 					selectItem.length = refItem.radius * 4;
 					selectItem.color = selectionBoxColor;
@@ -225,7 +225,7 @@ public:
 					selectItem.transform.translation = loopItem.center;
 					selectItem.transform.scale = { 1,1,1 };
 					selectItem.transform.rotation = { 0,0,0,0 };
-					selectItem.widht = loopItem.radius * 4;
+					selectItem.width = loopItem.radius * 4;
 					selectItem.height = loopItem.radius * 4;
 					selectItem.length = loopItem.radius * 4;
 					selectItem.color = selectionBoxColor;
@@ -256,7 +256,7 @@ public:
 					selectItem.transform.translation = systemItem.center;
 					selectItem.transform.scale = { 1,1,1 };
 					selectItem.transform.rotation = { 0,0,0,0 };
-					selectItem.widht = systemItem.radius * 4;
+					selectItem.width = systemItem.radius * 4;
 					selectItem.height = systemItem.radius * 4;
 					selectItem.length = systemItem.radius * 4;
 					selectItem.color = selectionBoxColor;

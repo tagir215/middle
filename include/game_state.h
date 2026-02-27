@@ -85,7 +85,7 @@ namespace middle {
 		Transform transform;
 		float radius;
 		float length;
-		float widht;
+		float width;
 		float height;
 		int fontSize;
 		std::string text = "";
