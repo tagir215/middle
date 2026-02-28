@@ -196,7 +196,20 @@ public:
 					if (ImGui::BeginPopup("Shape name selector")) {
 						for (std::string& name : gameState->shapeNames) {
 							if (ImGui::Button(name.c_str())) {
+
+								auto pos = middle::getComponent<components::Position>(shape);
+								Vector3 displacement = { 0,0,0 };
+								if (pos) {
+									displacement = { pos->posX, pos->posY, pos->posZ };
+									// move shape to origin
+									middle::moveShape(gameState, shape.id.index, Vector3Negate(displacement));
+								}
+
 								middle::saveShape(gameState, shape.id, "../assets/shapes/", name);
+
+								// move shape back after save
+								middle::moveShape(gameState, shape.id.index, displacement);
+
 								ImGui::CloseCurrentPopup();
 								ImGui::CloseCurrentPopup();
 							}

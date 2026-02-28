@@ -29,9 +29,9 @@ namespace MouseSelectionSystem {
 
 			for (int i = 0; i < gameState->shapes.size(); ++i) {
 				// ghost shapes can't be selected or edited
-				if (middle::isGhostShape(i)) {
-					break;
-				}
+				//if (middle::isGhostShape(i)) {
+				//	break;
+				//}
 				if (!middle::isShapeAlive(gameState, i)) {
 					continue;
 				}

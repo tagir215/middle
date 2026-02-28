@@ -323,7 +323,7 @@ public:
 				bubbleRef = middle::addComponent<components::BubbleRef>(shape);
 			}
 
-			if(bubbleRef->idRef.index == middle::UNASSIGNED){
+			if (bubbleRef->idRef.index == middle::UNASSIGNED) {
 				initialize = true;
 				middle::Shape& bubbleContainer = middle::addGhostShape(gameState);
 				bubbleRef->idRef = bubbleContainer.id;

@@ -280,18 +280,18 @@ namespace middle {
 	}
 
 	void deleteShapeRecursive(GameState* gameState, int index) {
+		if (!isShapeAlive(gameState, index)) {
+			return;
+		}
 		Shape& shape = gameState->shapes[index];
 		auto loop = getComponent<components::LoopSociety>(shape);
 		if (loop) {
-			int size = loop->loopMemberIds.size();
+			std::vector<middle::Id>children = loop->loopMemberIds;
+			int size = children.size();
 			for (int i = size - 1; i >= 0; --i) {
-				middle::Id& childId = loop->loopMemberIds[i];
+				middle::Id& childId = children[i];
 				deleteShapeRecursive(gameState, childId.index);
 			}
-		}
-		std::vector<int> connectedConstraints = findConnectedConstraints(gameState, shape.id);
-		for (int connectedIndex : connectedConstraints) {
-			deleteShape(gameState, connectedIndex);
 		}
 		deleteShape(gameState, index);
 	}
@@ -355,7 +355,13 @@ namespace middle {
 
 		Shape& ogShape = getShape(gameState, shapeToCopyIndex);
 
-		int freeIndex = findFreeIndex(gameState);
+		int freeIndex;
+		if (isGhostShape(shapeToCopyIndex)) {
+			freeIndex = findNextFreeGhostIndex(gameState);
+		}
+		else {
+			freeIndex = findFreeIndex(gameState);
+		}
 		Shape& newShape = addShape(gameState, freeIndex);
 
 		// copy components to the new shape
@@ -542,6 +548,20 @@ namespace middle {
 			for (Id& childId : loop->loopMemberIds) {
 				result.push_back(childId);
 				getAllChildren(gameState, childId, result);
+			}
+		}
+	}
+
+	void getChildrenWithComp(GameState* gameState, Id id, std::vector<Id>& result, int typeId)
+	{
+		Shape& shape = getShape(gameState, id.index);
+		auto loop = getComponent<components::LoopSociety>(shape);
+		if (loop) {
+			for (Id& childId : loop->loopMemberIds) {
+				auto& child = middle::getShape(gameState, childId.index);
+				if (child.componentMap.find(typeId) != child.componentMap.end()) {
+					result.push_back(childId);
+				}
 			}
 		}
 	}

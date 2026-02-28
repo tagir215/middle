@@ -146,9 +146,6 @@ namespace middle {
 			auto v = std::any_cast<std::vector<Id>>(field);
 			result += '\n';
 			for (int i = 0; i < v.size(); ++i) {
-				// Don't serialize ghost objects... TODO maybe refactor
-				if (v[i].index >= GHOST_INDEX_OFFSET)
-					continue;
 				result += std::to_string(v[i].index) + "\n";
 			}
 			return result;
@@ -301,6 +298,28 @@ namespace middle {
 		}
 	}
 
+	void saveComponent(middle::Shape& shape, std::ofstream& outFile) {
+
+		// references are special. for references skip children to save storage 
+		bool skipChildren = middle::getComponent<components::Reference>(shape);
+
+		for (auto& pair : shape.componentMap) {
+			std::string componentName = componentNameMap[pair.first];
+			outFile << componentName << "\n";
+			int componentTypeId = pair.first;
+			Component component = pair.second;
+			Serializable* serializable = componentListMap[componentTypeId]->getSerializable(component.componentOffset);
+
+			// skip children for reference types to save storage memory
+			if (skipChildren) {
+				bool isLoopComp = middle::getTypeId<components::LoopSociety>() == pair.first;
+				if (isLoopComp) continue;
+			}
+
+			serializable->serialize(outFile);
+		}
+	}
+
 	void saveScene(GameState* gameState, const std::string& sceneName) {
 		std::string filename = "../assets/scenes/" + sceneName + ".midsc";
 		std::ofstream outFile(filename);
@@ -320,16 +339,9 @@ namespace middle {
 				continue;
 
 			auto& shape = gameState->shapes[i];
-
 			outFile << "__" << std::to_string(i) << "__" << std::endl;
-			for (auto& pair : shape.componentMap) {
-				std::string componentName = componentNameMap[pair.first];
-				outFile << componentName << "\n";
-				int componentTypeId = pair.first;
-				Component component = pair.second;
-				Serializable* serializable = componentListMap[componentTypeId]->getSerializable(component.componentOffset);
-				serializable->serialize(outFile);
-			}
+
+			saveComponent(shape, outFile);
 		}
 
 		outFile.flush();
@@ -354,14 +366,7 @@ namespace middle {
 			auto& shape = getShape(gameState, currentId.index);
 
 			outFile << "__" << std::to_string(shape.id.index) << "__" << std::endl;
-			for (auto& pair : shape.componentMap) {
-				std::string componentName = componentNameMap[pair.first];
-				outFile << componentName << "\n";
-				int componentTypeId = pair.first;
-				Component component = pair.second;
-				Serializable* serializable = componentListMap[componentTypeId]->getSerializable(component.componentOffset);
-				serializable->serialize(outFile);
-			}
+			saveComponent(shape, outFile);
 
 			auto loop = getComponent<components::LoopSociety>(shape);
 			if (loop) {

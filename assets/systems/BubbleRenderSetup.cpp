@@ -76,7 +76,11 @@ class BubbleRenderSetup : public middle::MiddleGameplaySystem {
 
 					auto ref = middle::getComponent<components::BubbleRef>(shape);
 					if (!ref || ref->idRef.index == middle::UNASSIGNED) {
-						return false;
+						return true;
+					}
+
+					if (!middle::isShapeAlive(gameState, ref->idRef.index)) {
+						return true;
 					}
 
 					auto& bubbleContainer = middle::getShape(gameState, ref->idRef.index);

@@ -28,24 +28,24 @@ class BubbleCollisionSystem : public middle::MiddleGameplaySystem {
 	void update(middle::GameState* gameState) override {
 
 		// get bubbles
-		std::vector<middle::Id> bubbleList;
-		middle::loopInstances(gameState, [gameState, &bubbleList](int i, middle::Shape& shape) {
+		std::vector<middle::Id> containerList;
+		middle::loopInstances(gameState, [gameState, &containerList](int i, middle::Shape& shape) {
 
 			auto bubble = middle::getComponent<components::BubbleComponent>(shape);
 			auto mulComp = middle::getComponent<components::BubbleMultiplyComponent>(shape);
 			if (bubble || mulComp) {
-				bubbleList.push_back(shape.id);
+				containerList.push_back(shape.id);
 			}
 			return true;
 			});
 
 		// create pairs of bubbles children
 		std::vector<CollisionPair>pairs;
-		for (middle::Id id : bubbleList) {
+		for (middle::Id id : containerList) {
 			auto bubbleShape = middle::getShape(gameState, id.index);
 			auto bubbleLoop = middle::getComponent<components::LoopSociety>(bubbleShape);
 			std::vector<middle::Id>candidates;
-			middle::getAllChildrenWithComp(gameState, id, candidates, middle::getTypeId<components::BubbleComponent>());
+			middle::getChildrenWithComp(gameState, id, candidates, middle::getTypeId<components::BubbleComponent>());
 
 			int size = candidates.size();
 			for (int i = 0; i < size; ++i) {
