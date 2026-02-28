@@ -149,6 +149,18 @@ class ProcedureExecutionSystem : public middle::MiddleGameplaySystem {
 		assert(false);
 	}
 
+	void hackyVariableUpdate(middle::GameState* gameState) {
+		middle::loopInstances(gameState, [gameState](int i, middle::Shape& shape) {
+			auto input = middle::getComponent<components::InputVariable>(shape);
+			if (input) {
+				if (input->unitRef.index != middle::UNASSIGNED) {
+					input->unitRef = gameState->ids[input->unitRef.index];
+				}
+			}
+			return true;
+			});
+	}
+
 	// execute funcId,  landedFuncId is where the latest execution took place
 	void executeFunctions(middle::GameState* gameState, middle::Shape& funcShape) {
 
@@ -306,6 +318,8 @@ class ProcedureExecutionSystem : public middle::MiddleGameplaySystem {
 			function->actions.back()->undo(gameState);
 			function->actions.pop_back();
 		}
+		// update inputs because undo updates id generations
+		hackyVariableUpdate(gameState);
 	}
 
 	int currentIndex(middle::GameState* gameState, middle::Id& id, std::vector<middle::Id>& neighbors) {

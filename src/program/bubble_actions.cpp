@@ -684,6 +684,8 @@ namespace bubbleActions{
 			actions.back()->undo(gameState);
 			actions.pop_back();
 		}
+		shapeToReplaceId = gameState->shapes[shapeToReplaceId.index].id;
+		replacingShapeId = gameState->shapes[replacingShapeId.index].id;
 	}
 
 	LinkMultiplicationTerm::LinkMultiplicationTerm(middle::Id recieverShape, middle::Id linkingShape)
