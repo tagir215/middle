@@ -21,11 +21,11 @@ namespace bubbleActions{
 	void setBubbleHidden(middle::GameState* gameState, middle::Id& id, bool hidden);
 	middle::Id inverseBubble(middle::GameState* gameState, middle::Id& id);
 	middle::Id topLevelBubble(middle::GameState* gameState);
-	middle::Shape& newBubble(middle::GameState* gameState, const Vector3& targetPos);
-	middle::Shape& newUnit(middle::GameState* gameState, const Vector3& targetPos);
-	middle::Shape& newFraction(middle::GameState* gameState, const Vector3& targetPos, int dividend);
-	middle::Shape& shapeToFraction(middle::GameState* gameState, middle::Id shpaeId, const Vector3& targetPos, int dividend);
-	middle::Shape& newMultiplication(middle::GameState* gameState, middle::Id& idA, middle::Id& idB);
+	middle::Shape newBubble(middle::GameState* gameState, const Vector3& targetPos);
+	middle::Shape newUnit(middle::GameState* gameState, const Vector3& targetPos);
+	middle::Shape newFraction(middle::GameState* gameState, const Vector3& targetPos, int dividend);
+	middle::Shape shapeToFraction(middle::GameState* gameState, middle::Id shpaeId, const Vector3& targetPos, int dividend);
+	middle::Shape newMultiplication(middle::GameState* gameState, middle::Id& idA, middle::Id& idB);
 	bool isIntersecting(middle::GameState* gameState, middle::Shape& shape);
 	bool equals(middle::GameState* gameState, middle::Id& bubbleA, middle::Id& bubbleB);
 	float unitValue(middle::GameState* gameState, middle::Id& containerId);
@@ -67,6 +67,7 @@ namespace bubbleActions{
 		middle::Id recieverShapeId;
 		middle::Id linkingShapeId;
 		middle::Id resultShapeId;
+		std::vector<std::unique_ptr<middle::EditorActionContainer>> actions;
 		LinkMultiplicationTerm(middle::Id reciverShapeId, middle::Id linkikngShapeId);
 		void execute(middle::GameState* gameState) override;
 		void undo(middle::GameState* gameState) override;
@@ -76,6 +77,7 @@ namespace bubbleActions{
 	public:
 		middle::Id recieverShapeId;
 		middle::Id resultShapeId;
+		std::vector<std::unique_ptr<middle::EditorActionContainer>> actions;
 		MulOne(middle::Id recieverShapeId);
 		void execute(middle::GameState* gameState) override;
 		void undo(middle::GameState* gameState) override;
@@ -116,6 +118,7 @@ namespace bubbleActions{
 	public:
 		middle::Id id;
 		Pop(middle::Id id);
+		std::vector<std::unique_ptr<middle::EditorActionContainer>> actions;
 		void execute(middle::GameState* gameState) override;
 		void undo(middle::GameState* gameState) override;
 	};
@@ -135,6 +138,7 @@ namespace bubbleActions{
 		middle::Id containerShapeId;
 		middle::Id resultShapeId;
 		int dividend;
+		std::vector<std::unique_ptr<middle::EditorActionContainer>> actions;
 		Break(middle::Id containerShape, int dividend);
 		void execute(middle::GameState* gameState) override;
 		void undo(middle::GameState* gameState) override;
@@ -145,6 +149,7 @@ namespace bubbleActions{
 		middle::Id containerShapeId;
 		middle::Id resultCompressedBubbleId;
 		middle::Id resultCountBubbleId;
+		std::vector<std::unique_ptr<middle::EditorActionContainer>> actions;
 		Compress(middle::Id containerShape);
 		void execute(middle::GameState* gameState) override;
 		void undo(middle::GameState* gameState) override;

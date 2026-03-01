@@ -575,4 +575,16 @@ namespace middle {
 		middle::deleteShapeRecursive(gameState, resultId.index);
 	}
 
+	void EditorActionRegisterShape::execute(GameState* gameState)
+	{
+		int freeIndex = middle::findFreeIndex(gameState);
+		auto& newShape = middle::addShape(gameState, freeIndex);
+		newShapeId = newShape.id;
+	}
+
+	void EditorActionRegisterShape::undo(GameState* gameState)
+	{
+		middle::deleteShapeRecursive(gameState, newShapeId.index);
+	}
+
 }

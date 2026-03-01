@@ -41,6 +41,17 @@ namespace middle {
 		void undo(GameState* gameState) override;
 	};
 
+	class EditorActionRegisterShape : public EditorActionContainer {
+	public:
+		middle::Shape shapeToRegister;
+		middle::Id newShapeId;
+		EditorActionRegisterShape(middle::Shape& shape) {
+			shapeToRegister = shape;
+		}
+		void execute(GameState* gameState) override;
+		void undo(GameState* gameState) override;
+	};
+
 	// build from the editor.  hopefully no crashes...
 	class EditorActionBuild : public EditorActionContainer {
 	public:
