@@ -87,6 +87,7 @@ namespace middle {
 	}
 
 	void EditorActionSaveScene::execute(GameState* gameState) {
+		middle::resetGenerations(gameState);
 		saveScene(gameState, sceneName);
 	}
 

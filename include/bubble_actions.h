@@ -106,6 +106,7 @@ namespace bubbleActions{
 		middle::Id shapeToAddId;
 		middle::Id shapeToAddIntoId;
 		middle::Id resultShapeId;
+		std::vector<std::unique_ptr<middle::EditorActionContainer>> actions;
 		ExecuteAddition(middle::Id shapeToAddId, middle::Id shapeToAddIntoId);
 		void execute(middle::GameState* gameState) override;
 		void undo(middle::GameState* gameState) override;

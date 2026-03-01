@@ -4,6 +4,7 @@
 #include "middle_system_registrar.h"
 #include "imgui.h"
 #include "middle_shape_utils.h"
+#include "LoopSociety.h"
 
 class EditorUiSystem : public middle::MiddleGameplaySystem {
 public:
@@ -251,6 +252,18 @@ public:
 				}
 
 				ImGui::EndPopup();
+			}
+
+			if (ImGui::Button("Sync Generations")) {
+				middle::loopInstances(gameState, [gameState](int j, middle::Shape& shape) {
+					auto loop = middle::getComponent<components::LoopSociety>(shape);
+					if (loop) {
+						for (int index = 0; index < loop->loopMemberIds.size(); ++index) {
+							loop->loopMemberIds[index] = gameState->ids[loop->loopMemberIds[index].index];
+						}
+					}
+					return true;
+					});
 			}
 
 

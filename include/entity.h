@@ -28,7 +28,7 @@ namespace middle {
 
 	struct Id {
 		int index = UNASSIGNED;
-		int generation = UNASSIGNED;
+		int generation = 0;
 		bool operator==(const Id& other) {
 			return other.generation == generation && other.index == index;
 		}

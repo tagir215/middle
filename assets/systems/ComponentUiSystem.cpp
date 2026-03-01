@@ -37,7 +37,7 @@ public:
 
 			auto ui = [&shape, gameState]() {
 				ImGui::Begin("ComponentEditor");
-				std::string idText = "index_" + std::to_string(shape.id.index);
+				std::string idText = "index_" + std::to_string(shape.id.index) + "_gen_" + std::to_string(shape.id.generation);
 				ImGui::Text(idText.c_str());
 
 				if (ImGui::IsWindowHovered()) {
@@ -160,6 +160,8 @@ public:
 									ImGui::SameLine();
 									middle::Id* id = &(*vector)[index];
 									ImGui::InputInt(std::to_string(index).c_str(), &id->index);
+									ImGui::SameLine();
+									ImGui::Text(std::to_string(id->generation).c_str());
 								}
 								if (ImGui::Button("Add")) {
 									vector->resize(size + 1);
@@ -205,6 +207,7 @@ public:
 									middle::moveShape(gameState, shape.id.index, Vector3Negate(displacement));
 								}
 
+								middle::resetGenerations(gameState);
 								middle::saveShape(gameState, shape.id, "../assets/shapes/", name);
 
 								// move shape back after save
@@ -231,6 +234,7 @@ public:
 								middle::moveShape(gameState, shape.id.index, Vector3Negate(displacement));
 							}
 
+							middle::resetGenerations(gameState);
 							middle::saveShape(gameState, shape.id, "../assets/shapes/", inputtedName);
 
 							// move shape back after save

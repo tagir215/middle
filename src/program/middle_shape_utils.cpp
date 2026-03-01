@@ -305,6 +305,15 @@ namespace middle {
 		return gameState->shapes[index];
 	}
 
+	Shape& insertShape(GameState* gameState, middle::Id& id)
+	{
+		Shape shape;
+		shape.id = id;
+		gameState->ids[id.index] = id;
+		gameState->shapes[id.index] = shape;
+		return gameState->shapes[id.index];
+	}
+
 	Shape& addGhostShape(GameState* gameState){
 		Shape shape;
 		int index = findNextFreeGhostIndex(gameState);

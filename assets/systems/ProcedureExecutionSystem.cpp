@@ -317,9 +317,9 @@ class ProcedureExecutionSystem : public middle::MiddleGameplaySystem {
 		while (function->actions.size() > 0) {
 			function->actions.back()->undo(gameState);
 			function->actions.pop_back();
+			// update inputs because undo updates id generations
+			hackyVariableUpdate(gameState);
 		}
-		// update inputs because undo updates id generations
-		hackyVariableUpdate(gameState);
 	}
 
 	int currentIndex(middle::GameState* gameState, middle::Id& id, std::vector<middle::Id>& neighbors) {

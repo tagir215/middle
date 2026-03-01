@@ -140,15 +140,19 @@ namespace middle {
 			return result + QuaternionToString(std::any_cast<Quaternion>(field)) + '\n';
 		case FieldType::Color:
 			return result + ColorToString(std::any_cast<Color>(field)) + '\n';
-		case FieldType::Id:
-			return result + std::to_string(std::any_cast<Id>(field).index) + '\n';
-		case FieldType::IdVector:
+		case FieldType::Id: {
+			middle::Id id = std::any_cast<Id>(field);
+			return result + std::to_string(id.index) + '_' + std::to_string(id.generation) + '\n';
+		}
+		case FieldType::IdVector: {
 			auto v = std::any_cast<std::vector<Id>>(field);
 			result += '\n';
 			for (int i = 0; i < v.size(); ++i) {
-				result += std::to_string(v[i].index) + "\n";
+				middle::Id id = v[i];
+					result += fieldToString(id);
 			}
 			return result;
+		}
 		}
 
 		assert(false, "no we are not supporting this");
@@ -220,11 +224,14 @@ namespace middle {
 		case static_cast<char>(FieldType::Id): {
 			Id* id = static_cast<Id*>(field);
 			// Offset by indexOffset. This is used when importing scenes into other scenes, offsetting imported scenes indexes to ghost area
-			id->index = std::stoi(valueStr);
+			std::vector<std::string>idAndGen = split(valueStr, '_');
+			id->index = std::stoi(idAndGen[0]); 
 			if (id->index != UNASSIGNED) {
 				id->index += indexOffset;
 			}
-			id->generation = 0;
+			if (idAndGen.size() == 2) {
+				id->generation = std::stoi(idAndGen[1]);
+			}
 			return;
 		}
 		case static_cast<char>(FieldType::IdVector): {
@@ -233,8 +240,7 @@ namespace middle {
 			vectorptr->resize(values.size());
 			for (int i = 0; i < values.size(); ++i) {
 				// Offset by indexOffsetGlobal. This is used when importing scenes into other scenes, offsetting imported scenes indexes to ghost area
-				(*vectorptr)[i].index = std::stoi(values[i]) + indexOffset;
-				(*vectorptr)[i].generation = 0;
+				fillField(&(*vectorptr)[i], values[i], indexOffset);
 			}
 			return;
 		}
@@ -255,6 +261,17 @@ namespace middle {
 		std::string folder = "../src/editor_data/temp/";
 		std::string name = "s" + std::to_string(idToLoad.index) + "_" + std::to_string(idToLoad.generation);
 		return loadShape(gameState, folder, name, false);
+	}
+
+	void resetGenerations(GameState* gameState)
+	{
+		for (int i = 0; i < gameState->ids.size(); ++i) {
+			if (!isShapeAlive(gameState, i)) {
+				continue;
+			}
+			gameState->ids[i].generation = 0;
+			gameState->shapes[i].id.generation = 0;
+		}
 	}
 
 	bool isEmptyOrWhitespace(const std::string& s) {
@@ -339,7 +356,8 @@ namespace middle {
 				continue;
 
 			auto& shape = gameState->shapes[i];
-			outFile << "__" << std::to_string(i) << "__" << std::endl;
+			std::string idString = fieldToString(shape.id);
+			outFile << "__" << idString;
 
 			saveComponent(shape, outFile);
 		}
@@ -364,8 +382,8 @@ namespace middle {
 			idStack.pop();
 
 			auto& shape = getShape(gameState, currentId.index);
-
-			outFile << "__" << std::to_string(shape.id.index) << "__" << std::endl;
+			std::string idString = fieldToString(shape.id);
+			outFile << "__" << idString;
 			saveComponent(shape, outFile);
 
 			auto loop = getComponent<components::LoopSociety>(shape);
@@ -429,10 +447,11 @@ namespace middle {
 
 	void flushBuffer(GameState* gameState, std::vector<std::string>& buffer, const std::string& componentName, int index, int indexOffset = 0) {
 		int typeId = componentTypeMap[componentName];
-		int componentOffset = componentListMap[typeId]->grow();
+		auto& componentList = componentListMap[typeId];
+		int componentOffset = componentList->grow();
 		Serializable* serializable = componentListMap[typeId]->getSerializable(componentOffset);
 		serializable->deserialize(buffer, indexOffset);
-		auto& shape = gameState->shapes[index + indexOffset];
+		auto& shape = gameState->shapes[index];
 		shape.componentMap[typeId].componentOffset = componentOffset;
 		buffer.clear();
 
@@ -523,10 +542,12 @@ namespace middle {
 				// parse entity index and initialize it
 				int l = line.size();
 				int start = 2;
-				int end = l - 2;
-				std::string digits = line.substr(start, end);
-				activeShapeIndex = std::stoi(digits);
-				auto& shape = addShape(gameState, activeShapeIndex + indexOffset);
+				int end = l;
+				std::string idString = line.substr(start, end);
+				middle::Id id;
+				fillField(&id, idString, indexOffset);
+				auto& shape = insertShape(gameState, id);
+				activeShapeIndex = id.index;
 				newShapeIds.push_back(shape.id);
 
 				parseMode = noParse;
@@ -579,13 +600,10 @@ namespace middle {
 		// if we import we contain all the content in a reference loop
 		if (import) {
 			std::set<int>highestLevelContainers;
-			for (int i = indexOffset; i < highestUsedIndex + 1; ++i) {
-				// skip nons and skip constraints since they don't have parents
-				if (!isShapeAlive(gameState, i))
-					continue;
-				auto& shape = getShape(gameState, i);
+			for (middle::Id& newId : newShapeIds) {
+				auto& shape = getShape(gameState, newId.index);
 				if (getComponent<components::LoopSociety>(shape) != nullptr) {
-					highestLevelContainers.insert(findHighestLevelContainer(gameState, i));
+					highestLevelContainers.insert(findHighestLevelContainer(gameState, newId.index));
 				}
 			}
 

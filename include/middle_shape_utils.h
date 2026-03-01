@@ -41,6 +41,8 @@ namespace middle {
 	void deleteShapeRecursive(GameState* gameState, int index);
 	// add shape and updates generations
 	Shape& addShape(GameState* gameState, int index);
+	// add shape, doesn't update generations
+	Shape& insertShape(GameState* gameState, middle::Id& id);
 	// adds not serialized ghost shape and updates generations
 	Shape& addGhostShape(GameState* gameState);
 	// move camera in xz plane moving also the target 

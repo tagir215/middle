@@ -22,4 +22,5 @@ namespace middle {
 	void fillField(void* field, const std::string& fieldString, int indexOffset = 0);
 	void saveTempShape(GameState* gameState, Id& idToSave);
 	middle::Id loadTempShape(GameState* gameState, Id& idToLoad);
+	void resetGenerations(GameState* gameState);
 }

@@ -535,14 +535,16 @@ namespace bubbleActions{
 			middle::Id childIdA = loopA->loopMemberIds[indexA];
 			middle::Id childIdB = loopB->loopMemberIds[indexB];
 
-			auto additionReplacement = bubbleActions::CreateAdditionReplacementShape(childIdA, childIdB);
-			additionReplacement.execute(gameState);
-			middle::Id replacementId = additionReplacement.resultId;
+			auto additionReplacement = std::make_unique<CreateAdditionReplacementShape>(childIdA, childIdB);
+			additionReplacement->execute(gameState);
+			middle::Id replacementId = additionReplacement->resultId;
+			actions.push_back(std::move(additionReplacement));
 
 			// reparent
-			auto reparentAction = middle::EditorActionReparent(copyShapeA.id.index, replacementId.index);
-			reparentAction.execute(gameState);
+			auto reparentAction = std::make_unique<middle::EditorActionReparent>(copyShapeA.id.index, replacementId.index);
+			reparentAction->execute(gameState);
 			resultShapeId = copyShapeA.id;
+			actions.push_back(std::move(reparentAction));
 
 
 			// if value is filled,  like 3/3  then turn into 1
@@ -560,7 +562,9 @@ namespace bubbleActions{
 				if (value == sizeA) {
 					middle::Id someUnitId = replacementLoop->loopMemberIds[0];
 					middle::Id unitCopyId = middle::deepCopyShape(gameState, someUnitId.index, middle::UNASSIGNED);
-					deleteShapeRecursive(gameState, copyShapeA.id.index);
+					auto deleteAction = std::make_unique<middle::EditorActionDeleteSingle>(copyShapeA.id);
+					deleteAction->execute(gameState);
+					actions.push_back(std::move(deleteAction));
 					auto& unitShape = middle::getShape(gameState, unitCopyId.index);
 					auto unitLoop = middle::getComponent<components::LoopSociety>(unitShape);
 					unitLoop->parentLoopId = middle::Id();
@@ -568,23 +572,33 @@ namespace bubbleActions{
 				}
 			}
 
-			deleteShapeRecursive(gameState, copyShapeB.id.index);
-
+			auto deleteAction = std::make_unique<middle::EditorActionDeleteSingle>(copyShapeB.id);
+			deleteAction->execute(gameState);
+			actions.push_back(std::move(deleteAction));
 
 		}
 		// NORMAL AVERAGE BASIC CASE
 		else {
-			auto additionAction = bubbleActions::CreateAdditionReplacementShape(idA, idB);
-			additionAction.execute(gameState);
-			resultShapeId = additionAction.resultId;
+			auto additionAction = std::make_unique<CreateAdditionReplacementShape>(idA, idB);
+			additionAction->execute(gameState);
+			resultShapeId = additionAction->resultId;
+			actions.push_back(std::move(additionAction));
 		}
 
-		deleteShapeRecursive(gameState, shapeToAddId.index);
-		auto replace = bubbleActions::Replace(shapeToAddIntoId, resultShapeId);
-		replace.execute(gameState);
+		auto deleteAction = std::make_unique<middle::EditorActionDeleteSingle>(shapeToAddId);
+		deleteAction->execute(gameState);
+		actions.push_back(std::move(deleteAction));
+
+		auto replace = std::make_unique<Replace>(shapeToAddIntoId, resultShapeId);
+		replace->execute(gameState);
+		actions.push_back(std::move(replace));
 	}
 
 	void ExecuteAddition::undo(middle::GameState* gameState) {
+		while (actions.size() > 0) {
+			actions.back()->undo(gameState);
+			actions.pop_back();
+		}
 	}
 
 	Pop::Pop(middle::Id id) {
@@ -680,12 +694,10 @@ namespace bubbleActions{
 
 	void Replace::undo(middle::GameState* gameState)
 	{
-		while (actions.size() > 0){
+		while (actions.size() > 0) {
 			actions.back()->undo(gameState);
 			actions.pop_back();
 		}
-		shapeToReplaceId = gameState->shapes[shapeToReplaceId.index].id;
-		replacingShapeId = gameState->shapes[replacingShapeId.index].id;
 	}
 
 	LinkMultiplicationTerm::LinkMultiplicationTerm(middle::Id recieverShape, middle::Id linkingShape)
