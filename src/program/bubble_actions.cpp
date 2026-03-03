@@ -782,47 +782,25 @@ namespace bubbleActions {
 		auto newBubbleProto = bubbleActions::newBubble(gameState, containerPos);
 		auto registerAction = std::make_unique<middle::EditorActionRegisterShape>(newBubbleProto);
 		registerAction->execute(gameState);
-		resultShapeId = registerAction->newShapeId;
+		middle::Id newBubbleId = registerAction->newShapeId;
 		actions.push_back(std::move(registerAction));
 
 		if (unit) {
 			// replace unit with fractions
 			for (int i = 0; i < dividend; ++i) {
 				middle::Id& newFractionId = bubbleActions::newFraction(gameState, referencePos, dividend);
-				auto reparent = std::make_unique<middle::EditorActionReparent>(newBubbleProto.id.index, newFractionId.index);
+				auto reparent = std::make_unique<middle::EditorActionReparent>(newBubbleId.index, newFractionId.index);
 				reparent->execute(gameState);
-				actions.push_back(std::move(registerAction));
+				actions.push_back(std::move(reparent));
 				referencePos.x += 5;
 			}
 		}
 
-		if (bubble) {
-			// replace bubble with multiplications with container copies and fractions
-			for (int i = 0; i < dividend; ++i) {
-				middle::Id& newFractionId = bubbleActions::newFraction(gameState, referencePos, dividend);
-				auto newFractionBubble = bubbleActions::newBubble(gameState, referencePos);
-				auto reparentAction1 = std::make_unique<middle::EditorActionReparent>(newFractionBubble.id.index, newFractionId.index);
-				actions.push_back(std::move(reparentAction1));
-
-				auto copy = std::make_unique<middle::EditorActionCopySingle>(containerShapeId);
-				copy->execute(gameState);
-				middle::Id& containerCopyId = copy->resultId;
-				actions.push_back(std::move(copy));
-
-				Vector3 currentPos = middle::getShapePosition(gameState, containerCopyId.index);
-				middle::moveShape(gameState, containerCopyId.index, referencePos - currentPos);
-
-				middle::Id newMulId = newMultiplication(gameState, newFractionBubble.id, containerCopyId);
-				auto reparentAction2 = std::make_unique<middle::EditorActionReparent>(resultShapeId.index, newMulId.index);
-				reparentAction2->execute(gameState);
-				actions.push_back(std::move(reparentAction2));
-				referencePos.x += 5;
-			}
-		}
-
-		auto replace = std::make_unique<bubbleActions::Replace>(containerShapeId, resultShapeId);
+		auto replace = std::make_unique<bubbleActions::Replace>(containerShapeId, newBubbleId);
 		replace->execute(gameState);
 		actions.push_back(std::move(replace));
+
+		resultShapeId = newBubbleId;
 	}
 
 	void Break::undo(middle::GameState* gameState)
