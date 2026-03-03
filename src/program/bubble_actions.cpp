@@ -184,10 +184,11 @@ namespace bubbleActions{
 		middle::addComponent<components::MouseGrabbable>(newBubbleShape);
 		middle::addComponent<components::MouseIntersectable>(newBubbleShape);
 		middle::addComponent<components::LoopTag>(newBubbleShape);
-		middle::addComponent<components::Position>(newBubbleShape);
 		middle::addComponent<components::LoopSociety>(newBubbleShape);
-		Vector3 pos = middle::getShapePosition(gameState, newBubbleShape.id.index);
-		middle::moveShape(gameState, newBubbleShape.id.index, targetPos - pos);
+		auto position = middle::addComponent<components::Position>(newBubbleShape);
+		position->posX = targetPos.x;
+		position->posY = targetPos.y;
+		position->posZ = targetPos.z;
 		return newBubbleShape;
 	}
 
@@ -197,13 +198,14 @@ namespace bubbleActions{
 		middle::addComponent<components::BubbleUnit>(newUnitShape);
 		middle::addComponent<components::MouseGrabbable>(newUnitShape);
 		middle::addComponent<components::MouseIntersectable>(newUnitShape);
-		middle::addComponent<components::Position>(newUnitShape);
 		middle::addComponent<components::LoopSociety>(newUnitShape);
 		middle::addComponent<components::PhysicsData>(newUnitShape);
 		auto sphere = middle::addComponent<components::Sphere>(newUnitShape);
 		sphere->radius = 2;
-		Vector3 pos = middle::getShapePosition(gameState, newUnitShape.id.index);
-		middle::moveShape(gameState, newUnitShape.id.index, targetPos - pos);
+		auto position = middle::addComponent<components::Position>(newUnitShape);
+		position->posX = targetPos.x;
+		position->posY = targetPos.y;
+		position->posZ = targetPos.z;
 		return newUnitShape;
 	}
 
@@ -212,12 +214,13 @@ namespace bubbleActions{
 		middle::Shape newFractionShape;
 		middle::addComponent<components::FractionalComponent>(newFractionShape);
 		middle::addComponent<components::LoopSociety>(newFractionShape);
-		middle::addComponent<components::Position>(newFractionShape);
 		middle::addComponent<components::LoopTag>(newFractionShape);
 		middle::addComponent<components::MouseGrabbable>(newFractionShape);
 		middle::addComponent<components::MouseIntersectable>(newFractionShape);
-		Vector3 pos = middle::getShapePosition(gameState, newFractionShape.id.index);
-		middle::moveShape(gameState, newFractionShape.id.index, targetPos - pos);
+		auto position = middle::addComponent<components::Position>(newFractionShape);
+		position->posX = targetPos.x;
+		position->posY = targetPos.y;
+		position->posZ = targetPos.z;
 		const float fractionUnitSpacing = 10;
 		float height = fractionUnitSpacing * dividend - dividend;
 		Vector3 referencePos = targetPos;
@@ -313,16 +316,17 @@ namespace bubbleActions{
 		// UNIT CASE, or different scale fractions
 		if ((unitA && unitB) || (fractionA && fractionB) || (unitA && fractionB) || (unitB && fractionA)) {
 			Vector3 targetPos = middle::getShapePosition(gameState, idA.index);
-			middle::Shape& newBubbleShape = newBubble(gameState, targetPos);
+			auto regAction = middle::EditorActionRegisterShape(newBubble(gameState, targetPos));
+			regAction.execute(gameState);
+			replacementId = regAction.newShapeId;
+
+			middle::Shape& newBubbleShape = middle::getShape(gameState, replacementId.index);
 			middle::moveShape(gameState, idA.index, { 5,0,0 });
 			middle::moveShape(gameState, idB.index, { -5,0,0 });
-			auto newLoop = middle::addComponent<components::LoopSociety>(newBubbleShape);
 			auto reparentActionA = middle::EditorActionReparent(newBubbleShape.id.index, idA.index);
 			auto reparentActionB = middle::EditorActionReparent(newBubbleShape.id.index, idB.index);
 			reparentActionA.execute(gameState);
 			reparentActionB.execute(gameState);
-			newLoop = middle::getComponent<components::LoopSociety>(newBubbleShape);
-			replacementId = newBubbleShape.id;
 		}
 		// BUBBLE CASE
 		// add members from frombubble to intobubble

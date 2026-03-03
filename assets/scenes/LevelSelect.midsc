@@ -1,0 +1,233 @@
+#scene
+s  LevelSelect
+#activeCamera
+i  1
+__q  0_0
+MouseSelectable
+MouseGrabbable
+Text
+s  UiRenderSetup
+f  255.000000
+f  255.000000
+f  255.000000
+f  255.000000
+f  2.000000
+f  0.000000
+f  10.000000
+f  10.000000
+b  1
+MouseIntersectable
+LoopSociety
+q  -1_0
+p  
+Position
+f  -160.000000
+f  0.000000
+f  -100.000000
+SystemReference
+s  UiRenderSetup
+__q  1_0
+Sphere
+f  2.000000
+LoopSociety
+q  -1_0
+p  
+Position
+f  0.000000
+f  -499.999939
+f  0.000000
+CameraComponent
+f  8.040638
+f  -390.870422
+f  25.423080
+f  0.000000
+f  0.000000
+f  1.000000
+f  45.000000
+i  0
+b  1
+MouseGrabbable
+MouseSelectable
+MouseIntersectable
+__q  2_0
+MouseSelectable
+MouseGrabbable
+MouseIntersectable
+Text
+s  GridSystem
+f  255.000000
+f  255.000000
+f  255.000000
+f  255.000000
+f  2.000000
+f  0.000000
+f  10.000000
+f  10.000000
+b  1
+LoopSociety
+q  -1_0
+p  
+SystemReference
+s  GridSystem
+Position
+f  -100.000000
+f  0.000000
+f  -140.000000
+__q  3_0
+LoopSociety
+q  -1_0
+p  
+Sphere
+f  2.000000
+Position
+f  -36.000000
+f  0.000000
+f  0.000000
+Circle
+f  20.000000
+MouseGrabbable
+MouseIntersectable
+Text
+s  PROBLEM 1
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  1.000000
+b  1
+MouseSelectable
+Button
+i  -1
+MouseClickComponent
+LevelReference
+s  
+GridElement
+__q  4_0
+MouseSelectable
+MouseGrabbable
+Text
+s  RectangleIntersectionSystem
+f  255.000000
+f  255.000000
+f  255.000000
+f  255.000000
+f  2.000000
+f  0.000000
+f  10.000000
+f  10.000000
+b  1
+MouseIntersectable
+LoopSociety
+q  -1_0
+p  
+Position
+f  -180.000000
+f  0.000000
+f  -160.000000
+SystemReference
+s  RectangleIntersectionSystem
+__q  5_0
+MouseSelectable
+MouseGrabbable
+Text
+s  MouseClickSystem
+f  255.000000
+f  255.000000
+f  255.000000
+f  255.000000
+f  2.000000
+f  0.000000
+f  10.000000
+f  10.000000
+b  1
+MouseIntersectable
+LoopSociety
+q  -1_0
+p  
+Position
+f  -120.000000
+f  0.000000
+f  -180.000000
+SystemReference
+s  MouseClickSystem
+__q  6_0
+Sphere
+f  4.000000
+ConfigComponent
+Position
+f  0.204359
+f  -0.000244
+f  11.541653
+EditorConfigs
+i  18
+i  8
+MouseSelectable
+MouseGrabbable
+MouseIntersectable
+__q  7_0
+LoopSociety
+q  -1_0
+p  
+Sphere
+f  2.000000
+Position
+f  36.000000
+f  0.000000
+f  72.000000
+MouseGrabbable
+Circle
+f  20.000000
+Text
+s  PROBLEM 2
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  1.000000
+b  1
+MouseIntersectable
+MouseSelectable
+Button
+i  -1
+MouseClickComponent
+LevelReference
+s  
+GridElement
+__q  8_0
+LoopSociety
+q  -1_0
+p  
+Sphere
+f  2.000000
+Position
+f  -36.000000
+f  0.000000
+f  108.000000
+Circle
+f  20.000000
+MouseGrabbable
+MouseIntersectable
+Text
+s  PROBLEM 3
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  1.000000
+b  1
+MouseSelectable
+Button
+i  -1
+MouseClickComponent
+LevelReference
+s  
+GridElement

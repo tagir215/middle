@@ -8,6 +8,7 @@
 #include "PlacementComponent.h"
 #include "LoopSociety.h"
 #include "editor_actions.h"
+#include "GridElement.h"
 
 namespace MouseGrabbingSystem {
 
@@ -58,19 +59,22 @@ namespace MouseGrabbingSystem {
 				}
 
 				if ((grabbable && grabbable->grabbing) || (placable && placable->grabbing)) {
-					Vector3 pos;
-					auto posComponent = middle::getComponent<components::Position>(shape);
-					if (posComponent) {
-						pos = { posComponent->posX, posComponent->posY, posComponent->posZ };
-					}
+					Vector3 pos = middle::getShapePosition(gameState, i);
+					auto grid = middle::getComponent<components::GridElement>(shape);
 
-					Vector3 cameraPos = gameState->editorState.camera.position;
-					float objYDistance = std::abs(pos.y - cameraPos.y);
-					float yDistance = std::abs(cameraPos.y);
-					if (yDistance == 0)
-						yDistance = 0.001f;
-					Vector3 xzVel = Vector3Scale(gameState->input.mouseXZ_PlaneVelocity, objYDistance / yDistance);
-					dragShape(gameState, i, xzVel);
+					if (!grid) {
+						Vector3 cameraPos = gameState->editorState.camera.position;
+						float objYDistance = std::abs(pos.y - cameraPos.y);
+						float yDistance = std::abs(cameraPos.y);
+						if (yDistance == 0)
+							yDistance = 0.001f;
+						Vector3 xzVel = Vector3Scale(gameState->input.mouseXZ_PlaneVelocity, objYDistance / yDistance);
+						dragShape(gameState, i, xzVel);
+					}
+					else {
+						Vector3 targetPos = gameState->input.mouseXZ_PlanePos;
+						middle::moveShape(gameState, i, targetPos - pos);
+					}
 				}
 
 				if (gameState->input.grabReleased && gameState->editorState.grabbing) {

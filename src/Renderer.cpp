@@ -29,27 +29,6 @@ namespace RendererSystem {
 
 			rlSetClipPlanes(gameState->nearPlaneDistance, gameState->farPlaneDistance);
 
-			const float axisLength = 1000;
-			const Color CartesianColor = WHITE;
-
-			float mouseX = gameState->input.mouseXZ_PlanePos.x;
-			float mouseZ = gameState->input.mouseXZ_PlanePos.z;
-			// draw grid
-			const float visibleGridRadius = 10;
-			float visibleGridRadiusSq = visibleGridRadius * visibleGridRadius * gameState->editorState.gridSize * gameState->editorState.gridSize;
-			float gridSphereRadius = 0.10f * gameState->editorState.gridSize;
-			//for (float x = -axisLength; x < axisLength; x += gameState->editorState.gridSize) {
-			//	for (float z = -axisLength; z < axisLength; z += gameState->editorState.gridSize) {
-			//		float deltaX = mouseX - x;
-			//		float deltaZ = mouseZ - z;
-			//		float distSq = deltaX * deltaX + deltaZ * deltaZ;
-			//		float ratio = distSq / visibleGridRadiusSq;
-			//		if (distSq < visibleGridRadiusSq) {
-			//			DrawSphere({ x,0,z }, gridSphereRadius, ColorAlpha(CartesianColor, (1 - ratio)));
-			//		}
-			//	}
-			//}
-
 
 			for(int i=0; i<gameState->renderData.size(); ++i){
 				middle::RenderItem item = gameState->renderData[i];

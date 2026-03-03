@@ -57,7 +57,6 @@ namespace middle {
 		bool doOneStep = false;
 		bool showAllInfo = false;
 		int stepDir = 1;
-		int gridSize = 4;
 		int intersectCount = 0;
 		int selectCount = 0;
 		int selectChangeCountAfterClick = 0;

@@ -20,6 +20,9 @@
 #include "ComponentReference.h"
 #include "Text.h"
 #include "HiddenTag.h"
+#include "ConfigComponent.h"
+#include "EditorConfigs.h"
+#include "middle_math.h"
 
 class EditorRenderSetupSystem : public middle::MiddleGameplaySystem {
 public:
@@ -40,6 +43,8 @@ public:
 		Color referenceColor = middle::REFERENCE_INDICATOR_COLOR;
 		Color loopColor = middle::LOOP_INDICATOR_COLOR;
 		Color loopItemColor = WHITE;
+		Color configColor = ORANGE;
+		Color cameraColor = BLUE;
 
 
 		if (gameState->editorState.creationMode == middle::CreationMode::LOOP_MODE) {
@@ -48,6 +53,7 @@ public:
 			//systemColor = GRAY;
 		}
 		gameState->editorState.backgroundColor = backgroundColor;
+
 
 
 		loopInstances(gameState, [&](int i, middle::Shape& shape) {
@@ -61,7 +67,68 @@ public:
 			auto loopTag = middle::getComponent<components::LoopTag>(shape);
 			auto loopSociety = middle::getComponent<components::LoopSociety>(shape);
 			auto intersectable = middle::getComponent<components::MouseIntersectable>(shape);
+			auto config = middle::getComponent<components::ConfigComponent>(shape);
+			auto editorConfigs = middle::getComponent<components::EditorConfigs>(shape);
 
+			if (editorConfigs) {
+				if (editorConfigs->gridSize == 0)
+					return true;
+				// draw grid
+				const Color CartesianColor = WHITE;
+				Vector3 mouseXz = gameState->input.mouseXZ_PlanePos;
+				Vector3 mouseGridPos = middle::gridPosition(mouseXz, editorConfigs->gridSize);
+
+				const float visibleGridRadius = editorConfigs->gridSize * editorConfigs->visibleGridPointRadiusCount;
+				float visibleGridRadiusSq = visibleGridRadius * visibleGridRadius;
+				int startX = mouseGridPos.x - visibleGridRadius;
+				int startZ = mouseGridPos.z - visibleGridRadius;
+				for (float x = startX; x < startX + visibleGridRadius * 2; x += editorConfigs->gridSize) {
+					for (float z = startZ; z < startZ + visibleGridRadius * 2; z += editorConfigs->gridSize) {
+						float deltaX = mouseXz.x - x;
+						float deltaZ = mouseXz.z - z;
+						float distSq = deltaX * deltaX + deltaZ * deltaZ;
+						float ratio = distSq / visibleGridRadiusSq;
+						if (distSq < visibleGridRadiusSq) {
+							middle::RenderItem gridSphere;
+							gridSphere.type = middle::RenderItemType::SPHERE;
+							gridSphere.center = { x, 0, z };
+							gridSphere.color = CartesianColor;
+							gridSphere.color.a = (1.0f - ratio) * 255;
+							gridSphere.radius = editorConfigs->gridSize * 0.05f;
+							gameState->renderData.push_back(gridSphere);
+						}
+					}
+				}
+			}
+
+
+			if (config) {
+				middle::RenderItem configSphere;
+				configSphere.type = middle::RenderItemType::SPHERE;
+				configSphere.center = { position->posX, position->posY, position->posZ };
+				configSphere.radius = middle::DEF_RADIUS_SYSTEM;
+				configSphere.color = configColor;
+				if (intersectable && intersectable->intersecting) {
+					configSphere.color = hoveredColor;
+				}
+				gameState->renderData.push_back(configSphere);
+
+				if (selectable && selectable->selected) {
+					middle::RenderItem selectItem;
+					selectItem.type = middle::RenderItemType::RECTANGLE;
+					selectItem.center = { 0,0,0 };
+					selectItem.transform.translation = configSphere.center;
+					selectItem.transform.scale = { 1,1,1 };
+					selectItem.transform.rotation = { 0,0,0,0 };
+					selectItem.width = configSphere.radius * 4;
+					selectItem.height = configSphere.radius * 4;
+					selectItem.length = configSphere.radius * 4;
+					selectItem.color = selectionBoxColor;
+					gameState->renderData.push_back(selectItem);
+				}
+
+				return true;
+			}
 
 			auto text = middle::getComponent<components::Text>(shape);
 			if (text && text->visible) {
@@ -152,9 +219,9 @@ public:
 			}
 
 			// render hierarchy indicators, 
-			if (gameState->editorState.creationMode == middle::CreationMode::LOOP_MODE 
-				&& loopSociety 
-				&& intersectable 
+			if (gameState->editorState.creationMode == middle::CreationMode::LOOP_MODE
+				&& loopSociety
+				&& intersectable
 				&& intersectable->intersecting) {
 				for (middle::Id& id : loopSociety->loopMemberIds) {
 					Vector3 childPos = middle::getShapePosition(gameState, id.index);
@@ -210,7 +277,7 @@ public:
 				auto selectable = middle::getComponent<components::MouseSelectable>(shape);
 				middle::RenderItem loopItem;
 				loopItem.type = middle::RenderItemType::SPHERE;
-				loopItem.center = {position->posX, position->posY, position->posZ};
+				loopItem.center = { position->posX, position->posY, position->posZ };
 				loopItem.radius = middle::DEF_RADIUS_LOOP_INDICATOR;
 				loopItem.color = loopColor;
 				if (intersectable && intersectable->intersecting) {

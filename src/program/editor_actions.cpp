@@ -579,7 +579,10 @@ namespace middle {
 	{
 		int freeIndex = middle::findFreeIndex(gameState);
 		auto& newShape = middle::addShape(gameState, freeIndex);
-		newShapeId = newShape.id;
+		middle::Id newId = newShape.id;
+		shapeToRegister.id = newId;
+		newShape = shapeToRegister;
+		newShapeId = newId;
 	}
 
 	void EditorActionRegisterShape::undo(GameState* gameState)

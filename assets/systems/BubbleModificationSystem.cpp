@@ -100,6 +100,9 @@ class BubbleModificationSystem : public middle::MiddleGameplaySystem {
 
 		auto& shapeForDeletion = middle::getShape(gameState, shapeIdForDeletion.index);
 		auto ref = middle::getComponent<components::IdRef>(shapeForDeletion);
+		if (!middle::isShapeAlive(gameState, ref->idRef.index)) {
+			return;
+		}
 		auto& refShape = middle::getShape(gameState, ref->idRef.index);
 		middle::Id refParentId = middle::getParent(gameState, refShape.id);
 		assert(refShape.id.index != middle::UNASSIGNED);

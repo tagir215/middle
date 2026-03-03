@@ -1,0 +1,123 @@
+__q  72_0
+LoopTag
+LoopSociety
+q  -1_0
+p  
+q  70_0
+q  41_0
+q  33_0
+q  12_0
+MouseSelectable
+Text
+s  BubbleAlgebraSystems
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  1.000000
+b  1
+MouseIntersectable
+MouseGrabbable
+Position
+f  0.000000
+f  0.000000
+f  0.000000
+__q  12_0
+MouseSelectable
+MouseGrabbable
+MouseIntersectable
+Text
+s  BubbleManipulationSystem
+f  255.000000
+f  255.000000
+f  255.000000
+f  255.000000
+f  2.000000
+f  0.000000
+f  10.000000
+f  10.000000
+b  1
+Position
+f  35.064911
+f  0.000214
+f  47.362579
+SystemReference
+s  BubbleManipulationSystem
+LoopSociety
+q  72_2
+p  
+__q  33_0
+MouseGrabbable
+MouseIntersectable
+Text
+s  BubbleUiSystem
+f  255.000000
+f  255.000000
+f  255.000000
+f  255.000000
+f  2.000000
+f  0.000000
+f  10.000000
+f  10.000000
+b  1
+MouseSelectable
+Position
+f  63.652954
+f  0.000122
+f  18.470032
+SystemReference
+s  BubbleUiSystem
+LoopSociety
+q  72_2
+p  
+__q  41_0
+MouseSelectable
+MouseIntersectable
+Text
+s  BubbleInventorySystem
+f  255.000000
+f  255.000000
+f  255.000000
+f  255.000000
+f  2.000000
+f  0.000000
+f  10.000000
+f  10.000000
+b  1
+MouseGrabbable
+Position
+f  60.452026
+f  -0.000183
+f  -40.056915
+SystemReference
+s  BubbleInventorySystem
+LoopSociety
+q  72_2
+p  
+__q  70_0
+MouseSelectable
+MouseIntersectable
+Text
+s  BubbleModificationSystem
+f  255.000000
+f  255.000000
+f  255.000000
+f  255.000000
+f  2.000000
+f  0.000000
+f  10.000000
+f  10.000000
+b  1
+MouseGrabbable
+Position
+f  121.445984
+f  0.000152
+f  -70.856857
+SystemReference
+s  BubbleModificationSystem
+LoopSociety
+q  72_2
+p  

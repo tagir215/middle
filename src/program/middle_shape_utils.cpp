@@ -617,4 +617,16 @@ namespace middle {
 		}
 		return middle::UNASSIGNED;
 	}
+	middle::Id findFirstShapeWithComp(GameState* gameState, int typeId)
+	{
+		middle::Id id;
+		middle::loopInstances(gameState, [gameState, &id, &typeId](int i, middle::Shape& shape) {
+			if (shape.componentMap.find(typeId) != shape.componentMap.end()) {
+				id = shape.id;
+				return false;
+			}
+			return true;
+			});
+		return id;
+	}
 }

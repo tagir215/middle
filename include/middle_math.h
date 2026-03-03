@@ -32,6 +32,28 @@ namespace middle {
 		};
 	}
 
+	static Vector3 gridPosition(const Vector3& point, int gridSize) {
+		Vector3 result;
+		int x = static_cast<int>(point.x);
+		int y = static_cast<int>(point.y);
+		int z = static_cast<int>(point.z);
+		if (gridSize == 0) {
+			return { 0,0,0 };
+		}
+		int modX = x % gridSize;
+		int modY = y % gridSize;
+		int modZ = z % gridSize;
+
+		int halfGrid = (gridSize / 2);
+		int halfGridSq = halfGrid * halfGrid;
+		int gridX = modX > 0 ? gridSize : -gridSize;
+		int gridY = modY > 0 ? gridSize : -gridSize;
+		int gridZ = modZ > 0 ? gridSize : -gridSize;
+		result.x = modX * modX < halfGridSq ? x - modX : x - modX + gridX;
+		result.y = modY * modY < halfGridSq ? y - modY : y - modY + gridY;
+		result.z = modZ * modZ < halfGridSq ? z - modZ : z - modZ + gridZ;
+		return result;
+	}
 
 	static bool PointInsideSphere(const Vector3& point, const Vector3& spherePos, float radius) {
 		float sqDist = Vector3DistanceSqr(point, spherePos);

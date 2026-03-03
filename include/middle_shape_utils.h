@@ -73,6 +73,8 @@ namespace middle {
 	middle::Id getFirstChildWithComponent(GameState* gameState, Id& id, int typeId);
 	// get index of child
 	int getLoopIndex(GameState* gameState, Id& parentId, Id& childId);
+	// find shape with comp
+	middle::Id findFirstShapeWithComp(GameState* gameState, int typeId);
 
 	template<typename F>
 	void loopInstances(GameState* gameState, F func) {

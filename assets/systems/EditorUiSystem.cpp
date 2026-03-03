@@ -5,6 +5,7 @@
 #include "imgui.h"
 #include "middle_shape_utils.h"
 #include "LoopSociety.h"
+#include "EditorConfigs.h"
 
 class EditorUiSystem : public middle::MiddleGameplaySystem {
 public:
@@ -13,9 +14,20 @@ public:
 		systemModeType = middle::SystemModeType::ENGINE;
 	}
 
+
 	void editorUi(middle::GameState* gameState) {
 
-		auto ui = [gameState]() {
+		middle::Id& editorConfigs = 
+			middle::findFirstShapeWithComp(gameState, middle::getTypeId<components::EditorConfigs>());
+
+		components::EditorConfigs* configs = nullptr;
+		if (editorConfigs.index != middle::UNASSIGNED) {
+			auto& configShape = middle::getShape(gameState, editorConfigs.index);
+			configs = middle::getComponent<components::EditorConfigs>(configShape);
+		}
+
+
+		auto ui = [gameState, configs]() {
 			Vector3 referencePos = { 0,0,0 };
 
 			auto ImGuiDisplayText = [](const char* label, const char* text) {
@@ -92,13 +104,15 @@ public:
 			if (ImGui::Button("reset")) {
 				gameState->reset = true;
 			}
-			if (ImGui::Button("increase grid")) {
-				++gameState->editorState.gridSize;
-			}
-			if (ImGui::Button("decrease grid")) {
-				--gameState->editorState.gridSize;
-				if (gameState->editorState.gridSize < 1)
-					gameState->editorState.gridSize = 1;
+			if (configs) {
+				if (ImGui::Button("increase grid")) {
+					++configs->gridSize;
+				}
+				if (ImGui::Button("decrease grid")) {
+					--configs->gridSize;
+					if (configs->gridSize < 1)
+						configs->gridSize = 1;
+				}
 			}
 			if (ImGui::Button("PLAY")) {
 				gameState->applicationMode = middle::ApplicationMode::GAME_MODE;
@@ -376,7 +390,7 @@ public:
 			};
 
 
-			gameState->uiSetups.push_back(ui);
+		gameState->uiSetups.push_back(ui);
 	}
 
 	void gameEditorUi(middle::GameState* gameState) {

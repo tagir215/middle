@@ -8,6 +8,7 @@
 #include <string>
 #include <misc/cpp/imgui_stdlib.cpp>
 #include <Position.h>
+#include "Text.h"
 
 class ComponentUiSystem : public middle::MiddleGameplaySystem {
 
@@ -182,77 +183,38 @@ public:
 				ImGui::Separator();
 
 				if (ImGui::Button("Save")) {
-					ImGui::OpenPopup("Save Shape");
-				}
 
-				// Popup for entering new scene name
-				static char inputtedName[128] = ""; // buffer for scene name input
-				if (ImGui::BeginPopup("Save Shape")) {
-					gameState->inputBlockers.insert(middle::InputBlockers::KEYBOARD_BLOCK);
+					// Popup for entering new scene name
+					static char inputtedName[128] = ""; // buffer for scene name input
 
 					ImGui::Text("Save");
-					if (ImGui::Button("(F)")) {
-						ImGui::OpenPopup("Shape name selector");
+
+					auto text = middle::getComponent<components::Text>(shape);
+					std::string name;
+					if (text) {
+						name = text->text;
+					}
+					else {
+						name = "s" + std::to_string(shape.id.index) + "_" + std::to_string(shape.id.generation);
 					}
 
-					if (ImGui::BeginPopup("Shape name selector")) {
-						for (std::string& name : gameState->shapeNames) {
-							if (ImGui::Button(name.c_str())) {
 
-								auto pos = middle::getComponent<components::Position>(shape);
-								Vector3 displacement = { 0,0,0 };
-								if (pos) {
-									displacement = { pos->posX, pos->posY, pos->posZ };
-									// move shape to origin
-									middle::moveShape(gameState, shape.id.index, Vector3Negate(displacement));
-								}
-
-								middle::resetGenerations(gameState);
-								middle::saveShape(gameState, shape.id, "../assets/shapes/", name);
-
-								// move shape back after save
-								middle::moveShape(gameState, shape.id.index, displacement);
-
-								ImGui::CloseCurrentPopup();
-								ImGui::CloseCurrentPopup();
-							}
-						}
-						ImGui::EndPopup();
-					}
-					ImGui::Separator();
-
-					ImGui::Text("Enter Shape name:");
-					ImGui::InputText("##inputtedName", inputtedName, IM_ARRAYSIZE(inputtedName));
-					if (ImGui::Button("Save")) {
-						if (strlen(inputtedName) > 0) {
-
-							auto pos = middle::getComponent<components::Position>(shape);
-							Vector3 displacement = { 0,0,0 };
-							if (pos) {
-								displacement = { pos->posX, pos->posY, pos->posZ };
-								// move shape to origin
-								middle::moveShape(gameState, shape.id.index, Vector3Negate(displacement));
-							}
-
-							middle::resetGenerations(gameState);
-							middle::saveShape(gameState, shape.id, "../assets/shapes/", inputtedName);
-
-							// move shape back after save
-							middle::moveShape(gameState, shape.id.index, displacement);
-
-							// Clear buffer and close popup
-							inputtedName[0] = '\0';
-							ImGui::CloseCurrentPopup();
-						}
-					}
-					ImGui::SameLine();
-					if (ImGui::Button("Cancel")) {
-						inputtedName[0] = '\0';
-						ImGui::CloseCurrentPopup();
+					auto pos = middle::getComponent<components::Position>(shape);
+					Vector3 displacement = { 0,0,0 };
+					if (pos) {
+						displacement = { pos->posX, pos->posY, pos->posZ };
+						// move shape to origin
+						middle::moveShape(gameState, shape.id.index, Vector3Negate(displacement));
 					}
 
-					ImGui::EndPopup();
+					middle::resetGenerations(gameState);
+					middle::saveShape(gameState, shape.id, "../assets/shapes/", name);
+
+					// move shape back after save
+					middle::moveShape(gameState, shape.id.index, displacement);
+
 				}
+
 
 				ImGui::End();
 				};

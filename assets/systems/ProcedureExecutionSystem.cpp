@@ -534,6 +534,19 @@ class ProcedureExecutionSystem : public middle::MiddleGameplaySystem {
 				(procedure->mode == procedureConstants::EXECUTING
 					|| procedure->mode == procedureConstants::STEPPING)) {
 
+				// early exit if at beginning or end
+				if (procedure->direction == procedureConstants::BACKWARD && procedure->procedureTransitionStack.size() == 0) {
+					procedure->mode = procedureConstants::IDLE;
+					return true;
+				}
+				if (procedure->direction == procedureConstants::FORWARD && procedure->procedureTransitionStack.size() > 0) {
+					// update to previous before end
+					if (procedure->procedureTransitionStack.back().type == procedureConstants::End) {
+						procedure->activeBlock = procedure->procedureTransitionStack.back().previousId;
+						procedure->procedureTransitionStack.pop_back();
+					}
+				}
+
 				if (procedure->direction == procedureConstants::FORWARD) {
 					if (stepForward(gameState, procedure) == procedureConstants::CanStep) {
 						doStep(procedure);

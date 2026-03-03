@@ -11,7 +11,7 @@
 namespace middle {
 	static float DEF_RADIUS = 2;
 	static float DEF_RADIUS_LOOP_INDICATOR = 4;
-	static float DEF_RADIUS_REFERENCE_INDICATOR = 5;
+	static float DEF_RADIUS_REFERENCE_INDICATOR = 9;
 	static float DEF_RADIUS_CAMERA = 5;
 	static float DEF_RADIUS_SYSTEM = 4;
 	static float DEF_RADIUS_COMPONENT = 3;
