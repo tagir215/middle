@@ -15,7 +15,6 @@
 #include "Text.h"
 #include "InputVariable.h"
 
-
 namespace bubbleActions{
 
 	void setBubbleHidden(middle::GameState* gameState, middle::Id& id, bool hidden);
@@ -23,9 +22,9 @@ namespace bubbleActions{
 	middle::Id topLevelBubble(middle::GameState* gameState);
 	middle::Shape newBubble(middle::GameState* gameState, const Vector3& targetPos);
 	middle::Shape newUnit(middle::GameState* gameState, const Vector3& targetPos);
-	middle::Shape newFraction(middle::GameState* gameState, const Vector3& targetPos, int dividend);
-	middle::Shape shapeToFraction(middle::GameState* gameState, middle::Id shpaeId, const Vector3& targetPos, int dividend);
-	middle::Shape newMultiplication(middle::GameState* gameState, middle::Id& idA, middle::Id& idB);
+	middle::Id newFraction(middle::GameState* gameState, const Vector3& targetPos, int dividend);
+	middle::Id shapeToFraction(middle::GameState* gameState, middle::Id shpaeId, const Vector3& targetPos, int dividend);
+	middle::Id newMultiplication(middle::GameState* gameState, middle::Id& idA, middle::Id& idB);
 	bool isIntersecting(middle::GameState* gameState, middle::Shape& shape);
 	bool equals(middle::GameState* gameState, middle::Id& bubbleA, middle::Id& bubbleB);
 	float unitValue(middle::GameState* gameState, middle::Id& containerId);
@@ -40,6 +39,7 @@ namespace bubbleActions{
 		void execute(middle::GameState* gameState) override;
 		void undo(middle::GameState* gameState) override;
 	};
+
 
 	class CreateMulitiplicationReplacementShape : public middle::EditorActionContainer {
 	public:

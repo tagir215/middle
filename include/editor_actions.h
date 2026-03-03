@@ -52,6 +52,17 @@ namespace middle {
 		void undo(GameState* gameState) override;
 	};
 
+	class EditorActionRegisterId : public EditorActionContainer {
+	public:
+		middle::Id id;
+		EditorActionRegisterId(middle::Id& id) {
+			this->id = id;
+		}
+		void execute(GameState* gameState) override;
+		void undo(GameState* gameState) override;
+	};
+
+
 	// build from the editor.  hopefully no crashes...
 	class EditorActionBuild : public EditorActionContainer {
 	public:

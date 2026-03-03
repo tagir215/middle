@@ -120,7 +120,7 @@ class BubbleModificationSystem : public middle::MiddleGameplaySystem {
 				return true;
 			}
 			middle::Id parentId = middle::getParent(gameState, shape.id);
-			if (parentId == refParentId) {
+			if (parentId.index != middle::UNASSIGNED && parentId == refParentId) {
 				auto& refParent = middle::getShape(gameState, refParentId.index);
 				combine(gameState, refParent, refShape, shape);
 				return false;

@@ -11,9 +11,6 @@
 class InventorySystem : public middle::MiddleGameplaySystem {
 
 public:
-	InventorySystem() {
-		systemModeType = middle::SystemModeType::ENGINE;
-	}
 
 	const float margin = 30.0f;
 

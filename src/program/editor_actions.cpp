@@ -590,4 +590,14 @@ namespace middle {
 		middle::deleteShapeRecursive(gameState, newShapeId.index);
 	}
 
+	void EditorActionRegisterId::execute(GameState* gameState)
+	{
+		// this exist just for undo
+	}
+
+	void EditorActionRegisterId::undo(GameState* gameState)
+	{
+		middle::deleteShapeRecursive(gameState, id.index);
+	}
+
 }

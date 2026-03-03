@@ -277,7 +277,7 @@ public:
 				auto selectable = middle::getComponent<components::MouseSelectable>(shape);
 				middle::RenderItem loopItem;
 				loopItem.type = middle::RenderItemType::SPHERE;
-				loopItem.center = { position->posX, position->posY, position->posZ };
+				loopItem.center = middle::getShapePosition(gameState, i);
 				loopItem.radius = middle::DEF_RADIUS_LOOP_INDICATOR;
 				loopItem.color = loopColor;
 				if (intersectable && intersectable->intersecting) {
@@ -308,7 +308,7 @@ public:
 				assert(position);
 				middle::RenderItem systemItem;
 				systemItem.type = middle::RenderItemType::SPHERE;
-				systemItem.center = { position->posX, position->posY, position->posZ };
+				systemItem.center = middle::getShapePosition(gameState, i);
 				systemItem.radius = middle::DEF_RADIUS_SYSTEM;
 				systemItem.color = systemColor;
 				if (intersectable && intersectable->intersecting) {
