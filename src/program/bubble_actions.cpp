@@ -2,6 +2,7 @@
 #include "OutputVariable.h"
 #include "bubble_actions.h"
 #include <string>
+#include <stack>
 
 namespace bubbleActions {
 
@@ -67,6 +68,46 @@ namespace bubbleActions {
 		return loop->loopMemberIds.size();
 	}
 
+	bool matchingBubbles(middle::GameState* gameState, middle::Id& idA, middle::Id idB) {
+		auto& shapeA = middle::getShape(gameState, idA.index);
+		auto& shapeB = middle::getShape(gameState, idB.index);
+		auto bubCompA = middle::getComponent<components::BubbleComponent>(shapeA);
+		auto bubCompB = middle::getComponent<components::BubbleComponent>(shapeB);
+
+		// if both are bubbles check recursively
+		if (bubCompA && bubCompB) {
+			auto loopA = middle::getComponent<components::LoopSociety>(shapeA);
+			auto loopB = middle::getComponent<components::LoopSociety>(shapeB);
+			int size = loopA->loopMemberIds.size();
+			if (size != loopB->loopMemberIds.size()) {
+				return false;
+			}
+
+			std::vector<bool> mem;
+			mem.resize(size);
+			for (auto& b : mem) {
+				b = false;
+			}
+
+			int matchingCount = 0;
+			for (middle::Id& id : loopA->loopMemberIds) {
+				for (int i = 0; i < size; ++i) {
+					if (mem[i]) {
+						continue;
+					}
+					if (matchingBubbles(gameState, id, loopB->loopMemberIds[i])) {
+						++matchingCount;
+						mem[i] = true;
+						break;
+					}
+				}
+			}
+			return matchingCount == size;
+		}
+
+		// return true if same value
+		return equals(gameState, idA, idB);
+	}
 
 	CreateMulitiplicationReplacementShape::CreateMulitiplicationReplacementShape(middle::Id shapeToReplace, middle::Id replacingShape)
 	{

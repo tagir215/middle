@@ -641,6 +641,15 @@ namespace middle {
 			});
 		return id;
 	}
+	void findShapesWithComp(GameState* gameState, std::vector<Id>& result, int typeId)
+	{
+		middle::loopInstances(gameState, [gameState, &result, &typeId](int i, middle::Shape& shape) {
+			if (shape.componentMap.find(typeId) != shape.componentMap.end()) {
+				result.push_back(shape.id);
+			}
+			return true;
+			});
+	}
 	bool isIdCurrent(GameState* gameState, middle::Id& id)
 	{
 		if (id.index == middle::UNASSIGNED) {

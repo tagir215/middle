@@ -77,6 +77,8 @@ namespace middle {
 	int getLoopIndex(GameState* gameState, Id& parentId, Id& childId);
 	// find shape with comp
 	middle::Id findFirstShapeWithComp(GameState* gameState, int typeId);
+	// get children in a flat array
+	void findShapesWithComp(GameState* gameState, std::vector<Id>& result, int typeId);
 	// check if is id is assigned and up to date
 	bool isIdCurrent(GameState* gameState, middle::Id& id);
 

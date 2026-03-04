@@ -30,5 +30,8 @@ namespace bubbleButton{
     inline int STEP_FORWARD = 3;
     inline int STEP_BACKWARD = 4;
 	inline int UNDO = 5;
+	inline int DONE = 6;
+	inline int BACK = 7;
+	inline int CONTINUE = 8;
 }
 

@@ -29,6 +29,7 @@ namespace bubbleActions{
 	bool equals(middle::GameState* gameState, middle::Id& bubbleA, middle::Id& bubbleB);
 	float unitValue(middle::GameState* gameState, middle::Id& containerId);
 	int fractionUnitCount(middle::GameState* gameState, middle::Id& fractionId);
+	bool matchingBubbles(middle::GameState* gameState, middle::Id& bubbleA, middle::Id bubbleB);
 
 	class UpdateVariable : public middle::EditorActionContainer {
 	public:

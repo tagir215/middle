@@ -1,10 +1,10 @@
 #pragma once
 #include "registrars.h"
 #include "editor_file_utils.h"
-#define MIDDLEMOUSECLICKCOMPONENT(X) 
+#define MIDDLEBUBBLEALGEBRAPROBLEM(X)
 
 namespace components {
-	struct MouseClickComponent : public middle::Serializable{
+	struct BubbleAlgebraProblem : public middle::Serializable{
 
 		void serialize(std::ostream& ostream) override;
 		void deserialize(const std::vector<std::string>& buffer, int indexOffset) override;
@@ -13,7 +13,7 @@ namespace components {
 		template<typename V>
 		void reflect(V& v) {
 #define X(f) v(#f, f);
-			MIDDLEMOUSECLICKCOMPONENT(X)
+			MIDDLEBUBBLEALGEBRAPROBLEM(X)
 #undef X
 		}
 	};

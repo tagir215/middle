@@ -18,7 +18,7 @@ class LevelNavigationSystem : public middle::MiddleGameplaySystem {
 				return true;
 			}
 			auto click = middle::getComponent<components::MouseClickComponent>(shape);
-			if (click->clicked) {
+			if (click) {
 				middle::resetScene(gameState);
 				middle::loadScene(gameState, "../assets/scenes/", levelRef->levelName, false);
 			}
