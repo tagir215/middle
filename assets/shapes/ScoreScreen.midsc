@@ -1,0 +1,153 @@
+__q  74_0
+UiNode
+LoopTag
+LoopSociety
+q  -1_0
+p  
+q  75_0
+q  80_2
+q  81_0
+q  82_2
+MouseSelectable
+MouseIntersectable
+MouseGrabbable
+Position
+f  0.000000
+f  0.000000
+f  0.000000
+Offset
+f  0.000000
+f  -500.000000
+f  0.000000
+Text
+s  ScoreScreen
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  1.000000
+b  1
+RuntimeHiddenTag
+__q  82_0
+Position
+f  -58.111473
+f  -0.000031
+f  46.188660
+Sphere
+f  2.000000
+LoopSociety
+q  74_0
+p  
+PhysicsData
+f  1.000000
+f  1.000000
+f  1.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.800000
+f  0.800000
+f  0.800000
+f  0.000000
+f  0.000000
+f  0.000000
+b  0
+Text
+s  SOLVED!
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  5.000000
+b  1
+MouseSelectable
+MouseGrabbable
+MouseIntersectable
+__q  81_0
+Position
+f  -58.111473
+f  -0.000031
+f  7.115906
+Sphere
+f  2.000000
+PhysicsData
+f  1.000000
+f  1.000000
+f  1.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.800000
+f  0.800000
+f  0.800000
+f  0.000000
+f  0.000000
+f  0.000000
+b  0
+LoopSociety
+q  74_0
+p  
+Text
+s  SCORE 100/100
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  5.000000
+b  1
+MouseSelectable
+MouseGrabbable
+MouseIntersectable
+__q  80_0
+Position
+f  -17.201454
+f  -0.000031
+f  -12.379883
+Sphere
+f  2.000000
+LoopSociety
+q  74_0
+p  
+MouseSelectable
+Rectangle
+f  300.000000
+f  200.000000
+MouseGrabbable
+MouseIntersectable
+__q  75_0
+Button
+i  -1
+Position
+f  80.688713
+f  -0.000091
+f  -79.719116
+Sphere
+f  2.000000
+LoopSociety
+q  74_0
+p  
+MouseSelectable
+Circle
+f  20.000000
+MouseGrabbable
+MouseIntersectable
+Text
+s  CONTINUE
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  1.000000
+b  1

@@ -23,4 +23,6 @@ namespace middle {
 	void saveTempShape(GameState* gameState, Id& idToSave);
 	middle::Id loadTempShape(GameState* gameState, Id& idToLoad);
 	void resetGenerations(GameState* gameState);
+	void incrementGenerations(GameState* gameState);
+	void resetScene(GameState* gameState);
 }

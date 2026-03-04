@@ -1,7 +1,5 @@
 #scene
 s  LevelSelect
-#activeCamera
-i  1
 __q  0_0
 MouseSelectable
 MouseGrabbable
@@ -37,9 +35,9 @@ f  0.000000
 f  -499.999939
 f  0.000000
 CameraComponent
-f  8.040638
-f  -390.870422
-f  25.423080
+f  0.000000
+f  9500.000000
+f  0.000000
 f  0.000000
 f  0.000000
 f  1.000000
@@ -103,11 +101,12 @@ Button
 i  -1
 MouseClickComponent
 LevelReference
-s  
+s  Problem1
 GridElement
 __q  4_0
 MouseSelectable
 MouseGrabbable
+MouseIntersectable
 Text
 s  RectangleIntersectionSystem
 f  255.000000
@@ -119,40 +118,15 @@ f  0.000000
 f  10.000000
 f  10.000000
 b  1
-MouseIntersectable
 LoopSociety
 q  -1_0
 p  
-Position
-f  -180.000000
-f  0.000000
-f  -160.000000
 SystemReference
 s  RectangleIntersectionSystem
-__q  5_0
-MouseSelectable
-MouseGrabbable
-Text
-s  MouseClickSystem
-f  255.000000
-f  255.000000
-f  255.000000
-f  255.000000
-f  2.000000
-f  0.000000
-f  10.000000
-f  10.000000
-b  1
-MouseIntersectable
-LoopSociety
-q  -1_0
-p  
 Position
-f  -120.000000
-f  0.000000
-f  -180.000000
-SystemReference
-s  MouseClickSystem
+f  93.468536
+f  -0.000061
+f  -109.144447
 __q  6_0
 Sphere
 f  4.000000
@@ -197,7 +171,7 @@ Button
 i  -1
 MouseClickComponent
 LevelReference
-s  
+s  Problem2
 GridElement
 __q  8_0
 LoopSociety
@@ -229,5 +203,81 @@ Button
 i  -1
 MouseClickComponent
 LevelReference
-s  
+s  Problem3
 GridElement
+__q  9_0
+LoopSociety
+q  -1_0
+p  
+Sphere
+f  2.000000
+Position
+f  18.000000
+f  0.000000
+f  162.000000
+MouseGrabbable
+Circle
+f  20.000000
+Text
+s  PROBLEM 4
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  1.000000
+b  1
+MouseIntersectable
+MouseSelectable
+Button
+i  -1
+MouseClickComponent
+LevelReference
+s  Problem4
+GridElement
+__q  10_0
+LoopSociety
+q  -1_0
+p  
+Sphere
+f  2.000000
+Position
+f  54.000000
+f  0.000000
+f  234.000000
+Circle
+f  20.000000
+MouseGrabbable
+MouseIntersectable
+Text
+s  PROBLEM 5
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  1.000000
+b  1
+MouseSelectable
+Button
+i  -1
+MouseClickComponent
+LevelReference
+s  Problem5
+GridElement
+__q  13_0
+Position
+f  59.836361
+f  0.000061
+f  -306.835388
+MouseSelectable
+MouseGrabbable
+MouseIntersectable
+Reference
+s  BubbleAlgebraProblemSystems
+s  ../assets/shapes/
+LoopSociety

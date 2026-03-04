@@ -149,11 +149,9 @@ namespace middle {
 
 	void EditorActionLoadScene::execute(GameState* gameState)
 	{
-		// DELETE EVERYTHING
-		for (int i = 0; i < gameState->shapes.size(); ++i) {
-			deleteShape(gameState, i);
-		}
+		middle::resetScene(gameState);
 		gameState->reload = true;
+
 		int index = -1;
 		for (int i = 0; i < gameState->sceneNames.size(); ++i) {
 			if (gameState->sceneNames[i] == sceneName) {

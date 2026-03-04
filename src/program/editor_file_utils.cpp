@@ -274,6 +274,29 @@ namespace middle {
 		}
 	}
 
+	void incrementGenerations(GameState* gameState)
+	{
+		for (int i = 0; i < gameState->ids.size(); ++i) {
+			if (!isShapeAlive(gameState, i)) {
+				continue;
+			}
+			static int incrementAmount = 1;
+			gameState->ids[i].generation += incrementAmount;
+			gameState->shapes[i].id.generation += incrementAmount;
+			++incrementAmount;
+		}
+	}
+
+	void resetScene(GameState* gameState)
+	{
+		for (int i = 0; i < gameState->shapes.size(); ++i) {
+			if (isShapeAlive(gameState, i)) {
+				deleteShape(gameState, i);
+			}
+		}
+		gameState->reset = true;
+	}
+
 	bool isEmptyOrWhitespace(const std::string& s) {
 		return s.empty() ||
 			std::all_of(s.begin(), s.end(),
@@ -346,8 +369,6 @@ namespace middle {
 
 		outFile << "#scene\n";
 		outFile << fieldToString(sceneName);
-		outFile << "#activeCamera\n";
-		outFile << fieldToString(gameState->activeCameraIndex);
 
 		int saveSpam = GHOST_INDEX_OFFSET;
 		for (int i = 0; i < saveSpam; ++i) {
@@ -458,11 +479,6 @@ namespace middle {
 	}
 
 	void flushFieldBuffer(GameState* gameState, std::vector<std::string>& buffer, const std::string& field) {
-		if (field == "#activeCamera") {
-			assert(buffer.size() == 1);
-			fillField(&gameState->activeCameraIndex, buffer[0]);
-			buffer.clear();
-		}
 		if (field == "#editorCameraPos") {
 			assert(buffer.size() == 3);
 			Vector3 pos;
@@ -495,7 +511,7 @@ namespace middle {
 
 		std::ifstream inputFile(path);
 		if (!inputFile.is_open()) {
-			throw std::runtime_error("Faile to open file to open");
+			throw std::runtime_error("Failed to open file to open");
 		}
 		std::string line;
 

@@ -1,12 +1,12 @@
 #pragma once
 #include "registrars.h"
 #include "editor_file_utils.h"
-#define MIDDLEUICOMPONENT(X) \
-	X(type)
+#define MIDDLEVISIBILITYCOMPONENT(X) \
+	X(visible)
 
 namespace components {
-	struct UiComponent : public middle::Serializable{
-		int type = middle::UNASSIGNED;
+	struct VisibilityComponent : public middle::Serializable{
+		bool visible = true;
 
 		void serialize(std::ostream& ostream) override;
 		void deserialize(const std::vector<std::string>& buffer, int indexOffset) override;
@@ -15,12 +15,8 @@ namespace components {
 		template<typename V>
 		void reflect(V& v) {
 #define X(f) v(#f, f);
-			MIDDLEUICOMPONENT(X)
+			MIDDLEVISIBILITYCOMPONENT(X)
 #undef X
 		}
 	};
-}
-
-namespace UiElementTypes {
-	static int MOVES_LEFT_INDICATOR = 0;
 }

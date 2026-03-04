@@ -119,6 +119,7 @@ int main(void)
 		if (gameState->closeGame) {
 			break;
 		}
+
 	}
 
 	gameState->closeGame = true;

@@ -775,8 +775,9 @@ namespace bubbleActions {
 	{
 		auto& containerShape = middle::getShape(gameState, containerShapeId.index);
 		auto unit = middle::getComponent<components::BubbleUnit>(containerShape);
-		auto bubble = middle::getComponent<components::BubbleComponent>(containerShape);
-		auto fraction = middle::getComponent<components::FractionalComponent>(containerShape);
+		if (!unit) {
+			return;
+		}
 		Vector3 containerPos = middle::getShapePosition(gameState, containerShapeId.index);
 		Vector3 referencePos = containerPos;
 		auto newBubbleProto = bubbleActions::newBubble(gameState, containerPos);
@@ -785,15 +786,16 @@ namespace bubbleActions {
 		middle::Id newBubbleId = registerAction->newShapeId;
 		actions.push_back(std::move(registerAction));
 
-		if (unit) {
-			// replace unit with fractions
-			for (int i = 0; i < dividend; ++i) {
-				middle::Id& newFractionId = bubbleActions::newFraction(gameState, referencePos, dividend);
-				auto reparent = std::make_unique<middle::EditorActionReparent>(newBubbleId.index, newFractionId.index);
-				reparent->execute(gameState);
-				actions.push_back(std::move(reparent));
-				referencePos.x += 5;
-			}
+		// replace unit with fractions
+		for (int i = 0; i < dividend; ++i) {
+			middle::Id& newFractionId = bubbleActions::newFraction(gameState, referencePos, dividend);
+			auto registerFraction = std::make_unique<middle::EditorActionRegisterId>(newFractionId);
+			registerFraction->execute(gameState);
+			actions.push_back(std::move(registerFraction));
+			auto reparent = std::make_unique<middle::EditorActionReparent>(newBubbleId.index, newFractionId.index);
+			reparent->execute(gameState);
+			actions.push_back(std::move(reparent));
+			referencePos.x += 5;
 		}
 
 		auto replace = std::make_unique<bubbleActions::Replace>(containerShapeId, newBubbleId);

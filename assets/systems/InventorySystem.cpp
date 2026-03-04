@@ -23,17 +23,7 @@ public:
 			auto loop = middle::getComponent<components::LoopSociety>(shape);
 			std::vector<middle::Id>items = loop->loopMemberIds;
 
-			auto offset = middle::getComponent<components::Offset>(shape);
-			assert(offset);
-
 			Vector3 inventoryPosition = middle::getShapePosition(gameState, shape.id.index);
-			Vector3 cameraPos = gameState->activeCamera.position;
-			Vector3 offsetVec = { offset->offsetX, offset->offsetY, offset->offsetZ };
-			Vector3 displacement = (cameraPos + offsetVec) - inventoryPosition;
-
-			middle::moveShape(gameState, shape.id.index, displacement);
-
-			inventoryPosition = middle::getShapePosition(gameState, shape.id.index);
 
 
 			auto inventoryRect = middle::getComponent<components::Rectangle>(shape);

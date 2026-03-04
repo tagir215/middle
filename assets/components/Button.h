@@ -29,5 +29,6 @@ namespace bubbleButton{
     inline int START_PROCEDURE_BUTTON = 2;
     inline int STEP_FORWARD = 3;
     inline int STEP_BACKWARD = 4;
+	inline int UNDO = 5;
 }
 

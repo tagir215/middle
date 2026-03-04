@@ -136,7 +136,6 @@ extern "C" {
 
 			renderSystem->update(gameState);
 		}
-
 	}
 
 }

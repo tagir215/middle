@@ -545,7 +545,9 @@ namespace middle {
 	{
 		Shape& shape = getShape(gameState, id.index);
 		auto loopSociety = middle::getComponent<components::LoopSociety>(shape);
-		assert(loopSociety);
+		if (!loopSociety) {
+			return middle::Id();
+		}
 		return loopSociety->parentLoopId;
 	}
 	void getChildren(GameState* gameState, Id id, std::vector<Id>& result)
@@ -638,5 +640,13 @@ namespace middle {
 			return true;
 			});
 		return id;
+	}
+	bool isIdCurrent(GameState* gameState, middle::Id& id)
+	{
+		if (id.index == middle::UNASSIGNED) {
+			return false;
+		}
+		assert(gameState->ids[id.index] == gameState->shapes[id.index].id);
+		return gameState->ids[id.index] == id;
 	}
 }

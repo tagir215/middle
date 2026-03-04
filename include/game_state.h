@@ -126,7 +126,6 @@ namespace middle {
 		Matrix oldWorldM;
 		Matrix screenOrientorM;
 		int activeScene = 0;
-		int activeCameraIndex = UNASSIGNED;
 		int vertexIndex = 0;
 		int loopIndex = 0;
 		int uniqueComponentCount = 0;

@@ -77,6 +77,8 @@ namespace middle {
 	int getLoopIndex(GameState* gameState, Id& parentId, Id& childId);
 	// find shape with comp
 	middle::Id findFirstShapeWithComp(GameState* gameState, int typeId);
+	// check if is id is assigned and up to date
+	bool isIdCurrent(GameState* gameState, middle::Id& id);
 
 	template<typename F>
 	void loopInstances(GameState* gameState, F func) {

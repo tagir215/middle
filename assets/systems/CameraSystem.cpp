@@ -12,7 +12,14 @@ public:
 		systemModeType = middle::SystemModeType::ENGINE;
 	}
 
+	middle::Id activeCameraId;
+
 	void update(middle::GameState* gameState) override {
+
+		if (gameState->reset || !middle::isIdCurrent(gameState, activeCameraId)) {
+			activeCameraId = middle::findFirstShapeWithComp(gameState, middle::getTypeId<components::CameraComponent>());
+		}
+
 		if (gameState->applicationMode == middle::ApplicationMode::EDITOR_MODE) {
 			// camera controls
 			const float maxCameraSpeed = 60;
@@ -37,32 +44,9 @@ public:
 
 			gameState->activeCamera = gameState->editorState.camera;
 		}
-		else if (gameState->activeCameraIndex == middle::UNASSIGNED)
-		{
-			middle::loopInstances(gameState, [gameState](int i, middle::Shape& shape) {
-				auto cameraComponent = middle::getComponent<components::CameraComponent>(shape);
-				if (!cameraComponent)
-					return true;
 
-				if (cameraComponent->active) {
-					gameState->activeCameraIndex = i;
-					auto position = middle::getComponent<components::Position>(shape);
-					assert(position);
-					Camera camera;
-					camera.fovy = cameraComponent->fovy;
-					camera.position = { position->posX, position->posY, position->posZ };
-					camera.projection = cameraComponent->projection;
-					camera.target = { cameraComponent->targetX, cameraComponent->targetY, cameraComponent->targetZ };
-					camera.up = { cameraComponent->upX, cameraComponent->upY, cameraComponent->upZ };
-					gameState->activeCamera = camera;
-				}
-
-				return true;
-				});
-
-		}
-		else {
-			auto& shape = middle::getShape(gameState, gameState->activeCameraIndex);
+		if(gameState->applicationMode == middle::ApplicationMode::GAME_MODE){
+			auto& shape = middle::getShape(gameState, activeCameraId.index);
 			auto cameraComponent = middle::getComponent<components::CameraComponent>(shape);
 
 			if (cameraComponent->active) {
