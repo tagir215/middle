@@ -54,7 +54,7 @@ class BubbleInventorySystem : public middle::MiddleGameplaySystem {
 				auto inventoryItem = middle::getComponent<components::InventoryItem>(shape);
 				if (inventoryItem) {
 					auto delComp = middle::addComponent<components::DeleteComponent>(shape);
-					delComp->framesUntilDelete = 1;
+					delComp->framesUntilDelete = 0;
 				}
 				gameState->bubbleAlgebraState.grabbedId = middle::Id();
 			}

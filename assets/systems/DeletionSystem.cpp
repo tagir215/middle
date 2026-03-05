@@ -10,6 +10,7 @@ class DeletionSystem : public middle::MiddleGameplaySystem {
 public:
 	DeletionSystem() {
 		systemModeType = middle::SystemModeType::ENGINE;
+		systemUpdateType = middle::SystemUpdateType::PREFRAME;
 	}
 	void update(middle::GameState* gameState) override {
 		middle::loopInstances(gameState, [gameState](int i, middle::Shape& shape) {

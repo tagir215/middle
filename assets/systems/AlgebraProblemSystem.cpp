@@ -27,6 +27,12 @@ class AlgebraProblemSystem : public middle::MiddleGameplaySystem {
 					middle::loadShape(gameState, "../assets/shapes/", "ScoreScreen", true);
 				}
 			}
+			if (button->function == bubbleButton::UNDO) {
+				if (gameState->bubbleAlgebraState.bubbleActions.size() > 0) {
+					gameState->bubbleAlgebraState.bubbleActions.back()->undo(gameState);
+					gameState->bubbleAlgebraState.bubbleActions.pop_back();
+				}
+			}
 			return true;
 			});
 	}

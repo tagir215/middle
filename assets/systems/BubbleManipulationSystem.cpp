@@ -78,7 +78,7 @@ class BubbleManipulationSystem : public middle::MiddleGameplaySystem {
 				grabbable->grabbing = false;
 				gameState->bubbleAlgebraState.grabbedId = middle::Id();
 				auto deleteComp = middle::addComponent<components::DeleteComponent>(shape);
-				deleteComp->framesUntilDelete = 1;
+				deleteComp->framesUntilDelete = 0;
 			}
 
 			// bubble moving

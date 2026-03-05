@@ -93,9 +93,8 @@ namespace middle {
 	struct BubbleAlgebraState {
 		middle::Id grabbedId;
 		bool intersectingUI = false;
-
+		std::vector<std::unique_ptr<middle::EditorActionContainer>>bubbleActions;
 	};
-
 
 	struct GameState {
 	public:
