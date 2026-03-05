@@ -115,8 +115,8 @@ namespace middle {
 		std::array<Shape, MAX_SHAPE_COUNT>shapes;
 		// systems
 		std::unordered_map<std::string, std::unique_ptr<MiddleGameplaySystem>> gameplaySystems;
+		std::unordered_map<std::string, std::unique_ptr<MiddleGameplaySystem>> gameplaySystemsPostFrame;
 		std::vector<std::unique_ptr<MiddleGameplaySystem>> engineSystemsFrameStart;
-		std::vector<std::unique_ptr<MiddleGameplaySystem>> engineSystemsFrameEnd;
 		std::vector<std::unique_ptr<MiddleGameplaySystem>> engineRendererSystems;
 		std::vector<middle::Id>newShapeList;
 

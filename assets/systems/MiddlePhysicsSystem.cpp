@@ -10,7 +10,7 @@
 class MiddlePhysicsSystem : public middle::MiddleGameplaySystem {
 public:
 	MiddlePhysicsSystem() {
-		systemUpdateType = middle::SystemUpdateType::POSTFRAME;
+		systemUpdateType = middle::SystemUpdateType::GAMEPLAYE_POSTFRAME;
 		systemModeType = middle::SystemModeType::ENGINE;
 	}
 

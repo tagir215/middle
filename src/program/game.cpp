@@ -23,11 +23,11 @@ namespace middle{
 			if (sysptr->systemUpdateType == SystemUpdateType::PREFRAME) {
 				gameState->engineSystemsFrameStart.push_back(std::move(sysptr));
 			}
-			else if (sysptr->systemUpdateType == SystemUpdateType::IMPORTED) {
+			else if (sysptr->systemUpdateType == SystemUpdateType::GAMEPLAY_MIDFRAME) {
 				gameState->gameplaySystems[name] = std::move(sysptr);
 			}
-			else if (sysptr->systemUpdateType == SystemUpdateType::POSTFRAME) {
-				gameState->engineSystemsFrameEnd.push_back(std::move(sysptr));
+			else if (sysptr->systemUpdateType == SystemUpdateType::GAMEPLAYE_POSTFRAME) {
+				gameState->gameplaySystemsPostFrame[name] = std::move(sysptr);
 			}
 			else if (sysptr->systemUpdateType == SystemUpdateType::RENDERING) {
 				gameState->engineRendererSystems.push_back(std::move(sysptr));
@@ -82,15 +82,31 @@ namespace middle{
 			return true;
 			});
 
-		for (auto& system : gameState->engineSystemsFrameEnd) {
+		// run gameplay systems post frmae
+		loopInstances(gameState, [gameState](int i, Shape& shape) {
 
-			if (gameState->applicationMode == ApplicationMode::GAME_MODE
-				&& system->systemModeType == SystemModeType::EDITOR) {
-				continue;
+			auto sysRef = getComponent<components::SystemReference>(shape);
+			if (sysRef != nullptr) {
+				auto systemName = sysRef->systemName;
+				auto& system = gameState->gameplaySystemsPostFrame[systemName];
+
+				if (!system)
+					return true;
+
+				if (gameState->applicationMode == ApplicationMode::GAME_MODE
+					&& system->systemModeType == SystemModeType::EDITOR) {
+					return true;
+				}
+
+				if (gameState->applicationMode == ApplicationMode::EDITOR_MODE
+					&& system->systemModeType == SystemModeType::GAMEPLAY) {
+					return true;
+				}
+
+				system->update(gameState);
 			}
-
-			system->update(gameState);
-		}
+			return true;
+			});
 
 
 		// Clear input blockers at the end of physics update

@@ -8,8 +8,8 @@ namespace middle {
 	enum class SystemUpdateType {
 		PREFRAME,
 		// Imported systems are dynamically placed to scenes, they are updated between pre and post frame
-		IMPORTED,
-		POSTFRAME,
+		GAMEPLAY_MIDFRAME,
+		GAMEPLAYE_POSTFRAME,
 		RENDERING,
 	};
 
@@ -24,7 +24,7 @@ namespace middle {
 
 	class MiddleGameplaySystem {
 	public:
-		SystemUpdateType systemUpdateType = SystemUpdateType::IMPORTED;
+		SystemUpdateType systemUpdateType = SystemUpdateType::GAMEPLAY_MIDFRAME;
 		SystemModeType systemModeType = SystemModeType::GAMEPLAY;
 		virtual void update(GameState* gameState) = 0;
 	};
