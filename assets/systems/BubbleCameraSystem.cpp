@@ -7,6 +7,7 @@
 #include "Position.h"
 
 class BubbleCameraSystem : public middle::MiddleGameplaySystem {
+public:
 	void update(middle::GameState* gameState) override {
 		middle::loopInstances(gameState, [gameState](int i, middle::Shape& shape) {
 			auto camera = middle::getComponent<components::CameraComponent>(shape);
@@ -16,12 +17,6 @@ class BubbleCameraSystem : public middle::MiddleGameplaySystem {
 			auto position = middle::getComponent<components::Position>(shape);
 			Vector3 pos = { position->posX, position->posY, position->posZ };
 
-			static const Vector3 forward = { 0,10000,0 };
-			Vector3 target = pos + forward;
-
-			camera->targetX = target.x;
-			camera->targetY = target.y;
-			camera->targetZ = target.z;
 
 			const float cameraSpeed = 2;
 			if (gameState->gameInput.zoomIn) {
@@ -43,6 +38,17 @@ class BubbleCameraSystem : public middle::MiddleGameplaySystem {
 				middle::moveShape(gameState, shape.id.index, { cameraSpeed, 0,0 });
 			}
 
+
+			Vector3 newPos = middle::getShapePosition(gameState, i);
+			gameState->activeCamera.position = { position->posX, position->posY, position->posZ };
+			gameState->activeCamera.target = { camera->targetX, camera->targetY, camera->targetZ };
+
+			static const Vector3 forward = { 0,10000,0 };
+			Vector3 target = gameState->activeCamera.position + forward;
+			gameState->activeCamera.target = target;
+			camera->targetX = target.x;
+			camera->targetY = target.y;
+			camera->targetZ = target.z;
 			return true;
 			});
 	}

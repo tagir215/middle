@@ -26,7 +26,7 @@ namespace middle{
 			else if (sysptr->systemUpdateType == SystemUpdateType::GAMEPLAY_MIDFRAME) {
 				gameState->gameplaySystems[name] = std::move(sysptr);
 			}
-			else if (sysptr->systemUpdateType == SystemUpdateType::GAMEPLAYE_POSTFRAME) {
+			else if (sysptr->systemUpdateType == SystemUpdateType::GAMEPLAY_POSTFRAME) {
 				gameState->gameplaySystemsPostFrame[name] = std::move(sysptr);
 			}
 			else if (sysptr->systemUpdateType == SystemUpdateType::RENDERING) {

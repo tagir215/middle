@@ -18,6 +18,7 @@ class UiRenderSetup : public middle::MiddleGameplaySystem {
 public:
 	UiRenderSetup() {
 		systemModeType = middle::SystemModeType::ENGINE;
+		systemUpdateType = middle::SystemUpdateType::RENDERING;
 	}
 
 	void drawRect(middle::GameState* gameState, const std::vector<Vector3>& vertices, const Color& color) {

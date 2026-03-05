@@ -1,14 +1,10 @@
 __q  27_0
 LoopTag
 LoopSociety
-q  -1_2
+q  34_2
 p  
 q  11_0
-q  10_0
-q  13_0
-q  12_0
 MouseSelectable
-MouseIntersectable
 Text
 s  BubbleAlgebraProblemSystems
 f  0.000000
@@ -20,87 +16,14 @@ f  0.000000
 f  0.000000
 f  1.000000
 b  1
-MouseGrabbable
-Position
-f  0.000000
-f  0.000000
-f  0.000000
-__q  12_0
-MouseSelectable
-MouseGrabbable
 MouseIntersectable
-Text
-s  BubbleCameraSystem
-f  255.000000
-f  255.000000
-f  255.000000
-f  255.000000
-f  2.000000
-f  0.000000
-f  10.000000
-f  10.000000
-b  1
-LoopSociety
-q  27_0
-p  
-SystemReference
-s  BubbleCameraSystem
-Position
-f  62.519196
-f  -0.000061
-f  44.738815
-__q  13_0
-MouseSelectable
 MouseGrabbable
-Text
-s  InventorySystem
-f  255.000000
-f  255.000000
-f  255.000000
-f  255.000000
-f  2.000000
-f  0.000000
-f  10.000000
-f  10.000000
-b  1
-MouseIntersectable
-LoopSociety
-q  27_0
-p  
 Position
-f  74.554077
-f  0.000122
-f  -54.027878
-SystemReference
-s  InventorySystem
-__q  10_0
-MouseSelectable
-MouseGrabbable
-Text
-s  MouseClickSystem
-f  255.000000
-f  255.000000
-f  255.000000
-f  255.000000
-f  2.000000
 f  0.000000
-f  10.000000
-f  10.000000
-b  1
-MouseIntersectable
-LoopSociety
-q  27_0
-p  
-Position
-f  47.893829
-f  -0.000122
-f  -25.428146
-SystemReference
-s  MouseClickSystem
+f  0.000000
+f  0.000000
 __q  11_0
 MouseSelectable
-MouseGrabbable
-MouseIntersectable
 Text
 s  LevelNavigationSystem
 f  255.000000
@@ -112,11 +35,13 @@ f  0.000000
 f  10.000000
 f  10.000000
 b  1
+MouseGrabbable
+SystemReference
+s  LevelNavigationSystem
+MouseIntersectable
 LoopSociety
 q  27_2
 p  
-SystemReference
-s  LevelNavigationSystem
 Position
 f  32.415771
 f  0.000031

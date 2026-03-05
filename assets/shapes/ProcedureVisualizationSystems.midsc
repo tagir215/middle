@@ -9,11 +9,8 @@ q  -1_0
 p  
 q  109_0
 q  107_0
-q  108_0
 q  26_0
 q  55_0
-MouseSelectable
-MouseIntersectable
 Text
 s  ProcedureVisualizationSystems
 f  0.000000
@@ -25,10 +22,10 @@ f  0.000000
 f  0.000000
 f  1.000000
 b  1
-MouseGrabbable
-__q  55_0
 MouseSelectable
 MouseIntersectable
+MouseGrabbable
+__q  55_0
 Text
 s  OutputVariableSystem
 f  255.000000
@@ -40,20 +37,19 @@ f  0.000000
 f  10.000000
 f  10.000000
 b  1
+MouseSelectable
+MouseIntersectable
+SystemReference
+s  OutputVariableSystem
 MouseGrabbable
 Position
 f  -9.688324
 f  -0.000012
 f  -54.834747
-SystemReference
-s  OutputVariableSystem
 LoopSociety
 q  2_0
 p  
 __q  26_0
-MouseSelectable
-MouseGrabbable
-MouseIntersectable
 Text
 s  VariableLinkingSystem
 f  255.000000
@@ -65,42 +61,19 @@ f  0.000000
 f  10.000000
 f  10.000000
 b  1
+MouseSelectable
+SystemReference
+s  VariableLinkingSystem
+MouseGrabbable
+MouseIntersectable
 Position
 f  -37.089371
 f  -0.000073
 f  -26.068756
-SystemReference
-s  VariableLinkingSystem
-LoopSociety
-q  2_0
-p  
-__q  108_0
-MouseSelectable
-MouseGrabbable
-Text
-s  UiRenderSetup
-f  255.000000
-f  255.000000
-f  255.000000
-f  255.000000
-f  2.000000
-f  0.000000
-f  10.000000
-f  10.000000
-b  1
-MouseIntersectable
-Position
-f  1.072769
-f  0.000049
-f  46.080292
-SystemReference
-s  UiRenderSetup
 LoopSociety
 q  2_0
 p  
 __q  107_0
-MouseSelectable
-MouseGrabbable
 Text
 s  RectangleIntersectionSystem
 f  255.000000
@@ -112,19 +85,19 @@ f  0.000000
 f  10.000000
 f  10.000000
 b  1
+MouseSelectable
+SystemReference
+s  RectangleIntersectionSystem
+MouseGrabbable
 MouseIntersectable
 Position
 f  41.387177
 f  -0.000073
 f  30.037598
-SystemReference
-s  RectangleIntersectionSystem
 LoopSociety
 q  2_0
 p  
 __q  109_0
-MouseSelectable
-MouseGrabbable
 Text
 s  CodeBlockLayoutSystem
 f  255.000000
@@ -136,13 +109,15 @@ f  0.000000
 f  10.000000
 f  10.000000
 b  1
+MouseSelectable
+SystemReference
+s  CodeBlockLayoutSystem
+MouseGrabbable
 MouseIntersectable
 Position
 f  4.317780
 f  0.000110
 f  4.785553
-SystemReference
-s  CodeBlockLayoutSystem
 LoopSociety
 q  2_0
 p  

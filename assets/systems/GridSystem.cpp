@@ -11,7 +11,7 @@ class GridSystem : public middle::MiddleGameplaySystem {
 public:
 	GridSystem() {
 		systemModeType = middle::SystemModeType::EDITOR;
-		systemUpdateType = middle::SystemUpdateType::GAMEPLAYE_POSTFRAME;
+		systemUpdateType = middle::SystemUpdateType::GAMEPLAY_POSTFRAME;
 	}
 
 	void update(middle::GameState* gameState) override {

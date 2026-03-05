@@ -9,7 +9,7 @@ namespace middle {
 		PREFRAME,
 		// Imported systems are dynamically placed to scenes, they are updated between pre and post frame
 		GAMEPLAY_MIDFRAME,
-		GAMEPLAYE_POSTFRAME,
+		GAMEPLAY_POSTFRAME,
 		RENDERING,
 	};
 
@@ -24,6 +24,7 @@ namespace middle {
 
 	class MiddleGameplaySystem {
 	public:
+		virtual ~MiddleGameplaySystem() = default;
 		SystemUpdateType systemUpdateType = SystemUpdateType::GAMEPLAY_MIDFRAME;
 		SystemModeType systemModeType = SystemModeType::GAMEPLAY;
 		virtual void update(GameState* gameState) = 0;
