@@ -1,0 +1,41 @@
+#scene
+s  EcsPerformanceTest
+__q  1_0
+ConfigComponent
+LoopSociety
+q  -1_0
+p  
+LoopTag
+MouseSelectable
+MouseIntersectable
+EcsPerformanceTestConfigs
+i  10
+MouseGrabbable
+Position
+f  -32.405384
+f  -0.000031
+f  -14.276128
+__q  2_0
+Text
+s  EcsPerformanceTestSystem
+f  255.000000
+f  255.000000
+f  255.000000
+f  255.000000
+f  2.000000
+f  0.000000
+f  10.000000
+f  10.000000
+b  1
+MouseSelectable
+SystemReference
+s  EcsPerformanceTestSystem
+MouseGrabbable
+MouseIntersectable
+LoopSociety
+q  -1_0
+p  
+Position
+f  7.786129
+f  -0.000000
+f  -32.869678

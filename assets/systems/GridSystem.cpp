@@ -1,22 +1,43 @@
 #pragma once
-#include "game_state.h"
 #include "middle_system_registrar.h"
-#include "middle_shape_utils.h"
 #include "Position.h"
 #include "GridElement.h"
 #include "EditorConfigs.h"
 #include "middle_math.h"
+#include "comp_cache.h"
 
 class GridSystem : public middle::MiddleGameplaySystem {
 public:
+
+	components::CompCache cachoA;
+	components::CompCache cachoB;
+
 	GridSystem() {
 		systemModeType = middle::SystemModeType::EDITOR;
 		systemUpdateType = middle::SystemUpdateType::GAMEPLAY_POSTFRAME;
+
+		cachoA.addType<components::EditorConfigs>();
+		cachoB.addType<components::GridElement>();
+		cachoB.addType<components::Position>();
 	}
+
 
 	void update(middle::GameState* gameState) override {
 
-		middle::Id& editorConfigs = 
+		auto& configIt = cachoA.begin<components::EditorConfigs>();
+		auto& gridIt = cachoB.begin<components::GridElement>();
+		auto& posIt = cachoB.begin<components::Position>();
+
+		for (int i = 0; i < cachoA.getSize(); ++i) {
+			auto config = *configIt;
+		}
+
+		for (int i = 0; i < cachoB.getSize(); ++i) {
+			auto grid = *gridIt;
+			auto pos = *posIt;
+		}
+
+		middle::Id& editorConfigs =
 			middle::findFirstShapeWithComp(gameState, middle::getTypeId<components::EditorConfigs>());
 
 		if (editorConfigs.index == middle::UNASSIGNED) {

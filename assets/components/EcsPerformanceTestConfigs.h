@@ -1,13 +1,13 @@
 #pragma once
 #include "registrars.h"
 #include "editor_file_utils.h"
-#define MIDDLETESTCOMPONENT(X) \
-	X(vec) 
-
+#define MIDDLEECSPERFORMANCETESTCONFIGS(X) \
+	X(entityCount)
+	
 
 namespace components {
-	struct TestComponent : public middle::Serializable{
-		Vector3 vec;
+	struct EcsPerformanceTestConfigs : public middle::Serializable{
+		int entityCount = 0;
 
 		void serialize(std::ostream& ostream) override;
 		void deserialize(const std::vector<std::string>& buffer, int indexOffset) override;
@@ -16,7 +16,7 @@ namespace components {
 		template<typename V>
 		void reflect(V& v) {
 #define X(f) v(#f, f);
-			MIDDLETESTCOMPONENT(X)
+			MIDDLEECSPERFORMANCETESTCONFIGS(X)
 #undef X
 		}
 	};
