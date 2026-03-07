@@ -54,19 +54,6 @@ public:
 
 	void update(middle::GameState* gameState) override {
 
-		int& actionPointer = gameState->editorState.actionPointer;
-		int& previousSize = gameState->editorState.previousSize;
-		auto& actions = gameState->editorState.editorActions;
-		if (actions.size() > previousSize) {
-			// remove redoable actions when new action is added
-			while (actions.size() > actionPointer + 1) {
-				actions.erase(actions.begin() + actionPointer);
-			}
-			actions[actionPointer]->execute(gameState);
-			++actionPointer;
-			previousSize = actions.size();
-		}
-
 		if (gameState->startGame) {
 			if (gameState->applicationMode == middle::ApplicationMode::EDITOR_MODE) {
 				middle::loadEditorState(gameState);

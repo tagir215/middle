@@ -48,6 +48,17 @@ public:
 
 	void update(middle::GameState* gameState) override {
 
+		if (gameState->mutatedIdMap.size() > 0) {
+			for (auto& cache : gameState->compCaches) {
+				for (middle::Id& id : cache->relevantIdVector) {
+					if (gameState->mutatedIdMap.find(id.index) != gameState->mutatedIdMap.end()) {
+						cache->needsUpdate = true;
+						break;
+					}
+				}
+			}
+		}
+
 		for (auto& cache : gameState->compCaches) {
 			if (cache->needsUpdate) {
 				updateCache(gameState, cache.get());

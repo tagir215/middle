@@ -154,6 +154,15 @@ extern "C" {
 
 			renderSystem->update(gameState);
 		}
+
+		while (gameState->actionQueue.size() > 0) {
+			gameState->actionQueue.front()->execute(gameState);
+			gameState->actionQueue.pop();
+		}
+		while (gameState->undoQueue.size() > 0) {
+			gameState->undoQueue.front()->undo(gameState);
+			gameState->undoQueue.pop();
+		}
 	}
 
 }

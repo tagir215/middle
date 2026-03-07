@@ -276,7 +276,9 @@ namespace middle {
 			componentListMap[typeId]->shrink(c.componentOffset);
 		}
 
-		gameState->shapes[index].id.generation = prevGeneration + 1;
+		auto& delShape = gameState->shapes[index];
+		delShape.id.generation = prevGeneration + 1;
+		gameState->mutatedIdMap[delShape.id.index] = delShape.id;
 	}
 
 	void deleteShapeRecursive(GameState* gameState, int index) {
@@ -302,6 +304,7 @@ namespace middle {
 		shape.id.index = index;
 		gameState->ids[index] = shape.id;
 		gameState->shapes[index] = shape;
+		gameState->mutatedIdMap[shape.id.index] = shape.id;
 		return gameState->shapes[index];
 	}
 
@@ -312,7 +315,9 @@ namespace middle {
 		shape.id.index = freeIndex;
 		gameState->ids[freeIndex] = shape.id;
 		gameState->shapes[freeIndex] = shape;
-		return gameState->shapes[freeIndex];
+		middle::Shape& newShape = gameState->shapes[freeIndex];
+		gameState->mutatedIdMap[newShape.id.index] = newShape.id;
+		return newShape;
 	}
 
 	Shape& insertShape(GameState* gameState, middle::Id& id)
@@ -321,6 +326,7 @@ namespace middle {
 		shape.id = id;
 		gameState->ids[id.index] = id;
 		gameState->shapes[id.index] = shape;
+		gameState->mutatedIdMap[id.index] = id;
 		return gameState->shapes[id.index];
 	}
 
@@ -665,6 +671,21 @@ namespace middle {
 			std::make_unique<components::CompCache>()
 		);
 		return gameState->compCaches.back().get();
+	}
+
+	void queueAction(GameState* gameState, std::shared_ptr<EditorActionContainer> container)
+	{
+		gameState->actionQueue.push(container);
+	}
+
+	void queueEditorAction(GameState* gameState, std::shared_ptr<EditorActionContainer> container)
+	{
+		gameState->actionQueue.push(container);
+		while (gameState->editorState.historySinkDepth > 0) {
+			gameState->editorState.actionHistory.pop_back();
+			--gameState->editorState.historySinkDepth;
+		}
+		gameState->editorState.actionHistory.push_back(container);
 	}
 
 	//components::CompCache* newCompCache(GameState* gameState)

@@ -12,6 +12,9 @@
 #include <memory>
 #include <functional>
 #include "comp_cache.h"
+#include <queue>
+#include <stack>
+
 
 using namespace descart;
 
@@ -62,9 +65,8 @@ namespace middle {
 		int selectCount = 0;
 		int selectChangeCountAfterClick = 0;
 		Color backgroundColor = BACKGROUND_COLOR;
-		std::vector<std::unique_ptr<EditorActionContainer>> editorActions;
-		int previousSize = 0;
-		int actionPointer = 0;
+		int historySinkDepth = 0;
+		std::vector<std::shared_ptr<EditorActionContainer>>actionHistory;
 		bool grabbing = false;
 	};
 
@@ -148,6 +150,9 @@ namespace middle {
 		std::vector<middle::FieldInfo>fields;
 		BubbleAlgebraState bubbleAlgebraState;
 		std::vector<std::unique_ptr<components::CompCache>>compCaches;
+		std::unordered_map<int, middle::Id>mutatedIdMap;
+		std::queue<std::shared_ptr<EditorActionContainer>>actionQueue;
+		std::queue<std::shared_ptr<EditorActionContainer>>undoQueue;
 	};
 
 }

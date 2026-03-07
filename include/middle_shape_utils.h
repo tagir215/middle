@@ -83,6 +83,10 @@ namespace middle {
 	bool isIdCurrent(GameState* gameState, middle::Id& id);
 	// new comp cache for caching components for better cache locality of components
 	components::CompCache* newCompCache(GameState* gameState);
+	// queue action
+	void queueAction(GameState* gameState, std::shared_ptr<EditorActionContainer> container);
+	// queue action
+	void queueEditorAction(GameState* gameState, std::shared_ptr<EditorActionContainer> container);
 
 
 	template<typename F>

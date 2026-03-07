@@ -32,14 +32,10 @@ public:
 				if (intersectable->intersecting) {
 					if (gameState->input.navigateToFileClick) {
 						if (system) {
-							gameState->editorState.editorActions.push_back(
-								std::make_unique<middle::EditorActionOpenSystem>(system->systemName)
-							);
+							middle::queueAction(gameState, std::make_shared<middle::EditorActionOpenSystem>(system->systemName));
 						}
 						if (componentRef) {
-							gameState->editorState.editorActions.push_back(
-								std::make_unique<middle::EditorActionOpenComponent>(componentRef->componentName)
-							);
+							middle::queueAction(gameState, std::make_shared<middle::EditorActionOpenComponent>(componentRef->componentName));
 						}
 					}
 				}

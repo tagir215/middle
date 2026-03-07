@@ -76,17 +76,21 @@ public:
 					gameState->paused = true;
 				}
 				if (ImGui::Button("undo")) {
-					int& actionPointer = gameState->editorState.actionPointer;
-					if (actionPointer >= 1) {
-						gameState->editorState.editorActions[actionPointer - 1]->undo(gameState);
-						--actionPointer;
+					if (gameState->editorState.actionHistory.size() > 0) {
+						int lastIndex = gameState->editorState.actionHistory.size() - 1; 
+						int targetIndex = lastIndex - gameState->editorState.historySinkDepth;
+						auto actionToUndo = gameState->editorState.actionHistory[targetIndex];
+						gameState->undoQueue.push(actionToUndo);
+						++gameState->editorState.historySinkDepth;
 					}
 				}
 				if (ImGui::Button("redo")) {
-					int& actionPointer = gameState->editorState.actionPointer;
-					if (actionPointer < gameState->editorState.editorActions.size()) {
-						gameState->editorState.editorActions[actionPointer]->execute(gameState);
-						++actionPointer;
+					if (gameState->editorState.historySinkDepth > 0) {
+						int lastIndex = gameState->editorState.actionHistory.size() - 1; 
+						--gameState->editorState.historySinkDepth;
+						int targetIndex = lastIndex - gameState->editorState.historySinkDepth;
+						auto actionToRedo = gameState->editorState.actionHistory[targetIndex];
+						gameState->actionQueue.push(actionToRedo);
 					}
 				}
 			}
@@ -147,29 +151,21 @@ public:
 
 
 			if (ImGui::Button("DELETE OBJECT")) {
-				gameState->editorState.editorActions.push_back(
-					std::make_unique<middle::EditorActionDelete>(middle::getSelectedShapes(gameState))
-				);
+				middle::queueEditorAction(gameState, std::make_shared<middle::EditorActionDelete>(middle::getSelectedShapes(gameState)));
 			}
 
 			if (ImGui::Button("SAVE SCENE")) {
-				gameState->editorState.editorActions.push_back(
-					std::make_unique<middle::EditorActionSaveScene>(gameState->sceneNames[gameState->activeScene])
-				);
+				middle::queueAction(gameState, std::make_shared<middle::EditorActionSaveScene>(gameState->sceneNames[gameState->activeScene]));
 			}
 
 			if (ImGui::Button("CREATE LOOP")) {
-				gameState->editorState.editorActions.push_back(
-					std::make_unique<middle::EditorActionCreateLoop>(middle::getSelectedShapes(gameState))
-				);
+				middle::queueEditorAction(gameState, std::make_shared<middle::EditorActionCreateLoop>(middle::getSelectedShapes(gameState)));
 			}
 
 			ImGui::Separator();
 
 			if (ImGui::Button("BUILD")) {
-				gameState->editorState.editorActions.push_back(
-					std::make_unique<middle::EditorActionBuild>()
-				);
+				middle::queueAction(gameState, std::make_shared<middle::EditorActionBuild>());
 			}
 
 
@@ -203,14 +199,10 @@ public:
 					auto name = gameState->sceneNames[i];
 					if (ImGui::Button(name.c_str())) {
 						if (action == load) {
-							gameState->editorState.editorActions.push_back(
-								std::make_unique<middle::EditorActionLoadScene>(name)
-							);
+							middle::queueAction(gameState, std::make_shared<middle::EditorActionLoadScene>(name));
 						}
 						if (action == import) {
-							gameState->editorState.editorActions.push_back(
-								std::make_unique<middle::EditorActionImportScene>("../assets/scenes/", name)
-							);
+							middle::queueEditorAction(gameState, std::make_shared<middle::EditorActionImportScene>("../assets/scenes/", name));
 						}
 
 						ImGui::CloseCurrentPopup();
@@ -228,9 +220,7 @@ public:
 				for (int i = 0; i < gameState->shapeNames.size(); ++i) {
 					auto name = gameState->shapeNames[i];
 					if (ImGui::Button(name.c_str())) {
-						gameState->editorState.editorActions.push_back(
-							std::make_unique<middle::EditorActionImportScene>("../assets/shapes/", name)
-						);
+						middle::queueEditorAction(gameState, std::make_shared<middle::EditorActionImportScene>("../assets/scenes/", name));
 						ImGui::CloseCurrentPopup();
 					}
 				}
@@ -253,9 +243,7 @@ public:
 				if (ImGui::Button("Add")) {
 					if (strlen(newSceneName) > 0) {
 						// Add the new scene to the editor
-						gameState->editorState.editorActions.push_back(
-							std::make_unique<middle::EditorActionNewScene>(newSceneName)
-						);
+						middle::queueAction(gameState, std::make_shared<middle::EditorActionNewScene>(newSceneName));
 
 						// Clear buffer and close popup
 						newSceneName[0] = '\0';
@@ -313,9 +301,7 @@ public:
 				for (auto& name : gameState->systemNames) {
 					if (ImGui::Button(name.c_str())) {
 
-						gameState->editorState.editorActions.push_back(
-							std::make_unique<middle::EditorActionImportSystem>(name)
-						);
+						middle::queueEditorAction(gameState, std::make_shared<middle::EditorActionImportSystem>(name));
 
 						ImGui::CloseCurrentPopup();
 					}
@@ -329,9 +315,7 @@ public:
 				gameState->inputBlockers.insert(middle::InputBlockers::MOUSE_BLOCK);
 				for (auto& name : gameState->componentNames) {
 					if (ImGui::Button(name.c_str())) {
-						gameState->editorState.editorActions.push_back(
-							std::make_unique<middle::EditorActionImportComponent>(name, middle::getSelectedShapes(gameState))
-						);
+						middle::queueEditorAction(gameState, std::make_shared<middle::EditorActionImportComponent>(name, middle::getSelectedShapes(gameState)));
 						ImGui::CloseCurrentPopup();
 					}
 				}
@@ -360,15 +344,10 @@ public:
 					if (strlen(newScriptName) > 0) {
 						// Add the new scene to the editor
 						if (selectedSystemItem == 0) {
-							gameState->editorState.editorActions.push_back(
-								std::make_unique<middle::EditorActionNewSystem>(newScriptName)
-							);
+							middle::queueAction(gameState, std::make_shared<middle::EditorActionNewSystem>(newScriptName));
 						}
 						else {
-
-							gameState->editorState.editorActions.push_back(
-								std::make_unique<middle::EditorActionNewComponent>(newScriptName)
-							);
+							middle::queueAction(gameState, std::make_shared<middle::EditorActionNewComponent>(newScriptName));
 						}
 
 						// Clear buffer and close popup

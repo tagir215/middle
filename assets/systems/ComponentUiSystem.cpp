@@ -57,15 +57,11 @@ public:
 					ImGui::Separator();
 					ImGui::PushID((char)pair.first);
 					if (ImGui::Button("(o)")) {
-						gameState->editorState.editorActions.push_back(
-							std::make_unique<middle::EditorActionOpenComponent>(componentName)
-						);
+						middle::queueAction(gameState, std::make_shared<middle::EditorActionOpenComponent>(componentName));
 					}
 					ImGui::SameLine();
 					if (ImGui::Button("(d)")) {
-						gameState->editorState.editorActions.push_back(
-							std::make_unique<middle::EditorActionRemoveComponent>(componentName, middle::getSelectedShapes(gameState))
-						);
+						middle::queueAction(gameState, std::make_shared<middle::EditorActionRemoveComponent>(componentName, middle::getSelectedShapes(gameState)));
 					}
 
 
@@ -222,8 +218,8 @@ public:
 				ImGui::End();
 				};
 
-				gameState->uiSetups.push_back(ui);
-				return true;
+			gameState->uiSetups.push_back(ui);
+			return true;
 			});
 	}
 };

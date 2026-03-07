@@ -25,9 +25,7 @@ namespace MouseGrabbingSystem {
 
 			// setup editor action for movement
 			if (gameState->editorState.selectCount > 0 && gameState->input.grabDown && !gameState->editorState.grabbing) {
-				gameState->editorState.editorActions.push_back(
-					std::make_unique<middle::EditorActionMove>(middle::getSelectedShapes(gameState))
-				);
+				middle::queueEditorAction(gameState, std::make_shared<middle::EditorActionMove>(middle::getSelectedShapes(gameState)));
 				gameState->editorState.grabbing = true;
 				return;
 			}
@@ -82,8 +80,7 @@ namespace MouseGrabbingSystem {
 
 				if (gameState->input.grabReleased && gameState->editorState.grabbing) {
 					// update move action with new positions for redo to work
-					auto& actions = gameState->editorState.editorActions;
-					middle::EditorActionContainer* lastAction = actions[actions.size() - 1].get();
+					middle::EditorActionContainer* lastAction = gameState->editorState.actionHistory.back().get();
 					auto lastMoveAction = static_cast<middle::EditorActionMove*>(lastAction);
 					assert(lastMoveAction);
 					lastMoveAction->newPositions.resize(lastMoveAction->selectedShapes.size());

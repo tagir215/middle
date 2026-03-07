@@ -34,31 +34,23 @@ public:
 		if (gameState->editorState.creationMode != middle::CreationMode::SELECT_MODE) {
 
 			if (gameState->editorState.creationMode == middle::CreationMode::SPHERE_MODE && gameState->input.newThing) {
-				gameState->editorState.editorActions.push_back(
-					std::make_unique<middle::EditorActionNewSphere>(gameState->input.mouseXZ_PlanePos)
-				);
+				middle::queueEditorAction(gameState, std::make_shared<middle::EditorActionNewSphere>(gameState->input.mouseXZ_PlanePos));
 			}
 			if (gameState->editorState.creationMode == middle::CreationMode::CONSTRAINT_MODE) {
 				std::vector<int> selectedIndexes = middle::getSelectedShapes(gameState);
 				if (selectedIndexes.size() == 2) {
-					gameState->editorState.editorActions.push_back(
-						std::make_unique<middle::EditorActionNewConstraint>(selectedIndexes[0], selectedIndexes[1])
-					);
+					middle::queueEditorAction(gameState, std::make_shared<middle::EditorActionNewConstraint>(selectedIndexes[0], selectedIndexes[1]));
 				}
 
 			}
 			if (gameState->editorState.creationMode == middle::CreationMode::CAMERA_MODE) {
 				if (gameState->input.newThing) {
 					Camera camera = gameState->editorState.camera;
-					gameState->editorState.editorActions.push_back(
-						std::make_unique<middle::EditorActionNewCamera>(camera.position, camera.target, camera.up, camera.fovy, camera.projection)
-					);
+					middle::queueEditorAction(gameState, std::make_shared<middle::EditorActionNewCamera>(camera.position, camera.target, camera.up, camera.fovy, camera.projection));
 				}
 				if (gameState->input.focus) {
 					std::vector<int>selectedIndexes = middle::getSelectedShapes(gameState);
-					gameState->editorState.editorActions.push_back(
-						std::make_unique<middle::EditorActionSelectCamera>(selectedIndexes[0])
-					);
+					middle::queueEditorAction(gameState, std::make_shared<middle::EditorActionSelectCamera>(selectedIndexes[0]));
 				}
 			}
 
@@ -73,9 +65,7 @@ public:
 						) {
 						int parentIndex = selectedShapes[0];
 						int childIndex = intersectedShape;
-						gameState->editorState.editorActions.push_back(
-							std::make_unique<middle::EditorActionReparent>(parentIndex, childIndex)
-						);
+						middle::queueEditorAction(gameState, std::make_shared<middle::EditorActionReparent>(parentIndex, childIndex));
 					}
 				}
 
@@ -83,9 +73,7 @@ public:
 				if (gameState->input.seaprateFromParentClick) {
 					int intersectedShape = middle::getMouseIntersectedShape(gameState);
 					if (intersectedShape != middle::UNASSIGNED) {
-						gameState->editorState.editorActions.push_back(
-							std::make_unique<middle::EditorActionRemoveFromLoop>(intersectedShape)
-						);
+						middle::queueEditorAction(gameState, std::make_shared<middle::EditorActionRemoveFromLoop>(intersectedShape));
 					}
 				}
 			}
@@ -93,41 +81,29 @@ public:
 
 		if (gameState->editorState.creationMode == middle::CreationMode::SELECT_MODE) {
 			if (gameState->input.copyClick) {
-				gameState->editorState.editorActions.push_back(
-					std::make_unique<middle::EditorActionCopy>(middle::getSelectedShapes(gameState))
-				);
+				middle::queueEditorAction(gameState, std::make_shared<middle::EditorActionCopy>(middle::getSelectedShapes(gameState)));
 			}
 
 			if (gameState->input.deleteClick) {
-				gameState->editorState.editorActions.push_back(
-					std::make_unique<middle::EditorActionDelete>(middle::getSelectedShapes(gameState))
-				);
+				middle::queueEditorAction(gameState, std::make_shared<middle::EditorActionDelete>(middle::getSelectedShapes(gameState)));
 			}
 		}
 
 		if (gameState->input.saveClick) {
-			gameState->editorState.editorActions.push_back(
-				std::make_unique<middle::EditorActionSaveScene>(gameState->sceneNames[gameState->activeScene])
-			);
+			middle::queueAction(gameState, std::make_shared<middle::EditorActionSaveScene>(gameState->sceneNames[gameState->activeScene]));
 		}
 
 		if (gameState->input.loopClick) {
-			gameState->editorState.editorActions.push_back(
-				std::make_unique<middle::EditorActionCreateLoop>(middle::getSelectedShapes(gameState))
-			);
+			middle::queueEditorAction(gameState, std::make_shared<middle::EditorActionCreateLoop>(middle::getSelectedShapes(gameState)));
 		}
 
 		if (gameState->input.hideClick) {
 			std::vector<int>selectedShapes = middle::getSelectedShapes(gameState);
 			if (selectedShapes.size() > 0) {
-				gameState->editorState.editorActions.push_back(
-					std::make_unique<middle::EditorActionHide>(selectedShapes)
-				);
+				middle::queueEditorAction(gameState, std::make_shared<middle::EditorActionHide>(selectedShapes));
 			}
 			else {
-				gameState->editorState.editorActions.push_back(
-					std::make_unique<middle::EditorActionUnhide>()
-				);
+				middle::queueEditorAction(gameState, std::make_shared<middle::EditorActionUnhide>());
 			}
 		}
 	}
