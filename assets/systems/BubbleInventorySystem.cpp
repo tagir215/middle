@@ -14,6 +14,10 @@
 #include "IdRef.h"
 
 class BubbleInventorySystem : public middle::MiddleGameplaySystem {
+public:
+	void init(middle::GameState* gameState) {
+
+	}
 	void update(middle::GameState* gameState) override {
 
 		middle::loopInstances(gameState, [gameState](int i, middle::Shape& shape) {

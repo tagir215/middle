@@ -18,6 +18,10 @@
 #include <queue>
 
 class ProcedureExecutionSystem : public middle::MiddleGameplaySystem {
+public:
+	void init(middle::GameState* gameState) {
+
+	}
 
 	void getOneInput(middle::GameState* gameState, middle::Shape& funcShape, components::InputVariable& inputVariable) {
 		auto variablesLoop = middle::getComponent<components::LoopSociety>(funcShape);

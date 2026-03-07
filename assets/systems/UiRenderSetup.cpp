@@ -20,6 +20,9 @@ public:
 		systemModeType = middle::SystemModeType::ENGINE;
 		systemUpdateType = middle::SystemUpdateType::RENDERING;
 	}
+	void init(middle::GameState* gameState) {
+
+	}
 
 	void drawRect(middle::GameState* gameState, const std::vector<Vector3>& vertices, const Color& color) {
 		middle::RenderItem line1;

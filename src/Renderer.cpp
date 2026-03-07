@@ -13,6 +13,10 @@ namespace RendererSystem {
 	static std::string scriptName = "RendererSystem";
 
 	class RendererSystem : public middle::MiddleGameplaySystem {
+	public:
+		void init(middle::GameState* gameState) {
+
+		}
 		void update(middle::GameState* gameState) override {
 
 			BeginDrawing();
@@ -30,7 +34,7 @@ namespace RendererSystem {
 			rlSetClipPlanes(gameState->nearPlaneDistance, gameState->farPlaneDistance);
 
 
-			for(int i=0; i<gameState->renderData.size(); ++i){
+			for (int i = 0; i < gameState->renderData.size(); ++i) {
 				middle::RenderItem item = gameState->renderData[i];
 
 				if (item.type == middle::RenderItemType::SPHERE) {
@@ -44,7 +48,7 @@ namespace RendererSystem {
 					Matrix M = MatrixMultiply(MatrixMultiply(S, R), T);
 					rlPushMatrix();
 					rlMultMatrixf(MatrixToFloatV(M).v);
-					DrawCube(item.center, item.width,item.length,item.height, item.color);
+					DrawCube(item.center, item.width, item.length, item.height, item.color);
 					rlPopMatrix();
 				}
 

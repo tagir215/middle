@@ -14,6 +14,10 @@ public:
 
 	middle::Id activeCameraId;
 
+	void init(middle::GameState* gameState) {
+
+	}
+
 	void update(middle::GameState* gameState) override {
 
 		if (gameState->reset || !middle::isIdCurrent(gameState, activeCameraId)) {

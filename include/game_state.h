@@ -11,6 +11,7 @@
 #include <string>
 #include <memory>
 #include <functional>
+#include "comp_cache.h"
 
 using namespace descart;
 
@@ -146,6 +147,7 @@ namespace middle {
 		std::vector<std::function<void()>>uiSetups;
 		std::vector<middle::FieldInfo>fields;
 		BubbleAlgebraState bubbleAlgebraState;
+		std::vector<std::unique_ptr<components::CompCache>>compCaches;
 	};
 
 }

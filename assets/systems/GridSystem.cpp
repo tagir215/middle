@@ -5,62 +5,53 @@
 #include "EditorConfigs.h"
 #include "middle_math.h"
 #include "comp_cache.h"
+#include "middle_shape_utils.h"
 
 class GridSystem : public middle::MiddleGameplaySystem {
 public:
 
-	components::CompCache cachoA;
-	components::CompCache cachoB;
+	components::CompCache* cachoA = nullptr;
+	components::CompCache* cachoB = nullptr;
 
 	GridSystem() {
 		systemModeType = middle::SystemModeType::EDITOR;
 		systemUpdateType = middle::SystemUpdateType::GAMEPLAY_POSTFRAME;
+	}
+	void init(middle::GameState* gameState) override {
+		cachoA = middle::newCompCache(gameState);
+		cachoA->addType<components::EditorConfigs>();
+		cachoB = middle::newCompCache(gameState);
+		cachoB->addType<components::GridElement>();
+		cachoB->addType<components::Position>();
 
-		cachoA.addType<components::EditorConfigs>();
-		cachoB.addType<components::GridElement>();
-		cachoB.addType<components::Position>();
 	}
 
+	bool initialized = false;
 
 	void update(middle::GameState* gameState) override {
 
-		auto& configIt = cachoA.begin<components::EditorConfigs>();
-		auto& gridIt = cachoB.begin<components::GridElement>();
-		auto& posIt = cachoB.begin<components::Position>();
+		auto& configIt = cachoA->begin<components::EditorConfigs>();
+		auto& gridIt = cachoB->begin<components::GridElement>();
+		auto& posIt = cachoB->begin<components::Position>();
 
-		for (int i = 0; i < cachoA.getSize(); ++i) {
-			auto config = *configIt;
+		components::EditorConfigs* editorConfigs = nullptr;
+		for (int i = 0; i < cachoA->getSize(); ++i) {
+			editorConfigs = *configIt;
 		}
 
-		for (int i = 0; i < cachoB.getSize(); ++i) {
-			auto grid = *gridIt;
-			auto pos = *posIt;
-		}
-
-		middle::Id& editorConfigs =
-			middle::findFirstShapeWithComp(gameState, middle::getTypeId<components::EditorConfigs>());
-
-		if (editorConfigs.index == middle::UNASSIGNED) {
+		if (!editorConfigs)
 			return;
+
+		for (int i = 0; i < cachoB->getSize(); ++i) {
+			auto gridElement = *gridIt;
+			auto position = *posIt;
+			middle::Id id = cachoB->relevantIdVector[i];
+
+			Vector3 pos = middle::getShapePosition(gameState, id.index);
+			Vector3 targetPos = middle::gridPosition(pos, editorConfigs->gridSize);
+			middle::moveShape(gameState, id.index, targetPos - pos);
 		}
 
-		auto& configShape = middle::getShape(gameState, editorConfigs.index);
-		auto configs = middle::getComponent<components::EditorConfigs>(configShape);
-
-
-		middle::loopInstances(gameState, [gameState, configs](int i, middle::Shape& shape) {
-			auto gridElement = middle::getComponent<components::GridElement>(shape);
-			if (!gridElement)
-				return true;
-			auto position = middle::getComponent<components::Position>(shape);
-
-			Vector3 pos = middle::getShapePosition(gameState, i);
-
-			Vector3 targetPos = middle::gridPosition(pos, configs->gridSize);
-
-			middle::moveShape(gameState, i, targetPos - pos);
-			return true;
-			});
 	}
 };
 

@@ -27,6 +27,7 @@ namespace middle {
 		virtual ~MiddleGameplaySystem() = default;
 		SystemUpdateType systemUpdateType = SystemUpdateType::GAMEPLAY_MIDFRAME;
 		SystemModeType systemModeType = SystemModeType::GAMEPLAY;
+		virtual void init(GameState* gameState) = 0;
 		virtual void update(GameState* gameState) = 0;
 	};
 

@@ -10,6 +10,10 @@
 #include "PlacementComponent.h"
 
 class ProcedureUiSystem : public middle::MiddleGameplaySystem {
+public:
+	void init(middle::GameState* gameState) {
+
+	}
 
 	// there should be only one procedure... so it's the first one 
 	middle::Id& findProcedure(middle::GameState* gameState) {

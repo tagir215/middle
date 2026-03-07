@@ -4,6 +4,10 @@
 #include "middle_math.h"
 
 class InputSystem : public middle::MiddleGameplaySystem {
+public:
+	void init(middle::GameState* gameState) {
+
+	}
 	void update(middle::GameState* gameState) override {
 
 		Matrix scalorM = MatrixScale(1, -1, 1);

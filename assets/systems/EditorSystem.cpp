@@ -19,6 +19,9 @@ public:
 		systemUpdateType = middle::SystemUpdateType::PREFRAME;
 		systemModeType = middle::SystemModeType::EDITOR;
 	}
+	void init(middle::GameState* gameState) {
+
+	}
 
 	void reset(middle::GameState* gameState) {
 		for (int i = 0; i < gameState->shapes.size(); ++i) {

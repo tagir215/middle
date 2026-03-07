@@ -21,6 +21,11 @@ public:
 	BubbleOutlineSystem(){
 		systemModeType = middle::SystemModeType::ENGINE;
 	}
+
+	void init(middle::GameState* gameState) {
+
+	}
+
 	const float bubbleOutlineWidthMargin = 10;
 	const float distBetweenNodes = 5;
 	const float nodeRadius = 0.1f;

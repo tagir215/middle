@@ -10,6 +10,10 @@
 #include "InventoryItem.h"
 
 class BubbleModificationSystem : public middle::MiddleGameplaySystem {
+public:
+	void init(middle::GameState* gameState) {
+
+	}
 
 	bool isMultiplicationConnection(middle::GameState* gameState, middle::Shape& parentShape) {
 		auto mulComp = middle::getComponent<components::BubbleMultiplyComponent>(parentShape);

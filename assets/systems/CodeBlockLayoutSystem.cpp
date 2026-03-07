@@ -21,6 +21,9 @@ public:
 	CodeBlockLayoutSystem() {
 		systemModeType = middle::SystemModeType::ENGINE;
 	}
+	void init(middle::GameState* gameState) {
+
+	}
 
 	const float zmargin = 0;
 	const float minScopeHeight = 30;

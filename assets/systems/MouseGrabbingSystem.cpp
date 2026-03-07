@@ -18,6 +18,9 @@ namespace MouseGrabbingSystem {
 			systemUpdateType = middle::SystemUpdateType::PREFRAME;
 			systemModeType = middle::SystemModeType::EDITOR;
 		}
+		void init(middle::GameState* gameState) {
+
+		}
 		void update(middle::GameState* gameState) override {
 
 			// setup editor action for movement
@@ -38,12 +41,12 @@ namespace MouseGrabbingSystem {
 					continue;
 				if (!grabbable && !placable)
 					continue;
-				
+
 
 				if (grabbable && middle::isShapeSelected(gameState, i) && gameState->input.grabDown) {
 					grabbable->grabbing = true;
 				}
-				else if (grabbable && !gameState->input.grabDown){
+				else if (grabbable && !gameState->input.grabDown) {
 					grabbable->grabbing = false;
 				}
 

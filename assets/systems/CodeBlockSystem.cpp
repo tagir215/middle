@@ -24,6 +24,9 @@ public:
 	CodeBlockSystem() {
 		systemModeType = middle::SystemModeType::GAMEPLAY;
 	}
+	void init(middle::GameState* gameState) {
+
+	}
 
 	void update(middle::GameState* gameState) override {
 

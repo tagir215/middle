@@ -3,6 +3,9 @@
 #include "middle_system_registrar.h"
 
 class /*systemName*/ : public middle::MiddleGameplaySystem {
+	void init(middle::GameState* gameState) override {
+
+	}
 	void update(middle::GameState* gameState) override {
 
 	}

@@ -11,6 +11,9 @@ public:
 		systemModeType = middle::SystemModeType::ENGINE;
 	}
 
+	void init(middle::GameState* gameState) {
+
+	}
 	void update(middle::GameState* gameState) override {
 
 		middle::Id& shapeId = middle::findFirstShapeWithComp(gameState, middle::getTypeId<components::EcsPerformanceTestConfigs>());

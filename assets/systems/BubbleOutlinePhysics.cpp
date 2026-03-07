@@ -15,6 +15,10 @@ public:
 		systemModeType = middle::SystemModeType::ENGINE;
 	}
 
+	void init(middle::GameState* gameState) {
+
+	}
+
 	void applyForce(middle::GameState* gameState, middle::Shape& node, const Vector3& force) {
 		auto pData = middle::getComponent<components::PhysicsData>(node);
 		assert(pData);
@@ -42,6 +46,7 @@ public:
 		}
 		return fieldPositions;
 	}
+
 
 	void update(middle::GameState* gameState) override {
 

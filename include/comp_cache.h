@@ -1,7 +1,5 @@
 #pragma once
-#include "game_state.h"
 #include "middle_component_table.h"
-#include "middle_shape_utils.h"
 
 namespace components {
 
@@ -10,15 +8,12 @@ namespace components {
 		std::vector<int>typeIdVector;
 		std::vector<middle::IComponentVectorContainer*>containerVector;
 		std::vector<std::vector<int>>compOffsetsVector;
-		// key: id entity index  value: id cache index;  used to check if need to update
-		std::unordered_map<int, int>relevantIdMap;
+		std::vector<middle::Id>relevantIdVector;
 		int componentTypeCount = -1;
-		int idCount;
-
-		void updateCache(middle::GameState* gameState);
+		bool needsUpdate = true;
 
 		int getSize() const {
-			return idCount;
+			return relevantIdVector.size();
 		}
 
 		template<typename T>

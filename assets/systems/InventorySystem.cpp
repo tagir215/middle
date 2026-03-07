@@ -11,6 +11,9 @@
 class InventorySystem : public middle::MiddleGameplaySystem {
 
 public:
+	void init(middle::GameState* gameState) {
+
+	}
 
 	const float margin = 30.0f;
 

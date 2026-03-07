@@ -24,6 +24,10 @@ class BubbleCollisionSystem : public middle::MiddleGameplaySystem {
 		float maxDepth;
 		Vector3 normal;
 	};
+public:
+	void init(middle::GameState* gameState) {
+
+	}
 
 	void update(middle::GameState* gameState) override {
 

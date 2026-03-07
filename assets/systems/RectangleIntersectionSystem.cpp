@@ -10,6 +10,10 @@
 #include "middle_math.h"
 
 class RectangleIntersectionSystem : public middle::MiddleGameplaySystem {
+public:
+	void init(middle::GameState* gameState) {
+
+	}
 
 	bool isPlacedRecursive(middle::GameState* gameState, middle::Id& id) {
 		auto& shape = middle::getShape(gameState, id.index);

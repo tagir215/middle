@@ -16,6 +16,10 @@
 
 class BubbleRenderSetup : public middle::MiddleGameplaySystem {
 
+public:
+	void init(middle::GameState* gameState) {
+
+	}
 	bool debugRendering = false;
 
 	void update(middle::GameState* gameState) override {

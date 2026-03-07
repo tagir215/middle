@@ -8,6 +8,11 @@
 #include "bubble_actions.h"
 
 class AlgebraProblemSystem : public middle::MiddleGameplaySystem {
+public:
+	void init(middle::GameState* gameState) {
+
+	}
+
 	void update(middle::GameState* gameState) override {
 		middle::loopInstances(gameState, [gameState](int i, middle::Shape& shape) {
 			auto click = middle::getComponent<components::MouseClickComponent>(shape);

@@ -81,6 +81,9 @@ namespace middle {
 	void findShapesWithComp(GameState* gameState, std::vector<Id>& result, int typeId);
 	// check if is id is assigned and up to date
 	bool isIdCurrent(GameState* gameState, middle::Id& id);
+	// new comp cache for caching components for better cache locality of components
+	components::CompCache* newCompCache(GameState* gameState);
+
 
 	template<typename F>
 	void loopInstances(GameState* gameState, F func) {

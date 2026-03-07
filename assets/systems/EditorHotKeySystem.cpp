@@ -10,6 +10,9 @@ public:
 		systemUpdateType = middle::SystemUpdateType::RENDERING;
 		systemModeType = middle::SystemModeType::EDITOR;
 	}
+	void init(middle::GameState* gameState) {
+
+	}
 	void update(middle::GameState* gameState) override {
 
 		if (gameState->input.selectModeClick) {

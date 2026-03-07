@@ -20,6 +20,8 @@ namespace middle{
 			std::string name = pair.first;
 			auto& sysptr = pair.second;
 
+			sysptr->init(gameState);
+
 			if (sysptr->systemUpdateType == SystemUpdateType::PREFRAME) {
 				gameState->engineSystemsFrameStart.push_back(std::move(sysptr));
 			}

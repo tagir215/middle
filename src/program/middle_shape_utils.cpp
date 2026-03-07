@@ -658,4 +658,20 @@ namespace middle {
 		assert(gameState->ids[id.index] == gameState->shapes[id.index].id);
 		return gameState->ids[id.index] == id;
 	}
+
+	components::CompCache* newCompCache(GameState* gameState)
+	{
+		gameState->compCaches.push_back(
+			std::make_unique<components::CompCache>()
+		);
+		return gameState->compCaches.back().get();
+	}
+
+	//components::CompCache* newCompCache(GameState* gameState)
+	//{
+	//	gameState->compCaches.push_back(
+	//		std::make_unique<components::CompCache>()
+	//	);
+	//	return gameState->compCaches.back().get();
+	//}
 }

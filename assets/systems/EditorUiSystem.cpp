@@ -14,6 +14,9 @@ public:
 		systemModeType = middle::SystemModeType::ENGINE;
 	}
 
+	void init(middle::GameState* gameState) {
+
+	}
 
 	void editorUi(middle::GameState* gameState) {
 

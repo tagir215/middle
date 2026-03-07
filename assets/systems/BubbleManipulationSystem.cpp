@@ -18,6 +18,10 @@
 
 class BubbleManipulationSystem : public middle::MiddleGameplaySystem {
 
+public:
+	void init(middle::GameState* gameState) {
+
+	}
 
 	void update(middle::GameState* gameState) override {
 

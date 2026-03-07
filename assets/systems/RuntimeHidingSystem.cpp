@@ -5,6 +5,10 @@
 #include "RuntimeHiddenTag.h"
 
 class RuntimeHidingSystem : public middle::MiddleGameplaySystem {
+public:
+	void init(middle::GameState* gameState) {
+
+	}
 	void update(middle::GameState* gameState) override {
 		middle::loopInstances(gameState, [gameState](int i, middle::Shape& shape) {
 			return false;
