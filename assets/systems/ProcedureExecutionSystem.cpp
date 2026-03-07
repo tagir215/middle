@@ -173,20 +173,20 @@ public:
 			auto bubbleMultiplication = middle::getComponent<components::BubbleMultiplyComponent>(parentShape);
 
 			if (bubbleMultiplication) {
-				auto multiply = std::make_unique<bubbleActions::ExecuteMultiplication>(varA.unitRef, varB.unitRef);
-				multiply->execute(gameState);
-				auto update = std::make_unique<bubbleActions::UpdateVariable>(output.label, multiply->resultShapeId);
-				update->execute(gameState);
-				function->actions.push_back(std::move(multiply));
-				function->actions.push_back(std::move(update));
+				auto multiply = std::make_shared<bubbleActions::ExecuteMultiplication>(varA.unitRef, varB.unitRef);
+				middle::queueAction(gameState, multiply);
+				auto update = std::make_shared<bubbleActions::UpdateVariable>(output.label, multiply->resultShapeId);
+				middle::queueAction(gameState, update);
+				function->actions.push_back(multiply);
+				function->actions.push_back(update);
 			}
 			else {
-				auto combine = std::make_unique<bubbleActions::ExecuteAddition>(varA.unitRef, varB.unitRef);
-				combine->execute(gameState);
-				auto update = std::make_unique<bubbleActions::UpdateVariable>(output.label, combine->resultShapeId);
-				update->execute(gameState);
-				function->actions.push_back(std::move(combine));
-				function->actions.push_back(std::move(update));
+				auto combine = std::make_shared<bubbleActions::ExecuteAddition>(varA.unitRef, varB.unitRef);
+				middle::queueAction(gameState, combine);
+				auto update = std::make_shared<bubbleActions::UpdateVariable>(output.label, combine->resultShapeId);
+				middle::queueAction(gameState, update);
+				function->actions.push_back(combine);
+				function->actions.push_back(update);
 			}
 		}
 
@@ -200,12 +200,12 @@ public:
 			components::OutputVariable output;
 			getOneInput(gameState, funcShape, input);
 			getOneOutput(gameState, funcShape, output);
-			auto copyAction = std::make_unique<middle::EditorActionCopySingle>(input.unitRef);
-			copyAction->execute(gameState);
-			auto update = std::make_unique<bubbleActions::UpdateVariable>(output.label, copyAction->resultId);
-			update->execute(gameState);
-			function->actions.push_back(std::move(copyAction));
-			function->actions.push_back(std::move(update));
+			auto copyAction = std::make_shared<middle::EditorActionCopySingle>(input.unitRef);
+			middle::queueAction(gameState, copyAction);
+			auto update = std::make_shared<bubbleActions::UpdateVariable>(output.label, copyAction->resultId);
+			middle::queueAction(gameState, update);
+			function->actions.push_back(copyAction);
+			function->actions.push_back(update);
 		}
 
 
@@ -222,12 +222,12 @@ public:
 			assert(input.unitRef.index != middle::UNASSIGNED);
 			middle::Id topBubbleId = bubbleActions::topLevelBubble(gameState);
 			middle::Id copy = middle::deepCopyShape(gameState, funcShape.id.index, topBubbleId.index);
-			auto reparent = std::make_unique<middle::EditorActionReparent>(topBubbleId.index, copy.index);
-			reparent->execute(gameState);
-			auto update = std::make_unique<bubbleActions::UpdateVariable>(output.label, copy);
-			update->execute(gameState);
-			function->actions.push_back(std::move(reparent));
-			function->actions.push_back(std::move(update));
+			auto reparent = std::make_shared<middle::EditorActionReparent>(topBubbleId.index, copy.index);
+			middle::queueAction(gameState, reparent);
+			auto update = std::make_shared<bubbleActions::UpdateVariable>(output.label, copy);
+			middle::queueAction(gameState, update);
+			function->actions.push_back(reparent);
+			function->actions.push_back(update);
 		}
 
 		else if (function->type == functionTypes::NEW_MULTERM) {
@@ -238,21 +238,21 @@ public:
 			assert(input.unitRef.index != middle::UNASSIGNED);
 			middle::Id topBubbleId = bubbleActions::topLevelBubble(gameState);
 			middle::Id copy = middle::deepCopyShape(gameState, funcShape.id.index, topBubbleId.index);
-			auto replacement = std::make_unique<bubbleActions::CreateMulitiplicationReplacementShape>(topBubbleId, copy);
-			replacement->execute(gameState);
-			auto update = std::make_unique<bubbleActions::UpdateVariable>(output.label, copy);
-			update->execute(gameState);
-			function->actions.push_back(std::move(replacement));
-			function->actions.push_back(std::move(update));
+			auto replacement = std::make_shared<bubbleActions::CreateMulitiplicationReplacementShape>(topBubbleId, copy);
+			middle::queueAction(gameState, replacement);
+			auto update = std::make_shared<bubbleActions::UpdateVariable>(output.label, copy);
+			middle::queueAction(gameState, update);
+			function->actions.push_back(replacement);
+			function->actions.push_back(update);
 		}
 
 		else if (function->type == functionTypes::POP) {
 			components::InputVariable input;
 			getOneInput(gameState, funcShape, input);
 			assert(input.unitRef.index != middle::UNASSIGNED);
-			auto popAction = std::make_unique<bubbleActions::Pop>(input.unitRef);
-			popAction->execute(gameState);
-			function->actions.push_back(std::move(popAction));
+			auto popAction = std::make_shared<bubbleActions::Pop>(input.unitRef);
+			middle::queueAction(gameState, popAction);
+			function->actions.push_back(popAction);
 		}
 
 		else if (function->type == functionTypes::MUL_ONE) {
@@ -261,12 +261,12 @@ public:
 			getOneInput(gameState, funcShape, input);
 			getOneOutput(gameState, funcShape, output);
 			assert(input.unitRef.index != middle::UNASSIGNED);
-			auto mulOneAction = std::make_unique<bubbleActions::MulOne>(input.unitRef);
-			mulOneAction->execute(gameState);
-			auto update = std::make_unique<bubbleActions::UpdateVariable>(output.label, mulOneAction->resultShapeId);
-			update->execute(gameState);
-			function->actions.push_back(std::move(mulOneAction));
-			function->actions.push_back(std::move(update));
+			auto mulOneAction = std::make_shared<bubbleActions::MulOne>(input.unitRef);
+			middle::queueAction(gameState, mulOneAction);
+			auto update = std::make_shared<bubbleActions::UpdateVariable>(output.label, mulOneAction->resultShapeId);
+			middle::queueAction(gameState, update);
+			function->actions.push_back(mulOneAction);
+			function->actions.push_back(update);
 		}
 
 		else if (function->type == functionTypes::BREAK) {
@@ -278,12 +278,12 @@ public:
 			assert(inputA.unitRef.index != middle::UNASSIGNED);
 			assert(inputB.unitRef.index != middle::UNASSIGNED);
 			int value = (int)bubbleActions::unitValue(gameState, inputB.unitRef);
-			auto breakAction = std::make_unique<bubbleActions::Break>(inputA.unitRef, value);
-			breakAction->execute(gameState);
-			auto update = std::make_unique<bubbleActions::UpdateVariable>(output.label, breakAction->resultShapeId);
-			update->execute(gameState);
-			function->actions.push_back(std::move(breakAction));
-			function->actions.push_back(std::move(update));
+			auto breakAction = std::make_shared<bubbleActions::Break>(inputA.unitRef, value);
+			middle::queueAction(gameState, breakAction);
+			auto update = std::make_shared<bubbleActions::UpdateVariable>(output.label, breakAction->resultShapeId);
+			middle::queueAction(gameState, update);
+			function->actions.push_back(breakAction);
+			function->actions.push_back(update);
 		}
 
 		else if (function->type == functionTypes::COMPRESS) {
@@ -293,15 +293,15 @@ public:
 			getOneInput(gameState, funcShape, input);
 			getTwoOutputs(gameState, funcShape, outputA, outputB);
 			assert(input.unitRef.index != middle::UNASSIGNED);
-			auto compressAction = std::make_unique<bubbleActions::Compress>(input.unitRef);
-			compressAction->execute(gameState);
-			auto updateA = std::make_unique<bubbleActions::UpdateVariable>(outputA.label, compressAction->resultCountBubbleId);
-			updateA->execute(gameState);
-			auto updateB = std::make_unique<bubbleActions::UpdateVariable>(outputB.label, compressAction->resultCompressedBubbleId);
-			updateB->execute(gameState);
-			function->actions.push_back(std::move(compressAction));
-			function->actions.push_back(std::move(updateA));
-			function->actions.push_back(std::move(updateB));
+			auto compressAction = std::make_shared<bubbleActions::Compress>(input.unitRef);
+			middle::queueAction(gameState, compressAction);
+			auto updateA = std::make_shared<bubbleActions::UpdateVariable>(outputA.label, compressAction->resultCountBubbleId);
+			middle::queueAction(gameState, updateA);
+			auto updateB = std::make_shared<bubbleActions::UpdateVariable>(outputB.label, compressAction->resultCompressedBubbleId);
+			middle::queueAction(gameState, updateB);
+			function->actions.push_back(compressAction);
+			function->actions.push_back(updateA);
+			function->actions.push_back(updateB);
 		}
 	}
 
