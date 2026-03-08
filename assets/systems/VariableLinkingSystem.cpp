@@ -104,13 +104,18 @@ public:
 				return true;
 
 			if (intersectable->intersecting) {
-				middle::Id copyId = middle::deepCopyShape(gameState, shape.id.index, middle::UNASSIGNED);
-				auto& copyShape = middle::getShape(gameState, copyId.index);
-				auto copyLoop = middle::getComponent<components::LoopSociety>(copyShape);
-				// set copy intersecting as false since, its copied
-				middle::deleteComponent<components::MouseIntersectable>(copyShape);
-				copyLoop->parentLoopId = middle::Id();
-				gameState->bubbleAlgebraState.grabbedId = copyId;
+
+				middle::Id toCopyId = shape.id;
+				middle::queueAction(gameState, std::make_shared<middle::CustomAction>([toCopyId](middle::GameState* gameState) {
+					middle::Id copyId = middle::deepCopyShape(gameState, toCopyId.index, middle::UNASSIGNED);
+					auto& copyShape = middle::getShape(gameState, copyId.index);
+					auto copyLoop = middle::getComponent<components::LoopSociety>(copyShape);
+					// set copy intersecting as false since, its copied
+					middle::deleteComponent<components::MouseIntersectable>(copyShape);
+					copyLoop->parentLoopId = middle::Id();
+					gameState->bubbleAlgebraState.grabbedId = copyId;
+					}));
+
 			}
 			return true;
 			});
