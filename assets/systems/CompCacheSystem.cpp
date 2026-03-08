@@ -60,6 +60,7 @@ public:
 					}
 				}
 			}
+			structuralChanges.clear();
 		}
 
 		for (auto& cache : gameState->compCaches) {

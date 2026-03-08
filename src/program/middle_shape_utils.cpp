@@ -269,7 +269,6 @@ namespace middle {
 		}
 
 		int prevGeneration = gameState->shapes[index].id.generation;
-		gameState->shapes[index] = Shape();
 		for (auto& pair : gameState->shapes[index].componentMap) {
 			Component c = pair.second;
 			int typeId = pair.first;
@@ -278,6 +277,7 @@ namespace middle {
 
 			componentListMap[typeId]->shrink(c.componentOffset);
 		}
+		gameState->shapes[index] = Shape();
 
 		auto& delShape = gameState->shapes[index];
 		delShape.id.generation = prevGeneration + 1;

@@ -35,6 +35,7 @@ namespace middle {
 
 		void shrink(int componentOffset) {
 			freeList.push_back(componentOffset);
+			vectorData[componentOffset] = T();
 		}
 
 		Serializable* getSerializable(int componentOffset) {
