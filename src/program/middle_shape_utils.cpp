@@ -688,6 +688,7 @@ namespace middle {
 		gameState->editorState.actionHistory.push_back(container);
 	}
 
+
 	//components::CompCache* newCompCache(GameState* gameState)
 	//{
 	//	gameState->compCaches.push_back(

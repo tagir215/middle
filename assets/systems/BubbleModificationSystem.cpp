@@ -26,23 +26,23 @@ public:
 	void combine(middle::GameState* gameState, middle::Shape& refParent, middle::Shape& refShape, middle::Shape& intersectedShape) {
 		// is multiplication connection
 		if (isMultiplicationConnection(gameState, refParent)) {
-			auto multiply = std::make_unique<bubbleActions::ExecuteMultiplication>(refShape.id, intersectedShape.id);
+			auto multiply = std::make_shared<bubbleActions::ExecuteMultiplication>(refShape.id, intersectedShape.id);
 			multiply->execute(gameState);
-			gameState->bubbleAlgebraState.bubbleActions.push_back(std::move(multiply));
+			gameState->bubbleAlgebraState.bubbleActions.push_back(multiply);
 			return;
 		}
 		// else is addition connection
 		else {
-			auto add = std::make_unique<bubbleActions::ExecuteAddition>(refShape.id, intersectedShape.id);
+			auto add = std::make_shared<bubbleActions::ExecuteAddition>(refShape.id, intersectedShape.id);
 			add->execute(gameState);
-			gameState->bubbleAlgebraState.bubbleActions.push_back(std::move(add));
+			gameState->bubbleAlgebraState.bubbleActions.push_back(add);
 			return;
 		}
 	}
 
 	void inventoryAction(middle::GameState* gameState, int actionType, middle::Shape& intersectedShape) {
 		// pop as long as not multiplication
-		std::unique_ptr<middle::EditorActionContainer>action;
+		std::shared_ptr<middle::EditorActionContainer>action;
 
 		if (actionType == bubbleInventoryitemType::POP) {
 			middle::Id& parentId = middle::getParent(gameState, intersectedShape.id);
@@ -51,45 +51,45 @@ public:
 			}
 			auto& parentShape = middle::getShape(gameState, parentId.index);
 			if (!isMultiplicationConnection(gameState, parentShape)) {
-				action = std::make_unique<bubbleActions::Pop>(intersectedShape.id);
+				action = std::make_shared<bubbleActions::Pop>(intersectedShape.id);
 			}
 		}
 		else if (actionType == bubbleInventoryitemType::TIMES_ONE) {
-			action = std::make_unique<bubbleActions::MulOne>(intersectedShape.id);
+			action = std::make_shared<bubbleActions::MulOne>(intersectedShape.id);
 		}
 		else if (actionType == bubbleInventoryitemType::COMPRESS) {
-			action = std::make_unique<bubbleActions::Compress>(intersectedShape.id);
+			action = std::make_shared<bubbleActions::Compress>(intersectedShape.id);
 		}
 		else if (actionType == bubbleInventoryitemType::BREAK_2) {
-			action = std::make_unique<bubbleActions::Break>(intersectedShape.id, 2);
+			action = std::make_shared<bubbleActions::Break>(intersectedShape.id, 2);
 		}
 		else if (actionType == bubbleInventoryitemType::BREAK_3) {
-			action = std::make_unique<bubbleActions::Break>(intersectedShape.id, 3);
+			action = std::make_shared<bubbleActions::Break>(intersectedShape.id, 3);
 		}
 		else if (actionType == bubbleInventoryitemType::BREAK_4) {
-			action = std::make_unique<bubbleActions::Break>(intersectedShape.id, 4);
+			action = std::make_shared<bubbleActions::Break>(intersectedShape.id, 4);
 		}
 		else if (actionType == bubbleInventoryitemType::BREAK_5) {
-			action = std::make_unique<bubbleActions::Break>(intersectedShape.id, 5);
+			action = std::make_shared<bubbleActions::Break>(intersectedShape.id, 5);
 		}
 		else if (actionType == bubbleInventoryitemType::BREAK_6) {
-			action = std::make_unique<bubbleActions::Break>(intersectedShape.id, 6);
+			action = std::make_shared<bubbleActions::Break>(intersectedShape.id, 6);
 		}
 		else if (actionType == bubbleInventoryitemType::BREAK_7) {
-			action = std::make_unique<bubbleActions::Break>(intersectedShape.id, 7);
+			action = std::make_shared<bubbleActions::Break>(intersectedShape.id, 7);
 		}
 		else if (actionType == bubbleInventoryitemType::BREAK_8) {
-			action = std::make_unique<bubbleActions::Break>(intersectedShape.id, 8);
+			action = std::make_shared<bubbleActions::Break>(intersectedShape.id, 8);
 		}
 		else if (actionType == bubbleInventoryitemType::BREAK_9) {
-			action = std::make_unique<bubbleActions::Break>(intersectedShape.id, 9);
+			action = std::make_shared<bubbleActions::Break>(intersectedShape.id, 9);
 		}
 		else if (actionType == bubbleInventoryitemType::BREAK_10) {
-			action = std::make_unique<bubbleActions::Break>(intersectedShape.id, 10);
+			action = std::make_shared<bubbleActions::Break>(intersectedShape.id, 10);
 		}
 		if (action) {
 			action->execute(gameState);
-			gameState->bubbleAlgebraState.bubbleActions.push_back(std::move(action));
+			gameState->bubbleAlgebraState.bubbleActions.push_back(action);
 		}
 	}
 
