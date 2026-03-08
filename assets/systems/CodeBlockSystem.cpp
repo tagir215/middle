@@ -18,6 +18,7 @@
 #include "ScopeComponent.h"
 #include "ProcedureComponent.h"
 #include "InputVariable.h"
+#include "component_utils.h"
 
 class CodeBlockSystem : public middle::MiddleGameplaySystem {
 public:
@@ -204,7 +205,7 @@ public:
 				middle::deleteShapeRecursive(gameState, grabbedShape.id.index);
 			}
 			else {
-				middle::deleteComponent<components::PlacementComponent>(grabbedShape);
+				middle::queueComponentDeletion<components::PlacementComponent>(gameState, grabbedShape.id);
 			}
 			gameState->bubbleAlgebraState.grabbedId = middle::Id();
 		}

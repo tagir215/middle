@@ -1,5 +1,6 @@
 #pragma once
 #include "game_state.h"
+#include "functional"
 
 namespace middle {
 
@@ -348,4 +349,13 @@ namespace middle {
 		void undo(GameState* gameState) override;
 	};
 
+	class CustomAction : public EditorActionContainer {
+	public:
+		std::function<void(middle::GameState*)> func;
+		CustomAction(std::function<void(middle::GameState*)> func) {
+			this->func = func;
+		}
+		void execute(GameState* gameState) override;
+		void undo(GameState* gameState) override;
+	};
 }

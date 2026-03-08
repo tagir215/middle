@@ -12,6 +12,7 @@
 #include "Position.h"
 #include "DeleteComponent.h"
 #include "IdRef.h"
+#include "component_utils.h"
 
 class BubbleInventorySystem : public middle::MiddleGameplaySystem {
 public:
@@ -46,7 +47,7 @@ public:
 						gameState->bubbleAlgebraState.grabbedId = copyId;
 						auto ref = middle::addComponent<components::IdRef>(copyShape);
 						ref->idRef = copyId;
-						middle::deleteComponent<components::MouseIntersectable>(copyShape);
+						middle::queueComponentDeletion<components::MouseIntersectable>(gameState, copyShape.id);
 					}
 				}
 			}

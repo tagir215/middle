@@ -152,8 +152,8 @@ public:
 			constraintToEdit->idB = nodeToReplace;
 		}
 
-		middle::deleteShape(gameState, constraintShapeToRemove.id.index);
-		middle::deleteShape(gameState, nodeIdToRemove.index);
+		middle::queueAction(gameState, std::make_shared<middle::EditorActionDeleteSingle>(constraintShapeToRemove.id));
+		middle::queueAction(gameState, std::make_shared<middle::EditorActionDeleteSingle>(nodeIdToRemove));
 	}
 
 

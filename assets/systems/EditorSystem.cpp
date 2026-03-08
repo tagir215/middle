@@ -62,6 +62,10 @@ public:
 			loadSystemNames(gameState);
 			loadComponentNames(gameState);
 			gameState->startGame = false;
+
+			middle::queueAction(gameState, std::make_shared<middle::CustomAction>(
+				[](middle::GameState* gameState) { gameState->loaded = true; })
+			);
 		}
 
 

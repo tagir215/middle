@@ -143,6 +143,7 @@ namespace middle {
 		bool startGame = false;
 		bool reload = true;
 		bool reset = false;
+		bool loaded = false;
 		bool quit = false;
 		std::vector<RenderItem>renderData;
 		std::vector<PhysicsBody>physicsBodies;

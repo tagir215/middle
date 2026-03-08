@@ -21,6 +21,7 @@
 #include "PlacementComponent.h"
 #include "CameraEntity.h"
 #include "HiddenTag.h"
+#include "component_utils.h"
 
 namespace middle {
 
@@ -480,7 +481,7 @@ namespace middle {
 			getAllChildren(gameState, copyShape.id, children);
 			for (Id& id : children) {
 				Shape& child = getShape(gameState, id.index);
-				addComponent<components::PlacementComponent>(child);
+				middle::queueComponentAddition<components::PlacementComponent>(gameState, child.id);
 			}
 		}
 	}
@@ -497,7 +498,7 @@ namespace middle {
 	{
 		for (int index : selectedShapes) {
 			auto& shape = middle::getShape(gameState, index);
-			addComponent<components::HiddenTag>(shape);
+			middle::queueComponentAddition<components::HiddenTag>(gameState, shape.id);
 		}
 	}
 
@@ -505,16 +506,16 @@ namespace middle {
 	{
 		for (int index : selectedShapes) {
 			auto& shape = middle::getShape(gameState, index);
-			deleteComponent<components::HiddenTag>(shape);
+			middle::queueComponentDeletion<components::HiddenTag>(gameState, shape.id);
 		}
 	}
 
 	void EditorActionUnhide::execute(GameState* gameState)
 	{
 		std::vector<int>& unhidded = unhidIndexes;
-		loopInstances(gameState, [&unhidded](int i, middle::Shape& shape) {
+		loopInstances(gameState, [&unhidded, gameState](int i, middle::Shape& shape) {
 			if (middle::getComponent<components::HiddenTag>(shape)) {
-				deleteComponent<components::HiddenTag>(shape);
+				queueComponentDeletion<components::HiddenTag>(gameState, shape.id);
 				unhidded.push_back(shape.id.index);
 			}
 			return true;
@@ -606,6 +607,15 @@ namespace middle {
 	void EditorActionRegisterId::undo(GameState* gameState)
 	{
 		middle::deleteShapeRecursive(gameState, id.index);
+	}
+
+	void CustomAction::execute(GameState* gameState)
+	{
+		this->func(gameState);
+	}
+
+	void CustomAction::undo(GameState* gameState)
+	{
 	}
 
 }

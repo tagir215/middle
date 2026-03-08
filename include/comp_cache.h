@@ -34,6 +34,7 @@ namespace components {
 			Iterator(CompCache* cache) {
 				int typeId = middle::getTypeId<T>();
 				int cacheTypeIndex = -1;
+
 				for (int i = 0; i < cache->componentTypeCount; ++i) {
 					if (typeId == cache->typeIdVector[i]) {
 						cacheTypeIndex = i;

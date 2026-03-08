@@ -38,15 +38,18 @@ public:
 			}
 
 			cache->relevantIdVector.push_back(shape.id);
-			// update here cause sometimes shapes don't even exist at update point
-			cache->needsUpdate = false;
 			return true;
 			});
 
+		cache->needsUpdate = false;
 	}
 
 
 	void update(middle::GameState* gameState) override {
+
+		if (!gameState->loaded) {
+			return;
+		}
 
 		if (gameState->mutatedIdMap.size() > 0) {
 			for (auto& cache : gameState->compCaches) {

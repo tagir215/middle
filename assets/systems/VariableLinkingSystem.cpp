@@ -10,6 +10,7 @@
 #include "editor_actions.h"
 #include "OutputVariable.h"
 #include "bubble_actions.h"
+#include "component_utils.h"
 
 class VariableLinkingSystem : public middle::MiddleGameplaySystem {
 

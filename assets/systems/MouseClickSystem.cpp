@@ -5,6 +5,7 @@
 #include "MouseIntersectable.h"
 #include "MouseClickComponent.h"
 #include "Button.h"
+#include "component_utils.h"
 
 class MouseClickSystem : public middle::MiddleGameplaySystem {
 public:
@@ -16,7 +17,7 @@ public:
 		middle::loopInstances(gameState, [gameState](int i, middle::Shape& shape) {
 			auto click = middle::getComponent<components::MouseClickComponent>(shape);
 			if (click) {
-				middle::deleteComponent <components::MouseClickComponent>(shape);
+				middle::queueComponentDeletion<components::MouseClickComponent>(gameState, shape.id);
 			}
 			return true;
 			});

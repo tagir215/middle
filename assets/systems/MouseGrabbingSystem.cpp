@@ -9,6 +9,7 @@
 #include "LoopSociety.h"
 #include "editor_actions.h"
 #include "GridElement.h"
+#include "component_utils.h"
 
 namespace MouseGrabbingSystem {
 
@@ -55,7 +56,7 @@ namespace MouseGrabbingSystem {
 					middle::getAllChildren(gameState, shape.id, members);
 					for (middle::Id& childId : members) {
 						middle::Shape& child = middle::getShape(gameState, childId.index);
-						middle::deleteComponent<components::PlacementComponent>(child);
+						middle::queueComponentDeletion<components::PlacementComponent>(gameState, childId);
 					}
 				}
 

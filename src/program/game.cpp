@@ -58,6 +58,10 @@ namespace middle{
 			system->update(gameState);
 		}
 
+		if (!gameState->loaded) {
+			return;
+		}
+
 		// run gameplay systems
 		loopInstances(gameState, [gameState](int i, Shape& shape) {
 

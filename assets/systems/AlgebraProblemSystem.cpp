@@ -9,17 +9,23 @@
 
 class AlgebraProblemSystem : public middle::MiddleGameplaySystem {
 public:
-	void init(middle::GameState* gameState) {
 
+
+	components::CompCache* cache = nullptr;
+
+	void init(middle::GameState* gameState) {
+		cache = middle::newCompCache(gameState);
+		cache->addType<components::MouseClickComponent>();
+		cache->addType<components::Button>();
 	}
 
 	void update(middle::GameState* gameState) override {
-		middle::loopInstances(gameState, [gameState](int i, middle::Shape& shape) {
-			auto click = middle::getComponent<components::MouseClickComponent>(shape);
-			if (!click) {
-				return true;
-			}
-			auto button = middle::getComponent<components::Button>(shape);
+
+		auto buttonIt = cache->begin<components::Button>();
+		int size = cache->getSize();
+
+		for (int i = 0; i < size; ++i) {
+			auto button = *buttonIt;
 			if (button->function == bubbleButton::DONE) {
 				std::vector<middle::Id> formulas;
 				middle::findShapesWithComp(gameState, formulas, middle::getTypeId<components::BubbleAlgebraProblem>());
@@ -38,8 +44,7 @@ public:
 					gameState->bubbleAlgebraState.bubbleActions.pop_back();
 				}
 			}
-			return true;
-			});
+		}
 	}
 };
 
