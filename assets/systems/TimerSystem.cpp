@@ -4,6 +4,7 @@
 #include "middle_component_table.h"
 #include "middle_shape_utils.h"
 #include "TimerComponent.h"
+#include "component_utils.h"
 
 class TimerSystem : public middle::MiddleGameplaySystem {
 
@@ -18,7 +19,7 @@ public:
 				return true;
 			timer->timeLeft -= gameState->frameTime;
 			if (timer->timeLeft < 0) {
-				middle::deleteComponent<components::TimerComponent>(shape);
+				middle::queueComponentDeletion<components::TimerComponent>(gameState, shape.id);
 			}
 			return true;
 			});

@@ -51,7 +51,7 @@ namespace MouseGrabbingSystem {
 
 				// remove placement component after clicking
 				if (placable && gameState->input.mouseClicked) {
-					middle::deleteComponent<components::PlacementComponent>(shape);
+					middle::queueComponentDeletion<components::PlacementComponent>(gameState, shape.id);
 					std::vector<middle::Id>members;
 					middle::getAllChildren(gameState, shape.id, members);
 					for (middle::Id& childId : members) {
