@@ -14,7 +14,7 @@
 #include "comp_cache.h"
 #include <queue>
 #include <stack>
-
+#include <set>
 
 using namespace descart;
 
@@ -151,7 +151,7 @@ namespace middle {
 		std::vector<middle::FieldInfo>fields;
 		BubbleAlgebraState bubbleAlgebraState;
 		std::vector<std::unique_ptr<components::CompCache>>compCaches;
-		std::unordered_map<int, middle::Id>mutatedIdMap;
+		std::set<int>componentTypeIdSetWithStructuralChanges;
 		std::queue<std::shared_ptr<EditorActionContainer>>actionQueue;
 		std::queue<std::shared_ptr<EditorActionContainer>>undoQueue;
 	};

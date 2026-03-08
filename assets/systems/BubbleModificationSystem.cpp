@@ -27,14 +27,14 @@ public:
 		// is multiplication connection
 		if (isMultiplicationConnection(gameState, refParent)) {
 			auto multiply = std::make_shared<bubbleActions::ExecuteMultiplication>(refShape.id, intersectedShape.id);
-			multiply->execute(gameState);
+			middle::queueAction(gameState, multiply);
 			gameState->bubbleAlgebraState.bubbleActions.push_back(multiply);
 			return;
 		}
 		// else is addition connection
 		else {
 			auto add = std::make_shared<bubbleActions::ExecuteAddition>(refShape.id, intersectedShape.id);
-			add->execute(gameState);
+			middle::queueAction(gameState, add);
 			gameState->bubbleAlgebraState.bubbleActions.push_back(add);
 			return;
 		}
@@ -88,7 +88,7 @@ public:
 			action = std::make_shared<bubbleActions::Break>(intersectedShape.id, 10);
 		}
 		if (action) {
-			action->execute(gameState);
+			middle::queueAction(gameState, action);
 			gameState->bubbleAlgebraState.bubbleActions.push_back(action);
 		}
 	}

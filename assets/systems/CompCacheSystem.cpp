@@ -51,12 +51,12 @@ public:
 			return;
 		}
 
-		if (gameState->mutatedIdMap.size() > 0) {
+		auto& structuralChanges = gameState->componentTypeIdSetWithStructuralChanges;
+		if (structuralChanges.size() > 0) {
 			for (auto& cache : gameState->compCaches) {
-				for (middle::Id& id : cache->relevantIdVector) {
-					if (gameState->mutatedIdMap.find(id.index) != gameState->mutatedIdMap.end()) {
+				for (int compTypeId : cache->typeIdVector) {
+					if (structuralChanges.find(compTypeId) != structuralChanges.end()) {
 						cache->needsUpdate = true;
-						break;
 					}
 				}
 			}

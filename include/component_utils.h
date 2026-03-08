@@ -8,7 +8,7 @@ namespace middle {
 		middle::queueAction(gameState, std::make_shared<middle::CustomAction>([id](middle::GameState* gameState) {
 			middle::Shape& shape = middle::getShape(gameState, id.index);
 			middle::addComponent<CompType>(shape);
-			gameState->mutatedIdMap[shape.id.index] = shape.id;
+			gameState->componentTypeIdSetWithStructuralChanges.insert(middle::getTypeId<CompType>());
 			}));
 	}
 
@@ -18,7 +18,7 @@ namespace middle {
 			middle::Shape& shape = middle::getShape(gameState, id.index);
 			auto newComp = middle::addComponent<CompType>(shape);
 			init(newComp);
-			gameState->mutatedIdMap[shape.id.index] = shape.id;
+			gameState->componentTypeIdSetWithStructuralChanges.insert(middle::getTypeId<CompType>());
 			}));
 	}
 
@@ -27,7 +27,7 @@ namespace middle {
 		middle::queueAction(gameState, std::make_shared<middle::CustomAction>([id](middle::GameState* gameState) {
 			middle::Shape& shape = middle::getShape(gameState, id.index);
 			middle::deleteComponent<CompType>(shape);
-			gameState->mutatedIdMap[shape.id.index] = shape.id;
+			gameState->componentTypeIdSetWithStructuralChanges.insert(middle::getTypeId<CompType>());
 			}));
 	}
 }

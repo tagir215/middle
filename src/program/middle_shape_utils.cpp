@@ -273,12 +273,14 @@ namespace middle {
 		for (auto& pair : gameState->shapes[index].componentMap) {
 			Component c = pair.second;
 			int typeId = pair.first;
+			// store changed component typeids to trigger cache updates
+			gameState->componentTypeIdSetWithStructuralChanges.insert(typeId);
+
 			componentListMap[typeId]->shrink(c.componentOffset);
 		}
 
 		auto& delShape = gameState->shapes[index];
 		delShape.id.generation = prevGeneration + 1;
-		gameState->mutatedIdMap[delShape.id.index] = delShape.id;
 	}
 
 	void deleteShapeRecursive(GameState* gameState, int index) {
@@ -304,7 +306,6 @@ namespace middle {
 		shape.id.index = index;
 		gameState->ids[index] = shape.id;
 		gameState->shapes[index] = shape;
-		gameState->mutatedIdMap[shape.id.index] = shape.id;
 		return gameState->shapes[index];
 	}
 
@@ -316,7 +317,6 @@ namespace middle {
 		gameState->ids[freeIndex] = shape.id;
 		gameState->shapes[freeIndex] = shape;
 		middle::Shape& newShape = gameState->shapes[freeIndex];
-		gameState->mutatedIdMap[newShape.id.index] = newShape.id;
 		return newShape;
 	}
 
@@ -326,7 +326,6 @@ namespace middle {
 		shape.id = id;
 		gameState->ids[id.index] = id;
 		gameState->shapes[id.index] = shape;
-		gameState->mutatedIdMap[id.index] = id;
 		return gameState->shapes[id.index];
 	}
 

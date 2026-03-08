@@ -5,9 +5,13 @@
 #include "middle_component_table.h"
 #include "CameraComponent.h"
 #include "Position.h"
+#include "comp_cache.h"
 
 class BubbleCameraSystem : public middle::MiddleGameplaySystem {
 public:
+
+	components::CompCache* compCache;
+
 	void init(middle::GameState* gameState) {
 
 	}
