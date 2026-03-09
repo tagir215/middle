@@ -30,7 +30,7 @@ public:
 				}
 				auto intersectable = middle::getComponent<components::MouseIntersectable>(shape);
 				if (intersectable->intersecting) {
-					middle::addComponent<components::MouseClickComponent>(shape);
+					middle::attachComponent<components::MouseClickComponent>(gameState, shape.id);
 				}
 
 				return true;

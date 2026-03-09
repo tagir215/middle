@@ -177,7 +177,7 @@ public:
 					if (intersectable->intersectingTop && gameState->input.mouseClicked) {
 						middle::Id copyId = middle::deepCopyShape(gameState, childId.index, middle::UNASSIGNED);
 						auto& copyShape = middle::getShape(gameState, copyId.index);
-						auto placement = middle::addComponent<components::PlacementComponent>(copyShape);
+						auto placement = middle::attachComponent<components::PlacementComponent>(gameState, copyShape.id);
 						placement->grabbing = true;
 						auto removeLoop = middle::EditorActionRemoveFromLoop(copyId.index);
 						removeLoop.execute(gameState);

@@ -472,7 +472,7 @@ namespace middle {
 			// placement component until placing is done
 			auto position = middle::getComponent<components::Position>(copyShape);
 			if (position) {
-				auto placable = addComponent<components::PlacementComponent>(copyShape);
+				auto placable = middle::attachComponent<components::PlacementComponent>(gameState, copyShape.id);
 				placable->grabbing = true;
 			}
 

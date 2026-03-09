@@ -4,6 +4,7 @@
 #include "middle_shape_utils.h"
 #include "EcsPerformanceTestConfigs.h"
 #include "TestComponent.h"
+#include "component_utils.h"
 
 class EcsPerformanceTestSystem : public middle::MiddleGameplaySystem {
 public:
@@ -37,7 +38,7 @@ public:
 		// add new entities with test comps until target count
 		while (testCompCount < config->entityCount) {
 			auto& newShape = middle::addGhostShape(gameState);
-			middle::addComponent<components::TestComponent>(newShape);
+			middle::attachComponent<components::TestComponent>(gameState, newShape.id);
 			++testCompCount;
 		}
 

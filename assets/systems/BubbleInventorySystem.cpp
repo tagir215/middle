@@ -45,7 +45,7 @@ public:
 						auto removeLoop = middle::EditorActionRemoveFromLoop(copyId.index);
 						removeLoop.execute(gameState);
 						gameState->bubbleAlgebraState.grabbedId = copyId;
-						auto ref = middle::addComponent<components::IdRef>(copyShape);
+						auto ref = middle::attachComponent<components::IdRef>(gameState, copyShape.id);
 						ref->idRef = copyId;
 						middle::queueComponentDeletion<components::MouseIntersectable>(gameState, copyShape.id);
 					}
@@ -58,7 +58,7 @@ public:
 				grabbable->grabbing = false;
 				auto inventoryItem = middle::getComponent<components::InventoryItem>(shape);
 				if (inventoryItem) {
-					auto delComp = middle::addComponent<components::DeleteComponent>(shape);
+					auto delComp = middle::attachComponent<components::DeleteComponent>(gameState, shape.id);
 					delComp->framesUntilDelete = 0;
 				}
 				gameState->bubbleAlgebraState.grabbedId = middle::Id();

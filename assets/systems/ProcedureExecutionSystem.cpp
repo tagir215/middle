@@ -16,6 +16,7 @@
 #include "ProcedureContainer.h"
 #include "bubble_utils.h"
 #include <queue>
+#include "component_utils.h"
 
 class ProcedureExecutionSystem : public middle::MiddleGameplaySystem {
 public:
@@ -585,7 +586,7 @@ public:
 				}
 
 				if (procedure->mode == procedureConstants::EXECUTING) {
-					timer = middle::addComponent<components::TimerComponent>(shape);
+					timer = middle::attachComponent<components::TimerComponent>(gameState, shape.id);
 					timer->timeLeft = 1;
 				}
 
