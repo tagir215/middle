@@ -130,7 +130,7 @@ public:
 			auto& shape = middle::getShape(gameState, inputVariableCache->relevantIdVector[i].index);
 			if (inputVar->snapId.index != middle::UNASSIGNED) {
 				if (!middle::isShapeAlive(gameState, inputVar->snapId.index)) {
-					middle::deleteShape(gameState, shape.id.index);
+					middle::queueAction(gameState, std::make_shared<middle::EditorActionDeleteSingle>(shape.id));
 					continue;
 				}
 				Vector3 currentPos = middle::getShapePosition(gameState, shape.id.index);

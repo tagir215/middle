@@ -25,33 +25,65 @@ public:
 	CodeBlockSystem() {
 		systemModeType = middle::SystemModeType::GAMEPLAY;
 	}
-	void init(middle::GameState* gameState) {
 
+	components::CompCache* placementCache;
+	components::CompCache* grabbableCache;
+	components::CompCache* scopeCache;
+	components::CompCache* procedureCache;
+	components::CompCache* codeBlockCache;
+	components::CompCache* inventoryCache;
+
+	void init(middle::GameState* gameState) {
+		placementCache = middle::newCompCache(gameState);
+		placementCache->addType < components::PlacementComponent>();
+		grabbableCache = middle::newCompCache(gameState);
+		grabbableCache->addType < components::MouseGrabbable>();
+		scopeCache = middle::newCompCache(gameState);
+		scopeCache->addType < components::ScopeComponent>();
+		scopeCache->addType<components::MouseIntersectable>();
+		scopeCache->addType<components::LoopSociety>();
+		procedureCache = middle::newCompCache(gameState);
+		procedureCache->addType<components::ProcedureComponent>();
+		codeBlockCache = middle::newCompCache(gameState);
+		codeBlockCache->addType<components::CodeBlock>();
+		inventoryCache = middle::newCompCache(gameState);
+		inventoryCache->addType<components::Inventory>();
 	}
 
 	void update(middle::GameState* gameState) override {
 
-		middle::loopInstances(gameState, [gameState](int i, middle::Shape& shape) {
-
-			auto placement = middle::getComponent<components::PlacementComponent>(shape);
-			auto grabbable = middle::getComponent<components::MouseGrabbable>(shape);
-			auto scope = middle::getComponent<components::ScopeComponent>(shape);
-			auto procedure = middle::getComponent<components::ProcedureComponent>(shape);
-			auto codeBlock = middle::getComponent<components::CodeBlock>(shape);
-
-			// code block moving
-			if ((placement && placement->grabbing) || (grabbable && grabbable->grabbing)) {
+		auto placementIt = placementCache->begin<components::PlacementComponent>();
+		for (int i = 0; i < placementCache->getSize(); ++i) {
+			auto placement = *placementIt;
+			if (placement->grabbing) {
+				auto& shape = middle::getShape(gameState, placementCache->relevantIdVector[i].index);
 				Vector3 currentPos = middle::getShapePosition(gameState, shape.id.index);
 				Vector3 targetPos = gameState->input.mouseXZ_PlanePos;
 				middle::moveShape(gameState, shape.id.index, targetPos - currentPos);
 			}
+		}
 
-			middle::Id grabbedId = gameState->bubbleAlgebraState.grabbedId;
+		auto grabbableIt = grabbableCache->begin<components::MouseGrabbable>();
+		for (int i = 0; i < grabbableCache->getSize(); ++i) {
+			auto grabbable = *grabbableIt;
+			if (grabbable->grabbing) {
+				auto& shape = middle::getShape(gameState, placementCache->relevantIdVector[i].index);
+				Vector3 currentPos = middle::getShapePosition(gameState, shape.id.index);
+				Vector3 targetPos = gameState->input.mouseXZ_PlanePos;
+				middle::moveShape(gameState, shape.id.index, targetPos - currentPos);
+			}
+		}
 
-			// add and remove from/to scope container 
-			if (scope && grabbedId.index != middle::UNASSIGNED && shape.id != grabbedId) {
-				auto scopeIntersectable = middle::getComponent<components::MouseIntersectable>(shape);
-				auto scopeLoop = middle::getComponent<components::LoopSociety>(shape);
+		middle::Id grabbedId = gameState->bubbleAlgebraState.grabbedId;
+		auto scopeIt = scopeCache->begin<components::ScopeComponent>();
+		auto scopeLoopIt = scopeCache->begin<components::LoopSociety>();
+		auto scopeIntersectableIt = scopeCache->begin<components::MouseIntersectable>();
+		if (grabbedId.index != middle::UNASSIGNED) {
+			for (int i = 0; i < scopeCache->getSize(); ++i) {
+				auto scope = *scopeIt;
+				auto scopeLoop = *scopeLoopIt;
+				auto scopeIntersectable = *scopeIntersectableIt;
+				auto& shape = middle::getShape(gameState, scopeCache->relevantIdVector[i].index);
 
 				// removes from loop while grabbing and moving out of container
 				// if grabbing while not intersecting remove from loop
@@ -123,11 +155,13 @@ public:
 					}
 
 				}
-
 			}
+		}
+		else {
+			for (int i = 0; i < scopeCache->getSize(); ++i) {
+				auto scope = *scopeIt;
+				auto& shape = middle::getShape(gameState, scopeCache->relevantIdVector[i].index);
 
-			// grab placed component
-			if (scope && grabbedId.index == middle::UNASSIGNED) {
 				std::vector<middle::Id>children;
 				middle::getAllChildren(gameState, shape.id, children);
 				for (middle::Id& childId : children) {
@@ -158,37 +192,35 @@ public:
 
 						auto removeFromLoop = middle::EditorActionRemoveFromLoop(childId.index);
 						removeFromLoop.execute(gameState);
-						middle::addComponent<components::PlacementComponent>(childShape);
+						middle::attachComponent<components::PlacementComponent>(gameState, childShape.id);
 						gameState->bubbleAlgebraState.grabbedId = childId;
 					}
 				}
 			}
+		}
 
-			// copy from inventory
-			auto inventory = middle::getComponent<components::Inventory>(shape);
-			if (inventory) {
-				std::vector < middle::Id>children;
-				middle::getAllChildren(gameState, shape.id, children);
+		auto inventoryIt = inventoryCache->begin<components::Inventory>();
+		for (int i = 0; i < inventoryCache->getSize(); ++i) {
+			auto inventory = *inventoryIt;
+			auto& shape = middle::getShape(gameState, inventoryCache->relevantIdVector[i].index);
+			std::vector < middle::Id>children;
+			middle::getAllChildren(gameState, shape.id, children);
 
-				for (middle::Id childId : children) {
-					auto& child = middle::getShape(gameState, childId.index);
-					auto codeBlock = middle::getComponent<components::CodeBlock>(child);
-					auto intersectable = middle::getComponent<components::MouseIntersectable>(child);
-					if (intersectable->intersectingTop && gameState->input.mouseClicked) {
-						middle::Id copyId = middle::deepCopyShape(gameState, childId.index, middle::UNASSIGNED);
-						auto& copyShape = middle::getShape(gameState, copyId.index);
-						auto placement = middle::attachComponent<components::PlacementComponent>(gameState, copyShape.id);
-						placement->grabbing = true;
-						auto removeLoop = middle::EditorActionRemoveFromLoop(copyId.index);
-						removeLoop.execute(gameState);
-						gameState->bubbleAlgebraState.grabbedId = copyId;
-					}
+			for (middle::Id childId : children) {
+				auto& child = middle::getShape(gameState, childId.index);
+				auto codeBlock = middle::getComponent<components::CodeBlock>(child);
+				auto intersectable = middle::getComponent<components::MouseIntersectable>(child);
+				if (intersectable->intersectingTop && gameState->input.mouseClicked) {
+					middle::Id copyId = middle::deepCopyShape(gameState, childId.index, middle::UNASSIGNED);
+					auto& copyShape = middle::getShape(gameState, copyId.index);
+					auto placement = middle::attachComponent<components::PlacementComponent>(gameState, copyShape.id);
+					placement->grabbing = true;
+					auto removeLoop = middle::EditorActionRemoveFromLoop(copyId.index);
+					removeLoop.execute(gameState);
+					gameState->bubbleAlgebraState.grabbedId = copyId;
 				}
 			}
-
-			return true;
-			});
-
+		}
 
 		// delete shape if havent added to container
 		if (gameState->input.mouseReleased && gameState->bubbleAlgebraState.grabbedId.index != middle::UNASSIGNED) {
@@ -202,7 +234,7 @@ public:
 				return;
 
 			if (loop->parentLoopId.index == middle::UNASSIGNED) {
-				middle::deleteShapeRecursive(gameState, grabbedShape.id.index);
+				middle::queueAction(gameState, std::make_shared<middle::EditorActionDeleteSingle>(grabbedShape.id));
 			}
 			else {
 				middle::queueComponentDeletion<components::PlacementComponent>(gameState, grabbedShape.id);

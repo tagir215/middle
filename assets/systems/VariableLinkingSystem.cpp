@@ -68,7 +68,7 @@ public:
 						});
 
 					if (doDelete) {
-						middle::deleteShape(gameState, shape.id.index);
+						middle::queueAction(gameState, std::make_shared<middle::EditorActionDeleteSingle>(shape.id));
 					}
 
 					gameState->bubbleAlgebraState.grabbedId = middle::Id();
