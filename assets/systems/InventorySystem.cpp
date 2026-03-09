@@ -11,25 +11,33 @@
 class InventorySystem : public middle::MiddleGameplaySystem {
 
 public:
-	void init(middle::GameState* gameState) {
+	components::CompCache* inventoryCache;
 
+	void init(middle::GameState* gameState) {
+		inventoryCache = middle::newCompCache(gameState);
+		inventoryCache->addType<components::Inventory>();
+		inventoryCache->addType<components::LoopSociety>();
+		inventoryCache->addType<components::Rectangle>();
 	}
+
 
 	const float margin = 30.0f;
 
 	void update(middle::GameState* gameState) override {
-		middle::loopInstances(gameState, [gameState, this](int i, middle::Shape& shape) {
-			auto inventory = middle::getComponent<components::Inventory>(shape);
-			if (!inventory)
-				return true;
 
-			auto loop = middle::getComponent<components::LoopSociety>(shape);
+		auto inventoryIt = inventoryCache->begin<components::Inventory>();
+		auto loopIt = inventoryCache->begin<components::LoopSociety>();
+		auto rectangleIt = inventoryCache->begin<components::Rectangle>();
+
+		for (int i = 0; i < inventoryCache->getSize(); ++i) {
+			auto& shape = middle::getShape(gameState, inventoryCache->relevantIdVector[i].index);
+			auto inventory = *inventoryIt;
+			auto loop = *loopIt;
+			auto inventoryRect = *rectangleIt;
+
 			std::vector<middle::Id>items = loop->loopMemberIds;
 
 			Vector3 inventoryPosition = middle::getShapePosition(gameState, shape.id.index);
-
-
-			auto inventoryRect = middle::getComponent<components::Rectangle>(shape);
 
 			float totalWidth =  inventoryRect->width;
 			float totalHeight = inventoryRect->height;
@@ -60,9 +68,7 @@ public:
 				}
 			}
 
-
-			return true;
-			});
+		}
 	}
 };
 
