@@ -17,9 +17,14 @@ public:
 		systemUpdateType = middle::SystemUpdateType::PREFRAME;
 		systemModeType = middle::SystemModeType::EDITOR;
 	}
-	void init(middle::GameState* gameState) {
 
+	components::CompCache* cache;
+
+	void init(middle::GameState* gameState) {
+		cache = middle::newCompCache(gameState);
+		cache->addType<components::MouseSelectable>();
 	}
+
 
 	const int maxFieldCount = 100;
 
@@ -32,12 +37,14 @@ public:
 			return;
 		}
 
+		auto selectableIt = cache->begin<components::MouseSelectable>();
+		for (int i = 0; i < cache->getSize(); ++i) {
+			auto& shape = middle::getShape(gameState, cache->relevantIdVector[i].index);
+			auto selectable = *selectableIt;
 
-		middle::loopInstances(gameState, [gameState](int i, middle::Shape& shape) {
-			auto selected = middle::getComponent<components::MouseSelectable>(shape);
-			if (!selected || !selected->selected)
-				return true;
-
+			if (!selectable->selected) {
+				continue;
+			}
 
 			auto ui = [&shape, gameState]() {
 				ImGui::Begin("ComponentEditor");
@@ -219,8 +226,7 @@ public:
 				};
 
 			gameState->uiSetups.push_back(ui);
-			return true;
-			});
+		}
 	}
 };
 
