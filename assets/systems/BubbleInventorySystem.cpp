@@ -56,23 +56,25 @@ public:
 			}
 		}
 
-		if (gameState->bubbleAlgebraState.grabbedId.index != middle::UNASSIGNED && !gameState->input.mouseHeld) {
+		if (gameState->bubbleAlgebraState.grabbedId.index != middle::UNASSIGNED) {
 			auto grabbableIt = grabbableCache->begin<components::MouseGrabbable>();
 			auto inventoryItemIt = grabbableCache->begin<components::InventoryItem>();
 			for (int i = 0; i < grabbableCache->getSize(); ++i) {
 				auto grabbable = *grabbableIt;
 				auto inventoryItem = *inventoryItemIt;
 				auto& shape = middle::getShape(gameState, grabbableCache->relevantIdVector[i].index);
+
+				// item moving
 				if (grabbable->grabbing) {
+					moveShape(gameState, shape.id.index, gameState->input.mouseXZ_PlanePos - middle::getShapePosition(gameState, shape.id.index));
+				}
+
+				if (grabbable->grabbing && !gameState->input.mouseHeld) {
 					auto delComp = middle::attachComponent<components::DeleteComponent>(gameState, shape.id);
 					delComp->framesUntilDelete = 0;
 					gameState->bubbleAlgebraState.grabbedId = middle::Id();
 				}
 
-				// item moving
-				if (grabbable->grabbing) {
-					moveShape(gameState, i, gameState->input.mouseXZ_PlanePos - middle::getShapePosition(gameState, shape.id.index));
-				}
 			}
 		}
 	}

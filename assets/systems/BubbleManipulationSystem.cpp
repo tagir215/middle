@@ -83,7 +83,6 @@ public:
 	}
 
 	void update(middle::GameState* gameState) override {
-		return;
 
 		auto bubbleIt = bubbleCache->begin<components::BubbleComponent>();
 		auto bubbleGrabbableIt = bubbleCache->begin<components::MouseGrabbable>();

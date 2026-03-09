@@ -445,6 +445,7 @@ public:
 			}
 
 
+			loop = middle::getComponent<components::LoopSociety>(outlineContainer);
 			std::vector<middle::Id>nodes = bubble::getNodes(gameState, loop);
 
 			if (nodeCount - 1 < nodes.size()) {
