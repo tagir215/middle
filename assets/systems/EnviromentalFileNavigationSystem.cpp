@@ -18,31 +18,29 @@ public:
 		systemUpdateType = middle::SystemUpdateType::PREFRAME;
 		systemModeType = middle::SystemModeType::EDITOR;
 	}
-	void init(middle::GameState* gameState) {
 
+	components::CompCache* systemRefCache;
+
+	void init(middle::GameState* gameState) {
+		systemRefCache = middle::newCompCache(gameState);
+		systemRefCache->addType<components::SystemReference>();
+		systemRefCache->addType<components::MouseIntersectable>();
 	}
 
 	void update(middle::GameState* gameState) override {
-		middle::loopInstances(gameState, [gameState](int i, middle::Shape& shape) {
-			auto system = middle::getComponent<components::SystemReference>(shape);
-			auto componentRef = middle::getComponent<components::ComponentReference>(shape);
 
-			if (system || componentRef) {
-				auto intersectable = middle::getComponent<components::MouseIntersectable>(shape);
+		auto systemRefIt = systemRefCache->begin<components::SystemReference>();
+		auto systemIntersectableIt = systemRefCache->begin<components::MouseIntersectable>();
+		if (gameState->input.navigateToFileClick) {
+			for (int i = 0; i < systemRefCache->getSize(); ++i) {
+				auto systemRef = *systemRefIt;
+				auto intersectable = *systemIntersectableIt;
 				if (intersectable->intersecting) {
-					if (gameState->input.navigateToFileClick) {
-						if (system) {
-							middle::queueAction(gameState, std::make_shared<middle::EditorActionOpenSystem>(system->systemName));
-						}
-						if (componentRef) {
-							middle::queueAction(gameState, std::make_shared<middle::EditorActionOpenComponent>(componentRef->componentName));
-						}
-					}
+					middle::queueAction(gameState, std::make_shared<middle::EditorActionOpenSystem>(systemRef->systemName));
 				}
 			}
-			
-			return true;
-			});
+		}
+
 	}
 };
 
