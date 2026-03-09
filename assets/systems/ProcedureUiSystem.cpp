@@ -8,11 +8,17 @@
 #include "editor_file_utils.h"
 #include "ProcedureContainer.h"
 #include "PlacementComponent.h"
+#include "MouseClickComponent.h"
 
 class ProcedureUiSystem : public middle::MiddleGameplaySystem {
 public:
-	void init(middle::GameState* gameState) {
 
+	components::CompCache* buttonCache;
+
+	void init(middle::GameState* gameState) {
+		buttonCache = middle::newCompCache(gameState);
+		buttonCache->addType<components::Button>();
+		buttonCache->addType<components::MouseClickComponent>();
 	}
 
 	// there should be only one procedure... so it's the first one 
@@ -33,21 +39,9 @@ public:
 
 	void update(middle::GameState* gameState) override {
 
-		// early exit if not clicking...
-		if (!gameState->input.mouseClicked)
-			return;
-
-		middle::loopInstances(gameState, [gameState, this](int i, middle::Shape& shape) {
-			auto button = middle::getComponent<components::Button>(shape);
-			if (!button) {
-				return true;
-			}
-
-			auto intersectable = middle::getComponent<components::MouseIntersectable>(shape);
-			if (!intersectable->intersecting) {
-				return true;
-			}
-
+		auto buttonIt = buttonCache->begin<components::Button>();
+		for (int i = 0; i < buttonCache->getSize(); ++i) {
+			auto button = *buttonIt;
 			if (button->function == bubbleButton::SAVE_BUTTON) {
 				middle::Id procedure = findProcedure(gameState);
 				middle::saveShape(gameState, procedure, "../bubbleData/procedures/", "procedure1");
@@ -62,8 +56,7 @@ public:
 				//middle::addComponent<components::PlacementComponent>(procedureShape);
 			}
 
-			return true;
-			});
+		}
 	}
 };
 
