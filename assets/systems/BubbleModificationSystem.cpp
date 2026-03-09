@@ -153,31 +153,6 @@ public:
 			}
 		}
 
-
-		// TOP BUBBLE STUFF
-		// is inventory item intersecting with top Bubble?
-		//inventoryItem = middle::getComponent<components::InventoryItem>(refShape);
-		//if (inventoryItem) {
-		//	middle::Id topBubble = bubbleActions::topLevelBubble(gameState);
-		//	auto& topBubbleShape = middle::getShape(gameState, topBubble.index);
-		//	auto intersectable = middle::getComponent<components::MouseIntersectable>(topBubbleShape);
-		//	if (intersectable->intersecting) {
-		//		if (inventoryItem->itemType == bubbleInventoryitemType::ADD) {
-		//			middle::deleteComponent<components::DeleteComponent>(refShape);
-		//			auto newAddition = bubbleAcions::CreateAdditionReplacementShape(topBubbleShape.id, refShape.id);
-		//			newAddition.execute(gameState);
-		//			middle::addComponent<components::DeleteComponent>(refShape);
-		//			middle::addComponent<components::DeleteComponent>(topBubbleShape);
-		//		}
-		//		else if (inventoryItem->itemType == bubbleInventoryitemType::MULTIPLICATION) {
-		//			middle::deleteComponent<components::DeleteComponent>(refShape);
-		//			auto newMultiplication = bubbleActions::CreateMulitiplicationReplacementShape(topBubbleShape.id, refShape.id);
-		//			newMultiplication.execute(gameState);
-		//			middle::addComponent<components::DeleteComponent>(refShape);
-		//			middle::addComponent<components::DeleteComponent>(topBubbleShape);
-		//		}
-		//	}
-		//}
 	}
 };
 

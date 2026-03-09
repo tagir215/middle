@@ -75,25 +75,6 @@ public:
 			Vector3 bubbleCenter = { bubble->centerX, bubble->centerY, bubble->centerZ };
 			Vector3 bubblePos = { bubblePosition->posX, bubblePosition->posY, bubblePosition->posZ };
 
-			// BUBBLE GRAVITY
-
-			//for (middle::Id& childId : loopSociety->loopMemberIds) {
-			//	middle::Shape& child = middle::getShape(gameState, childId.index);
-			//	auto physics = middle::getComponent<components::PhysicsData>(child);
-			//	if (!physics)
-			//		continue;
-			//	auto childPosition = middle::getComponent<components::Position>(child);
-			//	const float gravityForce = 20.2f;
-			//	Vector3 childPos = { childPosition->posX, childPosition->posY, childPosition->posZ };
-			//	Vector3 gravityAxis = Vector3Normalize(bubblePos - childPos);
-			//	if (Vector3LengthSqr(gravityAxis) == 0) {
-			//		gravityAxis = { 1, 0, 0 };
-			//	}
-			//	Vector3 force = Vector3Scale(gravityAxis, gravityForce);
-			//	//applyForce(gameState, child, force);
-			//}
-
-
 			// OUTLINE PHYSICS
 
 			std::vector<Vector3>fieldPositions = getFieldPositions(gameState, shape);
@@ -105,12 +86,6 @@ public:
 				middle::Shape& node = middle::getShape(gameState, id.index);
 				auto position = middle::getComponent<components::Position>(node);
 				auto nodePhysics = middle::getComponent<components::PhysicsData>(node);
-
-				// TODO
-				//float magSqr = 
-				//	nodePhysics->velX * nodePhysics->velX 
-				//	+ nodePhysics->velY * nodePhysics->velY 
-				//	+ nodePhysics->velZ * nodePhysics->velZ;
 
 
 				nodePhysics->damX = 0.1f;
@@ -153,12 +128,6 @@ public:
 					float strengthRatio = (std::powf(normalizedError, power) / 1.0f);
 
 					Vector3 force = Vector3Scale(axis, strengthRatio * maxForce);
-
-					//middle::RenderItem debugLine;
-					//debugLine.type = middle::RenderItemType::LINE;
-					//debugLine.linePointA = fieldPos;
-					//debugLine.linePointB = fieldPos + force;
-					//gameState->renderData.push_back(debugLine);
 
 					applyForce(gameState, node, force);
 				}
