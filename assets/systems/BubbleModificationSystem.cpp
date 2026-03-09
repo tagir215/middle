@@ -11,7 +11,16 @@
 
 class BubbleModificationSystem : public middle::MiddleGameplaySystem {
 public:
+	components::CompCache* deletionCache;
+	components::CompCache* intersectableCache;
+
 	void init(middle::GameState* gameState) {
+		deletionCache = middle::newCompCache(gameState);
+		deletionCache->addType<components::DeleteComponent>();
+		deletionCache->addType<components::IdRef>();
+
+		intersectableCache = middle::newCompCache(gameState);
+		intersectableCache->addType<components::MouseIntersectable>();
 
 	}
 
@@ -95,19 +104,17 @@ public:
 
 	void update(middle::GameState* gameState) override {
 
-		// search for shapes for deletion
+		auto deletionIt = deletionCache->begin<components::DeleteComponent>();
+		auto idRefIt = deletionCache->begin<components::IdRef>();
+
 		middle::Id shapeIdForDeletion;
-		middle::loopInstances(gameState, [gameState, &shapeIdForDeletion](int i, middle::Shape& shape) {
-			auto deletion = middle::getComponent<components::DeleteComponent>(shape);
-			auto idRef = middle::getComponent<components::IdRef>(shape);
-			if (!deletion || !idRef) {
-				return true;
-			}
-			shapeIdForDeletion = shape.id;
-			return false;
-			});
-		if (shapeIdForDeletion.index == middle::UNASSIGNED)
+		if(deletionCache->getSize() > 0){
+			shapeIdForDeletion = deletionCache->relevantIdVector[0];
+		}
+
+		if (shapeIdForDeletion.index == middle::UNASSIGNED) {
 			return;
+		}
 
 		auto& shapeForDeletion = middle::getShape(gameState, shapeIdForDeletion.index);
 		auto ref = middle::getComponent<components::IdRef>(shapeForDeletion);
@@ -120,31 +127,31 @@ public:
 
 		auto inventoryItem = middle::getComponent<components::InventoryItem>(refShape);
 
-		// search for intersecting shapes, and see if operation can be done
-		middle::loopInstances(gameState, [gameState, this, &refShape, &refParentId, &shapeForDeletion, inventoryItem](int i, middle::Shape& shape) {
+		auto intersectableIt = intersectableCache->begin<components::MouseIntersectable>();
+		for (int i = 0; i < intersectableCache->getSize(); ++i) {
+			auto intersectable = *intersectableIt;
+			auto& shape = middle::getShape(gameState, intersectableCache->relevantIdVector[i].index);
+
 			if (!bubbleActions::isIntersecting(gameState, shape)) {
-				return true;
+				continue;
 			}
 
 			// skip shapefordeletion (the copy being dragged) and ref shape (shape its copy is pointing to)
 			if (shapeForDeletion.id == shape.id || shape.id == refShape.id) {
-				return true;
+				continue;
 			}
+
 			middle::Id parentId = middle::getParent(gameState, shape.id);
 			if (parentId.index != middle::UNASSIGNED && parentId == refParentId) {
 				auto& refParent = middle::getShape(gameState, refParentId.index);
 				combine(gameState, refParent, refShape, shape);
-				return false;
+				continue;
 			}
 
 			if (inventoryItem) {
 				inventoryAction(gameState, inventoryItem->itemType, shape);
-				return false;
 			}
-
-			return true;
-			});
-
+		}
 
 
 		// TOP BUBBLE STUFF
