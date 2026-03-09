@@ -20,91 +20,115 @@
 class BubbleManipulationSystem : public middle::MiddleGameplaySystem {
 
 public:
-	void init(middle::GameState* gameState) {
+	components::CompCache* bubbleCache;
+	components::CompCache* unitCache;
+	components::CompCache* fractionCache;
 
+
+	void init(middle::GameState* gameState) {
+		bubbleCache = middle::newCompCache(gameState);
+		bubbleCache->addType<components::MouseGrabbable>();
+		bubbleCache->addType<components::BubbleComponent>();
+		unitCache = middle::newCompCache(gameState);
+		unitCache->addType<components::MouseGrabbable>();
+		unitCache->addType<components::BubbleUnit>();
+		unitCache->addType<components::LoopSociety>();
+		fractionCache = middle::newCompCache(gameState);
+		fractionCache->addType<components::MouseGrabbable>();
+		fractionCache->addType<components::FractionalComponent>();
+	}
+
+	void move(middle::GameState* gameState, middle::Shape& shape) {
+		Vector3 pos;
+		auto posComponent = middle::getComponent<components::Position>(shape);
+		if (posComponent) {
+			pos = { posComponent->posX, posComponent->posY, posComponent->posZ };
+		}
+
+		Vector3 cameraPos = gameState->editorState.camera.position;
+		float objYDistance = std::abs(pos.y - cameraPos.y);
+		float yDistance = std::abs(cameraPos.y);
+		if (yDistance == 0)
+			yDistance = 0.001f;
+		Vector3 xzVel = Vector3Scale(gameState->input.mouseXZ_PlaneVelocity, objYDistance / yDistance);
+		moveShape(gameState, shape.id.index, Vector3Scale(xzVel, gameState->frameTime));
+	}
+
+	void attachComponents(middle::GameState* gameState, middle::Shape& shape, components::MouseGrabbable* grabbable) {
+
+		bool intersecting = bubbleActions::isIntersecting(gameState, shape);
+		if (intersecting && gameState->bubbleAlgebraState.grabbedId.index == middle::UNASSIGNED && gameState->input.mouseHeld) {
+			middle::Id& parentId = middle::getParent(gameState, shape.id);
+			if (parentId.index != middle::UNASSIGNED) {
+				// copy as grabbed
+				middle::Id copyId = middle::deepCopyShape(gameState, shape.id.index, middle::UNASSIGNED);
+				auto& copyShape = middle::getShape(gameState, copyId.index);
+				auto copyGrabbable = middle::getComponent<components::MouseGrabbable>(copyShape);
+				copyGrabbable->grabbing = true;
+				gameState->bubbleAlgebraState.grabbedId = copyId;
+				// set og as reference
+				auto ref = middle::attachComponent<components::IdRef>(gameState, copyShape.id);
+				ref->idRef = shape.id;
+				assert(ref->idRef.index != middle::UNASSIGNED);
+			}
+		}
+
+		if (gameState->bubbleAlgebraState.grabbedId.index != middle::UNASSIGNED && grabbable->grabbing && !gameState->input.mouseHeld) {
+			// set grabbable for deletion
+			grabbable->grabbing = false;
+			gameState->bubbleAlgebraState.grabbedId = middle::Id();
+			auto deleteComp = middle::attachComponent<components::DeleteComponent>(gameState, shape.id);
+			deleteComp->framesUntilDelete = 0;
+		}
 	}
 
 	void update(middle::GameState* gameState) override {
+		return;
 
-		// mouse movement
-		middle::loopInstances(gameState, [gameState, this](int i, middle::Shape& shape) {
-
-			auto grabbable = middle::getComponent<components::MouseGrabbable>(shape);
-			if (!grabbable) {
-				return true;
+		auto bubbleIt = bubbleCache->begin<components::BubbleComponent>();
+		auto bubbleGrabbableIt = bubbleCache->begin<components::MouseGrabbable>();
+		for (int i = 0; i < bubbleCache->getSize(); ++i) {
+			auto& shape = middle::getShape(gameState, bubbleCache->relevantIdVector[i].index);
+			auto bubble = *bubbleIt;
+			auto grabbable = *bubbleGrabbableIt;
+			attachComponents(gameState, shape, grabbable);
+			if (grabbable->grabbing) {
+				move(gameState, shape);
 			}
+		}
 
-			auto bubble = middle::getComponent<components::BubbleComponent>(shape);
-			auto unit = middle::getComponent<components::BubbleUnit>(shape);
-			auto fraction = middle::getComponent<components::FractionalComponent>(shape);
-			auto inventoryItem = middle::getComponent<components::InventoryItem>(shape);
-
-			if (inventoryItem) {
-				return true;
-			}
-
-			if (!bubble && !unit && !fraction) {
-				return true;
-			}
-
-			// skip units that are part of fractions
-			if (unit) {
-				auto loop = middle::getComponent<components::LoopSociety>(shape);
-				if (loop->parentLoopId.index != middle::UNASSIGNED) {
-					auto& parentShape = middle::getShape(gameState, loop->parentLoopId.index);
-					auto parentFraction = middle::getComponent<components::FractionalComponent>(parentShape);
-					if (parentFraction) {
-						return true;
-					}
+		auto unitIt = unitCache->begin<components::BubbleUnit>();
+		auto unitGrabbableIt = unitCache->begin<components::MouseGrabbable>();
+		auto loopIt = unitCache->begin<components::LoopSociety>();
+		for (int i = 0; i < unitCache->getSize(); ++i) {
+			auto& shape = middle::getShape(gameState, unitCache->relevantIdVector[i].index);
+			auto unit = *unitIt;
+			auto loop = *loopIt;
+			if (loop->parentLoopId.index != middle::UNASSIGNED) {
+				auto& parentShape = middle::getShape(gameState, loop->parentLoopId.index);
+				auto parentFraction = middle::getComponent<components::FractionalComponent>(parentShape);
+				if (parentFraction) {
+					continue;
 				}
 			}
-
-			bool intersecting = bubbleActions::isIntersecting(gameState, shape);
-
-
-			if (intersecting && gameState->bubbleAlgebraState.grabbedId.index == middle::UNASSIGNED && gameState->input.mouseHeld) {
-				middle::Id& parentId = middle::getParent(gameState, shape.id);
-				if (parentId.index != middle::UNASSIGNED) {
-					// copy as grabbed
-					middle::Id copyId = middle::deepCopyShape(gameState, shape.id.index, middle::UNASSIGNED);
-					auto& copyShape = middle::getShape(gameState, copyId.index);
-					auto copyGrabbable = middle::getComponent<components::MouseGrabbable>(copyShape);
-					copyGrabbable->grabbing = true;
-					gameState->bubbleAlgebraState.grabbedId = copyId;
-					// set og as reference
-					auto ref = middle::attachComponent<components::IdRef>(gameState, copyShape.id);
-					ref->idRef = shape.id;
-					assert(ref->idRef.index != middle::UNASSIGNED);
-				}
+			auto grabbable = *unitGrabbableIt;
+			attachComponents(gameState, shape, grabbable);
+			if (grabbable->grabbing) {
+				move(gameState, shape);
 			}
+		}
 
-			if (gameState->bubbleAlgebraState.grabbedId.index != middle::UNASSIGNED && grabbable->grabbing && !gameState->input.mouseHeld) {
-				// set grabbable for deletion
-				grabbable->grabbing = false;
-				gameState->bubbleAlgebraState.grabbedId = middle::Id();
-				auto deleteComp = middle::attachComponent<components::DeleteComponent>(gameState, shape.id);
-				deleteComp->framesUntilDelete = 0;
+		auto fractionIt = fractionCache->begin<components::FractionalComponent>();
+		auto fractionGrabbableIt = fractionCache->begin<components::MouseGrabbable>();
+		for (int i = 0; i < fractionCache->getSize(); ++i) {
+			auto& shape = middle::getShape(gameState, fractionCache->relevantIdVector[i].index);
+			auto fraction = *fractionIt;
+			auto grabbable = *fractionGrabbableIt;
+			attachComponents(gameState, shape, grabbable);
+			if (grabbable->grabbing) {
+				move(gameState, shape);
 			}
-
-			// bubble moving
-			if ((bubble || fraction || unit) && grabbable->grabbing) {
-				Vector3 pos;
-				auto posComponent = middle::getComponent<components::Position>(shape);
-				if (posComponent) {
-					pos = { posComponent->posX, posComponent->posY, posComponent->posZ };
-				}
-
-				Vector3 cameraPos = gameState->editorState.camera.position;
-				float objYDistance = std::abs(pos.y - cameraPos.y);
-				float yDistance = std::abs(cameraPos.y);
-				if (yDistance == 0)
-					yDistance = 0.001f;
-				Vector3 xzVel = Vector3Scale(gameState->input.mouseXZ_PlaneVelocity, objYDistance / yDistance);
-				moveShape(gameState, i, Vector3Scale(xzVel, gameState->frameTime));
-			}
-
-			return true;
-			});
+		}
 
 	}
 
