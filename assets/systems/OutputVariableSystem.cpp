@@ -11,15 +11,19 @@ static int resultId = 0;
 
 class OutputVariableSystem : public middle::MiddleGameplaySystem {
 public:
-	void init(middle::GameState* gameState) {
+	components::CompCache* compCache;
 
+	void init(middle::GameState* gameState) {
+		compCache = middle::newCompCache(gameState);
+		compCache->addType<components::ProcedureComponent>();
 	}
 
 	void update(middle::GameState* gameState) override {
-		middle::loopInstances(gameState, [gameState](int i, middle::Shape& shape) {
-			auto procedure = middle::getComponent<components::ProcedureComponent>(shape);
-			if (!procedure)
-				return true;
+
+		auto procedureIt = compCache->begin<components::ProcedureComponent>();
+		for (int i = 0; i < compCache->getSize(); ++i) {
+			auto procedure = *procedureIt;
+			auto& shape = middle::getShape(gameState, compCache->relevantIdVector[i].index);
 
 			std::stack<middle::Id>idStack;
 			idStack.push(shape.id);
@@ -37,9 +41,8 @@ public:
 					idStack.push(childId);
 				}
 			}
+		}
 
-			return true;
-			});
 	}
 };
 

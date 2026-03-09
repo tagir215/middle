@@ -86,6 +86,9 @@ namespace MouseIntersectDetectionSystem {
 					continue;
 				}
 
+				bool wasIntersecting = intersectable->intersecting;
+				intersectable->wasIntersecting = wasIntersecting;
+
 				auto sphere = middle::getComponent<components::Sphere>(shape);
 				auto reference = middle::getComponent<components::Reference>(shape);
 				auto system = middle::getComponent<components::SystemReference>(shape);

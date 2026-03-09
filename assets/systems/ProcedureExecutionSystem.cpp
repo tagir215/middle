@@ -17,11 +17,21 @@
 #include "bubble_utils.h"
 #include <queue>
 #include "component_utils.h"
+#include "MouseClickComponent.h"
 
 class ProcedureExecutionSystem : public middle::MiddleGameplaySystem {
 public:
-	void init(middle::GameState* gameState) {
 
+	components::CompCache* buttonCache;
+	components::CompCache* procedureCache;
+
+	void init(middle::GameState* gameState) {
+		buttonCache = middle::newCompCache(gameState);
+		buttonCache->addType<components::Button>();
+		buttonCache->addType<components::MouseClickComponent>();
+		buttonCache->addType<components::TimerComponent>(components::NOTINTERESTED);
+		procedureCache = middle::newCompCache(gameState);
+		procedureCache->addType<components::ProcedureContainer>();
 	}
 
 	void getOneInput(middle::GameState* gameState, middle::Shape& funcShape, components::InputVariable& inputVariable) {
@@ -491,15 +501,14 @@ public:
 	}
 
 	void update(middle::GameState* gameState) override {
-		middle::loopInstances(gameState, [gameState, this](int i, middle::Shape& shape) {
-			auto button = middle::getComponent<components::Button>(shape);
-			auto timer = middle::getComponent<components::TimerComponent>(shape);
-			if (timer && timer->timeLeft > 0) {
-				return true;
-			}
+
+		auto buttonIt = buttonCache->begin<components::Button>();
+		for (int i = 0; i < buttonCache->getSize(); ++i) {
+			auto& shape = middle::getShape(gameState, buttonCache->relevantIdVector[i].index);
+			auto button = *buttonIt;
 
 			// start
-			if (bubble::buttonClicked(gameState, shape, bubbleButton::START_PROCEDURE_BUTTON)) {
+			if (button->function == bubbleButton::START_PROCEDURE_BUTTON) {
 				// navigate to procedure scope... 
 				middle::Id parentId = middle::getParent(gameState, shape.id);
 				auto& parentShape = middle::getShape(gameState, parentId.index);
@@ -511,7 +520,7 @@ public:
 			}
 
 			// step
-			if (bubble::buttonClicked(gameState, shape, bubbleButton::STEP_FORWARD)) {
+			if (button->function == bubbleButton::STEP_FORWARD) {
 				// navigate to procedure scope... 
 				middle::Id parentId = middle::getParent(gameState, shape.id);
 				auto& parentShape = middle::getShape(gameState, parentId.index);
@@ -524,7 +533,7 @@ public:
 			}
 
 			// step back
-			if (bubble::buttonClicked(gameState, shape, bubbleButton::STEP_BACKWARD)) {
+			if (button->function == bubbleButton::STEP_BACKWARD) {
 				// navigate to procedure scope... 
 				middle::Id parentId = middle::getParent(gameState, shape.id);
 				auto& parentShape = middle::getShape(gameState, parentId.index);
@@ -532,17 +541,21 @@ public:
 				procedureContainer->mode = procedureConstants::STEPPING;
 				procedureContainer->direction = procedureConstants::BACKWARD;
 			}
+		}
 
 
-			auto procedure = middle::getComponent<components::ProcedureContainer>(shape);
-			if (procedure &&
-				(procedure->mode == procedureConstants::EXECUTING
+		auto procedureIt = procedureCache->begin<components::ProcedureContainer>();
+		for (int i = 0; i < procedureCache->getSize(); ++i) {
+			auto procedure = *procedureIt;
+			auto& shape = middle::getShape(gameState, procedureCache->relevantIdVector[i].index);
+
+			if ((procedure->mode == procedureConstants::EXECUTING
 					|| procedure->mode == procedureConstants::STEPPING)) {
 
 				// early exit if at beginning or end
 				if (procedure->direction == procedureConstants::BACKWARD && procedure->procedureTransitionStack.size() == 0) {
 					procedure->mode = procedureConstants::IDLE;
-					return true;
+					continue;
 				}
 				if (procedure->direction == procedureConstants::FORWARD && procedure->procedureTransitionStack.size() > 0) {
 					// update to previous before end
@@ -586,7 +599,7 @@ public:
 				}
 
 				if (procedure->mode == procedureConstants::EXECUTING) {
-					timer = middle::attachComponent<components::TimerComponent>(gameState, shape.id);
+					auto timer = middle::attachComponent<components::TimerComponent>(gameState, shape.id);
 					timer->timeLeft = 1;
 				}
 
@@ -594,9 +607,7 @@ public:
 					procedure->mode = procedureConstants::IDLE;
 				}
 			}
-
-			return true;
-			});
+		}
 	}
 };
 

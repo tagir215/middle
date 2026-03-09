@@ -41,9 +41,11 @@ public:
 			}
 			// add the comp offsets and relevant ids
 			for (int compTypeIndex = 0; compTypeIndex < cache->componentTypeCount; ++compTypeIndex) {
-				int typeId = cache->typeIdVector[compTypeIndex].typeId;
-				middle::Component& comp = shape.componentMap[typeId];
-				cache->compOffsetsVector[compTypeIndex].push_back(comp.componentOffset);
+				auto cacheCompType = cache->typeIdVector[compTypeIndex];
+				if (cacheCompType.desirability == components::INTERESTED) {
+					middle::Component& comp = shape.componentMap[cacheCompType.typeId];
+					cache->compOffsetsVector[compTypeIndex].push_back(comp.componentOffset);
+				}
 			}
 
 			cache->relevantIdVector.push_back(shape.id);

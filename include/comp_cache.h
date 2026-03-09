@@ -30,8 +30,13 @@ namespace components {
 		void addType(Desirability desirability = Desirability::INTERESTED) {
 			int typeId = middle::getTypeId<T>();
 			typeIdVector.push_back({desirability, typeId});
-			containerVector.push_back(middle::componentListMap[typeId].get());
 			componentTypeCount = typeIdVector.size();
+			if (desirability == Desirability::INTERESTED) {
+				containerVector.push_back(middle::componentListMap[typeId].get());
+			}
+			else {
+				containerVector.push_back({});
+			}
 		}
 
 
@@ -46,6 +51,7 @@ namespace components {
 				int cacheTypeIndex = -1;
 
 				for (int i = 0; i < cache->componentTypeCount; ++i) {
+					auto type = cache->typeIdVector[i];
 					if (typeId == cache->typeIdVector[i].typeId) {
 						cacheTypeIndex = i;
 					}
