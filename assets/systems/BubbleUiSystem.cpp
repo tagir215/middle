@@ -11,17 +11,21 @@
 
 class BubbleUiSystem : public middle::MiddleGameplaySystem {
 public:
-	void init(middle::GameState* gameState) {
 
+	components::CompCache* uiCache;
+
+	void init(middle::GameState* gameState) {
+		uiCache = middle::newCompCache(gameState);
+		uiCache->addType<components::UiComponent>();
+		uiCache->addType<components::LoopSociety>();
 	}
 	void update(middle::GameState* gameState) override {
-		middle::loopInstances(gameState, [gameState](int i, middle::Shape& shape) {
-			auto ui = middle::getComponent<components::UiComponent>(shape);
-			if (!ui) {
-				return true;
-			}
 
-			auto loop = middle::getComponent<components::LoopSociety>(shape);
+		auto loopIt = uiCache->begin<components::LoopSociety>();
+
+		for (int i = 0; i < uiCache->getSize(); ++i) {
+			auto& shape = middle::getShape(gameState, uiCache->relevantIdVector[i].index);
+			auto loop = *loopIt;
 			std::vector<Vector3>positions;
 			int size = loop->loopMemberIds.size();
 			positions.resize(size);
@@ -31,7 +35,6 @@ public:
 				auto position = middle::getComponent<components::Position>(member);
 				positions[index] = { position->posX, position->posY, position->posZ };
 			}
-
 			for (int index = 0; index < size; ++index) {
 				int indexA = index - 1;
 				int indexB = index;
@@ -45,8 +48,7 @@ public:
 				gameState->renderData.push_back(renderItem);
 			}
 
-			return true;
-			});
+		}
 	}
 };
 

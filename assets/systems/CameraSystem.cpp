@@ -12,17 +12,14 @@ public:
 		systemModeType = middle::SystemModeType::ENGINE;
 	}
 
-	middle::Id activeCameraId;
+	components::CompCache* cameraCache;
 
 	void init(middle::GameState* gameState) {
-
+		cameraCache = middle::newCompCache(gameState);
+		cameraCache->addType<components::CameraComponent>();
 	}
 
 	void update(middle::GameState* gameState) override {
-
-		if (gameState->reset || !middle::isIdCurrent(gameState, activeCameraId)) {
-			activeCameraId = middle::findFirstShapeWithComp(gameState, middle::getTypeId<components::CameraComponent>());
-		}
 
 		if (gameState->applicationMode == middle::ApplicationMode::EDITOR_MODE) {
 			// camera controls
@@ -49,20 +46,23 @@ public:
 			gameState->activeCamera = gameState->editorState.camera;
 		}
 
-		if(gameState->applicationMode == middle::ApplicationMode::GAME_MODE){
-			auto& shape = middle::getShape(gameState, activeCameraId.index);
-			auto cameraComponent = middle::getComponent<components::CameraComponent>(shape);
+		if (gameState->applicationMode == middle::ApplicationMode::GAME_MODE) {
+			auto cameraIt = cameraCache->begin<components::CameraComponent>();
+			for (int i = 0; i < cameraCache->getSize(); ++i) {
+				auto cameraComponent = *cameraIt;
+				auto& shape = middle::getShape(gameState, cameraCache->relevantIdVector[i].index);
 
-			if (cameraComponent->active) {
-				auto position = middle::getComponent<components::Position>(shape);
-				assert(position);
-				Camera camera;
-				camera.fovy = cameraComponent->fovy;
-				camera.position = { position->posX, position->posY, position->posZ };
-				camera.projection = cameraComponent->projection;
-				camera.target = { cameraComponent->targetX, cameraComponent->targetY, cameraComponent->targetZ };
-				camera.up = { cameraComponent->upX, cameraComponent->upY, cameraComponent->upZ };
-				gameState->activeCamera = camera;
+				if (cameraComponent->active) {
+					auto position = middle::getComponent<components::Position>(shape);
+					assert(position);
+					Camera camera;
+					camera.fovy = cameraComponent->fovy;
+					camera.position = { position->posX, position->posY, position->posZ };
+					camera.projection = cameraComponent->projection;
+					camera.target = { cameraComponent->targetX, cameraComponent->targetY, cameraComponent->targetZ };
+					camera.up = { cameraComponent->upX, cameraComponent->upY, cameraComponent->upZ };
+					gameState->activeCamera = camera;
+				}
 			}
 		}
 	}
