@@ -13,72 +13,77 @@ public:
 		systemUpdateType = middle::SystemUpdateType::GAMEPLAY_POSTFRAME;
 		systemModeType = middle::SystemModeType::ENGINE;
 	}
-	void init(middle::GameState* gameState) {
 
+	components::CompCache* physicsCache;
+	components::CompCache* constraintCache;
+
+	void init(middle::GameState* gameState) {
+		physicsCache = middle::newCompCache(gameState);
+		physicsCache->addType<components::PhysicsData>();
+		physicsCache->addType<components::Position>();
+		constraintCache = middle::newCompCache(gameState);
+		constraintCache->addType<components::Constraint>();
 	}
 
 	void update(middle::GameState* gameState) override {
 
-		// shape phsyics stuff
 		// create pairs
 
 		std::vector<Constraint> constraints;
 		std::vector<BodyPair> pairs;
 		std::vector<int> grounds;
-		if (gameState->physicsBodies.size() < gameState->shapes.size()) {
-			gameState->physicsBodies.resize(gameState->shapes.size());
+
+		if (gameState->physicsBodies.size() < physicsCache->getSize()) {
+			gameState->physicsBodies.resize(physicsCache->getSize());
 		}
 
-		for (int i = 0; i < gameState->shapes.size(); ++i) {
-			gameState->physicsBodies[i].active = false;
-			if (!isShapeAlive(gameState, i)) {
-				continue;
+		auto physicsIt = physicsCache->begin<components::PhysicsData>();
+		auto posIt = physicsCache->begin<components::Position>();
+		for (int i = 0; i < physicsCache->getSize(); ++i) {
+			auto pcomp = *physicsIt;
+			auto pos = *posIt;
+			gameState->physicsBodies[i].active = true;
+			if (gameState->physicsBodies.size() <= i) {
+				gameState->physicsBodies.resize(i + 100);
 			}
+			PhysicsBody& body = gameState->physicsBodies[i];
+			body.infiniteMass = pcomp->infiniteMass;
+			body.mass = pcomp->mass;
+			body.invMass = pcomp->invMass;
+			body.momentOfInertia = pcomp->momentOfInertia;
+			body.invMomentOfInertia = pcomp->invMomentOfInertia;
+			body.colliderType = ColliderType::CIRC;
+			body.linearAcc = { pcomp->accX, pcomp->accY, pcomp->accZ };
+			body.linearVel = { pcomp->velX, pcomp->velY, pcomp->velZ };
+			body.linearDamping = pcomp->damY;
+			body.position = { pos->posX, pos->posY, pos->posZ };
+			body.timeLeft = 1;
+		}
 
-			auto& shape = getShape(gameState, i);
-
-			auto constraint = middle::getComponent<components::Constraint>(shape);
-			if (constraint) {
-				if (constraint->idA.index != middle::UNASSIGNED && constraint->idB.index != middle::UNASSIGNED) {
-					Constraint c;
-					c.indexA = constraint->idA.index;
-					c.indexB = constraint->idB.index;
-					c.biasFactor = constraint->biasFactor;
-					c.stiffness = constraint->stiffness;
-					c.targetDistance = constraint->targetDistance;
-					c.type = ConstraintType::distance;
-					constraints.push_back(c);
-				}
-			}
-			auto pcomp = middle::getComponent<components::PhysicsData>(shape);
-			auto pos = middle::getComponent<components::Position>(shape);
-			if (pcomp) {
-				gameState->physicsBodies[i].active = true;
-				assert(pos != nullptr);
-				if (gameState->physicsBodies.size() <= i) {
-					gameState->physicsBodies.resize(i + 100);
-				}
-				PhysicsBody& body = gameState->physicsBodies[i];
-				body.infiniteMass = pcomp->infiniteMass;
-				body.mass = pcomp->mass;
-				body.invMass = pcomp->invMass;
-				body.momentOfInertia = pcomp->momentOfInertia;
-				body.invMomentOfInertia = pcomp->invMomentOfInertia;
-				body.colliderType = ColliderType::CIRC;
-				body.linearAcc = { pcomp->accX, pcomp->accY, pcomp->accZ };
-				body.linearVel = { pcomp->velX, pcomp->velY, pcomp->velZ };
-				body.linearDamping = pcomp->damY;
-				body.position = { pos->posX, pos->posY, pos->posZ };
-				body.timeLeft = 1;
+		auto constraintsIt = physicsCache->begin<components::Constraint>();
+		for (int i = 0; i < constraintCache->getSize(); ++i) {
+			auto constraint = *constraintsIt;
+			if (constraint->idA.index != middle::UNASSIGNED && constraint->idB.index != middle::UNASSIGNED) {
+				Constraint c;
+				c.indexA = constraint->idA.index;
+				c.indexB = constraint->idB.index;
+				c.biasFactor = constraint->biasFactor;
+				c.stiffness = constraint->stiffness;
+				c.targetDistance = constraint->targetDistance;
+				c.type = ConstraintType::distance;
+				constraints.push_back(c);
 			}
 		}
 
 		const int iterations = 12;
 		DescLoop(gameState->frameTime, pairs, constraints, gameState->physicsBodies, iterations);
 
-		loopInstances(gameState, [&](int i, middle::Shape& shape) {
-			auto pcomp = middle::getComponent<components::PhysicsData>(shape);
-			auto pos = middle::getComponent<components::Position>(shape);
+		physicsIt = physicsCache->begin<components::PhysicsData>();
+		posIt = physicsCache->begin<components::Position>();
+		for (int i = 0; i < physicsCache->getSize(); ++i) {
+			auto& shape = middle::getShape(gameState, physicsCache->relevantIdVector[i].index);
+			auto pcomp = *physicsIt;
+			auto pos = *posIt;
 			if (pcomp != nullptr && pos != nullptr) {
 				PhysicsBody& body = gameState->physicsBodies[i];
 				pcomp->velX = body.linearVel.x;
@@ -88,8 +93,7 @@ public:
 				pos->posY = body.position.y;
 				pos->posZ = body.position.z;
 			}
-			return true;
-			});
+		}
 	}
 };
 

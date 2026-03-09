@@ -7,29 +7,24 @@
 
 class LevelNavigationSystem : public middle::MiddleGameplaySystem {
 public:
+	components::CompCache* cache;
+
 	void init(middle::GameState* gameState) {
-
+		cache = middle::newCompCache(gameState);
+		cache->addType<components::LevelReference>();
+		cache->addType<components::MouseClickComponent>();
 	}
+
+
 	void update(middle::GameState* gameState) override {
-		// early exit
-		if (!gameState->input.mouseClicked) {
-			return;
+
+		auto levelIt = cache->begin<components::LevelReference>();
+		for (int i = 0; i < cache->getSize(); ++i) {
+			auto levelRef = *levelIt;
+			std::string name = levelRef->levelName;
+			middle::resetScene(gameState);
+			middle::loadScene(gameState, "../assets/scenes/", name, false);
 		}
-
-		middle::loopInstances(gameState, [gameState](int i, middle::Shape& shape) {
-			auto levelRef = middle::getComponent<components::LevelReference>(shape);
-			if (!levelRef) {
-				return true;
-			}
-			auto click = middle::getComponent<components::MouseClickComponent>(shape);
-			if (click) {
-				std::string name = levelRef->levelName;
-				middle::resetScene(gameState);
-				middle::loadScene(gameState, "../assets/scenes/", name, false);
-			}
-
-			return true;
-			});
 	}
 };
 
