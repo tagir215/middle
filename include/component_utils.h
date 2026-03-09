@@ -4,7 +4,15 @@
 
 namespace middle {
 	template<typename CompType>
-	void queueComponentAddition(middle::GameState* gameState, middle::Id id) {
+	CompType* attachComponent(middle::GameState* gameState, middle::Id id) {
+		middle::Shape& shape = middle::getShape(gameState, id.index);
+		auto newComp = middle::addComponent<CompType>(shape);
+		gameState->componentTypeIdSetWithStructuralChanges.insert(middle::getTypeId<CompType>());
+		return newComp;
+	}
+
+	template<typename CompType>
+	void queueComponentAttachment(middle::GameState* gameState, middle::Id id) {
 		middle::queueAction(gameState, std::make_shared<middle::CustomAction>([id](middle::GameState* gameState) {
 			middle::Shape& shape = middle::getShape(gameState, id.index);
 			middle::addComponent<CompType>(shape);
@@ -13,7 +21,7 @@ namespace middle {
 	}
 
 	template<typename CompType, typename Init>
-	void queueComponentAddition(middle::GameState* gameState, middle::Id id, Init init) {
+	void queueComponentAttachment(middle::GameState* gameState, middle::Id id, Init init) {
 		middle::queueAction(gameState, std::make_shared<middle::CustomAction>([id, &init](middle::GameState* gameState) {
 			middle::Shape& shape = middle::getShape(gameState, id.index);
 			auto newComp = middle::addComponent<CompType>(shape);
@@ -30,4 +38,5 @@ namespace middle {
 			gameState->componentTypeIdSetWithStructuralChanges.insert(middle::getTypeId<CompType>());
 			}));
 	}
+
 }

@@ -15,6 +15,7 @@
 #include "DeleteComponent.h"
 #include "IdRef.h"
 #include "bubble_actions.h"
+#include "component_utils.h"
 
 class BubbleManipulationSystem : public middle::MiddleGameplaySystem {
 
@@ -71,7 +72,7 @@ public:
 					copyGrabbable->grabbing = true;
 					gameState->bubbleAlgebraState.grabbedId = copyId;
 					// set og as reference
-					auto ref = middle::addComponent<components::IdRef>(copyShape);
+					auto ref = middle::attachComponent<components::IdRef>(gameState, copyShape.id);
 					ref->idRef = shape.id;
 					assert(ref->idRef.index != middle::UNASSIGNED);
 				}
@@ -81,7 +82,7 @@ public:
 				// set grabbable for deletion
 				grabbable->grabbing = false;
 				gameState->bubbleAlgebraState.grabbedId = middle::Id();
-				auto deleteComp = middle::addComponent<components::DeleteComponent>(shape);
+				auto deleteComp = middle::attachComponent<components::DeleteComponent>(gameState, shape.id);
 				deleteComp->framesUntilDelete = 0;
 			}
 

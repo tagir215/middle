@@ -23,8 +23,9 @@ public:
 			}
 			auto click = middle::getComponent<components::MouseClickComponent>(shape);
 			if (click) {
+				std::string name = levelRef->levelName;
 				middle::resetScene(gameState);
-				middle::loadScene(gameState, "../assets/scenes/", levelRef->levelName, false);
+				middle::loadScene(gameState, "../assets/scenes/", name, false);
 			}
 
 			return true;

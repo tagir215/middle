@@ -481,7 +481,7 @@ namespace middle {
 			getAllChildren(gameState, copyShape.id, children);
 			for (Id& id : children) {
 				Shape& child = getShape(gameState, id.index);
-				middle::queueComponentAddition<components::PlacementComponent>(gameState, child.id);
+				middle::queueComponentAttachment<components::PlacementComponent>(gameState, child.id);
 			}
 		}
 	}
@@ -498,7 +498,7 @@ namespace middle {
 	{
 		for (int index : selectedShapes) {
 			auto& shape = middle::getShape(gameState, index);
-			middle::queueComponentAddition<components::HiddenTag>(gameState, shape.id);
+			middle::queueComponentAttachment<components::HiddenTag>(gameState, shape.id);
 		}
 	}
 
@@ -587,11 +587,8 @@ namespace middle {
 	void EditorActionRegisterShape::execute(GameState* gameState)
 	{
 		int freeIndex = middle::findFreeIndex(gameState);
-		auto& newShape = middle::addShape(gameState, freeIndex);
-		middle::Id newId = newShape.id;
-		shapeToRegister.id = newId;
-		newShape = shapeToRegister;
-		newShapeId = newId;
+		middle::Shape& registeredShape = middle::registerShape(gameState, shapeToRegister);
+		newShapeId = registeredShape.id;
 	}
 
 	void EditorActionRegisterShape::undo(GameState* gameState)

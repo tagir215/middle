@@ -14,7 +14,7 @@
 namespace entities{
 
     void initCamera(middle::GameState* gameState, int index, const Vector3& position, const Vector3& up, const Vector3& target, float fovy, int projection){
-		auto& shape = middle::addShape(gameState,index);
+		middle::Shape shape;
 		components::Sphere* sphere = middle::addComponent<components::Sphere>(shape);
 		components::Position* pos = middle::addComponent<components::Position>(shape);
 		components::CameraComponent* camera = middle::addComponent<components::CameraComponent>(shape);
@@ -22,6 +22,7 @@ namespace entities{
 		middle::addComponent<components::MouseGrabbable>(shape);
 		middle::addComponent<components::MouseIntersectable>(shape);
 		middle::addComponent<components::LoopSociety>(shape);
+		middle::registerShape(gameState, shape);
 		sphere->radius = middle::DEF_RADIUS;
 		pos->posX = position.x;
 		pos->posY = position.y;

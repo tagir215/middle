@@ -8,35 +8,43 @@
 
 class DeletionSystem : public middle::MiddleGameplaySystem {
 public:
+	components::CompCache* dependencyCache;
+	components::CompCache* deleteCache;
+
 	DeletionSystem() {
 		systemModeType = middle::SystemModeType::ENGINE;
 		systemUpdateType = middle::SystemUpdateType::PREFRAME;
 	}
 	void init(middle::GameState* gameState) {
+		dependencyCache = middle::newCompCache(gameState);
+		dependencyCache->addType<components::DependencyComponent>();
 
+		deleteCache = middle::newCompCache(gameState);
+		deleteCache->addType<components::DeleteComponent>();
 	}
 	void update(middle::GameState* gameState) override {
-		middle::loopInstances(gameState, [gameState](int i, middle::Shape& shape) {
 
+		auto dependencyIt = dependencyCache->begin<components::DependencyComponent>();
+		auto deleteIt = deleteCache->begin<components::DeleteComponent>();
+
+		for (int i = 0; i < dependencyCache->getSize(); ++i) {
 			// if dependency is deleted, delete this as well
-			auto dependency = middle::getComponent<components::DependencyComponent>(shape);
-			if (dependency) {
-				if (!middle::isShapeAlive(gameState, dependency->idRef.index)) {
-					middle::deleteShapeRecursive(gameState, shape.id.index);
-				}
-				return true;
+			auto dependency = *dependencyIt;
+			if (!middle::isShapeAlive(gameState, dependency->idRef.index)) {
+				middle::Shape& shape = middle::getShape(gameState, dependencyCache->relevantIdVector[i].index);
+				middle::queueAction(gameState, std::make_shared<middle::EditorActionDeleteSingle>(shape.id));
 			}
+		}
 
+		for (int i = 0; i < deleteCache->getSize(); ++i) {
 			// if delete comp delete when frame count counts to 0
-			auto deleteComp = middle::getComponent<components::DeleteComponent>(shape);
-			if (deleteComp) {
-				if (deleteComp->framesUntilDelete <= 0) {
-					middle::deleteShapeRecursive(gameState, shape.id.index);
-				}
-				--deleteComp->framesUntilDelete;
+			auto deleteComp = *deleteIt;
+			middle::Shape& shape = middle::getShape(gameState, deleteCache->relevantIdVector[i].index);
+			if (deleteComp->framesUntilDelete <= 0) {
+				middle::queueAction(gameState, std::make_shared<middle::EditorActionDeleteSingle>(shape.id));
 			}
-			return true;
-			});
+			--deleteComp->framesUntilDelete;
+		}
 	}
 };
 

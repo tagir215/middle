@@ -11,13 +11,14 @@
 namespace entities{
 
     void initReference(middle::GameState* gameState, int index, std::vector<middle::Id>members, const std::string& folder, const std::string& sceneName){
-		auto& shape = middle::addShape(gameState, index);
+		middle::Shape shape;
 		components::Position* pos = middle::addComponent<components::Position>(shape);
 		middle::addComponent<components::MouseSelectable>(shape);
 		middle::addComponent<components::MouseGrabbable>(shape);
 		middle::addComponent<components::MouseIntersectable>(shape);
 		auto reference = middle::addComponent<components::Reference>(shape);
 		auto loop = middle::addComponent<components::LoopSociety>(shape);
+		middle::registerShape(gameState, shape);
 		reference->sceneName = sceneName;
 		reference->folder = folder;
 		loop->loopMemberIds = members;

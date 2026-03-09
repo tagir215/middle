@@ -42,7 +42,9 @@ namespace components {
 				}
 				assert(cacheTypeIndex != -1);
 				container = static_cast<middle::ComponentVectorContainer<T>*>(cache->containerVector[cacheTypeIndex]);
-				compOffsets = &cache->compOffsetsVector[cacheTypeIndex];
+				if (cache->getSize() > 0) {
+					compOffsets = &cache->compOffsetsVector[cacheTypeIndex];
+				}
 			}
 
 			T* operator *() {

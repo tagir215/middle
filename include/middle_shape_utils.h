@@ -40,9 +40,7 @@ namespace middle {
 	// deletes shapes and its children
 	void deleteShapeRecursive(GameState* gameState, int index);
 	// add shape and updates generations
-	Shape& addShape(GameState* gameState, int index);
-	// add shape and updates generations
-	Shape& addShape(GameState* gameState, middle::Shape shape);
+	Shape& registerShape(GameState* gameState, middle::Shape shape);
 	// add shape, doesn't update generations
 	Shape& insertShape(GameState* gameState, middle::Id& id);
 	// adds not serialized ghost shape and updates generations
@@ -85,7 +83,7 @@ namespace middle {
 	components::CompCache* newCompCache(GameState* gameState);
 	// queue action
 	void queueAction(GameState* gameState, std::shared_ptr<EditorActionContainer> container);
-	// queue action
+	// queue action for editor, with undos
 	void queueEditorAction(GameState* gameState, std::shared_ptr<EditorActionContainer> container);
 
 

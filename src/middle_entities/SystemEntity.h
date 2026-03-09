@@ -12,7 +12,7 @@
 namespace entities{
 
     inline void initSystem(middle::GameState* gameState, int index, const Vector3& position, const std::string& systemName){
-		auto& shape = middle::addShape(gameState, index);
+		middle::Shape shape;
 		middle::addComponent<components::MouseSelectable>(shape);
 		middle::addComponent<components::MouseGrabbable>(shape);
 		middle::addComponent<components::MouseIntersectable>(shape);
@@ -20,6 +20,7 @@ namespace entities{
 		auto system = middle::addComponent<components::SystemReference>(shape);
 		auto pos = middle::addComponent<components::Position>(shape);
 		auto text = middle::addComponent<components::Text>(shape);
+		middle::registerShape(gameState, shape);
 		system->systemName = systemName;
 		pos->posX = position.x;
 		pos->posY = position.y;

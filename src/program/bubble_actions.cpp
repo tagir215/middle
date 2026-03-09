@@ -260,7 +260,7 @@ namespace bubbleActions {
 		middle::addComponent<components::MouseIntersectable>(newFractionProto);
 		auto position = middle::addComponent<components::Position>(newFractionProto);
 
-		auto& newFractionShape = middle::addShape(gameState, newFractionProto);
+		auto& newFractionShape = middle::registerShape(gameState, newFractionProto);
 
 		position->posX = targetPos.x;
 		position->posY = targetPos.y;
@@ -272,7 +272,7 @@ namespace bubbleActions {
 		referencePos.z += height * 0.5f;
 		for (int i = 0; i < dividend; ++i) {
 			auto newUnitProto = newUnit(gameState, referencePos);
-			auto& newUnitShape = middle::addShape(gameState, newUnitProto);
+			auto& newUnitShape = middle::registerShape(gameState, newUnitProto);
 
 			auto unitComp = middle::getComponent<components::BubbleUnit>(newUnitShape);
 			// set everything other than bottom one as 0
@@ -329,7 +329,7 @@ namespace bubbleActions {
 		auto text = middle::addComponent<components::Text>(newMulShapeProto);
 		text->text = "x";
 
-		auto& newMulShape = middle::addShape(gameState, newMulShapeProto);
+		auto& newMulShape = middle::registerShape(gameState, newMulShapeProto);
 
 		auto reparentA = middle::EditorActionReparent(newMulShape.id.index, idA.index);
 		reparentA.execute(gameState);

@@ -300,16 +300,7 @@ namespace middle {
 		deleteShape(gameState, index);
 	}
 
-	Shape& addShape(GameState* gameState, int index) {
-		Shape shape;
-		shape.id.generation = gameState->shapes[index].id.generation + 1;
-		shape.id.index = index;
-		gameState->ids[index] = shape.id;
-		gameState->shapes[index] = shape;
-		return gameState->shapes[index];
-	}
-
-	Shape& addShape(GameState* gameState, middle::Shape shape)
+	Shape& registerShape(GameState* gameState, middle::Shape shape)
 	{
 		int freeIndex = findFreeIndex(gameState);
 		shape.id.generation = gameState->shapes[freeIndex].id.generation + 1;
@@ -317,8 +308,13 @@ namespace middle {
 		gameState->ids[freeIndex] = shape.id;
 		gameState->shapes[freeIndex] = shape;
 		middle::Shape& newShape = gameState->shapes[freeIndex];
+		for (auto& pair : newShape.componentMap) {
+			int typeId = pair.first;
+			gameState->componentTypeIdSetWithStructuralChanges.insert(typeId);
+		}
 		return newShape;
 	}
+
 
 	Shape& insertShape(GameState* gameState, middle::Id& id)
 	{
@@ -326,6 +322,10 @@ namespace middle {
 		shape.id = id;
 		gameState->ids[id.index] = id;
 		gameState->shapes[id.index] = shape;
+		for (auto& pair : shape.componentMap) {
+			int typeId = pair.first;
+			gameState->componentTypeIdSetWithStructuralChanges.insert(typeId);
+		}
 		return gameState->shapes[id.index];
 	}
 
@@ -386,7 +386,7 @@ namespace middle {
 		else {
 			freeIndex = findFreeIndex(gameState);
 		}
-		Shape& newShape = addShape(gameState, freeIndex);
+		Shape newShape;
 
 		// copy components to the new shape
 		for (auto& pair : ogShape.componentMap) {
@@ -396,7 +396,6 @@ namespace middle {
 
 			// grow component vector.. add new component for the copy
 			int copyOffset = componentListMap[typeId]->grow();
-
 
 			// get og serializable to get fields
 			Serializable* ogSerializable =
@@ -470,6 +469,8 @@ namespace middle {
 
 
 		}
+
+		newShape = middle::registerShape(gameState, newShape);
 
 		return newShape.id;
 	}

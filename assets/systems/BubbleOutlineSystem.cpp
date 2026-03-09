@@ -15,6 +15,7 @@
 #include "BubbleRef.h" 
 #include "DependencyComponent.h"
 #include "bubble_utils.h"
+#include "component_utils.h"
 
 class BubbleOutlineSystem : public middle::MiddleGameplaySystem {
 public:
@@ -43,10 +44,10 @@ public:
 	middle::Shape& newNodeShape(middle::GameState* gameState, const Vector3& pos) {
 
 		middle::Shape& outlineShape = middle::addGhostShape(gameState);
-		auto sphere = middle::addComponent<components::Sphere>(outlineShape);
-		auto posComp = middle::addComponent<components::Position>(outlineShape);
-		auto physicsComp = middle::addComponent<components::PhysicsData>(outlineShape);
-		auto loop = middle::addComponent<components::LoopSociety>(outlineShape);
+		auto sphere = middle::attachComponent<components::Sphere>(gameState, outlineShape.id);
+		auto posComp = middle::attachComponent<components::Position>(gameState, outlineShape.id);
+		auto physicsComp = middle::attachComponent<components::PhysicsData>(gameState, outlineShape.id);
+		auto loop = middle::attachComponent<components::LoopSociety>(gameState, outlineShape.id);
 		posComp->posX = pos.x;
 		posComp->posY = pos.y;
 		posComp->posZ = pos.z;
@@ -197,8 +198,8 @@ public:
 
 		// create new constraint
 		middle::Shape& newConstraintShape = middle::addGhostShape(gameState);
-		auto newConstraint = middle::addComponent<components::Constraint>(newConstraintShape);
-		middle::addComponent<components::LoopSociety>(newConstraintShape);
+		auto newConstraint = middle::attachComponent<components::Constraint>(gameState, newConstraintShape.id);
+		middle::attachComponent<components::LoopSociety>(gameState, newConstraintShape.id);
 		// update pointer after resizing array  
 		constraintToBreak = middle::getComponent<components::Constraint>(constraintToBreakShape);
 
@@ -325,16 +326,16 @@ public:
 			bool initialize = false;
 			auto bubbleRef = middle::getComponent<components::BubbleRef>(shape);
 			if (!bubbleRef) {
-				bubbleRef = middle::addComponent<components::BubbleRef>(shape);
+				bubbleRef = middle::attachComponent<components::BubbleRef>(gameState, shape.id);
 			}
 
 			if (bubbleRef->idRef.index == middle::UNASSIGNED) {
 				initialize = true;
 				middle::Shape& bubbleContainer = middle::addGhostShape(gameState);
 				bubbleRef->idRef = bubbleContainer.id;
-				auto dependency = middle::addComponent<components::DependencyComponent>(bubbleContainer);
+				auto dependency = middle::attachComponent<components::DependencyComponent>(gameState, bubbleContainer.id);
 				dependency->idRef = shape.id;
-				middle::addComponent<components::LoopSociety>(bubbleContainer);
+				middle::attachComponent<components::LoopSociety>(gameState, bubbleContainer.id);
 			}
 
 
@@ -431,8 +432,8 @@ public:
 					Vector3 posB = middle::getShapePosition(gameState, idB.index);
 
 					auto& constraintShape = middle::addGhostShape(gameState);
-					auto constraintLoop = middle::addComponent<components::LoopSociety>(constraintShape);
-					auto constraint = middle::addComponent<components::Constraint>(constraintShape);
+					auto constraintLoop = middle::attachComponent<components::LoopSociety>(gameState, constraintShape.id);
+					auto constraint = middle::attachComponent<components::Constraint>(gameState, constraintShape.id);
 					constraint->targetDistance = Vector3Distance(posA, posB);
 					constraint->idA = idA;
 					constraint->idB = idB;

@@ -11,13 +11,14 @@
 namespace entities{
 
     inline void initLoop(middle::GameState* gameState, int index, std::vector<middle::Id>loopIds, const Vector3& position){
-		auto& shape = middle::addShape(gameState, index);
+		middle::Shape shape;
 		middle::addComponent<components::LoopTag>(shape);
 		auto loop = middle::addComponent<components::LoopSociety>(shape);
 		middle::addComponent<components::MouseSelectable>(shape);
 		middle::addComponent<components::MouseIntersectable>(shape);
 		middle::addComponent<components::MouseGrabbable>(shape);
 		auto pos = middle::addComponent<components::Position>(shape);
+		middle::registerShape(gameState, shape);
 		pos->posX = position.x;
 		pos->posY = position.y;
 		pos->posZ = position.z;
