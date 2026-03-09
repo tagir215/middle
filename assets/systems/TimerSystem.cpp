@@ -9,20 +9,22 @@
 class TimerSystem : public middle::MiddleGameplaySystem {
 
 public:
-	void init(middle::GameState* gameState) {
+	components::CompCache* cache;
 
+	void init(middle::GameState* gameState) {
+		cache = middle::newCompCache(gameState);
+		cache->addType<components::TimerComponent>();
 	}
 	void update(middle::GameState* gameState) override {
-		middle::loopInstances(gameState, [gameState](int i, middle::Shape& shape) {
-			auto timer = middle::getComponent<components::TimerComponent>(shape);
-			if (!timer)
-				return true;
+		auto timerIt = cache->begin<components::TimerComponent>();
+		for (int i = 0; i < cache->getSize(); ++i) {
+			auto timer = *timerIt;
+			middle::Id& id = cache->relevantIdVector[i];
 			timer->timeLeft -= gameState->frameTime;
 			if (timer->timeLeft < 0) {
-				middle::queueComponentDeletion<components::TimerComponent>(gameState, shape.id);
+				middle::queueComponentDeletion<components::TimerComponent>(gameState, id);
 			}
-			return true;
-			});
+		}
 	}
 };
 

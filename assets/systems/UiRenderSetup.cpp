@@ -20,8 +20,18 @@ public:
 		systemModeType = middle::SystemModeType::ENGINE;
 		systemUpdateType = middle::SystemUpdateType::RENDERING;
 	}
-	void init(middle::GameState* gameState) {
 
+	components::CompCache* rectangleCache;
+	components::CompCache* circleCache;
+	components::CompCache* textCache;
+
+	void init(middle::GameState* gameState) {
+		rectangleCache = middle::newCompCache(gameState);
+		rectangleCache->addType<components::Rectangle>();
+		circleCache = middle::newCompCache(gameState);
+		circleCache->addType<components::Circle>();
+		textCache = middle::newCompCache(gameState);
+		textCache->addType<components::Text>();
 	}
 
 	void drawRect(middle::GameState* gameState, const std::vector<Vector3>& vertices, const Color& color) {
@@ -53,77 +63,52 @@ public:
 
 	void update(middle::GameState* gameState) override {
 
-		middle::loopInstances(gameState, [gameState, this](int i, middle::Shape& shape) {
-			auto rectangle = middle::getComponent<components::Rectangle>(shape);
-			auto text = middle::getComponent<components::Text>(shape);
-			auto circle = middle::getComponent<components::Circle>(shape);
-			auto uiComponent = middle::getComponent<components::UiComponent>(shape);
+		auto rectangleIt = rectangleCache->begin<components::Rectangle>();
+		for (int i = 0; i < rectangleCache->getSize(); ++i) {
+			auto rectangle = *rectangleIt;
+			auto& shape = middle::getShape(gameState, rectangleCache->relevantIdVector[i].index);
+			Vector3 position = middle::getShapePosition(gameState, shape.id.index);
+			auto intersectable = middle::getComponent<components::MouseIntersectable>(shape);
+			Color color = intersectable && intersectable->intersectingTop ? WHITE : Color{ 200,200,200,200 };
+			std::vector<Vector3>vertices = middle::getRectVertices(gameState, shape.id);
+			drawRect(gameState, vertices, color);
+		}
+
+		auto circleIt = circleCache->begin<components::Circle>();
+		for (int i = 0; i < circleCache->getSize(); ++i){
+			auto circle = *circleIt;
+			auto& shape = middle::getShape(gameState, circleCache->relevantIdVector[i].index);
+			auto intersectable = middle::getComponent<components::MouseIntersectable>(shape);
+			bool intersecting = intersectable && intersectable->intersectingTop;
+			Color color = intersecting ? WHITE : Color{ 200,200,200,200 };
+			middle::RenderItem circleItem;
+			circleItem.type = middle::RenderItemType::CIRCLE;
+			circleItem.color = color;
+			circleItem.radius = circle->radius;
+			circleItem.center = middle::getShapePosition(gameState, shape.id.index);
+			gameState->renderData.push_back(circleItem);
+		}
+
+		auto textIt = textCache->begin<components::Text>();
+		for (int i = 0; i < textCache->getSize(); ++i) {
+			auto text = *textIt;
+			auto& shape = middle::getShape(gameState, textCache->relevantIdVector[i].index);
 			auto inputVariable = middle::getComponent<components::InputVariable>(shape);
 			auto outputVariable = middle::getComponent<components::OutputVariable>(shape);
-			auto procedure = middle::getComponent<components::ProcedureContainer>(shape);
-
-			if (!rectangle && !circle && !uiComponent && !inputVariable && !outputVariable && !procedure)
-				return true;
-
 			if (inputVariable) {
 				text->text = inputVariable->label;
 			}
 			if (outputVariable) {
 				text->text = outputVariable->label;
 			}
-
-			if (rectangle) {
-				Vector3 position = middle::getShapePosition(gameState, shape.id.index);
-
-				auto intersectable = middle::getComponent<components::MouseIntersectable>(shape);
-				Color color = intersectable && intersectable->intersectingTop ? WHITE : Color{ 200,200,200,200 };
-
-				std::vector<Vector3>vertices = middle::getRectVertices(gameState, shape.id);
-
-				drawRect(gameState, vertices, color);
-			}
-
-			if (text) {
-				middle::RenderItem textItem;
-				Vector3 pos = middle::getShapePosition(gameState, shape.id.index);
-				textItem.type = middle::RenderItemType::TEXT;
-				textItem.text = text->text;
-				Vector3 offset = { text->offsetX, text->offsetY, text->offsetZ };
-				textItem.center = pos + offset;
-				gameState->renderData.push_back(textItem);
-			}
-
-			if (circle) {
-				auto intersectable = middle::getComponent<components::MouseIntersectable>(shape);
-				bool intersecting = intersectable && intersectable->intersectingTop;
-
-				Color color = intersecting ? WHITE : Color{ 200,200,200,200 };
-
-				middle::RenderItem circleItem;
-				circleItem.type = middle::RenderItemType::CIRCLE;
-				circleItem.color = color;
-				circleItem.radius = circle->radius;
-				circleItem.center = middle::getShapePosition(gameState, shape.id.index);
-				gameState->renderData.push_back(circleItem);
-			}
-
-//			if (procedure) {
-//				if (procedure->activeScope.index != middle::UNASSIGNED) {
-//					auto& activeScope = middle::getShape(gameState, procedure->activeScope.index);
-//					auto scope = middle::getComponent<components::ScopeComponent>(activeScope);
-//					std::vector<middle::Id>children;
-//					middle::getChildren(gameState, activeScope.id, children);
-//					auto& activeBlock = middle::getShape(gameState, children[scope->currentIndex].index);
-//					auto rectBlock = middle::getComponent<components::Rectangle>(activeBlock);
-//					Vector3 pos = middle::getShapePosition(gameState, activeBlock.id.index);
-//					middle::RenderItem rect;
-//					std::vector<Vector3>vertices = middle::getRectVertices(gameState, activeBlock.id);
-//					drawRect(gameState, vertices, GREEN);
-//				}
-//			}
-
-			return true;
-			});
+			middle::RenderItem textItem;
+			Vector3 pos = middle::getShapePosition(gameState, shape.id.index);
+			textItem.type = middle::RenderItemType::TEXT;
+			textItem.text = text->text;
+			Vector3 offset = { text->offsetX, text->offsetY, text->offsetZ };
+			textItem.center = pos + offset;
+			gameState->renderData.push_back(textItem);
+		}
 	}
 };
 

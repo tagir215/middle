@@ -91,7 +91,7 @@ public:
 		auto circleIt = circleCache->begin<components::Circle>();
 		auto circleIntersectableIt = circleCache->begin<components::MouseIntersectable>();
 		for (int i = 0; i < circleCache->getSize(); ++i) {
-			auto& shape = middle::getShape(gameState, rectangleCache->relevantIdVector[i].index);
+			auto& shape = middle::getShape(gameState, circleCache->relevantIdVector[i].index);
 			auto circle = *circleIt;
 			auto intersectable = *circleIntersectableIt;
 			Vector3 position = middle::getShapePosition(gameState, shape.id.index);
