@@ -9,32 +9,36 @@
 
 class MouseClickSystem : public middle::MiddleGameplaySystem {
 public:
-	void init(middle::GameState* gameState) {
+	components::CompCache* clickCache;
+	components::CompCache* buttonCache;
 
+	void init(middle::GameState* gameState) {
+		clickCache = middle::newCompCache(gameState);
+		clickCache->addType<components::MouseClickComponent>();
+		buttonCache = middle::newCompCache(gameState);
+		buttonCache->addType<components::Button>();
+		buttonCache->addType<components::MouseIntersectable>();
 	}
 	void update(middle::GameState* gameState) override {
 
-		middle::loopInstances(gameState, [gameState](int i, middle::Shape& shape) {
-			auto click = middle::getComponent<components::MouseClickComponent>(shape);
-			if (click) {
-				middle::queueComponentDeletion<components::MouseClickComponent>(gameState, shape.id);
-			}
-			return true;
-			});
+		auto clickIt = clickCache->begin<components::MouseClickComponent>();
+		for (int i = 0; i < clickCache->getSize(); ++i) {
+			auto& shape = middle::getShape(gameState, clickCache->relevantIdVector[i].index);
+			auto click = *clickIt;
+			middle::queueComponentDeletion<components::MouseClickComponent>(gameState, shape.id);
+		}
 
 		if (gameState->input.mouseClicked) {
-			middle::loopInstances(gameState, [gameState](int i, middle::Shape& shape) {
-				auto button = middle::getComponent<components::Button>(shape);
-				if (!button) {
-					return true;
-				}
-				auto intersectable = middle::getComponent<components::MouseIntersectable>(shape);
+			auto buttonIt = buttonCache->begin<components::Button>();
+			auto intersectableIt = buttonCache->begin<components::MouseIntersectable>();
+
+			for (int i = 0; i < buttonCache->getSize(); ++i) {
+				auto intersectable = *intersectableIt;
+				auto& shape = middle::getShape(gameState, buttonCache->relevantIdVector[i].index);
 				if (intersectable->intersecting) {
 					middle::attachComponent<components::MouseClickComponent>(gameState, shape.id);
 				}
-
-				return true;
-				});
+			}
 		}
 
 
