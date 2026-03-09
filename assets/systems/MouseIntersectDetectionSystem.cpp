@@ -26,65 +26,72 @@ namespace MouseIntersectDetectionSystem {
 			systemModeType = middle::SystemModeType::EDITOR;
 		}
 
-		void init(middle::GameState* gameState) {
+		components::CompCache* lineIntersectableCache;
+		components::CompCache* intersectableCache;
 
+		void init(middle::GameState* gameState) {
+			lineIntersectableCache = middle::newCompCache(gameState);
+			lineIntersectableCache->addType<components::MouseIntersectable>();
+			lineIntersectableCache->addType<components::Constraint>();
+			intersectableCache = middle::newCompCache(gameState);
+			intersectableCache->addType<components::MouseIntersectable>();
 		}
 
 		void update(middle::GameState* gameState) override {
 
-			bool foundIntersecting = false;
-
-			for (int i = 0; i < gameState->shapes.size(); ++i) {
-				if (!middle::isShapeAlive(gameState, i))
-					continue;
-				middle::Shape& shape = gameState->shapes[i];
-
+			auto intersectableIt = lineIntersectableCache->begin<components::MouseIntersectable>();
+			auto constraintIt = lineIntersectableCache->begin<components::Constraint>();
+			for (int i = 0; i < lineIntersectableCache->getSize(); ++i) {
+				middle::Shape& shape = middle::getShape(gameState, lineIntersectableCache->relevantIdVector[i].index);
+				auto constraint = *constraintIt;
+				auto intersectComponent = *intersectableIt;
 				auto hidden = middle::getComponent<components::HiddenTag>(shape);
 				if (hidden)
 					continue;
-
 				auto placable = middle::getComponent<components::PlacementComponent>(shape);
 				if (placable)
 					continue;
 
-				auto intersectComponent = middle::getComponent<components::MouseIntersectable>(shape);
-				if (!intersectComponent)
-					continue;
-
-				bool wasIntersecting = middle::isMouseIntersectingShape(gameState, i);
+				bool wasIntersecting = intersectComponent->intersecting;
 				intersectComponent->wasIntersecting = wasIntersecting;
 
-				// line intersect
-
-				auto constraint = middle::getComponent<components::Constraint>(shape);
-				if (constraint) {
-					// in constraint creation mode, can't select constraints, only spheres to create constraints to
-					if (gameState->editorState.creationMode == middle::CreationMode::CONSTRAINT_MODE)
-						continue;
-					auto& instanceA = getShape(gameState, constraint->idA.index);
-					auto& instanceB = getShape(gameState, constraint->idB.index);
-					Vector3 posA = middle::getShapePosition(gameState, constraint->idA.index);
-					Vector3 posB = middle::getShapePosition(gameState, constraint->idB.index);
-					bool mouseIntersect = middle::PointIntersectLineZX_Plane(gameState->input.mouseXZ_PlanePos, posA, posB, middle::DEF_LINE_PADDING_H, middle::DEF_LINE_PADDING_V);
-					auto intersectComponent = middle::getComponent<components::MouseIntersectable>(shape);
-					intersectComponent->intersecting = mouseIntersect;
-					intersectComponent->intersectingTop = mouseIntersect;
+				// in constraint creation mode, can't select constraints, only spheres to create constraints to
+				if (gameState->editorState.creationMode == middle::CreationMode::CONSTRAINT_MODE)
 					continue;
-				}
+				auto& instanceA = getShape(gameState, constraint->idA.index);
+				auto& instanceB = getShape(gameState, constraint->idB.index);
+				Vector3 posA = middle::getShapePosition(gameState, constraint->idA.index);
+				Vector3 posB = middle::getShapePosition(gameState, constraint->idB.index);
+				bool mouseIntersect = middle::PointIntersectLineZX_Plane(gameState->input.mouseXZ_PlanePos, posA, posB, middle::DEF_LINE_PADDING_H, middle::DEF_LINE_PADDING_V);
+				intersectComponent->intersecting = mouseIntersect;
+				intersectComponent->intersectingTop = mouseIntersect;
+			}
 
-
-				// intersect sphere
-
+			bool foundIntersecting = false;
+			auto sphereIntersectableIt = intersectableCache->begin<components::MouseIntersectable>();
+			for (int i = 0; i < intersectableCache->getSize(); ++i) {
+				middle::Shape& shape = middle::getShape(gameState, intersectableCache->relevantIdVector[i].index);
+				auto intersectable = *sphereIntersectableIt;
+				auto hidden = middle::getComponent<components::HiddenTag>(shape);
+				if (hidden)
+					continue;
+				auto placable = middle::getComponent<components::PlacementComponent>(shape);
+				if (placable)
+					continue;
 				auto position = middle::getComponent<components::Position>(shape);
 				if (!position)
 					continue;
+				auto constraint = middle::getComponent<components::Constraint>(shape);
+				if (constraint) {
+					continue;
+				}
 
 				auto sphere = middle::getComponent<components::Sphere>(shape);
 				auto reference = middle::getComponent<components::Reference>(shape);
 				auto system = middle::getComponent<components::SystemReference>(shape);
 				auto compRef = middle::getComponent<components::ComponentReference>(shape);
 				auto loopTag = middle::getComponent<components::LoopTag>(shape);
-				Vector3 pos = middle::getShapePosition(gameState, shape.id.index);
+
 
 				float radius = 0;
 				if (sphere) {
@@ -100,21 +107,25 @@ namespace MouseIntersectDetectionSystem {
 					radius = middle::DEF_RADIUS_LOOP_INDICATOR;
 				}
 
+				Vector3 pos = middle::getShapePosition(gameState, shape.id.index);
+
 				Vector3 intersectPos;
 				bool isIntersecting = middle::RayCastLineSphere(pos, radius, gameState->activeCamera.position,
 					gameState->activeCamera.position + gameState->input.mouseDir, intersectPos);
-				intersectComponent->intersecting = isIntersecting;
+				intersectable->intersecting = isIntersecting;
 
 				if (isIntersecting) {
 					if (!foundIntersecting) {
-						intersectComponent->intersectingTop = true;
+						intersectable->intersectingTop = true;
 					}
 					foundIntersecting = true;
 				}
 				else {
-					intersectComponent->intersectingTop = false;
+					intersectable->intersectingTop = false;
 				}
 			}
+
+
 		}
 	};
 
