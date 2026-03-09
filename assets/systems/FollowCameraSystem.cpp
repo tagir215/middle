@@ -9,23 +9,22 @@ public:
 	FollowCameraSystem(){
 		systemUpdateType = middle::SystemUpdateType::GAMEPLAY_POSTFRAME;
 	}
-	void init(middle::GameState* gameState) {
 
+	components::CompCache* uiCache;
+
+	void init(middle::GameState* gameState) {
+		uiCache = middle::newCompCache(gameState);
+		uiCache->addType<components::UiNode>();
 	}
 	void update(middle::GameState* gameState) override {
-		middle::loopInstances(gameState, [gameState](int i, middle::Shape& shape) {
-			auto uinode = middle::getComponent<components::UiNode>(shape);
-			if (!uinode) {
-				return true;
-			}
 
+		auto uiIt = uiCache->begin<components::UiNode>();
+		for (int i = 0; i < uiCache->getSize(); ++i) {
+			auto& shape = middle::getShape(gameState, uiCache->relevantIdVector[i].index);
 			Vector3 cameraPos = gameState->activeCamera.position;
-
-			Vector3 pos = middle::getShapePosition(gameState, i);
-			middle::moveShape(gameState, i, cameraPos - pos);
-
-			return true;
-			});
+			Vector3 pos = middle::getShapePosition(gameState, shape.id.index);
+			middle::moveShape(gameState, shape.id.index, cameraPos - pos);
+		}
 	}
 };
 
