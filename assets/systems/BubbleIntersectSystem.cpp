@@ -14,32 +14,65 @@
 #include "Sphere.h"
 
 class BubbleIntersectSystem : public middle::MiddleGameplaySystem {
-
 public:
-	void init(middle::GameState* gameState) {
 
+	components::CompCache* bubbleCache;
+	components::CompCache* unitCache;
+
+	void init(middle::GameState* gameState) {
+		bubbleCache = middle::newCompCache(gameState);
+		bubbleCache->addType<components::BubbleComponent>();
+		bubbleCache->addType<components::MouseIntersectable>();
+
+		unitCache = middle::newCompCache(gameState);
+		unitCache->addType<components::BubbleUnit>();
+		unitCache->addType<components::MouseIntersectable>();
+		unitCache->addType<components::Sphere>();
 	}
 
 	void update(middle::GameState* gameState) override {
 
-		middle::loopInstances(gameState, [gameState, this](int i, middle::Shape& shape) {
-
-			auto bubble = middle::getComponent<components::BubbleComponent>(shape);
-			auto unit = middle::getComponent<components::BubbleUnit>(shape);
-			if (!bubble && !unit)
-				return true;
-			auto grabbable = middle::getComponent<components::MouseGrabbable>(shape);
-			if (grabbable && grabbable->grabbing) {
-				return true;
-			}
-
-			auto intersectable = middle::getComponent<components::MouseIntersectable>(shape);
-			assert(intersectable);
+		auto unitIt = unitCache->begin<components::BubbleUnit>();
+		auto unitIntersectableIt = unitCache->begin<components::MouseIntersectable>();
+		auto sphereIt = unitCache->begin<components::Sphere>();
+		for (int i = 0; i < unitCache->getSize(); ++i) {
+			auto& shape = middle::getShape(gameState, unitCache->relevantIdVector[i].index);
+			auto unit = *unitIt;
+			auto intersectable = *unitIntersectableIt;
+			auto sphere = *sphereIt;
+			intersectable->intersecting = false;
+			intersectable->intersectingTop = false;
 
 			if (gameState->bubbleAlgebraState.intersectingUI) {
-				intersectable->intersecting = false;
-				intersectable->intersectingTop = false;
-				return true;
+				continue;
+			}
+
+			Vector3 pos = middle::getShapePosition(gameState, shape.id.index);
+			Vector3 intersectPos;
+			bool intersecting = middle::RayCastLineSphere(pos, sphere->radius, gameState->activeCamera.position,
+				gameState->activeCamera.position + gameState->input.mouseDir, intersectPos);
+
+			intersectable->intersecting = intersecting;
+			intersectable->intersectingTop = intersecting;
+		}
+
+
+		auto bubbleIt = bubbleCache->begin<components::BubbleComponent>();
+		auto bubbleIntersectableIt = bubbleCache->begin<components::MouseIntersectable>();
+		for (int i = 0; i < bubbleCache->getSize(); ++i) {
+			auto& shape = middle::getShape(gameState, bubbleCache->relevantIdVector[i].index);
+			auto bubble = *bubbleIt;
+			auto intersectable = *bubbleIntersectableIt;
+			intersectable->intersecting = false;
+			intersectable->intersectingTop = false;
+
+			auto grabbable = middle::getComponent<components::MouseGrabbable>(shape);
+			if (grabbable && grabbable->grabbing) {
+				continue;
+			}
+
+			if (gameState->bubbleAlgebraState.intersectingUI) {
+				continue;
 			}
 
 			// check that children are not already intersecting or grabbing 
@@ -61,30 +94,17 @@ public:
 				}
 			}
 
-			// update intersecting status
-
-			auto position = middle::getComponent<components::Position>(shape);
 			Vector3 pos = middle::getShapePosition(gameState, shape.id.index);
 			Vector3 mousePos = middle::RayCastLinePlane(pos, { 0,1,0 }, gameState->activeCamera.position, gameState->input.mouseDir);
 
-			bool intersecting = false;
-			if (bubble) {
-				intersecting = bubble::pointIntersectBubble(gameState, shape, mousePos);
-			}
-			if (unit) {
-				auto sphere = middle::getComponent<components::Sphere>(shape);
-				assert(position && sphere);
-				Vector3 intersectPos;
-				intersecting = middle::RayCastLineSphere(pos, sphere->radius, gameState->activeCamera.position,
-					gameState->activeCamera.position + gameState->input.mouseDir, intersectPos);
-			}
+			bool intersecting = bubble::pointIntersectBubble(gameState, shape, mousePos);
+
 			intersectable->intersecting = intersecting;
 			if (!alreadyIntersecting) {
 				intersectable->intersectingTop = intersecting;
 			}
+		}
 
-			return true;
-			});
 	}
 };
 
