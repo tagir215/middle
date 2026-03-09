@@ -12,28 +12,29 @@ public:
 		systemModeType = middle::SystemModeType::ENGINE;
 	}
 
-	void init(middle::GameState* gameState) {
+	components::CompCache* testCache;
+	components::CompCache* configCache;
 
+	void init(middle::GameState* gameState) {
+		testCache = middle::newCompCache(gameState);
+		testCache->addType<components::TestComponent>();
+		configCache = middle::newCompCache(gameState);
+		configCache->addType<components::EcsPerformanceTestConfigs>();
 	}
 	void update(middle::GameState* gameState) override {
 
-		middle::Id& shapeId = middle::findFirstShapeWithComp(gameState, middle::getTypeId<components::EcsPerformanceTestConfigs>());
-		auto& shape = middle::getShape(gameState, shapeId.index);
-		auto config = middle::getComponent<components::EcsPerformanceTestConfigs>(shape);
-
+		components::EcsPerformanceTestConfigs* config = nullptr;
+		auto configIt = configCache->begin<components::EcsPerformanceTestConfigs>();
+		if (configCache->getSize() > 0) {
+			config = *configIt;
+		}
 		if (!config) {
 			return;
 		}
 
+
 		// calculate entity count with testComp
-		int testCompCount = 0;
-		middle::loopInstances(gameState, [&testCompCount](int i, middle::Shape& shape) {
-			auto testComp = middle::getComponent<components::TestComponent>(shape);
-			if (testComp) {
-				++testCompCount;
-			}
-			return true;
-			});
+		int testCompCount = testCache->getSize();
 
 		// add new entities with test comps until target count
 		while (testCompCount < config->entityCount) {
@@ -42,19 +43,16 @@ public:
 			++testCompCount;
 		}
 
-		// delte entiteis with test comps until target count
+		// delete entities with test comps until target count
 		if (testCompCount > config->entityCount) {
-			middle::loopInstances(gameState, [config, gameState, &testCompCount](int i, middle::Shape& shape) {
-				auto testComp = middle::getComponent<components::TestComponent>(shape);
-				if (testComp) {
-					middle::deleteShape(gameState, i);
-					--testCompCount;
-				}
-				if (testCompCount <= config->entityCount) {
-					return false;
-				}
-				return true;
-			});
+			auto testIt = testCache->begin<components::TestComponent>();
+
+			for (int i = 0; i < testCache->getSize(); ++i) {
+				auto testComp = *testIt;
+				middle::Id& id = testCache->relevantIdVector[i];
+				middle::queueAction(gameState, std::make_shared<middle::EditorActionDeleteSingle>(id));
+				--testCompCount;
+			}
 		}
 
 	}

@@ -3,9 +3,19 @@
 
 namespace components {
 
+	enum Desirability {
+		INTERESTED,
+		NOTINTERESTED
+	};
+
+	struct CacheCompType {
+		Desirability desirability;
+		int typeId;
+	};
+
 	class CompCache {
 	public:
-		std::vector<int>typeIdVector;
+		std::vector<CacheCompType>typeIdVector;
 		std::vector<middle::IComponentVectorContainer*>containerVector;
 		std::vector<std::vector<int>>compOffsetsVector;
 		std::vector<middle::Id>relevantIdVector;
@@ -17,9 +27,9 @@ namespace components {
 		}
 
 		template<typename T>
-		void addType() {
+		void addType(Desirability desirability = Desirability::INTERESTED) {
 			int typeId = middle::getTypeId<T>();
-			typeIdVector.push_back(typeId);
+			typeIdVector.push_back({desirability, typeId});
 			containerVector.push_back(middle::componentListMap[typeId].get());
 			componentTypeCount = typeIdVector.size();
 		}
@@ -36,7 +46,7 @@ namespace components {
 				int cacheTypeIndex = -1;
 
 				for (int i = 0; i < cache->componentTypeCount; ++i) {
-					if (typeId == cache->typeIdVector[i]) {
+					if (typeId == cache->typeIdVector[i].typeId) {
 						cacheTypeIndex = i;
 					}
 				}

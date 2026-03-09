@@ -6,6 +6,7 @@
 class CompCacheSystem : public middle::MiddleGameplaySystem {
 
 public:
+
 	CompCacheSystem() {
 		systemUpdateType = middle::SystemUpdateType::PREFRAME;
 		systemModeType = middle::SystemModeType::ENGINE;
@@ -23,16 +24,24 @@ public:
 
 		// fill relevant ids and store comp offset for each component for each entity
 		middle::loopInstances(gameState, [gameState, cache](int i, middle::Shape& shape) {
-			// skip if not all components found
+			// skip if not all components found, or if not interseted skip if found
 			for (int compTypeIndex = 0; compTypeIndex < cache->componentTypeCount; ++compTypeIndex) {
-				int typeId = cache->typeIdVector[compTypeIndex];
-				if (shape.componentMap.find(typeId) == shape.componentMap.end()) {
-					return true;
+				components::CacheCompType cacheCompType = cache->typeIdVector[compTypeIndex];
+				int typeId = cacheCompType.typeId;
+				if (cacheCompType.desirability == components::INTERESTED) {
+					if (shape.componentMap.find(typeId) == shape.componentMap.end()) {
+						return true;
+					}
+				}
+				if (cacheCompType.desirability == components::NOTINTERESTED) {
+					if (shape.componentMap.find(typeId) != shape.componentMap.end()) {
+						return true;
+					}
 				}
 			}
 			// add the comp offsets and relevant ids
 			for (int compTypeIndex = 0; compTypeIndex < cache->componentTypeCount; ++compTypeIndex) {
-				int typeId = cache->typeIdVector[compTypeIndex];
+				int typeId = cache->typeIdVector[compTypeIndex].typeId;
 				middle::Component& comp = shape.componentMap[typeId];
 				cache->compOffsetsVector[compTypeIndex].push_back(comp.componentOffset);
 			}
@@ -54,8 +63,8 @@ public:
 		auto& structuralChanges = gameState->componentTypeIdSetWithStructuralChanges;
 		if (structuralChanges.size() > 0) {
 			for (auto& cache : gameState->compCaches) {
-				for (int compTypeId : cache->typeIdVector) {
-					if (structuralChanges.find(compTypeId) != structuralChanges.end()) {
+				for (auto cacheTypeId : cache->typeIdVector) {
+					if (structuralChanges.find(cacheTypeId.typeId) != structuralChanges.end()) {
 						cache->needsUpdate = true;
 					}
 				}

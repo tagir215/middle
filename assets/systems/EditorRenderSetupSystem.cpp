@@ -31,8 +31,65 @@ public:
 		systemModeType = middle::SystemModeType::EDITOR;
 	}
 
-	void init(middle::GameState* gameState) {
+	components::CompCache* gridCache;
+	components::CompCache* configCache;
+	components::CompCache* textCache;
+	components::CompCache* importRefCache;
+	components::CompCache* nodeCache;
+	components::CompCache* constraintCache;
+	components::CompCache* loopTagCache;
+	components::CompCache* hierarchyCache;
+	components::CompCache* systemRefCache;
+	components::CompCache* selectableSphereCache;
+	components::CompCache* selectableLineCache;
 
+
+	void init(middle::GameState* gameState) {
+		gridCache = middle::newCompCache(gameState);
+		gridCache->addType<components::EditorConfigs>();
+		//gridCache->addType<components::HiddenTag>(components::NOTINTERESTED);
+		configCache = middle::newCompCache(gameState);
+		configCache->addType<components::ConfigComponent>();
+		configCache->addType<components::Position>();
+		//configCache->addType<components::HiddenTag>(components::NOTINTERESTED);
+		textCache = middle::newCompCache(gameState);
+		textCache->addType<components::Text>();
+		textCache->addType<components::Position>();
+		//textCache->addType<components::HiddenTag>(components::NOTINTERESTED);
+		importRefCache = middle::newCompCache(gameState);
+		importRefCache->addType<components::Reference>();
+		importRefCache->addType<components::Position>();
+		//importRefCache->addType<components::HiddenTag>(components::NOTINTERESTED);
+		nodeCache = middle::newCompCache(gameState);
+		nodeCache->addType<components::Sphere>();
+		nodeCache->addType<components::Position>();
+		//nodeCache->addType<components::HiddenTag>(components::NOTINTERESTED);
+		constraintCache = middle::newCompCache(gameState);
+		constraintCache->addType<components::Constraint>();
+		//constraintCache->addType<components::HiddenTag>(components::NOTINTERESTED);
+		loopTagCache = middle::newCompCache(gameState);
+		loopTagCache->addType<components::LoopSociety>();
+		loopTagCache->addType<components::LoopTag>();
+		loopTagCache->addType<components::Position>();
+		//loopTagCache->addType<components::HiddenTag>(components::NOTINTERESTED);
+		//loopTagCache->addType<components::Reference>(components::NOTINTERESTED);
+		hierarchyCache = middle::newCompCache(gameState);
+		hierarchyCache->addType<components::LoopSociety>();
+		hierarchyCache->addType<components::MouseIntersectable>();
+		systemRefCache = middle::newCompCache(gameState);
+		systemRefCache->addType<components::LoopSociety>();
+		systemRefCache->addType<components::SystemReference>();
+		systemRefCache->addType<components::Position>();
+		//systemRefCache->addType<components::HiddenTag>(components::NOTINTERESTED);
+		selectableSphereCache = middle::newCompCache(gameState);
+		selectableSphereCache->addType<components::MouseSelectable>();
+		selectableSphereCache->addType<components::Sphere>();
+		selectableSphereCache->addType<components::Position>();
+		//selectableSphereCache->addType<components::HiddenTag>(components::NOTINTERESTED);
+		selectableLineCache = middle::newCompCache(gameState);
+		selectableLineCache->addType<components::MouseSelectable>();
+		selectableLineCache->addType<components::Constraint>();
+		//selectableLineCache->addType<components::HiddenTag>(components::NOTINTERESTED);
 	}
 	void update(middle::GameState* gameState) override {
 
@@ -49,7 +106,6 @@ public:
 		Color configColor = ORANGE;
 		Color cameraColor = BLUE;
 
-
 		if (gameState->editorState.creationMode == middle::CreationMode::LOOP_MODE) {
 			backgroundColor = GRAY;
 			//textColor = GRAY;
@@ -57,287 +113,251 @@ public:
 		}
 		gameState->editorState.backgroundColor = backgroundColor;
 
+		// drawing grid
+		auto gridIt = gridCache->begin<components::EditorConfigs>();
+		for (int i = 0; i < gridCache->getSize(); ++i) {
+			auto editorConfigs = *gridIt;
 
+			if (editorConfigs->gridSize == 0)
+				continue;
+			// draw grid
+			const Color CartesianColor = WHITE;
+			Vector3 mouseXz = gameState->input.mouseXZ_PlanePos;
+			Vector3 mouseGridPos = middle::gridPosition(mouseXz, editorConfigs->gridSize);
 
-		loopInstances(gameState, [&](int i, middle::Shape& shape) {
-
-			auto hidden = middle::getComponent<components::HiddenTag>(shape);
-			if (hidden)
-				return true;
-
-			auto position = middle::getComponent<components::Position>(shape);
-			auto selectable = middle::getComponent<components::MouseSelectable>(shape);
-			auto loopTag = middle::getComponent<components::LoopTag>(shape);
-			auto loopSociety = middle::getComponent<components::LoopSociety>(shape);
-			auto intersectable = middle::getComponent<components::MouseIntersectable>(shape);
-			auto config = middle::getComponent<components::ConfigComponent>(shape);
-			auto editorConfigs = middle::getComponent<components::EditorConfigs>(shape);
-
-			if (editorConfigs) {
-				if (editorConfigs->gridSize == 0)
-					return true;
-				// draw grid
-				const Color CartesianColor = WHITE;
-				Vector3 mouseXz = gameState->input.mouseXZ_PlanePos;
-				Vector3 mouseGridPos = middle::gridPosition(mouseXz, editorConfigs->gridSize);
-
-				const float visibleGridRadius = editorConfigs->gridSize * editorConfigs->visibleGridPointRadiusCount;
-				float visibleGridRadiusSq = visibleGridRadius * visibleGridRadius;
-				int startX = mouseGridPos.x - visibleGridRadius;
-				int startZ = mouseGridPos.z - visibleGridRadius;
-				for (float x = startX; x < startX + visibleGridRadius * 2; x += editorConfigs->gridSize) {
-					for (float z = startZ; z < startZ + visibleGridRadius * 2; z += editorConfigs->gridSize) {
-						float deltaX = mouseXz.x - x;
-						float deltaZ = mouseXz.z - z;
-						float distSq = deltaX * deltaX + deltaZ * deltaZ;
-						float ratio = distSq / visibleGridRadiusSq;
-						if (distSq < visibleGridRadiusSq) {
-							middle::RenderItem gridSphere;
-							gridSphere.type = middle::RenderItemType::SPHERE;
-							gridSphere.center = { x, 0, z };
-							gridSphere.color = CartesianColor;
-							gridSphere.color.a = (1.0f - ratio) * 255;
-							gridSphere.radius = editorConfigs->gridSize * 0.05f;
-							gameState->renderData.push_back(gridSphere);
-						}
+			const float visibleGridRadius = editorConfigs->gridSize * editorConfigs->visibleGridPointRadiusCount;
+			float visibleGridRadiusSq = visibleGridRadius * visibleGridRadius;
+			int startX = mouseGridPos.x - visibleGridRadius;
+			int startZ = mouseGridPos.z - visibleGridRadius;
+			for (float x = startX; x < startX + visibleGridRadius * 2; x += editorConfigs->gridSize) {
+				for (float z = startZ; z < startZ + visibleGridRadius * 2; z += editorConfigs->gridSize) {
+					float deltaX = mouseXz.x - x;
+					float deltaZ = mouseXz.z - z;
+					float distSq = deltaX * deltaX + deltaZ * deltaZ;
+					float ratio = distSq / visibleGridRadiusSq;
+					if (distSq < visibleGridRadiusSq) {
+						middle::RenderItem gridSphere;
+						gridSphere.type = middle::RenderItemType::SPHERE;
+						gridSphere.center = { x, 0, z };
+						gridSphere.color = CartesianColor;
+						gridSphere.color.a = (1.0f - ratio) * 255;
+						gridSphere.radius = editorConfigs->gridSize * 0.05f;
+						gameState->renderData.push_back(gridSphere);
 					}
 				}
 			}
+		}
 
 
-			if (config) {
-				middle::RenderItem configSphere;
-				configSphere.type = middle::RenderItemType::SPHERE;
-				configSphere.center = { position->posX, position->posY, position->posZ };
-				configSphere.radius = middle::DEF_RADIUS_SYSTEM;
-				configSphere.color = configColor;
-				if (intersectable && intersectable->intersecting) {
-					configSphere.color = hoveredColor;
-				}
-				gameState->renderData.push_back(configSphere);
+		auto configIt = configCache->begin<components::ConfigComponent>();
+		for (int i = 0; i < configCache->getSize(); ++i) {
+			auto config = *configIt;
+			auto& shape = middle::getShape(gameState, configCache->relevantIdVector[i].index);
 
-				if (selectable && selectable->selected) {
-					middle::RenderItem selectItem;
-					selectItem.type = middle::RenderItemType::RECTANGLE;
-					selectItem.center = { 0,0,0 };
-					selectItem.transform.translation = configSphere.center;
-					selectItem.transform.scale = { 1,1,1 };
-					selectItem.transform.rotation = { 0,0,0,0 };
-					selectItem.width = configSphere.radius * 4;
-					selectItem.height = configSphere.radius * 4;
-					selectItem.length = configSphere.radius * 4;
-					selectItem.color = selectionBoxColor;
-					gameState->renderData.push_back(selectItem);
-				}
-
-				return true;
+			middle::RenderItem configSphere;
+			configSphere.type = middle::RenderItemType::SPHERE;
+			configSphere.center = middle::getShapePosition(gameState, shape.id.index);
+			configSphere.radius = middle::DEF_RADIUS_SYSTEM;
+			configSphere.color = configColor;
+			auto intersectable = middle::getComponent<components::MouseIntersectable>(shape);
+			if (intersectable && intersectable->intersecting) {
+				configSphere.color = hoveredColor;
 			}
+			gameState->renderData.push_back(configSphere);
+		}
 
-			auto text = middle::getComponent<components::Text>(shape);
-			if (text && text->visible) {
-				assert(position);
-				middle::RenderItem textItem;
-				Vector3 offset = { text->offsetX, text->offsetY, text->offsetZ };
-				textItem.type = middle::RenderItemType::TEXT;
-				textItem.center = Vector3Add({ position->posX, position->posY, position->posZ }, offset);
-				textItem.text = text->text;
-				textItem.fontSize = text->fontSize;
-				textItem.color = textColor;
-				gameState->renderData.push_back(textItem);
+		auto textIt = textCache->begin<components::Text>();
+		auto textPositionIt = textCache->begin<components::Position>();
+		for (int i = 0; i < textCache->getSize(); ++i) {
+			auto text = *textIt;
+			auto position = *textPositionIt;
+			middle::RenderItem textItem;
+			Vector3 offset = { text->offsetX, text->offsetY, text->offsetZ };
+			textItem.type = middle::RenderItemType::TEXT;
+			textItem.center = Vector3Add({ position->posX, position->posY, position->posZ }, offset);
+			textItem.text = text->text;
+			textItem.fontSize = text->fontSize;
+			textItem.color = textColor;
+			gameState->renderData.push_back(textItem);
+		}
+
+		//componentREf?
+		//auto 
+				//assert(position);
+				//middle::RenderItem compRefItem;
+				//compRefItem.type = middle::RenderItemType::SPHERE;
+				//compRefItem.radius = middle::DEF_RADIUS_REFERENCE_INDICATOR;
+				//compRefItem.color = BLUE;
+				//compRefItem.center = { position->posX, position->posY, position->posZ };
+				//if (intersectable->intersecting) {
+				//	compRefItem.color = hoveredColor;
+				//}
+				//gameState->renderData.push_back(compRefItem);
+
+		auto nodeIt = nodeCache->begin<components::Sphere>();
+		for (int i = 0; i < nodeCache->getSize(); ++i) {
+			auto sphere = *nodeIt;
+			auto& shape = middle::getShape(gameState, nodeCache->relevantIdVector[i].index);
+			middle::RenderItem sphereItem;
+			sphereItem.type = middle::RenderItemType::SPHERE;
+			sphereItem.radius = sphere->radius;
+			sphereItem.center = middle::getShapePosition(gameState, shape.id.index);
+			sphereItem.color = jointColor;
+			auto intersectable = middle::getComponent<components::MouseIntersectable>(shape);
+			if (intersectable && intersectable->intersecting) {
+				sphereItem.color = hoveredColor;
 			}
+			gameState->renderData.push_back(sphereItem);
+		}
 
 
-			auto componentRef = middle::getComponent<components::ComponentReference>(shape);
-			if (componentRef) {
-				assert(position);
-				middle::RenderItem compRefItem;
-				compRefItem.type = middle::RenderItemType::SPHERE;
-				compRefItem.radius = middle::DEF_RADIUS_REFERENCE_INDICATOR;
-				compRefItem.color = BLUE;
-				compRefItem.center = { position->posX, position->posY, position->posZ };
+		auto constraintIt = constraintCache->begin<components::Constraint>();
+		for (int i = 0; i < constraintCache->getSize(); ++i) {
+			auto constraint = *constraintIt;
+			auto& shape = middle::getShape(gameState, constraintCache->relevantIdVector[i].index);
+			middle::RenderItem lineItem;
+			lineItem.type = middle::RenderItemType::LINE;
+			lineItem.linePointA = getShapePosition(gameState, constraint->idA.index);
+			lineItem.linePointB = getShapePosition(gameState, constraint->idB.index);
+			lineItem.color = constraintColor;
+			auto intersectable = middle::getComponent<components::MouseIntersectable>(shape);
+			if (intersectable && intersectable->intersecting) {
+				lineItem.color = hoveredColor;
+			}
+			gameState->renderData.push_back(lineItem);
+		}
+
+		if (gameState->editorState.creationMode == middle::CreationMode::LOOP_MODE) {
+			auto hierarchyLoopIt = hierarchyCache->begin<components::LoopSociety>();
+			auto hierarchyIntersectableIt = hierarchyCache->begin<components::MouseIntersectable>();
+			for (int i = 0; i < hierarchyCache->getSize(); ++i) {
+				auto loop = *hierarchyLoopIt;
+				auto intersectable = *hierarchyIntersectableIt;
+
 				if (intersectable->intersecting) {
-					compRefItem.color = hoveredColor;
-				}
-				gameState->renderData.push_back(compRefItem);
-			}
+					for (middle::Id& id : loop->loopMemberIds) {
+						Vector3 childPos = middle::getShapePosition(gameState, id.index);
+						middle::RenderItem childItem;
+						childItem.type = middle::RenderItemType::TEXT;
+						childItem.color = loopItemColor;
+						childItem.center = childPos;
+						childItem.text = "child";
+						gameState->renderData.push_back(childItem);
 
-
-			auto sphere = middle::getComponent<components::Sphere>(shape);
-			if (sphere) {
-				auto selectable = middle::getComponent<components::MouseSelectable>(shape);
-				middle::RenderItem sphereItem;
-				sphereItem.type = middle::RenderItemType::SPHERE;
-				sphereItem.radius = sphere->radius;
-				sphereItem.center = middle::getShapePosition(gameState, shape.id.index);
-				sphereItem.color = jointColor;
-				if (intersectable && intersectable->intersecting) {
-					sphereItem.color = hoveredColor;
-				}
-				gameState->renderData.push_back(sphereItem);
-
-				if (selectable && selectable->selected) {
-					middle::RenderItem selectItem;
-					selectItem.type = middle::RenderItemType::RECTANGLE;
-					selectItem.center = { 0,0,0 };
-					selectItem.transform.translation = getShapePosition(gameState, i);
-					selectItem.transform.scale = { 1,1,1 };
-					selectItem.transform.rotation = { 0,0,0,0 };
-					selectItem.width = sphereItem.radius * 4;
-					selectItem.height = sphereItem.radius * 4;
-					selectItem.length = sphereItem.radius * 4;
-					selectItem.color = selectionBoxColor;
-					gameState->renderData.push_back(selectItem);
-				}
-
-			}
-
-			auto constraint = middle::getComponent<components::Constraint>(shape);
-			if (constraint) {
-				auto selectable = middle::getComponent<components::MouseSelectable>(shape);
-				middle::RenderItem lineItem;
-				lineItem.type = middle::RenderItemType::LINE;
-				lineItem.linePointA = getShapePosition(gameState, constraint->idA.index);
-				lineItem.linePointB = getShapePosition(gameState, constraint->idB.index);
-				lineItem.color = constraintColor;
-				if (intersectable && intersectable->intersecting) {
-					lineItem.color = hoveredColor;
-				}
-				gameState->renderData.push_back(lineItem);
-
-				if (selectable && selectable->selected) {
-					middle::RenderItem selectItem;
-					selectItem.type = middle::RenderItemType::RECTANGLE;
-					selectItem.center = { 0,0,0 };
-					float height = Vector3Distance(lineItem.linePointA, lineItem.linePointB);
-					Vector3 lineDir = Vector3Normalize(lineItem.linePointB - lineItem.linePointA);
-					selectItem.width = 1;
-					selectItem.height = height;
-					selectItem.length = 1;
-					selectItem.color = selectionBoxColor;
-					selectItem.transform.scale = { 1,1,1 };
-					selectItem.transform.rotation = QuaternionFromVector3ToVector3({ 0,0,1 }, lineDir);
-					selectItem.transform.translation = Vector3Scale(lineItem.linePointA + lineItem.linePointB, 0.5f);
-					gameState->renderData.push_back(selectItem);
+					}
+					if (loop->parentLoopId.index != middle::UNASSIGNED) {
+						middle::Id& parentId = loop->parentLoopId;
+						Vector3 parentPos = middle::getShapePosition(gameState, parentId.index);
+						middle::RenderItem parentItem;
+						parentItem.type = middle::RenderItemType::TEXT;
+						parentItem.color = loopItemColor;
+						parentItem.center = parentPos;
+						parentItem.text = "parent";
+						gameState->renderData.push_back(parentItem);
+					}
 				}
 			}
+		}
 
-			// render hierarchy indicators, 
-			if (gameState->editorState.creationMode == middle::CreationMode::LOOP_MODE
-				&& loopSociety
-				&& intersectable
-				&& intersectable->intersecting) {
-				for (middle::Id& id : loopSociety->loopMemberIds) {
-					Vector3 childPos = middle::getShapePosition(gameState, id.index);
-					middle::RenderItem childItem;
-					childItem.type = middle::RenderItemType::TEXT;
-					childItem.color = loopItemColor;
-					childItem.center = childPos;
-					childItem.text = "child";
-					gameState->renderData.push_back(childItem);
-				}
+		auto importRefPositionIt = importRefCache->begin<components::Position>();
+		for (int i = 0; i < importRefCache->getSize(); ++i) {
+			auto& shape = middle::getShape(gameState, importRefCache->relevantIdVector[i].index);
+			auto position = *importRefPositionIt;
 
-				if (loopSociety->parentLoopId.index != middle::UNASSIGNED) {
-					middle::Id& parentId = loopSociety->parentLoopId;
-					Vector3 parentPos = middle::getShapePosition(gameState, parentId.index);
-					middle::RenderItem parentItem;
-					parentItem.type = middle::RenderItemType::TEXT;
-					parentItem.color = loopItemColor;
-					parentItem.center = parentPos;
-					parentItem.text = "parent";
-					gameState->renderData.push_back(parentItem);
-				}
+			auto selectable = middle::getComponent<components::MouseSelectable>(shape);
+			middle::RenderItem refItem;
+			refItem.type = middle::RenderItemType::SPHERE;
+			refItem.color = referenceColor;
+			refItem.center = { position->posX, position->posY, position->posZ };
+			refItem.radius = middle::DEF_RADIUS_REFERENCE_INDICATOR;
+			auto intersectable = middle::getComponent<components::MouseIntersectable>(shape);
+			if (intersectable && intersectable->intersecting) {
+				refItem.color = hoveredColor;
+			}
+			gameState->renderData.push_back(refItem);
+		}
+
+		auto systemPositionIt = systemRefCache->begin<components::Position>();
+		for (int i = 0; i < systemRefCache->getSize(); ++i) {
+			auto& shape = middle::getShape(gameState, systemRefCache->relevantIdVector[i].index);
+			auto position = *systemPositionIt;
+			middle::RenderItem systemItem;
+			systemItem.type = middle::RenderItemType::SPHERE;
+			systemItem.center = { position->posX, position->posY, position->posZ };
+			systemItem.radius = middle::DEF_RADIUS_SYSTEM;
+			systemItem.color = systemColor;
+			auto intersectable = middle::getComponent<components::MouseIntersectable>(shape);
+			if (intersectable && intersectable->intersecting) {
+				systemItem.color = hoveredColor;
+			}
+			gameState->renderData.push_back(systemItem);
+		}
+
+		for (int i = 0; i < loopTagCache->getSize(); ++i) {
+			auto& shape = middle::getShape(gameState, loopTagCache->relevantIdVector[i].index);
+			middle::RenderItem loopItem;
+			loopItem.type = middle::RenderItemType::SPHERE;
+			loopItem.center = middle::getShapePosition(gameState, shape.id.index);
+			loopItem.radius = middle::DEF_RADIUS_LOOP_INDICATOR;
+			loopItem.color = loopColor;
+			auto intersectable = middle::getComponent<components::MouseIntersectable>(shape);
+			if (intersectable && intersectable->intersecting) {
+				loopItem.color = hoveredColor;
+			}
+			gameState->renderData.push_back(loopItem);
+		}
+
+
+		auto selectableSphereIt = selectableSphereCache->begin<components::MouseSelectable>();
+		auto selectableSphere = selectableSphereCache->begin<components::Sphere>();
+		auto selectableSpherePosition = selectableSphereCache->begin<components::Position>();
+		for (int i = 0; i < selectableSphereCache->getSize(); ++i) {
+			auto selectable = *selectableSphereIt;
+			auto sphere = *selectableSphere;
+			auto position = *selectableSpherePosition;
+			if (!selectable->selected) {
+				continue;
 			}
 
-			auto reference = middle::getComponent<components::Reference>(shape);
-			if (reference) {
-				auto selectable = middle::getComponent<components::MouseSelectable>(shape);
-				middle::RenderItem refItem;
-				refItem.type = middle::RenderItemType::SPHERE;
-				refItem.color = referenceColor;
-				refItem.center = { position->posX, position->posY, position->posZ };
-				refItem.radius = middle::DEF_RADIUS_REFERENCE_INDICATOR;
-				if (intersectable && intersectable->intersecting) {
-					refItem.color = hoveredColor;
-				}
-				gameState->renderData.push_back(refItem);
+			middle::RenderItem selectItem;
+			selectItem.type = middle::RenderItemType::RECTANGLE;
+			selectItem.center = { 0,0,0 };
+			selectItem.transform.translation = { position->posX, position->posY, position->posZ };
+			selectItem.transform.scale = { 1,1,1 };
+			selectItem.transform.rotation = { 0,0,0,0 };
+			selectItem.width = sphere->radius * 4;
+			selectItem.height = sphere->radius * 4;
+			selectItem.length = sphere->radius * 4;
+			selectItem.color = selectionBoxColor;
+			gameState->renderData.push_back(selectItem);
+		}
 
-				if (selectable && selectable->selected) {
-					middle::RenderItem selectItem;
-					selectItem.type = middle::RenderItemType::RECTANGLE;
-					selectItem.center = { 0,0,0 };
-					selectItem.transform.translation = getShapePosition(gameState, i);
-					selectItem.transform.scale = { 1,1,1 };
-					selectItem.transform.rotation = { 0,0,0,0 };
-					selectItem.width = refItem.radius * 4;
-					selectItem.height = refItem.radius * 4;
-					selectItem.length = refItem.radius * 4;
-					selectItem.color = selectionBoxColor;
-					gameState->renderData.push_back(selectItem);
-				}
+		auto selectableLineIt = selectableLineCache->begin<components::MouseSelectable>();
+		auto selectableConstraintIt = selectableLineCache->begin<components::Constraint>();
+		for (int i = 0; i < selectableLineCache->getSize(); ++i) {
+			auto selectable = *selectableLineIt;
+			auto constraint = *selectableConstraintIt;
+			if (!selectable->selected) {
+				continue;
 			}
 
-			if (!reference && loopTag) {
-				auto selectable = middle::getComponent<components::MouseSelectable>(shape);
-				middle::RenderItem loopItem;
-				loopItem.type = middle::RenderItemType::SPHERE;
-				loopItem.center = middle::getShapePosition(gameState, i);
-				loopItem.radius = middle::DEF_RADIUS_LOOP_INDICATOR;
-				loopItem.color = loopColor;
-				if (intersectable && intersectable->intersecting) {
-					loopItem.color = hoveredColor;
-				}
-				gameState->renderData.push_back(loopItem);
+			Vector3 linePointA = middle::getShapePosition(gameState, constraint->idA.index);
+			Vector3 linePointB = middle::getShapePosition(gameState, constraint->idB.index);
 
-				if (selectable && selectable->selected) {
-					middle::RenderItem selectItem;
-					selectItem.type = middle::RenderItemType::RECTANGLE;
-					selectItem.center = { 0,0,0 };
-					selectItem.transform.translation = loopItem.center;
-					selectItem.transform.scale = { 1,1,1 };
-					selectItem.transform.rotation = { 0,0,0,0 };
-					selectItem.width = loopItem.radius * 4;
-					selectItem.height = loopItem.radius * 4;
-					selectItem.length = loopItem.radius * 4;
-					selectItem.color = selectionBoxColor;
-					gameState->renderData.push_back(selectItem);
-				}
-
-				return true;
-			}
-
-			auto system = middle::getComponent<components::SystemReference>(shape);
-			if (system) {
-				auto selectable = middle::getComponent<components::MouseSelectable>(shape);
-				assert(position);
-				middle::RenderItem systemItem;
-				systemItem.type = middle::RenderItemType::SPHERE;
-				systemItem.center = middle::getShapePosition(gameState, i);
-				systemItem.radius = middle::DEF_RADIUS_SYSTEM;
-				systemItem.color = systemColor;
-				if (intersectable && intersectable->intersecting) {
-					systemItem.color = hoveredColor;
-				}
-				gameState->renderData.push_back(systemItem);
-
-				if (selectable && selectable->selected) {
-					middle::RenderItem selectItem;
-					selectItem.type = middle::RenderItemType::RECTANGLE;
-					selectItem.center = { 0,0,0 };
-					selectItem.transform.translation = systemItem.center;
-					selectItem.transform.scale = { 1,1,1 };
-					selectItem.transform.rotation = { 0,0,0,0 };
-					selectItem.width = systemItem.radius * 4;
-					selectItem.height = systemItem.radius * 4;
-					selectItem.length = systemItem.radius * 4;
-					selectItem.color = selectionBoxColor;
-					gameState->renderData.push_back(selectItem);
-				}
-			}
-
-			return true;
-			});
-
-
+			middle::RenderItem selectItem;
+			selectItem.type = middle::RenderItemType::RECTANGLE;
+			selectItem.center = { 0,0,0 };
+			float height = Vector3Distance(linePointA, linePointB);
+			Vector3 lineDir = Vector3Normalize(linePointB - linePointA);
+			selectItem.width = 1;
+			selectItem.height = height;
+			selectItem.length = 1;
+			selectItem.color = selectionBoxColor;
+			selectItem.transform.scale = { 1,1,1 };
+			selectItem.transform.rotation = QuaternionFromVector3ToVector3({ 0,0,1 }, lineDir);
+			selectItem.transform.translation = Vector3Scale(linePointA + linePointB, 0.5f);
+			gameState->renderData.push_back(selectItem);
+		}
 
 
 	}
