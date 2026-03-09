@@ -12,6 +12,9 @@
 #include "BubbleMultiplyComponent.h"
 
 class BubbleCollisionSystem : public middle::MiddleGameplaySystem {
+	components::CompCache* bubbleCache;
+	components::CompCache* mulCache;
+
 	struct CollisionPair {
 		middle::Id idA;
 		middle::Id idB;
@@ -26,22 +29,24 @@ class BubbleCollisionSystem : public middle::MiddleGameplaySystem {
 	};
 public:
 	void init(middle::GameState* gameState) {
-
+		bubbleCache = middle::newCompCache(gameState);
+		bubbleCache->addType<components::BubbleComponent>();
+		mulCache = middle::newCompCache(gameState);
+		mulCache->addType<components::BubbleMultiplyComponent>();
 	}
 
 	void update(middle::GameState* gameState) override {
 
 		// get bubbles
 		std::vector<middle::Id> containerList;
-		middle::loopInstances(gameState, [gameState, &containerList](int i, middle::Shape& shape) {
 
-			auto bubble = middle::getComponent<components::BubbleComponent>(shape);
-			auto mulComp = middle::getComponent<components::BubbleMultiplyComponent>(shape);
-			if (bubble || mulComp) {
-				containerList.push_back(shape.id);
-			}
-			return true;
-			});
+		for (int i = 0; i < bubbleCache->getSize(); ++i) {
+			containerList.push_back(bubbleCache->relevantIdVector[i]);
+		}
+		for (int i = 0; i < mulCache->getSize(); ++i) {
+			containerList.push_back(mulCache->relevantIdVector[i]);
+		}
+
 
 		// create pairs of bubbles children
 		std::vector<CollisionPair>pairs;

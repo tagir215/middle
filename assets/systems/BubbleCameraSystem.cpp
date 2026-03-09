@@ -13,18 +13,18 @@ public:
 	components::CompCache* compCache;
 
 	void init(middle::GameState* gameState) {
-
+		compCache = middle::newCompCache(gameState);
+		compCache->addType<components::CameraComponent>();
 	}
 
 	void update(middle::GameState* gameState) override {
-		middle::loopInstances(gameState, [gameState](int i, middle::Shape& shape) {
-			auto camera = middle::getComponent<components::CameraComponent>(shape);
-			if (!camera)
-				return true;
 
-			auto position = middle::getComponent<components::Position>(shape);
-			Vector3 pos = { position->posX, position->posY, position->posZ };
+		auto cameraIt = compCache->begin<components::CameraComponent>();
 
+		int size = compCache->getSize();
+		for (int i = 0; i < compCache->getSize(); ++i) {
+			auto camera = *cameraIt;
+			auto& shape = middle::getShape(gameState, compCache->relevantIdVector[i].index);
 
 			const float cameraSpeed = 2;
 			if (gameState->gameInput.zoomIn) {
@@ -46,9 +46,8 @@ public:
 				middle::moveShape(gameState, shape.id.index, { cameraSpeed, 0,0 });
 			}
 
-
-			Vector3 newPos = middle::getShapePosition(gameState, i);
-			gameState->activeCamera.position = { position->posX, position->posY, position->posZ };
+			Vector3 newPos = middle::getShapePosition(gameState, shape.id.index);
+			gameState->activeCamera.position = newPos;
 			gameState->activeCamera.target = { camera->targetX, camera->targetY, camera->targetZ };
 
 			static const Vector3 forward = { 0,10000,0 };
@@ -57,8 +56,7 @@ public:
 			camera->targetX = target.x;
 			camera->targetY = target.y;
 			camera->targetZ = target.z;
-			return true;
-			});
+		}
 	}
 };
 
