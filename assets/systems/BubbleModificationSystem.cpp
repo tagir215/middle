@@ -164,7 +164,7 @@ public:
 		//	if (intersectable->intersecting) {
 		//		if (inventoryItem->itemType == bubbleInventoryitemType::ADD) {
 		//			middle::deleteComponent<components::DeleteComponent>(refShape);
-		//			auto newAddition = bubbleActions::CreateAdditionReplacementShape(topBubbleShape.id, refShape.id);
+		//			auto newAddition = bubbleAcions::CreateAdditionReplacementShape(topBubbleShape.id, refShape.id);
 		//			newAddition.execute(gameState);
 		//			middle::addComponent<components::DeleteComponent>(refShape);
 		//			middle::addComponent<components::DeleteComponent>(topBubbleShape);

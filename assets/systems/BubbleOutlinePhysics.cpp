@@ -15,8 +15,12 @@ public:
 		systemModeType = middle::SystemModeType::ENGINE;
 	}
 
-	void init(middle::GameState* gameState) {
+	components::CompCache* cache;
 
+	void init(middle::GameState* gameState) {
+		cache = middle::newCompCache(gameState);
+		cache->addType<components::BubbleComponent>();
+		cache->addType<components::BubbleRef>();
 	}
 
 	void applyForce(middle::GameState* gameState, middle::Shape& node, const Vector3& force) {
@@ -50,17 +54,19 @@ public:
 
 	void update(middle::GameState* gameState) override {
 
-		middle::loopInstances(gameState, [gameState, this](int i, middle::Shape& shape) {
+		auto bubbleIt = cache->begin<components::BubbleComponent>();
+		auto refIt = cache->begin<components::BubbleRef>();
 
+		for (int i = 0; i < cache->getSize(); ++i) {
+			auto bubble = *bubbleIt;
+			auto bubbleRef = *refIt;
 
-			auto bubble = middle::getComponent<components::BubbleComponent>(shape);
-			if (!bubble)
-				return true;
-
-			auto bubbleRef = middle::getComponent<components::BubbleRef>(shape);
-			if (!bubbleRef || bubbleRef->idRef.index == middle::UNASSIGNED) {
-				return true;
+			if (bubbleRef->idRef.index == middle::UNASSIGNED) {
+				continue;
 			}
+
+			auto& shape = middle::getShape(gameState, cache->relevantIdVector[i].index);
+
 			auto& bubbleContainer = middle::getShape(gameState, bubbleRef->idRef.index);
 
 			auto bubblePosition = middle::getComponent<components::Position>(shape);
@@ -179,8 +185,8 @@ public:
 				position->posZ += displacement.z;
 			}
 
-			return true;
-			});
+
+		}
 
 	}
 };
