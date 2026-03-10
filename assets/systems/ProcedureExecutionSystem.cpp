@@ -217,20 +217,21 @@ public:
 
 		// exit loops
 		else if (function->type == functionTypes::EXIT_LOOP) {
-			while (true) {
-				auto& activeCodeBlockShape = middle::getShape(gameState, container->activeBlock.index);
-				auto codeBlock = middle::getComponent<components::CodeBlock>(activeCodeBlockShape);
-				if (codeBlock->type == codeBlockTypes::LOOP_BLOCK) {
-					if (stepForward(gameState, container) == procedureConstants::CanStep){
-						doStep(container);
-					}
-					break;
-				}
-				else{
-					stepWest(gameState, container);
-					doStep(container);
-				}
-			}
+			container->exitingLoop = true;
+			//			while (true) {
+			//				auto& activeCodeBlockShape = middle::getShape(gameState, container->activeBlock.index);
+			//				auto codeBlock = middle::getComponent<components::CodeBlock>(activeCodeBlockShape);
+			//				if (codeBlock->type == codeBlockTypes::LOOP_BLOCK) {
+			//					if (stepForward(gameState, container) == procedureConstants::CanStep){
+			//						doStep(container);
+			//					}
+			//					break;
+			//				}
+			//				else{
+			//					stepWest(gameState, container);
+			//					doStep(container);
+			//				}
+			//			}
 		}
 
 		else if (function->type == functionTypes::COPY) {
@@ -402,11 +403,27 @@ public:
 		return middle::UNASSIGNED;
 	}
 
+	procedureConstants::StepStatus loopingStep(middle::GameState* gameState, components::ProcedureContainer* container) {
+		middle::Id previousId = container->procedureTransitionStack.back().destinationId;
+		auto& previousShape = middle::getShape(gameState, previousId.index);
+		auto previousBlock = middle::getComponent<components::CodeBlock>(previousShape);
+		if (previousBlock->type == codeBlockTypes::LOOP_BLOCK && !container->exitingLoop) {
+			return procedureConstants::Stationary;
+		}
+	}
+
+
 	procedureConstants::StepStatus stepSouth(middle::GameState* gameState, components::ProcedureContainer* container) {
 		middle::Id previousId = container->procedureTransitionStack.back().destinationId;
 		if (previousId.index == middle::UNASSIGNED) {
 			return procedureConstants::CannotStep;
 		}
+
+		auto loopingResult = loopingStep(gameState, container);
+		if (loopingResult == procedureConstants::Stationary) {
+			return loopingResult;
+		}
+
 		middle::Id& parentId = middle::getParent(gameState, previousId);
 		std::vector<middle::Id> neighbors;
 		middle::getChildren(gameState, parentId, neighbors);
@@ -416,7 +433,7 @@ public:
 		}
 		middle::Id nextId = neighbors[index + 1];
 		container->procedureTransitionStack.push_back(
-			{ procedureConstants::TransitionType::South, previousId, nextId 
+			{ procedureConstants::TransitionType::South, previousId, nextId
 			});
 		return procedureConstants::StepStatus::CanStep;
 	}
@@ -425,6 +442,7 @@ public:
 		auto& childShape = middle::getShape(gameState, id.index);
 		return middle::getComponent<components::ScopeComponent>(childShape) != nullptr;
 	}
+
 
 	procedureConstants::StepStatus stepEast(middle::GameState* gameState, components::ProcedureContainer* container, bool isConditionTrue) {
 		middle::Id previousId = container->procedureTransitionStack.back().destinationId;
@@ -528,12 +546,17 @@ public:
 		}
 
 		auto statusA = stepSouth(gameState, container);
-		if (statusA == procedureConstants::CanStep) {
+		if (statusA == procedureConstants::CanStep || statusA == procedureConstants::Stationary) {
 			return statusA;
 		}
 
 		auto statusB = stepWest(gameState, container);
 		if (statusB == procedureConstants::CanStep) {
+			// step to the next, unless is looping
+			auto statusC = stepSouth(gameState, container);
+			if (statusC == procedureConstants::CanStep) {
+				return statusC;
+			}
 			return statusB;
 		}
 
@@ -556,6 +579,7 @@ public:
 		if (previousId.index == middle::UNASSIGNED) {
 			return procedureConstants::CannotStep;
 		}
+
 		middle::Id id = getCodeBlockFunc(gameState, container->activeBlock);
 		if (id.index == middle::UNASSIGNED) {
 			return procedureConstants::CannotStep;

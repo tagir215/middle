@@ -30,6 +30,7 @@ namespace procedureConstants {
 	enum StepStatus {
 		CanStep,
 		CannotStep,
+		Stationary,
 	};
 }
 
@@ -41,6 +42,7 @@ namespace components {
 		int direction = procedureConstants::FORWARD;
 		std::vector<procedureConstants::ProcedureTransition> procedureTransitionStack;
 		bool reset = false;
+		bool exitingLoop = false;
 
 		void serialize(std::ostream& ostream) override;
 		void deserialize(const std::vector<std::string>& buffer, int indexOffset) override;
