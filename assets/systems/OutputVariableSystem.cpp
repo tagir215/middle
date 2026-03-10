@@ -12,10 +12,23 @@ static int resultId = 0;
 class OutputVariableSystem : public middle::MiddleGameplaySystem {
 public:
 	components::CompCache* compCache;
+	components::CompCache* outputCache;
 
 	void init(middle::GameState* gameState) {
 		compCache = middle::newCompCache(gameState);
 		compCache->addType<components::ProcedureComponent>();
+		outputCache = middle::newCompCache(gameState);
+		outputCache->addType<components::OutputVariable>();
+	}
+
+	std::set<std::string> usedNamesSet() {
+		std::set < std::string> usedNames;
+		auto outputIt = outputCache->begin<components::OutputVariable>();
+		for (int i = 0; i < outputCache->getSize(); ++i) {
+			auto output = *outputIt;
+			usedNames.insert(output->label);
+		}
+		return usedNames;
 	}
 
 	void update(middle::GameState* gameState) override {
@@ -33,7 +46,14 @@ public:
 				middle::Shape& containerShape = middle::getShape(gameState, containerId.index);
 				auto outputVariable = middle::getComponent<components::OutputVariable>(containerShape);
 				if (outputVariable && outputVariable->label == "") {
-					outputVariable->label = "r" + std::to_string(resultId++);
+					auto nameSet = usedNamesSet();
+					while (true) {
+						std::string suggestedName = "r" + std::to_string(resultId++);
+						if (nameSet.find(suggestedName) == nameSet.end()) {
+							outputVariable->label = suggestedName;
+							break;
+						}
+					}
 				}
 
 				auto loop = middle::getComponent<components::LoopSociety>(containerShape);

@@ -555,6 +555,7 @@ public:
 			// step to the next, unless is looping
 			auto statusC = stepSouth(gameState, container);
 			if (statusC == procedureConstants::CanStep) {
+				container->exitingLoop = false;
 				return statusC;
 			}
 			return statusB;
