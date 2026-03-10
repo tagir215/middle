@@ -34,9 +34,9 @@ namespace bubbleActions{
 	class UpdateVariable : public middle::EditorActionContainer {
 	public:
 		std::string label;
-		middle::Id newUnitRef;
+		std::function<middle::Id()>newUnitRefProvider;
 		middle::Id oldUnitRef;
-		UpdateVariable(std::string& label, middle::Id& newUnitRef);
+		UpdateVariable(std::string label, std::function<middle::Id()> newUnitrefProvider);
 		void execute(middle::GameState* gameState) override;
 		void undo(middle::GameState* gameState) override;
 	};

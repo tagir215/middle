@@ -615,4 +615,15 @@ namespace middle {
 	{
 	}
 
+
+	void CustomActionWithUndo::execute(GameState* gameState)
+	{
+		this->func(gameState);
+	}
+
+	void CustomActionWithUndo::undo(GameState* gameState)
+	{
+		this->undoFunc(gameState);
+	}
+
 }

@@ -266,6 +266,9 @@ public:
 						for (int index = 0; index < loop->loopMemberIds.size(); ++index) {
 							loop->loopMemberIds[index] = gameState->ids[loop->loopMemberIds[index].index];
 						}
+						if (loop->parentLoopId.index != middle::UNASSIGNED) {
+							loop->parentLoopId = gameState->ids[loop->parentLoopId.index];
+						}
 					}
 					return true;
 					});

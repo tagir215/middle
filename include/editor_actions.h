@@ -358,4 +358,17 @@ namespace middle {
 		void execute(GameState* gameState) override;
 		void undo(GameState* gameState) override;
 	};
+
+	class CustomActionWithUndo : public EditorActionContainer {
+	public:
+		std::function<void(middle::GameState*)> func;
+		std::function<void(middle::GameState*)> undoFunc;
+		CustomActionWithUndo(std::function<void(middle::GameState*)> func, 
+			std::function<void(middle::GameState*)> undoFunc) {
+			this->func = func;
+			this->undoFunc = undoFunc;
+		}
+		void execute(GameState* gameState) override;
+		void undo(GameState* gameState) override;
+	};
 }

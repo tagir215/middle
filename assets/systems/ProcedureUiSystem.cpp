@@ -9,44 +9,41 @@
 #include "ProcedureContainer.h"
 #include "PlacementComponent.h"
 #include "MouseClickComponent.h"
+#include "Rectangle.h"
 
 class ProcedureUiSystem : public middle::MiddleGameplaySystem {
 public:
 
 	components::CompCache* buttonCache;
+	components::CompCache* procedureCache;
 
 	void init(middle::GameState* gameState) {
 		buttonCache = middle::newCompCache(gameState);
 		buttonCache->addType<components::Button>();
 		buttonCache->addType<components::MouseClickComponent>();
-	}
-
-	// there should be only one procedure... so it's the first one 
-	middle::Id& findProcedure(middle::GameState* gameState) {
-
-		for (int i = 0; i < gameState->shapes.size(); ++i) {
-			if (!middle::isShapeAlive(gameState, i))
-				continue;
-
-			middle::Shape& shape = middle::getShape(gameState, i);
-			auto procedure = middle::getComponent<components::ProcedureContainer>(shape);
-			if (procedure) {
-				return shape.id;
-			}
-		}
-		return middle::Id();
+		procedureCache = middle::newCompCache(gameState);
+		procedureCache->addType<components::ProcedureContainer>();
 	}
 
 	void update(middle::GameState* gameState) override {
+
+		auto procedureIt = procedureCache->begin<components::ProcedureContainer>();
+		middle::Id procId;
+		components::ProcedureContainer* procComp = nullptr;
+		if (procedureCache->getSize() == 1) {
+			procId = procedureCache->relevantIdVector[0];
+			procComp = *procedureIt;
+		}
+		if (!procComp) {
+			return;
+		}
 
 		auto buttonIt = buttonCache->begin<components::Button>();
 		for (int i = 0; i < buttonCache->getSize(); ++i) {
 			auto button = *buttonIt;
 			if (button->function == bubbleButton::SAVE_BUTTON) {
-				middle::Id procedure = findProcedure(gameState);
-				middle::saveShape(gameState, procedure, "../bubbleData/procedures/", "procedure1");
+				middle::saveShape(gameState, procId, "../bubbleData/procedures/", "procedure1");
 			}
-
 			if (button->function == bubbleButton::LOAD_BUTTON) {
 				std::string folder = "../bubbleData/procedures/";
 				std::string shapeName = "procedure1";
@@ -56,6 +53,25 @@ public:
 				//middle::addComponent<components::PlacementComponent>(procedureShape);
 			}
 
+		}
+
+		if (procComp->activeBlock.index != middle::UNASSIGNED) {
+			auto& activeBlockShape = middle::getShape(gameState, procComp->activeBlock.index);
+			Vector3 position = middle::getShapePosition(gameState, activeBlockShape.id.index);
+			auto rect = middle::getComponent<components::Rectangle>(activeBlockShape);
+			middle::RenderItem activeBlockItem;
+			activeBlockItem.type = middle::RenderItemType::RECTANGLE;
+			Color color = { GREEN.r, GREEN.g, GREEN.b, 0.2f };
+			activeBlockItem.color = GREEN;
+			activeBlockItem.width = rect->width;
+			activeBlockItem.height = rect->height;
+			activeBlockItem.length = 0.2f;
+			activeBlockItem.center = { 0,0,0 };
+			Transform transform = {
+				position, {0,0,0,0}, {1,1,1}
+			};
+			activeBlockItem.transform = transform;
+			gameState->renderData.push_back(activeBlockItem);
 		}
 	}
 };

@@ -3,6 +3,8 @@
 #include "bubble_actions.h"
 #include <string>
 #include <stack>
+#include "component_utils.h"
+#include "BubbleRef.h"
 
 namespace bubbleActions {
 
@@ -960,15 +962,15 @@ namespace bubbleActions {
 			actions.pop_back();
 		}
 	}
-	UpdateVariable::UpdateVariable(std::string& label, middle::Id& newUnitRef)
+	UpdateVariable::UpdateVariable(std::string label, std::function<middle::Id()> newUnitRefProvider)
 	{
 		this->label = label;
-		this->newUnitRef = newUnitRef;
+		this->newUnitRefProvider = newUnitRefProvider;
 	}
 	void UpdateVariable::execute(middle::GameState* gameState)
 	{
 		std::string& label = this->label;
-		middle::Id& newUnitRef = this->newUnitRef;
+		middle::Id& newUnitRef = newUnitRefProvider();
 		middle::Id& oldUnitRef = this->oldUnitRef;
 
 		middle::loopInstances(gameState, [gameState, &label, &newUnitRef, &oldUnitRef](int i, middle::Shape& shape) {
@@ -987,7 +989,8 @@ namespace bubbleActions {
 	}
 	void UpdateVariable::undo(middle::GameState* gameState)
 	{
-		auto update = UpdateVariable(label, oldUnitRef);
+		middle::Id& oldRef = oldUnitRef;
+		auto update = UpdateVariable(label, [oldRef]() {return oldRef;});
 		update.execute(gameState);
 	}
 

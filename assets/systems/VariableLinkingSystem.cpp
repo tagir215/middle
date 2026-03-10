@@ -85,7 +85,8 @@ public:
 
 			if (otherBubble && grabbedInput) {
 				grabbedInput->snapId = shape.id;
-				bubbleActions::UpdateVariable(grabbedInput->label, shape.id).execute(gameState);
+				middle::Id shapeId = shape.id;
+				bubbleActions::UpdateVariable(grabbedInput->label, [shapeId]() {return shapeId;}).execute(gameState);
 				doDelete = false;
 			}
 		}

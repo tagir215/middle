@@ -156,7 +156,7 @@ public:
 			getOneInput(gameState, funcShape, input);
 			getOneOutput(gameState, funcShape, output);
 			middle::Id foundId = searchFromBubble(gameState, input.unitRef, findTypeId);
-			bubbleActions::UpdateVariable(output.label, foundId).execute(gameState);
+			bubbleActions::UpdateVariable(output.label, [foundId]() {return foundId;}).execute(gameState);
 			bool isConditionTrue = foundId.index != middle::UNASSIGNED;
 			return isConditionTrue;
 		}
@@ -165,8 +165,7 @@ public:
 	}
 
 
-	// execute funcId,  landedFuncId is where the latest execution took place
-	void executeFunctions(middle::GameState* gameState, middle::Shape& funcShape) {
+	void executeFunctions(middle::GameState* gameState, middle::Shape& funcShape, components::ProcedureContainer* container) {
 
 		auto function = middle::getComponent<components::CodeFunction>(funcShape);
 
@@ -185,25 +184,53 @@ public:
 
 			if (bubbleMultiplication) {
 				auto multiply = std::make_shared<bubbleActions::ExecuteMultiplication>(varA.unitRef, varB.unitRef);
-				middle::queueAction(gameState, multiply);
-				auto update = std::make_shared<bubbleActions::UpdateVariable>(output.label, multiply->resultShapeId);
-				middle::queueAction(gameState, update);
-				function->actions.push_back(multiply);
-				function->actions.push_back(update);
+				auto update = std::make_shared<bubbleActions::UpdateVariable>(output.label, [multiply]() {return multiply->resultShapeId;});
+				auto customMul = std::make_shared<middle::CustomActionWithUndo>(
+					[multiply, update](middle::GameState* gameState) {
+						multiply->execute(gameState);
+						update->execute(gameState);
+					},
+					[multiply, update](middle::GameState* gameState) {
+						update->undo(gameState);
+						multiply->undo(gameState);
+					});
+				middle::queueAction(gameState, customMul);
+				function->actions.push_back(customMul);
 			}
 			else {
 				auto combine = std::make_shared<bubbleActions::ExecuteAddition>(varA.unitRef, varB.unitRef);
-				middle::queueAction(gameState, combine);
-				auto update = std::make_shared<bubbleActions::UpdateVariable>(output.label, combine->resultShapeId);
-				middle::queueAction(gameState, update);
-				function->actions.push_back(combine);
-				function->actions.push_back(update);
+				auto update = std::make_shared<bubbleActions::UpdateVariable>(output.label, [combine]() {return combine->resultShapeId;});
+				auto customAdd = std::make_shared<middle::CustomActionWithUndo>(
+					[combine, update](middle::GameState* gameState) {
+						combine->execute(gameState);
+						update->execute(gameState);
+					},
+					[combine, update](middle::GameState* gameState) {
+						update->undo(gameState);
+						combine->undo(gameState);
+					}
+				);
+				middle::queueAction(gameState, customAdd);
+				function->actions.push_back(customAdd);
 			}
 		}
 
 		// exit loops
 		else if (function->type == functionTypes::EXIT_LOOP) {
-
+			while (true) {
+				auto& activeCodeBlockShape = middle::getShape(gameState, container->activeBlock.index);
+				auto codeBlock = middle::getComponent<components::CodeBlock>(activeCodeBlockShape);
+				if (codeBlock->type == codeBlockTypes::LOOP_BLOCK) {
+					if (stepForward(gameState, container) == procedureConstants::CanStep){
+						doStep(container);
+					}
+					break;
+				}
+				else{
+					stepWest(gameState, container);
+					doStep(container);
+				}
+			}
 		}
 
 		else if (function->type == functionTypes::COPY) {
@@ -212,11 +239,18 @@ public:
 			getOneInput(gameState, funcShape, input);
 			getOneOutput(gameState, funcShape, output);
 			auto copyAction = std::make_shared<middle::EditorActionCopySingle>(input.unitRef);
-			middle::queueAction(gameState, copyAction);
-			auto update = std::make_shared<bubbleActions::UpdateVariable>(output.label, copyAction->resultId);
-			middle::queueAction(gameState, update);
-			function->actions.push_back(copyAction);
-			function->actions.push_back(update);
+			auto update = std::make_shared<bubbleActions::UpdateVariable>(output.label, [copyAction] {return copyAction->resultId;});
+			auto customCopy = std::make_shared<middle::CustomActionWithUndo>(
+				[copyAction, update](middle::GameState* gameState) {
+					copyAction->execute(gameState);
+					update->execute(gameState);
+				},
+				[copyAction, update](middle::GameState* gameState) {
+					update->undo(gameState);
+					copyAction->undo(gameState);
+				});
+			middle::queueAction(gameState, customCopy);
+			function->actions.push_back(customCopy);
 		}
 
 
@@ -232,13 +266,20 @@ public:
 			getOneOutput(gameState, funcShape, output);
 			assert(input.unitRef.index != middle::UNASSIGNED);
 			middle::Id topBubbleId = bubbleActions::topLevelBubble(gameState);
-			middle::Id copy = middle::deepCopyShape(gameState, funcShape.id.index, topBubbleId.index);
-			auto reparent = std::make_shared<middle::EditorActionReparent>(topBubbleId.index, copy.index);
-			middle::queueAction(gameState, reparent);
-			auto update = std::make_shared<bubbleActions::UpdateVariable>(output.label, copy);
-			middle::queueAction(gameState, update);
-			function->actions.push_back(reparent);
-			function->actions.push_back(update);
+			middle::Id copyId = middle::deepCopyShape(gameState, funcShape.id.index, topBubbleId.index);
+			auto reparent = std::make_shared<middle::EditorActionReparent>(topBubbleId.index, copyId.index);
+			auto update = std::make_shared<bubbleActions::UpdateVariable>(output.label, [copyId]() {return copyId;});
+			auto customReparent = std::make_shared<middle::CustomActionWithUndo>(
+				[reparent, update](middle::GameState* gameState) {
+					reparent->execute(gameState);
+					update->execute(gameState);
+				},
+				[reparent, update](middle::GameState* gameState) {
+					update->undo(gameState);
+					reparent->undo(gameState);
+				});
+			middle::queueAction(gameState, customReparent);
+			function->actions.push_back(customReparent);
 		}
 
 		else if (function->type == functionTypes::NEW_MULTERM) {
@@ -248,13 +289,20 @@ public:
 			getOneOutput(gameState, funcShape, output);
 			assert(input.unitRef.index != middle::UNASSIGNED);
 			middle::Id topBubbleId = bubbleActions::topLevelBubble(gameState);
-			middle::Id copy = middle::deepCopyShape(gameState, funcShape.id.index, topBubbleId.index);
-			auto replacement = std::make_shared<bubbleActions::CreateMulitiplicationReplacementShape>(topBubbleId, copy);
-			middle::queueAction(gameState, replacement);
-			auto update = std::make_shared<bubbleActions::UpdateVariable>(output.label, copy);
-			middle::queueAction(gameState, update);
-			function->actions.push_back(replacement);
-			function->actions.push_back(update);
+			middle::Id copyId = middle::deepCopyShape(gameState, funcShape.id.index, topBubbleId.index);
+			auto replacement = std::make_shared<bubbleActions::CreateMulitiplicationReplacementShape>(topBubbleId, copyId);
+			auto update = std::make_shared<bubbleActions::UpdateVariable>(output.label, [copyId]() {return copyId;});
+			auto customReplacement = std::make_shared<middle::CustomActionWithUndo>(
+				[replacement, update](middle::GameState* gameState) {
+					replacement->execute(gameState);
+					update->execute(gameState);
+				},
+				[replacement, update](middle::GameState* gameState) {
+					update->undo(gameState);
+					replacement->undo(gameState);
+				});
+			middle::queueAction(gameState, customReplacement);
+			function->actions.push_back(customReplacement);
 		}
 
 		else if (function->type == functionTypes::POP) {
@@ -273,11 +321,18 @@ public:
 			getOneOutput(gameState, funcShape, output);
 			assert(input.unitRef.index != middle::UNASSIGNED);
 			auto mulOneAction = std::make_shared<bubbleActions::MulOne>(input.unitRef);
-			middle::queueAction(gameState, mulOneAction);
-			auto update = std::make_shared<bubbleActions::UpdateVariable>(output.label, mulOneAction->resultShapeId);
-			middle::queueAction(gameState, update);
-			function->actions.push_back(mulOneAction);
-			function->actions.push_back(update);
+			auto update = std::make_shared<bubbleActions::UpdateVariable>(output.label, [mulOneAction]() {return mulOneAction->resultShapeId;});
+			auto customMulOne = std::make_shared<middle::CustomActionWithUndo>(
+				[mulOneAction, update](middle::GameState* gameState) {
+					mulOneAction->execute(gameState);
+					update->execute(gameState);
+				},
+				[mulOneAction, update](middle::GameState* gameState) {
+					update->undo(gameState);
+					mulOneAction->undo(gameState);
+				});
+			middle::queueAction(gameState, customMulOne);
+			function->actions.push_back(customMulOne);
 		}
 
 		else if (function->type == functionTypes::BREAK) {
@@ -290,11 +345,18 @@ public:
 			assert(inputB.unitRef.index != middle::UNASSIGNED);
 			int value = (int)bubbleActions::unitValue(gameState, inputB.unitRef);
 			auto breakAction = std::make_shared<bubbleActions::Break>(inputA.unitRef, value);
-			middle::queueAction(gameState, breakAction);
-			auto update = std::make_shared<bubbleActions::UpdateVariable>(output.label, breakAction->resultShapeId);
-			middle::queueAction(gameState, update);
-			function->actions.push_back(breakAction);
-			function->actions.push_back(update);
+			auto update = std::make_shared<bubbleActions::UpdateVariable>(output.label, [breakAction]() {return breakAction->resultShapeId;});
+			auto customBreak = std::make_shared<middle::CustomActionWithUndo>(
+				[breakAction, update](middle::GameState* gameState) {
+					breakAction->execute(gameState);
+					update->execute(gameState);
+				},
+				[breakAction, update](middle::GameState* gameState) {
+					update->undo(gameState);
+					breakAction->undo(gameState);
+				});
+			middle::queueAction(gameState, customBreak);
+			function->actions.push_back(customBreak);
 		}
 
 		else if (function->type == functionTypes::COMPRESS) {
@@ -305,20 +367,27 @@ public:
 			getTwoOutputs(gameState, funcShape, outputA, outputB);
 			assert(input.unitRef.index != middle::UNASSIGNED);
 			auto compressAction = std::make_shared<bubbleActions::Compress>(input.unitRef);
-			middle::queueAction(gameState, compressAction);
-			auto updateA = std::make_shared<bubbleActions::UpdateVariable>(outputA.label, compressAction->resultCountBubbleId);
-			middle::queueAction(gameState, updateA);
-			auto updateB = std::make_shared<bubbleActions::UpdateVariable>(outputB.label, compressAction->resultCompressedBubbleId);
-			middle::queueAction(gameState, updateB);
-			function->actions.push_back(compressAction);
-			function->actions.push_back(updateA);
-			function->actions.push_back(updateB);
+			auto updateA = std::make_shared<bubbleActions::UpdateVariable>(outputA.label, [compressAction]() {return compressAction->resultCountBubbleId;});
+			auto updateB = std::make_shared<bubbleActions::UpdateVariable>(outputB.label, [compressAction]() {return compressAction->resultCompressedBubbleId;});
+			auto customCompress = std::make_shared<middle::CustomActionWithUndo>(
+				[compressAction, updateA, updateB](middle::GameState* gameState) {
+					compressAction->execute(gameState);
+					updateA->execute(gameState);
+					updateB->execute(gameState);
+				},
+				[compressAction, updateA, updateB](middle::GameState* gameState) {
+					updateB->undo(gameState);
+					updateA->undo(gameState);
+					compressAction->undo(gameState);
+				});
+			middle::queueAction(gameState, customCompress);
+			function->actions.push_back(customCompress);
 		}
 	}
 
 	void undoFunctions(middle::GameState* gameState, middle::Shape& funcShape) {
 		auto function = middle::getComponent<components::CodeFunction>(funcShape);
-		while (function->actions.size() > 0) {
+		if (function->actions.size() > 0) {
 			function->actions.back()->undo(gameState);
 			function->actions.pop_back();
 		}
@@ -465,7 +534,7 @@ public:
 
 		auto statusB = stepWest(gameState, container);
 		if (statusB == procedureConstants::CanStep) {
-			return stepSouth(gameState, container);
+			return statusB;
 		}
 
 		return stepEnd(gameState, container);
@@ -578,12 +647,17 @@ public:
 						middle::Id funcShapeId = getCodeBlockFunc(gameState, procedure->activeBlock);
 						if (funcShapeId.index != middle::UNASSIGNED) {
 							auto& funcShape = middle::getShape(gameState, funcShapeId.index);
-							executeFunctions(gameState, funcShape);
+							executeFunctions(gameState, funcShape, procedure);
 						}
 					}
 				}
 
 				if (procedure->direction == procedureConstants::BACKWARD) {
+					if (procedure->activeBlock.index == middle::UNASSIGNED) {
+						if (stepBackward(gameState, procedure) == procedureConstants::CanStep) {
+							doStep(procedure);
+						}
+					}
 					middle::Id funcShapeId = getCodeBlockFunc(gameState, procedure->activeBlock);
 					if (funcShapeId.index != middle::UNASSIGNED) {
 						auto& funcShape = middle::getShape(gameState, funcShapeId.index);
