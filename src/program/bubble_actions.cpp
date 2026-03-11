@@ -536,8 +536,15 @@ namespace bubbleActions {
 		auto& shapeToAddInto = middle::getShape(gameState, shapeToAddIntoId.index);
 		auto addLoop = middle::getComponent<components::LoopSociety>(shapeToAdd);
 
-		middle::Id idA = middle::deepCopyShape(gameState, shapeToAdd.id.index);
-		middle::Id idB = middle::deepCopyShape(gameState, shapeToAddInto.id.index);
+		auto copyA = std::make_unique<middle::EditorActionCopySingle>(shapeToAdd.id);
+		copyA->execute(gameState);
+		middle::Id idA = copyA->resultId;
+		actions.push_back(std::move(copyA));
+		auto copyB = std::make_unique<middle::EditorActionCopySingle>(shapeToAddInto.id);
+		copyB->execute(gameState);
+		middle::Id idB = copyB->resultId;
+		actions.push_back(std::move(copyB));
+
 		middle::Shape& copyShapeA = middle::getShape(gameState, idA.index);
 		middle::Shape& copyShapeB = middle::getShape(gameState, idB.index);
 		auto copyAddLoop = middle::getComponent<components::LoopSociety>(copyShapeA);
@@ -884,7 +891,11 @@ namespace bubbleActions {
 		middle::Id compressedBubbleId = registerAction->newShapeId;
 		actions.push_back(std::move(registerAction));
 
-		middle::Id& copyContentId = middle::deepCopyShape(gameState, referenceId.index);
+		auto copyAction = std::make_unique<middle::EditorActionCopySingle>(referenceId);
+		copyAction->execute(gameState);
+		middle::Id& copyContentId = copyAction->resultId;
+		actions.push_back(std::move(copyAction));
+
 		auto reparent = std::make_unique<middle::EditorActionReparent>(compressedBubbleId.index, copyContentId.index);
 		reparent->execute(gameState);
 		actions.push_back(std::move(reparent));

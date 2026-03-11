@@ -27,6 +27,8 @@ namespace bubbleActions{
 	float unitValue(middle::GameState* gameState, middle::Id& containerId);
 	int fractionUnitCount(middle::GameState* gameState, middle::Id& fractionId);
 	bool matchingBubbles(middle::GameState* gameState, middle::Id& bubbleA, middle::Id bubbleB);
+	middle::Id newFraction(middle::GameState* gameState, const Vector3& targetPos, int dividend);
+	middle::Id shapeToFraction(middle::GameState* gameState, middle::Id shpaeId, const Vector3& targetPos, int dividend);
 
 	class UpdateVariable : public middle::EditorActionContainer {
 	public:
@@ -38,8 +40,6 @@ namespace bubbleActions{
 		void undo(middle::GameState* gameState) override;
 	};
 
-	middle::Id newFraction(middle::GameState* gameState, const Vector3& targetPos, int dividend);
-	middle::Id shapeToFraction(middle::GameState* gameState, middle::Id shpaeId, const Vector3& targetPos, int dividend);
 
 	class NewMultiplication : public middle::EditorActionContainer {
 	public:
