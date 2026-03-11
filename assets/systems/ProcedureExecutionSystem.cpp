@@ -397,8 +397,12 @@ public:
 	void undoFunctions(middle::GameState* gameState, middle::Shape& funcShape) {
 		auto function = middle::getComponent<components::CodeFunction>(funcShape);
 		if (function->actions.size() > 0) {
-			function->actions.back()->undo(gameState);
+			auto action = function->actions.back();
 			function->actions.pop_back();
+			middle::queueAction(gameState, std::make_shared<middle::CustomAction>(
+				[action](middle::GameState* gameState) {
+					action->undo(gameState);
+				}));
 		}
 	}
 
