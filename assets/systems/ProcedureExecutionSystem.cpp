@@ -120,14 +120,14 @@ public:
 		int size = children.size();
 		int index = 0;
 		while (index < size) {
+			if (bubbleComp->searchIndex >= size) {
+				bubbleComp->searchIndex = 0;
+			}
 			middle::Id id = children[bubbleComp->searchIndex];
 			++bubbleComp->searchIndex;
 			auto& shape = middle::getShape(gameState, id.index);
 			if (shape.componentMap.find(typeId) != shape.componentMap.end()) {
 				return id;
-			}
-			if (bubbleComp->searchIndex >= size) {
-				bubbleComp->searchIndex = 0;
 			}
 			++index;
 		}
@@ -168,6 +168,11 @@ public:
 	void executeFunctions(middle::GameState* gameState, middle::Shape& funcShape, components::ProcedureContainer* container) {
 
 		auto function = middle::getComponent<components::CodeFunction>(funcShape);
+
+		auto ifComp = middle::getComponent<components::CodeFunction>(funcShape);
+		if (ifComp) {
+			potentialConditionalStep(gameState, container);
+		}
 
 		// combine functions are either multiplciations or additions
 		if (function->type == functionTypes::COMBINE) {
@@ -213,25 +218,14 @@ public:
 				middle::queueAction(gameState, customAdd);
 				function->actions.push_back(customAdd);
 			}
+
+			stepForward(gameState, container);
 		}
 
 		// exit loops
 		else if (function->type == functionTypes::EXIT_LOOP) {
 			container->exitingLoop = true;
-			//			while (true) {
-			//				auto& activeCodeBlockShape = middle::getShape(gameState, container->activeBlock.index);
-			//				auto codeBlock = middle::getComponent<components::CodeBlock>(activeCodeBlockShape);
-			//				if (codeBlock->type == codeBlockTypes::LOOP_BLOCK) {
-			//					if (stepForward(gameState, container) == procedureConstants::CanStep){
-			//						doStep(container);
-			//					}
-			//					break;
-			//				}
-			//				else{
-			//					stepWest(gameState, container);
-			//					doStep(container);
-			//				}
-			//			}
+			stepForward(gameState, container);
 		}
 
 		else if (function->type == functionTypes::COPY) {
@@ -252,6 +246,8 @@ public:
 				});
 			middle::queueAction(gameState, customCopy);
 			function->actions.push_back(customCopy);
+
+			stepForward(gameState, container);
 		}
 
 
@@ -281,6 +277,8 @@ public:
 				});
 			middle::queueAction(gameState, customReparent);
 			function->actions.push_back(customReparent);
+			
+			stepForward(gameState, container);
 		}
 
 		else if (function->type == functionTypes::NEW_MULTERM) {
@@ -304,6 +302,8 @@ public:
 				});
 			middle::queueAction(gameState, customReplacement);
 			function->actions.push_back(customReplacement);
+
+			stepForward(gameState, container);
 		}
 
 		else if (function->type == functionTypes::POP) {
@@ -313,6 +313,8 @@ public:
 			auto popAction = std::make_shared<bubbleActions::Pop>(input.unitRef);
 			middle::queueAction(gameState, popAction);
 			function->actions.push_back(popAction);
+
+			stepForward(gameState, container);
 		}
 
 		else if (function->type == functionTypes::MUL_ONE) {
@@ -334,6 +336,8 @@ public:
 				});
 			middle::queueAction(gameState, customMulOne);
 			function->actions.push_back(customMulOne);
+
+			stepForward(gameState, container);
 		}
 
 		else if (function->type == functionTypes::BREAK) {
@@ -358,6 +362,8 @@ public:
 				});
 			middle::queueAction(gameState, customBreak);
 			function->actions.push_back(customBreak);
+
+			stepForward(gameState, container);
 		}
 
 		else if (function->type == functionTypes::COMPRESS) {
@@ -383,6 +389,8 @@ public:
 				});
 			middle::queueAction(gameState, customCompress);
 			function->actions.push_back(customCompress);
+
+			stepForward(gameState, container);
 		}
 	}
 
@@ -431,6 +439,7 @@ public:
 		if (index + 1 >= neighbors.size()) {
 			return procedureConstants::StepStatus::CannotStep;
 		}
+		assert(index != -1);
 		middle::Id nextId = neighbors[index + 1];
 		container->procedureTransitionStack.push_back(
 			{ procedureConstants::TransitionType::South, previousId, nextId
@@ -553,7 +562,7 @@ public:
 		auto statusB = stepWest(gameState, container);
 		if (statusB == procedureConstants::CanStep) {
 			// step to the next, unless is looping
-			auto statusC = stepSouth(gameState, container);
+			auto statusC = stepForward(gameState, container);
 			if (statusC == procedureConstants::CanStep) {
 				container->exitingLoop = false;
 				return statusC;
@@ -660,19 +669,21 @@ public:
 				}
 
 				if (procedure->direction == procedureConstants::FORWARD) {
-					if (stepForward(gameState, procedure) == procedureConstants::CanStep) {
-						doStep(procedure);
+
+					if (procedure->activeBlock.index == middle::UNASSIGNED) {
+						stepStart(gameState, procedure);
 					}
 
-					if (potentialConditionalStep(gameState, procedure) == procedureConstants::CanStep) {
-						doStep(procedure);
-					}
+					doStep(procedure);
 
 					if (procedure->activeBlock.index != middle::UNASSIGNED) {
 						middle::Id funcShapeId = getCodeBlockFunc(gameState, procedure->activeBlock);
 						if (funcShapeId.index != middle::UNASSIGNED) {
 							auto& funcShape = middle::getShape(gameState, funcShapeId.index);
 							executeFunctions(gameState, funcShape, procedure);
+						}
+						else {
+							stepForward(gameState, procedure);
 						}
 					}
 				}
