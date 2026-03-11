@@ -50,9 +50,9 @@ public:
 	}
 
 	void inventoryAction(middle::GameState* gameState, int actionType, middle::Shape& intersectedShape) {
-		// pop as long as not multiplication
 		std::shared_ptr<middle::EditorActionContainer>action;
 
+		// pop as long as not multiplication
 		if (actionType == bubbleInventoryitemType::POP) {
 			middle::Id& parentId = middle::getParent(gameState, intersectedShape.id);
 			if (parentId.index == middle::UNASSIGNED) {

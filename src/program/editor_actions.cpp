@@ -360,6 +360,8 @@ namespace middle {
 				return;
 			}
 		}
+
+		assert(loopIndex != middle::UNASSIGNED);
 	}
 
 	void EditorActionRemoveFromLoop::undo(GameState* gameState)

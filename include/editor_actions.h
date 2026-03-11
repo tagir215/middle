@@ -267,6 +267,9 @@ namespace middle {
 			this->parentIndex = parentIndex;
 			this->childIndex = childIndex;
 			this->newLoopIndex = newLoopIndex;
+			assert(parentIndex >= 0);
+			assert(childIndex >= 0);
+			assert(newLoopIndex >= 0);
 		}
 		void execute(GameState* gameState) override;
 		void undo(GameState* gameState) override;

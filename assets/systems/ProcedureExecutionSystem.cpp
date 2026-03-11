@@ -670,7 +670,7 @@ public:
 
 				if (procedure->direction == procedureConstants::FORWARD) {
 
-					if (procedure->activeBlock.index == middle::UNASSIGNED) {
+					if (procedure->procedureTransitionStack.size() == 0) {
 						stepStart(gameState, procedure);
 					}
 

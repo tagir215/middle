@@ -560,8 +560,8 @@ namespace bubbleActions {
 		auto& shapeToAddInto = middle::getShape(gameState, shapeToAddIntoId.index);
 		auto addLoop = middle::getComponent<components::LoopSociety>(shapeToAdd);
 
-		middle::Id idA = middle::deepCopyShape(gameState, shapeToAdd.id.index, addLoop->parentLoopId.index);
-		middle::Id idB = middle::deepCopyShape(gameState, shapeToAddInto.id.index, addLoop->parentLoopId.index);
+		middle::Id idA = middle::deepCopyShape(gameState, shapeToAdd.id.index);
+		middle::Id idB = middle::deepCopyShape(gameState, shapeToAddInto.id.index);
 		middle::Shape& copyShapeA = middle::getShape(gameState, idA.index);
 		middle::Shape& copyShapeB = middle::getShape(gameState, idB.index);
 		auto copyAddLoop = middle::getComponent<components::LoopSociety>(copyShapeA);
@@ -793,6 +793,9 @@ namespace bubbleActions {
 			}
 		}
 		middle::Id& newMulId = newMultiplication(gameState, recieverShapeId, linkingShapeId);
+		auto registerId = std::make_unique<middle::EditorActionRegisterId>(newMulId);
+		registerId->execute(gameState);
+		actions.push_back(std::move(registerId));
 		if (parentId.index != middle::UNASSIGNED) {
 			auto reparent = std::make_unique<middle::EditorActionReparent>(parentId.index, newMulId.index);
 			reparent->execute(gameState);

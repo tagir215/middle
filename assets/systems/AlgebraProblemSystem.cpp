@@ -40,8 +40,10 @@ public:
 			}
 			if (button->function == bubbleButton::UNDO) {
 				if (gameState->bubbleAlgebraState.bubbleActions.size() > 0) {
-					gameState->bubbleAlgebraState.bubbleActions.back()->undo(gameState);
-					gameState->bubbleAlgebraState.bubbleActions.pop_back();
+					middle::queueAction(gameState, std::make_shared<middle::CustomAction>([](middle::GameState* gameState) {
+						gameState->bubbleAlgebraState.bubbleActions.back()->undo(gameState);
+						gameState->bubbleAlgebraState.bubbleActions.pop_back();
+						}));
 				}
 			}
 		}
