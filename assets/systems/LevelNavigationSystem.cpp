@@ -4,6 +4,7 @@
 #include "middle_shape_utils.h"
 #include "LevelReference.h"
 #include "MouseClickComponent.h"
+#include "editor_actions.h"
 
 class LevelNavigationSystem : public middle::MiddleGameplaySystem {
 public:
@@ -22,8 +23,11 @@ public:
 		for (int i = 0; i < cache->getSize(); ++i) {
 			auto levelRef = *levelIt;
 			std::string name = levelRef->levelName;
-			middle::resetScene(gameState);
-			middle::loadScene(gameState, "../assets/scenes/", name, false);
+			middle::queueAction(gameState, std::make_shared<middle::CustomAction>(
+				[name](middle::GameState* gameState) {
+				middle::resetScene(gameState);
+				middle::loadScene(gameState, "../assets/scenes/", name, false);
+				}));
 		}
 	}
 };

@@ -134,8 +134,11 @@ namespace bubbleActions {
 			// deep copy to replace and replacing
 			middle::Id copyId = middle::deepCopyShape(gameState, replacingShape.id.index);
 			middle::Id toReplaceCopyId = middle::deepCopyShape(gameState, shapeToReplaceId.index);
-			middle::Id& mulShapeId = newMultiplication(gameState, copyId, toReplaceCopyId);
-			auto& newMulShape = middle::getShape(gameState, mulShapeId.index);
+
+			auto newMulAction = bubbleActions::NewMultiplication(copyId, toReplaceCopyId);
+			newMulAction.execute(gameState);
+
+			auto& newMulShape = middle::getShape(gameState, newMulAction.resultShapeId.index);
 			auto position = middle::getComponent<components::Position>(newMulShape);
 
 			// compute displacmenet from replacing shape to shapeToReplace position
@@ -317,33 +320,6 @@ namespace bubbleActions {
 		return fractionShapeId;
 	}
 
-
-	middle::Id newMultiplication(middle::GameState* gameState, middle::Id& idA, middle::Id& idB)
-	{
-		middle::Shape newMulShapeProto;
-		auto position = middle::addComponent<components::Position>(newMulShapeProto);
-		middle::addComponent<components::BubbleMultiplyComponent>(newMulShapeProto);
-		middle::addComponent<components::MouseIntersectable>(newMulShapeProto);
-		middle::addComponent<components::MouseGrabbable>(newMulShapeProto);
-		middle::addComponent<components::LoopSociety>(newMulShapeProto);
-		auto sphere = middle::addComponent<components::Sphere>(newMulShapeProto);
-		sphere->radius = 2;
-		auto text = middle::addComponent<components::Text>(newMulShapeProto);
-		text->text = "x";
-
-		auto& newMulShape = middle::registerShape(gameState, newMulShapeProto);
-
-		auto reparentA = middle::EditorActionReparent(newMulShape.id.index, idA.index);
-		reparentA.execute(gameState);
-		auto reparentB = middle::EditorActionReparent(newMulShape.id.index, idB.index);
-		reparentB.execute(gameState);
-		Vector3 center = middle::getShapePosition(gameState, idA.index) + middle::getShapePosition(gameState, idB.index);
-		center *= 0.5f;
-		position->posX = center.x;
-		position->posY = center.y;
-		position->posZ = center.z;
-		return newMulShape.id;
-	}
 
 
 	CreateAdditionReplacementShape::CreateAdditionReplacementShape(middle::Id idA, middle::Id idB) {
@@ -792,10 +768,12 @@ namespace bubbleActions {
 				return;
 			}
 		}
-		middle::Id& newMulId = newMultiplication(gameState, recieverShapeId, linkingShapeId);
-		auto registerId = std::make_unique<middle::EditorActionRegisterId>(newMulId);
-		registerId->execute(gameState);
-		actions.push_back(std::move(registerId));
+
+		auto newMul = std::make_unique<NewMultiplication>(recieverShapeId, linkingShapeId);
+		newMul->execute(gameState);
+		middle::Id newMulId = newMul->resultShapeId;
+		actions.push_back(std::move(newMul));
+
 		if (parentId.index != middle::UNASSIGNED) {
 			auto reparent = std::make_unique<middle::EditorActionReparent>(parentId.index, newMulId.index);
 			reparent->execute(gameState);
@@ -995,6 +973,47 @@ namespace bubbleActions {
 		middle::Id& oldRef = oldUnitRef;
 		auto update = UpdateVariable(label, [oldRef]() {return oldRef;});
 		update.execute(gameState);
+	}
+
+	void NewMultiplication::execute(middle::GameState* gameState)
+	{
+		middle::Shape newMulShapeProto;
+		auto position = middle::addComponent<components::Position>(newMulShapeProto);
+		middle::addComponent<components::BubbleMultiplyComponent>(newMulShapeProto);
+		middle::addComponent<components::MouseIntersectable>(newMulShapeProto);
+		middle::addComponent<components::MouseGrabbable>(newMulShapeProto);
+		middle::addComponent<components::LoopSociety>(newMulShapeProto);
+		auto sphere = middle::addComponent<components::Sphere>(newMulShapeProto);
+		sphere->radius = 2;
+		auto text = middle::addComponent<components::Text>(newMulShapeProto);
+		text->text = "x";
+		auto& newMulShape = middle::registerShape(gameState, newMulShapeProto);
+
+		auto registerAction = std::make_unique<middle::EditorActionRegisterId>(newMulShape.id);
+		registerAction->execute(gameState);
+		actions.push_back(std::move(registerAction));
+
+		auto reparentA = std::make_unique<middle::EditorActionReparent>(newMulShape.id.index, idA.index);
+		reparentA->execute(gameState);
+		actions.push_back(std::move(reparentA));
+		auto reparentB = std::make_unique<middle::EditorActionReparent>(newMulShape.id.index, idB.index);
+		reparentB->execute(gameState);
+		actions.push_back(std::move(reparentB));
+
+		Vector3 center = middle::getShapePosition(gameState, idA.index) + middle::getShapePosition(gameState, idB.index);
+		center *= 0.5f;
+		position->posX = center.x;
+		position->posY = center.y;
+		position->posZ = center.z;
+		resultShapeId = newMulShape.id;
+	}
+
+	void NewMultiplication::undo(middle::GameState* gameState)
+	{
+		while (actions.size() > 0) {
+			actions.back()->undo(gameState);
+			actions.pop_back();
+		}
 	}
 
 }

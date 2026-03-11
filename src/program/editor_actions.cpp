@@ -414,8 +414,14 @@ namespace middle {
 
 	void EditorActionReparent::undo(GameState* gameState)
 	{
-		auto metaReparent = EditorActionReparent(oldParentIndex, childIndex);
-		metaReparent.execute(gameState);
+		if (oldParentIndex != middle::UNASSIGNED) {
+			auto metaReparent = EditorActionReparent(oldParentIndex, childIndex);
+			metaReparent.execute(gameState);
+		}
+		else {
+			auto removeFromLoop = EditorActionRemoveFromLoop(childIndex);
+			removeFromLoop.execute(gameState);
+		}
 	}
 
 	void EditorActionChangeLoopMemberIndex::execute(GameState* gameState)

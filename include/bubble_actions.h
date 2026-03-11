@@ -22,9 +22,6 @@ namespace bubbleActions{
 	middle::Id topLevelBubble(middle::GameState* gameState);
 	middle::Shape newBubble(middle::GameState* gameState, const Vector3& targetPos);
 	middle::Shape newUnit(middle::GameState* gameState, const Vector3& targetPos);
-	middle::Id newFraction(middle::GameState* gameState, const Vector3& targetPos, int dividend);
-	middle::Id shapeToFraction(middle::GameState* gameState, middle::Id shpaeId, const Vector3& targetPos, int dividend);
-	middle::Id newMultiplication(middle::GameState* gameState, middle::Id& idA, middle::Id& idB);
 	bool isIntersecting(middle::GameState* gameState, middle::Shape& shape);
 	bool equals(middle::GameState* gameState, middle::Id& bubbleA, middle::Id& bubbleB);
 	float unitValue(middle::GameState* gameState, middle::Id& containerId);
@@ -41,6 +38,22 @@ namespace bubbleActions{
 		void undo(middle::GameState* gameState) override;
 	};
 
+	middle::Id newFraction(middle::GameState* gameState, const Vector3& targetPos, int dividend);
+	middle::Id shapeToFraction(middle::GameState* gameState, middle::Id shpaeId, const Vector3& targetPos, int dividend);
+
+	class NewMultiplication : public middle::EditorActionContainer {
+	public:
+		middle::Id idA;
+		middle::Id idB;
+		std::vector<std::unique_ptr<middle::EditorActionContainer>> actions;
+		middle::Id resultShapeId;
+		NewMultiplication(const middle::Id& idA, const middle::Id& idB) {
+			this->idA = idA;
+			this->idB = idB;
+		}
+		void execute(middle::GameState* gameState) override;
+		void undo(middle::GameState* gameState) override;
+	};
 
 	class CreateMulitiplicationReplacementShape : public middle::EditorActionContainer {
 	public:
