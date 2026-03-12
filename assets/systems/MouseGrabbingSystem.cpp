@@ -54,8 +54,15 @@ namespace MouseGrabbingSystem {
 
 		void releasing(middle::GameState* gameState) {
 			// update move action with new positions for redo to work
-			middle::EditorActionContainer* lastAction = gameState->editorState.actionHistory.back().get();
-			auto lastMoveAction = static_cast<middle::EditorActionMove*>(lastAction);
+			middle::EditorActionMove* lastMoveAction = nullptr;
+			// find last move action
+			for (int i = gameState->editorState.actionHistory.size() - 1; i >= 0; --i) {
+				middle::EditorActionContainer* lastAction = gameState->editorState.actionHistory[i].get();
+				lastMoveAction = dynamic_cast<middle::EditorActionMove*>(lastAction);
+				if (lastMoveAction != nullptr) {
+					break;
+				}
+			}
 			assert(lastMoveAction);
 			lastMoveAction->newPositions.resize(lastMoveAction->selectedShapes.size());
 			for (int j = 0; j < lastMoveAction->selectedShapes.size(); ++j) {

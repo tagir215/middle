@@ -9,6 +9,7 @@
 #include <misc/cpp/imgui_stdlib.cpp>
 #include <Position.h>
 #include "Text.h"
+#include "Rotation.h"
 
 class ComponentUiSystem : public middle::MiddleGameplaySystem {
 
@@ -121,20 +122,24 @@ public:
 								ImGui::PopID();
 							}
 							else if (field.type == middle::FieldType::Quaternion) {
-								Quaternion* vector = static_cast<Quaternion*>(field.value);
+								Quaternion* quat = static_cast<Quaternion*>(field.value);
 								ImGui::Text(field.name);
 								ImGui::PushID("x");
 								ImGui::PushID("y");
 								ImGui::PushID("z");
 								ImGui::PushID("2");
-								ImGui::InputFloat("x", &vector->x);
-								ImGui::InputFloat("y", &vector->y);
-								ImGui::InputFloat("z", &vector->z);
-								ImGui::InputFloat("w", &vector->w);
+								ImGui::InputFloat("x", &quat->x);
+								ImGui::InputFloat("y", &quat->y);
+								ImGui::InputFloat("z", &quat->z);
+								ImGui::InputFloat("w", &quat->w);
 								ImGui::PopID();
 								ImGui::PopID();
 								ImGui::PopID();
 								ImGui::PopID();
+								auto position = middle::getComponent<components::Position>(shape);
+								if (position) {
+									Vector3 forward = Vector3RotateByQuaternion(middle::ROTATION_FORWARD, *quat);
+								}
 							}
 							else if (field.type == middle::FieldType::Color) {
 								Color* color = static_cast<Color*>(field.value);

@@ -1,0 +1,367 @@
+#scene
+s  Demonstrointikohtaus
+__q  0_0
+MouseSelectable
+Position
+f  190.211304
+f  200.000000
+f  61.803402
+MouseGrabbable
+SystemReference
+s  EditorSystem
+MouseIntersectable
+LoopSociety
+q  -1_0
+p  
+Text
+s  EditorSystem
+f  255.000000
+f  255.000000
+f  255.000000
+f  255.000000
+f  2.000000
+f  0.000000
+f  10.000000
+f  10.000000
+b  1
+__q  1_0
+MouseSelectable
+Position
+f  165.094376
+f  200.000000
+f  112.888649
+MouseGrabbable
+SystemReference
+s  MouseIntersectDetectionSystem
+MouseIntersectable
+LoopSociety
+q  -1_0
+p  
+Text
+s  MouseIntersectDetectionSystem
+f  255.000000
+f  255.000000
+f  255.000000
+f  255.000000
+f  2.000000
+f  0.000000
+f  10.000000
+f  10.000000
+b  1
+__q  2_0
+MouseSelectable
+Position
+f  126.602486
+f  200.000000
+f  154.828339
+MouseGrabbable
+SystemReference
+s  MouseGrabbingSystem
+MouseIntersectable
+LoopSociety
+q  -1_0
+p  
+Text
+s  MouseGrabbingSystem
+f  255.000000
+f  255.000000
+f  255.000000
+f  255.000000
+f  2.000000
+f  0.000000
+f  10.000000
+f  10.000000
+b  1
+__q  3_0
+MouseSelectable
+Position
+f  77.854004
+f  200.000000
+f  184.224731
+MouseGrabbable
+SystemReference
+s  MouseSelectionSystem
+MouseIntersectable
+LoopSociety
+q  -1_0
+p  
+Text
+s  MouseSelectionSystem
+f  255.000000
+f  255.000000
+f  255.000000
+f  255.000000
+f  2.000000
+f  0.000000
+f  10.000000
+f  10.000000
+b  1
+__q  4_0
+MouseSelectable
+Position
+f  22.798265
+f  200.000000
+f  198.696350
+MouseGrabbable
+SystemReference
+s  EnviromentalFileNavigationSystem
+MouseIntersectable
+LoopSociety
+q  -1_0
+p  
+Text
+s  EnviromentalFileNavigationSystem
+f  255.000000
+f  255.000000
+f  255.000000
+f  255.000000
+f  2.000000
+f  0.000000
+f  10.000000
+f  10.000000
+b  1
+__q  5_0
+MouseSelectable
+Position
+f  -34.104458
+f  200.000000
+f  197.070770
+MouseGrabbable
+SystemReference
+s  EditorHotKeySystem
+MouseIntersectable
+LoopSociety
+q  -1_0
+p  
+Text
+s  EditorHotKeySystem
+f  255.000000
+f  255.000000
+f  255.000000
+f  255.000000
+f  2.000000
+f  0.000000
+f  10.000000
+f  10.000000
+b  1
+__q  6_0
+MouseSelectable
+Position
+f  -88.244225
+f  200.000000
+f  179.479675
+MouseGrabbable
+SystemReference
+s  CameraSystem
+MouseIntersectable
+LoopSociety
+q  -1_0
+p  
+Text
+s  CameraSystem
+f  255.000000
+f  255.000000
+f  255.000000
+f  255.000000
+f  2.000000
+f  0.000000
+f  10.000000
+f  10.000000
+b  1
+__q  7_0
+MouseSelectable
+Position
+f  -135.235001
+f  200.000000
+f  147.348206
+MouseGrabbable
+SystemReference
+s  MiddlePhysicsSystem
+MouseIntersectable
+LoopSociety
+q  -1_0
+p  
+Text
+s  MiddlePhysicsSystem
+f  255.000000
+f  255.000000
+f  255.000000
+f  255.000000
+f  2.000000
+f  0.000000
+f  10.000000
+f  10.000000
+b  1
+__q  8_0
+MouseSelectable
+Position
+f  -171.269836
+f  200.000000
+f  103.279449
+MouseGrabbable
+SystemReference
+s  EditorRenderSetupSystem
+MouseIntersectable
+LoopSociety
+q  -1_0
+p  
+Text
+s  EditorRenderSetupSystem
+f  255.000000
+f  255.000000
+f  255.000000
+f  255.000000
+f  2.000000
+f  0.000000
+f  10.000000
+f  10.000000
+b  1
+__q  9_0
+MouseSelectable
+Position
+f  -193.429382
+f  200.000000
+f  50.843632
+MouseGrabbable
+SystemReference
+s  EditorUiSystem
+MouseIntersectable
+LoopSociety
+q  -1_0
+p  
+Text
+s  EditorUiSystem
+f  255.000000
+f  255.000000
+f  255.000000
+f  255.000000
+f  2.000000
+f  0.000000
+f  10.000000
+f  10.000000
+b  1
+__q  10_0
+MouseSelectable
+Position
+f  -199.918442
+f  200.000000
+f  -5.711226
+MouseGrabbable
+SystemReference
+s  ComponentUiSystem
+MouseIntersectable
+LoopSociety
+q  -1_0
+p  
+Text
+s  ComponentUiSystem
+f  255.000000
+f  255.000000
+f  255.000000
+f  255.000000
+f  2.000000
+f  0.000000
+f  10.000000
+f  10.000000
+b  1
+__q  11_0
+Sphere
+f  2.000000
+Position
+f  0.000000
+f  0.000000
+f  -140.000000
+MouseGrabbable
+PhysicsData
+f  1.000000
+f  1.000000
+f  1.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.800000
+f  0.800000
+f  0.800000
+f  0.000000
+f  0.000000
+f  0.000000
+b  0
+MouseSelectable
+MouseIntersectable
+LoopSociety
+q  -1_0
+p  
+GridElement
+ModelComponent
+s  C:\Users\tagir\raylib_projects\middle\assets\models\dinosaur\dinosaur.glb
+__q  12_0
+MouseSelectable
+MouseGrabbable
+Position
+f  -120.087349
+f  0.000031
+f  -97.519371
+MouseIntersectable
+SystemReference
+s  GridSystem
+LoopSociety
+q  -1_0
+p  
+Text
+s  GridSystem
+f  255.000000
+f  255.000000
+f  255.000000
+f  255.000000
+f  2.000000
+f  0.000000
+f  10.000000
+f  10.000000
+b  1
+__q  13_0
+MouseGrabbable
+Position
+f  72.129593
+f  0.000061
+f  -60.696899
+Sphere
+f  2.000000
+MouseSelectable
+EditorConfigs
+i  20
+i  8
+MouseIntersectable
+ConfigComponent
+LoopSociety
+q  -1_0
+p  
+__q  14_0
+MouseGrabbable
+Position
+f  160.000000
+f  0.000000
+f  -220.000000
+Sphere
+f  2.000000
+PhysicsData
+f  1.000000
+f  1.000000
+f  1.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.800000
+f  0.800000
+f  0.800000
+f  0.000000
+f  0.000000
+f  0.000000
+b  0
+MouseSelectable
+MouseIntersectable
+LoopSociety
+q  -1_0
+p  
+GridElement
+ModelComponent
+s  C:\Users\tagir\raylib_projects\middle\assets\models\dinosaur\dinosaur.glb

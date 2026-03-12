@@ -88,6 +88,7 @@ int main(void)
 	// these are called in middle project
 	auto inputSystem = std::move(systemMap["InputSystem"]);
 	auto renderSystem = std::move(systemMap["RendererSystem"]);
+	auto fileDropSystem = std::move(systemMap["FileDropSystem"]);
 
 
 	gameState->startGame = true;
@@ -108,6 +109,7 @@ int main(void)
 		gameState->screenWidth = GetScreenWidth();
 		gameState->screenHeight = GetScreenHeight();
 
+		fileDropSystem->update(gameState);
 
 		inputSystem->update(gameState);
 

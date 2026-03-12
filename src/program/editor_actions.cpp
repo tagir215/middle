@@ -297,6 +297,7 @@ namespace middle {
 			Component component;
 			component.componentOffset = componentListMap[componentTypeId]->grow();
 			shape.componentMap[componentTypeId] = component;
+			gameState->componentTypeIdSetWithStructuralChanges.insert(componentTypeId);
 		};
 	}
 
@@ -309,6 +310,7 @@ namespace middle {
 			Component component = shape.componentMap[componentTypeId];
 			componentListMap[componentTypeId]->shrink(component.componentOffset);
 			shape.componentMap.erase(componentTypeId);
+			gameState->componentTypeIdSetWithStructuralChanges.insert(componentTypeId);
 		}
 	}
 

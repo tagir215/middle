@@ -76,6 +76,7 @@ namespace middle {
 		RECTANGLE,
 		CIRCLE,
 		TEXT,
+		MODEL,
 	};
 
 	struct RenderItem {
@@ -91,12 +92,18 @@ namespace middle {
 		float height;
 		int fontSize;
 		std::string text = "";
+		Model* model;
 	};
 
 	struct BubbleAlgebraState {
 		middle::Id grabbedId;
 		bool intersectingUI = false;
 		std::vector<std::shared_ptr<middle::EditorActionContainer>>bubbleActions;
+	};
+
+	struct ModelContainer {
+		std::string path = "";
+		Model model;
 	};
 
 	struct GameState {
@@ -154,6 +161,8 @@ namespace middle {
 		std::set<int>componentTypeIdSetWithStructuralChanges;
 		std::queue<std::shared_ptr<EditorActionContainer>>actionQueue;
 		std::queue<std::shared_ptr<EditorActionContainer>>undoQueue;
+		std::vector<ModelContainer> loadedModels;
+		std::queue<std::string>modelsToLoadQueue;
 	};
 
 }

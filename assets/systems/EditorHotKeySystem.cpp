@@ -106,6 +106,7 @@ public:
 				middle::queueEditorAction(gameState, std::make_shared<middle::EditorActionUnhide>());
 			}
 		}
+
 	}
 };
 

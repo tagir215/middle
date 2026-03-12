@@ -43,6 +43,7 @@ add_executable(middle
     src/middle_imgui.cpp 
     src/Renderer.cpp
     src/InputSystem.cpp
+    src/FileDropSystem.cpp
 )
 target_include_directories(middle PUBLIC ${CMAKE_SOURCE_DIR}/include)
 target_include_directories(middle PUBLIC ${CMAKE_SOURCE_DIR}/assets/components)

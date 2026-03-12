@@ -60,7 +60,7 @@ public:
 			body.timeLeft = 1;
 		}
 
-		auto constraintsIt = physicsCache->begin<components::Constraint>();
+		auto constraintsIt = constraintCache->begin<components::Constraint>();
 		for (int i = 0; i < constraintCache->getSize(); ++i) {
 			auto constraint = *constraintsIt;
 			if (constraint->idA.index != middle::UNASSIGNED && constraint->idB.index != middle::UNASSIGNED) {

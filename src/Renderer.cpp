@@ -52,6 +52,17 @@ namespace RendererSystem {
 					rlPopMatrix();
 				}
 
+				if (item.type == middle::RenderItemType::MODEL) {
+					Matrix T = MatrixTranslate(item.transform.translation.x, item.transform.translation.y, item.transform.translation.z);
+					Matrix R = QuaternionToMatrix(item.transform.rotation);
+					Matrix S = MatrixScale(item.transform.scale.x, item.transform.scale.y, item.transform.scale.z);
+					Matrix M = MatrixMultiply(MatrixMultiply(S, R), T);
+					rlPushMatrix();
+					rlMultMatrixf(MatrixToFloatV(M).v);
+					DrawModel(*item.model, item.center, 1, item.color);
+					rlPopMatrix();
+				}
+
 				if (item.type == middle::RenderItemType::LINE) {
 					DrawLine3D(item.linePointA, item.linePointB, item.color);
 				}
