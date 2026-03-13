@@ -57,6 +57,14 @@ namespace RendererSystem {
 					rlPopMatrix();
 				}
 
+				if (item.type == middle::RenderItemType::CYLINDER) {
+					Matrix M = transformMatrix(item);
+					rlPushMatrix();
+					rlMultMatrixf(MatrixToFloatV(M).v);
+					DrawCylinder(item.center, item.radius, item.ringRadius, item.length, 23, item.color);
+					rlPopMatrix();
+				}
+
 				if (item.type == middle::RenderItemType::MODEL) {
 					DrawModel(*item.model, item.center, 1, item.color);
 				}

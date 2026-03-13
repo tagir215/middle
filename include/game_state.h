@@ -81,6 +81,7 @@ namespace middle {
 		CIRCLE_SECTOR,
 		CONE,
 		RING,
+		CYLINDER,
 	};
 
 	struct RenderItem {

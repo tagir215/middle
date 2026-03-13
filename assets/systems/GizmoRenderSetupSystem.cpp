@@ -31,7 +31,8 @@ public:
 			middle::RenderItem rotItem;
 			rotItem.type = middle::RenderItemType::VECTOR;
 			rotItem.center = { 0,0,0 };
-			rotItem.color = GREEN;
+			rotItem.color = WHITE;
+			rotItem.color.a = 50.0f;
 			rotItem.transform.translation = pos;
 			rotItem.transform.rotation = rotation->rotation;
 			rotItem.transform.scale = { 1,1,1 };

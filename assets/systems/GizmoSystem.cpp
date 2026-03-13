@@ -28,6 +28,7 @@ public:
 		// 0 = X, 1 = Y, 2 = Z
 		int resultAxis = -1;
 		Vector3 collisionPos;
+		Vector3 axis;
 	};
 
 	AxisTestResult axisTest(middle::GameState* gameState, const Vector3& spherePos, float radius) {
@@ -37,9 +38,9 @@ public:
 		Vector3 collisionPosY = middle::RayCastLinePlane(spherePos, { 0,0,1 }, rayStart, rayDir);
 		Vector3 collisionPosZ = middle::RayCastLinePlane(spherePos, { 1,0,0 }, rayStart, rayDir);
 		std::vector<AxisTestResult>candidates = {
-			{ 0, collisionPosX },
-			{ 1, collisionPosY },
-			{ 2, collisionPosZ }
+			{ 0, collisionPosX, {0,1,0} },
+			{ 1, collisionPosY, {0,0,1} },
+			{ 2, collisionPosZ, {1,0,0} }
 		};
 		// filter non collisions
 		float radiusSq = radius * radius;
@@ -91,26 +92,47 @@ public:
 				continue;
 			}
 
+			const float gizmoRadius = 30;
+
 			Vector3 gizmoPos = { position->posX, position->posY, position->posZ };
-			if (!broadTest(gameState, gizmoPos, 30)) {
+			if (!broadTest(gameState, gizmoPos, gizmoRadius)) {
 				continue;
 			}
 
-			AxisTestResult axisResult = axisTest(gameState, gizmoPos, 30);
+			AxisTestResult axisResult = axisTest(gameState, gizmoPos, gizmoRadius);
 			middle::RenderItem indicator;
 			indicator.type = middle::RenderItemType::SPHERE;
 			indicator.center = axisResult.collisionPos;
 			indicator.radius = 3;
+			Color color;
 			if (axisResult.resultAxis == 0) {
-				indicator.color = GREEN;
+				color = GREEN;
 			}
-			if (axisResult.resultAxis == 1) {
-				indicator.color = RED;
+			else if (axisResult.resultAxis == 1) {
+				color = RED;
 			}
-			if (axisResult.resultAxis == 2) {
-				indicator.color = BLUE;
+			else if (axisResult.resultAxis == 2) {
+				color = BLUE;
 			}
+			else {
+				return;
+			}
+			color.a = 30;
+			indicator.color = color;
 			gameState->renderData.push_back(indicator);
+
+			middle::RenderItem cyl;
+			cyl.type = middle::RenderItemType::CYLINDER;
+			cyl.center = { 0,0,0 };
+			cyl.color = color;
+			cyl.ringRadius = gizmoRadius;
+			cyl.transform.translation = gizmoPos;
+			cyl.length = 0.1f;
+			cyl.transform.scale = { 1,1,1 };
+			cyl.transform.rotation = QuaternionFromVector3ToVector3({ 0,1,0 }, axisResult.axis);
+			cyl.radius = gizmoRadius;
+			gameState->renderData.push_back(cyl);
+
 
 			bool intersectsWithX;
 		}
