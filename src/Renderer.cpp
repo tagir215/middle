@@ -12,6 +12,14 @@ namespace RendererSystem {
 
 	static std::string scriptName = "RendererSystem";
 
+	Matrix transformMatrix(middle::RenderItem& item) {
+		Matrix S = MatrixScale(item.transform.scale.x, item.transform.scale.y, item.transform.scale.z);
+		Matrix R = QuaternionToMatrix(item.transform.rotation);
+		Matrix T = MatrixTranslate(item.transform.translation.x, item.transform.translation.y, item.transform.translation.z);
+		Matrix M = MatrixMultiply(MatrixMultiply(S, R), T);
+		return M;
+	}
+
 	class RendererSystem : public middle::MiddleGameplaySystem {
 	public:
 		void init(middle::GameState* gameState) {
@@ -42,10 +50,7 @@ namespace RendererSystem {
 				}
 
 				if (item.type == middle::RenderItemType::RECTANGLE) {
-					Matrix T = MatrixTranslate(item.transform.translation.x, item.transform.translation.y, item.transform.translation.z);
-					Matrix R = QuaternionToMatrix(item.transform.rotation);
-					Matrix S = MatrixScale(item.transform.scale.x, item.transform.scale.y, item.transform.scale.z);
-					Matrix M = MatrixMultiply(MatrixMultiply(S, R), T);
+					Matrix M = transformMatrix(item);
 					rlPushMatrix();
 					rlMultMatrixf(MatrixToFloatV(M).v);
 					DrawCube(item.center, item.width, item.length, item.height, item.color);
@@ -53,14 +58,29 @@ namespace RendererSystem {
 				}
 
 				if (item.type == middle::RenderItemType::MODEL) {
-					Matrix T = MatrixTranslate(item.transform.translation.x, item.transform.translation.y, item.transform.translation.z);
-					Matrix R = QuaternionToMatrix(item.transform.rotation);
-					Matrix S = MatrixScale(item.transform.scale.x, item.transform.scale.y, item.transform.scale.z);
-					Matrix M = MatrixMultiply(MatrixMultiply(S, R), T);
+					DrawModel(*item.model, item.center, 1, item.color);
+				}
+
+				if (item.type == middle::RenderItemType::VECTOR) {
+					Matrix M = transformMatrix(item);
+					rlPushMatrix();
+					rlLoadIdentity();
+					rlMultMatrixf(MatrixToFloatV(M).v);
+					DrawCylinder(item.center, item.radius, item.radius, item.length, 23, item.color);
+					rlPopMatrix();
+
+					Vector3 rotationForward = { 0,1,0 };
+					Vector3 dir = Vector3RotateByQuaternion(rotationForward, item.transform.rotation);
+					//DrawSphere(conePos, 3, BLUE);
+					Vector3 conePos = item.transform.translation + Vector3Scale(dir, item.length);
+					item.transform.translation = conePos;
+					M = transformMatrix(item);
+
 					rlPushMatrix();
 					rlMultMatrixf(MatrixToFloatV(M).v);
-					DrawModel(*item.model, item.center, 1, item.color);
+					DrawCylinder(item.center, 0, item.radius * 2, 10, 23, item.color);
 					rlPopMatrix();
+
 				}
 
 				if (item.type == middle::RenderItemType::LINE) {
@@ -68,8 +88,14 @@ namespace RendererSystem {
 				}
 
 				if (item.type == middle::CIRCLE) {
+					Matrix M = transformMatrix(item);
+					rlPushMatrix();
+					rlLoadIdentity();
+					rlMultMatrixf(MatrixToFloatV(M).v);
 					DrawCircle3D(item.center, item.radius, { 1,0,0 }, 90, item.color);
+					rlPopMatrix();
 				}
+
 			}
 
 

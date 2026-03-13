@@ -23,5 +23,5 @@ namespace components {
 }
 
 namespace middle {
-	const Vector3 ROTATION_FORWARD = { 0,0,1 };
+	const Vector3 ROTATION_FORWARD = { 0,1,0 };
 }

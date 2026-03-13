@@ -77,6 +77,10 @@ namespace middle {
 		CIRCLE,
 		TEXT,
 		MODEL,
+		VECTOR,
+		CIRCLE_SECTOR,
+		CONE,
+		RING,
 	};
 
 	struct RenderItem {
@@ -87,12 +91,22 @@ namespace middle {
 		Vector3 linePointB;
 		Transform transform;
 		float radius;
+		float ringRadius;
+		float startAngle;
+		float endAngle;
+		int segments;
 		float length;
 		float width;
 		float height;
 		int fontSize;
 		std::string text = "";
 		Model* model;
+
+		RenderItem() {
+			transform.translation = { 0,0,0 };
+			transform.rotation = { 0,0,0 };
+			transform.scale = { 1,1,1 };
+		}
 	};
 
 	struct BubbleAlgebraState {

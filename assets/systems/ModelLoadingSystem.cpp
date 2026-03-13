@@ -7,6 +7,10 @@
 #include "MouseSelectable.h"
 #include "editor_actions.h"
 #include "component_utils.h"
+#include "Position.h"
+#include "Rotation.h"
+#include "Scale.h"
+
 
 class ModelLoadingSystem : public middle::MiddleGameplaySystem {
 public:
@@ -17,12 +21,18 @@ public:
 
 	components::CompCache* selectableCache;
 	components::CompCache* modelCache;
+	components::CompCache* modelPosCache;
 
 	void init(middle::GameState* gameState) override {
 		selectableCache = middle::newCompCache(gameState);
 		selectableCache->addType<components::MouseSelectable>();
 		modelCache = middle::newCompCache(gameState);
 		modelCache->addType<components::ModelComponent>();
+		modelPosCache = middle::newCompCache(gameState);
+		modelPosCache->addType<components::ModelComponent>();
+		modelPosCache->addType<components::Position>();
+		modelPosCache->addType<components::Rotation>();
+		modelPosCache->addType<components::Scale>();
 	}
 	void update(middle::GameState* gameState) override {
 		if (gameState->loadedModels.size() > 0) {
@@ -64,6 +74,23 @@ public:
 			if (!model->initialized) {
 				gameState->modelsToLoadQueue.push(model->path);
 			}
+
+		}
+
+		auto modelPosIt = modelPosCache->begin<components::ModelComponent>();
+		auto posIt = modelPosCache->begin<components::Position>();
+		auto rotIt = modelPosCache->begin<components::Rotation>();
+		auto scaleIt = modelPosCache->begin<components::Scale>();
+		for (int i = 0; i < modelPosCache->getSize(); ++i) {
+			auto model = *modelPosIt;
+			auto pos = *posIt;
+			auto rot = *rotIt;
+			auto scale = *scaleIt;
+			Matrix T = MatrixTranslate(pos->posX, pos->posY, pos->posZ);
+			Matrix R = QuaternionToMatrix(rot->rotation);
+			Matrix S = MatrixScale(scale->scale.x, scale->scale.y, scale->scale.z);
+			Matrix M = MatrixMultiply(MatrixMultiply(S, R), T);
+			model->model.transform = M;
 		}
 
 		modelIt = modelCache->begin<components::ModelComponent>();

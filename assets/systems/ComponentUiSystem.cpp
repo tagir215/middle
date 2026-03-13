@@ -136,10 +136,6 @@ public:
 								ImGui::PopID();
 								ImGui::PopID();
 								ImGui::PopID();
-								auto position = middle::getComponent<components::Position>(shape);
-								if (position) {
-									Vector3 forward = Vector3RotateByQuaternion(middle::ROTATION_FORWARD, *quat);
-								}
 							}
 							else if (field.type == middle::FieldType::Color) {
 								Color* color = static_cast<Color*>(field.value);
