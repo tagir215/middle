@@ -42,6 +42,10 @@ public:
 			gameState->input.grabDown = false;
 			gameState->input.grabReleased = false;
 			gameState->input.grabReleased = false;
+			gameState->input.rotatePressed = false;
+			gameState->input.rotateReleased = false;
+			gameState->input.scaleDown = false;
+			gameState->input.scaleReleased = false;
 			gameState->input.infoClick = false;
 			gameState->input.loopClick = false;
 			gameState->input.selectModeClick = false;
@@ -70,6 +74,10 @@ public:
 				gameState->input.grabDown = IsKeyDown(KEY_G);
 				gameState->input.grabReleased = IsKeyReleased(KEY_G);
 				gameState->input.grabReleased = IsKeyReleased(KEY_G);
+				gameState->input.rotatePressed = IsKeyPressed(KEY_X);
+				gameState->input.rotateReleased = IsKeyReleased(KEY_X);
+				gameState->input.scaleDown = IsKeyDown(KEY_Z);
+				gameState->input.scaleReleased = IsKeyReleased(KEY_Z);
 				gameState->input.infoClick = IsKeyPressed(KEY_I);
 				gameState->input.loopClick = IsKeyPressed(KEY_L);
 				gameState->input.selectModeClick = IsKeyPressed(KEY_ONE);

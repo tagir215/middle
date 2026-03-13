@@ -1,18 +1,15 @@
 #scene
 s  Demonstrointikohtaus
 __q  0_0
-MouseSelectable
 SystemReference
 s  EditorSystem
+MouseSelectable
+MouseGrabbable
 Position
 f  190.211304
 f  200.000000
 f  61.803402
-MouseGrabbable
 MouseIntersectable
-LoopSociety
-q  -1_0
-p  
 Text
 s  EditorSystem
 f  255.000000
@@ -24,19 +21,19 @@ f  0.000000
 f  10.000000
 f  10.000000
 b  1
+LoopSociety
+q  -1_0
+p  
 __q  1_0
-MouseSelectable
 SystemReference
 s  MouseIntersectDetectionSystem
+MouseSelectable
+MouseGrabbable
 Position
 f  165.094376
 f  200.000000
 f  112.888649
-MouseGrabbable
 MouseIntersectable
-LoopSociety
-q  -1_0
-p  
 Text
 s  MouseIntersectDetectionSystem
 f  255.000000
@@ -48,19 +45,19 @@ f  0.000000
 f  10.000000
 f  10.000000
 b  1
+LoopSociety
+q  -1_0
+p  
 __q  2_0
-MouseSelectable
 SystemReference
 s  MouseGrabbingSystem
+MouseSelectable
+MouseGrabbable
 Position
 f  126.602486
 f  200.000000
 f  154.828339
-MouseGrabbable
 MouseIntersectable
-LoopSociety
-q  -1_0
-p  
 Text
 s  MouseGrabbingSystem
 f  255.000000
@@ -72,19 +69,19 @@ f  0.000000
 f  10.000000
 f  10.000000
 b  1
+LoopSociety
+q  -1_0
+p  
 __q  3_0
-MouseSelectable
 SystemReference
 s  MouseSelectionSystem
+MouseSelectable
+MouseGrabbable
 Position
 f  77.854004
 f  200.000000
 f  184.224731
-MouseGrabbable
 MouseIntersectable
-LoopSociety
-q  -1_0
-p  
 Text
 s  MouseSelectionSystem
 f  255.000000
@@ -96,19 +93,19 @@ f  0.000000
 f  10.000000
 f  10.000000
 b  1
+LoopSociety
+q  -1_0
+p  
 __q  4_0
-MouseSelectable
 SystemReference
 s  EnviromentalFileNavigationSystem
+MouseSelectable
+MouseGrabbable
 Position
 f  22.798265
 f  200.000000
 f  198.696350
-MouseGrabbable
 MouseIntersectable
-LoopSociety
-q  -1_0
-p  
 Text
 s  EnviromentalFileNavigationSystem
 f  255.000000
@@ -120,19 +117,19 @@ f  0.000000
 f  10.000000
 f  10.000000
 b  1
+LoopSociety
+q  -1_0
+p  
 __q  5_0
-MouseSelectable
 SystemReference
 s  EditorHotKeySystem
+MouseSelectable
+MouseGrabbable
 Position
 f  -34.104458
 f  200.000000
 f  197.070770
-MouseGrabbable
 MouseIntersectable
-LoopSociety
-q  -1_0
-p  
 Text
 s  EditorHotKeySystem
 f  255.000000
@@ -144,19 +141,19 @@ f  0.000000
 f  10.000000
 f  10.000000
 b  1
+LoopSociety
+q  -1_0
+p  
 __q  6_0
-MouseSelectable
 SystemReference
 s  CameraSystem
+MouseSelectable
+MouseGrabbable
 Position
 f  -88.244225
 f  200.000000
 f  179.479675
-MouseGrabbable
 MouseIntersectable
-LoopSociety
-q  -1_0
-p  
 Text
 s  CameraSystem
 f  255.000000
@@ -168,19 +165,19 @@ f  0.000000
 f  10.000000
 f  10.000000
 b  1
+LoopSociety
+q  -1_0
+p  
 __q  7_0
-MouseSelectable
 SystemReference
 s  MiddlePhysicsSystem
+MouseSelectable
+MouseGrabbable
 Position
 f  -135.235001
 f  200.000000
 f  147.348206
-MouseGrabbable
 MouseIntersectable
-LoopSociety
-q  -1_0
-p  
 Text
 s  MiddlePhysicsSystem
 f  255.000000
@@ -192,19 +189,19 @@ f  0.000000
 f  10.000000
 f  10.000000
 b  1
+LoopSociety
+q  -1_0
+p  
 __q  8_0
-MouseSelectable
 SystemReference
 s  EditorRenderSetupSystem
+MouseSelectable
+MouseGrabbable
 Position
 f  -171.269836
 f  200.000000
 f  103.279449
-MouseGrabbable
 MouseIntersectable
-LoopSociety
-q  -1_0
-p  
 Text
 s  EditorRenderSetupSystem
 f  255.000000
@@ -216,19 +213,19 @@ f  0.000000
 f  10.000000
 f  10.000000
 b  1
+LoopSociety
+q  -1_0
+p  
 __q  9_0
-MouseSelectable
 SystemReference
 s  EditorUiSystem
+MouseSelectable
+MouseGrabbable
 Position
 f  -193.429382
 f  200.000000
 f  50.843632
-MouseGrabbable
 MouseIntersectable
-LoopSociety
-q  -1_0
-p  
 Text
 s  EditorUiSystem
 f  255.000000
@@ -240,19 +237,19 @@ f  0.000000
 f  10.000000
 f  10.000000
 b  1
+LoopSociety
+q  -1_0
+p  
 __q  10_0
-MouseSelectable
 SystemReference
 s  ComponentUiSystem
+MouseSelectable
+MouseGrabbable
 Position
 f  -199.918442
 f  200.000000
 f  -5.711226
-MouseGrabbable
 MouseIntersectable
-LoopSociety
-q  -1_0
-p  
 Text
 s  ComponentUiSystem
 f  255.000000
@@ -264,14 +261,199 @@ f  0.000000
 f  10.000000
 f  10.000000
 b  1
+LoopSociety
+q  -1_0
+p  
 __q  11_0
+MouseIntersectable
+Sphere
+f  2.000000
+MouseGrabbable
+Position
+f  -100.000000
+f  0.000000
+f  -240.000000
+PhysicsData
+f  1.000000
+f  1.000000
+f  1.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.800000
+f  0.800000
+f  0.800000
+f  0.000000
+f  0.000000
+f  0.000000
+b  0
+MouseSelectable
+LoopSociety
+q  -1_0
+p  
+q  20_0
+q  15_0
+GridElement
+ModelComponent
+s  C:\Users\tagir\raylib_projects\middle\assets\models\dinosaur\dinosaur.glb
+Rotation
+r  
+0.000000
+0.700000
+0.700000
+0.000000
+
+Scale
+v  
+1.000000
+1.000000
+1.000000
+__q  12_0
+SystemReference
+s  GridSystem
+MouseSelectable
+Position
+f  -120.087349
+f  0.000031
+f  -97.519371
+MouseGrabbable
+MouseIntersectable
+Text
+s  GridSystem
+f  255.000000
+f  255.000000
+f  255.000000
+f  255.000000
+f  2.000000
+f  0.000000
+f  10.000000
+f  10.000000
+b  1
+LoopSociety
+q  -1_0
+p  
+__q  13_0
+Position
+f  72.129593
+f  0.000061
+f  -60.696899
+MouseGrabbable
+MouseIntersectable
+EditorConfigs
+i  20
+i  8
+Sphere
+f  2.000000
+MouseSelectable
+ConfigComponent
+LoopSociety
+q  -1_0
+p  
+__q  14_0
+MouseSelectable
+SystemReference
+s  GizmoSystem
+MouseGrabbable
+Position
+f  -117.836868
+f  0.000031
+f  -117.836884
+MouseIntersectable
+LoopSociety
+q  -1_0
+p  
+Text
+s  GizmoSystem
+f  255.000000
+f  255.000000
+f  255.000000
+f  255.000000
+f  2.000000
+f  0.000000
+f  10.000000
+f  10.000000
+b  1
+__q  15_0
 Sphere
 f  2.000000
 MouseIntersectable
 Position
-f  40.000000
+f  -200.000000
 f  0.000000
-f  -100.000000
+f  -320.000000
+MouseGrabbable
+PhysicsData
+f  1.000000
+f  1.000000
+f  1.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.800000
+f  0.800000
+f  0.800000
+f  0.000000
+f  0.000000
+f  0.000000
+b  0
+MouseSelectable
+LoopSociety
+q  11_0
+p  
+GridElement
+ModelComponent
+s  C:\Users\tagir\raylib_projects\middle\assets\models\dinosaur\dinosaur.glb
+Rotation
+r  
+0.000000
+0.700000
+0.700000
+0.000000
+
+Scale
+v  
+1.000000
+1.000000
+1.000000
+__q  16_0
+MouseIntersectable
+Sphere
+f  2.000000
+MouseGrabbable
+Position
+f  80.000000
+f  0.000000
+f  -280.000000
+PhysicsData
+f  1.000000
+f  1.000000
+f  1.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.800000
+f  0.800000
+f  0.800000
+f  0.000000
+f  0.000000
+f  0.000000
+b  0
+MouseSelectable
+LoopSociety
+q  -1_0
+p  
+GridElement
+Rectangle
+f  20.000000
+f  20.000000
+__q  17_0
+Sphere
+f  2.000000
+MouseIntersectable
+Position
+f  100.000000
+f  0.000000
+f  -240.000000
 MouseGrabbable
 PhysicsData
 f  1.000000
@@ -292,6 +474,102 @@ LoopSociety
 q  -1_0
 p  
 GridElement
+Rectangle
+f  20.000000
+f  20.000000
+__q  18_0
+MouseIntersectable
+Sphere
+f  2.000000
+MouseGrabbable
+Position
+f  140.000000
+f  0.000000
+f  -260.000000
+PhysicsData
+f  1.000000
+f  1.000000
+f  1.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.800000
+f  0.800000
+f  0.800000
+f  0.000000
+f  0.000000
+f  0.000000
+b  0
+MouseSelectable
+LoopSociety
+q  -1_0
+p  
+GridElement
+Rectangle
+f  20.000000
+f  20.000000
+__q  19_0
+Sphere
+f  2.000000
+MouseIntersectable
+Position
+f  80.000000
+f  0.000000
+f  -220.000000
+MouseGrabbable
+PhysicsData
+f  1.000000
+f  1.000000
+f  1.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.800000
+f  0.800000
+f  0.800000
+f  0.000000
+f  0.000000
+f  0.000000
+b  0
+MouseSelectable
+LoopSociety
+q  -1_0
+p  
+GridElement
+Rectangle
+f  20.000000
+f  20.000000
+__q  20_0
+Sphere
+f  2.000000
+MouseIntersectable
+Position
+f  0.000000
+f  0.000000
+f  -320.000000
+MouseGrabbable
+PhysicsData
+f  1.000000
+f  1.000000
+f  1.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.800000
+f  0.800000
+f  0.800000
+f  0.000000
+f  0.000000
+f  0.000000
+b  0
+MouseSelectable
+LoopSociety
+q  11_0
+p  
+q  24_0
+q  23_0
+q  22_0
+GridElement
 ModelComponent
 s  C:\Users\tagir\raylib_projects\middle\assets\models\dinosaur\dinosaur.glb
 Rotation
@@ -306,68 +584,159 @@ v
 1.000000
 1.000000
 1.000000
-__q  12_0
-MouseSelectable
-SystemReference
-s  GridSystem
-MouseGrabbable
-Position
-f  -120.087349
-f  0.000031
-f  -97.519371
-MouseIntersectable
-LoopSociety
-q  -1_0
-p  
-Text
-s  GridSystem
-f  255.000000
-f  255.000000
-f  255.000000
-f  255.000000
-f  2.000000
-f  0.000000
-f  10.000000
-f  10.000000
-b  1
-__q  13_0
-MouseGrabbable
-Position
-f  72.129593
-f  0.000061
-f  -60.696899
+__q  21_0
 Sphere
 f  2.000000
-EditorConfigs
-i  20
-i  8
 MouseIntersectable
-MouseSelectable
-ConfigComponent
-LoopSociety
-q  -1_0
-p  
-__q  14_0
-SystemReference
-s  GizmoSystem
-MouseSelectable
 Position
-f  -117.836868
-f  0.000031
-f  -117.836884
-MouseGrabbable
-MouseIntersectable
-Text
-s  GizmoSystem
-f  255.000000
-f  255.000000
-f  255.000000
-f  255.000000
-f  2.000000
+f  120.000000
 f  0.000000
-f  10.000000
-f  10.000000
-b  1
+f  -180.000000
+MouseGrabbable
+PhysicsData
+f  1.000000
+f  1.000000
+f  1.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.800000
+f  0.800000
+f  0.800000
+f  0.000000
+f  0.000000
+f  0.000000
+b  0
+MouseSelectable
 LoopSociety
 q  -1_0
 p  
+Rectangle
+f  20.000000
+f  20.000000
+__q  22_0
+MouseIntersectable
+Sphere
+f  2.000000
+MouseGrabbable
+Position
+f  -40.000000
+f  0.000000
+f  -400.000000
+PhysicsData
+f  1.000000
+f  1.000000
+f  1.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.800000
+f  0.800000
+f  0.800000
+f  0.000000
+f  0.000000
+f  0.000000
+b  0
+MouseSelectable
+LoopSociety
+q  20_2
+p  
+GridElement
+ModelComponent
+s  C:\Users\tagir\raylib_projects\middle\assets\models\dinosaur\dinosaur.glb
+Rotation
+r  
+0.000000
+0.700000
+0.700000
+0.000000
+
+Scale
+v  
+1.000000
+1.000000
+1.000000
+__q  23_0
+Sphere
+f  2.000000
+MouseIntersectable
+Position
+f  20.000000
+f  0.000000
+f  -400.000000
+MouseGrabbable
+PhysicsData
+f  1.000000
+f  1.000000
+f  1.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.800000
+f  0.800000
+f  0.800000
+f  0.000000
+f  0.000000
+f  0.000000
+b  0
+MouseSelectable
+LoopSociety
+q  20_2
+p  
+GridElement
+ModelComponent
+s  C:\Users\tagir\raylib_projects\middle\assets\models\dinosaur\dinosaur.glb
+Rotation
+r  
+0.000000
+0.700000
+0.700000
+0.000000
+
+Scale
+v  
+1.000000
+1.000000
+1.000000
+__q  24_0
+MouseIntersectable
+Sphere
+f  2.000000
+MouseGrabbable
+Position
+f  80.000000
+f  0.000000
+f  -400.000000
+PhysicsData
+f  1.000000
+f  1.000000
+f  1.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.800000
+f  0.800000
+f  0.800000
+f  0.000000
+f  0.000000
+f  0.000000
+b  0
+MouseSelectable
+LoopSociety
+q  20_2
+p  
+GridElement
+ModelComponent
+s  C:\Users\tagir\raylib_projects\middle\assets\models\dinosaur\dinosaur.glb
+Rotation
+r  
+0.000000
+0.700000
+0.700000
+0.000000
+
+Scale
+v  
+1.000000
+1.000000
+1.000000

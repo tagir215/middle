@@ -10,7 +10,7 @@ class GizmoRenderSetupSystem : public middle::MiddleGameplaySystem {
 public:
 	GizmoRenderSetupSystem() {
 		systemModeType = middle::SystemModeType::EDITOR;
-		systemUpdateType = middle::SystemUpdateType::PREFRAME;
+		systemUpdateType = middle::SystemUpdateType::RENDERING;
 	}
 	components::CompCache* cache;
 

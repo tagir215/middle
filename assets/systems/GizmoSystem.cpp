@@ -143,7 +143,7 @@ public:
 
 			renderAxis(gameState, gizmoPos, color, axisResult.axis, gizmoRadius);
 
-			if (gameState->input.mouseClicked) {
+			if (gameState->input.rotatePressed) {
 				auto& shape = middle::getShape(gameState, cache->relevantIdVector[i].index);
 				auto comp = middle::attachComponent<components::DragStart>(gameState, shape.id);
 				comp->dragStartPos = gameState->input.mouseXZ_PlanePos;
@@ -175,7 +175,7 @@ public:
 			color.a = 60;
 			renderAxis(gameState, drag->gizmoPos, color, drag->axis, 30);
 
-			if (gameState->input.mouseReleased) {
+			if (gameState->input.rotateReleased) {
 				middle::queueComponentDeletion<components::DragStart>(gameState, draggedCache->relevantIdVector[i]);
 			}
 

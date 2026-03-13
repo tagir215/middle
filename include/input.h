@@ -30,6 +30,10 @@ namespace middle {
 		bool altDown = false;
 		bool grabDown = false;
 		bool grabReleased = false;
+		bool rotatePressed = false;
+		bool rotateReleased = false;
+		bool scaleDown = false;
+		bool scaleReleased = false;
 		bool infoClick = false;
 		bool loopClick = false;
 		bool sphereModeClick = false;
