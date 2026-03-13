@@ -7,10 +7,13 @@
 #include "MouseSelectable.h"
 #include "middle_shape_utils.h"
 #include "middle_math.h"
+#include "DragStart.h"
+#include "component_utils.h"
 
 class GizmoSystem : public middle::MiddleGameplaySystem {
 public:
 	components::CompCache* cache;
+	components::CompCache* draggedCache;
 
 	GizmoSystem() {
 		systemModeType = middle::SystemModeType::EDITOR;
@@ -68,6 +71,19 @@ public:
 		return candidates[bestIndex];
 	}
 
+	void renderAxis(middle::GameState* gameState, const Vector3& gizmoPos, const Color& color, const Vector3& axis, float gizmoRadius) {
+		middle::RenderItem cyl;
+		cyl.type = middle::RenderItemType::CYLINDER;
+		cyl.center = { 0,0,0 };
+		cyl.color = color;
+		cyl.ringRadius = gizmoRadius;
+		cyl.transform.translation = gizmoPos;
+		cyl.length = 0.1f;
+		cyl.transform.scale = { 1,1,1 };
+		cyl.transform.rotation = QuaternionFromVector3ToVector3({ 0,1,0 }, axis);
+		cyl.radius = gizmoRadius;
+		gameState->renderData.push_back(cyl);
+	}
 
 	void init(middle::GameState* gameState) override {
 		cache = middle::newCompCache(gameState);
@@ -75,7 +91,10 @@ public:
 		cache->addType<components::Rotation>();
 		cache->addType<components::Scale>();
 		cache->addType<components::MouseSelectable>();
+		draggedCache = middle::newCompCache(gameState);
+		draggedCache->addType<components::DragStart>();
 	}
+
 	void update(middle::GameState* gameState) override {
 		auto positionIt = cache->begin<components::Position>();
 		auto rotationIt = cache->begin<components::Rotation>();
@@ -121,21 +140,42 @@ public:
 			indicator.color = color;
 			gameState->renderData.push_back(indicator);
 
-			middle::RenderItem cyl;
-			cyl.type = middle::RenderItemType::CYLINDER;
-			cyl.center = { 0,0,0 };
-			cyl.color = color;
-			cyl.ringRadius = gizmoRadius;
-			cyl.transform.translation = gizmoPos;
-			cyl.length = 0.1f;
-			cyl.transform.scale = { 1,1,1 };
-			cyl.transform.rotation = QuaternionFromVector3ToVector3({ 0,1,0 }, axisResult.axis);
-			cyl.radius = gizmoRadius;
-			gameState->renderData.push_back(cyl);
+			renderAxis(gameState, gizmoPos, color, axisResult.axis, gizmoRadius);
 
+			if (gameState->input.mouseClicked) {
+				auto& shape = middle::getShape(gameState, cache->relevantIdVector[i].index);
+				auto comp = middle::attachComponent<components::DragStart>(gameState, shape.id);
+				comp->dragStartPos = gameState->input.mouseXZ_PlanePos;
+				comp->axis = axisResult.axis;
+				comp->axisId = axisResult.resultAxis;
+				comp->gizmoPos = gizmoPos;
+			}
 
 			bool intersectsWithX;
 		}
+
+		auto draggedIt = draggedCache->begin<components::DragStart>();
+		for (int i = 0; i < draggedCache->getSize(); ++i) {
+			auto drag = *draggedIt;
+			float rotateAmount = Vector3Distance(gameState->input.mouseXZ_PlanePos, drag->dragStartPos);
+			Color color;
+			if (drag->axisId == 0) {
+				color = GREEN;
+			}
+			else if (drag->axisId == 1) {
+				color = RED;
+			}
+			else if (drag->axisId == 2) {
+				color = BLUE;
+			}
+			color.a = 60;
+			renderAxis(gameState, drag->gizmoPos, color, drag->axis, 30);
+
+			if (gameState->input.mouseReleased) {
+				middle::queueComponentDeletion<components::DragStart>(gameState, draggedCache->relevantIdVector[i]);
+			}
+		}
+
 	}
 };
 
