@@ -93,6 +93,7 @@ public:
 		cache->addType<components::MouseSelectable>();
 		draggedCache = middle::newCompCache(gameState);
 		draggedCache->addType<components::DragStart>();
+		draggedCache->addType<components::Rotation>();
 	}
 
 	void update(middle::GameState* gameState) override {
@@ -149,16 +150,19 @@ public:
 				comp->axis = axisResult.axis;
 				comp->axisId = axisResult.resultAxis;
 				comp->gizmoPos = gizmoPos;
+				comp->initRotation = rotation->rotation;
 			}
 
 			bool intersectsWithX;
 		}
 
 		auto draggedIt = draggedCache->begin<components::DragStart>();
+		auto rotationIt2 = draggedCache->begin<components::Rotation>();
 		for (int i = 0; i < draggedCache->getSize(); ++i) {
 			auto drag = *draggedIt;
-			float rotateAmount = Vector3Distance(gameState->input.mouseXZ_PlanePos, drag->dragStartPos);
+			auto rotation = *rotationIt2;
 			Color color;
+			Vector3 perpAxis = { 1,0,0 };
 			if (drag->axisId == 0) {
 				color = GREEN;
 			}
@@ -174,6 +178,12 @@ public:
 			if (gameState->input.mouseReleased) {
 				middle::queueComponentDeletion<components::DragStart>(gameState, draggedCache->relevantIdVector[i]);
 			}
+
+			// rotation
+			float rotateDelta = Vector3Subtract(gameState->input.mouseXZ_PlanePos, drag->dragStartPos).x;
+			float scalor = 0.1f;
+			Quaternion axisQuat = QuaternionFromAxisAngle(drag->axis, rotateDelta * scalor);
+			rotation->rotation = QuaternionMultiply(drag->initRotation, axisQuat);
 		}
 
 	}
