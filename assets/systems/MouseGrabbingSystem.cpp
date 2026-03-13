@@ -105,12 +105,14 @@ namespace MouseGrabbingSystem {
 			for (int i = 0; i < placableCache->getSize(); ++i) {
 				auto placable = *placableIt;
 				auto& shape = middle::getShape(gameState, placableCache->relevantIdVector[i].index);
-				middle::queueComponentDeletion<components::PlacementComponent>(gameState, shape.id);
-				std::vector<middle::Id>members;
-				middle::getAllChildren(gameState, shape.id, members);
-				for (middle::Id& childId : members) {
-					middle::Shape& child = middle::getShape(gameState, childId.index);
-					middle::queueComponentDeletion<components::PlacementComponent>(gameState, childId);
+				if (gameState->input.mouseClicked) {
+					middle::queueComponentDeletion<components::PlacementComponent>(gameState, shape.id);
+					std::vector<middle::Id>members;
+					middle::getAllChildren(gameState, shape.id, members);
+					for (middle::Id& childId : members) {
+						middle::Shape& child = middle::getShape(gameState, childId.index);
+						middle::queueComponentDeletion<components::PlacementComponent>(gameState, childId);
+					}
 				}
 
 				if (placable->grabbing) {

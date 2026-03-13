@@ -108,7 +108,7 @@ public:
 			auto scale = *scaleIt;
 			auto selectable = *selectableIt;
 
-			if (selectable->selected) {
+			if (!selectable->selected) {
 				continue;
 			}
 

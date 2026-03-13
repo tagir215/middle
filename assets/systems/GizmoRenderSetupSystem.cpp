@@ -23,9 +23,14 @@ public:
 	void update(middle::GameState* gameState) override {
 		auto rotationIt = cache->begin<components::Rotation>();
 		auto positionIt = cache->begin<components::Position>();
+		auto selectableIt = cache->begin<components::MouseSelectable>();
 		for (int i = 0; i < cache->getSize(); ++i) {
 			auto rotation = *rotationIt;
 			auto position = *positionIt;
+			auto selectable = *selectableIt;
+			if (!selectable->selected) {
+				continue;
+			}
 			Vector3 pos = { position->posX, position->posY, position->posZ };
 			Vector3 forward = Vector3RotateByQuaternion(middle::ROTATION_FORWARD, rotation->rotation);
 			middle::RenderItem rotItem;

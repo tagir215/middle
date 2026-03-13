@@ -462,6 +462,26 @@ namespace middle {
 					*valueptr = *static_cast<std::string*>(ogField.value);
 					break;
 				}
+				case FieldType::Quaternion: {
+					Quaternion* valueptr = static_cast<Quaternion*>(copyField.value);
+					*valueptr = *static_cast<Quaternion*>(ogField.value);
+					break;
+				}
+				case FieldType::Vector3: {
+					Vector3* valueptr = static_cast<Vector3*>(copyField.value);
+					*valueptr = *static_cast<Vector3*>(ogField.value);
+					break;
+				}
+				case FieldType::Vector2: {
+					Vector2* valueptr = static_cast<Vector2*>(copyField.value);
+					*valueptr = *static_cast<Vector2*>(ogField.value);
+					break;
+				}
+				case FieldType::Color: {
+					Color* valueptr = static_cast<Color*>(copyField.value);
+					*valueptr = *static_cast<Color*>(ogField.value);
+					break;
+				}
 				default:
 					assert(true, "not supported");
 				}

@@ -236,9 +236,6 @@ public:
 			if (loop->parentLoopId.index == middle::UNASSIGNED) {
 				middle::queueAction(gameState, std::make_shared<middle::EditorActionDeleteSingle>(grabbedShape.id));
 			}
-			else {
-				middle::queueComponentDeletion<components::PlacementComponent>(gameState, grabbedShape.id);
-			}
 			gameState->bubbleAlgebraState.grabbedId = middle::Id();
 		}
 
