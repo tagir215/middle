@@ -42,8 +42,8 @@ public:
 	};
 
 	const float attractionForce = 20;
-	const float fieldRadius = 20.0f;
-	bool debugField = true;
+	const float fieldRadius = 10.0f;
+	bool debugField = false;
 	void update(middle::GameState* gameState) override {
 		if (debugField) {
 			auto unitIt = unitCache->begin<components::BubbleUnit>();
@@ -52,8 +52,8 @@ public:
 				auto circle = middle::attachComponent<components::Circle>(gameState, shape.id);
 				circle->radius = fieldRadius;
 			}
+			debugField = false;
 		}
-
 
 		std::vector<Bubble>bubbles;
 		auto bubbleIt = bubbleCache->begin<components::BubbleComponent>();
@@ -95,9 +95,39 @@ public:
 		}
 
 		// attraction forces
+		//const float attractionForce = 200;
+		//for (Bubble& bubble : bubbles) {
+		//	for (Unit& unit : bubble.units) {
+		//		float dirX = bubble.pos->posX - unit.pos->posX;
+		//		float dirY = bubble.pos->posY - unit.pos->posY;
+		//		float dirZ = bubble.pos->posZ - unit.pos->posZ;
+		//		Vector3 attractionDir = Vector3Normalize({ dirX, dirY, dirZ });
+		//		Vector3 acc = Vector3Scale(attractionDir, attractionForce);
+		//		unit.physicsData->velX += acc.x * gameState->frameTime;
+		//		unit.physicsData->velY += acc.y * gameState->frameTime;
+		//		unit.physicsData->velZ += acc.z * gameState->frameTime;
+		//	}
+		//}
+
+		// attraction Forces
+		for (std::vector<UnitPair>& pairVector : pairVectors) {
+			for (UnitPair& pair : pairVector) {
+				auto& unitA = pair.unitA;
+				auto& unitB = pair.unitB;
+				Vector3 posA = { unitA.pos->posX, unitA.pos->posY, unitA.pos->posZ };
+				Vector3 posB = { unitB.pos->posX, unitB.pos->posY, unitB.pos->posZ };
+				Vector3 axis = Vector3Normalize(Vector3Subtract(posB, posA));
+				Vector3 acc = Vector3Scale(axis, -attractionForce * gameState->frameTime);
+				unitA.physicsData->velX -= acc.x;
+				unitA.physicsData->velZ -= acc.z;
+				unitB.physicsData->velX += acc.x;
+				unitB.physicsData->velZ += acc.z;
+			}
+		}
+
 		const float inverseTime = 1.0f / gameState->frameTime;
 		// forces between units
-		for (int iteration = 0; iteration < 30; ++iteration) {
+		for (int iteration = 0; iteration < 8; ++iteration) {
 			for (std::vector<UnitPair>& pairVector : pairVectors) {
 				for (UnitPair& pair : pairVector) {
 					auto& unitA = pair.unitA;
@@ -112,9 +142,6 @@ public:
 
 					Vector3 impulse = { 0,0,0 };
 
-					// attraction force
-					impulse += Vector3Scale(axis, -attractionForce);
-
 					// repulsive force
 					if (dist < fieldRadius * 2) {
 						float targetRelVel = 0;
@@ -124,17 +151,9 @@ public:
 
 					Vector3 acc = Vector3Scale(impulse, gameState->frameTime);
 					unitA.physicsData->velX -= acc.x;
-					unitA.physicsData->velY -= acc.y;
 					unitA.physicsData->velZ -= acc.z;
 					unitB.physicsData->velX += acc.x;
-					unitB.physicsData->velY += acc.y;
 					unitB.physicsData->velZ += acc.z;
-
-						velA = { unitA.physicsData->velX, unitA.physicsData->velY, unitA.physicsData->velZ };
-						velB = { unitB.physicsData->velX, unitB.physicsData->velY, unitB.physicsData->velZ };
-						axis = Vector3Normalize(Vector3Subtract(posB, posA));
-						relVel = Vector3DotProduct(Vector3Subtract(velB, velA), axis);
-						int a = 0;
 				}
 			}
 		}
@@ -152,7 +171,8 @@ public:
 			pos->posZ += physics->velZ * gameState->frameTime;
 		}
 
-		for (int iteration = 0; iteration < 1; ++iteration) {
+		const float stiffness = 0.2f;
+		for (int iteration = 0; iteration < 8; ++iteration) {
 			for (std::vector<UnitPair>& pairVector : pairVectors) {
 				for (UnitPair& pair : pairVector) {
 					auto& unitA = pair.unitA;
@@ -161,16 +181,12 @@ public:
 					Vector3 posB = { unitB.pos->posX, unitB.pos->posY, unitB.pos->posZ };
 					Vector3 axis = Vector3Normalize(Vector3Subtract(posB, posA));
 					float dist = Vector3Distance(posA, posB);
-					float penetration = (fieldRadius - dist) * 0.5f;
-					if (dist < fieldRadius) {
-						float penetration = fieldRadius - dist;
-						Vector3 correction = Vector3Scale(axis, penetration * 0.5f);
-
+					float penetration = (fieldRadius * 2 - dist);
+					if (penetration > 0) {
+						Vector3 correction = Vector3Scale(axis, penetration * 0.5f * stiffness);
 						unitA.pos->posX -= correction.x;
-						unitA.pos->posY -= correction.y;
 						unitA.pos->posZ -= correction.z;
 						unitB.pos->posX += correction.x;
-						unitB.pos->posY += correction.y;
 						unitB.pos->posZ += correction.z;
 					}
 

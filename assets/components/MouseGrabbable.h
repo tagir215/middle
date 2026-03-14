@@ -1,7 +1,7 @@
 #pragma once
 #include "registrars.h"
 #include "editor_file_utils.h"
-# define MIDDLEMOUSEGRABBABLE(X)
+# define MIDDLEMOUSEGRABBABLE(X) 
 
 namespace components {
 	struct MouseGrabbable : public middle::Serializable{

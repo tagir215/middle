@@ -10,6 +10,7 @@
 #include "editor_actions.h"
 #include "GridElement.h"
 #include "component_utils.h"
+#include "MouseSelectable.h"
 
 namespace MouseGrabbingSystem {
 
@@ -28,6 +29,7 @@ namespace MouseGrabbingSystem {
 			grabbableCache = middle::newCompCache(gameState);
 			grabbableCache->addType<components::MouseGrabbable>();
 			grabbableCache->addType<components::Position>();
+			grabbableCache->addType<components::MouseSelectable>();
 			placableCache = middle::newCompCache(gameState);
 			placableCache->addType<components::PlacementComponent>();
 			placableCache->addType<components::Position>();
@@ -84,12 +86,14 @@ namespace MouseGrabbingSystem {
 
 			auto grabbableIt = grabbableCache->begin<components::MouseGrabbable>();
 			auto positionIt = grabbableCache->begin<components::Position>();
+			auto selectableIt = grabbableCache->begin<components::MouseSelectable>();
 			for (int i = 0; i < grabbableCache->getSize(); ++i) {
 				auto& shape = middle::getShape(gameState, grabbableCache->relevantIdVector[i].index);
 				auto grabbable = *grabbableIt;
 				auto position = *positionIt;
+				auto selectable = *selectableIt;
 
-				if (grabbable && middle::isShapeSelected(gameState, i) && gameState->input.grabDown) {
+				if (grabbable && selectable->selected && gameState->input.grabDown) {
 					grabbable->grabbing = true;
 				}
 				else if (grabbable && !gameState->input.grabDown) {
