@@ -232,6 +232,9 @@ public:
 
 	void update(middle::GameState* gameState) override {
 
+		// 
+		return;
+
 		std::vector<middle::Id> shapeList;
 
 		middle::loopInstances(gameState, [gameState, &shapeList, this](int i, middle::Shape& shape) {
