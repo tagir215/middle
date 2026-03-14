@@ -11,7 +11,7 @@ class MiddlePhysicsSystem : public middle::MiddleGameplaySystem {
 public:
 	MiddlePhysicsSystem() {
 		systemUpdateType = middle::SystemUpdateType::GAMEPLAY_POSTFRAME;
-		systemModeType = middle::SystemModeType::ENGINE;
+		systemModeType = middle::SystemModeType::EDITOR;
 	}
 
 	components::CompCache* physicsCache;

@@ -43,8 +43,8 @@ namespace MouseGrabbingSystem {
 				float yDistance = std::abs(cameraPos.y);
 				if (yDistance == 0)
 					yDistance = 0.001f;
-				Vector3 xzVel = Vector3Scale(gameState->input.mouseXZ_PlaneVelocity, objYDistance / yDistance);
-				dragShape(gameState, shape.id.index, xzVel);
+				Vector3 xzVel = Vector3Scale(gameState->input.mouseXZ_PlaneVelocity * gameState->frameTime, objYDistance / yDistance);
+				middle::moveShape(gameState, shape.id.index, xzVel);
 			}
 			else {
 				Vector3 targetPos = gameState->input.mouseXZ_PlanePos;

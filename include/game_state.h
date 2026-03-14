@@ -167,6 +167,8 @@ namespace middle {
 		bool reset = false;
 		bool loaded = false;
 		bool quit = false;
+
+		const char* workingDir;
 		std::vector<RenderItem>renderData;
 		std::vector<PhysicsBody>physicsBodies;
 		std::vector<std::function<void()>>uiSetups;

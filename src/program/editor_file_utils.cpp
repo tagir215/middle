@@ -506,6 +506,7 @@ namespace middle {
 	}
 
 	void loadScene(GameState* gameState, const std::string& folder, const std::string& sceneName, bool import, const Vector3& pos, int sceneReferenceIndex) {
+
 		std::string path = folder + sceneName + ".midsc";
 
 		int indexOffset = 0;
