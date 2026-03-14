@@ -75,12 +75,12 @@ public:
 			for (Body& body : bubble.bodies) {
 				Vector3 bodyPos = { body.pos->posX, body.pos->posY, body.pos->posZ };
 				float dist = Vector3Distance(bubblePos, bodyPos);
-				if (dist > bubbleBody.radius) {
+				if (dist > bubbleBody.radius - body.radius) {
 					Collision collision;
 					collision.axis = Vector3Normalize(Vector3Subtract(bubblePos, bodyPos));
 					collision.bodyA = body;
 					collision.bodyB = bubbleBody;
-					collision.penetration = bubbleBody.radius - dist;
+					collision.penetration = bubbleBody.radius - dist - body.radius;
 					results.push_back(collision);
 				}
 			}
