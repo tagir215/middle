@@ -9,21 +9,30 @@
 #include "component_utils.h"
 #include "Circle.h"
 #include "LoopSociety.h"
+#include "BubbleMultiplyComponent.h"
 
 class BubblePhysics : public middle::MiddleGameplaySystem {
 public:
-	components::CompCache* bodyCache;
+	components::CompCache* unitCache;
 	components::CompCache* bubbleCache;
+	components::CompCache* mulCache;
 
 	void init(middle::GameState* gameState) override {
-		bodyCache = middle::newCompCache(gameState);
-		bodyCache->addType<components::Position>();
-		bodyCache->addType<components::PhysicsData>();
+		unitCache = middle::newCompCache(gameState);
+		unitCache->addType<components::Position>();
+		unitCache->addType<components::PhysicsData>();
+		unitCache->addType<components::BubbleUnit>();
+
 		bubbleCache = middle::newCompCache(gameState);
 		bubbleCache->addType<components::BubbleComponent>();
 		bubbleCache->addType<components::Position>();
 		bubbleCache->addType<components::PhysicsData>();
 		bubbleCache->addType<components::Circle>();
+		bubbleCache->addType<components::LoopSociety>();
+
+		mulCache = middle::newCompCache(gameState);
+		mulCache->addType<components::BubbleMultiplyComponent>();
+		mulCache->addType<components::LoopSociety>();
 	}
 
 	struct Body {
@@ -48,6 +57,11 @@ public:
 		Body bodyB;
 		Vector3 axis;
 		float penetration;
+	};
+
+	struct MoleculeConstraint {
+		std::vector<Body>bodies;
+		std::vector<float>targetDistances;
 	};
 
 	void findSiblingCollisions(std::vector<std::vector<BodyPair>>& pairVectors, std::vector<Collision>& results) {
@@ -112,15 +126,62 @@ public:
 		bodyB.physicsData->velZ += acc.z * bodyB.physicsData->invMass;
 	}
 
+	void solveMoleculeConstraint(MoleculeConstraint& constraint, float frameTime, float inverseTime) {
+		for (int i = 1; i < constraint.bodies.size(); ++i) {
+			Body& bodyA = constraint.bodies[i - 1];
+			Body& bodyB = constraint.bodies[i];
+			Vector3 posA = { bodyA.pos->posX, bodyA.pos->posY, bodyA.pos->posZ };
+			Vector3 posB = { bodyB.pos->posX, bodyB.pos->posY, bodyB.pos->posZ };
+			Vector3 velA = { bodyA.physicsData->velX, bodyA.physicsData->velY, bodyA.physicsData->velZ };
+			Vector3 velB = { bodyB.physicsData->velX, bodyB.physicsData->velY, bodyB.physicsData->velZ };
+			Vector3 axis = Vector3Normalize(Vector3Subtract(posB, posA));
+			float dist = Vector3Distance(posA, posB);
+			float relVel = Vector3DotProduct(Vector3Subtract(velB, velA), axis);
+			float error = constraint.targetDistances[i - 1] - dist;
+			float eMass = 1.0f / (bodyA.physicsData->invMass + bodyB.physicsData->invMass);
+			float targetRelVel = 0;
+			float impulseMag = (targetRelVel - relVel) * eMass;
+
+			Vector3 impulse = Vector3Scale(axis, impulseMag);
+			const float stiffness = 0.8f;
+			Vector3 bias = Vector3Scale(axis, error * inverseTime * stiffness * eMass);
+			impulse += bias;
+
+			Vector3 acc = Vector3Scale(impulse, frameTime);
+			bodyA.physicsData->velX -= acc.x * bodyA.physicsData->invMass;
+			bodyA.physicsData->velZ -= acc.z * bodyA.physicsData->invMass;
+			bodyB.physicsData->velX += acc.x * bodyB.physicsData->invMass;
+			bodyB.physicsData->velZ += acc.z * bodyB.physicsData->invMass;
+		}
+	}
+
+	void integrate(float frameTime, components::CompCache* cache) {
+		// integrating
+		const float damping = 0.2f;
+		auto posIt = cache->begin<components::Position>();
+		auto physicsIt = cache->begin<components::PhysicsData>();
+		for (int i = 0; i < cache->getSize(); ++i) {
+			auto pos = *posIt;
+			auto physics = *physicsIt;
+			pos->posX += physics->velX * frameTime;
+			pos->posY += physics->velY * frameTime;
+			pos->posZ += physics->velZ * frameTime;
+			physics->velX -= physics->velX * damping;
+			physics->velY -= physics->velY * damping;
+			physics->velZ -= physics->velZ * damping;
+		}
+
+	}
+
 	const float attractionForce = 20;
 	const float fieldRadius = 10.0f;
-	bool debugField = true;
+	bool debugField = false;
 	bool inverses = true;
 
 	void update(middle::GameState* gameState) override {
 		if (debugField) {
-			for (int i = 0; i < bodyCache->getSize(); ++i) {
-				auto& shape = middle::getShape(gameState, bodyCache->relevantIdVector[i].index);
+			for (int i = 0; i < unitCache->getSize(); ++i) {
+				auto& shape = middle::getShape(gameState, unitCache->relevantIdVector[i].index);
 				if (!middle::getComponent<components::BubbleUnit>(shape)) {
 					continue;
 				}
@@ -131,30 +192,45 @@ public:
 		}
 
 		if (inverses) {
-			auto inverseIt = bodyCache->begin<components::PhysicsData>();
-			for (int i = 0; i < bodyCache->getSize(); ++i) {
+			auto inverseIt = unitCache->begin<components::PhysicsData>();
+			for (int i = 0; i < unitCache->getSize(); ++i) {
 				auto physics = *inverseIt;
 				physics->invMass = 1.0f / physics->mass;
 			}
 		}
 
 
+		// COLLECT BUBBLES
 
 		std::vector<Bubble>bubbles;
 		auto bubbleIt = bubbleCache->begin<components::BubbleComponent>();
 		auto bubblePosIt = bubbleCache->begin<components::Position>();
 		auto circleIt = bubbleCache->begin<components::Circle>();
 		auto physicsIt = bubbleCache->begin<components::PhysicsData>();
+		auto bubbleLoopIt = bubbleCache->begin<components::LoopSociety>();
 		for (int i = 0; i < bubbleCache->getSize(); ++i) {
 			auto bubble = *bubbleIt;
 			auto bubblePos = *bubblePosIt;
 			auto circle = *circleIt;
 			auto bubblePhysics = *physicsIt;
+			auto loop = *bubbleLoopIt;
 			auto& bubbleShape = middle::getShape(gameState, bubbleCache->relevantIdVector[i].index);
-			std::vector<middle::Id>children;
-			middle::getChildrenWithComp(gameState, bubbleShape.id, children, middle::getTypeId<components::PhysicsData>());
+
+			std::vector<middle::Id> interactingChildren;
+			for (middle::Id& id : loop->loopMemberIds) {
+				auto& childShape = middle::getShape(gameState, id.index);
+				if (middle::getComponent<components::BubbleMultiplyComponent>(childShape)) {
+					std::vector<middle::Id>mulChildren;
+					middle::getAllChildrenWithComp(gameState, id, mulChildren, middle::getTypeId<components::PhysicsData>());
+					interactingChildren.insert(interactingChildren.end(), mulChildren.begin(), mulChildren.end());
+				}
+				else if (middle::getComponent<components::PhysicsData>(childShape)) {
+					interactingChildren.push_back(id);
+				}
+			}
+
 			std::vector<Body>bodies;
-			for (middle::Id& childId : children) {
+			for (middle::Id& childId : interactingChildren) {
 				auto& childShape = middle::getShape(gameState, childId.index);
 				auto position = middle::getComponent<components::Position>(childShape);
 				auto physics = middle::getComponent<components::PhysicsData>(childShape);
@@ -178,32 +254,63 @@ public:
 				});
 		}
 
+		// COLLECT MOLECULE CONSTRAINTS
+		std::vector<MoleculeConstraint>moleculeConstraints;
+		auto mulLoopIt = mulCache->begin<components::LoopSociety>();
+		for (int i = 0; i < mulCache->getSize(); ++i) {
+			auto loop = *mulLoopIt;
+			MoleculeConstraint moleculeConstraint;
+			float prevRadius = -1;
+			for (int j = 0; j < loop->loopMemberIds.size(); ++j) {
+				auto& childShape = middle::getShape(gameState, loop->loopMemberIds[j].index);
+				auto position = middle::getComponent<components::Position>(childShape);
+				auto physics = middle::getComponent<components::PhysicsData>(childShape);
+				auto childCircle = middle::getComponent<components::Circle>(childShape);
+				Body body;
+				body.id = childShape.id;
+				body.physicsData = physics;
+				body.pos = position;
+				moleculeConstraint.bodies.push_back(body);
+				if (j > 0) {
+					const float targetSeparation = 5;
+					moleculeConstraint.targetDistances.push_back(prevRadius + targetSeparation + childCircle->radius);
+				}
+				prevRadius = childCircle->radius;
+			}
+			moleculeConstraints.push_back(moleculeConstraint);
+		}
+
+
+		// CREATE COLLISION PAIRS
+
+		// pairs within bubbles
 		std::vector<std::vector<BodyPair>>pairVectors;
 		for (auto& bubble : bubbles) {
 			std::vector<BodyPair>pairs;
-			for (int i = 0; i < bubble.bodies.size(); ++i) {
-				for (int j = i + 1; j < bubble.bodies.size(); ++j) {
-					pairs.push_back({ bubble.bodies[i], bubble.bodies[j] });
+			for (int x = 0; x < bubble.bodies.size(); ++x) {
+				for (int y = x + 1; y < bubble.bodies.size(); ++y) {
+					pairs.push_back({ bubble.bodies[x], bubble.bodies[y] });
 				}
 			}
 			pairVectors.push_back(pairs);
 		}
 
+
 		// attraction forces
-		//const float attractionForce = 200;
-		//for (Bubble& bubble : bubbles) {
-		//	Body& bubbleBody = bubble.bubbleBody;
-		//	for (Body& unit : bubble.bodies) {
-		//		float dirX = bubbleBody.pos->posX - unit.pos->posX;
-		//		float dirY = bubbleBody.pos->posY - unit.pos->posY;
-		//		float dirZ = bubbleBody.pos->posZ - unit.pos->posZ;
-		//		Vector3 attractionDir = Vector3Normalize({ dirX, dirY, dirZ });
-		//		Vector3 acc = Vector3Scale(attractionDir, attractionForce);
-		//		unit.physicsData->velX += acc.x * gameState->frameTime;
-		//		unit.physicsData->velY += acc.y * gameState->frameTime;
-		//		unit.physicsData->velZ += acc.z * gameState->frameTime;
-		//	}
-		//}
+		const float attractionForce = 200;
+		for (Bubble& bubble : bubbles) {
+			Body& bubbleBody = bubble.bubbleBody;
+			for (Body& unit : bubble.bodies) {
+				float dirX = bubbleBody.pos->posX - unit.pos->posX;
+				float dirY = bubbleBody.pos->posY - unit.pos->posY;
+				float dirZ = bubbleBody.pos->posZ - unit.pos->posZ;
+				Vector3 attractionDir = Vector3Normalize({ dirX, dirY, dirZ });
+				Vector3 acc = Vector3Scale(attractionDir, attractionForce);
+				unit.physicsData->velX += acc.x * gameState->frameTime;
+				unit.physicsData->velY += acc.y * gameState->frameTime;
+				unit.physicsData->velZ += acc.z * gameState->frameTime;
+			}
+		}
 
 		// attraction Forces
 		//for (std::vector<BodyPair>& pairVector : pairVectors) {
@@ -231,18 +338,13 @@ public:
 			for (Collision& collision : collisions) {
 				solveVelocity(collision, gameState->frameTime, inverseTime);
 			}
+			for (MoleculeConstraint& constraint : moleculeConstraints) {
+				solveMoleculeConstraint(constraint, gameState->frameTime, inverseTime);
+			}
 		}
 
-		// integrating
-		auto unitPosIt = bodyCache->begin<components::Position>();
-		auto unitPhysicsIt = bodyCache->begin<components::PhysicsData>();
-		for (int i = 0; i < bodyCache->getSize(); ++i) {
-			auto pos = *unitPosIt;
-			auto physics = *unitPhysicsIt;
-			pos->posX += physics->velX * gameState->frameTime;
-			pos->posY += physics->velY * gameState->frameTime;
-			pos->posZ += physics->velZ * gameState->frameTime;
-		}
+		integrate(gameState->frameTime, bubbleCache);
+		integrate(gameState->frameTime, unitCache);
 
 		//const float stiffness = 0.2f;
 		//for (int iteration = 0; iteration < 8; ++iteration) {

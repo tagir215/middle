@@ -7,6 +7,7 @@
 #include "component_utils.h"
 #include "Position.h"
 #include "PhysicsData.h"
+#include "BubbleUnit.h"
 
 class NewBubbleOutlineSystem : public middle::MiddleGameplaySystem {
 public:
@@ -38,14 +39,21 @@ public:
 			auto circle = *circleIt;
 			auto& shape = middle::getShape(gameState, circfullCache->relevantIdVector[i].index);
 			std::vector<middle::Id>children;
-			middle::getChildrenWithComp(gameState, shape.id, children, middle::getTypeId<components::Circle>());
+			middle::getAllChildrenWithComp(gameState, shape.id, children, middle::getTypeId<components::Circle>());
 			float totalArea = 0;
 			for (middle::Id& childId : children) {
-				auto& shape = middle::getShape(gameState, childId.index);
-				auto childCircle = middle::getComponent<components::Circle>(shape);
-				totalArea += childCircle->radius * 4;
+				auto& childShape = middle::getShape(gameState, childId.index);
+				auto childCircle = middle::getComponent<components::Circle>(childShape);
+				if (childCircle) {
+					totalArea += childCircle->radius * 4;
+				}
+				auto bubbleUnit = middle::getComponent<components::BubbleUnit>(childShape);
+				if(bubbleUnit){
+					const float fieldRadius = 10;
+					totalArea += fieldRadius;
+				}
 			}
-			const float margin =10;
+			const float margin = 10;
 			circle->radius = totalArea / 4 + margin;
 			if (circle->radius < startingRadius) {
 				//circle->radius = startingRadius;

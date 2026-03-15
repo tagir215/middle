@@ -5,6 +5,7 @@
 #include <stack>
 #include "component_utils.h"
 #include "BubbleRef.h"
+#include "Circle.h"
 
 namespace bubbleActions {
 
@@ -231,6 +232,9 @@ namespace bubbleActions {
 		middle::addComponent<components::MouseIntersectable>(newBubbleShape);
 		middle::addComponent<components::LoopTag>(newBubbleShape);
 		middle::addComponent<components::LoopSociety>(newBubbleShape);
+		middle::addComponent<components::PhysicsData>(newBubbleShape);
+		auto circle = middle::addComponent<components::Circle>(newBubbleShape);
+		circle->radius = 10;
 		auto position = middle::addComponent<components::Position>(newBubbleShape);
 		position->posX = targetPos.x;
 		position->posY = targetPos.y;

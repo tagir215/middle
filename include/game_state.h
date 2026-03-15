@@ -149,6 +149,7 @@ namespace middle {
 		Vector2 mouseDragPos;
 		Matrix oldWorldM;
 		Matrix screenOrientorM;
+		Vector3 mouseIntersectTopPosition;
 		int activeScene = 0;
 		int vertexIndex = 0;
 		int loopIndex = 0;
