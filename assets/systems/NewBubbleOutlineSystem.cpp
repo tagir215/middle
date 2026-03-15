@@ -5,6 +5,8 @@
 #include "BubbleComponent.h"
 #include "Circle.h"
 #include "component_utils.h"
+#include "Position.h"
+#include "PhysicsData.h"
 
 class NewBubbleOutlineSystem : public middle::MiddleGameplaySystem {
 public:
@@ -18,6 +20,7 @@ public:
 		circfullCache = middle::newCompCache(gameState);
 		circfullCache->addType<components::BubbleComponent>();
 		circfullCache->addType<components::Circle>();
+		circfullCache->addType<components::PhysicsData>();
 	}
 
 	const float startingRadius = 30;
@@ -29,13 +32,36 @@ public:
 			circle->radius = startingRadius;
 		}
 
-		auto bubbleIt = circfullCache->begin<components::BubbleComponent>();
+		// calculate bubble size
 		auto circleIt = circfullCache->begin<components::Circle>();
 		for (int i = 0; i < circfullCache->getSize(); ++i) {
-			auto bubble = *bubbleIt;
 			auto circle = *circleIt;
+			auto& shape = middle::getShape(gameState, circfullCache->relevantIdVector[i].index);
+			std::vector<middle::Id>children;
+			middle::getChildrenWithComp(gameState, shape.id, children, middle::getTypeId<components::Circle>());
+			float totalArea = 0;
+			for (middle::Id& childId : children) {
+				auto& shape = middle::getShape(gameState, childId.index);
+				auto childCircle = middle::getComponent<components::Circle>(shape);
+				totalArea += childCircle->radius * 4;
+			}
+			const float margin =10;
+			circle->radius = totalArea / 4 + margin;
+			if (circle->radius < startingRadius) {
+				//circle->radius = startingRadius;
+			}
 		}
 
+	
+		// update bubble masses based on area
+		circleIt = circfullCache->begin<components::Circle>();
+		auto physicsIt = circfullCache->begin<components::PhysicsData>();
+		for (int i = 0; i < circfullCache->getSize(); ++i) {
+			auto circle = *circleIt;
+			auto physics = *physicsIt;
+			physics->mass = circle->radius * circle->radius * PI;
+			physics->invMass = 1.0f / physics->mass;
+		}
 	}
 };
 

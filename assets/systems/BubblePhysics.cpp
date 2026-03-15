@@ -78,16 +78,16 @@ public:
 				if (dist > bubbleBody.radius - body.radius) {
 					Collision collision;
 					collision.axis = Vector3Normalize(Vector3Subtract(bubblePos, bodyPos));
-					collision.bodyA = body;
-					collision.bodyB = bubbleBody;
-					collision.penetration = bubbleBody.radius - dist - body.radius;
+					collision.bodyA = bubbleBody;
+					collision.bodyB = body;
+					collision.penetration = dist - bubbleBody.radius + body.radius;
 					results.push_back(collision);
 				}
 			}
 		}
 	}
 
-	void solveVelocity(middle::GameState* gameState, Collision& collision, float inverseTime) {
+	void solveVelocity(Collision& collision, float frameTime, float inverseTime) {
 		Body& bodyA = collision.bodyA;
 		Body& bodyB = collision.bodyB;
 		Vector3 axis = collision.axis;
@@ -100,12 +100,12 @@ public:
 		float eMass = 1.0f / (bodyA.physicsData->invMass + bodyB.physicsData->invMass);
 		float targetRelVel = 0;
 		float impulseMag = (targetRelVel - relVel) * eMass;
-		Vector3 impulse = Vector3Scale(axis, impulseMag * inverseTime);
+		Vector3 impulse = Vector3Scale(axis, impulseMag);
 		const float biasFactor = 0.2f;
-		Vector3 bias = Vector3Scale(axis, collision.penetration * inverseTime * inverseTime * biasFactor);
+		Vector3 bias = Vector3Scale(axis, collision.penetration * inverseTime * biasFactor * eMass);
 		impulse += bias;
 
-		Vector3 acc = Vector3Scale(impulse, gameState->frameTime);
+		Vector3 acc = Vector3Scale(impulse, frameTime);
 		bodyA.physicsData->velX -= acc.x * bodyA.physicsData->invMass;
 		bodyA.physicsData->velZ -= acc.z * bodyA.physicsData->invMass;
 		bodyB.physicsData->velX += acc.x * bodyB.physicsData->invMass;
@@ -115,6 +115,7 @@ public:
 	const float attractionForce = 20;
 	const float fieldRadius = 10.0f;
 	bool debugField = true;
+	bool inverses = true;
 
 	void update(middle::GameState* gameState) override {
 		if (debugField) {
@@ -128,6 +129,16 @@ public:
 			}
 			debugField = false;
 		}
+
+		if (inverses) {
+			auto inverseIt = bodyCache->begin<components::PhysicsData>();
+			for (int i = 0; i < bodyCache->getSize(); ++i) {
+				auto physics = *inverseIt;
+				physics->invMass = 1.0f / physics->mass;
+			}
+		}
+
+
 
 		std::vector<Bubble>bubbles;
 		auto bubbleIt = bubbleCache->begin<components::BubbleComponent>();
@@ -155,7 +166,6 @@ public:
 					physics,
 					radius,
 					});
-
 			}
 			bubbles.push_back({
 				{
@@ -196,20 +206,20 @@ public:
 		//}
 
 		// attraction Forces
-		for (std::vector<BodyPair>& pairVector : pairVectors) {
-			for (BodyPair& pair : pairVector) {
-				auto& unitA = pair.bodyA;
-				auto& unitB = pair.bodyB;
-				Vector3 posA = { unitA.pos->posX, unitA.pos->posY, unitA.pos->posZ };
-				Vector3 posB = { unitB.pos->posX, unitB.pos->posY, unitB.pos->posZ };
-				Vector3 axis = Vector3Normalize(Vector3Subtract(posB, posA));
-				Vector3 acc = Vector3Scale(axis, -attractionForce * gameState->frameTime);
-				unitA.physicsData->velX -= acc.x;
-				unitA.physicsData->velZ -= acc.z;
-				unitB.physicsData->velX += acc.x;
-				unitB.physicsData->velZ += acc.z;
-			}
-		}
+		//for (std::vector<BodyPair>& pairVector : pairVectors) {
+		//	for (BodyPair& pair : pairVector) {
+		//		auto& unitA = pair.bodyA;
+		//		auto& unitB = pair.bodyB;
+		//		Vector3 posA = { unitA.pos->posX, unitA.pos->posY, unitA.pos->posZ };
+		//		Vector3 posB = { unitB.pos->posX, unitB.pos->posY, unitB.pos->posZ };
+		//		Vector3 axis = Vector3Normalize(Vector3Subtract(posB, posA));
+		//		Vector3 acc = Vector3Scale(axis, -attractionForce * gameState->frameTime);
+		//		unitA.physicsData->velX -= acc.x;
+		//		unitA.physicsData->velZ -= acc.z;
+		//		unitB.physicsData->velX += acc.x;
+		//		unitB.physicsData->velZ += acc.z;
+		//	}
+		//}
 
 		std::vector<Collision>collisions;
 		findSiblingCollisions(pairVectors, collisions);
@@ -219,7 +229,7 @@ public:
 		// forces between units
 		for (int iteration = 0; iteration < 8; ++iteration) {
 			for (Collision& collision : collisions) {
-				solveVelocity(gameState, collision, inverseTime);
+				solveVelocity(collision, gameState->frameTime, inverseTime);
 			}
 		}
 

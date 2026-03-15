@@ -28,6 +28,7 @@ public:
 	void update(middle::GameState* gameState) override {
 
 		// create pairs
+		return;
 
 		std::vector<Constraint> constraints;
 		std::vector<BodyPair> pairs;

@@ -398,7 +398,6 @@ public:
 				while (arcTravelled < arcLength) {
 					nextPos = centerLineEnd + dirVec;
 					middle::Shape& outlineShape = newNodeShape(gameState, nextPos);
-
 					dirVec = Vector3RotateByAxisAngle(dirVec, rotateAxis, -angleBetweenNodes);
 					arcTravelled += angleBetweenNodes * bubbleEndPointRadius;
 					middle::EditorActionReparent(outlineContainer.id.index, outlineShape.id.index).execute(gameState);
@@ -428,7 +427,6 @@ public:
 					if (iB < 0) {
 						iB = nodes.size() - 1;
 					}
-
 					auto& idA = nodes[iA];
 					auto& idB = nodes[iB];
 					Vector3 posA = middle::getShapePosition(gameState, idA.index);
