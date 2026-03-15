@@ -13,6 +13,7 @@
 #include "MouseIntersectable.h"
 #include "bubble_utils.h"
 #include "BubbleRef.h"
+#include "Circle.h"
 
 class BubbleRenderSetup : public middle::MiddleGameplaySystem {
 
@@ -27,6 +28,7 @@ public:
 		bubbleCache->addType<components::BubbleComponent>();
 		mulCache = middle::newCompCache(gameState);
 		mulCache->addType<components::BubbleMultiplyComponent>();
+		mulCache->addType<components::LoopSociety>();
 		fractionCache = middle::newCompCache(gameState);
 		fractionCache->addType<components::FractionalComponent>();
 		unitCache = middle::newCompCache(gameState);
@@ -162,17 +164,27 @@ public:
 
 			// render muls
 			auto mulIt = mulCache->begin<components::BubbleMultiplyComponent>();
+			auto mulLoopIt = mulCache->begin<components::LoopSociety>();
 			for (int i = 0; i < mulCache->getSize(); ++i) {
 				auto multiplyComponent = *mulIt;
-				auto& shape = middle::getShape(gameState, mulCache->relevantIdVector[i].index);
-
-				auto pos = middle::getComponent<components::Position>(shape);
-				middle::RenderItem multiplyItem;
-				multiplyItem.center = { pos->posX, pos->posY, pos->posZ };
-				multiplyItem.text = "X";
-				multiplyItem.fontSize = 20;
-				multiplyItem.type = middle::RenderItemType::TEXT;
-				gameState->renderData.push_back(multiplyItem);
+				auto loop = *mulLoopIt;
+				for (int x = 1; x < loop->loopMemberIds.size(); ++x) {
+					auto& shapeA = middle::getShape(gameState, loop->loopMemberIds[x-1].index);
+					auto& shapeB = middle::getShape(gameState, loop->loopMemberIds[x].index);
+					auto positionA = middle::getComponent<components::Position>(shapeA);
+					auto positionB = middle::getComponent<components::Position>(shapeB);
+					auto circleA = middle::getComponent<components::Circle>(shapeA);
+					auto circleB = middle::getComponent<components::Circle>(shapeB);
+					Vector3 posA = { positionA->posX, positionA->posY, positionA->posZ };
+					Vector3 posB = { positionB->posX, positionB->posY, positionB->posZ };
+					Vector3 axis = Vector3Normalize(Vector3Subtract(posB, posA));
+					middle::RenderItem line;
+					line.type = middle::RenderItemType::LINE;
+					line.linePointA = posA + Vector3Scale(axis, circleA->radius);
+					line.linePointB = posB + Vector3Scale(axis, -circleB->radius);
+					line.color = RED;
+					gameState->renderData.push_back(line);
+				}
 			}
 
 

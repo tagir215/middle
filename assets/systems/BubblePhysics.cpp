@@ -272,7 +272,7 @@ public:
 				body.pos = position;
 				moleculeConstraint.bodies.push_back(body);
 				if (j > 0) {
-					const float targetSeparation = 5;
+					const float targetSeparation = 10;
 					moleculeConstraint.targetDistances.push_back(prevRadius + targetSeparation + childCircle->radius);
 				}
 				prevRadius = childCircle->radius;
