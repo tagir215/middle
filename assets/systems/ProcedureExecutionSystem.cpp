@@ -32,6 +32,7 @@ public:
 		buttonCache->addType<components::TimerComponent>(components::NOTINTERESTED);
 		procedureCache = middle::newCompCache(gameState);
 		procedureCache->addType<components::ProcedureContainer>();
+		procedureCache->addType<components::TimerComponent>(components::NOTINTERESTED);
 	}
 
 	void getOneInput(middle::GameState* gameState, middle::Shape& funcShape, components::InputVariable& inputVariable) {
@@ -238,6 +239,8 @@ public:
 			auto customCopy = std::make_shared<middle::CustomActionWithUndo>(
 				[copyAction, update](middle::GameState* gameState) {
 					copyAction->execute(gameState);
+					// move away from view
+					middle::moveShape(gameState, copyAction->resultId.index, {400,0,100});
 					update->execute(gameState);
 				},
 				[copyAction, update](middle::GameState* gameState) {
@@ -714,7 +717,7 @@ public:
 
 				if (procedure->mode == procedureConstants::EXECUTING) {
 					auto timer = middle::attachComponent<components::TimerComponent>(gameState, shape.id);
-					timer->timeLeft = 1;
+					timer->timeLeft = 0.1f;
 				}
 
 				if (procedure->mode == procedureConstants::STEPPING) {

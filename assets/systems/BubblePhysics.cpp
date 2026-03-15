@@ -218,7 +218,7 @@ public:
 	}
 
 	const float attractionForce = 20;
-	const float fieldRadius = 10.0f;
+	const float fieldMargin = 5.0f;
 	bool debugField = false;
 	bool inverses = true;
 
@@ -230,7 +230,7 @@ public:
 					continue;
 				}
 				auto circle = middle::attachComponent<components::Circle>(gameState, shape.id);
-				circle->radius = fieldRadius;
+				circle->radius = fieldMargin;
 			}
 			debugField = false;
 		}
@@ -283,7 +283,7 @@ public:
 				auto childUnit = middle::getComponent<components::BubbleUnit>(childShape);
 				assert(physics);
 				// units use a field radius instead
-				float radius = childCircle && !childUnit ? childCircle->radius : fieldRadius;
+				float radius = childCircle ? childCircle->radius + fieldMargin : fieldMargin;
 				bodies.push_back({
 					childId,
 					position,

@@ -179,6 +179,8 @@ public:
 					auto positionB = middle::getComponent<components::Position>(shapeB);
 					auto circleA = middle::getComponent<components::Circle>(shapeA);
 					auto circleB = middle::getComponent<components::Circle>(shapeB);
+					if (!circleA || !circleB)
+						continue;
 					Vector3 posA = { positionA->posX, positionA->posY, positionA->posZ };
 					Vector3 posB = { positionB->posX, positionB->posY, positionB->posZ };
 					Vector3 axis = Vector3Normalize(Vector3Subtract(posB, posA));
