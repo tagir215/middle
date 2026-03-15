@@ -299,6 +299,18 @@ namespace bubbleActions {
 		return newFractionShape.id;
 	}
 
+	middle::Id fractionQuotient(middle::GameState* gameState, middle::Id& fractionId) {
+		std::vector<middle::Id> fractionChildren;
+		middle::getChildren(gameState, fractionId, fractionChildren);
+		for (middle::Id& fractionPartId : fractionChildren) {
+			auto& unitShape = middle::getShape(gameState, fractionPartId.index);
+			auto unit = middle::getComponent<components::BubbleUnit>(unitShape);
+			if (!unit || unit->value != 0) {
+				return fractionPartId;
+			}
+		}
+		assert(false);
+	}
 
 	middle::Id shapeToFraction(middle::GameState* gameState, middle::Id shapeId, const Vector3& targetPos, int dividend)
 	{
@@ -307,21 +319,20 @@ namespace bubbleActions {
 		if (fraction) {
 			int fractionSize = fractionUnitCount(gameState, shapeId);
 			dividend *= fractionSize;
-			auto& fractionShape = newFraction(gameState, targetPos, dividend);
-			return fractionShape;
+			middle::Id fractionShapeId = newFraction(gameState, targetPos, dividend);
+			middle::Id oldQuotientId = fractionQuotient(gameState, shapeId);
+			middle::Id genericQuotientId = fractionQuotient(gameState, fractionShapeId);
+			middle::Id quotientCopyId = middle::deepCopyShape(gameState, oldQuotientId.index);
+			Replace(genericQuotientId, quotientCopyId).execute(gameState);
+			return fractionShapeId;
 		}
-
-		auto& fractionShapeId = newFraction(gameState, targetPos, dividend);
-		std::vector<middle::Id> fractionChildren;
-		middle::getChildren(gameState, fractionShapeId, fractionChildren);
-		for (middle::Id& fractionUnitId : fractionChildren) {
-			auto& unitShape = middle::getShape(gameState, fractionUnitId.index);
-			auto unit = middle::getComponent<components::BubbleUnit>(unitShape);
-			if (unit->value == 1) {
-				Replace(fractionUnitId, shapeId).execute(gameState);
-			}
+		else {
+			middle::Id shapeCopyId = middle::deepCopyShape(gameState, shapeId.index);
+			middle::Id fractionShapeId = newFraction(gameState, targetPos, dividend);
+			middle::Id genericQuotientId = fractionQuotient(gameState, fractionShapeId);
+			Replace(genericQuotientId, shapeCopyId).execute(gameState);
+			return fractionShapeId;
 		}
-		return fractionShapeId;
 	}
 
 
@@ -651,6 +662,26 @@ namespace bubbleActions {
 		this->id = id;
 	}
 
+	void validateFraction(middle::GameState* gameState, middle::Id& id) {
+		middle::Shape& shape = middle::getShape(gameState, id.index);
+		auto loop = middle::getComponent<components::LoopSociety>(shape);
+		auto fraction = middle::getComponent<components::FractionalComponent>(shape);
+		assert(fraction);
+		int nonZeroCount = 0;
+		for (middle::Id& childId : loop->loopMemberIds) {
+			auto& childShape = middle::getShape(gameState, childId.index);
+			auto childFraction = middle::getComponent<components::FractionalComponent>(childShape);
+			auto mulComp = middle::getComponent<components::BubbleMultiplyComponent>(childShape);
+			assert(!childFraction);
+			assert(!mulComp);
+			auto unit = middle::getComponent<components::BubbleUnit>(childShape);
+			if (!unit || unit->value != 0) {
+				++nonZeroCount;
+			}
+		}
+		assert(nonZeroCount == 1);
+	}
+
 	void Pop::execute(middle::GameState* gameState) {
 		middle::Shape& shape = middle::getShape(gameState, id.index);
 		// check that there is a parent
@@ -684,11 +715,21 @@ namespace bubbleActions {
 				for (middle::Id& bubbleChild : bubbleChildren) {
 					referencePos.x += 8;
 					middle::Id replacementFractionId = shapeToFraction(gameState, bubbleChild, referencePos, dividend);
+					validateFraction(gameState, replacementFractionId);
+
 					auto regAction = std::make_unique<middle::EditorActionRegisterId>(replacementFractionId);
+					regAction->execute(gameState);
 					actions.push_back(std::move(regAction));
+
+					auto replaceAction = std::make_unique<bubbleActions::Replace>(bubbleChild, replacementFractionId);
+					replaceAction->execute(gameState);
+					actions.push_back(std::move(replaceAction));
+
 					auto reparentAction = std::make_unique<middle::EditorActionReparent>(parentId.index, replacementFractionId.index);
 					reparentAction->execute(gameState);
 					actions.push_back(std::move(reparentAction));
+
+					validateFraction(gameState, replacementFractionId);
 				}
 			}
 		}
@@ -998,10 +1039,6 @@ namespace bubbleActions {
 		middle::addComponent<components::MouseIntersectable>(newMulShapeProto);
 		middle::addComponent<components::MouseGrabbable>(newMulShapeProto);
 		middle::addComponent<components::LoopSociety>(newMulShapeProto);
-		auto sphere = middle::addComponent<components::Sphere>(newMulShapeProto);
-		sphere->radius = 2;
-		auto text = middle::addComponent<components::Text>(newMulShapeProto);
-		text->text = "x";
 		auto& newMulShape = middle::registerShape(gameState, newMulShapeProto);
 
 		auto registerAction = std::make_unique<middle::EditorActionRegisterId>(newMulShape.id);

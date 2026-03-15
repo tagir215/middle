@@ -31,6 +31,7 @@ public:
 		mulCache->addType<components::LoopSociety>();
 		fractionCache = middle::newCompCache(gameState);
 		fractionCache->addType<components::FractionalComponent>();
+		fractionCache->addType<components::LoopSociety>();
 		unitCache = middle::newCompCache(gameState);
 		unitCache->addType<components::BubbleUnit>();
 	}
@@ -142,13 +143,16 @@ public:
 				auto pos = middle::getComponent<components::Position>(shape);
 				middle::RenderItem particle;
 				particle.center = { pos->posX, pos->posY, pos->posZ };
-				particle.type = middle::RenderItemType::SPHERE;
+				particle.length = 0.1f;
 				const float unitRadius = 2;
+				particle.ringRadius = unitRadius;
 				particle.radius = unitRadius;
 				if (unit->value == 1) {
-					particle.color = middle::UGLY_PINK;
+					particle.type = middle::RenderItemType::CYLINDER;
+					particle.color = BLACK;
 				}
 				if (unit->value == 0) {
+					particle.type = middle::RenderItemType::CIRCLE;
 					particle.color = { 255,255,255, 60 };
 				}
 				if (unit->value == -1) {
@@ -188,22 +192,34 @@ public:
 			}
 
 
-			// render fractions
-			auto fractionIt = fractionCache->begin<components::FractionalComponent>();
+			auto fractionLoopIt = fractionCache->begin<components::LoopSociety>();
 			for (int i = 0; i < fractionCache->getSize(); ++i) {
-				auto& shape = middle::getShape(gameState, fractionCache->relevantIdVector[i].index);
-
-				auto loop = middle::getComponent<components::LoopSociety>(shape);
-				int size = loop->loopMemberIds.size();
-				for (int x = 0; x < size; ++x) {
-					for (int y = x + 1; y < size; ++y) {
-						middle::RenderItem fractionLine;
-						fractionLine.type = middle::RenderItemType::LINE;
-						fractionLine.linePointA = middle::getShapePosition(gameState, loop->loopMemberIds[x].index);
-						fractionLine.linePointB = middle::getShapePosition(gameState, loop->loopMemberIds[y].index);
-						fractionLine.color = { 255,255,255,50 };
-						gameState->renderData.push_back(fractionLine);
+				auto loop = *fractionLoopIt;
+				for (int x = 1; x < loop->loopMemberIds.size(); ++x) {
+					auto& shapeA = middle::getShape(gameState, loop->loopMemberIds[x-1].index);
+					auto& shapeB = middle::getShape(gameState, loop->loopMemberIds[x].index);
+					auto positionA = middle::getComponent<components::Position>(shapeA);
+					auto positionB = middle::getComponent<components::Position>(shapeB);
+					auto circleA = middle::getComponent<components::Circle>(shapeA);
+					auto circleB = middle::getComponent<components::Circle>(shapeB);
+					Vector3 posA = { positionA->posX, positionA->posY, positionA->posZ };
+					Vector3 posB = { positionB->posX, positionB->posY, positionB->posZ };
+					middle::RenderItem line;
+					line.type = middle::RenderItemType::LINE;
+					line.color = WHITE;
+					Vector3 pointA = posA;
+					Vector3 pointB = posB;
+					Vector3 axis = Vector3Normalize(Vector3Subtract(posB, posA));
+					if (circleA) {
+						pointA += Vector3Scale(axis, circleA->radius);
 					}
+					if (circleB) {
+						pointB += Vector3Scale(axis, -circleB->radius);
+					}
+
+					line.linePointA = pointA;
+					line.linePointB = pointB;
+					gameState->renderData.push_back(line);
 				}
 			}
 		}

@@ -46,6 +46,7 @@ public:
 		nonBubbleCircleCache->addType<components::Position>();
 		nonBubbleCircleCache->addType<components::MouseIntersectable>();
 		nonBubbleCircleCache->addType<components::BubbleComponent>(components::NOTINTERESTED);
+		nonBubbleCircleCache->addType<components::BubbleUnit>(components::NOTINTERESTED);
 	}
 
 	bool isPlacedRecursive(middle::GameState* gameState, middle::Id& id) {
@@ -80,6 +81,67 @@ public:
 
 	void update(middle::GameState* gameState) override {
 
+		bool uiIntersected = false;
+		auto rectangleIt = rectangleCache->begin<components::Rectangle>();
+		auto intersectableIt = rectangleCache->begin<components::MouseIntersectable>();
+		for (int i = 0; i < rectangleCache->getSize(); ++i) {
+			auto& shape = middle::getShape(gameState, rectangleCache->relevantIdVector[i].index);
+			auto rectangle = *rectangleIt;
+			auto intersectable = *intersectableIt;
+			Vector3 position = middle::getShapePosition(gameState, shape.id.index);
+			Vector3 scale = middle::getTotalScale(gameState, shape.id);
+			Vector3 uiPlaneIntersectPoint = middle::RayCastLinePlane(position, { 0,-1,0 },
+				gameState->input.mouseNearPlanePos, gameState->input.mouseDir);
+			Vector3 mouseXZ = uiPlaneIntersectPoint;
+
+			float axisX = rectangle->width * 0.5f * scale.x;
+			float axisZ = rectangle->height * 0.5f * scale.z;
+			intersectable->intersecting =
+				mouseXZ.x > position.x - axisX && mouseXZ.x < position.x + axisX &&
+				mouseXZ.z > position.z - axisZ && mouseXZ.z < position.z + axisZ;
+
+			if (intersectable->intersecting) {
+				uiIntersected = true;
+			}
+
+			intersectable->intersectingTop = false;
+			if (isPlacedRecursive(gameState, shape.id)) {
+				intersectable->intersecting = false;
+				continue;
+			}
+			childrenIntersecting(gameState, shape, intersectable);
+		}
+
+		auto circleIt = nonBubbleCircleCache->begin<components::Circle>();
+		auto circleIntersectableIt = nonBubbleCircleCache->begin<components::MouseIntersectable>();
+		for (int i = 0; i < nonBubbleCircleCache->getSize(); ++i) {
+			auto& shape = middle::getShape(gameState, nonBubbleCircleCache->relevantIdVector[i].index);
+			auto circle = *circleIt;
+			auto intersectable = *circleIntersectableIt;
+			Vector3 position = middle::getShapePosition(gameState, shape.id.index);
+			Vector3 scale = middle::getTotalScale(gameState, shape.id);
+			Vector3 uiPlaneIntersectPoint = middle::RayCastLinePlane(position, { 0,-1,0 },
+				gameState->input.mouseNearPlanePos, gameState->input.mouseDir);
+			Vector3 mouseXZ = uiPlaneIntersectPoint;
+
+			if (circle) {
+				intersectable->intersecting = Vector3DistanceSqr(mouseXZ, position) < circle->radius * circle->radius;
+			}
+
+			if (intersectable->intersecting) {
+				uiIntersected = true;
+			}
+
+			intersectable->intersectingTop = false;
+			if (isPlacedRecursive(gameState, shape.id)) {
+				intersectable->intersecting = false;
+				continue;
+			}
+			childrenIntersecting(gameState, shape, intersectable);
+		}
+
+
+
 		auto unitIt = unitCache->begin<components::BubbleUnit>();
 		auto unitIntersectableIt = unitCache->begin<components::MouseIntersectable>();
 		auto sphereIt = unitCache->begin<components::Sphere>();
@@ -93,7 +155,7 @@ public:
 			intersectable->intersecting = false;
 			intersectable->intersectingTop = false;
 
-			if (gameState->bubbleAlgebraState.intersectingUI) {
+			if (uiIntersected) {
 				continue;
 			}
 
@@ -123,7 +185,7 @@ public:
 				continue;
 			}
 
-			if (gameState->bubbleAlgebraState.intersectingUI) {
+			if (uiIntersected) {
 				continue;
 			}
 
@@ -158,64 +220,6 @@ public:
 		}
 
 
-		bool oneIntersect = false;
-		auto rectangleIt = rectangleCache->begin<components::Rectangle>();
-		auto intersectableIt = rectangleCache->begin<components::MouseIntersectable>();
-		for (int i = 0; i < rectangleCache->getSize(); ++i) {
-			auto& shape = middle::getShape(gameState, rectangleCache->relevantIdVector[i].index);
-			auto rectangle = *rectangleIt;
-			auto intersectable = *intersectableIt;
-			Vector3 position = middle::getShapePosition(gameState, shape.id.index);
-			Vector3 scale = middle::getTotalScale(gameState, shape.id);
-			Vector3 uiPlaneIntersectPoint = middle::RayCastLinePlane(position, { 0,-1,0 },
-				gameState->input.mouseNearPlanePos, gameState->input.mouseDir);
-			Vector3 mouseXZ = uiPlaneIntersectPoint;
-
-			float axisX = rectangle->width * 0.5f * scale.x;
-			float axisZ = rectangle->height * 0.5f * scale.z;
-			intersectable->intersecting =
-				mouseXZ.x > position.x - axisX && mouseXZ.x < position.x + axisX &&
-				mouseXZ.z > position.z - axisZ && mouseXZ.z < position.z + axisZ;
-
-			if (intersectable->intersecting) {
-				oneIntersect = true;
-			}
-
-			intersectable->intersectingTop = false;
-			if (isPlacedRecursive(gameState, shape.id)) {
-				intersectable->intersecting = false;
-				continue;
-			}
-			childrenIntersecting(gameState, shape, intersectable);
-		}
-
-		auto circleIt = nonBubbleCircleCache->begin<components::Circle>();
-		auto circleIntersectableIt = nonBubbleCircleCache->begin<components::MouseIntersectable>();
-		for (int i = 0; i < nonBubbleCircleCache->getSize(); ++i) {
-			auto& shape = middle::getShape(gameState, nonBubbleCircleCache->relevantIdVector[i].index);
-			auto circle = *circleIt;
-			auto intersectable = *circleIntersectableIt;
-			Vector3 position = middle::getShapePosition(gameState, shape.id.index);
-			Vector3 scale = middle::getTotalScale(gameState, shape.id);
-			Vector3 uiPlaneIntersectPoint = middle::RayCastLinePlane(position, { 0,-1,0 },
-				gameState->input.mouseNearPlanePos, gameState->input.mouseDir);
-			Vector3 mouseXZ = uiPlaneIntersectPoint;
-
-			if (circle) {
-				intersectable->intersecting = Vector3DistanceSqr(mouseXZ, position) < circle->radius * circle->radius;
-			}
-
-			if (intersectable->intersecting) {
-				oneIntersect = true;
-			}
-
-			intersectable->intersectingTop = false;
-			if (isPlacedRecursive(gameState, shape.id)) {
-				intersectable->intersecting = false;
-				continue;
-			}
-			childrenIntersecting(gameState, shape, intersectable);
-		}
 	}
 };
 

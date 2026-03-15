@@ -10,12 +10,14 @@
 #include "Circle.h"
 #include "LoopSociety.h"
 #include "BubbleMultiplyComponent.h"
+#include "FractionalComponent.h"
 
 class BubblePhysics : public middle::MiddleGameplaySystem {
 public:
 	components::CompCache* unitCache;
 	components::CompCache* bubbleCache;
 	components::CompCache* mulCache;
+	components::CompCache* fractionCache;
 
 	void init(middle::GameState* gameState) override {
 		unitCache = middle::newCompCache(gameState);
@@ -33,6 +35,10 @@ public:
 		mulCache = middle::newCompCache(gameState);
 		mulCache->addType<components::BubbleMultiplyComponent>();
 		mulCache->addType<components::LoopSociety>();
+
+		fractionCache = middle::newCompCache(gameState);
+		fractionCache->addType<components::FractionalComponent>();
+		fractionCache->addType<components::LoopSociety>();
 	}
 
 	struct Body {
@@ -173,6 +179,44 @@ public:
 
 	}
 
+	void collectMoleculeConstraints(middle::GameState* gameState, components::CompCache* cache, std::vector<MoleculeConstraint>& constraints) {
+		auto mulLoopIt = cache->begin<components::LoopSociety>();
+		for (int i = 0; i < cache->getSize(); ++i) {
+			auto loop = *mulLoopIt;
+			MoleculeConstraint moleculeConstraint;
+			Body prevBody;
+			for (int j = 0; j < loop->loopMemberIds.size(); ++j) {
+				auto& childShape = middle::getShape(gameState, loop->loopMemberIds[j].index);
+				auto position = middle::getComponent<components::Position>(childShape);
+				auto physics = middle::getComponent<components::PhysicsData>(childShape);
+				auto childCircle = middle::getComponent<components::Circle>(childShape);
+				auto mul = middle::getComponent<components::BubbleMultiplyComponent>(childShape);
+				auto fraction = middle::getComponent<components::FractionalComponent>(childShape);
+				assert(physics);
+
+				Body body;
+				body.id = childShape.id;
+				body.physicsData = physics;
+				body.pos = position;
+				body.radius = 1;
+				if (childCircle) {
+					body.radius = childCircle->radius;
+				}
+				moleculeConstraint.bodies.push_back(body);
+
+				const float targetSeparation = 10;
+				if (j > 0 && childCircle) {
+					moleculeConstraint.targetDistances.push_back(prevBody.radius + targetSeparation + childCircle->radius);
+				}
+				if(j > 0 && !childCircle) {
+					moleculeConstraint.targetDistances.push_back(targetSeparation);
+				}
+				prevBody = body;
+			}
+			constraints.push_back(moleculeConstraint);
+		}
+	}
+
 	const float attractionForce = 20;
 	const float fieldRadius = 10.0f;
 	bool debugField = false;
@@ -219,9 +263,10 @@ public:
 			std::vector<middle::Id> interactingChildren;
 			for (middle::Id& id : loop->loopMemberIds) {
 				auto& childShape = middle::getShape(gameState, id.index);
-				if (middle::getComponent<components::BubbleMultiplyComponent>(childShape)) {
+				if (middle::getComponent<components::BubbleMultiplyComponent>(childShape) 
+					|| middle::getComponent<components::FractionalComponent>(childShape)) {
 					std::vector<middle::Id>mulChildren;
-					middle::getAllChildrenWithComp(gameState, id, mulChildren, middle::getTypeId<components::PhysicsData>());
+					middle::getChildrenWithComp(gameState, id, mulChildren, middle::getTypeId<components::PhysicsData>());
 					interactingChildren.insert(interactingChildren.end(), mulChildren.begin(), mulChildren.end());
 				}
 				else if (middle::getComponent<components::PhysicsData>(childShape)) {
@@ -235,7 +280,10 @@ public:
 				auto position = middle::getComponent<components::Position>(childShape);
 				auto physics = middle::getComponent<components::PhysicsData>(childShape);
 				auto childCircle = middle::getComponent<components::Circle>(childShape);
-				float radius = childCircle != nullptr ? childCircle->radius : fieldRadius;
+				auto childUnit = middle::getComponent<components::BubbleUnit>(childShape);
+				assert(physics);
+				// units use a field radius instead
+				float radius = childCircle && !childUnit ? childCircle->radius : fieldRadius;
 				bodies.push_back({
 					childId,
 					position,
@@ -256,30 +304,8 @@ public:
 
 		// COLLECT MOLECULE CONSTRAINTS
 		std::vector<MoleculeConstraint>moleculeConstraints;
-		auto mulLoopIt = mulCache->begin<components::LoopSociety>();
-		for (int i = 0; i < mulCache->getSize(); ++i) {
-			auto loop = *mulLoopIt;
-			MoleculeConstraint moleculeConstraint;
-			float prevRadius = -1;
-			for (int j = 0; j < loop->loopMemberIds.size(); ++j) {
-				auto& childShape = middle::getShape(gameState, loop->loopMemberIds[j].index);
-				auto position = middle::getComponent<components::Position>(childShape);
-				auto physics = middle::getComponent<components::PhysicsData>(childShape);
-				auto childCircle = middle::getComponent<components::Circle>(childShape);
-				Body body;
-				body.id = childShape.id;
-				body.physicsData = physics;
-				body.pos = position;
-				moleculeConstraint.bodies.push_back(body);
-				if (j > 0) {
-					const float targetSeparation = 10;
-					moleculeConstraint.targetDistances.push_back(prevRadius + targetSeparation + childCircle->radius);
-				}
-				prevRadius = childCircle->radius;
-			}
-			moleculeConstraints.push_back(moleculeConstraint);
-		}
-
+		collectMoleculeConstraints(gameState, mulCache, moleculeConstraints);
+		collectMoleculeConstraints(gameState, fractionCache, moleculeConstraints);
 
 		// CREATE COLLISION PAIRS
 

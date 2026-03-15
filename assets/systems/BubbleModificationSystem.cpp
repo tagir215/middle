@@ -130,26 +130,37 @@ public:
 		auto intersectableIt = intersectableCache->begin<components::MouseIntersectable>();
 		for (int i = 0; i < intersectableCache->getSize(); ++i) {
 			auto intersectable = *intersectableIt;
-			auto& shape = middle::getShape(gameState, intersectableCache->relevantIdVector[i].index);
 
-			if (!bubbleActions::isIntersecting(gameState, shape)) {
+			auto& draggedCopyShape = middle::getShape(gameState, intersectableCache->relevantIdVector[i].index);
+			middle::Id parentId = middle::getParent(gameState, draggedCopyShape.id);
+
+			// check if there's parent, the parent is not a fraction
+			if (parentId.index != middle::UNASSIGNED) {
+				auto parentShape = middle::getShape(gameState, parentId.index);
+				auto fraction = middle::getComponent<components::FractionalComponent>(parentShape);
+				if (fraction) {
+					continue;
+				}
+			}
+
+			if (!bubbleActions::isIntersecting(gameState, draggedCopyShape)) {
 				continue;
 			}
 
 			// skip shapefordeletion (the copy being dragged) and ref shape (shape its copy is pointing to)
-			if (shapeForDeletion.id == shape.id || shape.id == refShape.id) {
+			if (shapeForDeletion.id == draggedCopyShape.id || draggedCopyShape.id == refShape.id) {
 				continue;
 			}
 
-			middle::Id parentId = middle::getParent(gameState, shape.id);
 			if (parentId.index != middle::UNASSIGNED && parentId == refParentId) {
 				auto& refParent = middle::getShape(gameState, refParentId.index);
-				combine(gameState, refParent, refShape, shape);
+				combine(gameState, refParent, refShape, draggedCopyShape);
 				continue;
 			}
 
 			if (inventoryItem) {
-				inventoryAction(gameState, inventoryItem->itemType, shape);
+				inventoryAction(gameState, inventoryItem->itemType, draggedCopyShape);
+				break;
 			}
 		}
 

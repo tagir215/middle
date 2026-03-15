@@ -8,11 +8,14 @@
 #include "Position.h"
 #include "PhysicsData.h"
 #include "BubbleUnit.h"
+#include "Sphere.h"
 
 class NewBubbleOutlineSystem : public middle::MiddleGameplaySystem {
 public:
 	components::CompCache* circlessCache;
 	components::CompCache* circfullCache;
+	components::CompCache* circlessCache2;
+	components::CompCache* circfullCache2;
 
 	void init(middle::GameState* gameState) override {
 		circlessCache = middle::newCompCache(gameState);
@@ -22,6 +25,15 @@ public:
 		circfullCache->addType<components::BubbleComponent>();
 		circfullCache->addType<components::Circle>();
 		circfullCache->addType<components::PhysicsData>();
+
+		circlessCache2 = middle::newCompCache(gameState);
+		circlessCache2->addType<components::BubbleUnit>();
+		circlessCache2->addType<components::Sphere>();
+		circlessCache2->addType<components::Circle>(components::NOTINTERESTED);
+		circfullCache2 = middle::newCompCache(gameState);
+		circfullCache2->addType<components::BubbleUnit>();
+		circfullCache2->addType<components::Circle>();
+		circfullCache2->addType<components::PhysicsData>();
 	}
 
 	const float startingRadius = 30;
@@ -31,6 +43,13 @@ public:
 			auto& circleId = circlessCache->relevantIdVector[i];
 			auto circle = middle::attachComponent<components::Circle>(gameState, circleId);
 			circle->radius = startingRadius;
+		}
+		auto sphereIt = circlessCache2->begin<components::Sphere>();
+		for (int i = 0; i < circlessCache2->getSize(); ++i) {
+			auto& circleId = circlessCache2->relevantIdVector[i];
+			auto sphere = *sphereIt;
+			auto circle = middle::attachComponent<components::Circle>(gameState, circleId);
+			circle->radius = sphere->radius;
 		}
 
 		// calculate bubble size
