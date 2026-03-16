@@ -11,6 +11,7 @@
 #include "LoopSociety.h"
 #include "BubbleMultiplyComponent.h"
 #include "FractionalComponent.h"
+#include "Rectangle.h"
 
 class BubblePhysics : public middle::MiddleGameplaySystem {
 public:
@@ -18,6 +19,7 @@ public:
 	components::CompCache* bubbleCache;
 	components::CompCache* mulCache;
 	components::CompCache* fractionCache;
+	components::CompCache* rectCache;
 
 	void init(middle::GameState* gameState) override {
 		unitCache = middle::newCompCache(gameState);
@@ -39,6 +41,11 @@ public:
 		fractionCache = middle::newCompCache(gameState);
 		fractionCache->addType<components::FractionalComponent>();
 		fractionCache->addType<components::LoopSociety>();
+
+		rectCache = middle::newCompCache(gameState);
+		rectCache->addType<components::Rectangle>();
+		rectCache->addType<components::Position>();
+		rectCache->addType<components::PhysicsData>();
 	}
 
 	struct Body {

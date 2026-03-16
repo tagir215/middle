@@ -41,6 +41,10 @@ public:
 			for (middle::Id childId : children) {
 				auto& child = middle::getShape(gameState, childId.index);
 				auto intersectable = middle::getComponent<components::MouseIntersectable>(child);
+				auto grabbable = middle::getComponent<components::MouseGrabbable>(child);
+				if (!grabbable) {
+					continue;
+				}
 				if (intersectable->intersectingTop && gameState->input.mouseClicked) {
 					middle::Id copyId = middle::deepCopyShape(gameState, childId.index, middle::UNASSIGNED);
 					auto& copyShape = middle::getShape(gameState, copyId.index);

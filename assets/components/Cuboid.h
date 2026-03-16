@@ -1,14 +1,16 @@
 #pragma once
 #include "registrars.h"
 #include "editor_file_utils.h"
-#define MIDDLEINVENTORY(X) \
-	X(horizontal) \
-	X(rows)
+#define MIDDLECUBOID(X) \
+	X(width) \
+	X(height) \
+	X(length)
 
 namespace components {
-	struct Inventory : public middle::Serializable{
-		bool horizontal = false;
-		int rows = 1;
+	struct Cuboid : public middle::Serializable{
+		float width = 0;
+		float height = 0;
+		float length = 0;
 
 		void serialize(std::ostream& ostream) override;
 		void deserialize(const std::vector<std::string>& buffer, int indexOffset) override;
@@ -17,7 +19,7 @@ namespace components {
 		template<typename V>
 		void reflect(V& v) {
 #define X(f) v(#f, f);
-			MIDDLEINVENTORY(X)
+			MIDDLECUBOID(X)
 #undef X
 		}
 	};

@@ -652,6 +652,22 @@ namespace middle {
 		}
 	}
 
+	std::vector<std::string> loadFileNamesInFolder(const std::string& folderPath)
+	{
+		std::vector<std::string>filenames;
+		try {
+			if (std::filesystem::exists(folderPath) && std::filesystem::is_directory(folderPath)) {
+				for (const auto& entry : std::filesystem::directory_iterator(folderPath)) {
+					filenames.push_back(entry.path().stem().string());
+				}
+			}
+		}
+		catch (const std::filesystem::filesystem_error& err){
+			std::cerr << "hmm" << err.what();
+		}
+		return filenames;
+	}
+
 	void loadEditorState(GameState* gameState) {
 		std::string filename = "../src/editor_data/editor_state.midsc";
 

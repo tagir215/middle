@@ -104,6 +104,15 @@ namespace RendererSystem {
 					rlPopMatrix();
 				}
 
+				if (item.type == middle::CUBOID) {
+					Matrix M = transformMatrix(item);
+					rlPushMatrix();
+					rlLoadIdentity();
+					rlMultMatrixf(MatrixToFloatV(M).v);
+					DrawCube(item.center, item.width, item.height, item.length, item.color);
+					rlPopMatrix();
+				}
+
 			}
 
 

@@ -14,6 +14,8 @@
 #include "bubble_utils.h"
 #include "BubbleRef.h"
 #include "Circle.h"
+#include "Cuboid.h"
+
 
 class BubbleRenderSetup : public middle::MiddleGameplaySystem {
 
@@ -22,6 +24,7 @@ public:
 	components::CompCache* mulCache;
 	components::CompCache* fractionCache;
 	components::CompCache* unitCache;
+	components::CompCache* cuboidCache;
 
 	void init(middle::GameState* gameState) {
 		bubbleCache = middle::newCompCache(gameState);
@@ -34,6 +37,9 @@ public:
 		fractionCache->addType<components::LoopSociety>();
 		unitCache = middle::newCompCache(gameState);
 		unitCache->addType<components::BubbleUnit>();
+		cuboidCache = middle::newCompCache(gameState);
+		cuboidCache->addType<components::Cuboid>();
+		cuboidCache->addType<components::Position>();
 	}
 	bool debugRendering = false;
 
@@ -226,6 +232,23 @@ public:
 			}
 		}
 
+
+		auto cuboidIt = cuboidCache->begin<components::Cuboid>();
+		auto cuboidPosIt = cuboidCache->begin<components::Position>();
+		for (int i = 0; i < cuboidCache->getSize(); ++i) {
+			auto cuboid = *cuboidIt;
+			auto pos = *cuboidPosIt;
+			middle::RenderItem cuboidItem;
+			cuboidItem.type = middle::RenderItemType::CUBOID;
+			cuboidItem.width = cuboid->width;
+			cuboidItem.height = cuboid->height;
+			cuboidItem.length = cuboid->length;
+			cuboidItem.color = WHITE;
+			// TODO
+			cuboidItem.color.a = 30;
+			cuboidItem.center = { pos->posX, pos->posY, pos->posZ };
+			gameState->renderData.push_back(cuboidItem);
+		}
 	}
 };
 

@@ -82,6 +82,7 @@ namespace middle {
 		CONE,
 		RING,
 		CYLINDER,
+		CUBOID,
 	};
 
 	struct RenderItem {

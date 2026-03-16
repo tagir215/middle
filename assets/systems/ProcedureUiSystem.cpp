@@ -10,12 +10,23 @@
 #include "PlacementComponent.h"
 #include "MouseClickComponent.h"
 #include "Rectangle.h"
+#include "ProcedureUseUiTag.h"
+#include "LoopSociety.h"
+#include "UiComponent.h"
+#include "Position.h"
+#include "Text.h"
+#include "InventoryItem.h"
+#include "editor_actions.h"
+#include "Sphere.h"
+
 
 class ProcedureUiSystem : public middle::MiddleGameplaySystem {
 public:
 
 	components::CompCache* buttonCache;
 	components::CompCache* procedureCache;
+	components::CompCache* procedureUseCache;
+	std::vector<std::string>procedureNames;
 
 	void init(middle::GameState* gameState) {
 		buttonCache = middle::newCompCache(gameState);
@@ -23,6 +34,9 @@ public:
 		buttonCache->addType<components::MouseClickComponent>();
 		procedureCache = middle::newCompCache(gameState);
 		procedureCache->addType<components::ProcedureContainer>();
+		procedureUseCache = middle::newCompCache(gameState);
+		procedureUseCache->addType<components::ProcedureUseUiTag>();
+		procedureUseCache->addType<components::LoopSociety>();
 	}
 
 	void update(middle::GameState* gameState) override {
@@ -34,10 +48,8 @@ public:
 			procId = procedureCache->relevantIdVector[0];
 			procComp = *procedureIt;
 		}
-		if (!procComp) {
-			return;
-		}
 
+		// buttons
 		auto buttonIt = buttonCache->begin<components::Button>();
 		for (int i = 0; i < buttonCache->getSize(); ++i) {
 			auto button = *buttonIt;
@@ -55,7 +67,8 @@ public:
 
 		}
 
-		if (procComp->activeBlock.index != middle::UNASSIGNED) {
+		// execution iterator rendering
+		if (procComp && procComp->activeBlock.index != middle::UNASSIGNED) {
 			auto& activeBlockShape = middle::getShape(gameState, procComp->activeBlock.index);
 			Vector3 position = middle::getShapePosition(gameState, activeBlockShape.id.index);
 			auto rect = middle::getComponent<components::Rectangle>(activeBlockShape);
@@ -73,6 +86,33 @@ public:
 			activeBlockItem.transform = transform;
 			gameState->renderData.push_back(activeBlockItem);
 		}
+
+		auto procedureUseAiIt = procedureUseCache->begin<components::LoopSociety>();
+		for (int i = 0; i < procedureUseCache->getSize(); ++i) {
+			middle::Id procUiId = procedureUseCache->relevantIdVector[i];
+			if (procedureNames.size() == 0) {
+				procedureNames = middle::loadFileNamesInFolder("../bubbleData/procedures");
+				for (int j = 0; j < procedureNames.size(); ++j) {
+					middle::Shape shape;
+					middle::addComponent<components::UiComponent>(shape);
+					middle::addComponent<components::MouseIntersectable>(shape);
+					middle::addComponent<components::Position>(shape);
+					middle::addComponent<components::InventoryItem>(shape);
+					middle::addComponent<components::LoopSociety>(shape);
+					auto sphere = middle::addComponent<components::Sphere>(shape);
+					sphere->radius = middle::DEF_RADIUS;
+					auto text = middle::addComponent<components::Text>(shape);
+					auto button = middle::addComponent<components::Button>(shape);
+					auto rectangle = middle::addComponent<components::Rectangle>(shape);
+					text->text = procedureNames[j];
+					rectangle->width = 100;
+					rectangle->height = 50;
+					middle::Shape& registeredShape = middle::registerAsGhostShape(gameState, shape);
+					middle::queueAction(gameState, std::make_shared<middle::EditorActionReparent>(procUiId.index, registeredShape.id.index));
+				}
+			}
+		}
+
 	}
 };
 
