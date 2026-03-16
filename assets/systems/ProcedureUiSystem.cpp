@@ -18,6 +18,7 @@
 #include "InventoryItem.h"
 #include "editor_actions.h"
 #include "Sphere.h"
+#include "ProcedureImportContainer.h"
 
 
 class ProcedureUiSystem : public middle::MiddleGameplaySystem {
@@ -26,17 +27,21 @@ public:
 	components::CompCache* buttonCache;
 	components::CompCache* procedureCache;
 	components::CompCache* procedureUseCache;
+	components::CompCache* procedureImportContainerCache;
 	std::vector<std::string>procedureNames;
 
 	void init(middle::GameState* gameState) {
 		buttonCache = middle::newCompCache(gameState);
 		buttonCache->addType<components::Button>();
 		buttonCache->addType<components::MouseClickComponent>();
+		buttonCache->addType<components::Text>();
 		procedureCache = middle::newCompCache(gameState);
 		procedureCache->addType<components::ProcedureContainer>();
 		procedureUseCache = middle::newCompCache(gameState);
 		procedureUseCache->addType<components::ProcedureUseUiTag>();
 		procedureUseCache->addType<components::LoopSociety>();
+		procedureImportContainerCache = middle::newCompCache(gameState);
+		procedureImportContainerCache->addType<components::ProcedureImportContainer>();
 	}
 
 	void update(middle::GameState* gameState) override {
@@ -51,18 +56,33 @@ public:
 
 		// buttons
 		auto buttonIt = buttonCache->begin<components::Button>();
+		auto buttonTextIt = buttonCache->begin<components::Text>();
 		for (int i = 0; i < buttonCache->getSize(); ++i) {
 			auto button = *buttonIt;
+			auto text = *buttonTextIt;
 			if (button->function == bubbleButton::SAVE_BUTTON) {
-				middle::saveShape(gameState, procId, "../bubbleData/procedures/", "procedure1");
+				middle::saveShape(gameState, procId, "../bubbleData/procedures/", text->text);
 			}
-			if (button->function == bubbleButton::LOAD_BUTTON) {
+			if (button->function == bubbleButton::IMPORT_PROCEDURE) {
 				std::string folder = "../bubbleData/procedures/";
-				std::string shapeName = "procedure1";
+				std::string shapeName = text->text;
 				Vector3 mouseXZ = gameState->input.mouseXZ_PlanePos;
 				middle::Id loadedProcId = middle::loadShape(gameState, folder, shapeName, true, mouseXZ);
 				auto& procedureShape = middle::getShape(gameState, loadedProcId.index);
-				//middle::addComponent<components::PlacementComponent>(procedureShape);
+				auto loadedPosition = middle::getComponent<components::Position>(procedureShape);
+				Vector3 loadedPos = { loadedPosition->posX, loadedPosition->posY, loadedPosition->posZ };
+
+				// shape the procedure is contained into
+				middle::Id& containerId = procedureImportContainerCache->relevantIdVector[0];
+				auto& containerShape = middle::getShape(gameState, containerId.index);
+				auto containerLoop = middle::getComponent<components::LoopSociety>(containerShape);
+				auto containerPos = middle::getComponent<components::Position>(containerShape);
+				Vector3 targetPos = { containerPos->posX, containerPos->posY, containerPos->posZ };
+				if (containerLoop->loopMemberIds.size() > 0) {
+					middle::queueAction(gameState, std::make_shared<middle::EditorActionDeleteSingle>(containerId));
+				}
+				middle::queueAction(gameState, std::make_shared<middle::EditorActionReparent>(containerId.index, loadedProcId.index));
+				middle::moveShape(gameState, loadedProcId.index, Vector3Subtract(targetPos, loadedPos));
 			}
 
 		}
@@ -107,6 +127,7 @@ public:
 					text->text = procedureNames[j];
 					rectangle->width = 100;
 					rectangle->height = 50;
+					button->function = bubbleButton::IMPORT_PROCEDURE;
 					middle::Shape& registeredShape = middle::registerAsGhostShape(gameState, shape);
 					middle::queueAction(gameState, std::make_shared<middle::EditorActionReparent>(procUiId.index, registeredShape.id.index));
 				}
