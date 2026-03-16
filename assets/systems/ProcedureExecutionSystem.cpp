@@ -551,15 +551,12 @@ public:
 
 	procedureConstants::StepStatus stepStart(middle::GameState* gameState, components::ProcedureContainer* container) {
 		container->procedureTransitionStack.push_back(
-			{ procedureConstants::TransitionType::Start, middle::Id(), container->startBlock }
+			{ procedureConstants::TransitionType::Start, middle::Id(), container->startBlock}
 		);
 		return procedureConstants::CanStep;
 	}
 
 	procedureConstants::StepStatus stepForward(middle::GameState* gameState, components::ProcedureContainer* container) {
-		if (container->reset) {
-			return stepStart(gameState, container);
-		}
 
 		auto statusA = stepSouth(gameState, container);
 		if (statusA == procedureConstants::CanStep || statusA == procedureConstants::Stationary) {
@@ -625,7 +622,6 @@ public:
 				auto procedureContainer = middle::getComponent<components::ProcedureContainer>(parentShape);
 				procedureContainer->mode = procedureConstants::EXECUTING;
 				procedureContainer->direction = procedureConstants::FORWARD;
-				procedureContainer->reset = true;
 				procedureContainer->procedureTransitionStack.clear();
 			}
 
@@ -638,7 +634,6 @@ public:
 				procedureContainer->mode = procedureConstants::STEPPING;
 				procedureContainer->direction = procedureConstants::FORWARD;
 				if (procedureContainer->procedureTransitionStack.size() == 0) {
-					procedureContainer->reset = true;
 				}
 			}
 
@@ -701,18 +696,14 @@ public:
 							doStep(procedure);
 						}
 					}
+					if (stepBackward(gameState, procedure) == procedureConstants::CanStep) {
+						doStep(procedure);
+					}
 					middle::Id funcShapeId = getCodeBlockFunc(gameState, procedure->activeBlock);
 					if (funcShapeId.index != middle::UNASSIGNED) {
 						auto& funcShape = middle::getShape(gameState, funcShapeId.index);
 						undoFunctions(gameState, funcShape);
 					}
-					if (stepBackward(gameState, procedure) == procedureConstants::CanStep) {
-						doStep(procedure);
-					}
-				}
-
-				if (procedure->reset) {
-					procedure->reset = false;
 				}
 
 				if (procedure->mode == procedureConstants::EXECUTING) {
