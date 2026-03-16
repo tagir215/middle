@@ -67,6 +67,7 @@ f  0.000000
 b  0
 Circle
 f  122.000000
+TopDogBubbleTag
 __q  2_0
 Position
 f  -216.205704
@@ -200,6 +201,30 @@ f  34.086365
 f  -869.525269
 f  -29.490509
 MouseGrabbable
+__q  9_0
+MouseSelectable
+MouseGrabbable
+Position
+f  -193.429382
+f  200.000000
+f  50.843632
+MouseIntersectable
+LoopSociety
+q  -1_0
+p  
+SystemReference
+s  EditorUiSystem
+Text
+s  EditorUiSystem
+f  255.000000
+f  255.000000
+f  255.000000
+f  255.000000
+f  2.000000
+f  0.000000
+f  10.000000
+f  10.000000
+b  1
 __q  10_0
 MouseSelectable
 LoopSociety
@@ -429,6 +454,7 @@ f  0.000000
 f  0.000000
 f  0.000000
 b  0
+TopDogBubbleTag
 __q  18_0
 MouseSelectable
 Sphere
@@ -991,7 +1017,7 @@ f  0.000061
 f  3.353312
 PhysicsData
 f  10000.000000
-f  1.000000
+f  0.000001
 f  1.000000
 f  0.000000
 f  0.000000

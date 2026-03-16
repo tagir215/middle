@@ -12,6 +12,7 @@
 #include "BubbleMultiplyComponent.h"
 #include "FractionalComponent.h"
 #include "Rectangle.h"
+#include "TopDogBubbleTag.h"
 
 class BubblePhysics : public middle::MiddleGameplaySystem {
 public:
@@ -20,6 +21,7 @@ public:
 	components::CompCache* mulCache;
 	components::CompCache* fractionCache;
 	components::CompCache* rectCache;
+	components::CompCache* topDogBubbleCache;
 
 	void init(middle::GameState* gameState) override {
 		unitCache = middle::newCompCache(gameState);
@@ -46,6 +48,12 @@ public:
 		rectCache->addType<components::Rectangle>();
 		rectCache->addType<components::Position>();
 		rectCache->addType<components::PhysicsData>();
+
+		topDogBubbleCache = middle::newCompCache(gameState);
+		topDogBubbleCache->addType<components::TopDogBubbleTag>();
+		topDogBubbleCache->addType<components::Position>();
+		topDogBubbleCache->addType<components::PhysicsData>();
+		topDogBubbleCache->addType<components::Circle>();
 	}
 
 	struct Body {
@@ -53,6 +61,8 @@ public:
 		components::Position* pos;
 		components::PhysicsData* physicsData;
 		float radius;
+		float width;
+		float height;
 	};
 
 	struct BodyPair {
@@ -110,6 +120,28 @@ public:
 					collision.penetration = dist - bubbleBody.radius + body.radius;
 					results.push_back(collision);
 				}
+			}
+		}
+	}
+
+	void findCollisionsWithGreatCenterLine(std::vector<Body>& topDogs, Body& greatCenterLine, std::vector<Collision>& results) {
+		// great line assumed to be vertical
+		Vector3 axis = { 1,0,0 };
+		Vector3 greatCenterLinePos = { greatCenterLine.pos->posX, greatCenterLine.pos->posY, greatCenterLine.pos->posZ };
+		greatCenterLine.physicsData->infiniteMass = true;
+		greatCenterLine.physicsData->invMass = 0;
+		for (Body& body : topDogs) {
+			Vector3 bodyPos = { body.pos->posX, body.pos->posY, body.pos->posZ };
+			float dir = Vector3DotProduct(Vector3Subtract(bodyPos, greatCenterLinePos), axis);
+			float dist = std::abs(dir);
+			float outlineRadius = greatCenterLine.width * 0.5f + body.radius;
+			if (dist < outlineRadius) {
+				Collision collision;
+				collision.axis = Vector3Normalize(Vector3Scale(axis, dir));
+				collision.bodyA = greatCenterLine;
+				collision.bodyB = body;
+				collision.penetration = outlineRadius - dist;
+				results.push_back(collision);
 			}
 		}
 	}
@@ -251,7 +283,7 @@ public:
 		}
 
 
-		// COLLECT BUBBLES
+		// Collect bubbles
 
 		std::vector<Bubble>bubbles;
 		auto bubbleIt = bubbleCache->begin<components::BubbleComponent>();
@@ -291,22 +323,59 @@ public:
 				assert(physics);
 				// units use a field radius instead
 				float radius = childCircle ? childCircle->radius + fieldMargin : fieldMargin;
-				bodies.push_back({
-					childId,
-					position,
-					physics,
-					radius,
-					});
+				Body body;
+				body.id = childId;
+				body.pos = position;
+				body.physicsData = physics;
+				body.radius = radius;
+				bodies.push_back(body);
 			}
+			Body body;
+			body.id = bubbleShape.id;
+			body.pos = bubblePos;
+			body.physicsData = bubblePhysics;
+			body.radius = circle->radius;
 			bubbles.push_back({
-				{
-					bubbleShape.id,
-					bubblePos,
-					bubblePhysics,
-					circle->radius
-				},
+				body,
 				bodies,
 				});
+		}
+
+		// Collect great rectangles
+		auto rectIt = rectCache->begin<components::Rectangle>();
+		auto rectPosIt = rectCache->begin<components::Position>();
+		auto rectPhysicsIt = rectCache->begin<components::PhysicsData>();
+		std::vector<Body>greatCenterLines;
+		for (int i = 0; i < rectCache->getSize(); ++i) {
+			auto rect = *rectIt;
+			auto rectPos = *rectPosIt;
+			auto rectPhysics = *rectPhysicsIt;
+			Body body;
+			body.id = rectCache->relevantIdVector[i];
+			body.pos = rectPos;
+			body.physicsData = rectPhysics;
+			body.width = rect->width;
+			body.height = rect->height;
+			greatCenterLines.push_back(body);
+		}
+
+		// Collect top bubbles
+		auto topBubbleIt = topDogBubbleCache->begin<components::TopDogBubbleTag>();
+		auto topBubblePosIt = topDogBubbleCache->begin<components::Position>();
+		auto topBubblePhysicsIt = topDogBubbleCache->begin<components::PhysicsData>();
+		auto topBubbleCircleIt = topDogBubbleCache->begin<components::Circle>();
+		std::vector<Body>topDogBubbles;
+		for (int i = 0; i < topDogBubbleCache->getSize(); ++i) {
+			auto topBubble = *topBubbleIt;
+			auto topBubblePos = *topBubblePosIt;
+			auto topBubblePhysics = *topBubblePhysicsIt;
+			auto circle = *topBubbleCircleIt;
+			Body body;
+			body.id = topDogBubbleCache->relevantIdVector[i];
+			body.pos = topBubblePos;
+			body.physicsData = topBubblePhysics;
+			body.radius = circle->radius + fieldMargin;
+			topDogBubbles.push_back(body);
 		}
 
 		// COLLECT MOLECULE CONSTRAINTS
@@ -364,6 +433,10 @@ public:
 		std::vector<Collision>collisions;
 		findSiblingCollisions(pairVectors, collisions);
 		findCollisionsWithOutline(bubbles, collisions);
+
+		if (greatCenterLines.size() == 1) {
+			findCollisionsWithGreatCenterLine(topDogBubbles, greatCenterLines[0], collisions);
+		}
 
 		const float inverseTime = 1.0f / gameState->frameTime;
 		// forces between units
