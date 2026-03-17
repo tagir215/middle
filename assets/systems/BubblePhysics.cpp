@@ -13,6 +13,7 @@
 #include "FractionalComponent.h"
 #include "Rectangle.h"
 #include "TopDogBubbleTag.h"
+#include "BubbleEqualsComponent.h"
 
 class BubblePhysics : public middle::MiddleGameplaySystem {
 public:
@@ -22,6 +23,7 @@ public:
 	components::CompCache* fractionCache;
 	components::CompCache* rectCache;
 	components::CompCache* topDogBubbleCache;
+	components::CompCache* equalsCache;
 
 	void init(middle::GameState* gameState) override {
 		unitCache = middle::newCompCache(gameState);
@@ -44,6 +46,10 @@ public:
 		fractionCache->addType<components::FractionalComponent>();
 		fractionCache->addType<components::LoopSociety>();
 
+		equalsCache = middle::newCompCache(gameState);
+		equalsCache->addType<components::BubbleEqualsComponent>();
+		equalsCache->addType<components::LoopSociety>();
+
 		rectCache = middle::newCompCache(gameState);
 		rectCache->addType<components::Rectangle>();
 		rectCache->addType<components::Position>();
@@ -54,6 +60,7 @@ public:
 		topDogBubbleCache->addType<components::Position>();
 		topDogBubbleCache->addType<components::PhysicsData>();
 		topDogBubbleCache->addType<components::Circle>();
+
 	}
 
 	struct Body {
@@ -382,6 +389,7 @@ public:
 		std::vector<MoleculeConstraint>moleculeConstraints;
 		collectMoleculeConstraints(gameState, mulCache, moleculeConstraints);
 		collectMoleculeConstraints(gameState, fractionCache, moleculeConstraints);
+		collectMoleculeConstraints(gameState, equalsCache, moleculeConstraints);
 
 		// CREATE COLLISION PAIRS
 
@@ -414,21 +422,6 @@ public:
 			}
 		}
 
-		// attraction Forces
-		//for (std::vector<BodyPair>& pairVector : pairVectors) {
-		//	for (BodyPair& pair : pairVector) {
-		//		auto& unitA = pair.bodyA;
-		//		auto& unitB = pair.bodyB;
-		//		Vector3 posA = { unitA.pos->posX, unitA.pos->posY, unitA.pos->posZ };
-		//		Vector3 posB = { unitB.pos->posX, unitB.pos->posY, unitB.pos->posZ };
-		//		Vector3 axis = Vector3Normalize(Vector3Subtract(posB, posA));
-		//		Vector3 acc = Vector3Scale(axis, -attractionForce * gameState->frameTime);
-		//		unitA.physicsData->velX -= acc.x;
-		//		unitA.physicsData->velZ -= acc.z;
-		//		unitB.physicsData->velX += acc.x;
-		//		unitB.physicsData->velZ += acc.z;
-		//	}
-		//}
 
 		std::vector<Collision>collisions;
 		findSiblingCollisions(pairVectors, collisions);
@@ -451,29 +444,6 @@ public:
 
 		integrate(gameState->frameTime, bubbleCache);
 		integrate(gameState->frameTime, unitCache);
-
-		//const float stiffness = 0.2f;
-		//for (int iteration = 0; iteration < 8; ++iteration) {
-		//	for (std::vector<BodyPair>& pairVector : pairVectors) {
-		//		for (BodyPair& pair : pairVector) {
-		//			auto& unitA = pair.bodyA;
-		//			auto& unitB = pair.bodyB;
-		//			Vector3 posA = { unitA.pos->posX, unitA.pos->posY, unitA.pos->posZ };
-		//			Vector3 posB = { unitB.pos->posX, unitB.pos->posY, unitB.pos->posZ };
-		//			Vector3 axis = Vector3Normalize(Vector3Subtract(posB, posA));
-		//			float dist = Vector3Distance(posA, posB);
-		//			float penetration = (unitA.radius + unitB.radius - dist);
-		//			if (penetration > 0) {
-		//				Vector3 correction = Vector3Scale(axis, penetration * 0.5f * stiffness);
-		//				unitA.pos->posX -= correction.x;
-		//				unitA.pos->posZ -= correction.z;
-		//				unitB.pos->posX += correction.x;
-		//				unitB.pos->posZ += correction.z;
-		//			}
-
-		//		}
-		//	}
-		//}
 
 	}
 };

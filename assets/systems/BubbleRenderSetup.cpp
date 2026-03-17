@@ -15,6 +15,7 @@
 #include "BubbleRef.h"
 #include "Circle.h"
 #include "Cuboid.h"
+#include "BubbleEqualsComponent.h"
 
 
 class BubbleRenderSetup : public middle::MiddleGameplaySystem {
@@ -25,6 +26,7 @@ public:
 	components::CompCache* fractionCache;
 	components::CompCache* unitCache;
 	components::CompCache* cuboidCache;
+	components::CompCache* equalsCache;
 
 	void init(middle::GameState* gameState) {
 		bubbleCache = middle::newCompCache(gameState);
@@ -40,6 +42,9 @@ public:
 		cuboidCache = middle::newCompCache(gameState);
 		cuboidCache->addType<components::Cuboid>();
 		cuboidCache->addType<components::Position>();
+		equalsCache = middle::newCompCache(gameState);
+		equalsCache->addType<components::BubbleEqualsComponent>();
+		equalsCache->addType<components::LoopSociety>();
 	}
 	bool debugRendering = false;
 
@@ -248,6 +253,29 @@ public:
 			cuboidItem.color.a = 30;
 			cuboidItem.center = { pos->posX, pos->posY, pos->posZ };
 			gameState->renderData.push_back(cuboidItem);
+		}
+
+		auto equalsIt = equalsCache->begin<components::LoopSociety>();
+		for (int i = 0; i < equalsCache->getSize(); ++i) {
+			auto equalsLoop = *equalsIt;
+			assert(equalsLoop->loopMemberIds.size() == 2);
+			middle::Id& idA = equalsLoop->loopMemberIds[0];
+			middle::Id& idB = equalsLoop->loopMemberIds[1];
+			middle::Shape& shapeA = middle::getShape(gameState, idA.index);
+			middle::Shape& shapeB = middle::getShape(gameState, idB.index);
+			Vector3 posA = middle::getShapePosition(gameState, idA.index);
+			Vector3 posB = middle::getShapePosition(gameState, idB.index);
+			auto circleA = middle::getComponent<components::Circle>(shapeA);
+			auto circleB = middle::getComponent<components::Circle>(shapeB);
+			Vector3 axis = Vector3Normalize(Vector3Subtract(posB, posA));
+			Vector3 linePointA = posA + Vector3Scale(axis, circleA->radius);
+			Vector3 linePointB = posB + Vector3Scale(axis, -circleB->radius);
+			middle::RenderItem equalsLine;
+			equalsLine.type = middle::RenderItemType::LINE;
+			equalsLine.linePointA = linePointA;
+			equalsLine.linePointB = linePointB;
+			equalsLine.color = BLUE;
+			gameState->renderData.push_back(equalsLine);
 		}
 	}
 };

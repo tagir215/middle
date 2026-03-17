@@ -6,6 +6,7 @@
 #include "component_utils.h"
 #include "BubbleRef.h"
 #include "Circle.h"
+#include "BubbleEqualsComponent.h"
 
 namespace bubbleActions {
 
@@ -540,16 +541,37 @@ namespace bubbleActions {
 		}
 	}
 
+	bool validateAdditionInitialState(middle::GameState* gameState, ExecuteAddition* addition) {
+
+		middle::Id& parentAId = middle::getParent(gameState, addition->shapeToAddId);
+		middle::Id& parentBId = middle::getParent(gameState, addition->shapeToAddIntoId);
+		if (parentAId != parentBId) {
+			return false;
+		}
+		auto& parentShape = middle::getShape(gameState, parentAId.index);
+		auto parentMul = middle::getComponent<components::BubbleMultiplyComponent>(parentShape);
+		auto parentEquals = middle::getComponent<components::BubbleEqualsComponent>(parentShape);
+		if (parentMul || parentEquals) {
+			return false;
+		}
+
+		return true;
+	}
 
 	ExecuteAddition::ExecuteAddition(middle::Id shapeToAddId, middle::Id shapeToAddIntoId) {
 		this->shapeToAddId = shapeToAddId;
 		this->shapeToAddIntoId = shapeToAddIntoId;
 	}
 
+
 	void ExecuteAddition::execute(middle::GameState* gameState) {
 		auto& shapeToAdd = middle::getShape(gameState, shapeToAddId.index);
 		auto& shapeToAddInto = middle::getShape(gameState, shapeToAddIntoId.index);
 		auto addLoop = middle::getComponent<components::LoopSociety>(shapeToAdd);
+
+		if (!validateAdditionInitialState(gameState, this)) {
+			return;
+		}
 
 		auto copyA = std::make_unique<middle::EditorActionCopySingle>(shapeToAdd.id);
 		copyA->execute(gameState);
