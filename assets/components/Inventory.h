@@ -3,10 +3,12 @@
 #include "editor_file_utils.h"
 #define MIDDLEINVENTORY(X) \
 	X(horizontal) \
+	X(rows)
 
 namespace components {
 	struct Inventory : public middle::Serializable{
 		bool horizontal = false;
+		int rows = 1;
 
 		void serialize(std::ostream& ostream) override;
 		void deserialize(const std::vector<std::string>& buffer, int indexOffset) override;

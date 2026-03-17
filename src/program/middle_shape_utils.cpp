@@ -315,6 +315,19 @@ namespace middle {
 		return newShape;
 	}
 
+	Shape& registerAsGhostShape(GameState* gameState, middle::Shape shape) {
+		int freeIndex = findNextFreeGhostIndex(gameState);
+		shape.id.generation = gameState->shapes[freeIndex].id.generation + 1;
+		shape.id.index = freeIndex;
+		gameState->ids[freeIndex] = shape.id;
+		gameState->shapes[freeIndex] = shape;
+		middle::Shape& newShape = gameState->shapes[freeIndex];
+		for (auto& pair : newShape.componentMap) {
+			int typeId = pair.first;
+			gameState->componentTypeIdSetWithStructuralChanges.insert(typeId);
+		}
+		return newShape;
+	}
 
 	Shape& insertShape(GameState* gameState, middle::Id& id)
 	{

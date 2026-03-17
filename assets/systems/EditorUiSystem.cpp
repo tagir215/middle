@@ -220,7 +220,7 @@ public:
 				for (int i = 0; i < gameState->shapeNames.size(); ++i) {
 					auto name = gameState->shapeNames[i];
 					if (ImGui::Button(name.c_str())) {
-						middle::queueEditorAction(gameState, std::make_shared<middle::EditorActionImportScene>("../assets/scenes/", name));
+						middle::queueEditorAction(gameState, std::make_shared<middle::EditorActionImportScene>("../assets/shapes/", name));
 						ImGui::CloseCurrentPopup();
 					}
 				}

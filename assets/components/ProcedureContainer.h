@@ -41,7 +41,6 @@ namespace components {
 		int mode = procedureConstants::IDLE;
 		int direction = procedureConstants::FORWARD;
 		std::vector<procedureConstants::ProcedureTransition> procedureTransitionStack;
-		bool reset = false;
 		bool exitingLoop = false;
 
 		void serialize(std::ostream& ostream) override;

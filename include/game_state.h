@@ -82,6 +82,7 @@ namespace middle {
 		CONE,
 		RING,
 		CYLINDER,
+		CUBOID,
 	};
 
 	struct RenderItem {
@@ -149,6 +150,7 @@ namespace middle {
 		Vector2 mouseDragPos;
 		Matrix oldWorldM;
 		Matrix screenOrientorM;
+		Vector3 mouseIntersectTopPosition;
 		int activeScene = 0;
 		int vertexIndex = 0;
 		int loopIndex = 0;
@@ -167,6 +169,8 @@ namespace middle {
 		bool reset = false;
 		bool loaded = false;
 		bool quit = false;
+
+		const char* workingDir;
 		std::vector<RenderItem>renderData;
 		std::vector<PhysicsBody>physicsBodies;
 		std::vector<std::function<void()>>uiSetups;

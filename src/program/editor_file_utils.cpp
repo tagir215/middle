@@ -506,6 +506,7 @@ namespace middle {
 	}
 
 	void loadScene(GameState* gameState, const std::string& folder, const std::string& sceneName, bool import, const Vector3& pos, int sceneReferenceIndex) {
+
 		std::string path = folder + sceneName + ".midsc";
 
 		int indexOffset = 0;
@@ -649,6 +650,22 @@ namespace middle {
 			// move imported scene where it wants to be
 			moveShape(gameState, sceneReferenceIndex, pos);
 		}
+	}
+
+	std::vector<std::string> loadFileNamesInFolder(const std::string& folderPath)
+	{
+		std::vector<std::string>filenames;
+		try {
+			if (std::filesystem::exists(folderPath) && std::filesystem::is_directory(folderPath)) {
+				for (const auto& entry : std::filesystem::directory_iterator(folderPath)) {
+					filenames.push_back(entry.path().stem().string());
+				}
+			}
+		}
+		catch (const std::filesystem::filesystem_error& err){
+			std::cerr << "hmm" << err.what();
+		}
+		return filenames;
 	}
 
 	void loadEditorState(GameState* gameState) {

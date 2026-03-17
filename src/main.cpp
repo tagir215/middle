@@ -90,6 +90,7 @@ int main(void)
 	auto renderSystem = std::move(systemMap["RendererSystem"]);
 	auto fileDropSystem = std::move(systemMap["FileDropSystem"]);
 
+	gameState->workingDir = GetWorkingDirectory();
 
 	gameState->startGame = true;
 
@@ -108,6 +109,7 @@ int main(void)
 
 		gameState->screenWidth = GetScreenWidth();
 		gameState->screenHeight = GetScreenHeight();
+
 
 		fileDropSystem->update(gameState);
 

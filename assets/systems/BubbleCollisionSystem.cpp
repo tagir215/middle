@@ -37,6 +37,8 @@ public:
 
 	void update(middle::GameState* gameState) override {
 
+		return;
+
 		// get bubbles
 		std::vector<middle::Id> containerList;
 

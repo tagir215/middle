@@ -7,6 +7,7 @@
 #include "Rectangle.h"
 #include "Position.h"
 #include "Offset.h"
+#include "editor_file_utils.h"
 
 class InventorySystem : public middle::MiddleGameplaySystem {
 
@@ -18,6 +19,7 @@ public:
 		inventoryCache->addType<components::Inventory>();
 		inventoryCache->addType<components::LoopSociety>();
 		inventoryCache->addType<components::Rectangle>();
+
 	}
 
 

@@ -608,7 +608,11 @@ namespace middle {
 
 	void EditorActionRegisterId::execute(GameState* gameState)
 	{
-		// this exist just for undo
+		auto& shape = middle::getShape(gameState, id.index);
+		for (auto pair : shape.componentMap) {
+			int typeId = pair.first;
+			gameState->componentTypeIdSetWithStructuralChanges.insert(typeId);
+		}
 	}
 
 	void EditorActionRegisterId::undo(GameState* gameState)

@@ -41,6 +41,8 @@ namespace middle {
 	void deleteShapeRecursive(GameState* gameState, int index);
 	// add shape and updates generations
 	Shape& registerShape(GameState* gameState, middle::Shape shape);
+	// add shape and updates generations
+	Shape& registerAsGhostShape(GameState* gameState, middle::Shape shape);
 	// add shape, doesn't update generations
 	Shape& insertShape(GameState* gameState, middle::Id& id);
 	// adds not serialized ghost shape and updates generations

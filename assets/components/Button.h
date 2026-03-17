@@ -33,5 +33,6 @@ namespace bubbleButton{
 	inline int DONE = 6;
 	inline int BACK = 7;
 	inline int CONTINUE = 8;
+	inline int IMPORT_PROCEDURE = 9;
 }
 
