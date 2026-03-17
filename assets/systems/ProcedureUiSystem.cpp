@@ -66,23 +66,37 @@ public:
 			if (button->function == bubbleButton::IMPORT_PROCEDURE) {
 				std::string folder = "../bubbleData/procedures/";
 				std::string shapeName = text->text;
-				Vector3 mouseXZ = gameState->input.mouseXZ_PlanePos;
-				middle::Id loadedProcId = middle::loadShape(gameState, folder, shapeName, true, mouseXZ);
-				auto& procedureShape = middle::getShape(gameState, loadedProcId.index);
-				auto loadedPosition = middle::getComponent<components::Position>(procedureShape);
-				Vector3 loadedPos = { loadedPosition->posX, loadedPosition->posY, loadedPosition->posZ };
 
 				// shape the procedure is contained into
 				middle::Id& containerId = procedureImportContainerCache->relevantIdVector[0];
 				auto& containerShape = middle::getShape(gameState, containerId.index);
 				auto containerLoop = middle::getComponent<components::LoopSociety>(containerShape);
 				auto containerPos = middle::getComponent<components::Position>(containerShape);
+				auto procImportContainer = middle::getComponent<components::ProcedureImportContainer>(containerShape);
 				Vector3 targetPos = { containerPos->posX, containerPos->posY, containerPos->posZ };
-				if (containerLoop->loopMemberIds.size() > 0) {
-					middle::queueAction(gameState, std::make_shared<middle::EditorActionDeleteSingle>(containerId));
+
+				if (procImportContainer->loadedProcedureName == shapeName) {
+					middle::Id currentLoadedProcedureId = containerLoop->loopMemberIds[0];
+					middle::queueAction(gameState, std::make_shared<middle::EditorActionDeleteSingle>(currentLoadedProcedureId));
+					procImportContainer->loadedProcedureName = "";
 				}
-				middle::queueAction(gameState, std::make_shared<middle::EditorActionReparent>(containerId.index, loadedProcId.index));
-				middle::moveShape(gameState, loadedProcId.index, Vector3Subtract(targetPos, loadedPos));
+				else {
+					middle::Id loadedProcId = middle::loadShape(gameState, folder, shapeName, true, targetPos);
+					auto& procedureShape = middle::getShape(gameState, loadedProcId.index);
+					auto loadedPosition = middle::getComponent<components::Position>(procedureShape);
+					Vector3 loadedPos = { loadedPosition->posX, loadedPosition->posY, loadedPosition->posZ };
+					procImportContainer->loadedProcedureName = shapeName;
+
+					// remove current procedure if it exists
+					if (containerLoop->loopMemberIds.size() > 0) {
+						middle::Id currentLoadedProcedureId = containerLoop->loopMemberIds[0];
+						middle::queueAction(gameState, std::make_shared<middle::EditorActionDeleteSingle>(currentLoadedProcedureId));
+					}
+					middle::queueAction(gameState, std::make_shared<middle::EditorActionReparent>(containerId.index, loadedProcId.index));
+					middle::moveShape(gameState, loadedProcId.index, Vector3Subtract(targetPos, loadedPos));
+				}
+				procComp = nullptr;
+
 			}
 
 		}

@@ -5,6 +5,7 @@
 
 namespace components {
 	struct ProcedureImportContainer : public middle::Serializable{
+		std::string loadedProcedureName = "";
 
 		void serialize(std::ostream& ostream) override;
 		void deserialize(const std::vector<std::string>& buffer, int indexOffset) override;
