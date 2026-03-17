@@ -1,24 +1,24 @@
 __q  74_0
-UiNode
-LoopTag
-LoopSociety
-q  -1_0
-p  
-q  75_0
-q  80_2
-q  81_0
-q  82_2
-MouseSelectable
 MouseIntersectable
-MouseGrabbable
+MouseSelectable
+UiNode
 Position
 f  0.000000
 f  0.000000
 f  0.000000
+MouseGrabbable
+LoopTag
 Offset
 f  0.000000
 f  -500.000000
 f  0.000000
+LoopSociety
+q  -1_0
+p  
+q  75_0
+q  80_0
+q  81_0
+q  82_0
 Text
 s  ScoreScreen
 f  0.000000
@@ -31,29 +31,18 @@ f  0.000000
 f  1.000000
 b  1
 __q  82_0
+MouseGrabbable
 Position
-f  -58.111473
+f  -58.111511
 f  -0.000031
 f  46.188660
+MouseSelectable
 Sphere
 f  2.000000
+MouseIntersectable
 LoopSociety
 q  74_0
 p  
-PhysicsData
-f  1.000000
-f  1.000000
-f  1.000000
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.800000
-f  0.800000
-f  0.800000
-f  0.000000
-f  0.000000
-f  0.000000
-b  0
 Text
 s  SOLVED!
 f  0.000000
@@ -65,16 +54,6 @@ f  0.000000
 f  0.000000
 f  5.000000
 b  1
-MouseSelectable
-MouseGrabbable
-MouseIntersectable
-__q  81_0
-Position
-f  -58.111473
-f  -0.000031
-f  7.115906
-Sphere
-f  2.000000
 PhysicsData
 f  1.000000
 f  1.000000
@@ -89,9 +68,30 @@ f  0.000000
 f  0.000000
 f  0.000000
 b  0
-LoopSociety
-q  74_0
-p  
+__q  81_0
+MouseGrabbable
+Position
+f  -58.111511
+f  -0.000031
+f  7.115982
+MouseSelectable
+Sphere
+f  2.000000
+MouseIntersectable
+PhysicsData
+f  1.000000
+f  1.000000
+f  1.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.800000
+f  0.800000
+f  0.800000
+f  0.000000
+f  0.000000
+f  0.000000
+b  0
 Text
 s  SCORE 100/100
 f  0.000000
@@ -103,42 +103,42 @@ f  0.000000
 f  0.000000
 f  5.000000
 b  1
-MouseSelectable
-MouseGrabbable
-MouseIntersectable
-__q  80_0
-Position
-f  -17.201454
-f  -0.000031
-f  -12.379883
-Sphere
-f  2.000000
 LoopSociety
 q  74_0
 p  
+__q  80_0
+MouseGrabbable
+Position
+f  -17.201477
+f  -0.000031
+f  -12.379852
 MouseSelectable
+Sphere
+f  2.000000
+MouseIntersectable
 Rectangle
 f  300.000000
 f  200.000000
-MouseGrabbable
-MouseIntersectable
-__q  75_0
-Button
-i  8
-Position
-f  80.688713
-f  -0.000091
-f  -79.719116
-Sphere
-f  2.000000
 LoopSociety
 q  74_0
 p  
+__q  75_0
+Button
+i  8
 MouseSelectable
+MouseGrabbable
+Position
+f  80.688721
+f  -0.000092
+f  -79.719116
+Sphere
+f  2.000000
+MouseIntersectable
+LoopSociety
+q  74_0
+p  
 Circle
 f  20.000000
-MouseGrabbable
-MouseIntersectable
 Text
 s  CONTINUE
 f  0.000000

@@ -1,0 +1,73 @@
+__q  29_0
+LoopTag
+LoopSociety
+q  -1_0
+p  
+q  12_0
+q  70_0
+MouseSelectable
+MouseIntersectable
+Position
+f  0.000000
+f  0.000000
+f  0.000000
+MouseGrabbable
+Text
+s  ManipulationSystems
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  1.000000
+b  1
+__q  70_0
+Text
+s  BubbleModificationSystem
+f  255.000000
+f  255.000000
+f  255.000000
+f  255.000000
+f  2.000000
+f  0.000000
+f  10.000000
+f  10.000000
+b  1
+SystemReference
+s  BubbleModificationSystem
+LoopSociety
+q  29_2
+p  
+MouseSelectable
+MouseIntersectable
+MouseGrabbable
+Position
+f  38.595589
+f  -0.000092
+f  -103.022644
+__q  12_0
+Text
+s  BubbleManipulationSystem
+f  255.000000
+f  255.000000
+f  255.000000
+f  255.000000
+f  2.000000
+f  0.000000
+f  10.000000
+f  10.000000
+b  1
+SystemReference
+s  BubbleManipulationSystem
+LoopSociety
+q  29_2
+p  
+MouseSelectable
+MouseGrabbable
+Position
+f  40.194946
+f  0.000153
+f  65.445984
+MouseIntersectable

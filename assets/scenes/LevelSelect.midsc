@@ -15,23 +15,25 @@ f  10.000000
 b  1
 Sphere
 f  0.000000
-MouseGrabbable
 Position
 f  -160.000000
 f  0.000000
 f  -100.000000
+MouseGrabbable
 MouseIntersectable
+SystemReference
+s  UiRenderSetup
 LoopSociety
 q  -1_0
 p  
-SystemReference
-s  UiRenderSetup
 __q  1_0
+MouseGrabbable
 Position
 f  0.000000
 f  -499.999939
 f  0.000000
-MouseGrabbable
+Sphere
+f  2.000000
 CameraComponent
 f  0.000000
 f  9500.000000
@@ -42,8 +44,6 @@ f  1.000000
 f  45.000000
 i  0
 b  1
-Sphere
-f  2.000000
 LoopSociety
 q  -1_0
 p  
@@ -76,16 +76,16 @@ p
 SystemReference
 s  GridSystem
 __q  3_0
-Circle
-f  20.000000
 LoopSociety
 q  -1_0
 p  
+Circle
+f  20.000000
+MouseGrabbable
 Position
 f  -36.000000
 f  0.000000
 f  0.000000
-MouseGrabbable
 Sphere
 f  2.000000
 MouseIntersectable
@@ -109,17 +109,17 @@ GridElement
 Node
 __q  4_0
 MouseSelectable
-Position
-f  51.635551
-f  -0.000000
-f  -125.580559
 MouseGrabbable
+Position
+f  31.692390
+f  -0.000000
+f  -129.107346
 MouseIntersectable
-SystemReference
-s  BubbleIntersectSystem
 LoopSociety
 q  -1_0
 p  
+SystemReference
+s  BubbleIntersectSystem
 Text
 s  BubbleIntersectSystem
 f  255.000000
@@ -131,43 +131,31 @@ f  0.000000
 f  10.000000
 f  10.000000
 b  1
-__q  5_0
-Position
-f  32.924171
-f  0.000061
-f  -195.497742
-MouseGrabbable
-MouseSelectable
-MouseIntersectable
-Reference
-s  BubbleAlgebraProblemSystems
-s  ../assets/shapes/
-LoopSociety
 __q  6_0
-Position
-f  0.204359
-f  -0.000244
-f  11.541653
 MouseGrabbable
+Position
+f  38.744041
+f  -0.000275
+f  -57.098633
 Sphere
 f  4.000000
-MouseSelectable
 ConfigComponent
-MouseIntersectable
+MouseSelectable
 EditorConfigs
 i  18
 i  8
+MouseIntersectable
 __q  7_0
-Circle
-f  20.000000
 LoopSociety
 q  -1_0
 p  
+Circle
+f  20.000000
+MouseGrabbable
 Position
 f  36.000000
 f  0.000000
 f  72.000000
-MouseGrabbable
 Sphere
 f  2.000000
 Text
@@ -190,16 +178,16 @@ s  Problem2
 GridElement
 Node
 __q  8_0
-Circle
-f  20.000000
 LoopSociety
 q  -1_0
 p  
+Circle
+f  20.000000
+MouseGrabbable
 Position
 f  -36.000000
 f  0.000000
 f  108.000000
-MouseGrabbable
 Sphere
 f  2.000000
 MouseIntersectable
@@ -222,16 +210,16 @@ s  Problem3
 GridElement
 Node
 __q  9_0
-Circle
-f  20.000000
 LoopSociety
 q  -1_0
 p  
+Circle
+f  20.000000
+MouseGrabbable
 Position
 f  18.000000
 f  0.000000
 f  162.000000
-MouseGrabbable
 Sphere
 f  2.000000
 Text
@@ -254,16 +242,16 @@ s  Problem4
 GridElement
 Node
 __q  10_0
-Circle
-f  20.000000
 LoopSociety
 q  -1_0
 p  
+Circle
+f  20.000000
+MouseGrabbable
 Position
 f  54.000000
 f  0.000000
 f  234.000000
-MouseGrabbable
 Sphere
 f  2.000000
 MouseIntersectable
@@ -284,3 +272,75 @@ i  -1
 LevelReference
 s  Problem5
 GridElement
+__q  11_0
+MouseSelectable
+Position
+f  31.304356
+f  -0.000000
+f  -160.462723
+MouseGrabbable
+MouseIntersectable
+SystemReference
+s  MouseClickSystem
+LoopSociety
+q  -1_0
+p  
+Text
+s  MouseClickSystem
+f  255.000000
+f  255.000000
+f  255.000000
+f  255.000000
+f  2.000000
+f  0.000000
+f  10.000000
+f  10.000000
+b  1
+__q  12_0
+MouseSelectable
+Position
+f  -31.333454
+f  -0.000061
+f  -199.516510
+MouseGrabbable
+MouseIntersectable
+SystemReference
+s  LevelNavigationSystem
+LoopSociety
+q  -1_0
+p  
+Text
+s  LevelNavigationSystem
+f  255.000000
+f  255.000000
+f  255.000000
+f  255.000000
+f  2.000000
+f  0.000000
+f  10.000000
+f  10.000000
+b  1
+__q  13_0
+MouseSelectable
+Position
+f  80.270020
+f  0.000061
+f  -204.441315
+MouseGrabbable
+MouseIntersectable
+SystemReference
+s  InventorySystem
+LoopSociety
+q  -1_0
+p  
+Text
+s  InventorySystem
+f  255.000000
+f  255.000000
+f  255.000000
+f  255.000000
+f  2.000000
+f  0.000000
+f  10.000000
+f  10.000000
+b  1

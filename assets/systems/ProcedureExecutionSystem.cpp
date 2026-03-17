@@ -35,7 +35,7 @@ public:
 		procedureCache->addType<components::TimerComponent>(components::NOTINTERESTED);
 	}
 
-	void getOneInput(middle::GameState* gameState, middle::Shape& funcShape, components::InputVariable& inputVariable) {
+	bool getOneInput(middle::GameState* gameState, middle::Shape& funcShape, components::InputVariable& inputVariable) {
 		auto variablesLoop = middle::getComponent<components::LoopSociety>(funcShape);
 		assert(variablesLoop);
 		for (middle::Id& childId : variablesLoop->loopMemberIds) {
@@ -46,12 +46,14 @@ public:
 			}
 
 			inputVariable = *inputVar;
-			return;
+
+			return inputVariable.unitRef.index != middle::UNASSIGNED;
 		}
 		assert(false);
+		return false;
 	}
 
-	void getTwoInputs(middle::GameState* gameState, middle::Shape& funcShape, components::InputVariable& varA, components::InputVariable& varB) {
+	bool getTwoInputs(middle::GameState* gameState, middle::Shape& funcShape, components::InputVariable& varA, components::InputVariable& varB) {
 		auto variablesLoop = middle::getComponent<components::LoopSociety>(funcShape);
 		assert(variablesLoop);
 		bool varAFound = false;
@@ -68,10 +70,11 @@ public:
 			}
 			else {
 				varB = *inputVar;
-				return;
+				return varB.unitRef.index != middle::UNASSIGNED;
 			}
 		}
 		assert(false);
+		return false;
 	}
 
 	void getOneOutput(middle::GameState* gameState, middle::Shape& funcShape, components::OutputVariable& var) {
@@ -154,7 +157,9 @@ public:
 		if (findTypeId >= 0) {
 			components::InputVariable input;
 			components::OutputVariable output;
-			getOneInput(gameState, funcShape, input);
+			if (!getOneInput(gameState, funcShape, input)) {
+				return false;
+			}
 			getOneOutput(gameState, funcShape, output);
 			middle::Id foundId = searchFromBubble(gameState, input.unitRef, findTypeId);
 			bubbleActions::UpdateVariable(output.label, [foundId]() {return foundId;}).execute(gameState);
@@ -180,7 +185,9 @@ public:
 			components::InputVariable varA;
 			components::InputVariable varB;
 			components::OutputVariable output;
-			getTwoInputs(gameState, funcShape, varA, varB);
+			if (!getTwoInputs(gameState, funcShape, varA, varB)) {
+				return;
+			}
 			getOneOutput(gameState, funcShape, output);
 			assert(varA.unitRef.index != middle::UNASSIGNED);
 			assert(varB.unitRef.index != middle::UNASSIGNED);
@@ -232,7 +239,9 @@ public:
 		else if (function->type == functionTypes::COPY) {
 			components::InputVariable input;
 			components::OutputVariable output;
-			getOneInput(gameState, funcShape, input);
+			if (!getOneInput(gameState, funcShape, input)) {
+				return;
+			}
 			getOneOutput(gameState, funcShape, output);
 			auto copyAction = std::make_shared<middle::EditorActionCopySingle>(input.unitRef);
 			auto update = std::make_shared<bubbleActions::UpdateVariable>(output.label, [copyAction] {return copyAction->resultId;});
@@ -262,7 +271,9 @@ public:
 		else if (function->type == functionTypes::NEW_TERM) {
 			components::InputVariable input;
 			components::OutputVariable output;
-			getOneInput(gameState, funcShape, input);
+			if (!getOneInput(gameState, funcShape, input)) {
+				return;
+			}
 			getOneOutput(gameState, funcShape, output);
 			assert(input.unitRef.index != middle::UNASSIGNED);
 			middle::Id topBubbleId = bubbleActions::topLevelBubble(gameState);
@@ -287,7 +298,9 @@ public:
 		else if (function->type == functionTypes::NEW_MULTERM) {
 			components::InputVariable input;
 			components::OutputVariable output;
-			getOneInput(gameState, funcShape, input);
+			if (!getOneInput(gameState, funcShape, input)) {
+				return;
+			}
 			getOneOutput(gameState, funcShape, output);
 			assert(input.unitRef.index != middle::UNASSIGNED);
 			middle::Id topBubbleId = bubbleActions::topLevelBubble(gameState);
@@ -311,7 +324,9 @@ public:
 
 		else if (function->type == functionTypes::POP) {
 			components::InputVariable input;
-			getOneInput(gameState, funcShape, input);
+			if (!getOneInput(gameState, funcShape, input)) {
+				return;
+			}
 			assert(input.unitRef.index != middle::UNASSIGNED);
 			auto popAction = std::make_shared<bubbleActions::Pop>(input.unitRef);
 			middle::queueAction(gameState, popAction);
@@ -323,7 +338,9 @@ public:
 		else if (function->type == functionTypes::MUL_ONE) {
 			components::InputVariable input;
 			components::OutputVariable output;
-			getOneInput(gameState, funcShape, input);
+			if (!getOneInput(gameState, funcShape, input)) {
+				return;
+			}
 			getOneOutput(gameState, funcShape, output);
 			assert(input.unitRef.index != middle::UNASSIGNED);
 			auto mulOneAction = std::make_shared<bubbleActions::MulOne>(input.unitRef);
@@ -347,7 +364,9 @@ public:
 			components::InputVariable inputA;
 			components::InputVariable inputB;
 			components::OutputVariable output;
-			getTwoInputs(gameState, funcShape, inputA, inputB);
+			if (!getTwoInputs(gameState, funcShape, inputA, inputB)) {
+				return;
+			}
 			getOneOutput(gameState, funcShape, output);
 			assert(inputA.unitRef.index != middle::UNASSIGNED);
 			assert(inputB.unitRef.index != middle::UNASSIGNED);
@@ -373,7 +392,9 @@ public:
 			components::InputVariable input;
 			components::OutputVariable outputA;
 			components::OutputVariable outputB;
-			getOneInput(gameState, funcShape, input);
+			if (!getOneInput(gameState, funcShape, input)) {
+				return;
+			}
 			getTwoOutputs(gameState, funcShape, outputA, outputB);
 			assert(input.unitRef.index != middle::UNASSIGNED);
 			auto compressAction = std::make_shared<bubbleActions::Compress>(input.unitRef);

@@ -19,6 +19,7 @@
 #include "editor_actions.h"
 #include "Sphere.h"
 #include "ProcedureImportContainer.h"
+#include "bubble_utils.h"
 
 
 class ProcedureUiSystem : public middle::MiddleGameplaySystem {
@@ -70,20 +71,26 @@ public:
 				// shape the procedure is contained into
 				middle::Id& containerId = procedureImportContainerCache->relevantIdVector[0];
 				auto& containerShape = middle::getShape(gameState, containerId.index);
-				auto containerLoop = middle::getComponent<components::LoopSociety>(containerShape);
-				auto containerPos = middle::getComponent<components::Position>(containerShape);
 				auto procImportContainer = middle::getComponent<components::ProcedureImportContainer>(containerShape);
-				Vector3 targetPos = { containerPos->posX, containerPos->posY, containerPos->posZ };
 
 				if (procImportContainer->loadedProcedureName == shapeName) {
+					auto containerLoop = middle::getComponent<components::LoopSociety>(containerShape);
 					middle::Id currentLoadedProcedureId = containerLoop->loopMemberIds[0];
 					middle::queueAction(gameState, std::make_shared<middle::EditorActionDeleteSingle>(currentLoadedProcedureId));
 					procImportContainer->loadedProcedureName = "";
 				}
 				else {
-					middle::Id loadedProcId = middle::loadShape(gameState, folder, shapeName, true, targetPos);
-					auto& procedureShape = middle::getShape(gameState, loadedProcId.index);
-					auto loadedPosition = middle::getComponent<components::Position>(procedureShape);
+					middle::Id loadedProcReferenceId = middle::loadShape(gameState, folder, shapeName, true, {0,0,0});
+					// update pointer because loading shape messes component arrays
+					procImportContainer = middle::getComponent<components::ProcedureImportContainer>(containerShape);
+
+					auto containerLoop = middle::getComponent<components::LoopSociety>(containerShape);
+					auto containerPos = middle::getComponent<components::Position>(containerShape);
+
+					Vector3 targetPos = { containerPos->posX, containerPos->posY, containerPos->posZ };
+					auto& loadedProcReferenceShape = middle::getShape(gameState, loadedProcReferenceId.index);
+					auto loadedPosition = middle::getComponent<components::Position>(loadedProcReferenceShape);
+					auto loadedReferenceLoop = middle::getComponent<components::LoopSociety>(loadedProcReferenceShape);
 					Vector3 loadedPos = { loadedPosition->posX, loadedPosition->posY, loadedPosition->posZ };
 					procImportContainer->loadedProcedureName = shapeName;
 
@@ -92,9 +99,25 @@ public:
 						middle::Id currentLoadedProcedureId = containerLoop->loopMemberIds[0];
 						middle::queueAction(gameState, std::make_shared<middle::EditorActionDeleteSingle>(currentLoadedProcedureId));
 					}
-					middle::queueAction(gameState, std::make_shared<middle::EditorActionReparent>(containerId.index, loadedProcId.index));
-					middle::moveShape(gameState, loadedProcId.index, Vector3Subtract(targetPos, loadedPos));
+
+					middle::queueAction(gameState, std::make_shared<middle::EditorActionReparent>(containerId.index, loadedProcReferenceId.index));
+					middle::moveShape(gameState, loadedProcReferenceId.index, Vector3Subtract(targetPos, loadedPos));
+
+					// child of reference is the actual object
+					middle::Id loadedProcId = loadedReferenceLoop->loopMemberIds[0];
+
+					// resize the container to fit the procedure
+					middle::queueAction(gameState, std::make_shared<middle::CustomAction>([loadedProcId, containerId](middle::GameState* gameState) {
+						float left, right, bottom, top;
+						bubble::loopChildrenOnlyRectBoundingBox(gameState, loadedProcId, &left, &right, &bottom, &top);
+						auto& procContainer = middle::getShape(gameState, containerId.index);
+						auto containerRect = middle::getComponent<components::Rectangle>(procContainer);
+						containerRect->width = right - left;
+						containerRect->height = top - bottom;
+						}));
 				}
+
+
 				procComp = nullptr;
 
 			}
