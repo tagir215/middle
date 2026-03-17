@@ -1030,58 +1030,6 @@ f  1.000000
 b  1
 Circle
 f  10.000000
-__q  35_0
-LoopSociety
-q  40_0
-p  
-q  36_0
-q  38_0
-q  39_0
-BubbleComponent
-LoopTag
-MouseGrabbable
-Position
-f  222.607147
-f  -899.459656
-f  -531.729980
-MouseSelectable
-InventoryItem
-i  2
-MouseIntersectable
-BubbleRef
-Circle
-f  30.000000
-__q  36_0
-PhysicsData
-f  1.000000
-f  1.000000
-f  1.000000
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.800000
-f  0.800000
-f  0.800000
-f  0.000000
-f  0.000000
-f  0.000000
-b  0
-LoopSociety
-q  35_0
-p  
-Sphere
-f  2.000000
-MouseSelectable
-BubbleUnit
-i  1
-MouseIntersectable
-MouseGrabbable
-Position
-f  211.982880
-f  -899.459656
-f  -527.875061
-Circle
-f  2.000000
 __q  37_0
 SystemReference
 s  BubbleCameraSystem
@@ -1106,88 +1054,6 @@ f  10.000000
 f  10.000000
 b  1
 MouseIntersectable
-__q  38_0
-PhysicsData
-f  1.000000
-f  1.000000
-f  1.000000
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.800000
-f  0.800000
-f  0.800000
-f  0.000000
-f  0.000000
-f  0.000000
-b  0
-LoopSociety
-q  35_0
-p  
-Sphere
-f  2.000000
-MouseSelectable
-BubbleUnit
-i  1
-MouseIntersectable
-MouseGrabbable
-Position
-f  231.659332
-f  -899.459656
-f  -532.119873
-Circle
-f  2.000000
-__q  39_0
-PhysicsData
-f  1.000000
-f  1.000000
-f  1.000000
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.800000
-f  0.800000
-f  0.800000
-f  0.000000
-f  0.000000
-f  0.000000
-b  0
-LoopSociety
-q  35_0
-p  
-Sphere
-f  2.000000
-MouseSelectable
-BubbleUnit
-i  1
-MouseIntersectable
-MouseGrabbable
-Position
-f  217.041656
-f  -899.459656
-f  -540.424500
-Circle
-f  2.000000
-__q  40_0
-LoopTag
-Rectangle
-f  250.000000
-f  60.000000
-MouseGrabbable
-Position
-f  264.273804
-f  -899.459656
-f  -531.729980
-LoopSociety
-q  73_2
-p  
-q  35_0
-q  58_0
-MouseSelectable
-MouseIntersectable
-Inventory
-b  1
-i  1
 __q  41_0
 Text
 s  BubbleInventorySystem
@@ -1215,12 +1081,12 @@ MouseGrabbable
 __q  42_0
 MouseGrabbable
 Position
-f  8.869095
-f  -899.459778
-f  -532.118774
+f  134.251480
+f  -899.459900
+f  -529.914368
 LoopTag
 Rectangle
-f  250.000000
+f  500.000000
 f  60.000000
 LoopSociety
 q  73_2
@@ -1235,9 +1101,9 @@ i  1
 __q  43_0
 MouseGrabbable
 Position
-f  -32.797569
-f  -899.459778
-f  -532.118774
+f  92.584831
+f  -899.459900
+f  -529.914368
 LoopSociety
 q  42_0
 p  
@@ -1253,6 +1119,20 @@ MouseIntersectable
 BubbleRef
 Circle
 f  30.000000
+PhysicsData
+f  1.000000
+f  1.000000
+f  1.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+b  0
 __q  44_0
 Sphere
 f  2.000000
@@ -1279,9 +1159,9 @@ f  0.000000
 b  0
 MouseGrabbable
 Position
-f  -43.421349
-f  -899.459778
-f  -528.263916
+f  81.961044
+f  -899.459900
+f  -526.059509
 Circle
 f  2.000000
 __q  45_0
@@ -1310,9 +1190,9 @@ f  0.000000
 b  0
 MouseGrabbable
 Position
-f  -23.745140
-f  -899.459778
-f  -532.508667
+f  101.637260
+f  -899.459900
+f  -530.304260
 Circle
 f  2.000000
 __q  46_0
@@ -1390,9 +1270,9 @@ f  0.000000
 b  0
 MouseGrabbable
 Position
-f  -38.362633
-f  -899.459778
-f  -540.813293
+f  87.019768
+f  -899.459900
+f  -538.608887
 Circle
 f  2.000000
 __q  50_0
@@ -1545,140 +1425,12 @@ f  1.000000
 b  1
 Circle
 f  10.000000
-__q  54_0
-MouseGrabbable
-Position
-f  307.049377
-f  -899.459900
-f  -525.753357
-LoopTag
-MouseSelectable
-FractionalComponent
-LoopSociety
-q  58_0
-p  
-q  55_0
-q  56_0
-q  57_0
-MouseIntersectable
-__q  55_0
-Sphere
-f  2.000000
-MouseSelectable
-BubbleUnit
-i  0
-MouseIntersectable
-LoopSociety
-q  54_0
-p  
-PhysicsData
-f  1.000000
-f  1.000000
-f  1.000000
-f  -0.000097
-f  0.000000
-f  0.000023
-f  0.800000
-f  0.800000
-f  0.800000
-f  0.000000
-f  0.000000
-f  0.000000
-b  0
-MouseGrabbable
-Position
-f  298.427063
-f  -899.459900
-f  -521.799133
-Circle
-f  2.000000
-__q  56_0
-Sphere
-f  2.000000
-MouseSelectable
-BubbleUnit
-i  0
-MouseIntersectable
-LoopSociety
-q  54_0
-p  
-PhysicsData
-f  1.000000
-f  1.000000
-f  1.000000
-f  -0.000267
-f  0.000000
-f  -0.000310
-f  0.800000
-f  0.800000
-f  0.800000
-f  0.000000
-f  0.000000
-f  0.000000
-b  0
-MouseGrabbable
-Position
-f  312.067017
-f  -899.459900
-f  -524.953735
-Circle
-f  2.000000
-__q  57_0
-Sphere
-f  2.000000
-MouseSelectable
-BubbleUnit
-i  1
-MouseIntersectable
-LoopSociety
-q  54_0
-p  
-PhysicsData
-f  1.000000
-f  1.000000
-f  1.000000
-f  0.000364
-f  0.000000
-f  0.000288
-f  0.800000
-f  0.800000
-f  0.800000
-f  0.000000
-f  0.000000
-f  0.000000
-b  0
-MouseGrabbable
-Position
-f  301.082947
-f  -899.459900
-f  -533.634277
-Circle
-f  2.000000
-__q  58_0
-LoopSociety
-q  40_0
-p  
-q  54_0
-BubbleComponent
-LoopTag
-MouseGrabbable
-Position
-f  305.940491
-f  -899.459656
-f  -531.729980
-MouseSelectable
-InventoryItem
-i  2
-MouseIntersectable
-BubbleRef
-Circle
-f  30.000000
 __q  59_0
 MouseGrabbable
 Position
-f  50.535767
-f  -899.459778
-f  -532.118774
+f  175.918152
+f  -899.459900
+f  -529.914368
 LoopSociety
 q  42_0
 p  
@@ -1692,6 +1444,20 @@ MouseIntersectable
 BubbleRef
 Circle
 f  30.000000
+PhysicsData
+f  1.000000
+f  1.000000
+f  1.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+b  0
 __q  60_0
 MouseSelectable
 FractionalComponent
@@ -1704,9 +1470,9 @@ q  63_0
 LoopTag
 MouseGrabbable
 Position
-f  52.178940
-f  -899.459900
-f  -527.172180
+f  177.561325
+f  -899.460022
+f  -524.967773
 MouseIntersectable
 __q  61_0
 PhysicsData
@@ -1734,9 +1500,9 @@ i  0
 MouseIntersectable
 MouseGrabbable
 Position
-f  43.667496
-f  -899.459900
-f  -523.094177
+f  169.049881
+f  -899.460022
+f  -520.889771
 Circle
 f  2.000000
 __q  62_0
@@ -1765,9 +1531,9 @@ i  0
 MouseIntersectable
 MouseGrabbable
 Position
-f  57.307449
-f  -899.459900
-f  -526.248779
+f  182.689835
+f  -899.460022
+f  -524.044373
 Circle
 f  2.000000
 __q  63_0
@@ -1796,9 +1562,9 @@ i  1
 MouseIntersectable
 MouseGrabbable
 Position
-f  46.323395
-f  -899.459900
-f  -534.929260
+f  171.705780
+f  -899.460022
+f  -532.724854
 Circle
 f  2.000000
 __q  64_0
@@ -2168,7 +1934,6 @@ q  -1_0
 p  
 q  31_0
 q  42_0
-q  40_0
 q  77_0
 q  76_0
 q  83_0

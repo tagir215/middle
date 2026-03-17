@@ -15,6 +15,7 @@
 #include "Circle.h"
 #include "Rectangle.h"
 #include "PlacementComponent.h"
+#include "InventoryItem.h"
 
 class BubbleIntersectSystem : public middle::MiddleGameplaySystem {
 public:
@@ -185,7 +186,8 @@ public:
 				continue;
 			}
 
-			if (uiIntersected) {
+			bool isInventoryItem = middle::getComponent<components::InventoryItem>(shape) != nullptr;
+			if (uiIntersected && !isInventoryItem) {
 				continue;
 			}
 

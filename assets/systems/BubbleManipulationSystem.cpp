@@ -29,6 +29,7 @@ public:
 		bubbleCache = middle::newCompCache(gameState);
 		bubbleCache->addType<components::MouseGrabbable>();
 		bubbleCache->addType<components::BubbleComponent>();
+		bubbleCache->addType<components::InventoryItem>(components::NOTINTERESTED);
 		unitCache = middle::newCompCache(gameState);
 		unitCache->addType<components::MouseGrabbable>();
 		unitCache->addType<components::BubbleUnit>();
@@ -61,7 +62,7 @@ public:
 			middle::Id& parentId = middle::getParent(gameState, shape.id);
 			if (parentId.index != middle::UNASSIGNED) {
 				// copy as grabbed
-				middle::Id copyId = middle::deepCopyShape(gameState, shape.id.index, middle::UNASSIGNED);
+				middle::Id copyId = middle::deepCopyShape(gameState, shape.id.index);
 				auto& copyShape = middle::getShape(gameState, copyId.index);
 				auto copyGrabbable = middle::getComponent<components::MouseGrabbable>(copyShape);
 				copyGrabbable->grabbing = true;
