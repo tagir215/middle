@@ -1193,7 +1193,10 @@ namespace bubbleActions {
 			middle::Id toLinkIntoId;
 
 			if (children.size() == 1) {
-				toLinkIntoId = children[0];
+				std::vector<middle::Id>multiplicationMembers;
+				middle::getChildren(gameState, children[0], multiplicationMembers);
+				assert(multiplicationMembers.size() >= 2);
+				toLinkIntoId = multiplicationMembers[0];
 			}
 			// create new container bubble, because the top dog bubble should be alone
 			else if (children.size() > 1) {
