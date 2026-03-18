@@ -8,11 +8,14 @@
 #include "BubbleMultiplyComponent.h"
 #include "bubble_actions.h"
 #include "InventoryItem.h"
+#include "component_utils.h"
+#include "PlacementComponent.h"
 
 class BubbleModificationSystem : public middle::MiddleGameplaySystem {
 public:
 	components::CompCache* deletionCache;
 	components::CompCache* intersectableCache;
+	components::CompCache* placementCache;
 
 	void init(middle::GameState* gameState) {
 		deletionCache = middle::newCompCache(gameState);
@@ -22,6 +25,10 @@ public:
 		intersectableCache = middle::newCompCache(gameState);
 		intersectableCache->addType<components::MouseIntersectable>();
 
+		placementCache = middle::newCompCache(gameState);
+		placementCache->addType<components::BubbleComponent>();
+		placementCache->addType<components::PlacementComponent>();
+		placementCache->addType<components::IdRef>();
 	}
 
 	bool isMultiplicationConnection(middle::GameState* gameState, middle::Shape& parentShape) {
@@ -49,11 +56,48 @@ public:
 		}
 	}
 
-	void inventoryAction(middle::GameState* gameState, int actionType, middle::Shape& intersectedShape) {
+	middle::Id copyOfInventoryItem(middle::GameState* gameState, middle::Id& inventoryItemId) {
+		middle::Id& copyId = middle::deepCopyShape(gameState, inventoryItemId.index);
+		middle::queueComponentDeletion<components::InventoryItem>(gameState, copyId);
+		middle::queueComponentDeletion<components::IdRef>(gameState, copyId);
+		middle::Shape& shape = middle::getShape(gameState, copyId.index);
+		return copyId;
+	}
+
+
+	void inventoryAction(middle::GameState* gameState, int actionType, middle::Id& refId, middle::Shape& intersectedShape) {
 		std::shared_ptr<middle::EditorActionContainer>action;
 
+		if (actionType == bubbleInventoryitemType::NEW_ADDITION_TERM) {
+			middle::Id copyId = copyOfInventoryItem(gameState, refId);
+			auto registerAction = std::make_shared<middle::EditorActionRegisterId>(copyId);
+			auto newTermAction = std::make_shared<bubbleActions::NewAdditionTerm>(intersectedShape.id, copyId, gameState->input.mouseXZ_PlanePos);
+			action = std::make_shared < middle::CustomActionWithUndo>(
+				[registerAction, newTermAction](middle::GameState* gameState) {
+					registerAction->execute(gameState);
+					newTermAction->execute(gameState);
+				},
+				[registerAction, newTermAction](middle::GameState* gameState) {
+					newTermAction->undo(gameState);
+					registerAction->undo(gameState);
+				});
+		}
+		else if (actionType == bubbleInventoryitemType::NEW_MULTIPLICATION_TERM) {
+			middle::Id copyId = copyOfInventoryItem(gameState, refId);
+			auto registerAction = std::make_shared<middle::EditorActionRegisterId>(copyId);
+			auto newTermAction = std::make_shared<bubbleActions::NewMultiplicationTerm>(intersectedShape.id, copyId, gameState->input.mouseXZ_PlanePos);
+			action = std::make_shared < middle::CustomActionWithUndo>(
+				[registerAction, newTermAction](middle::GameState* gameState) {
+					registerAction->execute(gameState);
+					newTermAction->execute(gameState);
+				},
+				[registerAction, newTermAction](middle::GameState* gameState) {
+					newTermAction->undo(gameState);
+					registerAction->undo(gameState);
+				});
+		}
 		// pop as long as not multiplication
-		if (actionType == bubbleInventoryitemType::POP) {
+		else if (actionType == bubbleInventoryitemType::POP) {
 			middle::Id& parentId = middle::getParent(gameState, intersectedShape.id);
 			if (parentId.index == middle::UNASSIGNED) {
 				return;
@@ -104,66 +148,71 @@ public:
 
 	void update(middle::GameState* gameState) override {
 
-		auto deletionIt = deletionCache->begin<components::DeleteComponent>();
-		auto idRefIt = deletionCache->begin<components::IdRef>();
+		for (int i = 0; i < deletionCache->getSize(); ++i) {
 
-		middle::Id shapeIdForDeletion;
-		if(deletionCache->getSize() > 0){
-			shapeIdForDeletion = deletionCache->relevantIdVector[0];
-		}
 
-		if (shapeIdForDeletion.index == middle::UNASSIGNED) {
-			return;
-		}
+			auto deletionIt = deletionCache->begin<components::DeleteComponent>();
+			auto idRefIt = deletionCache->begin<components::IdRef>();
+			auto deletion = *deletionIt;
+			auto ref = *idRefIt;
 
-		auto& shapeForDeletion = middle::getShape(gameState, shapeIdForDeletion.index);
-		auto ref = middle::getComponent<components::IdRef>(shapeForDeletion);
-		if (!middle::isShapeAlive(gameState, ref->idRef.index)) {
-			return;
-		}
-		auto& refShape = middle::getShape(gameState, ref->idRef.index);
-		middle::Id refParentId = middle::getParent(gameState, refShape.id);
-		assert(refShape.id.index != middle::UNASSIGNED);
+			middle::Id shapeIdForDeletion;
+			if (deletionCache->getSize() > 0) {
+				shapeIdForDeletion = deletionCache->relevantIdVector[0];
+			}
 
-		auto inventoryItem = middle::getComponent<components::InventoryItem>(refShape);
+			if (shapeIdForDeletion.index == middle::UNASSIGNED) {
+				return;
+			}
 
-		auto intersectableIt = intersectableCache->begin<components::MouseIntersectable>();
-		for (int i = 0; i < intersectableCache->getSize(); ++i) {
-			auto intersectable = *intersectableIt;
+			auto& shapeForDeletion = middle::getShape(gameState, shapeIdForDeletion.index);
+			if (!middle::isShapeAlive(gameState, ref->idRef.index)) {
+				return;
+			}
+			auto& refShape = middle::getShape(gameState, ref->idRef.index);
+			middle::Id refParentId = middle::getParent(gameState, refShape.id);
+			assert(refShape.id.index != middle::UNASSIGNED);
 
-			auto& draggedCopyShape = middle::getShape(gameState, intersectableCache->relevantIdVector[i].index);
-			middle::Id parentId = middle::getParent(gameState, draggedCopyShape.id);
+			auto inventoryItem = middle::getComponent<components::InventoryItem>(refShape);
 
-			// check if there's parent, the parent is not a fraction
-			if (parentId.index != middle::UNASSIGNED) {
-				auto parentShape = middle::getShape(gameState, parentId.index);
-				auto fraction = middle::getComponent<components::FractionalComponent>(parentShape);
-				if (fraction) {
+			auto intersectableIt = intersectableCache->begin<components::MouseIntersectable>();
+			for (int i = 0; i < intersectableCache->getSize(); ++i) {
+				auto intersectable = *intersectableIt;
+
+				auto& intersectableShape = middle::getShape(gameState, intersectableCache->relevantIdVector[i].index);
+				middle::Id parentId = middle::getParent(gameState, intersectableShape.id);
+
+				// check if there's parent, the parent is not a fraction
+				if (parentId.index != middle::UNASSIGNED) {
+					auto parentShape = middle::getShape(gameState, parentId.index);
+					auto fraction = middle::getComponent<components::FractionalComponent>(parentShape);
+					if (fraction) {
+						continue;
+					}
+				}
+
+				if (!bubbleActions::isIntersecting(gameState, intersectableShape)) {
 					continue;
+				}
+
+				// skip shapefordeletion (the copy being dragged) and ref shape (shape its copy is pointing to)
+				if (shapeForDeletion.id == intersectableShape.id || intersectableShape.id == refShape.id) {
+					continue;
+				}
+
+				if (parentId.index != middle::UNASSIGNED && parentId == refParentId) {
+					auto& refParent = middle::getShape(gameState, refParentId.index);
+					combine(gameState, refParent, refShape, intersectableShape);
+					continue;
+				}
+
+				if (inventoryItem) {
+					inventoryAction(gameState, inventoryItem->itemType, ref->idRef, intersectableShape);
+					break;
 				}
 			}
 
-			if (!bubbleActions::isIntersecting(gameState, draggedCopyShape)) {
-				continue;
-			}
-
-			// skip shapefordeletion (the copy being dragged) and ref shape (shape its copy is pointing to)
-			if (shapeForDeletion.id == draggedCopyShape.id || draggedCopyShape.id == refShape.id) {
-				continue;
-			}
-
-			if (parentId.index != middle::UNASSIGNED && parentId == refParentId) {
-				auto& refParent = middle::getShape(gameState, refParentId.index);
-				combine(gameState, refParent, refShape, draggedCopyShape);
-				continue;
-			}
-
-			if (inventoryItem) {
-				inventoryAction(gameState, inventoryItem->itemType, draggedCopyShape);
-				break;
-			}
 		}
-
 	}
 };
 

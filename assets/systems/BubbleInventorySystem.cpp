@@ -54,7 +54,7 @@ public:
 					removeLoop.execute(gameState);
 					gameState->bubbleAlgebraState.grabbedId = copyId;
 					auto ref = middle::attachComponent<components::IdRef>(gameState, copyShape.id);
-					ref->idRef = copyId;
+					ref->idRef = childId;
 					middle::queueComponentDeletion<components::MouseIntersectable>(gameState, copyShape.id);
 				}
 			}

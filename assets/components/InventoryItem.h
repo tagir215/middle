@@ -23,8 +23,8 @@ namespace components {
 
 namespace bubbleInventoryitemType {
 	inline int DEFAULT = 0;
-	inline int MULTIPLICATION = 1;
-	inline int ADD = 2;
+	inline int NEW_ADDITION_TERM = 1;
+	inline int NEW_MULTIPLICATION_TERM = 2;
 	inline int POP = 3;
 	inline int TIMES_ONE = 4;
 	inline int BREAK_2 = 5;

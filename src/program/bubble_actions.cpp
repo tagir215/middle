@@ -7,6 +7,8 @@
 #include "BubbleRef.h"
 #include "Circle.h"
 #include "BubbleEqualsComponent.h"
+#include "InventoryItem.h"
+#include "DeleteComponent.h"
 
 namespace bubbleActions {
 
@@ -519,11 +521,19 @@ namespace bubbleActions {
 			std::vector<middle::Id>children;
 			middle::getChildren(gameState, parentId, children);
 			middle::Id parentsParentId = middle::getParent(gameState, parentId);
+			// reparent to parents parent (if it exists)
 			if (children.size() == 1 && parentsParentId.index != middle::UNASSIGNED) {
 				auto reparent = std::make_unique<middle::EditorActionReparent>(parentsParentId.index, children[0].index);
 				reparent->execute(gameState);
 				actions.push_back(std::move(reparent));
 			}
+			// (if it doesn't exist) remove from the current parent to prevent it being deleted when parent is deleted
+			else if(children.size() == 1) {
+				auto removeFromLoop = std::make_unique<middle::EditorActionRemoveFromLoop>(children[0].index);
+				removeFromLoop->execute(gameState);
+				actions.push_back(std::move(removeFromLoop));
+			}
+			// delete parent, which is a multiplication with less than 2 values
 			if (children.size() < 2) {
 				mulShapeId = parentId;
 				auto deleteAction = std::make_unique<middle::EditorActionDeleteSingle>(parentId);
@@ -1087,6 +1097,44 @@ namespace bubbleActions {
 		while (actions.size() > 0) {
 			actions.back()->undo(gameState);
 			actions.pop_back();
+		}
+	}
+
+	bool validateNewTermState(middle::GameState* gameState, middle::Id& shapeToAddIntoId, middle::Id& termId) {
+		return true;
+	}
+
+	void NewAdditionTerm::execute(middle::GameState* gameState)
+	{
+		auto reparentAction = std::make_unique<middle::EditorActionReparent>(shapeToAddIntoId.index, newTermId.index);
+		reparentAction->execute(gameState);
+		resultId = newTermId;
+		Vector3 currentPos = middle::getShapePosition(gameState, newTermId.index);
+		middle::moveShape(gameState, resultId.index, targetPosition - currentPos);
+		actions.push_back(std::move(reparentAction));
+	}
+
+	void NewAdditionTerm::undo(middle::GameState* gameState)
+	{
+		while (actions.size() > 0) {
+			actions.back()->undo(gameState);
+		}
+	}
+
+	void NewMultiplicationTerm::execute(middle::GameState* gameState)
+	{
+		auto linkAction = std::make_unique<bubbleActions::LinkMultiplicationTerm>(shapeToAddIntoId, newTermId);
+		linkAction->execute(gameState);
+		resultId = newTermId;
+		Vector3 currentPos = middle::getShapePosition(gameState, newTermId.index);
+		middle::moveShape(gameState, resultId.index, targetPosition - currentPos);
+		actions.push_back(std::move(linkAction));
+	}
+
+	void NewMultiplicationTerm::undo(middle::GameState* gameState)
+	{
+		while (actions.size() > 0) {
+			actions.back()->undo(gameState);
 		}
 	}
 
