@@ -13,6 +13,10 @@
 #include "DeleteComponent.h"
 #include "IdRef.h"
 #include "component_utils.h"
+#include "PlacementComponent.h"
+#include "CodeBlock.h"
+#include "CodeFunction.h"
+
 
 class BubbleInventorySystem : public middle::MiddleGameplaySystem {
 public:
@@ -54,6 +58,8 @@ public:
 					removeLoop.execute(gameState);
 					gameState->bubbleAlgebraState.grabbedId = copyId;
 					auto ref = middle::attachComponent<components::IdRef>(gameState, copyShape.id);
+					auto placement = middle::attachComponent<components::PlacementComponent>(gameState, copyShape.id);
+					placement->grabbing = true;
 					ref->idRef = childId;
 					middle::queueComponentDeletion<components::MouseIntersectable>(gameState, copyShape.id);
 				}

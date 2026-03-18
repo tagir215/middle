@@ -118,6 +118,7 @@ namespace RendererSystem {
 
 			EndMode3D();
 
+
 			for (int i = 0; i < gameState->renderData.size(); ++i) {
 				middle::RenderItem item = gameState->renderData[i];
 				if (item.type == middle::RenderItemType::TEXT) {

@@ -16,6 +16,7 @@
 #include "Circle.h"
 #include "Cuboid.h"
 #include "BubbleEqualsComponent.h"
+#include "BubbleVariable.h"
 
 
 class BubbleRenderSetup : public middle::MiddleGameplaySystem {
@@ -30,6 +31,7 @@ public:
 	components::CompCache* mulCache;
 	components::CompCache* fractionCache;
 	components::CompCache* unitCache;
+	components::CompCache* variableCache;
 	components::CompCache* cuboidCache;
 	components::CompCache* equalsCache;
 
@@ -45,6 +47,10 @@ public:
 		fractionCache->addType<components::LoopSociety>();
 		unitCache = middle::newCompCache(gameState);
 		unitCache->addType<components::BubbleUnit>();
+		unitCache->addType<components::BubbleVariable>(components::NOTINTERESTED);
+		variableCache = middle::newCompCache(gameState);
+		variableCache->addType<components::BubbleUnit>();
+		variableCache->addType<components::BubbleVariable>();
 		cuboidCache = middle::newCompCache(gameState);
 		cuboidCache->addType<components::Cuboid>();
 		cuboidCache->addType<components::Position>();
@@ -194,6 +200,38 @@ public:
 				}
 				gameState->renderData.push_back(particle);
 			}
+
+			// render variables
+			auto variableIt = variableCache->begin<components::BubbleVariable>();
+			for (int i = 0; i < variableCache->getSize(); ++i) {
+				auto variable = *variableIt;
+				auto& shape = middle::getShape(gameState, variableCache->relevantIdVector[i].index);
+
+				auto pos = middle::getComponent<components::Position>(shape);
+				middle::RenderItem particle;
+				particle.center = { pos->posX, pos->posY, pos->posZ };
+				particle.length = 0.1f;
+				const float variableRadius = 4;
+				particle.ringRadius = variableRadius;
+				particle.radius = variableRadius;
+				particle.type = middle::RenderItemType::CIRCLE;
+				particle.color = BLACK;
+
+				auto intersectable = middle::getComponent<components::MouseIntersectable>(shape);
+				if (intersectable->intersectingTop) {
+					particle.color = WHITE;
+				}
+				gameState->renderData.push_back(particle);
+
+				middle::RenderItem variableText;
+				variableText.type = middle::RenderItemType::TEXT;
+				variableText.center = particle.center;
+				variableText.color = GREEN;
+				variableText.text = variable->label;
+				variableText.fontSize = 15;
+				gameState->renderData.push_back(variableText);
+			}
+
 
 			// render muls
 			auto mulIt = mulCache->begin<components::BubbleMultiplyComponent>();

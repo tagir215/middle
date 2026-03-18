@@ -9,6 +9,7 @@
 #include "BubbleEqualsComponent.h"
 #include "InventoryItem.h"
 #include "DeleteComponent.h"
+#include "BubbleVariable.h"
 
 namespace bubbleActions {
 
@@ -132,6 +133,7 @@ namespace bubbleActions {
 		auto mulComp = middle::getComponent<components::BubbleMultiplyComponent>(shapeToReplace);
 		auto fraction = middle::getComponent<components::FractionalComponent>(shapeToReplace);
 		auto unit = middle::getComponent<components::BubbleUnit>(shapeToReplace);
+		auto variable = middle::getComponent<components::BubbleVariable>(shapeToReplace);
 
 		// containe copies in a new multiplication
 		if (bubbleComp) {
@@ -201,17 +203,28 @@ namespace bubbleActions {
 			return;
 		}
 
+		// if shape to replace is variable, variable is contained in a bubble and bubble in multiplication link
+		if (variable) {
+			middle::Shape newContainerBubbleProto = newBubble(gameState, targetPos);
+			middle::Shape& newContainerBubble = middle::registerShape(gameState, newContainerBubbleProto);
+			middle::Id variableCopyId = middle::deepCopyShape(gameState, shapeToReplaceId.index);
+			middle::EditorActionReparent(newContainerBubble.id.index, variableCopyId.index).execute(gameState);
+			middle::Id replacingCopyId = middle::deepCopyShape(gameState, replacingShapeId.index);
+
+			auto newMul = NewMultiplication(replacingCopyId, newContainerBubble.id);
+			newMul.execute(gameState);
+
+			resultShapeId = newMul.resultShapeId;
+			return;
+		}
 		// if shape to replace is a unit
-		if (unit)
+		else if (unit)
 		{
-			middle::Id shapeToCopyId;
-			if (unit->value == 1) {
-				shapeToCopyId = replacingShape.id;
-			}
+			middle::Id shapeToCopyId = replacingShape.id;
 			if (unit->value == 0) {
 				shapeToCopyId = shapeToReplace.id;
 			}
-			middle::Id copyId = middle::deepCopyShape(gameState, shapeToCopyId.index, middle::UNASSIGNED);
+			middle::Id copyId = middle::deepCopyShape(gameState, shapeToCopyId.index);
 			// compute displacmenet from replacing shape to shapeToReplace position
 			Vector3 replacingShapePos = middle::getShapePosition(gameState, copyId.index);
 			Vector3 displacement = targetPos - replacingShapePos;
