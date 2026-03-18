@@ -67,7 +67,7 @@ public:
 		for (int i = 0; i < grabbableCache->getSize(); ++i) {
 			auto grabbable = *grabbableIt;
 			if (grabbable->grabbing) {
-				auto& shape = middle::getShape(gameState, placementCache->relevantIdVector[i].index);
+				auto& shape = middle::getShape(gameState, grabbableCache->relevantIdVector[i].index);
 				Vector3 currentPos = middle::getShapePosition(gameState, shape.id.index);
 				Vector3 targetPos = gameState->input.mouseXZ_PlanePos;
 				middle::moveShape(gameState, shape.id.index, targetPos - currentPos);
