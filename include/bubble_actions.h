@@ -175,7 +175,6 @@ namespace bubbleActions{
 		middle::Id newTermId;
 		Vector3 targetPosition;
 		std::vector<std::unique_ptr<middle::EditorActionContainer>> actions;
-		middle::Id resultId;
 		NewAdditionTerm(middle::Id& shapeToAddIntoId, middle::Id& newTermId, const Vector3& targetPosition) {
 			this->shapeToAddIntoId = shapeToAddIntoId;
 			this->newTermId = newTermId;
@@ -191,7 +190,6 @@ namespace bubbleActions{
 		middle::Id newTermId;
 		Vector3 targetPosition;
 		std::vector<std::unique_ptr<middle::EditorActionContainer>> actions;
-		middle::Id resultId;
 		NewMultiplicationTerm(middle::Id& shapeToAddIntoId, middle::Id& newTermId, const Vector3& targetPosition) {
 			this->shapeToAddIntoId = shapeToAddIntoId;
 			this->newTermId = newTermId;

@@ -1104,14 +1104,46 @@ namespace bubbleActions {
 		return true;
 	}
 
+
+
 	void NewAdditionTerm::execute(middle::GameState* gameState)
 	{
-		auto reparentAction = std::make_unique<middle::EditorActionReparent>(shapeToAddIntoId.index, newTermId.index);
-		reparentAction->execute(gameState);
-		resultId = newTermId;
-		Vector3 currentPos = middle::getShapePosition(gameState, newTermId.index);
-		middle::moveShape(gameState, resultId.index, targetPosition - currentPos);
-		actions.push_back(std::move(reparentAction));
+		middle::Id parentId = middle::getParent(gameState, shapeToAddIntoId);
+		std::vector<middle::Id>shapesToAddIntoIds;
+		std::vector<middle::Id>shapesToAddIds;
+		// if no parent, add just the og shapeToAddIntoId
+		if (parentId.index == middle::UNASSIGNED) {
+			shapesToAddIntoIds.push_back(shapeToAddIntoId);
+			shapesToAddIds.push_back(newTermId);
+		}
+		// else we check that the parent has equals component, then we add all the children of it as shapes to add into
+		else{
+			auto& parentShape = middle::getShape(gameState, parentId.index);
+			auto equalsComp = middle::getComponent<components::BubbleEqualsComponent>(parentShape);
+			if (!equalsComp) {
+				return;
+			}
+			shapesToAddIds.push_back(newTermId);
+			middle::getChildren(gameState, parentShape.id, shapesToAddIntoIds);
+			// copy the new terms to be added to the other containers
+			for (int i = 1; i < shapesToAddIntoIds.size(); ++i) {
+				auto copyAction = std::make_unique<middle::EditorActionCopySingle>(newTermId);
+				copyAction->execute(gameState);
+				shapesToAddIds.push_back(copyAction->resultId);
+				actions.push_back(std::move(copyAction));
+			}
+		}
+
+		assert(shapesToAddIntoIds.size() == shapesToAddIds.size());
+		for (int i = 0; i < shapesToAddIntoIds.size(); ++i) {
+			middle::Id& intoId = shapesToAddIntoIds[i];
+			middle::Id& toAddId = shapesToAddIds[i];
+			auto reparentAction = std::make_unique<middle::EditorActionReparent>(intoId.index, toAddId.index);
+			reparentAction->execute(gameState);
+			Vector3 currentPos = middle::getShapePosition(gameState, toAddId.index);
+			middle::moveShape(gameState, toAddId.index, targetPosition - currentPos);
+			actions.push_back(std::move(reparentAction));
+		}
 	}
 
 	void NewAdditionTerm::undo(middle::GameState* gameState)
@@ -1124,12 +1156,70 @@ namespace bubbleActions {
 
 	void NewMultiplicationTerm::execute(middle::GameState* gameState)
 	{
-		auto linkAction = std::make_unique<bubbleActions::LinkMultiplicationTerm>(shapeToAddIntoId, newTermId);
-		linkAction->execute(gameState);
-		resultId = newTermId;
-		Vector3 currentPos = middle::getShapePosition(gameState, newTermId.index);
-		middle::moveShape(gameState, resultId.index, targetPosition - currentPos);
-		actions.push_back(std::move(linkAction));
+		middle::Id parentId = middle::getParent(gameState, shapeToAddIntoId);
+		std::vector<middle::Id>shapesToAddIntoIds;
+		std::vector<middle::Id>shapesToAddIds;
+		// if no parent, add just the og shapeToAddIntoId
+		if (parentId.index == middle::UNASSIGNED) {
+			shapesToAddIntoIds.push_back(shapeToAddIntoId);
+			shapesToAddIds.push_back(newTermId);
+		}
+		// else we check that the parent has equals component, then we add all the children of it as shapes to add into
+		else{
+			auto& parentShape = middle::getShape(gameState, parentId.index);
+			auto equalsComp = middle::getComponent<components::BubbleEqualsComponent>(parentShape);
+			if (!equalsComp) {
+				return;
+			}
+			shapesToAddIds.push_back(newTermId);
+			middle::getChildren(gameState, parentShape.id, shapesToAddIntoIds);
+			// copy the new terms to be added to the other containers
+			for (int i = 1; i < shapesToAddIntoIds.size(); ++i) {
+				auto copyAction = std::make_unique<middle::EditorActionCopySingle>(newTermId);
+				copyAction->execute(gameState);
+				shapesToAddIds.push_back(copyAction->resultId);
+				actions.push_back(std::move(copyAction));
+			}
+		}
+
+		for (int i = 0; i < shapesToAddIntoIds.size(); ++i) {
+			middle::Id containerId = shapesToAddIntoIds[i];
+			middle::Id toAddId = shapesToAddIds[i];
+			std::vector<middle::Id>children;
+			middle::getChildren(gameState, containerId, children);
+			if (children.size() == 0) {
+				return;
+			}
+			middle::Id toLinkIntoId;
+
+			if (children.size() == 1) {
+				toLinkIntoId = children[0];
+			}
+			// create new container bubble, because the top dog bubble should be alone
+			else if (children.size() > 1) {
+				middle::Shape newContainer = newBubble(gameState, middle::getShapePosition(gameState, containerId.index));
+				auto registerAction = std::make_unique<middle::EditorActionRegisterShape>(newContainer);
+				registerAction->execute(gameState);
+				toLinkIntoId = registerAction->newShapeId;
+				actions.push_back(std::move(registerAction));
+				for (middle::Id childId : children) {
+					auto reparentAction = std::make_unique<middle::EditorActionReparent>(toLinkIntoId.index, childId.index);
+					reparentAction->execute(gameState);
+					actions.push_back(std::move(reparentAction));
+				}
+
+				auto reparentNewBubble = std::make_unique<middle::EditorActionReparent>(containerId.index, toLinkIntoId.index);
+				reparentNewBubble->execute(gameState);
+				actions.push_back(std::move(reparentNewBubble));
+			}
+
+			auto linkAction = std::make_unique<bubbleActions::LinkMultiplicationTerm>(toLinkIntoId, toAddId);
+			linkAction->execute(gameState);
+			Vector3 currentPos = middle::getShapePosition(gameState, toAddId.index);
+			middle::moveShape(gameState, toAddId.index, targetPosition - currentPos);
+			actions.push_back(std::move(linkAction));
+
+		}
 	}
 
 	void NewMultiplicationTerm::undo(middle::GameState* gameState)
