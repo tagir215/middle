@@ -1118,6 +1118,7 @@ namespace bubbleActions {
 	{
 		while (actions.size() > 0) {
 			actions.back()->undo(gameState);
+			actions.pop_back();
 		}
 	}
 
@@ -1135,6 +1136,7 @@ namespace bubbleActions {
 	{
 		while (actions.size() > 0) {
 			actions.back()->undo(gameState);
+			actions.pop_back();
 		}
 	}
 
