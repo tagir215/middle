@@ -202,27 +202,6 @@ namespace bubbleActions {
 			auto replace = Replace(quotientId, resultId);
 			replace.execute(gameState);
 
-			//std::vector<middle::Id> shapesToDelete;
-			//auto loop = middle::getComponent<components::LoopSociety>(copyFractionShape);
-			//assert(loop);
-			//int size = loop->loopMemberIds.size();
-
-			//for (int i = 0; i < size; ++i) {
-			//	// referesh loop pointer...
-			//	loop = middle::getComponent<components::LoopSociety>(copyFractionShape);
-			//	middle::Id id = loop->loopMemberIds[i];
-			//	shapesToDelete.push_back(id);
-			//	auto action = CreateMulitiplicationReplacementShape(id, replacingShape.id);
-			//	action.execute(gameState);
-			//	middle::Id replacementId = action.resultShapeId;
-			//	auto reparentAction = middle::EditorActionReparent(copyFractionId.index, replacementId.index);
-			//	reparentAction.execute(gameState);
-			//}
-			//for (middle::Id& id : shapesToDelete) {
-			//	deleteShapeRecursive(gameState, id.index);
-			//}
-
-			//loop = middle::getComponent<components::LoopSociety>(copyFractionShape);
 			resultShapeId = copyFractionId;
 			return;
 		}
