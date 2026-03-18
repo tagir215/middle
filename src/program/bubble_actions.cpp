@@ -452,33 +452,6 @@ namespace bubbleActions {
 	}
 
 
-	void setBubbleHidden(middle::GameState* gameState, middle::Id& id, bool hidden) {
-		middle::Shape& shape = middle::getShape(gameState, id.index);
-		auto bubbleComponent = middle::getComponent<components::BubbleComponent>(shape);
-		auto bubbleUnit = middle::getComponent<components::BubbleUnit>(shape);
-		if (bubbleUnit) {
-			bubbleUnit->hidden = hidden;
-			return;
-		}
-
-		if (bubbleComponent)
-			bubbleComponent->hidden = hidden;
-
-		std::vector<middle::Id>children;
-		middle::getAllChildren(gameState, shape.id, children);
-		for (middle::Id& childId : children) {
-			middle::Shape& childShape = middle::getShape(gameState, childId.index);
-			auto childBubble = middle::getComponent<components::BubbleComponent>(childShape);
-			if (childBubble) {
-				childBubble->hidden = hidden;
-			}
-			auto childUnit = middle::getComponent<components::BubbleUnit>(childShape);
-			if (childUnit) {
-				childUnit->hidden = hidden;
-			}
-		}
-	}
-
 
 	ExecuteMultiplication::ExecuteMultiplication(middle::Id shapeToCopyId, middle::Id shapeToCopyIntoId) {
 		this->shapeToCopyId = shapeToCopyId;
