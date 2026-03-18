@@ -319,6 +319,8 @@ namespace bubbleActions {
 	{
 		auto& shape = middle::getShape(gameState, shapeId.index);
 		auto fraction = middle::getComponent<components::FractionalComponent>(shape);
+		auto multiplication = middle::getComponent<components::BubbleMultiplyComponent>(shape);
+		// hmm...?
 		if (fraction) {
 			int fractionSize = fractionUnitCount(gameState, shapeId);
 			dividend *= fractionSize;
@@ -329,6 +331,18 @@ namespace bubbleActions {
 			Replace(genericQuotientId, quotientCopyId).execute(gameState);
 			return fractionShapeId;
 		}
+		// multiplication needs to be contained in a bubble
+		else if (multiplication) {
+			middle::Id fractionShapeId = newFraction(gameState, targetPos, dividend);
+			middle::Id genericQuotientId = fractionQuotient(gameState, fractionShapeId);
+			middle::Shape newContainerBubbleProto = newBubble(gameState, targetPos);
+			middle::Shape& newContainerBubble = middle::registerShape(gameState, newContainerBubbleProto);
+			middle::Id copyMultiplicationId = middle::deepCopyShape(gameState, shapeId.index);
+			middle::EditorActionReparent(newContainerBubble.id.index, copyMultiplicationId.index).execute(gameState);
+			Replace(genericQuotientId, newContainerBubble.id).execute(gameState);
+			return fractionShapeId;
+		}
+		// other cases
 		else {
 			middle::Id shapeCopyId = middle::deepCopyShape(gameState, shapeId.index);
 			middle::Id fractionShapeId = newFraction(gameState, targetPos, dividend);
@@ -1003,6 +1017,10 @@ namespace bubbleActions {
 	}
 	void MulOne::execute(middle::GameState* gameState)
 	{
+		middle::Id parentId = middle::getParent(gameState, recieverShapeId);
+		if (parentId.index == middle::UNASSIGNED) {
+			return;
+		}
 		Vector3 targetPos = middle::getShapePosition(gameState, recieverShapeId.index);
 		middle::Shape newBubbleProto = bubbleActions::newBubble(gameState, targetPos);
 		middle::Shape newUnitProto = bubbleActions::newUnit(gameState, targetPos);
