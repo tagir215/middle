@@ -19,8 +19,13 @@
 
 
 class BubbleRenderSetup : public middle::MiddleGameplaySystem {
-
 public:
+
+	BubbleRenderSetup() {
+		systemModeType = middle::SystemModeType::ENGINE;
+		systemUpdateType = middle::SystemUpdateType::RENDERING;
+	}
+
 	components::CompCache* bubbleCache;
 	components::CompCache* mulCache;
 	components::CompCache* fractionCache;
@@ -31,6 +36,7 @@ public:
 	void init(middle::GameState* gameState) {
 		bubbleCache = middle::newCompCache(gameState);
 		bubbleCache->addType<components::BubbleComponent>();
+		bubbleCache->addType<components::Circle>();
 		mulCache = middle::newCompCache(gameState);
 		mulCache->addType<components::BubbleMultiplyComponent>();
 		mulCache->addType<components::LoopSociety>();
@@ -54,9 +60,21 @@ public:
 
 			// render bubbbles
 			auto bubbleIt = bubbleCache->begin<components::BubbleComponent>();
+			auto bubbleCircleIt = bubbleCache->begin<components::Circle>();
 			for (int i = 0; i < bubbleCache->getSize(); ++i) {
 				auto bubble = *bubbleIt;
+				auto circle = *bubbleCircleIt;
 				auto& shape = middle::getShape(gameState, bubbleCache->relevantIdVector[i].index);
+
+				auto intersectable = middle::getComponent<components::MouseIntersectable>(shape);
+				bool intersecting = intersectable && intersectable->intersectingTop;
+				Color color = intersecting ? WHITE : Color{ 200,200,200,200 };
+				middle::RenderItem circleItem;
+				circleItem.type = middle::RenderItemType::CIRCLE;
+				circleItem.color = color;
+				circleItem.radius = circle->radius;
+				circleItem.center = middle::getShapePosition(gameState, shape.id.index);
+				gameState->renderData.push_back(circleItem);
 
 				auto ref = middle::getComponent<components::BubbleRef>(shape);
 				if (!ref || ref->idRef.index == middle::UNASSIGNED) {
@@ -184,7 +202,7 @@ public:
 				auto multiplyComponent = *mulIt;
 				auto loop = *mulLoopIt;
 				for (int x = 1; x < loop->loopMemberIds.size(); ++x) {
-					auto& shapeA = middle::getShape(gameState, loop->loopMemberIds[x-1].index);
+					auto& shapeA = middle::getShape(gameState, loop->loopMemberIds[x - 1].index);
 					auto& shapeB = middle::getShape(gameState, loop->loopMemberIds[x].index);
 					auto positionA = middle::getComponent<components::Position>(shapeA);
 					auto positionB = middle::getComponent<components::Position>(shapeB);
@@ -209,7 +227,7 @@ public:
 			for (int i = 0; i < fractionCache->getSize(); ++i) {
 				auto loop = *fractionLoopIt;
 				for (int x = 1; x < loop->loopMemberIds.size(); ++x) {
-					auto& shapeA = middle::getShape(gameState, loop->loopMemberIds[x-1].index);
+					auto& shapeA = middle::getShape(gameState, loop->loopMemberIds[x - 1].index);
 					auto& shapeB = middle::getShape(gameState, loop->loopMemberIds[x].index);
 					auto positionA = middle::getComponent<components::Position>(shapeA);
 					auto positionB = middle::getComponent<components::Position>(shapeB);

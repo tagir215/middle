@@ -28,10 +28,13 @@ public:
 	void init(middle::GameState* gameState) {
 		rectangleCache = middle::newCompCache(gameState);
 		rectangleCache->addType<components::Rectangle>();
+		rectangleCache->addType<components::UiComponent>();
 		circleCache = middle::newCompCache(gameState);
 		circleCache->addType<components::Circle>();
+		circleCache->addType<components::UiComponent>();
 		textCache = middle::newCompCache(gameState);
 		textCache->addType<components::Text>();
+		textCache->addType<components::UiComponent>();
 	}
 
 	void drawRect(middle::GameState* gameState, const std::vector<Vector3>& vertices, const Color& color) {
