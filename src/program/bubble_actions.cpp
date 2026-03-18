@@ -175,30 +175,54 @@ namespace bubbleActions {
 
 		if (fraction) {
 			middle::Id& copyFractionId = middle::deepCopyShape(gameState, shapeToReplace.id.index);
-			auto& copyFraction = middle::getShape(gameState, copyFractionId.index);
+			auto& copyFractionShape = middle::getShape(gameState, copyFractionId.index);
+
 			// compute displacmenet from replacing shape to shapeToReplace position
-			Vector3 replacingShapePos = middle::getShapePosition(gameState, copyFraction.id.index);
+			Vector3 replacingShapePos = middle::getShapePosition(gameState, copyFractionShape.id.index);
 			Vector3 displacement = targetPos - replacingShapePos;
-			middle::moveShape(gameState, copyFraction.id.index, displacement);
-			std::vector<middle::Id> shapesToDelete;
-			auto loop = middle::getComponent<components::LoopSociety>(copyFraction);
-			assert(loop);
-			int size = loop->loopMemberIds.size();
-			for (int i = 0; i < size; ++i) {
-				// referesh loop pointer...
-				loop = middle::getComponent<components::LoopSociety>(copyFraction);
-				middle::Id& id = loop->loopMemberIds[i];
-				shapesToDelete.push_back(id);
-				auto action = CreateMulitiplicationReplacementShape(id, replacingShape.id);
-				action.execute(gameState);
-				middle::Id copyId = action.resultShapeId;
-				auto reparentAction = middle::EditorActionReparent(copyFractionId.index, copyId.index);
-				reparentAction.execute(gameState);
+			middle::moveShape(gameState, copyFractionShape.id.index, displacement);
+
+			middle::Id quotientId = fractionQuotient(gameState, copyFractionId);
+
+			auto createReplacement = CreateMulitiplicationReplacementShape(quotientId, replacingShapeId);
+			createReplacement.execute(gameState);
+
+			middle::Id resultId = createReplacement.resultShapeId;
+			auto& resultShape = middle::getShape(gameState, resultId.index);
+
+			// if result is not a bubble we need to contain it into a bubble
+			auto bubble = middle::getComponent<components::BubbleComponent>(resultShape);
+			if (!bubble) {
+				middle::Shape newContainerProto = newBubble(gameState, targetPos);
+				middle::Shape& newContainer = middle::registerShape(gameState, newContainerProto);
+				middle::EditorActionReparent(newContainer.id.index, resultId.index).execute(gameState);
+				resultId = newContainer.id;
 			}
-			for (middle::Id& id : shapesToDelete) {
-				deleteShapeRecursive(gameState, id.index);
-			}
-			loop = middle::getComponent<components::LoopSociety>(copyFraction);
+
+			auto replace = Replace(quotientId, resultId);
+			replace.execute(gameState);
+
+			//std::vector<middle::Id> shapesToDelete;
+			//auto loop = middle::getComponent<components::LoopSociety>(copyFractionShape);
+			//assert(loop);
+			//int size = loop->loopMemberIds.size();
+
+			//for (int i = 0; i < size; ++i) {
+			//	// referesh loop pointer...
+			//	loop = middle::getComponent<components::LoopSociety>(copyFractionShape);
+			//	middle::Id id = loop->loopMemberIds[i];
+			//	shapesToDelete.push_back(id);
+			//	auto action = CreateMulitiplicationReplacementShape(id, replacingShape.id);
+			//	action.execute(gameState);
+			//	middle::Id replacementId = action.resultShapeId;
+			//	auto reparentAction = middle::EditorActionReparent(copyFractionId.index, replacementId.index);
+			//	reparentAction.execute(gameState);
+			//}
+			//for (middle::Id& id : shapesToDelete) {
+			//	deleteShapeRecursive(gameState, id.index);
+			//}
+
+			//loop = middle::getComponent<components::LoopSociety>(copyFractionShape);
 			resultShapeId = copyFractionId;
 			return;
 		}
@@ -900,6 +924,16 @@ namespace bubbleActions {
 			auto registerFraction = std::make_unique<middle::EditorActionRegisterId>(newFractionId);
 			registerFraction->execute(gameState);
 			actions.push_back(std::move(registerFraction));
+
+			// replace default 1 unit with the actual unit value, because new fraction returns a generic fraction
+			middle::Id& quotientId = fractionQuotient(gameState, newFractionId);
+			auto copyAction = std::make_unique<middle::EditorActionCopySingle>(containerShapeId);
+			copyAction->execute(gameState);
+			auto replace = std::make_unique<Replace>(quotientId, copyAction->resultId);
+			replace->execute(gameState);
+			actions.push_back(std::move(copyAction));
+			actions.push_back(std::move(replace));
+
 			auto reparent = std::make_unique<middle::EditorActionReparent>(newBubbleId.index, newFractionId.index);
 			reparent->execute(gameState);
 			actions.push_back(std::move(reparent));
