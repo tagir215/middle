@@ -10,6 +10,8 @@
 #include "InventoryItem.h"
 #include "component_utils.h"
 #include "PlacementComponent.h"
+#include "BubbleVariable.h"
+#include "TopDogBubbleTag.h"
 
 class BubbleModificationSystem : public middle::MiddleGameplaySystem {
 public:
@@ -37,6 +39,33 @@ public:
 			return true;
 		}
 		return false;
+	}
+
+	void insert(middle::GameState* gameState, middle::Shape& variableShape, middle::Shape& shapeToInsert) {
+		auto copy = std::make_shared <middle::EditorActionCopySingle>(shapeToInsert.id);
+		auto replace = std::make_shared<bubbleActions::Replace>(variableShape.id, middle::Id());
+		auto insert = std::make_shared<middle::CustomActionWithUndo>(
+			[copy, replace](middle::GameState* gameState) {
+				// copy shape to insert
+				copy->execute(gameState);
+				middle::Id copyId = copy->resultId;
+				// negate if variable where inserting to is negative
+				middle::Id variableId = replace->shapeToReplaceId;
+				auto& varShape = middle::getShape(gameState, variableId.index);
+				auto varUnit = middle::getComponent<components::BubbleUnit>(varShape);
+				if (varUnit->value == -1) {
+					bubbleActions::negate(gameState, copyId);
+				}
+				// replace, update variable first
+				replace->replacingShapeId = copyId;
+				replace->execute(gameState);
+			},
+			[copy, replace](middle::GameState* gameState) {
+				replace->undo(gameState);
+				copy->undo(gameState);
+			});
+		middle::queueAction(gameState, insert);
+		gameState->bubbleAlgebraState.bubbleActions.push_back(insert);
 	}
 
 	void combine(middle::GameState* gameState, middle::Shape& refParent, middle::Shape& refShape, middle::Shape& intersectedShape) {
@@ -150,7 +179,6 @@ public:
 
 		for (int i = 0; i < deletionCache->getSize(); ++i) {
 
-
 			auto deletionIt = deletionCache->begin<components::DeleteComponent>();
 			auto idRefIt = deletionCache->begin<components::IdRef>();
 			auto deletion = *deletionIt;
@@ -173,7 +201,6 @@ public:
 			middle::Id refParentId = middle::getParent(gameState, refShape.id);
 			assert(refShape.id.index != middle::UNASSIGNED);
 
-			auto inventoryItem = middle::getComponent<components::InventoryItem>(refShape);
 
 			auto intersectableIt = intersectableCache->begin<components::MouseIntersectable>();
 			for (int i = 0; i < intersectableCache->getSize(); ++i) {
@@ -206,6 +233,13 @@ public:
 					continue;
 				}
 
+				auto variableComp = middle::getComponent<components::BubbleVariable>(intersectableShape);
+				auto topDogComp = middle::getComponent<components::TopDogBubbleTag>(refShape);
+				if (variableComp && topDogComp) {
+					insert(gameState, intersectableShape, refShape);
+				}
+
+				auto inventoryItem = middle::getComponent<components::InventoryItem>(refShape);
 				if (inventoryItem) {
 					inventoryAction(gameState, inventoryItem->itemType, ref->idRef, intersectableShape);
 					break;
