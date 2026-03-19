@@ -987,15 +987,46 @@ namespace bubbleActions {
 	{
 		this->containerShapeId = containerShape;
 	}
+
+	struct TypeRepresentative {
+		middle::Id id;
+		int count = 0;
+	};
+
 	void Compress::execute(middle::GameState* gameState)
 	{
 		std::vector<middle::Id>children;
 		middle::getChildren(gameState, containerShapeId, children);
 		middle::Id referenceId = children[0];
 		int childCount = children.size();
-		for (int i = 1; i < childCount; ++i) {
-			// if all children are not the same, can't compress
-			if (!equals(gameState, referenceId, children[i])) {
+
+		if (childCount == 0) {
+			return;
+		}
+
+		std::vector<TypeRepresentative>typeRepresentatives;
+
+		for (middle::Id id : children) {
+			if (typeRepresentatives.size() == 0) {
+				typeRepresentatives.push_back({id, 1});
+				continue;
+			}
+			bool friendFound = false;
+			for (auto& representative : typeRepresentatives) {
+				bool typeEquals = equals(gameState, id, representative.id);
+				if (typeEquals) {
+					++representative.count;
+					friendFound = true;
+				}
+			}
+			if (!friendFound) {
+				typeRepresentatives.push_back({ id, 1 });
+			}
+		}
+		int compressCount = typeRepresentatives[0].count;
+		for (auto& representative : typeRepresentatives) {
+			if (representative.count != compressCount) {
+				// exit if not all same size, can't compress if there are different counts
 				return;
 			}
 		}
@@ -1003,54 +1034,54 @@ namespace bubbleActions {
 		// create bubble with compress count
 		Vector3 targetPos = middle::getShapePosition(gameState, containerShapeId.index);
 		middle::Shape countBubbleProto = newBubble(gameState, targetPos);
-
 		auto registerAction1 = std::make_unique<middle::EditorActionRegisterShape>(countBubbleProto);
 		registerAction1->execute(gameState);
 		middle::Id countBubbleId = registerAction1->newShapeId;
 		actions.push_back(std::move(registerAction1));
-
 		Vector3 refPos = targetPos;
-		for (int i = 0; i < childCount; ++i) {
+		for (int i = 0; i < compressCount; ++i) {
 			middle::Shape unitProto = newUnit(gameState, refPos);
 			auto registerAction2 = std::make_unique<middle::EditorActionRegisterShape>(unitProto);
 			registerAction2->execute(gameState);
 			middle::Id unitId = registerAction2->newShapeId;
 			actions.push_back(std::move(registerAction2));
-
 			auto reparent = std::make_unique<middle::EditorActionReparent>(countBubbleId.index, unitId.index);
 			reparent->execute(gameState);
 			actions.push_back(std::move(reparent));
 			refPos.x += 5;
 		}
 
-		// create compressed bubble
-		middle::Shape compressedBubbleProto = newBubble(gameState, targetPos);
-		auto registerAction = std::make_unique<middle::EditorActionRegisterShape>(compressedBubbleProto);
+		// create new container bubble
+		middle::Shape newContainerProto = newBubble(gameState, targetPos);
+		auto registerAction = std::make_unique<middle::EditorActionRegisterShape>(newContainerProto);
 		registerAction->execute(gameState);
-		middle::Id compressedBubbleId = registerAction->newShapeId;
+		middle::Id newContainerId = registerAction->newShapeId;
 		actions.push_back(std::move(registerAction));
 
-		auto copyAction = std::make_unique<middle::EditorActionCopySingle>(referenceId);
-		copyAction->execute(gameState);
-		middle::Id& copyContentId = copyAction->resultId;
-		actions.push_back(std::move(copyAction));
+		// reparent copy of each representative to the new container
+		for (auto& representative : typeRepresentatives) {
+			auto copyRepresentativeAction = std::make_unique<middle::EditorActionCopySingle>(representative.id);
+			copyRepresentativeAction->execute(gameState);
+			middle::Id copyRepresentativeId = copyRepresentativeAction->resultId;
+			actions.push_back(std::move(copyRepresentativeAction));
 
-		auto reparent = std::make_unique<middle::EditorActionReparent>(compressedBubbleId.index, copyContentId.index);
-		reparent->execute(gameState);
-		actions.push_back(std::move(reparent));
+			auto reparentAction = std::make_unique<middle::EditorActionReparent>(newContainerId.index, copyRepresentativeId.index);
+			reparentAction->execute(gameState);
+			actions.push_back(std::move(reparentAction));
+		}
 
-		// replace container with compressed
-		auto replace = std::make_unique<Replace>(containerShapeId, compressedBubbleId);
+		// link compress count bubble to compressed bubble
+		auto link = std::make_unique<LinkMultiplicationTerm>(newContainerId, countBubbleId);
+		link->execute(gameState);
+		middle::Id newMultiplicationId = link->resultShapeId;
+		actions.push_back(std::move(link));
+
+		auto replace = std::make_unique<Replace>(containerShapeId, newMultiplicationId);
 		replace->execute(gameState);
 		actions.push_back(std::move(replace));
 
-		// link compress count bubble to compressed bubble
-		auto link = std::make_unique<LinkMultiplicationTerm>(compressedBubbleId, countBubbleId);
-		link->execute(gameState);
-		actions.push_back(std::move(link));
-
 		resultCountBubbleId = countBubbleId;
-		resultCompressedBubbleId = compressedBubbleId;
+		resultCompressedBubbleId = newContainerId;
 	}
 	void Compress::undo(middle::GameState* gameState)
 	{
@@ -1183,7 +1214,7 @@ namespace bubbleActions {
 			shapesToAddIds.push_back(newTermId);
 		}
 		// else we check that the parent has equals component, then we add all the children of it as shapes to add into
-		else{
+		else {
 			auto& parentShape = middle::getShape(gameState, parentId.index);
 			auto equalsComp = middle::getComponent<components::BubbleEqualsComponent>(parentShape);
 			if (!equalsComp) {
@@ -1231,7 +1262,7 @@ namespace bubbleActions {
 			shapesToAddIds.push_back(newTermId);
 		}
 		// else we check that the parent has equals component, then we add all the children of it as shapes to add into
-		else{
+		else {
 			auto& parentShape = middle::getShape(gameState, parentId.index);
 			auto equalsComp = middle::getComponent<components::BubbleEqualsComponent>(parentShape);
 			if (!equalsComp) {
