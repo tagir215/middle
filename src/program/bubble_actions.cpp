@@ -240,10 +240,13 @@ namespace bubbleActions {
 			if (unit->value == 0) {
 				shapeToCopyId = shapeToReplace.id;
 			}
+
 			middle::Id copyId = middle::deepCopyShape(gameState, shapeToCopyId.index);
+
 			if (unit->value == -1) {
 				negate(gameState, copyId);
 			}
+
 			// compute displacmenet from replacing shape to shapeToReplace position
 			Vector3 replacingShapePos = middle::getShapePosition(gameState, copyId.index);
 			Vector3 displacement = targetPos - replacingShapePos;
@@ -663,10 +666,10 @@ namespace bubbleActions {
 				auto unitB = middle::getComponent<components::BubbleUnit>(childShapeB);
 				auto bubbleA = middle::getComponent<components::BubbleComponent>(childShapeA);
 				auto bubbleB = middle::getComponent<components::BubbleComponent>(childShapeB);
-				if (unitA && unitA->value == 1 || bubbleA) {
+				if (unitA && unitA->value != 0 || bubbleA) {
 					indexA = i;
 				}
-				if (unitB && unitB->value == 1 || bubbleB) {
+				if (unitB && unitB->value != 0 || bubbleB) {
 					indexB = i;
 				}
 			}
