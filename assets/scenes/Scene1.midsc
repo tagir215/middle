@@ -61,6 +61,7 @@ q  21_0
 p  
 q  3_0
 q  7_0
+q  35_0
 BubbleComponent
 MouseSelectable
 LoopTag
@@ -281,7 +282,7 @@ f  61.624699
 f  -0.000123
 f  49.668827
 BubbleUnit
-i  1
+i  -1
 MouseSelectable
 MouseIntersectable
 Sphere
@@ -1041,6 +1042,39 @@ Circle
 f  10.000000
 UiComponent
 i  -1
+__q  35_0
+BubbleUnit
+i  -1
+Position
+f  8.550782
+f  -0.000092
+f  97.749786
+MouseGrabbable
+MouseSelectable
+MouseIntersectable
+Sphere
+f  2.000000
+LoopSociety
+q  2_0
+p  
+PhysicsData
+f  1.000000
+f  1.000000
+f  1.000000
+f  -1.133202
+f  0.000000
+f  -0.419994
+f  0.800000
+f  0.800000
+f  0.800000
+f  0.000000
+f  0.000000
+f  0.000000
+b  0
+Circle
+f  2.000000
+BubbleVariable
+s  x
 __q  37_0
 SystemReference
 s  BubbleCameraSystem

@@ -203,29 +203,33 @@ public:
 
 			// render variables
 			auto variableIt = variableCache->begin<components::BubbleVariable>();
+			auto variableUnitIt = variableCache->begin<components::BubbleUnit>();
 			for (int i = 0; i < variableCache->getSize(); ++i) {
 				auto variable = *variableIt;
+				auto unit = *variableUnitIt;
 				auto& shape = middle::getShape(gameState, variableCache->relevantIdVector[i].index);
 
 				auto pos = middle::getComponent<components::Position>(shape);
-				middle::RenderItem particle;
-				particle.center = { pos->posX, pos->posY, pos->posZ };
-				particle.length = 0.1f;
+				middle::RenderItem variableRing;
+				variableRing.center = { pos->posX, pos->posY, pos->posZ };
+				variableRing.length = 0.1f;
 				const float variableRadius = 4;
-				particle.ringRadius = variableRadius;
-				particle.radius = variableRadius;
-				particle.type = middle::RenderItemType::CIRCLE;
-				particle.color = BLACK;
-
+				variableRing.ringRadius = variableRadius;
+				variableRing.radius = variableRadius;
+				variableRing.type = middle::RenderItemType::CIRCLE;
+				variableRing.color = BLACK;
+				if (unit->value == -1) {
+					variableRing.color = { 0,255,255,255 };
+				}
 				auto intersectable = middle::getComponent<components::MouseIntersectable>(shape);
 				if (intersectable->intersectingTop) {
-					particle.color = WHITE;
+					variableRing.color = WHITE;
 				}
-				gameState->renderData.push_back(particle);
+				gameState->renderData.push_back(variableRing);
 
 				middle::RenderItem variableText;
 				variableText.type = middle::RenderItemType::TEXT;
-				variableText.center = particle.center;
+				variableText.center = variableRing.center;
 				variableText.color = GREEN;
 				variableText.text = variable->label;
 				variableText.fontSize = 15;

@@ -116,6 +116,19 @@ namespace bubbleActions {
 		return equals(gameState, idA, idB);
 	}
 
+	void negate(middle::GameState* gameState, middle::Id id) {
+		auto& shape = middle::getShape(gameState, id.index);
+		auto unit = middle::getComponent<components::BubbleUnit>(shape);
+		if (unit) {
+			unit->value = -unit->value;
+			return;
+		}
+		auto loop = middle::getComponent<components::LoopSociety>(shape);
+		for (middle::Id childId : loop->loopMemberIds) {
+			negate(gameState, childId);
+		}
+	}
+
 	CreateMulitiplicationReplacementShape::CreateMulitiplicationReplacementShape(middle::Id shapeToReplace, middle::Id replacingShape)
 	{
 		this->shapeToReplaceId = shapeToReplace;
@@ -228,6 +241,9 @@ namespace bubbleActions {
 				shapeToCopyId = shapeToReplace.id;
 			}
 			middle::Id copyId = middle::deepCopyShape(gameState, shapeToCopyId.index);
+			if (unit->value == -1) {
+				negate(gameState, copyId);
+			}
 			// compute displacmenet from replacing shape to shapeToReplace position
 			Vector3 replacingShapePos = middle::getShapePosition(gameState, copyId.index);
 			Vector3 displacement = targetPos - replacingShapePos;
@@ -576,6 +592,25 @@ namespace bubbleActions {
 		this->shapeToAddIntoId = shapeToAddIntoId;
 	}
 
+	bool additiveInverses(middle::GameState* gameState, middle::Id idA, middle::Id idB) {
+		auto& shapeA = middle::getShape(gameState, idA.index);
+		auto& shapeB = middle::getShape(gameState, idB.index);
+		auto unitA = middle::getComponent<components::BubbleUnit>(shapeA);
+		auto unitB = middle::getComponent<components::BubbleUnit>(shapeB);
+		if (!unitA || !unitB) {
+			return false;
+		}
+		auto variableA = middle::getComponent<components::BubbleVariable>(shapeA);
+		auto variableB = middle::getComponent<components::BubbleVariable>(shapeB);
+		if (variableA && variableB && variableA->label == variableB->label) {
+			return unitA->value + unitB->value == 0;
+		}
+		else if (!variableA && !variableB) {
+			return unitA->value + unitB->value == 0;
+		}
+		return false;
+	}
+
 
 	void ExecuteAddition::execute(middle::GameState* gameState) {
 		auto& shapeToAdd = middle::getShape(gameState, shapeToAddId.index);
@@ -583,6 +618,17 @@ namespace bubbleActions {
 		auto addLoop = middle::getComponent<components::LoopSociety>(shapeToAdd);
 
 		if (!validateAdditionInitialState(gameState, this)) {
+			return;
+		}
+
+		if (additiveInverses(gameState, shapeToAddId, shapeToAddIntoId)) {
+			auto deleteA = std::make_unique<middle::EditorActionDeleteSingle>(shapeToAddId);
+			deleteA->execute(gameState);
+			actions.push_back(std::move(deleteA));
+
+			auto deleteB = std::make_unique<middle::EditorActionDeleteSingle>(shapeToAddIntoId);
+			deleteB->execute(gameState);
+			actions.push_back(std::move(deleteB));
 			return;
 		}
 
