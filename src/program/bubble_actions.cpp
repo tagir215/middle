@@ -995,8 +995,17 @@ namespace bubbleActions {
 
 	void Compress::execute(middle::GameState* gameState)
 	{
+		middle::Id compressTarget = containerShapeId;
+
+		// if its a fraction try compress the quotient
+		auto& shape = middle::getShape(gameState, compressTarget.index);
+		auto fraction = middle::getComponent<components::FractionalComponent>(shape);
+		if (fraction) {
+			compressTarget = fractionQuotient(gameState, containerShapeId);
+		}
+
 		std::vector<middle::Id>children;
-		middle::getChildren(gameState, containerShapeId, children);
+		middle::getChildren(gameState, compressTarget, children);
 		middle::Id referenceId = children[0];
 		int childCount = children.size();
 
@@ -1032,7 +1041,7 @@ namespace bubbleActions {
 		}
 
 		// create bubble with compress count
-		Vector3 targetPos = middle::getShapePosition(gameState, containerShapeId.index);
+		Vector3 targetPos = middle::getShapePosition(gameState, compressTarget.index);
 		middle::Shape countBubbleProto = newBubble(gameState, targetPos);
 		auto registerAction1 = std::make_unique<middle::EditorActionRegisterShape>(countBubbleProto);
 		registerAction1->execute(gameState);
@@ -1076,7 +1085,18 @@ namespace bubbleActions {
 		middle::Id newMultiplicationId = link->resultShapeId;
 		actions.push_back(std::move(link));
 
-		auto replace = std::make_unique<Replace>(containerShapeId, newMultiplicationId);
+		// create antoher container, beacuse in fractions or some places multiplication doesn't work as container
+		middle::Shape multiplicationContainerProto = newBubble(gameState, targetPos);
+		auto registerAction2 = std::make_unique<middle::EditorActionRegisterShape>(multiplicationContainerProto);
+		registerAction2->execute(gameState);
+		middle::Id multiplicationContainerId = registerAction2->newShapeId;
+		actions.push_back(std::move(registerAction2));
+
+		auto reparentAction = std::make_unique<middle::EditorActionReparent>(multiplicationContainerId.index, newMultiplicationId.index);
+		reparentAction->execute(gameState);
+		actions.push_back(std::move(reparentAction));
+
+		auto replace = std::make_unique<Replace>(compressTarget, multiplicationContainerId);
 		replace->execute(gameState);
 		actions.push_back(std::move(replace));
 
