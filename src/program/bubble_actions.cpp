@@ -57,7 +57,7 @@ namespace bubbleActions {
 				float v = unit->value;
 				if (fraction) {
 					assert(childCount != 0);
-					v / childCount;
+					v /= childCount;
 				}
 				value += v;
 			}
@@ -1351,6 +1351,51 @@ namespace bubbleActions {
 	}
 
 	void NewMultiplicationTerm::undo(middle::GameState* gameState)
+	{
+		while (actions.size() > 0) {
+			actions.back()->undo(gameState);
+			actions.pop_back();
+		}
+	}
+
+	bool parentIsBubble(middle::GameState* gameState, middle::Id id) {
+		middle::Id parentId = middle::getParent(gameState, id);
+		auto& parentShape = middle::getShape(gameState, parentId.index);
+		auto bubble = middle::getComponent<components::BubbleComponent>(parentShape);
+		return bubble != nullptr;
+	}
+
+	void Bubblify::execute(middle::GameState* gameState)
+	{
+		Vector3 targetPos = middle::getShapePosition(gameState, id.index);
+		middle::Id parentId;
+		middle::Id targetId;
+		if (parentIsBubble(gameState, id)) {
+			targetId = id;
+			parentId = middle::getParent(gameState, id);
+		}
+		else {
+			targetId = middle::getParent(gameState, id);
+			parentId = middle::getParent(gameState, targetId);
+		}
+
+		middle::Shape bubbleProto = newBubble(gameState, targetPos);
+		auto registerBubble = std::make_unique<middle::EditorActionRegisterShape>(bubbleProto);
+		registerBubble->execute(gameState);
+		resultId = registerBubble->newShapeId;
+		actions.push_back(std::move(registerBubble));
+
+
+		auto reparentToBubble = std::make_unique<middle::EditorActionReparent>(resultId.index, targetId.index);
+		reparentToBubble->execute(gameState);
+		actions.push_back(std::move(reparentToBubble));
+
+		auto reparentBubble = std::make_unique<middle::EditorActionReparent>(parentId.index, resultId.index);
+		reparentBubble->execute(gameState);
+		actions.push_back(std::move(reparentBubble));
+	}
+
+	void Bubblify::undo(middle::GameState* gameState)
 	{
 		while (actions.size() > 0) {
 			actions.back()->undo(gameState);

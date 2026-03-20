@@ -32,6 +32,18 @@ namespace bubbleActions{
 	bool additiveInverses(middle::GameState* gameState, middle::Id idA, middle::Id idB);
 	void negate(middle::GameState* gameState, middle::Id id);
 
+	class Bubblify : public middle::EditorActionContainer{
+	public:
+		middle::Id id;
+		std::vector<std::unique_ptr<middle::EditorActionContainer>> actions;
+		middle::Id resultId;
+		Bubblify(middle::Id id) {
+			this->id = id;
+		}
+		void execute(middle::GameState* gameState) override;
+		void undo(middle::GameState* gameState) override;
+	};
+
 	class UpdateVariable : public middle::EditorActionContainer {
 	public:
 		std::string label;

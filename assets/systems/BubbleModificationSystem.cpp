@@ -169,6 +169,9 @@ public:
 		else if (actionType == bubbleInventoryitemType::BREAK_10) {
 			action = std::make_shared<bubbleActions::Break>(intersectedShape.id, 10);
 		}
+		else if (actionType == bubbleInventoryitemType::BUBBLIFY) {
+			action = std::make_shared<bubbleActions::Bubblify>(intersectedShape.id);
+		}
 		if (action) {
 			middle::queueAction(gameState, action);
 			gameState->bubbleAlgebraState.bubbleActions.push_back(action);
