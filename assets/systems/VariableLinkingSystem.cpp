@@ -43,7 +43,7 @@ public:
 			}));
 	}
 
-	void variableTransfer(middle::GameState* gameState, middle::Id& grabbedId, bool& doDelete) {
+	void variableTransfer(middle::GameState* gameState, middle::Id& grabbedId) {
 		// variable transfer
 
 		auto& grabbedShape = middle::getShape(gameState, grabbedId.index);
@@ -84,10 +84,8 @@ public:
 			}
 
 			if (otherBubble && grabbedInput) {
-				grabbedInput->snapId = shape.id;
 				middle::Id shapeId = shape.id;
 				bubbleActions::UpdateVariable(grabbedInput->label, [shapeId]() {return shapeId;}).execute(gameState);
-				doDelete = false;
 			}
 		}
 
@@ -107,13 +105,10 @@ public:
 
 				if (grabbedInputVariable || grabbedOutputVariable) {
 
-					bool doDelete = true;
 
-					variableTransfer(gameState, grabbedId, doDelete);
+					variableTransfer(gameState, grabbedId);
 
-					if (doDelete) {
-						middle::queueAction(gameState, std::make_shared<middle::EditorActionDeleteSingle>(shape.id));
-					}
+					middle::queueAction(gameState, std::make_shared<middle::EditorActionDeleteSingle>(shape.id));
 
 					gameState->bubbleAlgebraState.grabbedId = middle::Id();
 				}

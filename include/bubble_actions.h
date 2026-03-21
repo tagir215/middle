@@ -22,8 +22,12 @@ namespace bubbleActions{
 	middle::Shape newBubble(middle::GameState* gameState, const Vector3& targetPos);
 	middle::Shape newUnit(middle::GameState* gameState, const Vector3& targetPos);
 	bool isIntersecting(middle::GameState* gameState, middle::Shape& shape);
-	bool equals(middle::GameState* gameState, middle::Id& bubbleA, middle::Id& bubbleB);
-	float unitValue(middle::GameState* gameState, middle::Id& containerId);
+	bool unitEquals(middle::GameState* gameState, middle::Id& bubbleA, middle::Id& bubbleB);
+	struct BubbleValue {
+		float magnitude = 0;
+		std::string variableLabel = "";
+	};
+	BubbleValue unitValue(middle::GameState* gameState, middle::Id& containerId);
 	int fractionUnitCount(middle::GameState* gameState, middle::Id& fractionId);
 	bool matchingBubbles(middle::GameState* gameState, middle::Id& bubbleA, middle::Id bubbleB);
 	middle::Id newFraction(middle::GameState* gameState, const Vector3& targetPos, int dividend);

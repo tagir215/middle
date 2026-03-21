@@ -2,7 +2,8 @@
 #include "registrars.h"
 #include "editor_file_utils.h"
 #define MIDDLEPROCEDURECONTAINER(X) \
-	X(startBlock)
+	X(startBlock) \
+	X(bubbleRef)
 
 namespace procedureConstants {
 	const int FORWARD = 1;
@@ -38,6 +39,7 @@ namespace components {
 	struct ProcedureContainer : public middle::Serializable {
 		middle::Id activeBlock;
 		middle::Id startBlock;
+		middle::Id bubbleRef;
 		int mode = procedureConstants::IDLE;
 		int direction = procedureConstants::FORWARD;
 		std::vector<procedureConstants::ProcedureTransition> procedureTransitionStack;

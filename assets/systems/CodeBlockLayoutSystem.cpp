@@ -27,7 +27,6 @@ public:
 	components::CompCache* functionCache;
 	components::CompCache* codeBlockCache;
 	components::CompCache* ifBlockCache;
-	components::CompCache* inputVariableCache;
 
 	void init(middle::GameState* gameState) {
 		procedureCache = middle::newCompCache(gameState);
@@ -45,8 +44,6 @@ public:
 		ifBlockCache = middle::newCompCache(gameState);
 		ifBlockCache->addType<components::IfComponent>();
 		ifBlockCache->addType<components::LoopSociety>();
-		inputVariableCache = middle::newCompCache(gameState);
-		inputVariableCache->addType<components::InputVariable>();
 	}
 
 	const float zmargin = 0;
@@ -122,21 +119,6 @@ public:
 
 		if (gameState->bubbleAlgebraState.grabbedId.index != middle::UNASSIGNED) {
 			return;
-		}
-
-		auto inputVarIt = inputVariableCache->begin<components::InputVariable>();
-		for (int i = 0; i < inputVariableCache->getSize(); ++i) {
-			auto inputVar = *inputVarIt;
-			auto& shape = middle::getShape(gameState, inputVariableCache->relevantIdVector[i].index);
-			if (inputVar->snapId.index != middle::UNASSIGNED) {
-				if (!middle::isShapeAlive(gameState, inputVar->snapId.index)) {
-					middle::queueAction(gameState, std::make_shared<middle::EditorActionDeleteSingle>(shape.id));
-					continue;
-				}
-				Vector3 currentPos = middle::getShapePosition(gameState, shape.id.index);
-				Vector3 refShapePosition = middle::getShapePosition(gameState, inputVar->snapId.index);
-				middle::moveShape(gameState, shape.id.index, refShapePosition - currentPos);
-			}
 		}
 
 		// procedure layout

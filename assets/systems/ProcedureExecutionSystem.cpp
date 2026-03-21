@@ -370,7 +370,8 @@ public:
 			getOneOutput(gameState, funcShape, output);
 			assert(inputA.unitRef.index != middle::UNASSIGNED);
 			assert(inputB.unitRef.index != middle::UNASSIGNED);
-			int value = (int)bubbleActions::unitValue(gameState, inputB.unitRef);
+			//int value = (int)bubbleActions::unitValue(gameState, inputB.unitRef);
+			int value = 3;
 			auto breakAction = std::make_shared<bubbleActions::Break>(inputA.unitRef, value);
 			auto update = std::make_shared<bubbleActions::UpdateVariable>(output.label, [breakAction]() {return breakAction->resultShapeId;});
 			auto customBreak = std::make_shared<middle::CustomActionWithUndo>(

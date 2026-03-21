@@ -12,4 +12,5 @@ namespace bubble {
 	bool buttonClicked(middle::GameState* gameState, middle::Shape& shape, int function);
 	std::vector<middle::Id>getNodes(middle::GameState* gameState, components::LoopSociety* loop);
 	std::vector<middle::Id>getConstraints(middle::GameState* gameState, components::LoopSociety* loop);
+	middle::Id findBubbleWithPatern(middle::GameState* gameState, middle::Id containerBubble);
 }

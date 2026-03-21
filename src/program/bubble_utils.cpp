@@ -166,4 +166,16 @@ namespace bubble {
 		}
 		return ids;
 	}
+
+	middle::Id findBubbleWithPatern(middle::GameState* gameState, middle::Id containerBubble)
+	{
+		std::queue<middle::Id>ids;
+		ids.push(containerBubble);
+		while (ids.size() > 0) {
+			std::vector<middle::Id>children;
+			middle::getChildren(gameState, containerBubble, children);
+
+		}
+		return middle::Id();
+	}
 }

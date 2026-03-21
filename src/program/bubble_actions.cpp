@@ -34,38 +34,29 @@ namespace bubbleActions {
 		return intersectable->intersectingTop;
 	}
 
-	bool equals(middle::GameState* gameState, middle::Id& idA, middle::Id& idB)
+	bool unitEquals(middle::GameState* gameState, middle::Id& idA, middle::Id& idB)
 	{
-		float valueA = unitValue(gameState, idA);
-		float valueB = unitValue(gameState, idB);
+		BubbleValue valueA = unitValue(gameState, idA);
+		BubbleValue valueB = unitValue(gameState, idB);
 		const float epsilon = 1e-4f;
-		return std::abs(valueA - valueB) < epsilon;
+		bool equalMagnitude = std::abs(valueA.magnitude - valueB.magnitude) < epsilon;
+		bool equalLabel = valueA.variableLabel == valueB.variableLabel;
+		return equalMagnitude && equalLabel;
 	}
 
-	float unitValue(middle::GameState* gameState, middle::Id& containerId)
+
+	BubbleValue unitValue(middle::GameState* gameState, middle::Id& containerId)
 	{
-		middle::Shape& containerShape = middle::getShape(gameState, containerId.index);
-		std::vector<middle::Id>children;
-		middle::getChildren(gameState, containerShape.id, children);
-		int childCount = children.size();
-		auto fraction = middle::getComponent<components::FractionalComponent>(containerShape);
-		float value = 0;
-		for (middle::Id childId : children) {
-			middle::Shape& childShape = middle::getShape(gameState, childId.index);
-			auto unit = middle::getComponent<components::BubbleUnit>(childShape);
-			if (unit) {
-				float v = unit->value;
-				if (fraction) {
-					assert(childCount != 0);
-					v /= childCount;
-				}
-				value += v;
-			}
-			else {
-				value += unitValue(gameState, childId);
-			}
+		BubbleValue result;
+		middle::Shape& shape = middle::getShape(gameState, containerId.index);
+		auto unit = middle::getComponent<components::BubbleUnit>(shape);
+		result.magnitude = unit->value;
+		auto variable = middle::getComponent<components::BubbleVariable>(shape);
+		if (variable) {
+			result.variableLabel = variable->label;
 		}
-		return value;
+		return result;
+
 	}
 
 	int fractionUnitCount(middle::GameState* gameState, middle::Id& fractionId)
@@ -78,11 +69,15 @@ namespace bubbleActions {
 	bool matchingBubbles(middle::GameState* gameState, middle::Id& idA, middle::Id idB) {
 		auto& shapeA = middle::getShape(gameState, idA.index);
 		auto& shapeB = middle::getShape(gameState, idB.index);
-		auto bubCompA = middle::getComponent<components::BubbleComponent>(shapeA);
-		auto bubCompB = middle::getComponent<components::BubbleComponent>(shapeB);
+		auto unitA = middle::getComponent<components::BubbleUnit>(shapeA);
+		auto unitB = middle::getComponent<components::BubbleUnit>(shapeB);
+
+		if (unitA && unitB) {
+			return unitEquals(gameState, idA, idB);
+		}
 
 		// if both are bubbles check recursively
-		if (bubCompA && bubCompB) {
+		if (!unitA && !unitB) {
 			auto loopA = middle::getComponent<components::LoopSociety>(shapeA);
 			auto loopB = middle::getComponent<components::LoopSociety>(shapeB);
 			int size = loopA->loopMemberIds.size();
@@ -112,8 +107,7 @@ namespace bubbleActions {
 			return matchingCount == size;
 		}
 
-		// return true if same value
-		return equals(gameState, idA, idB);
+		return false;
 	}
 
 	void negate(middle::GameState* gameState, middle::Id id) {
@@ -1022,7 +1016,7 @@ namespace bubbleActions {
 			}
 			bool friendFound = false;
 			for (auto& representative : typeRepresentatives) {
-				bool typeEquals = equals(gameState, id, representative.id);
+				bool typeEquals = matchingBubbles(gameState, id, representative.id);
 				if (typeEquals) {
 					++representative.count;
 					friendFound = true;
