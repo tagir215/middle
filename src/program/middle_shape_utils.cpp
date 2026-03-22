@@ -56,8 +56,9 @@ namespace middle {
 	int findFreeIndex(GameState* gameState)
 	{
 		for (int i = 0; i < gameState->shapes.size(); ++i) {
-			if (!isShapeAlive(gameState, i))
+			if (!isShapeAlive(gameState, i)) {
 				return i;
+			}
 		}
 		assert(true);
 	}
@@ -231,10 +232,11 @@ namespace middle {
 		assert(false);
 	}
 
-	void deleteShape(GameState* gameState, int index) {
+	void deleteShape(GameState* gameState, int index, bool deleteComponentsOnly) {
 		if (!isShapeAlive(gameState, index)) {
 			return;
 		}
+
 		// remove parent indexes if deleting loops from children
 		auto loop = getComponent<components::LoopSociety>(gameState->shapes[index]);
 		if (loop) {
@@ -264,11 +266,10 @@ namespace middle {
 		auto componentRefParent = getComponent<components::ComponentRefParent>(gameState->shapes[index]);
 		if (componentRefParent) {
 			for (Id childId : componentRefParent->memberIds) {
-				deleteShape(gameState, childId.index);
+				deleteShape(gameState, childId.index, deleteComponentsOnly);
 			}
 		}
 
-		int prevGeneration = gameState->shapes[index].id.generation;
 		for (auto& pair : gameState->shapes[index].componentMap) {
 			Component c = pair.second;
 			int typeId = pair.first;
@@ -277,13 +278,20 @@ namespace middle {
 
 			componentListMap[typeId]->shrink(c.componentOffset);
 		}
-		gameState->shapes[index] = Shape();
 
 		auto& delShape = gameState->shapes[index];
-		delShape.id.generation = prevGeneration + 1;
+		if (deleteComponentsOnly) {
+			delShape.componentMap.clear();
+		}
+
+		if (!deleteComponentsOnly) {
+			int prevGeneration = gameState->shapes[index].id.generation;
+			gameState->shapes[index] = Shape();
+			delShape.id.generation = prevGeneration + 1;
+		}
 	}
 
-	void deleteShapeRecursive(GameState* gameState, int index) {
+	void deleteShapeRecursive(GameState* gameState, int index, bool deleteComponentsOnly) {
 		if (!isShapeAlive(gameState, index)) {
 			return;
 		}
@@ -294,10 +302,10 @@ namespace middle {
 			int size = children.size();
 			for (int i = size - 1; i >= 0; --i) {
 				middle::Id& childId = children[i];
-				deleteShapeRecursive(gameState, childId.index);
+				deleteShapeRecursive(gameState, childId.index, deleteComponentsOnly);
 			}
 		}
-		deleteShape(gameState, index);
+		deleteShape(gameState, index, deleteComponentsOnly);
 	}
 
 	Shape& registerShape(GameState* gameState, middle::Shape shape)
@@ -342,7 +350,7 @@ namespace middle {
 		return gameState->shapes[id.index];
 	}
 
-	Shape& addGhostShape(GameState* gameState){
+	Shape& addGhostShape(GameState* gameState) {
 		Shape shape;
 		int index = findNextFreeGhostIndex(gameState);
 		shape.id.generation = gameState->shapes[index].id.generation + 1;

@@ -36,9 +36,9 @@ namespace middle {
 	// get shape instance
 	Shape& getShape(GameState* gameState, int index);
 	// delete shape , updates generational indexes
-	void deleteShape(GameState* gameState, int index);
+	void deleteShape(GameState* gameState, int index, bool deleteComponentsOnly = false);
 	// deletes shapes and its children
-	void deleteShapeRecursive(GameState* gameState, int index);
+	void deleteShapeRecursive(GameState* gameState, int index, bool deleteComponentsOnly = false);
 	// add shape and updates generations
 	Shape& registerShape(GameState* gameState, middle::Shape shape);
 	// add shape and updates generations

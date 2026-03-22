@@ -575,7 +575,7 @@ namespace middle {
 			removeFromLoop->execute(gameState);
 		}
 		middle::saveTempShape(gameState, id);
-		middle::deleteShapeRecursive(gameState, id.index);
+		middle::deleteShapeRecursive(gameState, id.index, true);
 	}
 
 	void EditorActionDeleteSingle::undo(GameState* gameState)

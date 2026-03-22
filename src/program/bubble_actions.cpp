@@ -203,7 +203,7 @@ namespace bubbleActions {
 
 	void CreateMulitiplicationReplacementShape::undo(middle::GameState* gameState)
 	{
-		deleteShapeRecursive(gameState, resultShapeId.index);
+		deleteShapeRecursive(gameState, resultShapeId.index, true);
 	}
 
 
@@ -253,7 +253,7 @@ namespace bubbleActions {
 				auto loopB = middle::getComponent<components::LoopSociety>(shapeB);
 				loopB->loopMemberIds.push_back(copyId);
 			}
-			deleteShapeRecursive(gameState, idA.index);
+			deleteShapeRecursive(gameState, idA.index, true);
 			auto deleteActio = std::make_unique<middle::EditorActionDeleteSingle>(idA);
 			replacementId = idB;
 		}
@@ -278,7 +278,7 @@ namespace bubbleActions {
 	}
 
 	void CreateAdditionReplacementShape::undo(middle::GameState* gameState) {
-		deleteShapeRecursive(gameState, resultId.index);
+		deleteShapeRecursive(gameState, resultId.index, true);
 	}
 
 
