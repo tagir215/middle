@@ -1,16 +1,19 @@
 #pragma once
 #include "registrars.h"
 #include "editor_file_utils.h"
-#include "bubble_actions.h"
-#define MIDDLEINPUTVARIABLE(X) \
-	X(unitRef) \
-	X(label) 
+#define MIDDLEALGEBRANODE(X) \
+	X(type) \
+	X(variableLabel) \
+	X(value) \
+	X(children) 
+
 
 namespace components {
-	struct InputVariable : public middle::Serializable{
-		middle::Id unitRef;
-		std::string label;
-		middle::Id structureId;
+	struct AlgebraNode : public middle::Serializable{
+		int type = middle::UNASSIGNED;
+		std::string variableLabel = "";
+		float value = 0;
+		std::vector<middle::Id>children;
 
 		void serialize(std::ostream& ostream) override;
 		void deserialize(const std::vector<std::string>& buffer, int indexOffset) override;
@@ -19,8 +22,17 @@ namespace components {
 		template<typename V>
 		void reflect(V& v) {
 #define X(f) v(#f, f);
-			MIDDLEINPUTVARIABLE(X)
+			MIDDLEALGEBRANODE(X)
 #undef X
 		}
 	};
+
+	enum class AlgebraNodeType {
+		BUBBLE,
+		VARIABLE,
+		UNIT,
+		FRACTION,
+		MULTIPLICATION,
+	};
 }
+

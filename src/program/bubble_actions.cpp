@@ -39,9 +39,42 @@ namespace bubbleActions {
 		BubbleValue valueA = unitValue(gameState, idA);
 		BubbleValue valueB = unitValue(gameState, idB);
 		const float epsilon = 1e-4f;
-		bool equalMagnitude = std::abs(valueA.magnitude - valueB.magnitude) < epsilon;
+		bool equalMagnitude = std::abs(valueA.scale - valueB.scale) < epsilon;
 		bool equalLabel = valueA.variableLabel == valueB.variableLabel;
 		return equalMagnitude && equalLabel;
+	}
+
+	std::vector<middle::Id> algebraContainerChildren(middle::Shape& shape) {
+		auto loop = middle::getComponent<components::LoopSociety>(shape);
+		if (loop) {
+			return loop->loopMemberIds;
+		}
+		auto algebraNode = middle::getComponent<components::AlgebraNode>(shape);
+		if (algebraNode) {
+			return algebraNode->children;
+		}
+		assert(false);
+	}
+
+	bool containerStructureEquals(middle::GameState* gameState, middle::Id idA, middle::Id idB) {
+		middle::Shape& shapeA = middle::getShape(gameState, idA.index);
+		middle::Shape& shapeB = middle::getShape(gameState, idB.index);
+		// make sure same type of container
+		auto typeA = getStructureType(gameState, shapeA.id);
+		auto typeB = getStructureType(gameState, shapeA.id);
+		if (typeA != typeB) {
+			return false;
+		}
+
+		// make sure equal amount of children
+		std::vector<middle::Id>childrenA = algebraContainerChildren(shapeA);
+		std::vector<middle::Id>childrenB = algebraContainerChildren(shapeA);
+		int size = childrenA.size();
+		if (size != childrenB.size()) {
+			return false;
+		}
+
+		return true;
 	}
 
 
@@ -50,13 +83,12 @@ namespace bubbleActions {
 		BubbleValue result;
 		middle::Shape& shape = middle::getShape(gameState, containerId.index);
 		auto unit = middle::getComponent<components::BubbleUnit>(shape);
-		result.magnitude = unit->value;
+		result.scale = unit->value;
 		auto variable = middle::getComponent<components::BubbleVariable>(shape);
 		if (variable) {
 			result.variableLabel = variable->label;
 		}
 		return result;
-
 	}
 
 	int fractionUnitCount(middle::GameState* gameState, middle::Id& fractionId)
@@ -72,32 +104,33 @@ namespace bubbleActions {
 		auto unitA = middle::getComponent<components::BubbleUnit>(shapeA);
 		auto unitB = middle::getComponent<components::BubbleUnit>(shapeB);
 
+		// check that units equal
 		if (unitA && unitB) {
 			return unitEquals(gameState, idA, idB);
 		}
 
-		// if both are bubbles check recursively
+		// if both are non units, so are some kind of containers
 		if (!unitA && !unitB) {
-			auto loopA = middle::getComponent<components::LoopSociety>(shapeA);
-			auto loopB = middle::getComponent<components::LoopSociety>(shapeB);
-			int size = loopA->loopMemberIds.size();
-			if (size != loopB->loopMemberIds.size()) {
+			if (!containerStructureEquals(gameState, idA, idB)) {
 				return false;
 			}
-
+			std::vector<middle::Id>childrenA = algebraContainerChildren(shapeA);
+			std::vector<middle::Id>childrenB = algebraContainerChildren(shapeB);
+			int size = childrenA.size();
+			// store found matches
 			std::vector<bool> mem;
 			mem.resize(size);
 			for (auto& b : mem) {
 				b = false;
 			}
-
+			// see if matching strcutres of children between the 2 containers
 			int matchingCount = 0;
-			for (middle::Id& id : loopA->loopMemberIds) {
+			for (middle::Id& id : childrenA) {
 				for (int i = 0; i < size; ++i) {
 					if (mem[i]) {
 						continue;
 					}
-					if (matchingBubbles(gameState, id, loopB->loopMemberIds[i])) {
+					if (matchingBubbles(gameState, id, childrenB[i])) {
 						++matchingCount;
 						mem[i] = true;
 						break;
@@ -105,6 +138,57 @@ namespace bubbleActions {
 				}
 			}
 			return matchingCount == size;
+		}
+
+		// one is unit other is structure, or somehting else weird
+		return false;
+	}
+
+	bool matchesStructureWithVariables(middle::GameState* gameState, middle::Id bubbleId, middle::Id algebraNodeId) {
+		auto algebraNodeType = getStructureType(gameState, algebraNodeId);
+		auto bubbleType = getStructureType(gameState, bubbleId);
+		bool aUnit = algebraNodeType == components::AlgebraNodeType::UNIT;
+		bool bUnit = bubbleType == components::AlgebraNodeType::UNIT;
+
+		if (aUnit && bUnit) {
+			return unitEquals(gameState, bubbleId, algebraNodeId);
+		}
+		// if node type is variable, bubble can be basically anything
+		if (algebraNodeType == components::AlgebraNodeType::VARIABLE) {
+			return true;
+		}
+
+		auto& bubbleShape = middle::getShape(gameState, bubbleId.index);
+		auto& structureRootShape = middle::getShape(gameState, algebraNodeId.index);
+
+		if (!aUnit && !bUnit) {
+			// containers need to match if algebra node is a container
+			if (!containerStructureEquals(gameState, bubbleId, algebraNodeId)) {
+				return false;
+			}
+			std::vector<middle::Id>childrenA = algebraContainerChildren(bubbleShape);
+			std::vector<middle::Id>childrenB = algebraContainerChildren(structureRootShape);
+			int size = childrenA.size();
+			// store found matches
+			std::vector<bool> mem;
+			mem.resize(size);
+			for (auto& b : mem) {
+				b = false;
+			}
+			// see if matching strcutres of children between the 2 containers
+			int matchingCount = 0;
+			for (middle::Id& id : childrenA) {
+				for (int i = 0; i < size; ++i) {
+					if (mem[i]) {
+						continue;
+					}
+					if (matchesStructureWithVariables(gameState, id, childrenB[i])) {
+						++matchingCount;
+						mem[i] = true;
+						break;
+					}
+				}
+			}
 		}
 
 		return false;
@@ -122,6 +206,85 @@ namespace bubbleActions {
 			negate(gameState, childId);
 		}
 	}
+
+	components::AlgebraNodeType getStructureType(middle::GameState* gameState, middle::Id id) {
+		auto& shape = middle::getShape(gameState, id.index);
+		if (middle::getComponent<components::BubbleComponent>(shape)) {
+			return components::AlgebraNodeType::BUBBLE;
+		}
+		if (middle::getComponent<components::BubbleVariable>(shape)) {
+			return components::AlgebraNodeType::VARIABLE;
+		}
+		if (middle::getComponent<components::BubbleUnit>(shape)) {
+			return components::AlgebraNodeType::UNIT;
+		}
+		if (middle::getComponent<components::BubbleMultiplyComponent>(shape)) {
+			return components::AlgebraNodeType::MULTIPLICATION;
+		}
+		if (middle::getComponent<components::FractionalComponent>(shape)) {
+			return components::AlgebraNodeType::FRACTION;
+		}
+		auto algebraNode = middle::getComponent<components::AlgebraNode>(shape);
+		if (algebraNode) {
+			return static_cast<components::AlgebraNodeType>(algebraNode->type);
+		}
+		assert(false);
+	}
+
+	middle::Id bubbleToStructure(middle::GameState* gameState, middle::Id bubbleId)
+	{
+		// create root
+		middle::Shape rootNodeShapeProto;
+		auto rootNode = middle::addComponent<components::AlgebraNode>(rootNodeShapeProto);
+		rootNode->type = static_cast<int>(components::AlgebraNodeType::BUBBLE);
+		middle::Shape& rootNodeShape = middle::registerShape(gameState, rootNodeShapeProto);
+
+		// push id and root structure to stacks
+		std::stack<middle::Id>realBubbleStack;
+		realBubbleStack.push(bubbleId);
+		std::stack<middle::Id>nodeStack;
+		nodeStack.push(rootNodeShape.id);
+
+		// iterate bubble tree downward and build algebra structure
+		while (realBubbleStack.size() > 0) {
+			middle::Id realBubbleId = realBubbleStack.top();
+			realBubbleStack.pop();
+			middle::Id currentNodeId = nodeStack.top();
+			nodeStack.pop();
+
+			std::vector<middle::Id>realChildren;
+			middle::getChildren(gameState, realBubbleId, realChildren);
+
+			auto& currentNodeShape = middle::getShape(gameState, currentNodeId.index);
+			auto currentNode = middle::getComponent<components::AlgebraNode>(currentNodeShape);
+			currentNode->children.resize(realChildren.size());
+
+			for (int i = 0; i < realChildren.size(); ++i) {
+				middle::Id realChildId = realChildren[i];
+				auto& realChildShape = middle::getShape(gameState, realChildId.index);
+				middle::Shape nodeShapeProto;
+				auto node = middle::addComponent<components::AlgebraNode>(nodeShapeProto);
+				node->type = static_cast<int>(getStructureType(gameState, realChildId));
+				middle::Shape& nodeShape = middle::registerShape(gameState, nodeShapeProto);
+
+				if (node->type == static_cast<int>(components::AlgebraNodeType::UNIT) || node->type == static_cast<int>(components::AlgebraNodeType::VARIABLE)) {
+					BubbleValue value = unitValue(gameState, realChildId);
+					node->value = value.scale;
+					node->variableLabel = value.variableLabel;
+				}
+
+				// refresh pointer
+				currentNode = middle::getComponent<components::AlgebraNode>(currentNodeShape);
+				currentNode->children[i] = nodeShape.id;
+
+				realBubbleStack.push(realChildId);
+				nodeStack.push(nodeShape.id);
+			}
+		}
+
+		return rootNodeShape.id;
+	}
+
 
 	CreateMulitiplicationReplacementShape::CreateMulitiplicationReplacementShape(middle::Id shapeToReplace, middle::Id replacingShape)
 	{
@@ -544,7 +707,7 @@ namespace bubbleActions {
 				actions.push_back(std::move(reparent));
 			}
 			// (if it doesn't exist) remove from the current parent to prevent it being deleted when parent is deleted
-			else if(children.size() == 1) {
+			else if (children.size() == 1) {
 				auto removeFromLoop = std::make_unique<middle::EditorActionRemoveFromLoop>(children[0].index);
 				removeFromLoop->execute(gameState);
 				actions.push_back(std::move(removeFromLoop));
@@ -1011,7 +1174,7 @@ namespace bubbleActions {
 
 		for (middle::Id id : children) {
 			if (typeRepresentatives.size() == 0) {
-				typeRepresentatives.push_back({id, 1});
+				typeRepresentatives.push_back({ id, 1 });
 				continue;
 			}
 			bool friendFound = false;

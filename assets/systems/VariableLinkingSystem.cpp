@@ -43,6 +43,15 @@ public:
 			}));
 	}
 
+	void travelStruct(middle::GameState* gameState, middle::Id id) {
+		auto& structureShape = middle::getShape(gameState, id.index);
+		auto structComp = middle::getComponent<components::AlgebraNode>(structureShape);
+
+		for (middle::Id id : structComp->children) {
+			travelStruct(gameState, id);
+		}
+	}
+
 	void variableTransfer(middle::GameState* gameState, middle::Id& grabbedId) {
 		// variable transfer
 
@@ -54,11 +63,14 @@ public:
 		auto intersectableIt = inputCache->begin<components::MouseIntersectable>();
 		for (int i = 0; i < inputCache->getSize(); ++i) {
 			auto& shape = middle::getShape(gameState, inputCache->relevantIdVector[i].index);
+
 			if (shape.id == grabbedId) {
 				continue;
 			}
 			auto otherInput = *inputIt;
 			auto intersectable = *intersectableIt;
+
+
 			if (!intersectable->intersectingTop) {
 				continue;
 			}
@@ -83,6 +95,10 @@ public:
 				continue;
 			}
 
+			middle::Id structureId = bubbleActions::bubbleToStructure(gameState, shape.id);
+			travelStruct(gameState, structureId);
+
+
 			if (otherBubble && grabbedInput) {
 				middle::Id shapeId = shape.id;
 				bubbleActions::UpdateVariable(grabbedInput->label, [shapeId]() {return shapeId;}).execute(gameState);
@@ -104,7 +120,6 @@ public:
 				auto grabbedOutputVariable = middle::getComponent<components::OutputVariable>(shape);
 
 				if (grabbedInputVariable || grabbedOutputVariable) {
-
 
 					variableTransfer(gameState, grabbedId);
 
