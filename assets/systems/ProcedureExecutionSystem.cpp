@@ -695,8 +695,9 @@ public:
 				if (intersectable->intersectingTop && input->structureId.index != middle::UNASSIGNED) {
 					//middle::attachComponent<components::Highlight>(gameState, inputCache->relevantIdVector[i]);
 					middle::Id bubbleRef = middle::getFirstChildWithComponent(gameState, procedure->bubbleRef, middle::getTypeId<components::BubbleComponent>());
-					middle::Id foundId1 = bubble::findMatchingStructureWithVariables(gameState, bubbleRef, input->structureId);
+					middle::Id foundId1 = bubble::findMatchingStructureWithVariables(gameState, bubbleRef, input->structureId, input->structureDepth);
 					middle::Id foundId2 = bubble::findMatchingStructureWithVariablesFromSibling(gameState, foundId1, input->structureId);
+					int a = 0;
 				}
 			}
 

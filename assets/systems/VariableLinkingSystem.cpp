@@ -106,7 +106,8 @@ public:
 			auto& ogShape = middle::getShape(gameState, ref->idRef.index);
 			auto ogInput = middle::getComponent<components::InputVariable>(ogShape);
 			ogInput->structureId = structureId;
-
+			ogInput->structureDepth = bubble::findDepth(gameState, shape.id);
+			ogInput->topDogContainer = bubble::findTopDog(gameState, shape.id);
 
 			if (otherBubble && grabbedInput) {
 				middle::Id shapeId = shape.id;

@@ -29,8 +29,9 @@ namespace bubble {
 	int fractionUnitCount(middle::GameState* gameState, middle::Id& fractionId);
 	bool matchingBubbles(middle::GameState* gameState, middle::Id& bubbleA, middle::Id bubbleB);
 	bool matchesStructureWithVariables(middle::GameState* gameState, middle::Id bubbleId, middle::Id algebraNodeId);
-	middle::Id findMatchingStructureWithVariables(middle::GameState* gameState, middle::Id containerId, middle::Id algebraNodeId);
+	middle::Id findMatchingStructureWithVariables(middle::GameState* gameState, middle::Id containerId, middle::Id algebraNodeId, int targetDepth, std::set<int>ignoreSet = {});
 	middle::Id findMatchingStructureWithVariablesFromSibling(middle::GameState* gameState, middle::Id siblingId, middle::Id algebraNodeId);
+	middle::Id findMatchingStructurePairWithVariables(middle::GameState* gameState, middle::Id containerId, middle::Id algebraNodeId, int targetDepth, std::set<int>ignoreSet = {});
 	middle::Id newFraction(middle::GameState* gameState, const Vector3& targetPos, int dividend);
 	middle::Id shapeToFraction(middle::GameState* gameState, middle::Id shpaeId, const Vector3& targetPos, int dividend);
 	middle::Id fractionQuotient(middle::GameState* gameState, middle::Id& fractionId);
@@ -38,4 +39,6 @@ namespace bubble {
 	void negate(middle::GameState* gameState, middle::Id id);
 	middle::Id bubbleToStructure(middle::GameState* gameState, middle::Id bubbleId);
 	components::AlgebraNodeType getStructureType(middle::GameState* gameState, middle::Id id);
+	int findDepth(middle::GameState* gameState, middle::Id id);
+	middle::Id findTopDog(middle::GameState* gameState, middle::Id id);
 }

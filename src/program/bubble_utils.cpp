@@ -14,6 +14,7 @@
 #include "PhysicsData.h"
 #include "BubbleVariable.h"
 #include "Circle.h"
+#include "TopDogBubbleTag.h"
 
 namespace bubble {
 
@@ -391,22 +392,30 @@ namespace bubble {
 		return false;
 	}
 
-	middle::Id findMatchingStructureWithVariables(middle::GameState* gameState, middle::Id containerId, middle::Id algebraNodeId)
+	middle::Id findMatchingStructureWithVariables(middle::GameState* gameState, middle::Id containerId, middle::Id algebraNodeId, int targetDepth, std::set<int>ignoreSet)
 	{
-		std::queue<middle::Id>idStack;
-		idStack.push(containerId);
-		while (idStack.size() > 0) {
-			middle::Id currentId = idStack.front();
-			idStack.pop();
+		std::queue<middle::Id>idQueue;
+		std::queue<int>depthQueue;
+		idQueue.push(containerId);
+		depthQueue.push(0);
+		while (idQueue.size() > 0) {
+			middle::Id currentId = idQueue.front();
+			idQueue.pop();
+			int currentDepth = depthQueue.front();
+			depthQueue.pop();
 
-			// return id of the first bubble or structure element that matches algebra node structure
-			if (matchesStructureWithVariables(gameState, currentId, algebraNodeId)) {
-				return currentId;
+			if (currentDepth == targetDepth) {
+				// return id of the first bubble or structure element that matches algebra node structure
+				if (matchesStructureWithVariables(gameState, currentId, algebraNodeId)) {
+					return currentId;
+				}
 			}
+
 			auto& shape = middle::getShape(gameState, currentId.index);
 			std::vector<middle::Id>children = algebraContainerChildren(shape);
 			for (middle::Id& id : children) {
-				idStack.push(id);
+				idQueue.push(id);
+				depthQueue.push(currentDepth + 1);
 			}
 
 		}
@@ -467,6 +476,45 @@ namespace bubble {
 			return static_cast<components::AlgebraNodeType>(algebraNode->type);
 		}
 		assert(false);
+	}
+
+	int findDepth(middle::GameState* gameState, middle::Id id)
+	{
+		std::stack < middle::Id> parents;
+		parents.push(id);
+		int depth = 0;
+		while (parents.size() > 0) {
+			middle::Id currentId = parents.top();
+			parents.pop();
+
+			auto& parentShape = middle::getShape(gameState, currentId.index);
+			if (middle::getComponent<components::TopDogBubbleTag>(parentShape)) {
+				return depth;
+			}
+
+			++depth;
+
+			middle::Id parentId = middle::getParent(gameState, currentId);
+			parents.push(parentId);
+		}
+		assert(false && "top dog not found");
+	}
+
+	middle::Id findTopDog(middle::GameState* gameState, middle::Id id)
+	{
+		std::stack < middle::Id> parents;
+		parents.push(id);
+		while (parents.size() > 0) {
+			middle::Id currentId = parents.top();
+			parents.pop();
+			auto& parentShape = middle::getShape(gameState, currentId.index);
+			if (middle::getComponent<components::TopDogBubbleTag>(parentShape)) {
+				return parentShape.id;
+			}
+			middle::Id parentId = middle::getParent(gameState, currentId);
+			parents.push(parentId);
+		}
+		assert(false && "top dog not found");
 	}
 
 	middle::Id bubbleToStructure(middle::GameState* gameState, middle::Id bubbleId)
