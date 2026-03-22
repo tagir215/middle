@@ -16,6 +16,7 @@
 #include "IdRef.h"
 #include "bubble_actions.h"
 #include "component_utils.h"
+#include "bubble_utils.h"
 
 class BubbleManipulationSystem : public middle::MiddleGameplaySystem {
 
@@ -57,7 +58,7 @@ public:
 
 	void attachComponents(middle::GameState* gameState, middle::Shape& shape, components::MouseGrabbable* grabbable) {
 
-		bool intersecting = bubbleActions::isIntersecting(gameState, shape);
+		bool intersecting = bubble::isIntersecting(gameState, shape);
 		if (intersecting && gameState->bubbleAlgebraState.grabbedId.index == middle::UNASSIGNED && gameState->input.mouseHeld) {
 			middle::Id& parentId = middle::getParent(gameState, shape.id);
 			if (parentId.index != middle::UNASSIGNED) {

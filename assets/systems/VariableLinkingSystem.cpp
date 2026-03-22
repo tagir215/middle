@@ -11,6 +11,9 @@
 #include "OutputVariable.h"
 #include "bubble_actions.h"
 #include "component_utils.h"
+#include "Highlight.h"
+#include "IdRef.h"
+#include "bubble_utils.h"
 
 class VariableLinkingSystem : public middle::MiddleGameplaySystem {
 public:
@@ -37,7 +40,9 @@ public:
 			auto& copyShape = middle::getShape(gameState, copyId.index);
 			auto copyLoop = middle::getComponent<components::LoopSociety>(copyShape);
 			// set copy intersecting as false since, its copied
-			middle::deleteComponent<components::MouseIntersectable>(copyShape);
+			middle::queueComponentDeletion<components::MouseIntersectable>(gameState, copyShape.id);
+			auto idRef = middle::attachComponent<components::IdRef>(gameState, copyShape.id);
+			idRef->idRef = toCopyId;
 			copyLoop->parentLoopId = middle::Id();
 			gameState->bubbleAlgebraState.grabbedId = copyId;
 			}));
@@ -70,7 +75,6 @@ public:
 			auto otherInput = *inputIt;
 			auto intersectable = *intersectableIt;
 
-
 			if (!intersectable->intersectingTop) {
 				continue;
 			}
@@ -95,8 +99,13 @@ public:
 				continue;
 			}
 
-			middle::Id structureId = bubbleActions::bubbleToStructure(gameState, shape.id);
-			travelStruct(gameState, structureId);
+
+			middle::Id structureId = bubble::bubbleToStructure(gameState, shape.id);
+
+			auto ref = middle::getComponent<components::IdRef>(grabbedShape);
+			auto& ogShape = middle::getShape(gameState, ref->idRef.index);
+			auto ogInput = middle::getComponent<components::InputVariable>(ogShape);
+			ogInput->structureId = structureId;
 
 
 			if (otherBubble && grabbedInput) {

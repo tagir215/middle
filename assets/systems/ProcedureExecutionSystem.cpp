@@ -24,6 +24,7 @@ public:
 
 	components::CompCache* buttonCache;
 	components::CompCache* procedureCache;
+	components::CompCache* inputCache;
 
 	void init(middle::GameState* gameState) {
 		buttonCache = middle::newCompCache(gameState);
@@ -33,9 +34,12 @@ public:
 		procedureCache = middle::newCompCache(gameState);
 		procedureCache->addType<components::ProcedureContainer>();
 		procedureCache->addType<components::TimerComponent>(components::NOTINTERESTED);
+		inputCache = middle::newCompCache(gameState);
+		inputCache->addType<components::InputVariable>();
+		inputCache->addType<components::MouseIntersectable>();
 	}
 
-	bool getOneInput(middle::GameState* gameState, middle::Shape& funcShape, components::InputVariable& inputVariable) {
+	bool getOneInput(middle::GameState* gameState, middle::Shape& funcShape,  components::InputVariable& inputVariable) {
 		auto variablesLoop = middle::getComponent<components::LoopSociety>(funcShape);
 		assert(variablesLoop);
 		for (middle::Id& childId : variablesLoop->loopMemberIds) {
@@ -63,6 +67,8 @@ public:
 			if (!inputVar) {
 				continue;
 			}
+
+			//inputVar->unitRef = bubbleActions::findMatchingStructureWithVariables(gameState, )
 
 			if (!varAFound) {
 				varAFound = true;
@@ -276,7 +282,7 @@ public:
 			}
 			getOneOutput(gameState, funcShape, output);
 			assert(input.unitRef.index != middle::UNASSIGNED);
-			middle::Id topBubbleId = bubbleActions::topLevelBubble(gameState);
+			middle::Id topBubbleId = bubble::topLevelBubble(gameState);
 			middle::Id copyId = middle::deepCopyShape(gameState, funcShape.id.index, topBubbleId.index);
 			auto reparent = std::make_shared<middle::EditorActionReparent>(topBubbleId.index, copyId.index);
 			auto update = std::make_shared<bubbleActions::UpdateVariable>(output.label, [copyId]() {return copyId;});
@@ -303,7 +309,7 @@ public:
 			}
 			getOneOutput(gameState, funcShape, output);
 			assert(input.unitRef.index != middle::UNASSIGNED);
-			middle::Id topBubbleId = bubbleActions::topLevelBubble(gameState);
+			middle::Id topBubbleId = bubble::topLevelBubble(gameState);
 			middle::Id copyId = middle::deepCopyShape(gameState, funcShape.id.index, topBubbleId.index);
 			auto replacement = std::make_shared<bubbleActions::CreateMulitiplicationReplacementShape>(topBubbleId, copyId);
 			auto update = std::make_shared<bubbleActions::UpdateVariable>(output.label, [copyId]() {return copyId;});
@@ -631,6 +637,8 @@ public:
 
 	void update(middle::GameState* gameState) override {
 
+
+
 		auto buttonIt = buttonCache->begin<components::Button>();
 		for (int i = 0; i < buttonCache->getSize(); ++i) {
 			auto& shape = middle::getShape(gameState, buttonCache->relevantIdVector[i].index);
@@ -676,8 +684,26 @@ public:
 			auto procedure = *procedureIt;
 			auto& shape = middle::getShape(gameState, procedureCache->relevantIdVector[i].index);
 
+
+
+			// random step but it is to find input
+			auto inputIt = inputCache->begin<components::InputVariable>();
+			auto intersectableIt = inputCache->begin<components::MouseIntersectable>();
+			for (int i = 0; i < inputCache->getSize(); ++i) {
+				auto intersectable = *intersectableIt;
+				auto input = *inputIt;
+				if (intersectable->intersectingTop && input->structureId.index != middle::UNASSIGNED) {
+					//middle::attachComponent<components::Highlight>(gameState, inputCache->relevantIdVector[i]);
+					middle::Id bubbleRef = middle::getFirstChildWithComponent(gameState, procedure->bubbleRef, middle::getTypeId<components::BubbleComponent>());
+					middle::Id foundId1 = bubble::findMatchingStructureWithVariables(gameState, bubbleRef, input->structureId);
+					middle::Id foundId2 = bubble::findMatchingStructureWithVariablesFromSibling(gameState, foundId1, input->structureId);
+				}
+			}
+
+
+
 			if ((procedure->mode == procedureConstants::EXECUTING
-					|| procedure->mode == procedureConstants::STEPPING)) {
+				|| procedure->mode == procedureConstants::STEPPING)) {
 
 				// early exit if at beginning or end
 				if (procedure->direction == procedureConstants::BACKWARD && procedure->procedureTransitionStack.size() == 0) {

@@ -10,280 +10,66 @@
 #include "InventoryItem.h"
 #include "DeleteComponent.h"
 #include "BubbleVariable.h"
+#include "bubble_utils.h"
 
 namespace bubbleActions {
 
-	bool isIntersecting(middle::GameState* gameState, middle::Shape& shape) {
-		auto fraction = middle::getComponent<components::FractionalComponent>(shape);
-		auto intersectable = middle::getComponent<components::MouseIntersectable>(shape);
-
-		if (fraction) {
-			auto loop = middle::getComponent<components::LoopSociety>(shape);
-			for (middle::Id id : loop->loopMemberIds) {
-				middle::Shape& shape = middle::getShape(gameState, id.index);
-				if (isIntersecting(gameState, shape)) {
-					return true;
-				}
-			}
+	bool additiveInverses(middle::GameState* gameState, middle::Id idA, middle::Id idB) {
+		auto& shapeA = middle::getShape(gameState, idA.index);
+		auto& shapeB = middle::getShape(gameState, idB.index);
+		auto unitA = middle::getComponent<components::BubbleUnit>(shapeA);
+		auto unitB = middle::getComponent<components::BubbleUnit>(shapeB);
+		if (!unitA || !unitB) {
 			return false;
 		}
-		else if (!intersectable) {
+		auto variableA = middle::getComponent<components::BubbleVariable>(shapeA);
+		auto variableB = middle::getComponent<components::BubbleVariable>(shapeB);
+		if (variableA && variableB && variableA->label == variableB->label) {
+			return unitA->value + unitB->value == 0;
+		}
+		else if (!variableA && !variableB) {
+			return unitA->value + unitB->value == 0;
+		}
+		return false;
+	}
+
+	bool validateAdditionInitialState(middle::GameState* gameState, ExecuteAddition* addition) {
+
+		middle::Id& parentAId = middle::getParent(gameState, addition->shapeToAddId);
+		middle::Id& parentBId = middle::getParent(gameState, addition->shapeToAddIntoId);
+		if (parentAId != parentBId) {
 			return false;
 		}
-
-		return intersectable->intersectingTop;
-	}
-
-	bool unitEquals(middle::GameState* gameState, middle::Id& idA, middle::Id& idB)
-	{
-		BubbleValue valueA = unitValue(gameState, idA);
-		BubbleValue valueB = unitValue(gameState, idB);
-		const float epsilon = 1e-4f;
-		bool equalMagnitude = std::abs(valueA.scale - valueB.scale) < epsilon;
-		bool equalLabel = valueA.variableLabel == valueB.variableLabel;
-		return equalMagnitude && equalLabel;
-	}
-
-	std::vector<middle::Id> algebraContainerChildren(middle::Shape& shape) {
-		auto loop = middle::getComponent<components::LoopSociety>(shape);
-		if (loop) {
-			return loop->loopMemberIds;
-		}
-		auto algebraNode = middle::getComponent<components::AlgebraNode>(shape);
-		if (algebraNode) {
-			return algebraNode->children;
-		}
-		assert(false);
-	}
-
-	bool containerStructureEquals(middle::GameState* gameState, middle::Id idA, middle::Id idB) {
-		middle::Shape& shapeA = middle::getShape(gameState, idA.index);
-		middle::Shape& shapeB = middle::getShape(gameState, idB.index);
-		// make sure same type of container
-		auto typeA = getStructureType(gameState, shapeA.id);
-		auto typeB = getStructureType(gameState, shapeA.id);
-		if (typeA != typeB) {
-			return false;
-		}
-
-		// make sure equal amount of children
-		std::vector<middle::Id>childrenA = algebraContainerChildren(shapeA);
-		std::vector<middle::Id>childrenB = algebraContainerChildren(shapeA);
-		int size = childrenA.size();
-		if (size != childrenB.size()) {
+		auto& parentShape = middle::getShape(gameState, parentAId.index);
+		auto parentMul = middle::getComponent<components::BubbleMultiplyComponent>(parentShape);
+		auto parentEquals = middle::getComponent<components::BubbleEqualsComponent>(parentShape);
+		if (parentMul || parentEquals) {
 			return false;
 		}
 
 		return true;
 	}
 
-
-	BubbleValue unitValue(middle::GameState* gameState, middle::Id& containerId)
-	{
-		BubbleValue result;
-		middle::Shape& shape = middle::getShape(gameState, containerId.index);
-		auto unit = middle::getComponent<components::BubbleUnit>(shape);
-		result.scale = unit->value;
-		auto variable = middle::getComponent<components::BubbleVariable>(shape);
-		if (variable) {
-			result.variableLabel = variable->label;
-		}
-		return result;
-	}
-
-	int fractionUnitCount(middle::GameState* gameState, middle::Id& fractionId)
-	{
-		auto& shape = middle::getShape(gameState, fractionId.index);
+	void validateFraction(middle::GameState* gameState, middle::Id& id) {
+		middle::Shape& shape = middle::getShape(gameState, id.index);
 		auto loop = middle::getComponent<components::LoopSociety>(shape);
-		return loop->loopMemberIds.size();
+		auto fraction = middle::getComponent<components::FractionalComponent>(shape);
+		assert(fraction);
+		int nonZeroCount = 0;
+		for (middle::Id& childId : loop->loopMemberIds) {
+			auto& childShape = middle::getShape(gameState, childId.index);
+			auto childFraction = middle::getComponent<components::FractionalComponent>(childShape);
+			auto mulComp = middle::getComponent<components::BubbleMultiplyComponent>(childShape);
+			assert(!childFraction);
+			assert(!mulComp);
+			auto unit = middle::getComponent<components::BubbleUnit>(childShape);
+			if (!unit || unit->value != 0) {
+				++nonZeroCount;
+			}
+		}
+		assert(nonZeroCount == 1);
 	}
 
-	bool matchingBubbles(middle::GameState* gameState, middle::Id& idA, middle::Id idB) {
-		auto& shapeA = middle::getShape(gameState, idA.index);
-		auto& shapeB = middle::getShape(gameState, idB.index);
-		auto unitA = middle::getComponent<components::BubbleUnit>(shapeA);
-		auto unitB = middle::getComponent<components::BubbleUnit>(shapeB);
-
-		// check that units equal
-		if (unitA && unitB) {
-			return unitEquals(gameState, idA, idB);
-		}
-
-		// if both are non units, so are some kind of containers
-		if (!unitA && !unitB) {
-			if (!containerStructureEquals(gameState, idA, idB)) {
-				return false;
-			}
-			std::vector<middle::Id>childrenA = algebraContainerChildren(shapeA);
-			std::vector<middle::Id>childrenB = algebraContainerChildren(shapeB);
-			int size = childrenA.size();
-			// store found matches
-			std::vector<bool> mem;
-			mem.resize(size);
-			for (auto& b : mem) {
-				b = false;
-			}
-			// see if matching strcutres of children between the 2 containers
-			int matchingCount = 0;
-			for (middle::Id& id : childrenA) {
-				for (int i = 0; i < size; ++i) {
-					if (mem[i]) {
-						continue;
-					}
-					if (matchingBubbles(gameState, id, childrenB[i])) {
-						++matchingCount;
-						mem[i] = true;
-						break;
-					}
-				}
-			}
-			return matchingCount == size;
-		}
-
-		// one is unit other is structure, or somehting else weird
-		return false;
-	}
-
-	bool matchesStructureWithVariables(middle::GameState* gameState, middle::Id bubbleId, middle::Id algebraNodeId) {
-		auto algebraNodeType = getStructureType(gameState, algebraNodeId);
-		auto bubbleType = getStructureType(gameState, bubbleId);
-		bool aUnit = algebraNodeType == components::AlgebraNodeType::UNIT;
-		bool bUnit = bubbleType == components::AlgebraNodeType::UNIT;
-
-		if (aUnit && bUnit) {
-			return unitEquals(gameState, bubbleId, algebraNodeId);
-		}
-		// if node type is variable, bubble can be basically anything
-		if (algebraNodeType == components::AlgebraNodeType::VARIABLE) {
-			return true;
-		}
-
-		auto& bubbleShape = middle::getShape(gameState, bubbleId.index);
-		auto& structureRootShape = middle::getShape(gameState, algebraNodeId.index);
-
-		if (!aUnit && !bUnit) {
-			// containers need to match if algebra node is a container
-			if (!containerStructureEquals(gameState, bubbleId, algebraNodeId)) {
-				return false;
-			}
-			std::vector<middle::Id>childrenA = algebraContainerChildren(bubbleShape);
-			std::vector<middle::Id>childrenB = algebraContainerChildren(structureRootShape);
-			int size = childrenA.size();
-			// store found matches
-			std::vector<bool> mem;
-			mem.resize(size);
-			for (auto& b : mem) {
-				b = false;
-			}
-			// see if matching strcutres of children between the 2 containers
-			int matchingCount = 0;
-			for (middle::Id& id : childrenA) {
-				for (int i = 0; i < size; ++i) {
-					if (mem[i]) {
-						continue;
-					}
-					if (matchesStructureWithVariables(gameState, id, childrenB[i])) {
-						++matchingCount;
-						mem[i] = true;
-						break;
-					}
-				}
-			}
-		}
-
-		return false;
-	}
-
-	void negate(middle::GameState* gameState, middle::Id id) {
-		auto& shape = middle::getShape(gameState, id.index);
-		auto unit = middle::getComponent<components::BubbleUnit>(shape);
-		if (unit) {
-			unit->value = -unit->value;
-			return;
-		}
-		auto loop = middle::getComponent<components::LoopSociety>(shape);
-		for (middle::Id childId : loop->loopMemberIds) {
-			negate(gameState, childId);
-		}
-	}
-
-	components::AlgebraNodeType getStructureType(middle::GameState* gameState, middle::Id id) {
-		auto& shape = middle::getShape(gameState, id.index);
-		if (middle::getComponent<components::BubbleComponent>(shape)) {
-			return components::AlgebraNodeType::BUBBLE;
-		}
-		if (middle::getComponent<components::BubbleVariable>(shape)) {
-			return components::AlgebraNodeType::VARIABLE;
-		}
-		if (middle::getComponent<components::BubbleUnit>(shape)) {
-			return components::AlgebraNodeType::UNIT;
-		}
-		if (middle::getComponent<components::BubbleMultiplyComponent>(shape)) {
-			return components::AlgebraNodeType::MULTIPLICATION;
-		}
-		if (middle::getComponent<components::FractionalComponent>(shape)) {
-			return components::AlgebraNodeType::FRACTION;
-		}
-		auto algebraNode = middle::getComponent<components::AlgebraNode>(shape);
-		if (algebraNode) {
-			return static_cast<components::AlgebraNodeType>(algebraNode->type);
-		}
-		assert(false);
-	}
-
-	middle::Id bubbleToStructure(middle::GameState* gameState, middle::Id bubbleId)
-	{
-		// create root
-		middle::Shape rootNodeShapeProto;
-		auto rootNode = middle::addComponent<components::AlgebraNode>(rootNodeShapeProto);
-		rootNode->type = static_cast<int>(components::AlgebraNodeType::BUBBLE);
-		middle::Shape& rootNodeShape = middle::registerShape(gameState, rootNodeShapeProto);
-
-		// push id and root structure to stacks
-		std::stack<middle::Id>realBubbleStack;
-		realBubbleStack.push(bubbleId);
-		std::stack<middle::Id>nodeStack;
-		nodeStack.push(rootNodeShape.id);
-
-		// iterate bubble tree downward and build algebra structure
-		while (realBubbleStack.size() > 0) {
-			middle::Id realBubbleId = realBubbleStack.top();
-			realBubbleStack.pop();
-			middle::Id currentNodeId = nodeStack.top();
-			nodeStack.pop();
-
-			std::vector<middle::Id>realChildren;
-			middle::getChildren(gameState, realBubbleId, realChildren);
-
-			auto& currentNodeShape = middle::getShape(gameState, currentNodeId.index);
-			auto currentNode = middle::getComponent<components::AlgebraNode>(currentNodeShape);
-			currentNode->children.resize(realChildren.size());
-
-			for (int i = 0; i < realChildren.size(); ++i) {
-				middle::Id realChildId = realChildren[i];
-				auto& realChildShape = middle::getShape(gameState, realChildId.index);
-				middle::Shape nodeShapeProto;
-				auto node = middle::addComponent<components::AlgebraNode>(nodeShapeProto);
-				node->type = static_cast<int>(getStructureType(gameState, realChildId));
-				middle::Shape& nodeShape = middle::registerShape(gameState, nodeShapeProto);
-
-				if (node->type == static_cast<int>(components::AlgebraNodeType::UNIT) || node->type == static_cast<int>(components::AlgebraNodeType::VARIABLE)) {
-					BubbleValue value = unitValue(gameState, realChildId);
-					node->value = value.scale;
-					node->variableLabel = value.variableLabel;
-				}
-
-				// refresh pointer
-				currentNode = middle::getComponent<components::AlgebraNode>(currentNodeShape);
-				currentNode->children[i] = nodeShape.id;
-
-				realBubbleStack.push(realChildId);
-				nodeStack.push(nodeShape.id);
-			}
-		}
-
-		return rootNodeShape.id;
-	}
 
 
 	CreateMulitiplicationReplacementShape::CreateMulitiplicationReplacementShape(middle::Id shapeToReplace, middle::Id replacingShape)
@@ -352,7 +138,7 @@ namespace bubbleActions {
 			Vector3 displacement = targetPos - replacingShapePos;
 			middle::moveShape(gameState, copyFractionShape.id.index, displacement);
 
-			middle::Id quotientId = fractionQuotient(gameState, copyFractionId);
+			middle::Id quotientId = bubble::fractionQuotient(gameState, copyFractionId);
 
 			auto createReplacement = CreateMulitiplicationReplacementShape(quotientId, replacingShapeId);
 			createReplacement.execute(gameState);
@@ -363,7 +149,7 @@ namespace bubbleActions {
 			// if result is not a bubble we need to contain it into a bubble
 			auto bubble = middle::getComponent<components::BubbleComponent>(resultShape);
 			if (!bubble) {
-				middle::Shape newContainerProto = newBubble(gameState, targetPos);
+				middle::Shape newContainerProto = bubble::newBubble(gameState, targetPos);
 				middle::Shape& newContainer = middle::registerShape(gameState, newContainerProto);
 				middle::EditorActionReparent(newContainer.id.index, resultId.index).execute(gameState);
 				resultId = newContainer.id;
@@ -378,7 +164,7 @@ namespace bubbleActions {
 
 		// if shape to replace is variable, variable is contained in a bubble and bubble in multiplication link
 		if (variable) {
-			middle::Shape newContainerBubbleProto = newBubble(gameState, targetPos);
+			middle::Shape newContainerBubbleProto = bubble::newBubble(gameState, targetPos);
 			middle::Shape& newContainerBubble = middle::registerShape(gameState, newContainerBubbleProto);
 			middle::Id variableCopyId = middle::deepCopyShape(gameState, shapeToReplaceId.index);
 			middle::EditorActionReparent(newContainerBubble.id.index, variableCopyId.index).execute(gameState);
@@ -401,7 +187,7 @@ namespace bubbleActions {
 			middle::Id copyId = middle::deepCopyShape(gameState, shapeToCopyId.index);
 
 			if (unit->value == -1) {
-				negate(gameState, copyId);
+				bubble::negate(gameState, copyId);
 			}
 
 			// compute displacmenet from replacing shape to shapeToReplace position
@@ -420,129 +206,6 @@ namespace bubbleActions {
 		deleteShapeRecursive(gameState, resultShapeId.index);
 	}
 
-	middle::Shape newBubble(middle::GameState* gameState, const Vector3& targetPos) {
-		middle::Shape newBubbleShape;
-		middle::addComponent<components::BubbleComponent>(newBubbleShape);
-		middle::addComponent<components::MouseGrabbable>(newBubbleShape);
-		middle::addComponent<components::MouseIntersectable>(newBubbleShape);
-		middle::addComponent<components::LoopTag>(newBubbleShape);
-		middle::addComponent<components::LoopSociety>(newBubbleShape);
-		middle::addComponent<components::PhysicsData>(newBubbleShape);
-		auto circle = middle::addComponent<components::Circle>(newBubbleShape);
-		circle->radius = 10;
-		auto position = middle::addComponent<components::Position>(newBubbleShape);
-		position->posX = targetPos.x;
-		position->posY = targetPos.y;
-		position->posZ = targetPos.z;
-		return newBubbleShape;
-	}
-
-	middle::Shape newUnit(middle::GameState* gameState, const Vector3& targetPos)
-	{
-		middle::Shape newUnitShape;
-		middle::addComponent<components::BubbleUnit>(newUnitShape);
-		middle::addComponent<components::MouseGrabbable>(newUnitShape);
-		middle::addComponent<components::MouseIntersectable>(newUnitShape);
-		middle::addComponent<components::LoopSociety>(newUnitShape);
-		middle::addComponent<components::PhysicsData>(newUnitShape);
-		auto sphere = middle::addComponent<components::Sphere>(newUnitShape);
-		sphere->radius = 2;
-		auto position = middle::addComponent<components::Position>(newUnitShape);
-		position->posX = targetPos.x;
-		position->posY = targetPos.y;
-		position->posZ = targetPos.z;
-		return newUnitShape;
-	}
-
-	middle::Id newFraction(middle::GameState* gameState, const Vector3& targetPos, int dividend)
-	{
-		middle::Shape newFractionProto;
-		middle::addComponent<components::FractionalComponent>(newFractionProto);
-		auto loop = middle::addComponent<components::LoopSociety>(newFractionProto);
-		middle::addComponent<components::LoopTag>(newFractionProto);
-		middle::addComponent<components::MouseGrabbable>(newFractionProto);
-		middle::addComponent<components::MouseIntersectable>(newFractionProto);
-		auto position = middle::addComponent<components::Position>(newFractionProto);
-
-		auto& newFractionShape = middle::registerShape(gameState, newFractionProto);
-
-		position->posX = targetPos.x;
-		position->posY = targetPos.y;
-		position->posZ = targetPos.z;
-
-		const float fractionUnitSpacing = 10;
-		float height = fractionUnitSpacing * dividend - dividend;
-		Vector3 referencePos = targetPos;
-		referencePos.z += height * 0.5f;
-		for (int i = 0; i < dividend; ++i) {
-			auto newUnitProto = newUnit(gameState, referencePos);
-			auto& newUnitShape = middle::registerShape(gameState, newUnitProto);
-
-			auto unitComp = middle::getComponent<components::BubbleUnit>(newUnitShape);
-			// set everything other than bottom one as 0
-			if (i < dividend - 1) {
-				unitComp->value = 0;
-			}
-			else {
-				unitComp->value = 1;
-			}
-
-			auto reparent = middle::EditorActionReparent(newFractionShape.id.index, newUnitShape.id.index);
-			reparent.execute(gameState);
-			referencePos.z -= fractionUnitSpacing;
-		}
-		return newFractionShape.id;
-	}
-
-	middle::Id fractionQuotient(middle::GameState* gameState, middle::Id& fractionId) {
-		std::vector<middle::Id> fractionChildren;
-		middle::getChildren(gameState, fractionId, fractionChildren);
-		for (middle::Id& fractionPartId : fractionChildren) {
-			auto& unitShape = middle::getShape(gameState, fractionPartId.index);
-			auto unit = middle::getComponent<components::BubbleUnit>(unitShape);
-			if (!unit || unit->value != 0) {
-				return fractionPartId;
-			}
-		}
-		assert(false);
-	}
-
-	middle::Id shapeToFraction(middle::GameState* gameState, middle::Id shapeId, const Vector3& targetPos, int dividend)
-	{
-		auto& shape = middle::getShape(gameState, shapeId.index);
-		auto fraction = middle::getComponent<components::FractionalComponent>(shape);
-		auto multiplication = middle::getComponent<components::BubbleMultiplyComponent>(shape);
-		// hmm...?
-		if (fraction) {
-			int fractionSize = fractionUnitCount(gameState, shapeId);
-			dividend *= fractionSize;
-			middle::Id fractionShapeId = newFraction(gameState, targetPos, dividend);
-			middle::Id oldQuotientId = fractionQuotient(gameState, shapeId);
-			middle::Id genericQuotientId = fractionQuotient(gameState, fractionShapeId);
-			middle::Id quotientCopyId = middle::deepCopyShape(gameState, oldQuotientId.index);
-			Replace(genericQuotientId, quotientCopyId).execute(gameState);
-			return fractionShapeId;
-		}
-		// multiplication needs to be contained in a bubble
-		else if (multiplication) {
-			middle::Id fractionShapeId = newFraction(gameState, targetPos, dividend);
-			middle::Id genericQuotientId = fractionQuotient(gameState, fractionShapeId);
-			middle::Shape newContainerBubbleProto = newBubble(gameState, targetPos);
-			middle::Shape& newContainerBubble = middle::registerShape(gameState, newContainerBubbleProto);
-			middle::Id copyMultiplicationId = middle::deepCopyShape(gameState, shapeId.index);
-			middle::EditorActionReparent(newContainerBubble.id.index, copyMultiplicationId.index).execute(gameState);
-			Replace(genericQuotientId, newContainerBubble.id).execute(gameState);
-			return fractionShapeId;
-		}
-		// other cases
-		else {
-			middle::Id shapeCopyId = middle::deepCopyShape(gameState, shapeId.index);
-			middle::Id fractionShapeId = newFraction(gameState, targetPos, dividend);
-			middle::Id genericQuotientId = fractionQuotient(gameState, fractionShapeId);
-			Replace(genericQuotientId, shapeCopyId).execute(gameState);
-			return fractionShapeId;
-		}
-	}
 
 
 
@@ -569,7 +232,7 @@ namespace bubbleActions {
 		// UNIT CASE, or different scale fractions
 		if ((unitA && unitB) || (fractionA && fractionB) || (unitA && fractionB) || (unitB && fractionA)) {
 			Vector3 targetPos = middle::getShapePosition(gameState, idA.index);
-			auto regAction = middle::EditorActionRegisterShape(newBubble(gameState, targetPos));
+			auto regAction = middle::EditorActionRegisterShape(bubble::newBubble(gameState, targetPos));
 			regAction.execute(gameState);
 			replacementId = regAction.newShapeId;
 
@@ -616,31 +279,6 @@ namespace bubbleActions {
 
 	void CreateAdditionReplacementShape::undo(middle::GameState* gameState) {
 		deleteShapeRecursive(gameState, resultId.index);
-	}
-
-
-	middle::Id inverseBubble(middle::GameState* gameState, middle::Id& id)
-	{
-		return middle::Id();
-	}
-
-	middle::Id topLevelBubble(middle::GameState* gameState)
-	{
-		middle::Id resultId;
-		middle::loopInstances(gameState, [gameState, &resultId](int i, middle::Shape& shape) {
-			auto bubble = middle::getComponent<components::BubbleComponent>(shape);
-			auto mul = middle::getComponent<components::BubbleMultiplyComponent>(shape);
-			if (!bubble && !mul) {
-				return true;
-			}
-			middle::Id& parentId = middle::getParent(gameState, shape.id);
-			if (parentId.index == middle::UNASSIGNED) {
-				resultId = shape.id;
-				return false;
-			}
-			return true;
-			});
-		return resultId;
 	}
 
 
@@ -730,45 +368,10 @@ namespace bubbleActions {
 		}
 	}
 
-	bool validateAdditionInitialState(middle::GameState* gameState, ExecuteAddition* addition) {
-
-		middle::Id& parentAId = middle::getParent(gameState, addition->shapeToAddId);
-		middle::Id& parentBId = middle::getParent(gameState, addition->shapeToAddIntoId);
-		if (parentAId != parentBId) {
-			return false;
-		}
-		auto& parentShape = middle::getShape(gameState, parentAId.index);
-		auto parentMul = middle::getComponent<components::BubbleMultiplyComponent>(parentShape);
-		auto parentEquals = middle::getComponent<components::BubbleEqualsComponent>(parentShape);
-		if (parentMul || parentEquals) {
-			return false;
-		}
-
-		return true;
-	}
 
 	ExecuteAddition::ExecuteAddition(middle::Id shapeToAddId, middle::Id shapeToAddIntoId) {
 		this->shapeToAddId = shapeToAddId;
 		this->shapeToAddIntoId = shapeToAddIntoId;
-	}
-
-	bool additiveInverses(middle::GameState* gameState, middle::Id idA, middle::Id idB) {
-		auto& shapeA = middle::getShape(gameState, idA.index);
-		auto& shapeB = middle::getShape(gameState, idB.index);
-		auto unitA = middle::getComponent<components::BubbleUnit>(shapeA);
-		auto unitB = middle::getComponent<components::BubbleUnit>(shapeB);
-		if (!unitA || !unitB) {
-			return false;
-		}
-		auto variableA = middle::getComponent<components::BubbleVariable>(shapeA);
-		auto variableB = middle::getComponent<components::BubbleVariable>(shapeB);
-		if (variableA && variableB && variableA->label == variableB->label) {
-			return unitA->value + unitB->value == 0;
-		}
-		else if (!variableA && !variableB) {
-			return unitA->value + unitB->value == 0;
-		}
-		return false;
 	}
 
 
@@ -903,25 +506,6 @@ namespace bubbleActions {
 		this->id = id;
 	}
 
-	void validateFraction(middle::GameState* gameState, middle::Id& id) {
-		middle::Shape& shape = middle::getShape(gameState, id.index);
-		auto loop = middle::getComponent<components::LoopSociety>(shape);
-		auto fraction = middle::getComponent<components::FractionalComponent>(shape);
-		assert(fraction);
-		int nonZeroCount = 0;
-		for (middle::Id& childId : loop->loopMemberIds) {
-			auto& childShape = middle::getShape(gameState, childId.index);
-			auto childFraction = middle::getComponent<components::FractionalComponent>(childShape);
-			auto mulComp = middle::getComponent<components::BubbleMultiplyComponent>(childShape);
-			assert(!childFraction);
-			assert(!mulComp);
-			auto unit = middle::getComponent<components::BubbleUnit>(childShape);
-			if (!unit || unit->value != 0) {
-				++nonZeroCount;
-			}
-		}
-		assert(nonZeroCount == 1);
-	}
 
 	void Pop::execute(middle::GameState* gameState) {
 		middle::Shape& shape = middle::getShape(gameState, id.index);
@@ -955,7 +539,7 @@ namespace bubbleActions {
 				middle::getChildren(gameState, fractionChildShape.id, bubbleChildren);
 				for (middle::Id& bubbleChild : bubbleChildren) {
 					referencePos.x += 8;
-					middle::Id replacementFractionId = shapeToFraction(gameState, bubbleChild, referencePos, dividend);
+					middle::Id replacementFractionId = bubble::shapeToFraction(gameState, bubbleChild, referencePos, dividend);
 					validateFraction(gameState, replacementFractionId);
 
 					auto regAction = std::make_unique<middle::EditorActionRegisterId>(replacementFractionId);
@@ -1097,7 +681,7 @@ namespace bubbleActions {
 		}
 		Vector3 containerPos = middle::getShapePosition(gameState, containerShapeId.index);
 		Vector3 referencePos = containerPos;
-		auto newBubbleProto = bubbleActions::newBubble(gameState, containerPos);
+		auto newBubbleProto = bubble::newBubble(gameState, containerPos);
 		auto registerAction = std::make_unique<middle::EditorActionRegisterShape>(newBubbleProto);
 		registerAction->execute(gameState);
 		middle::Id newBubbleId = registerAction->newShapeId;
@@ -1105,13 +689,13 @@ namespace bubbleActions {
 
 		// replace unit with fractions
 		for (int i = 0; i < dividend; ++i) {
-			middle::Id& newFractionId = bubbleActions::newFraction(gameState, referencePos, dividend);
+			middle::Id& newFractionId = bubble::newFraction(gameState, referencePos, dividend);
 			auto registerFraction = std::make_unique<middle::EditorActionRegisterId>(newFractionId);
 			registerFraction->execute(gameState);
 			actions.push_back(std::move(registerFraction));
 
 			// replace default 1 unit with the actual unit value, because new fraction returns a generic fraction
-			middle::Id& quotientId = fractionQuotient(gameState, newFractionId);
+			middle::Id& quotientId = bubble::fractionQuotient(gameState, newFractionId);
 			auto copyAction = std::make_unique<middle::EditorActionCopySingle>(containerShapeId);
 			copyAction->execute(gameState);
 			auto replace = std::make_unique<Replace>(quotientId, copyAction->resultId);
@@ -1158,7 +742,7 @@ namespace bubbleActions {
 		auto& shape = middle::getShape(gameState, compressTarget.index);
 		auto fraction = middle::getComponent<components::FractionalComponent>(shape);
 		if (fraction) {
-			compressTarget = fractionQuotient(gameState, containerShapeId);
+			compressTarget = bubble::fractionQuotient(gameState, containerShapeId);
 		}
 
 		std::vector<middle::Id>children;
@@ -1179,7 +763,7 @@ namespace bubbleActions {
 			}
 			bool friendFound = false;
 			for (auto& representative : typeRepresentatives) {
-				bool typeEquals = matchingBubbles(gameState, id, representative.id);
+				bool typeEquals = bubble::matchingBubbles(gameState, id, representative.id);
 				if (typeEquals) {
 					++representative.count;
 					friendFound = true;
@@ -1199,14 +783,14 @@ namespace bubbleActions {
 
 		// create bubble with compress count
 		Vector3 targetPos = middle::getShapePosition(gameState, compressTarget.index);
-		middle::Shape countBubbleProto = newBubble(gameState, targetPos);
+		middle::Shape countBubbleProto = bubble::newBubble(gameState, targetPos);
 		auto registerAction1 = std::make_unique<middle::EditorActionRegisterShape>(countBubbleProto);
 		registerAction1->execute(gameState);
 		middle::Id countBubbleId = registerAction1->newShapeId;
 		actions.push_back(std::move(registerAction1));
 		Vector3 refPos = targetPos;
 		for (int i = 0; i < compressCount; ++i) {
-			middle::Shape unitProto = newUnit(gameState, refPos);
+			middle::Shape unitProto = bubble::newUnit(gameState, refPos);
 			auto registerAction2 = std::make_unique<middle::EditorActionRegisterShape>(unitProto);
 			registerAction2->execute(gameState);
 			middle::Id unitId = registerAction2->newShapeId;
@@ -1218,7 +802,7 @@ namespace bubbleActions {
 		}
 
 		// create new container bubble
-		middle::Shape newContainerProto = newBubble(gameState, targetPos);
+		middle::Shape newContainerProto = bubble::newBubble(gameState, targetPos);
 		auto registerAction = std::make_unique<middle::EditorActionRegisterShape>(newContainerProto);
 		registerAction->execute(gameState);
 		middle::Id newContainerId = registerAction->newShapeId;
@@ -1243,7 +827,7 @@ namespace bubbleActions {
 		actions.push_back(std::move(link));
 
 		// create antoher container, beacuse in fractions or some places multiplication doesn't work as container
-		middle::Shape multiplicationContainerProto = newBubble(gameState, targetPos);
+		middle::Shape multiplicationContainerProto = bubble::newBubble(gameState, targetPos);
 		auto registerAction2 = std::make_unique<middle::EditorActionRegisterShape>(multiplicationContainerProto);
 		registerAction2->execute(gameState);
 		middle::Id multiplicationContainerId = registerAction2->newShapeId;
@@ -1278,8 +862,8 @@ namespace bubbleActions {
 			return;
 		}
 		Vector3 targetPos = middle::getShapePosition(gameState, recieverShapeId.index);
-		middle::Shape newBubbleProto = bubbleActions::newBubble(gameState, targetPos);
-		middle::Shape newUnitProto = bubbleActions::newUnit(gameState, targetPos);
+		middle::Shape newBubbleProto = bubble::newBubble(gameState, targetPos);
+		middle::Shape newUnitProto = bubble::newUnit(gameState, targetPos);
 		auto register1 = std::make_unique<middle::EditorActionRegisterShape>(newBubbleProto);
 		register1->execute(gameState);
 		middle::Id newBubbleId = register1->newShapeId;
@@ -1482,7 +1066,7 @@ namespace bubbleActions {
 			}
 			// create new container bubble, because the top dog bubble should be alone
 			else if (children.size() > 1) {
-				middle::Shape newContainer = newBubble(gameState, middle::getShapePosition(gameState, containerId.index));
+				middle::Shape newContainer = bubble::newBubble(gameState, middle::getShapePosition(gameState, containerId.index));
 				auto registerAction = std::make_unique<middle::EditorActionRegisterShape>(newContainer);
 				registerAction->execute(gameState);
 				toLinkIntoId = registerAction->newShapeId;
@@ -1536,7 +1120,7 @@ namespace bubbleActions {
 			parentId = middle::getParent(gameState, targetId);
 		}
 
-		middle::Shape bubbleProto = newBubble(gameState, targetPos);
+		middle::Shape bubbleProto = bubble::newBubble(gameState, targetPos);
 		auto registerBubble = std::make_unique<middle::EditorActionRegisterShape>(bubbleProto);
 		registerBubble->execute(gameState);
 		resultId = registerBubble->newShapeId;

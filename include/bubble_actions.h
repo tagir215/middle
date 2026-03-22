@@ -17,29 +17,8 @@
 #include "AlgebraNode.h"
 
 namespace bubbleActions{
-	struct BubbleValue {
-		float scale = 0;
-		std::string variableLabel = "";
-	};
 
 
-	middle::Id inverseBubble(middle::GameState* gameState, middle::Id& id);
-	middle::Id topLevelBubble(middle::GameState* gameState);
-	middle::Shape newBubble(middle::GameState* gameState, const Vector3& targetPos);
-	middle::Shape newUnit(middle::GameState* gameState, const Vector3& targetPos);
-	bool isIntersecting(middle::GameState* gameState, middle::Shape& shape);
-	bool unitEquals(middle::GameState* gameState, middle::Id& bubbleA, middle::Id& bubbleB);
-	BubbleValue unitValue(middle::GameState* gameState, middle::Id& containerId);
-	int fractionUnitCount(middle::GameState* gameState, middle::Id& fractionId);
-	bool matchingBubbles(middle::GameState* gameState, middle::Id& bubbleA, middle::Id bubbleB);
-	bool matchesStructureWithVariables(middle::GameState* gameState, middle::Id bubbleId, middle::Id algebraNodeId);
-	middle::Id newFraction(middle::GameState* gameState, const Vector3& targetPos, int dividend);
-	middle::Id shapeToFraction(middle::GameState* gameState, middle::Id shpaeId, const Vector3& targetPos, int dividend);
-	middle::Id fractionQuotient(middle::GameState* gameState, middle::Id& fractionId);
-	bool additiveInverses(middle::GameState* gameState, middle::Id idA, middle::Id idB);
-	void negate(middle::GameState* gameState, middle::Id id);
-	middle::Id bubbleToStructure(middle::GameState* gameState, middle::Id bubbleId);
-	components::AlgebraNodeType getStructureType(middle::GameState* gameState, middle::Id id);
 
 	class Bubblify : public middle::EditorActionContainer{
 	public:

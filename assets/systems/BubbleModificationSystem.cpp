@@ -12,6 +12,7 @@
 #include "PlacementComponent.h"
 #include "BubbleVariable.h"
 #include "TopDogBubbleTag.h"
+#include "bubble_utils.h"
 
 class BubbleModificationSystem : public middle::MiddleGameplaySystem {
 public:
@@ -54,7 +55,7 @@ public:
 				auto& varShape = middle::getShape(gameState, variableId.index);
 				auto varUnit = middle::getComponent<components::BubbleUnit>(varShape);
 				if (varUnit->value == -1) {
-					bubbleActions::negate(gameState, copyId);
+					bubble::negate(gameState, copyId);
 				}
 				// replace, update variable first
 				replace->replacingShapeId = copyId;
@@ -221,7 +222,7 @@ public:
 					}
 				}
 
-				if (!bubbleActions::isIntersecting(gameState, intersectableShape)) {
+				if (!bubble::isIntersecting(gameState, intersectableShape)) {
 					continue;
 				}
 

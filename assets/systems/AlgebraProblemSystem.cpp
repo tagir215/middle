@@ -6,6 +6,7 @@
 #include "Button.h"
 #include "BubbleAlgebraProblem.h"
 #include "bubble_actions.h"
+#include "bubble_utils.h"
 
 class AlgebraProblemSystem : public middle::MiddleGameplaySystem {
 public:
@@ -32,7 +33,7 @@ public:
 				assert(formulas.size() == 2);
 				middle::Id& formulaA = formulas[0];
 				middle::Id& formulaB = formulas[1];
-				bool matching = bubbleActions::matchingBubbles(gameState, formulaA, formulaB);
+				bool matching = bubble::matchingBubbles(gameState, formulaA, formulaB);
 
 				if (matching) {
 					middle::loadShape(gameState, "../assets/shapes/", "ScoreScreen", true);

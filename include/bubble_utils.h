@@ -1,6 +1,7 @@
 #pragma once
 #include "LoopSociety.h"
 #include "game_state.h"
+#include "AlgebraNode.h"
 using namespace middle;
 
 namespace bubble {
@@ -13,4 +14,28 @@ namespace bubble {
 	std::vector<middle::Id>getNodes(middle::GameState* gameState, components::LoopSociety* loop);
 	std::vector<middle::Id>getConstraints(middle::GameState* gameState, components::LoopSociety* loop);
 	middle::Id findBubbleWithPatern(middle::GameState* gameState, middle::Id containerBubble);
+	middle::Id shapeToFraction(middle::GameState* gameState, middle::Id shapeId, const Vector3& targetPos, int dividend);
+	struct BubbleValue {
+		float scale = 0;
+		std::string variableLabel = "";
+	};
+	middle::Id inverseBubble(middle::GameState* gameState, middle::Id& id);
+	middle::Id topLevelBubble(middle::GameState* gameState);
+	middle::Shape newBubble(middle::GameState* gameState, const Vector3& targetPos);
+	middle::Shape newUnit(middle::GameState* gameState, const Vector3& targetPos);
+	bool isIntersecting(middle::GameState* gameState, middle::Shape& shape);
+	bool unitEquals(middle::GameState* gameState, middle::Id& bubbleA, middle::Id& bubbleB);
+	BubbleValue unitValue(middle::GameState* gameState, middle::Id& containerId);
+	int fractionUnitCount(middle::GameState* gameState, middle::Id& fractionId);
+	bool matchingBubbles(middle::GameState* gameState, middle::Id& bubbleA, middle::Id bubbleB);
+	bool matchesStructureWithVariables(middle::GameState* gameState, middle::Id bubbleId, middle::Id algebraNodeId);
+	middle::Id findMatchingStructureWithVariables(middle::GameState* gameState, middle::Id containerId, middle::Id algebraNodeId);
+	middle::Id findMatchingStructureWithVariablesFromSibling(middle::GameState* gameState, middle::Id siblingId, middle::Id algebraNodeId);
+	middle::Id newFraction(middle::GameState* gameState, const Vector3& targetPos, int dividend);
+	middle::Id shapeToFraction(middle::GameState* gameState, middle::Id shpaeId, const Vector3& targetPos, int dividend);
+	middle::Id fractionQuotient(middle::GameState* gameState, middle::Id& fractionId);
+	bool additiveInverses(middle::GameState* gameState, middle::Id idA, middle::Id idB);
+	void negate(middle::GameState* gameState, middle::Id id);
+	middle::Id bubbleToStructure(middle::GameState* gameState, middle::Id bubbleId);
+	components::AlgebraNodeType getStructureType(middle::GameState* gameState, middle::Id id);
 }
