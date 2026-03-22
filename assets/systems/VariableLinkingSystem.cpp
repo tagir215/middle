@@ -102,12 +102,14 @@ public:
 
 			middle::Id structureId = bubble::bubbleToStructure(gameState, shape.id);
 
+			// set bubble reference
 			auto ref = middle::getComponent<components::IdRef>(grabbedShape);
 			auto& ogShape = middle::getShape(gameState, ref->idRef.index);
 			auto ogInput = middle::getComponent<components::InputVariable>(ogShape);
 			ogInput->structureId = structureId;
 			ogInput->structureDepth = bubble::findDepth(gameState, shape.id);
 			ogInput->topDogContainer = bubble::findTopDog(gameState, shape.id);
+			middle::attachComponent<components::Highlight>(gameState, ogShape.id);
 
 			if (otherBubble && grabbedInput) {
 				middle::Id shapeId = shape.id;

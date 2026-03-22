@@ -31,7 +31,7 @@ namespace bubble {
 	bool matchesStructureWithVariables(middle::GameState* gameState, middle::Id bubbleId, middle::Id algebraNodeId);
 	middle::Id findMatchingStructureWithVariables(middle::GameState* gameState, middle::Id containerId, middle::Id algebraNodeId, int targetDepth, std::set<int>ignoreSet = {});
 	middle::Id findMatchingStructureWithVariablesFromSibling(middle::GameState* gameState, middle::Id siblingId, middle::Id algebraNodeId);
-	middle::Id findMatchingStructurePairWithVariables(middle::GameState* gameState, middle::Id containerId, middle::Id algebraNodeId, int targetDepth, std::set<int>ignoreSet = {});
+	void findMatchingStructurePairWithVariables(middle::GameState* gameState, middle::Id containerId, middle::Id algebraNodeIdA, middle::Id algebraNodeIdB, int targetDepth, middle::Id& resultIdA, middle::Id& resultIdB);
 	middle::Id newFraction(middle::GameState* gameState, const Vector3& targetPos, int dividend);
 	middle::Id shapeToFraction(middle::GameState* gameState, middle::Id shpaeId, const Vector3& targetPos, int dividend);
 	middle::Id fractionQuotient(middle::GameState* gameState, middle::Id& fractionId);

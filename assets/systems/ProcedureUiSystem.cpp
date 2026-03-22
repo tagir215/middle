@@ -20,6 +20,9 @@
 #include "Sphere.h"
 #include "ProcedureImportContainer.h"
 #include "bubble_utils.h"
+#include "InputVariable.h"
+#include "Highlight.h"
+
 
 
 class ProcedureUiSystem : public middle::MiddleGameplaySystem {
@@ -29,7 +32,10 @@ public:
 	components::CompCache* procedureCache;
 	components::CompCache* procedureUseCache;
 	components::CompCache* procedureImportContainerCache;
+	components::CompCache* inputCache;
 	std::vector<std::string>procedureNames;
+
+	Color highlightColor = { GREEN.r, GREEN.g, GREEN.b, 60 };
 
 	void init(middle::GameState* gameState) {
 		buttonCache = middle::newCompCache(gameState);
@@ -43,6 +49,10 @@ public:
 		procedureUseCache->addType<components::LoopSociety>();
 		procedureImportContainerCache = middle::newCompCache(gameState);
 		procedureImportContainerCache->addType<components::ProcedureImportContainer>();
+		inputCache = middle::newCompCache(gameState);
+		inputCache->addType<components::InputVariable>();
+		inputCache->addType<components::Highlight>();
+		inputCache->addType<components::Position>();
 	}
 
 	void update(middle::GameState* gameState) override {
@@ -125,18 +135,18 @@ public:
 		}
 
 		// execution iterator rendering
-		if (procComp && procComp->activeBlock.index != middle::UNASSIGNED) {
+		bool procedureInAction = procComp->procedureTransitionStack.size() > 0;
+		if (procComp && procComp->activeBlock.index != middle::UNASSIGNED && procedureInAction) {
 			auto& activeBlockShape = middle::getShape(gameState, procComp->activeBlock.index);
 			Vector3 position = middle::getShapePosition(gameState, activeBlockShape.id.index);
 			auto rect = middle::getComponent<components::Rectangle>(activeBlockShape);
 			middle::RenderItem activeBlockItem;
 			activeBlockItem.type = middle::RenderItemType::RECTANGLE;
-			Color color = { GREEN.r, GREEN.g, GREEN.b, 0.2f };
-			activeBlockItem.color = GREEN;
+			activeBlockItem.color = highlightColor;
 			activeBlockItem.width = rect->width;
 			activeBlockItem.height = rect->height;
 			activeBlockItem.length = 0.2f;
-			activeBlockItem.center = { 0,0,0 };
+			activeBlockItem.center = { 0,1,0 };
 			Transform transform = {
 				position, {0,0,0,0}, {1,1,1}
 			};
@@ -144,7 +154,6 @@ public:
 			gameState->renderData.push_back(activeBlockItem);
 		}
 
-		auto procedureUseAiIt = procedureUseCache->begin<components::LoopSociety>();
 		for (int i = 0; i < procedureUseCache->getSize(); ++i) {
 			middle::Id procUiId = procedureUseCache->relevantIdVector[i];
 			if (procedureNames.size() == 0) {
@@ -171,6 +180,21 @@ public:
 			}
 		}
 
+
+		// render highlighted inputs
+		auto inputPosIt = inputCache->begin<components::Position>();
+		for (int i = 0; i < inputCache->getSize(); ++i) {
+			auto position = *inputPosIt;
+			middle::RenderItem item;
+			item.type = middle::RenderItemType::CYLINDER;
+			item.center = { position->posX, position->posY, position->posZ };
+			item.radius = 4;
+			item.ringRadius = 4;
+			item.length = 0.1f;
+			item.color = highlightColor;
+			gameState->renderData.push_back(item);
+
+		}
 	}
 };
 

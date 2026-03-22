@@ -404,6 +404,10 @@ namespace bubble {
 			int currentDepth = depthQueue.front();
 			depthQueue.pop();
 
+			if (ignoreSet.find(currentId.index) != ignoreSet.end()) {
+				continue;
+			}
+
 			if (currentDepth == targetDepth) {
 				// return id of the first bubble or structure element that matches algebra node structure
 				if (matchesStructureWithVariables(gameState, currentId, algebraNodeId)) {
@@ -439,6 +443,24 @@ namespace bubble {
 			}
 		}
 		return middle::Id();
+	}
+
+	void findMatchingStructurePairWithVariables(middle::GameState* gameState, middle::Id containerId, middle::Id algebraNodeIdA, middle::Id algebraNodeIdB, int targetDepth, middle::Id& resultIdA, middle::Id& resultIdB)
+	{
+		std::set<int>ignoreSet;
+		while (true) {
+			middle::Id idACandidate = findMatchingStructureWithVariables(gameState, containerId, algebraNodeIdA, targetDepth, ignoreSet);
+			if (idACandidate.index == middle::UNASSIGNED) {
+				return;
+			}
+			middle::Id idBCandidate = findMatchingStructureWithVariablesFromSibling(gameState, idACandidate, algebraNodeIdB);
+			if (idBCandidate.index != UNASSIGNED) {
+				resultIdA = idACandidate;
+				resultIdB = idBCandidate;
+				return;
+			}
+			ignoreSet.insert(idACandidate.index);
+		}
 	}
 
 	void negate(middle::GameState* gameState, middle::Id id) {
