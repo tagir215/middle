@@ -62,32 +62,6 @@ public:
 
 		auto& grabbedShape = middle::getShape(gameState, grabbedId.index);
 		auto grabbedInput = middle::getComponent<components::InputVariable>(grabbedShape);
-		auto grabbedOutput = middle::getComponent<components::OutputVariable>(grabbedShape);
-
-		auto inputIt = inputCache->begin<components::InputVariable>();
-		auto intersectableIt = inputCache->begin<components::MouseIntersectable>();
-		for (int i = 0; i < inputCache->getSize(); ++i) {
-			auto& shape = middle::getShape(gameState, inputCache->relevantIdVector[i].index);
-
-			if (shape.id == grabbedId) {
-				continue;
-			}
-			auto otherInput = *inputIt;
-			auto intersectable = *intersectableIt;
-
-			if (!intersectable->intersectingTop) {
-				continue;
-			}
-
-			if (otherInput && grabbedInput) {
-				otherInput->unitRef = grabbedInput->unitRef;
-				otherInput->label = grabbedInput->label;
-			}
-			else if (otherInput && grabbedOutput) {
-				otherInput->unitRef = grabbedOutput->unitRef;
-				otherInput->label = grabbedOutput->label;
-			}
-		}
 
 		auto bubbleIt = bubbleCache->begin<components::BubbleComponent>();
 		auto bubbleIntersectableIt = bubbleCache->begin<components::MouseIntersectable>();
@@ -99,7 +73,6 @@ public:
 				continue;
 			}
 
-
 			middle::Id structureId = bubble::bubbleToStructure(gameState, shape.id);
 
 			// set bubble reference
@@ -110,11 +83,6 @@ public:
 			ogInput->structureDepth = bubble::findDepth(gameState, shape.id);
 			ogInput->topDogContainer = bubble::findTopDog(gameState, shape.id);
 			middle::attachComponent<components::Highlight>(gameState, ogShape.id);
-
-			if (otherBubble && grabbedInput) {
-				middle::Id shapeId = shape.id;
-				bubbleActions::UpdateVariable(grabbedInput->label, [shapeId]() {return shapeId;}).execute(gameState);
-			}
 		}
 
 	}
@@ -164,19 +132,12 @@ public:
 			auto input = *inputIt;
 			auto intersectable = *intersectableIt;
 			if (intersectable->intersecting) {
+				//reset input
+				input->structureId = middle::Id();
+				input->unitRef = middle::Id();
 				auto& shape = middle::getShape(gameState, inputCache->relevantIdVector[i].index);
-				middle::Id toCopyId = shape.id;
-				copy(gameState, toCopyId);
-			}
-		}
+				middle::queueComponentDeletion<components::Highlight>(gameState, shape.id);
 
-		auto outputIt = outputCache->begin<components::OutputVariable>();
-		auto outputIntersectableIt = outputCache->begin<components::MouseIntersectable>();
-		for (int i = 0; i < outputCache->getSize(); ++i) {
-			auto ouptut = *outputIt;
-			auto intersectable = *outputIntersectableIt;
-			if (intersectable->intersecting) {
-				auto& shape = middle::getShape(gameState, outputCache->relevantIdVector[i].index);
 				middle::Id toCopyId = shape.id;
 				copy(gameState, toCopyId);
 			}

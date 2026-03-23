@@ -83,7 +83,6 @@ public:
 			else {
 				varB = *inputVar;
 				middle::Id idA, idB;
-
 				if (varA.unitRef.index == middle::UNASSIGNED || varB.unitRef.index == middle::UNASSIGNED) {
 					return false;
 				}
@@ -692,6 +691,9 @@ public:
 			if (input->topDogContainer.index == middle::UNASSIGNED) {
 				return;
 			}
+			if (input->structureId.index == middle::UNASSIGNED) {
+				return;
+			}
 			middle::Id result = bubble::findMatchingStructureWithVariables(gameState, input->topDogContainer,
 				input->structureId, input->structureDepth);
 			input->unitRef = result;
@@ -708,11 +710,27 @@ public:
 			if (inputB->topDogContainer.index == middle::UNASSIGNED) {
 				return;
 			}
-			middle::Id idA, idB;
-			bubble::findMatchingStructurePairWithVariables(gameState, inputA->topDogContainer,
-				inputA->structureId, inputB->structureId, inputA->structureDepth, idA, idB);
-			inputA->unitRef = idA;
-			inputB->unitRef = idB;
+
+			bool bothValid = inputA->structureId.index != middle::UNASSIGNED && inputB->structureId.index != middle::UNASSIGNED;
+			if (bothValid) {
+				middle::Id idA, idB;
+				bubble::findMatchingStructurePairWithVariables(gameState, inputA->topDogContainer,
+					inputA->structureId, inputB->structureId, inputA->structureDepth, idA, idB);
+				inputA->unitRef = idA;
+				inputB->unitRef = idB;
+			}
+			// if one is valid update it for visual indicators
+			else if (inputA->structureId.index != middle::UNASSIGNED) {
+				middle::Id result = bubble::findMatchingStructureWithVariables(gameState, inputA->topDogContainer,
+					inputA->structureId, inputA->structureDepth);
+				inputA->unitRef = result;
+			}
+			else if (inputB->structureId.index != middle::UNASSIGNED) {
+				middle::Id result = bubble::findMatchingStructureWithVariables(gameState, inputB->topDogContainer,
+					inputB->structureId, inputB->structureDepth);
+				inputB->unitRef = result;
+			}
+
 		}
 	}
 
