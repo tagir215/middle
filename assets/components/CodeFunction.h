@@ -8,7 +8,6 @@
 namespace components {
 	struct CodeFunction : public middle::Serializable{
 		int type = middle::UNASSIGNED;
-		std::vector<std::shared_ptr<middle::EditorActionContainer>>actions;
 
 		void serialize(std::ostream& ostream) override;
 		void deserialize(const std::vector<std::string>& buffer, int indexOffset) override;

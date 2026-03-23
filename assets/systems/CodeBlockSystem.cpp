@@ -16,7 +16,7 @@
 #include "CodeFunction.h"
 #include "IfComponent.h"
 #include "ScopeComponent.h"
-#include "ProcedureComponent.h"
+#include "ProcedureContainer.h"
 #include "InputVariable.h"
 #include "component_utils.h"
 
@@ -32,6 +32,7 @@ public:
 	components::CompCache* procedureCache;
 	components::CompCache* codeBlockCache;
 	components::CompCache* inventoryCache;
+	components::CompCache* blockCache;
 
 	void init(middle::GameState* gameState) {
 		placementCache = middle::newCompCache(gameState);
@@ -43,11 +44,14 @@ public:
 		scopeCache->addType<components::MouseIntersectable>();
 		scopeCache->addType<components::LoopSociety>();
 		procedureCache = middle::newCompCache(gameState);
-		procedureCache->addType<components::ProcedureComponent>();
+		procedureCache->addType<components::ProcedureContainer>();
 		codeBlockCache = middle::newCompCache(gameState);
 		codeBlockCache->addType<components::CodeBlock>();
 		inventoryCache = middle::newCompCache(gameState);
 		inventoryCache->addType<components::Inventory>();
+		blockCache = middle::newCompCache(gameState);
+		blockCache->addType<components::CodeBlock>();
+		blockCache->addType<components::MouseIntersectable>();
 	}
 
 	void update(middle::GameState* gameState) override {
@@ -74,10 +78,38 @@ public:
 			}
 		}
 
+		components::ProcedureContainer* procContainer = nullptr;
+		if (procedureCache->getSize() > 0) {
+			auto procIt = procedureCache->begin<components::ProcedureContainer>();
+			procContainer = *procIt;
+		}
+
+
+		// PROCEDURE POINTER POSITION, WARNING WARNING EXTERNAL SYSTEM
+		auto blockIntersectableIt = blockCache->begin<components::MouseIntersectable>();
+		for (int i = 0; i < blockCache->getSize(); ++i) {
+			auto intersectable = *blockIntersectableIt;
+			if (!intersectable->intersectingTop) {
+				continue;
+			}
+			middle::Id intersectedId = blockCache->relevantIdVector[i];
+			int targetSize = -1;
+			for (int j = 0; j < procContainer->procedureTransitionStack.size(); ++j) {
+				middle::Id blockId = procContainer->procedureTransitionStack[j].previousId;
+				if (blockId == intersectedId) {
+					procContainer->targetActionStackSize = j;
+					break;
+				}
+			}
+		}
+
+
 		middle::Id grabbedId = gameState->bubbleAlgebraState.grabbedId;
 		auto scopeIt = scopeCache->begin<components::ScopeComponent>();
 		auto scopeLoopIt = scopeCache->begin<components::LoopSociety>();
 		auto scopeIntersectableIt = scopeCache->begin<components::MouseIntersectable>();
+
+
 		if (grabbedId.index != middle::UNASSIGNED) {
 			for (int i = 0; i < scopeCache->getSize(); ++i) {
 				auto scope = *scopeIt;
@@ -199,6 +231,7 @@ public:
 			}
 		}
 
+		// copy from inventory
 		auto inventoryIt = inventoryCache->begin<components::Inventory>();
 		for (int i = 0; i < inventoryCache->getSize(); ++i) {
 			auto inventory = *inventoryIt;

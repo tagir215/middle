@@ -233,7 +233,7 @@ public:
 						multiply->undo(gameState);
 					});
 				middle::queueAction(gameState, customMul);
-				function->actions.push_back(customMul);
+				container->procedureTransitionStack.back().action = customMul;
 			}
 			else {
 				auto combine = std::make_shared<bubbleActions::ExecuteAddition>(varA.unitRef, varB.unitRef);
@@ -246,7 +246,7 @@ public:
 					}
 				);
 				middle::queueAction(gameState, customAdd);
-				function->actions.push_back(customAdd);
+				container->procedureTransitionStack.back().action = customAdd;
 			}
 
 			stepForward(gameState, container);
@@ -279,7 +279,7 @@ public:
 					copyAction->undo(gameState);
 				});
 			middle::queueAction(gameState, customCopy);
-			function->actions.push_back(customCopy);
+			container->procedureTransitionStack.back().action = customCopy;
 
 			stepForward(gameState, container);
 		}
@@ -307,7 +307,7 @@ public:
 					reparent->undo(gameState);
 				});
 			middle::queueAction(gameState, customReparent);
-			function->actions.push_back(customReparent);
+			container->procedureTransitionStack.back().action = customReparent;
 			
 			stepForward(gameState, container);
 		}
@@ -329,7 +329,7 @@ public:
 					replacement->undo(gameState);
 				});
 			middle::queueAction(gameState, customReplacement);
-			function->actions.push_back(customReplacement);
+			container->procedureTransitionStack.back().action = customReplacement;
 
 			stepForward(gameState, container);
 		}
@@ -342,7 +342,7 @@ public:
 			assert(input.unitRef.index != middle::UNASSIGNED);
 			auto popAction = std::make_shared<bubbleActions::Pop>(input.unitRef);
 			middle::queueAction(gameState, popAction);
-			function->actions.push_back(popAction);
+			container->procedureTransitionStack.back().action = popAction;
 
 			stepForward(gameState, container);
 		}
@@ -362,8 +362,7 @@ public:
 					mulOneAction->undo(gameState);
 				});
 			middle::queueAction(gameState, customMulOne);
-			function->actions.push_back(customMulOne);
-
+			container->procedureTransitionStack.back().action = customMulOne;
 			stepForward(gameState, container);
 		}
 
@@ -386,7 +385,7 @@ public:
 					breakAction->undo(gameState);
 				});
 			middle::queueAction(gameState, customBreak);
-			function->actions.push_back(customBreak);
+			container->procedureTransitionStack.back().action = customBreak;
 
 			stepForward(gameState, container);
 		}
@@ -406,17 +405,19 @@ public:
 					compressAction->undo(gameState);
 				});
 			middle::queueAction(gameState, customCompress);
-			function->actions.push_back(customCompress);
+			container->procedureTransitionStack.back().action = customCompress;
 
 			stepForward(gameState, container);
 		}
 	}
 
-	void undoFunctions(middle::GameState* gameState, middle::Shape& funcShape) {
-		auto function = middle::getComponent<components::CodeFunction>(funcShape);
-		if (function->actions.size() > 0) {
-			auto action = function->actions.back();
-			function->actions.pop_back();
+	void undoFunctions(middle::GameState* gameState, components::ProcedureContainer* container) {
+		int index = container->procedureTransitionStack.size() - 2;
+		if (index < 0) {
+			return;
+		}
+		auto action = container->procedureTransitionStack[index].action;
+		if (action) {
 			middle::queueAction(gameState, std::make_shared<middle::CustomAction>(
 				[action](middle::GameState* gameState) {
 					action->undo(gameState);
@@ -569,7 +570,7 @@ public:
 
 	procedureConstants::StepStatus stepStart(middle::GameState* gameState, components::ProcedureContainer* container) {
 		container->procedureTransitionStack.push_back(
-			{ procedureConstants::TransitionType::Start, middle::Id(), container->startBlock}
+			{ procedureConstants::TransitionType::Start, middle::Id(), container->startBlock }
 		);
 		return procedureConstants::CanStep;
 	}
@@ -626,6 +627,58 @@ public:
 		}
 	}
 
+
+	procedureConstants::StepStatus procedureStepForward(middle::GameState* gameState, components::ProcedureContainer* procedure) {
+		if (procedure->procedureTransitionStack.size() == 0) {
+			auto status = stepStart(gameState, procedure);
+			doStep(procedure);
+			if (procedure->mode == procedureConstants::STEPPING) {
+				procedure->mode = procedureConstants::IDLE;
+			}
+			return status;
+		}
+
+		doStep(procedure);
+
+		if (procedure->activeBlock.index != middle::UNASSIGNED) {
+			middle::Id funcShapeId = getCodeBlockFunc(gameState, procedure->activeBlock);
+			if (funcShapeId.index != middle::UNASSIGNED) {
+				auto& funcShape = middle::getShape(gameState, funcShapeId.index);
+				executeFunctions(gameState, funcShape, procedure);
+			}
+			else {
+				auto status = stepForward(gameState, procedure);
+				return status;
+			}
+		}
+
+		if (procedure->procedureTransitionStack.back().type == procedureConstants::End) {
+			procedure->targetActionStackSize = procedure->procedureTransitionStack.size();
+		}
+
+		return procedureConstants::CannotStep;
+	}
+
+	procedureConstants::StepStatus procedureStepBackward(middle::GameState* gameState, components::ProcedureContainer* procedure) {
+		if (procedure->targetActionStackSize < 1) {
+			procedure->targetActionStackSize = 1;
+		}
+
+		if (procedure->activeBlock.index != middle::UNASSIGNED) {
+			middle::Id funcShapeId = getCodeBlockFunc(gameState, procedure->activeBlock);
+			if (funcShapeId.index != middle::UNASSIGNED) {
+				auto& funcShape = middle::getShape(gameState, funcShapeId.index);
+				undoFunctions(gameState, procedure);
+			}
+		}
+
+		auto status = stepBackward(gameState, procedure);
+		if (status == procedureConstants::CanStep) {
+			doStepBackward(procedure);
+		}
+		return status;
+	}
+
 	void update(middle::GameState* gameState) override {
 
 
@@ -676,7 +729,6 @@ public:
 			auto& shape = middle::getShape(gameState, procedureCache->relevantIdVector[i].index);
 
 
-
 			// random step but it is to find input
 			auto inputIt = inputCache->begin<components::InputVariable>();
 			auto intersectableIt = inputCache->begin<components::MouseIntersectable>();
@@ -690,7 +742,6 @@ public:
 					bubble::findMatchingStructurePairWithVariables(gameState, bubbleRef, input->structureId, input->structureId, input->structureDepth, idA, idB);
 				}
 			}
-
 
 
 			if ((procedure->mode == procedureConstants::EXECUTING
@@ -710,49 +761,29 @@ public:
 				}
 
 				if (procedure->direction == procedureConstants::FORWARD) {
-
-					if (procedure->procedureTransitionStack.size() == 0) {
-						stepStart(gameState, procedure);
-						doStep(procedure);
-						if (procedure->mode == procedureConstants::STEPPING) {
-							procedure->mode = procedureConstants::IDLE;
-						}
-						continue;
-					}
-
-					doStep(procedure);
-
-					if (procedure->activeBlock.index != middle::UNASSIGNED) {
-						middle::Id funcShapeId = getCodeBlockFunc(gameState, procedure->activeBlock);
-						if (funcShapeId.index != middle::UNASSIGNED) {
-							auto& funcShape = middle::getShape(gameState, funcShapeId.index);
-							executeFunctions(gameState, funcShape, procedure);
-						}
-						else {
-							stepForward(gameState, procedure);
-						}
+					if (procedure->procedureTransitionStack.size() == 0 || procedure->procedureTransitionStack.back().type != procedureConstants::End) {
+						++procedure->targetActionStackSize;
 					}
 				}
 
 				if (procedure->direction == procedureConstants::BACKWARD) {
-					if (procedure->activeBlock.index == middle::UNASSIGNED) {
-						if (stepBackward(gameState, procedure) == procedureConstants::CanStep) {
-							doStepBackward(procedure);
-						}
-					}
+					--procedure->targetActionStackSize;
+				}
 
-					if (procedure->activeBlock.index != middle::UNASSIGNED) {
-						middle::Id funcShapeId = getCodeBlockFunc(gameState, procedure->activeBlock);
-						if (funcShapeId.index != middle::UNASSIGNED) {
-							auto& funcShape = middle::getShape(gameState, funcShapeId.index);
-							undoFunctions(gameState, funcShape);
-						}
-					}
-
-					if (stepBackward(gameState, procedure) == procedureConstants::CanStep) {
-						doStepBackward(procedure);
+				while (procedure->procedureTransitionStack.size() < procedure->targetActionStackSize) {
+					auto status = procedureStepForward(gameState, procedure);
+					if (status == procedureConstants::CannotStep) {
+						break;
 					}
 				}
+
+				while (procedure->procedureTransitionStack.size() > procedure->targetActionStackSize) {
+					auto status = procedureStepBackward(gameState, procedure);
+					if (status == procedureConstants::CannotStep) {
+						break;
+					}
+				}
+
 
 				if (procedure->mode == procedureConstants::EXECUTING) {
 					auto timer = middle::attachComponent<components::TimerComponent>(gameState, shape.id);
