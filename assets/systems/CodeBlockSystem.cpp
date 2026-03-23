@@ -97,9 +97,16 @@ public:
 			for (int j = 0; j < procContainer->procedureTransitionStack.size(); ++j) {
 				middle::Id blockId = procContainer->procedureTransitionStack[j].previousId;
 				if (blockId == intersectedId) {
+					targetSize = j;
 					procContainer->targetActionStackSize = j;
 					break;
 				}
+			}
+			if (targetSize >= 0) {
+				while (procContainer->procedureTransitionStack.size() > targetSize) {
+					procContainer->procedureTransitionStack.pop_back();
+				}
+				procContainer->activeBlock = procContainer->procedureTransitionStack.back().previousId;
 			}
 		}
 

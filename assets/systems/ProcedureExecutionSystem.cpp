@@ -730,18 +730,18 @@ public:
 
 
 			// random step but it is to find input
-			auto inputIt = inputCache->begin<components::InputVariable>();
-			auto intersectableIt = inputCache->begin<components::MouseIntersectable>();
-			for (int i = 0; i < inputCache->getSize(); ++i) {
-				auto intersectable = *intersectableIt;
-				auto input = *inputIt;
-				if (intersectable->intersectingTop && input->structureId.index != middle::UNASSIGNED) {
-					//middle::attachComponent<components::Highlight>(gameState, inputCache->relevantIdVector[i]);
-					middle::Id bubbleRef = middle::getFirstChildWithComponent(gameState, procedure->bubbleRef, middle::getTypeId<components::BubbleComponent>());
-					middle::Id idA, idB;
-					bubble::findMatchingStructurePairWithVariables(gameState, bubbleRef, input->structureId, input->structureId, input->structureDepth, idA, idB);
-				}
-			}
+			//auto inputIt = inputCache->begin<components::InputVariable>();
+			//auto intersectableIt = inputCache->begin<components::MouseIntersectable>();
+			//for (int i = 0; i < inputCache->getSize(); ++i) {
+			//	auto intersectable = *intersectableIt;
+			//	auto input = *inputIt;
+			//	if (intersectable->intersectingTop && input->structureId.index != middle::UNASSIGNED) {
+			//		//middle::attachComponent<components::Highlight>(gameState, inputCache->relevantIdVector[i]);
+			//		middle::Id bubbleRef = middle::getFirstChildWithComponent(gameState, procedure->bubbleRef, middle::getTypeId<components::BubbleComponent>());
+			//		middle::Id idA, idB;
+			//		bubble::findMatchingStructurePairWithVariables(gameState, bubbleRef, input->structureId, input->structureId, input->structureDepth, idA, idB);
+			//	}
+			//}
 
 
 			if ((procedure->mode == procedureConstants::EXECUTING
@@ -751,13 +751,6 @@ public:
 				if (procedure->direction == procedureConstants::BACKWARD && procedure->procedureTransitionStack.size() == 0) {
 					procedure->mode = procedureConstants::IDLE;
 					continue;
-				}
-				if (procedure->direction == procedureConstants::FORWARD && procedure->procedureTransitionStack.size() > 0) {
-					// update to previous before end
-					if (procedure->procedureTransitionStack.back().type == procedureConstants::End) {
-						procedure->activeBlock = procedure->procedureTransitionStack.back().previousId;
-						procedure->procedureTransitionStack.pop_back();
-					}
 				}
 
 				if (procedure->direction == procedureConstants::FORWARD) {
