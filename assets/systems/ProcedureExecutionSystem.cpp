@@ -54,11 +54,17 @@ public:
 			if (inputVariable.unitRef.index == middle::UNASSIGNED) {
 				return false;
 			}
+			if (inputVariable.structureId.index == middle::UNASSIGNED) {
+				return false;
+			}
 
 			middle::Id matchingId = bubble::findMatchingStructureWithVariables(gameState, inputVariable.topDogContainer, inputVariable.structureId, inputVariable.structureDepth);
 			inputVariable.unitRef = matchingId;
 
 			if (inputVariable.unitRef.index == middle::UNASSIGNED) {
+				return false;
+			}
+			if (inputVariable.structureId.index == middle::UNASSIGNED) {
 				return false;
 			}
 
@@ -90,6 +96,9 @@ public:
 				if (varA.unitRef.index == middle::UNASSIGNED || varB.unitRef.index == middle::UNASSIGNED) {
 					return false;
 				}
+				if (varA.structureId.index == middle::UNASSIGNED || varB.structureId.index == middle::UNASSIGNED) {
+					return false;
+				}
 
 				bubble::findMatchingStructurePairWithVariables(gameState, varA.topDogContainer, varA.structureId, varB.structureId,
 					varA.structureDepth, idA, idB);
@@ -97,6 +106,9 @@ public:
 				varB.unitRef = idB;
 
 				if (varA.unitRef.index == middle::UNASSIGNED || varB.unitRef.index == middle::UNASSIGNED) {
+					return false;
+				}
+				if (varA.structureId.index == middle::UNASSIGNED || varB.structureId.index == middle::UNASSIGNED) {
 					return false;
 				}
 
@@ -215,6 +227,7 @@ public:
 			components::InputVariable varA;
 			components::InputVariable varB;
 			if (!getTwoInputs(gameState, funcShape, varA, varB)) {
+				stepForward(gameState, container);
 				return;
 			}
 			assert(varA.unitRef.index != middle::UNASSIGNED);
