@@ -19,6 +19,7 @@
 #include "ProcedureContainer.h"
 #include "InputVariable.h"
 #include "component_utils.h"
+#include "ProcedureComponent.h"
 
 class CodeBlockSystem : public middle::MiddleGameplaySystem {
 public:
@@ -29,6 +30,7 @@ public:
 	components::CompCache* placementCache;
 	components::CompCache* grabbableCache;
 	components::CompCache* scopeCache;
+	components::CompCache* procScopeCache;
 	components::CompCache* procedureCache;
 	components::CompCache* codeBlockCache;
 	components::CompCache* inventoryCache;
@@ -40,9 +42,12 @@ public:
 		grabbableCache = middle::newCompCache(gameState);
 		grabbableCache->addType < components::MouseGrabbable>();
 		scopeCache = middle::newCompCache(gameState);
-		scopeCache->addType < components::ScopeComponent>();
+		scopeCache->addType <components::ScopeComponent>();
 		scopeCache->addType<components::MouseIntersectable>();
 		scopeCache->addType<components::LoopSociety>();
+		procScopeCache = middle::newCompCache(gameState);
+		procScopeCache->addType<components::LoopSociety>();
+		procScopeCache->addType<components::ProcedureComponent>();
 		procedureCache = middle::newCompCache(gameState);
 		procedureCache->addType<components::ProcedureContainer>();
 		codeBlockCache = middle::newCompCache(gameState);
@@ -78,35 +83,36 @@ public:
 			}
 		}
 
+		// get reference to proccontainer
 		components::ProcedureContainer* procContainer = nullptr;
 		if (procedureCache->getSize() > 0) {
 			auto procIt = procedureCache->begin<components::ProcedureContainer>();
 			procContainer = *procIt;
 		}
 
+		// update procedure size
+		components::LoopSociety* procLoop = nullptr;
+		if (procScopeCache->getSize() > 0) {
+			auto procScopeIt = procScopeCache->begin<components::LoopSociety>();
+			procLoop = *procScopeIt;
+			procContainer->size = procLoop->loopMemberIds.size();
+		}
 
 		// PROCEDURE POINTER POSITION, WARNING WARNING EXTERNAL SYSTEM
 		auto blockIntersectableIt = blockCache->begin<components::MouseIntersectable>();
 		for (int i = 0; i < blockCache->getSize(); ++i) {
 			auto intersectable = *blockIntersectableIt;
-			if (!intersectable->intersectingTop) {
+			if (!intersectable->intersecting) {
 				continue;
 			}
 			middle::Id intersectedId = blockCache->relevantIdVector[i];
 			int targetSize = -1;
-			for (int j = 0; j < procContainer->procedureTransitionStack.size(); ++j) {
-				middle::Id blockId = procContainer->procedureTransitionStack[j].previousId;
+			for (int j = 0; j < procContainer->size; ++j) {
+				middle::Id blockId = procLoop->loopMemberIds[j];
 				if (blockId == intersectedId) {
-					targetSize = j;
-					procContainer->targetActionStackSize = j;
+					procContainer->targetActionStackSize = j + 1;
 					break;
 				}
-			}
-			if (targetSize >= 0) {
-				while (procContainer->procedureTransitionStack.size() > targetSize) {
-					procContainer->procedureTransitionStack.pop_back();
-				}
-				procContainer->activeBlock = procContainer->procedureTransitionStack.back().previousId;
 			}
 		}
 

@@ -9,10 +9,10 @@ namespace procedureConstants {
 	enum Direction {
 		FORWARD = 1,
 		BACKWARD = -1,
-		IDLE = 0,
 	};
 
 	enum Mode {
+		IDLE = 0,
 		EXECUTING = 1,
 		STEPPING = 2,
 	};
@@ -55,6 +55,8 @@ namespace components {
 		int targetActionStackSize = 0;
 		// whether mouse is intersecting the code blocks, which has effect on execution position
 		bool intersecting = false;
+		// number of top level blocks
+		int size = 0;
 
 		void serialize(std::ostream& ostream) override;
 		void deserialize(const std::vector<std::string>& buffer, int indexOffset) override;

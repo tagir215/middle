@@ -762,30 +762,32 @@ public:
 				if (procedure->direction == procedureConstants::BACKWARD) {
 					--procedure->targetActionStackSize;
 				}
+			}
 
-				while (procedure->procedureTransitionStack.size() < procedure->targetActionStackSize) {
-					auto status = procedureStepForward(gameState, procedure);
-					if (status == procedureConstants::CannotStep) {
-						break;
-					}
+
+			// move 
+			while (procedure->procedureTransitionStack.size() < procedure->targetActionStackSize) {
+				auto status = procedureStepForward(gameState, procedure);
+				if (status == procedureConstants::CannotStep) {
+					break;
 				}
+			}
 
-				while (procedure->procedureTransitionStack.size() > procedure->targetActionStackSize) {
-					auto status = procedureStepBackward(gameState, procedure);
-					if (status == procedureConstants::CannotStep) {
-						break;
-					}
+			while (procedure->procedureTransitionStack.size() > procedure->targetActionStackSize) {
+				auto status = procedureStepBackward(gameState, procedure);
+				if (status == procedureConstants::CannotStep) {
+					break;
 				}
+			}
 
 
-				if (procedure->mode == procedureConstants::EXECUTING) {
-					auto timer = middle::attachComponent<components::TimerComponent>(gameState, shape.id);
-					timer->timeLeft = 0.1f;
-				}
+			if (procedure->mode == procedureConstants::EXECUTING) {
+				auto timer = middle::attachComponent<components::TimerComponent>(gameState, shape.id);
+				timer->timeLeft = 0.1f;
+			}
 
-				if (procedure->mode == procedureConstants::STEPPING) {
-					procedure->mode = procedureConstants::IDLE;
-				}
+			if (procedure->mode == procedureConstants::STEPPING) {
+				procedure->mode = procedureConstants::IDLE;
 			}
 		}
 	}
