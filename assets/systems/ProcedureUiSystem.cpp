@@ -22,6 +22,7 @@
 #include "bubble_utils.h"
 #include "InputVariable.h"
 #include "Highlight.h"
+#include "Circle.h"
 
 
 
@@ -183,8 +184,10 @@ public:
 
 		// render highlighted inputs
 		auto inputPosIt = inputCache->begin<components::Position>();
+		auto inputIt = inputCache->begin<components::InputVariable>();
 		for (int i = 0; i < inputCache->getSize(); ++i) {
 			auto position = *inputPosIt;
+			auto input = *inputIt;
 			middle::RenderItem item;
 			item.type = middle::RenderItemType::CYLINDER;
 			item.center = { position->posX, position->posY, position->posZ };
@@ -193,6 +196,28 @@ public:
 			item.length = 0.1f;
 			item.color = highlightColor;
 			gameState->renderData.push_back(item);
+
+			// highlight reference bubble if it exists at the moment
+			if (input->unitRef.index != middle::UNASSIGNED) {
+				if (!middle::isShapeAlive(gameState, input->unitRef.index)) {
+					continue;
+				}
+				middle::Shape& shape = middle::getShape(gameState, input->unitRef.index);
+				if (shape.componentMap.size() == 0) {
+					continue;
+				}
+				Vector3 pos = middle::getShapePosition(gameState, input->unitRef.index);
+				auto circle = middle::getComponent<components::Circle>(shape);
+
+				middle::RenderItem inputHighlight;
+				inputHighlight.type = middle::RenderItemType::CYLINDER;
+				inputHighlight.center = pos;
+				inputHighlight.color = highlightColor;
+				inputHighlight.radius = circle->radius;
+				inputHighlight.ringRadius = circle->radius;
+				inputHighlight.length = 0.1f;
+				gameState->renderData.push_back(inputHighlight);
+			}
 
 		}
 	}

@@ -18,6 +18,7 @@
 #include <queue>
 #include "component_utils.h"
 #include "MouseClickComponent.h"
+#include "PlacementComponent.h"
 
 class ProcedureExecutionSystem : public middle::MiddleGameplaySystem {
 public:
@@ -58,16 +59,6 @@ public:
 				return false;
 			}
 
-			middle::Id matchingId = bubble::findMatchingStructureWithVariables(gameState, inputVariable.topDogContainer, inputVariable.structureId, inputVariable.structureDepth);
-			inputVariable.unitRef = matchingId;
-
-			if (inputVariable.unitRef.index == middle::UNASSIGNED) {
-				return false;
-			}
-			if (inputVariable.structureId.index == middle::UNASSIGNED) {
-				return false;
-			}
-
 			return true;
 		}
 		assert(false);
@@ -99,19 +90,6 @@ public:
 				if (varA.structureId.index == middle::UNASSIGNED || varB.structureId.index == middle::UNASSIGNED) {
 					return false;
 				}
-
-				bubble::findMatchingStructurePairWithVariables(gameState, varA.topDogContainer, varA.structureId, varB.structureId,
-					varA.structureDepth, idA, idB);
-				varA.unitRef = idA;
-				varB.unitRef = idB;
-
-				if (varA.unitRef.index == middle::UNASSIGNED || varB.unitRef.index == middle::UNASSIGNED) {
-					return false;
-				}
-				if (varA.structureId.index == middle::UNASSIGNED || varB.structureId.index == middle::UNASSIGNED) {
-					return false;
-				}
-
 				return true;
 			}
 		}
@@ -692,6 +670,52 @@ public:
 		return status;
 	}
 
+
+	void updateInputVariableReferences(middle::GameState* gameState, middle::Id codeBlockId) {
+		if (codeBlockId.index == middle::UNASSIGNED) {
+			return;
+		}
+		middle::Id funcId = getCodeBlockFunc(gameState, codeBlockId);
+		if (funcId.index == middle::UNASSIGNED) {
+			return;
+		}
+		auto& funcShape = middle::getShape(gameState, funcId.index);
+		if (middle::getComponent<components::PlacementComponent>(funcShape)) {
+			return;
+		}
+		std::vector<middle::Id>inputChildren;
+		middle::getChildrenWithComp(gameState, funcId, inputChildren, middle::getTypeId<components::InputVariable>());
+		// update one input case
+		if (inputChildren.size() == 1) {
+			auto& inputChild = middle::getShape(gameState, inputChildren[0].index);
+			auto input = middle::getComponent<components::InputVariable>(inputChild);
+			if (input->topDogContainer.index == middle::UNASSIGNED) {
+				return;
+			}
+			middle::Id result = bubble::findMatchingStructureWithVariables(gameState, input->topDogContainer,
+				input->structureId, input->structureDepth);
+			input->unitRef = result;
+		}
+		// update two input case
+		if (inputChildren.size() == 2) {
+			auto& inputChildA = middle::getShape(gameState, inputChildren[0].index);
+			auto& inputChildB = middle::getShape(gameState, inputChildren[1].index);
+			auto inputA = middle::getComponent<components::InputVariable>(inputChildA);
+			auto inputB = middle::getComponent<components::InputVariable>(inputChildB);
+			if (inputA->topDogContainer.index == middle::UNASSIGNED) {
+				return;
+			}
+			if (inputB->topDogContainer.index == middle::UNASSIGNED) {
+				return;
+			}
+			middle::Id idA, idB;
+			bubble::findMatchingStructurePairWithVariables(gameState, inputA->topDogContainer,
+				inputA->structureId, inputB->structureId, inputA->structureDepth, idA, idB);
+			inputA->unitRef = idA;
+			inputB->unitRef = idB;
+		}
+	}
+
 	void update(middle::GameState* gameState) override {
 
 
@@ -741,21 +765,9 @@ public:
 			auto procedure = *procedureIt;
 			auto& shape = middle::getShape(gameState, procedureCache->relevantIdVector[i].index);
 
-
-			// random step but it is to find input
-			//auto inputIt = inputCache->begin<components::InputVariable>();
-			//auto intersectableIt = inputCache->begin<components::MouseIntersectable>();
-			//for (int i = 0; i < inputCache->getSize(); ++i) {
-			//	auto intersectable = *intersectableIt;
-			//	auto input = *inputIt;
-			//	if (intersectable->intersectingTop && input->structureId.index != middle::UNASSIGNED) {
-			//		//middle::attachComponent<components::Highlight>(gameState, inputCache->relevantIdVector[i]);
-			//		middle::Id bubbleRef = middle::getFirstChildWithComponent(gameState, procedure->bubbleRef, middle::getTypeId<components::BubbleComponent>());
-			//		middle::Id idA, idB;
-			//		bubble::findMatchingStructurePairWithVariables(gameState, bubbleRef, input->structureId, input->structureId, input->structureDepth, idA, idB);
-			//	}
-			//}
-
+			if (procedure->procedureTransitionStack.size() > 0) {
+				updateInputVariableReferences(gameState, procedure->procedureTransitionStack.back().destinationId);
+			}
 
 			if ((procedure->mode == procedureConstants::EXECUTING
 				|| procedure->mode == procedureConstants::STEPPING)) {
