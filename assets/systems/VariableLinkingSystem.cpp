@@ -14,6 +14,7 @@
 #include "Highlight.h"
 #include "IdRef.h"
 #include "bubble_utils.h"
+#include "ProcedureContainer.h"
 
 class VariableLinkingSystem : public middle::MiddleGameplaySystem {
 public:
@@ -21,6 +22,7 @@ public:
 	components::CompCache* inputCache;
 	components::CompCache* outputCache;
 	components::CompCache* bubbleCache;
+	components::CompCache* procCache;
 
 	void init(middle::GameState* gameState) {
 		inputCache = middle::newCompCache(gameState);
@@ -32,6 +34,9 @@ public:
 		bubbleCache = middle::newCompCache(gameState);
 		bubbleCache->addType<components::BubbleComponent>();
 		bubbleCache->addType<components::MouseIntersectable>();
+		procCache = middle::newCompCache(gameState);
+		procCache->addType<components::ProcedureContainer>();
+
 	}
 
 	void copy(middle::GameState* gameState, middle::Id toCopyId) {
@@ -91,6 +96,10 @@ public:
 
 		middle::Id& grabbedId = gameState->bubbleAlgebraState.grabbedId;
 
+		auto procIt = procCache->begin<components::ProcedureContainer>();
+		components::ProcedureContainer* procContainer = *procIt;
+		assert(procContainer);
+
 		if (!gameState->input.mouseHeld) {
 
 			if (grabbedId.index != middle::UNASSIGNED) {
@@ -102,6 +111,8 @@ public:
 				if (grabbedInputVariable || grabbedOutputVariable) {
 
 					variableTransfer(gameState, grabbedId);
+
+					procContainer->updateInputs = true;
 
 					middle::queueAction(gameState, std::make_shared<middle::EditorActionDeleteSingle>(shape.id));
 
@@ -137,6 +148,8 @@ public:
 				input->unitRef = middle::Id();
 				auto& shape = middle::getShape(gameState, inputCache->relevantIdVector[i].index);
 				middle::queueComponentDeletion<components::Highlight>(gameState, shape.id);
+
+				procContainer->updateInputs = true;
 
 				middle::Id toCopyId = shape.id;
 				copy(gameState, toCopyId);

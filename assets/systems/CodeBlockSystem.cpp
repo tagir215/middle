@@ -111,6 +111,7 @@ public:
 				middle::Id blockId = procLoop->loopMemberIds[j];
 				if (blockId == intersectedId) {
 					procContainer->targetActionStackSize = j + 1;
+					procContainer->updateInputs = true;
 					break;
 				}
 			}

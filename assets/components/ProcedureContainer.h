@@ -53,8 +53,8 @@ namespace components {
 		bool exitingLoop = false;
 		// target size or position for execution 
 		int targetActionStackSize = 0;
-		// whether mouse is intersecting the code blocks, which has effect on execution position
-		bool intersecting = false;
+		// whether should update inputs
+		bool updateInputs = false;
 		// number of top level blocks
 		int size = 0;
 

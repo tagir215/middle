@@ -209,6 +209,7 @@ public:
 			}
 			assert(varA.unitRef.index != middle::UNASSIGNED);
 			assert(varB.unitRef.index != middle::UNASSIGNED);
+			assert(varA.unitRef.index != varB.unitRef.index);
 			middle::Id& parentId = middle::getParent(gameState, varA.unitRef);
 			auto& parentShape = middle::getShape(gameState, parentId.index);
 			auto bubbleMultiplication = middle::getComponent<components::BubbleMultiplyComponent>(parentShape);
@@ -783,7 +784,7 @@ public:
 			auto procedure = *procedureIt;
 			auto& shape = middle::getShape(gameState, procedureCache->relevantIdVector[i].index);
 
-			if (procedure->procedureTransitionStack.size() > 0) {
+			if (procedure->procedureTransitionStack.size() > 0 && procedure->updateInputs) {
 				updateInputVariableReferences(gameState, procedure->procedureTransitionStack.back().destinationId);
 			}
 
@@ -810,6 +811,11 @@ public:
 
 			// move 
 			while (procedure->procedureTransitionStack.size() < procedure->targetActionStackSize) {
+
+				if (procedure->procedureTransitionStack.size() > 0) {
+					updateInputVariableReferences(gameState, procedure->procedureTransitionStack.back().destinationId);
+				}
+
 				auto status = procedureStepForward(gameState, procedure);
 				if (status == procedureConstants::CannotStep) {
 					break;
@@ -817,6 +823,11 @@ public:
 			}
 
 			while (procedure->procedureTransitionStack.size() > procedure->targetActionStackSize) {
+
+				if (procedure->procedureTransitionStack.size() > 0) {
+					updateInputVariableReferences(gameState, procedure->procedureTransitionStack.back().destinationId);
+				}
+
 				auto status = procedureStepBackward(gameState, procedure);
 				if (status == procedureConstants::CannotStep) {
 					break;
