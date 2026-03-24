@@ -147,7 +147,9 @@ public:
 				input->structureId = middle::Id();
 				input->unitRef = middle::Id();
 				auto& shape = middle::getShape(gameState, inputCache->relevantIdVector[i].index);
-				middle::queueComponentDeletion<components::Highlight>(gameState, shape.id);
+				if (middle::getComponent<components::Highlight>(shape)) {
+					middle::queueComponentDeletion<components::Highlight>(gameState, shape.id);
+				}
 
 				procContainer->updateInputs = true;
 

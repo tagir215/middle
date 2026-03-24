@@ -202,6 +202,11 @@ public:
 				if (!middle::isShapeAlive(gameState, input->unitRef.index)) {
 					continue;
 				}
+				// todo refactor to always check generation
+				middle::Id id = gameState->ids[input->unitRef.index];
+				if (id != input->unitRef) {
+					continue;
+				}
 				middle::Shape& shape = middle::getShape(gameState, input->unitRef.index);
 				if (shape.componentMap.size() == 0) {
 					continue;

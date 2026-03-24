@@ -280,10 +280,17 @@ namespace bubble {
 		BubbleValue result;
 		middle::Shape& shape = middle::getShape(gameState, containerId.index);
 		auto unit = middle::getComponent<components::BubbleUnit>(shape);
-		result.scale = unit->value;
-		auto variable = middle::getComponent<components::BubbleVariable>(shape);
-		if (variable) {
-			result.variableLabel = variable->label;
+		auto node = middle::getComponent<components::AlgebraNode>(shape);
+		if (unit) {
+			result.scale = unit->value;
+			auto variable = middle::getComponent<components::BubbleVariable>(shape);
+			if (variable) {
+				result.variableLabel = variable->label;
+			}
+		}
+		if (node) {
+			result.scale = node->value;
+			result.variableLabel = node->variableLabel;
 		}
 		return result;
 	}
@@ -350,8 +357,12 @@ namespace bubble {
 		if (aUnit && bUnit) {
 			return unitEquals(gameState, bubbleId, algebraNodeId);
 		}
-		// if node type is variable, bubble can be basically anything
+
+		// if node type is variable and bubble is variable return true if both have same label, otherwise if algebra node is variable bubble can be anything
 		if (algebraNodeType == components::AlgebraNodeType::VARIABLE) {
+			if (bubbleType == components::AlgebraNodeType::VARIABLE) {
+				return unitEquals(gameState, bubbleId, algebraNodeId);
+			}
 			return true;
 		}
 

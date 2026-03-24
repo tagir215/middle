@@ -44,5 +44,6 @@ namespace functionTypes {
 	inline int BREAK = 18;
 	inline int COMPRESS = 19;
 	inline int FIND_UNIT = 20;
+	inline int BUBBLIFY = 21;
 }
 
