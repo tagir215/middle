@@ -751,7 +751,6 @@ public:
 				}
 			}
 
-
 			// move 
 			while (procedure->procedureTransitionStack.size() < procedure->targetActionStackSize) {
 

@@ -23,6 +23,7 @@
 #include "InputVariable.h"
 #include "Highlight.h"
 #include "Circle.h"
+#include "ProcedureInputVariable.h"
 
 
 
@@ -37,6 +38,7 @@ public:
 	std::vector<std::string>procedureNames;
 
 	Color highlightColor = { GREEN.r, GREEN.g, GREEN.b, 60 };
+	Color highlightColor2 = { 0, 255, 255, 30 };
 
 	void init(middle::GameState* gameState) {
 		buttonCache = middle::newCompCache(gameState);
@@ -196,6 +198,7 @@ public:
 		for (int i = 0; i < inputCache->getSize(); ++i) {
 			auto position = *inputPosIt;
 			auto input = *inputIt;
+			auto& shape = middle::getShape(gameState, inputCache->relevantIdVector[i].index);
 			middle::RenderItem item;
 			item.type = middle::RenderItemType::CYLINDER;
 			item.center = { position->posX, position->posY, position->posZ };
@@ -215,17 +218,26 @@ public:
 				if (id != input->unitRef) {
 					continue;
 				}
-				middle::Shape& shape = middle::getShape(gameState, input->unitRef.index);
-				if (shape.componentMap.size() == 0) {
+				middle::Shape& refShape = middle::getShape(gameState, input->unitRef.index);
+				if (refShape.componentMap.size() == 0) {
 					continue;
 				}
 				Vector3 pos = middle::getShapePosition(gameState, input->unitRef.index);
-				auto circle = middle::getComponent<components::Circle>(shape);
+				auto circle = middle::getComponent<components::Circle>(refShape);
+
+
+				Color color = highlightColor;
+
+				// highlight procedure refs with different color
+				auto procInput = middle::getComponent<components::ProcedureInputVariable>(shape);
+				if (procInput) {
+					color = highlightColor2;
+				}
 
 				middle::RenderItem inputHighlight;
 				inputHighlight.type = middle::RenderItemType::CYLINDER;
 				inputHighlight.center = pos;
-				inputHighlight.color = highlightColor;
+				inputHighlight.color = color;
 				inputHighlight.radius = circle->radius;
 				inputHighlight.ringRadius = circle->radius;
 				inputHighlight.length = 0.1f;
