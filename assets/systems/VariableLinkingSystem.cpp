@@ -15,6 +15,7 @@
 #include "IdRef.h"
 #include "bubble_utils.h"
 #include "ProcedureContainer.h"
+#include "ProcedureInputVariable.h"
 
 class VariableLinkingSystem : public middle::MiddleGameplaySystem {
 public:
@@ -56,11 +57,12 @@ public:
 			}));
 	}
 
-	void variableTransfer(middle::GameState* gameState, middle::Id& grabbedId) {
+	void variableTransfer(middle::GameState* gameState, middle::Id& grabbedId, components::ProcedureContainer* procContainer) {
 		// variable transfer
 
 		auto& grabbedShape = middle::getShape(gameState, grabbedId.index);
 		auto grabbedInput = middle::getComponent<components::InputVariable>(grabbedShape);
+		auto grabbedProcedureInput = middle::getComponent<components::ProcedureInputVariable>(grabbedShape);
 
 		auto bubbleIt = bubbleCache->begin<components::BubbleComponent>();
 		auto bubbleIntersectableIt = bubbleCache->begin<components::MouseIntersectable>();
@@ -72,18 +74,27 @@ public:
 				continue;
 			}
 
-			middle::Id structureId = bubble::bubbleToStructure(gameState, shape.id);
-
 			// set bubble reference
 			auto ref = middle::getComponent<components::IdRef>(grabbedShape);
 			auto& ogShape = middle::getShape(gameState, ref->idRef.index);
 			auto ogInput = middle::getComponent<components::InputVariable>(ogShape);
-			ogInput->structureId = structureId;
-			ogInput->structureDepth = bubble::findDepth(gameState, shape.id);
-			middle::attachComponent<components::Highlight>(gameState, ogShape.id);
 
-			// reparent algebra node to input, for automatic deletion and serialization
-			middle::queueAction(gameState, std::make_shared<middle::EditorActionReparent>(ogShape.id.index, structureId.index));
+			middle::queueComponentAttachment<components::Highlight>(gameState, ogShape.id);
+
+			if (!grabbedProcedureInput || grabbedProcedureInput->editMode) {
+				middle::Id structureId = bubble::bubbleToStructure(gameState, shape.id);
+				// reparent algebra node to input, for automatic deletion and serialization
+				middle::queueAction(gameState, std::make_shared<middle::EditorActionReparent>(ogShape.id.index, structureId.index));
+				ogInput->structureId = structureId;
+				ogInput->structureDepth = bubble::findDepth(gameState, shape.id);
+			}
+
+			// if its procedre input update unit ref here, and set proc container to point to the ref
+			if(grabbedProcedureInput){
+				ogInput->unitRef = shape.id;
+				procContainer->bubbleRef = shape.id;
+			}
+
 		}
 
 	}
@@ -112,7 +123,7 @@ public:
 
 				if (grabbedInputVariable || grabbedOutputVariable) {
 
-					variableTransfer(gameState, grabbedId);
+					variableTransfer(gameState, grabbedId, procContainer);
 
 					procContainer->updateInputs = true;
 
@@ -145,13 +156,19 @@ public:
 			auto input = *inputIt;
 			auto intersectable = *intersectableIt;
 			if (intersectable->intersecting) {
-				//reset input
-				if (input->structureId.index != middle::UNASSIGNED) {
-					middle::deleteShapeRecursive(gameState, input->structureId.index);
-				}
-				input->structureId = middle::Id();
-				input->unitRef = middle::Id();
 				auto& shape = middle::getShape(gameState, inputCache->relevantIdVector[i].index);
+
+				auto procedureInput = middle::getComponent<components::ProcedureInputVariable>(shape);
+
+				//reset input, if not procedureInput,  procedureInput can be edited if in edit mode
+				if (!procedureInput || procedureInput->editMode) {
+					if (input->structureId.index != middle::UNASSIGNED) {
+						middle::deleteShapeRecursive(gameState, input->structureId.index);
+					}
+					input->structureId = middle::Id();
+					input->unitRef = middle::Id();
+				}
+
 				if (middle::getComponent<components::Highlight>(shape)) {
 					middle::queueComponentDeletion<components::Highlight>(gameState, shape.id);
 				}
