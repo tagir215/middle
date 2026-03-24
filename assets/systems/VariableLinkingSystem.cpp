@@ -23,6 +23,7 @@ public:
 	components::CompCache* outputCache;
 	components::CompCache* bubbleCache;
 	components::CompCache* procCache;
+	components::CompCache* algebraCache;
 
 	void init(middle::GameState* gameState) {
 		inputCache = middle::newCompCache(gameState);
@@ -36,6 +37,8 @@ public:
 		bubbleCache->addType<components::MouseIntersectable>();
 		procCache = middle::newCompCache(gameState);
 		procCache->addType<components::ProcedureContainer>();
+		algebraCache = middle::newCompCache(gameState);
+		algebraCache->addType<components::AlgebraNode>();
 
 	}
 
@@ -51,15 +54,6 @@ public:
 			copyLoop->parentLoopId = middle::Id();
 			gameState->bubbleAlgebraState.grabbedId = copyId;
 			}));
-	}
-
-	void travelStruct(middle::GameState* gameState, middle::Id id) {
-		auto& structureShape = middle::getShape(gameState, id.index);
-		auto structComp = middle::getComponent<components::AlgebraNode>(structureShape);
-
-		for (middle::Id id : structComp->children) {
-			travelStruct(gameState, id);
-		}
 	}
 
 	void variableTransfer(middle::GameState* gameState, middle::Id& grabbedId) {
@@ -86,8 +80,10 @@ public:
 			auto ogInput = middle::getComponent<components::InputVariable>(ogShape);
 			ogInput->structureId = structureId;
 			ogInput->structureDepth = bubble::findDepth(gameState, shape.id);
-			ogInput->topDogContainer = bubble::findTopDog(gameState, shape.id);
 			middle::attachComponent<components::Highlight>(gameState, ogShape.id);
+
+			// reparent algebra node to input, for automatic deletion and serialization
+			middle::queueAction(gameState, std::make_shared<middle::EditorActionReparent>(ogShape.id.index, structureId.index));
 		}
 
 	}
@@ -96,9 +92,15 @@ public:
 
 		middle::Id& grabbedId = gameState->bubbleAlgebraState.grabbedId;
 
-		auto procIt = procCache->begin<components::ProcedureContainer>();
-		components::ProcedureContainer* procContainer = *procIt;
-		assert(procContainer);
+		components::ProcedureContainer* procContainer = nullptr;
+		if (procCache->getSize() > 0) {
+			auto procIt = procCache->begin<components::ProcedureContainer>();
+			procContainer = *procIt;
+			assert(procContainer);
+		}
+		else {
+			return;
+		}
 
 		if (!gameState->input.mouseHeld) {
 
@@ -144,6 +146,9 @@ public:
 			auto intersectable = *intersectableIt;
 			if (intersectable->intersecting) {
 				//reset input
+				if (input->structureId.index != middle::UNASSIGNED) {
+					middle::deleteShapeRecursive(gameState, input->structureId.index);
+				}
 				input->structureId = middle::Id();
 				input->unitRef = middle::Id();
 				auto& shape = middle::getShape(gameState, inputCache->relevantIdVector[i].index);

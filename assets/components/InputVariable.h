@@ -6,14 +6,12 @@
 	X(unitRef) \
 	X(label) \
 	X(structureId) \
-	X(structureDepth) \
-	X(topDogContainer)
+	X(structureDepth) 
 
 namespace components {
 	struct InputVariable : public middle::Serializable{
 		middle::Id unitRef;
 		middle::Id structureId;
-		middle::Id topDogContainer;
 		std::string label = "";
 		int structureDepth = 0;
 

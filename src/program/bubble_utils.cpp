@@ -241,18 +241,6 @@ namespace bubble {
 		return equalMagnitude && equalLabel;
 	}
 
-	std::vector<middle::Id> algebraContainerChildren(middle::Shape& shape) {
-		auto loop = middle::getComponent<components::LoopSociety>(shape);
-		if (loop) {
-			return loop->loopMemberIds;
-		}
-		auto algebraNode = middle::getComponent<components::AlgebraNode>(shape);
-		if (algebraNode) {
-			return algebraNode->children;
-		}
-		assert(false);
-	}
-
 	bool containerStructureEquals(middle::GameState* gameState, middle::Id idA, middle::Id idB) {
 		middle::Shape& shapeA = middle::getShape(gameState, idA.index);
 		middle::Shape& shapeB = middle::getShape(gameState, idB.index);
@@ -264,8 +252,10 @@ namespace bubble {
 		}
 
 		// make sure equal amount of children
-		std::vector<middle::Id>childrenA = algebraContainerChildren(shapeA);
-		std::vector<middle::Id>childrenB = algebraContainerChildren(shapeB);
+		std::vector<middle::Id>childrenA;
+		std::vector<middle::Id>childrenB;
+		middle::getChildren(gameState, shapeA.id, childrenA);
+		middle::getChildren(gameState, shapeB.id, childrenB);
 		int size = childrenA.size();
 		if (size != childrenB.size()) {
 			return false;
@@ -318,8 +308,10 @@ namespace bubble {
 			if (!containerStructureEquals(gameState, idA, idB)) {
 				return false;
 			}
-			std::vector<middle::Id>childrenA = algebraContainerChildren(shapeA);
-			std::vector<middle::Id>childrenB = algebraContainerChildren(shapeB);
+			std::vector<middle::Id>childrenA;
+			std::vector<middle::Id>childrenB;
+			middle::getChildren(gameState, shapeA.id, childrenA);
+			middle::getChildren(gameState, shapeB.id, childrenB);
 			int size = childrenA.size();
 			// store found matches
 			std::vector<bool> mem;
@@ -374,8 +366,10 @@ namespace bubble {
 			if (!containerStructureEquals(gameState, bubbleId, algebraNodeId)) {
 				return false;
 			}
-			std::vector<middle::Id>childrenA = algebraContainerChildren(bubbleShape);
-			std::vector<middle::Id>childrenB = algebraContainerChildren(structureRootShape);
+			std::vector<middle::Id>childrenA;
+			std::vector<middle::Id>childrenB;
+			middle::getChildren(gameState, bubbleShape.id, childrenA);
+			middle::getChildren(gameState, structureRootShape.id, childrenB);
 			int size = childrenA.size();
 			// store found matches
 			std::vector<bool> mem;
@@ -427,7 +421,8 @@ namespace bubble {
 			}
 
 			auto& shape = middle::getShape(gameState, currentId.index);
-			std::vector<middle::Id>children = algebraContainerChildren(shape);
+			std::vector<middle::Id>children;
+			middle::getChildren(gameState, shape.id, children);
 			for (middle::Id& id : children) {
 				idQueue.push(id);
 				depthQueue.push(currentDepth + 1);
@@ -555,6 +550,7 @@ namespace bubble {
 		// create root
 		middle::Shape rootNodeShapeProto;
 		auto rootNode = middle::addComponent<components::AlgebraNode>(rootNodeShapeProto);
+		middle::addComponent<components::LoopSociety>(rootNodeShapeProto);
 		rootNode->type = static_cast<int>(components::AlgebraNodeType::BUBBLE);
 		middle::Shape& rootNodeShape = middle::registerShape(gameState, rootNodeShapeProto);
 
@@ -576,13 +572,15 @@ namespace bubble {
 
 			auto& currentNodeShape = middle::getShape(gameState, currentNodeId.index);
 			auto currentNode = middle::getComponent<components::AlgebraNode>(currentNodeShape);
-			currentNode->children.resize(realChildren.size());
+			auto nodeLoop = middle::getComponent<components::LoopSociety>(currentNodeShape);
+			nodeLoop->loopMemberIds.resize(realChildren.size());
 
 			for (int i = 0; i < realChildren.size(); ++i) {
 				middle::Id realChildId = realChildren[i];
 				auto& realChildShape = middle::getShape(gameState, realChildId.index);
 				middle::Shape nodeShapeProto;
 				auto node = middle::addComponent<components::AlgebraNode>(nodeShapeProto);
+				middle::addComponent<components::LoopSociety>(nodeShapeProto);
 				node->type = static_cast<int>(getStructureType(gameState, realChildId));
 				middle::Shape& nodeShape = middle::registerShape(gameState, nodeShapeProto);
 
@@ -593,8 +591,10 @@ namespace bubble {
 				}
 
 				// refresh pointer
-				currentNode = middle::getComponent<components::AlgebraNode>(currentNodeShape);
-				currentNode->children[i] = nodeShape.id;
+				nodeLoop = middle::getComponent<components::LoopSociety>(currentNodeShape);
+				auto currentLoop = middle::getComponent<components::LoopSociety>(nodeShape);
+				nodeLoop->loopMemberIds[i] = nodeShape.id;
+				currentLoop->parentLoopId = currentNodeShape.id;
 
 				realBubbleStack.push(realChildId);
 				nodeStack.push(nodeShape.id);

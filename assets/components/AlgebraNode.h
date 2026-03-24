@@ -4,8 +4,7 @@
 #define MIDDLEALGEBRANODE(X) \
 	X(type) \
 	X(variableLabel) \
-	X(value) \
-	X(children) 
+	X(value) 
 
 
 namespace components {
@@ -13,7 +12,6 @@ namespace components {
 		int type = middle::UNASSIGNED;
 		std::string variableLabel = "";
 		float value = 0;
-		std::vector<middle::Id>children;
 
 		void serialize(std::ostream& ostream) override;
 		void deserialize(const std::vector<std::string>& buffer, int indexOffset) override;

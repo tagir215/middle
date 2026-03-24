@@ -1,11 +1,13 @@
 #pragma once
 #include "registrars.h"
 #include "editor_file_utils.h"
-#define MIDDLEPROCEDUREIMPORTCONTAINER(X)
+#define MIDDLEPROCEDUREIMPORTCONTAINER(X) \
+	X(bubbleRef)
 
 namespace components {
 	struct ProcedureImportContainer : public middle::Serializable{
 		std::string loadedProcedureName = "";
+		middle::Id bubbleRef;
 
 		void serialize(std::ostream& ostream) override;
 		void deserialize(const std::vector<std::string>& buffer, int indexOffset) override;

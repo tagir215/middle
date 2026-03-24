@@ -623,7 +623,7 @@ public:
 	}
 
 
-	void updateInputVariableReferences(middle::GameState* gameState, middle::Id codeBlockId) {
+	void updateInputVariableReferences(middle::GameState* gameState, middle::Id codeBlockId, middle::Id topDogContainerId) {
 		if (codeBlockId.index == middle::UNASSIGNED) {
 			return;
 		}
@@ -641,13 +641,10 @@ public:
 		if (inputChildren.size() == 1) {
 			auto& inputChild = middle::getShape(gameState, inputChildren[0].index);
 			auto input = middle::getComponent<components::InputVariable>(inputChild);
-			if (input->topDogContainer.index == middle::UNASSIGNED) {
-				return;
-			}
 			if (input->structureId.index == middle::UNASSIGNED) {
 				return;
 			}
-			middle::Id result = bubble::findMatchingStructureWithVariables(gameState, input->topDogContainer,
+			middle::Id result = bubble::findMatchingStructureWithVariables(gameState, topDogContainerId,
 				input->structureId, input->structureDepth);
 			input->unitRef = result;
 		}
@@ -657,29 +654,23 @@ public:
 			auto& inputChildB = middle::getShape(gameState, inputChildren[1].index);
 			auto inputA = middle::getComponent<components::InputVariable>(inputChildA);
 			auto inputB = middle::getComponent<components::InputVariable>(inputChildB);
-			if (inputA->topDogContainer.index == middle::UNASSIGNED) {
-				return;
-			}
-			if (inputB->topDogContainer.index == middle::UNASSIGNED) {
-				return;
-			}
 
 			bool bothValid = inputA->structureId.index != middle::UNASSIGNED && inputB->structureId.index != middle::UNASSIGNED;
 			if (bothValid) {
 				middle::Id idA, idB;
-				bubble::findMatchingStructurePairWithVariables(gameState, inputA->topDogContainer,
+				bubble::findMatchingStructurePairWithVariables(gameState, topDogContainerId,
 					inputA->structureId, inputB->structureId, inputA->structureDepth, idA, idB);
 				inputA->unitRef = idA;
 				inputB->unitRef = idB;
 			}
 			// if one is valid update it for visual indicators
 			else if (inputA->structureId.index != middle::UNASSIGNED) {
-				middle::Id result = bubble::findMatchingStructureWithVariables(gameState, inputA->topDogContainer,
+				middle::Id result = bubble::findMatchingStructureWithVariables(gameState, topDogContainerId,
 					inputA->structureId, inputA->structureDepth);
 				inputA->unitRef = result;
 			}
 			else if (inputB->structureId.index != middle::UNASSIGNED) {
-				middle::Id result = bubble::findMatchingStructureWithVariables(gameState, inputB->topDogContainer,
+				middle::Id result = bubble::findMatchingStructureWithVariables(gameState, topDogContainerId,
 					inputB->structureId, inputB->structureDepth);
 				inputB->unitRef = result;
 			}
@@ -737,7 +728,7 @@ public:
 			auto& shape = middle::getShape(gameState, procedureCache->relevantIdVector[i].index);
 
 			if (procedure->procedureTransitionStack.size() > 0 && procedure->updateInputs) {
-				updateInputVariableReferences(gameState, procedure->procedureTransitionStack.back().destinationId);
+				updateInputVariableReferences(gameState, procedure->procedureTransitionStack.back().destinationId, procedure->bubbleRef);
 			}
 
 			if ((procedure->mode == procedureConstants::EXECUTING
@@ -765,7 +756,7 @@ public:
 			while (procedure->procedureTransitionStack.size() < procedure->targetActionStackSize) {
 
 				if (procedure->procedureTransitionStack.size() > 0) {
-					updateInputVariableReferences(gameState, procedure->procedureTransitionStack.back().destinationId);
+					updateInputVariableReferences(gameState, procedure->procedureTransitionStack.back().destinationId, procedure->bubbleRef);
 				}
 
 				auto status = procedureStepForward(gameState, procedure);
@@ -777,7 +768,7 @@ public:
 			while (procedure->procedureTransitionStack.size() > procedure->targetActionStackSize) {
 
 				if (procedure->procedureTransitionStack.size() > 0) {
-					updateInputVariableReferences(gameState, procedure->procedureTransitionStack.back().destinationId);
+					updateInputVariableReferences(gameState, procedure->procedureTransitionStack.back().destinationId, procedure->bubbleRef);
 				}
 
 				auto status = procedureStepBackward(gameState, procedure);

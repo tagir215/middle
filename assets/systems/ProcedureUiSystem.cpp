@@ -117,6 +117,12 @@ public:
 					// child of reference is the actual object
 					middle::Id loadedProcId = loadedReferenceLoop->loopMemberIds[0];
 
+					// set bubble ref to the ref import container is pointing to
+					auto& procContainerShape = middle::getShape(gameState, loadedProcId.index);
+					auto procContainer = middle::getComponent<components::ProcedureContainer>(procContainerShape);
+					assert(procContainer);
+					procContainer->bubbleRef = procImportContainer->bubbleRef;
+
 					// resize the container to fit the procedure
 					middle::queueAction(gameState, std::make_shared<middle::CustomAction>([loadedProcId, containerId](middle::GameState* gameState) {
 						float left, right, bottom, top;
@@ -135,24 +141,26 @@ public:
 
 		}
 
-		// execution iterator rendering
-		bool procedureInAction = procComp->procedureTransitionStack.size() > 0;
-		if (procComp && procComp->activeBlock.index != middle::UNASSIGNED && procedureInAction) {
-			auto& activeBlockShape = middle::getShape(gameState, procComp->activeBlock.index);
-			Vector3 position = middle::getShapePosition(gameState, activeBlockShape.id.index);
-			auto rect = middle::getComponent<components::Rectangle>(activeBlockShape);
-			middle::RenderItem activeBlockItem;
-			activeBlockItem.type = middle::RenderItemType::RECTANGLE;
-			activeBlockItem.color = highlightColor;
-			activeBlockItem.width = rect->width;
-			activeBlockItem.height = rect->height;
-			activeBlockItem.length = 0.2f;
-			activeBlockItem.center = { 0,1,0 };
-			Transform transform = {
-				position, {0,0,0,0}, {1,1,1}
-			};
-			activeBlockItem.transform = transform;
-			gameState->renderData.push_back(activeBlockItem);
+		if (procedureCache->getSize() > 0) {
+			// execution iterator rendering
+			bool procedureInAction = procComp->procedureTransitionStack.size() > 0;
+			if (procComp && procComp->activeBlock.index != middle::UNASSIGNED && procedureInAction) {
+				auto& activeBlockShape = middle::getShape(gameState, procComp->activeBlock.index);
+				Vector3 position = middle::getShapePosition(gameState, activeBlockShape.id.index);
+				auto rect = middle::getComponent<components::Rectangle>(activeBlockShape);
+				middle::RenderItem activeBlockItem;
+				activeBlockItem.type = middle::RenderItemType::RECTANGLE;
+				activeBlockItem.color = highlightColor;
+				activeBlockItem.width = rect->width;
+				activeBlockItem.height = rect->height;
+				activeBlockItem.length = 0.2f;
+				activeBlockItem.center = { 0,1,0 };
+				Transform transform = {
+					position, {0,0,0,0}, {1,1,1}
+				};
+				activeBlockItem.transform = transform;
+				gameState->renderData.push_back(activeBlockItem);
+			}
 		}
 
 		for (int i = 0; i < procedureUseCache->getSize(); ++i) {
