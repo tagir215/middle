@@ -230,8 +230,7 @@ public:
 					// if grabbing child from scope, can reorder it
 					auto childGrabbable = middle::getComponent<components::MouseGrabbable>(childShape);
 					auto childIntersectable = middle::getComponent<components::MouseIntersectable>(childShape);
-					assert(childGrabbable);
-					if (gameState->input.mouseHeld
+					if (childGrabbable && childIntersectable && gameState->input.mouseHeld
 						&& childIntersectable->intersectingTop
 						&& gameState->bubbleAlgebraState.grabbedId.index == middle::UNASSIGNED) {
 
