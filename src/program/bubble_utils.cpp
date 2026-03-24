@@ -15,6 +15,7 @@
 #include "BubbleVariable.h"
 #include "Circle.h"
 #include "TopDogBubbleTag.h"
+#include "MouseSelectable.h"
 
 namespace bubble {
 
@@ -608,6 +609,7 @@ namespace bubble {
 		middle::Shape newBubbleShape;
 		middle::addComponent<components::BubbleComponent>(newBubbleShape);
 		middle::addComponent<components::MouseGrabbable>(newBubbleShape);
+		middle::addComponent<components::MouseSelectable>(newBubbleShape);
 		middle::addComponent<components::MouseIntersectable>(newBubbleShape);
 		middle::addComponent<components::LoopTag>(newBubbleShape);
 		middle::addComponent<components::LoopSociety>(newBubbleShape);
@@ -627,6 +629,7 @@ namespace bubble {
 		middle::addComponent<components::BubbleUnit>(newUnitShape);
 		middle::addComponent<components::MouseGrabbable>(newUnitShape);
 		middle::addComponent<components::MouseIntersectable>(newUnitShape);
+		middle::addComponent<components::MouseSelectable>(newUnitShape);
 		middle::addComponent<components::LoopSociety>(newUnitShape);
 		middle::addComponent<components::PhysicsData>(newUnitShape);
 		auto sphere = middle::addComponent<components::Sphere>(newUnitShape);
@@ -638,6 +641,15 @@ namespace bubble {
 		return newUnitShape;
 	}
 
+	middle::Shape newVariable(middle::GameState* gameState, const std::string& label, const Vector3& targetPos)
+	{
+		middle::Shape variableProto = newUnit(gameState, targetPos);
+		auto varComp = middle::addComponent<components::BubbleVariable>(variableProto);
+		varComp->label = label;
+		auto& shape = middle::registerShape(gameState, variableProto);
+		return shape;
+	}
+
 	middle::Id newFraction(middle::GameState* gameState, const Vector3& targetPos, int dividend)
 	{
 		middle::Shape newFractionProto;
@@ -646,6 +658,7 @@ namespace bubble {
 		middle::addComponent<components::LoopTag>(newFractionProto);
 		middle::addComponent<components::MouseGrabbable>(newFractionProto);
 		middle::addComponent<components::MouseIntersectable>(newFractionProto);
+		middle::addComponent<components::MouseSelectable>(newFractionProto);
 		auto position = middle::addComponent<components::Position>(newFractionProto);
 
 		auto& newFractionShape = middle::registerShape(gameState, newFractionProto);

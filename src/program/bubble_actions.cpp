@@ -11,6 +11,7 @@
 #include "DeleteComponent.h"
 #include "BubbleVariable.h"
 #include "bubble_utils.h"
+#include "MouseSelectable.h"
 
 namespace bubbleActions {
 
@@ -928,6 +929,7 @@ namespace bubbleActions {
 		middle::addComponent<components::BubbleMultiplyComponent>(newMulShapeProto);
 		middle::addComponent<components::MouseIntersectable>(newMulShapeProto);
 		middle::addComponent<components::MouseGrabbable>(newMulShapeProto);
+		middle::addComponent<components::MouseSelectable>(newMulShapeProto);
 		middle::addComponent<components::LoopSociety>(newMulShapeProto);
 		auto& newMulShape = middle::registerShape(gameState, newMulShapeProto);
 

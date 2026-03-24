@@ -23,6 +23,7 @@ namespace bubble {
 	middle::Id topLevelBubble(middle::GameState* gameState);
 	middle::Shape newBubble(middle::GameState* gameState, const Vector3& targetPos);
 	middle::Shape newUnit(middle::GameState* gameState, const Vector3& targetPos);
+	middle::Shape newVariable(middle::GameState* gameState, const std::string& label, const Vector3& targetPos);
 	bool isIntersecting(middle::GameState* gameState, middle::Shape& shape);
 	bool unitEquals(middle::GameState* gameState, middle::Id& bubbleA, middle::Id& bubbleB);
 	BubbleValue unitValue(middle::GameState* gameState, middle::Id& containerId);
