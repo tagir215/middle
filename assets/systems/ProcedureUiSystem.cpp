@@ -69,6 +69,7 @@ public:
 		}
 
 		// buttons
+		// TODO MOVE THIS OR MOVE RENDERING
 		auto buttonIt = buttonCache->begin<components::Button>();
 		auto buttonTextIt = buttonCache->begin<components::Text>();
 		for (int i = 0; i < buttonCache->getSize(); ++i) {
@@ -124,6 +125,8 @@ public:
 					auto procContainer = middle::getComponent<components::ProcedureContainer>(procContainerShape);
 					assert(procContainer);
 					procContainer->bubbleRef = procImportContainer->bubbleRef;
+					// Unassign bubble ref, it might have been serialized
+					procContainer->bubbleRef = middle::Id();
 
 					// resize the container to fit the procedure
 					middle::queueAction(gameState, std::make_shared<middle::CustomAction>([loadedProcId, containerId](middle::GameState* gameState) {

@@ -91,8 +91,13 @@ public:
 
 			// if its procedre input update unit ref here, and set proc container to point to the ref
 			if(grabbedProcedureInput){
-				ogInput->unitRef = shape.id;
-				procContainer->bubbleRef = shape.id;
+				if (bubble::matchesStructureWithVariables(gameState, shape.id, ogInput->structureId)) {
+					ogInput->unitRef = shape.id;
+					procContainer->bubbleRef = shape.id;
+				}
+				else {
+					// TODO PRINT NOT MATCHING ERROR
+				}
 			}
 
 		}
