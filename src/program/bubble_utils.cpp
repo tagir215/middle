@@ -16,6 +16,7 @@
 #include "Circle.h"
 #include "TopDogBubbleTag.h"
 #include "MouseSelectable.h"
+#include "BubbleEqualsComponent.h"
 
 namespace bubble {
 
@@ -648,6 +649,24 @@ namespace bubble {
 		varComp->label = label;
 		auto& shape = middle::registerShape(gameState, variableProto);
 		return shape;
+	}
+
+	middle::Id newEquals(middle::GameState* gameState, middle::Id bubbleAId, middle::Id bubbleBId, const Vector3& targetPos)
+	{
+		middle::Shape equalsProto;
+		middle::addComponent<components::BubbleEqualsComponent>(equalsProto);
+		auto position = middle::addComponent<components::Position>(equalsProto);
+		middle::addComponent<components::MouseIntersectable>(equalsProto);
+		middle::addComponent<components::MouseGrabbable>(equalsProto);
+		middle::addComponent<components::MouseSelectable>(equalsProto);
+		middle::addComponent<components::LoopSociety>(equalsProto);
+		position->posX = targetPos.x;
+		position->posY = targetPos.y;
+		position->posZ = targetPos.z;
+		auto& shape = middle::registerShape(gameState, equalsProto);
+		middle::EditorActionReparent(shape.id.index, bubbleAId.index).execute(gameState);
+		middle::EditorActionReparent(shape.id.index, bubbleBId.index).execute(gameState);
+		return shape.id;
 	}
 
 	middle::Id newFraction(middle::GameState* gameState, const Vector3& targetPos, int dividend)

@@ -17,6 +17,10 @@ public:
 	components::CompCache* circlessCache2;
 	components::CompCache* circfullCache2;
 
+	NewBubbleOutlineSystem() {
+		systemModeType = middle::SystemModeType::ENGINE;
+	}
+
 	void init(middle::GameState* gameState) override {
 		circlessCache = middle::newCompCache(gameState);
 		circlessCache->addType<components::BubbleComponent>();
@@ -36,13 +40,13 @@ public:
 		circfullCache2->addType<components::PhysicsData>();
 	}
 
-	const float startingRadius = 30;
+	const float minBubbleRadius = 10;
 	void update(middle::GameState* gameState) override {
 		// add circles
 		for (int i = 0; i < circlessCache->getSize(); ++i) {
 			auto& circleId = circlessCache->relevantIdVector[i];
 			auto circle = middle::attachComponent<components::Circle>(gameState, circleId);
-			circle->radius = startingRadius;
+			circle->radius = minBubbleRadius;
 		}
 		auto sphereIt = circlessCache2->begin<components::Sphere>();
 		for (int i = 0; i < circlessCache2->getSize(); ++i) {
@@ -74,8 +78,12 @@ public:
 					totalArea += fieldRadius;
 				}
 			}
-			const float margin = 10;
-			circle->radius = std::sqrt(totalArea / PI);
+
+			float radius = std::sqrt(totalArea / PI);
+			if (radius < minBubbleRadius) {
+				radius = minBubbleRadius;
+			}
+			circle->radius = radius;
 		}
 
 	

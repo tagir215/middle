@@ -17,6 +17,11 @@
 
 class BubblePhysics : public middle::MiddleGameplaySystem {
 public:
+
+	BubblePhysics() {
+		systemModeType = middle::SystemModeType::ENGINE;
+	}
+
 	components::CompCache* unitCache;
 	components::CompCache* bubbleCache;
 	components::CompCache* mulCache;

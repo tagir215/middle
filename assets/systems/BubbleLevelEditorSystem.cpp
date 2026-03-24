@@ -35,74 +35,102 @@ public:
 		return middle::Id();
 	}
 
+	Vector3 randomOffset() {
+		float randomX = (std::rand() % 50 + 1);
+		float randomZ = (std::rand() % 50 + 1);
+		return { 1.0f / randomX, 0, 1.0f / randomZ };
+	}
+
 	void update(middle::GameState* gameState) override {
-		auto ui = [gameState, this]() 
-		{
-			ImGui::Begin("BubbleEditor");
+		auto ui = [gameState, this]()
+			{
+				ImGui::Begin("BubbleEditor");
 
-			middle::Id selectedId = getSelected();
+				middle::Id selectedId = getSelected();
 
-			bool somethingSelected = selectedId.index != middle::UNASSIGNED;
+				bool somethingSelected = selectedId.index != middle::UNASSIGNED;
 
-			if (!somethingSelected) {
-				if (ImGui::Button("NewBubble")) {
-					middle::unselect(gameState);
-					auto bubbleProto = bubble::newBubble(gameState, { 0,0,0 });
-					auto& bubbleShape = middle::registerShape(gameState, bubbleProto);
-					auto selectable = middle::getComponent<components::MouseSelectable>(bubbleShape);
-					selectable->selected = true;
+				if (!somethingSelected) {
+					if (ImGui::Button("New Bubble")) {
+						middle::unselect(gameState);
+						auto bubbleProto = bubble::newBubble(gameState, {0,0,0});
+						auto& bubbleShape = middle::registerShape(gameState, bubbleProto);
+						auto selectable = middle::getComponent<components::MouseSelectable>(bubbleShape);
+						selectable->selected = true;
+					}
+
+					if (ImGui::Button("New Equals")) {
+						middle::unselect(gameState);
+						auto bubbleProtoA = bubble::newBubble(gameState, randomOffset());
+						auto& bubbleShapeA = middle::registerShape(gameState, bubbleProtoA);
+						auto bubbleProtoB = bubble::newBubble(gameState, randomOffset());
+						auto& bubbleShapeB = middle::registerShape(gameState, bubbleProtoB);
+						bubble::newEquals(gameState, bubbleShapeA.id, bubbleShapeB.id, { 0,0,0 });
+					}
 				}
-			}
 
 
-			if (somethingSelected) {
+				if (somethingSelected) {
 
-				if (ImGui::Button("New Bubble")) {
-					auto bubbleProto = bubble::newBubble(gameState, { 0,0,0 });
-					auto& bubbleShape = middle::registerShape(gameState, bubbleProto);
-					middle::Id newId = bubbleShape.id;
-					middle::EditorActionReparent(selectedId.index, newId.index).execute(gameState);
-				}
-				if (ImGui::Button("New Unit")) {
-					Vector3 containerPos = middle::getShapePosition(gameState, selectedId.index);
-					auto unitProto = bubble::newUnit(gameState, containerPos);
-					auto& unit = middle::registerShape(gameState, unitProto);
-					middle::Id newId = unit.id;
-					middle::EditorActionReparent(selectedId.index, newId.index).execute(gameState);
-				}
-				if (ImGui::Button("New Variable")) {
-					static char* label;
-					ImGui::InputText("variable lable", label, 20);
-					Vector3 containerPos = middle::getShapePosition(gameState, selectedId.index);
-					auto unitProto = bubble::newVariable(gameState, label, containerPos);
-					auto& unit = middle::registerShape(gameState, unitProto);
-					middle::Id newId = unit.id;
-					middle::EditorActionReparent(selectedId.index, newId.index).execute(gameState);
-				}
-				if (ImGui::Button("New Multiplication")) {
-					Vector3 containerPos = middle::getShapePosition(gameState, selectedId.index);
-					float xOffset = 20;
-					Vector3 offsetVec = { xOffset, 0,0 };
-					auto bubbleAProto = bubble::newBubble(gameState, containerPos + offsetVec);
-					auto bubbleBProto = bubble::newBubble(gameState, containerPos + Vector3Negate(offsetVec));
-					auto& bubbleA = middle::registerShape(gameState, bubbleAProto);
-					auto& bubbleB = middle::registerShape(gameState, bubbleBProto);
-					auto mulAction = bubbleActions::NewMultiplication(bubbleA.id, bubbleB.id);
-					mulAction.execute(gameState);
-					middle::Id newId = mulAction.resultShapeId;
-					middle::EditorActionReparent(selectedId.index, newId.index).execute(gameState);
-				}
-				if (ImGui::Button("To Fraciton")) {
+					if (ImGui::Button("New Bubble")) {
+						Vector3 containerPos = middle::getShapePosition(gameState, selectedId.index);
+						auto bubbleProto = bubble::newBubble(gameState, containerPos + randomOffset());
+						auto& bubbleShape = middle::registerShape(gameState, bubbleProto);
+						middle::Id newId = bubbleShape.id;
+						middle::EditorActionReparent(selectedId.index, newId.index).execute(gameState);
+					}
+					ImGui::Separator();
+					if (ImGui::Button("New Unit")) {
+						Vector3 containerPos = middle::getShapePosition(gameState, selectedId.index);
+						auto unitProto = bubble::newUnit(gameState, containerPos + randomOffset());
+						auto& unit = middle::registerShape(gameState, unitProto);
+						middle::Id newId = unit.id;
+						middle::EditorActionReparent(selectedId.index, newId.index).execute(gameState);
+					}
+					ImGui::Separator();
+					static char label[20] = "x";
+					ImGui::InputText("variable lable", label, IM_ARRAYSIZE(label));
+					if (ImGui::Button("New Variable")) {
+						Vector3 containerPos = middle::getShapePosition(gameState, selectedId.index);
+						std::string string(label);
+						auto unitProto = bubble::newVariable(gameState, string, containerPos + randomOffset());
+						auto& unit = middle::registerShape(gameState, unitProto);
+						middle::Id newId = unit.id;
+						middle::EditorActionReparent(selectedId.index, newId.index).execute(gameState);
+					}
+					ImGui::Separator();
+					if (ImGui::Button("New Multiplication")) {
+						Vector3 containerPos = middle::getShapePosition(gameState, selectedId.index);
+						float xOffset = 20;
+						auto bubbleAProto = bubble::newBubble(gameState, containerPos + randomOffset());
+						auto bubbleBProto = bubble::newBubble(gameState, containerPos + randomOffset());
+						auto& bubbleA = middle::registerShape(gameState, bubbleAProto);
+						auto& bubbleB = middle::registerShape(gameState, bubbleBProto);
+						auto mulAction = bubbleActions::NewMultiplication(bubbleA.id, bubbleB.id);
+						mulAction.execute(gameState);
+						middle::Id newId = mulAction.resultShapeId;
+						middle::EditorActionReparent(selectedId.index, newId.index).execute(gameState);
+					}
+					ImGui::Separator();
+					if (ImGui::Button("Link Multiplication")) {
+						Vector3 containerPos = middle::getShapePosition(gameState, selectedId.index);
+						auto bubbleProto = bubble::newBubble(gameState, containerPos + randomOffset());
+						auto& bubble = middle::registerShape(gameState, bubbleProto);
+						auto linkAction = bubbleActions::LinkMultiplicationTerm(selectedId, bubble.id);
+						linkAction.execute(gameState);
+					}
+					ImGui::Separator();
 					static int dividend = 2;
 					ImGui::SliderInt("dividend", &dividend, 2, 10);
-					Vector3 containerPos = middle::getShapePosition(gameState, selectedId.index);
-					middle::Id fraction = bubble::shapeToFraction(gameState, selectedId, containerPos, dividend);
-					bubbleActions::Replace(selectedId, fraction).execute(gameState);
+					if (ImGui::Button("To Fraciton")) {
+						Vector3 containerPos = middle::getShapePosition(gameState, selectedId.index);
+						middle::Id fraction = bubble::shapeToFraction(gameState, selectedId, containerPos, dividend);
+						bubbleActions::Replace(selectedId, fraction).execute(gameState);
+					}
+
 				}
 
-			}
-
-			ImGui::End();
+				ImGui::End();
 			};
 
 		gameState->uiSetups.push_back(ui);
