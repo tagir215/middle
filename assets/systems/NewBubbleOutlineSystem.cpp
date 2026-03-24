@@ -64,7 +64,9 @@ public:
 				auto& childShape = middle::getShape(gameState, childId.index);
 				auto childCircle = middle::getComponent<components::Circle>(childShape);
 				if (childCircle) {
-					totalArea += childCircle->radius * 4;
+					const float margin = 10;
+					float r = childCircle->radius + margin;
+					totalArea += r * r * PI;
 				}
 				auto bubbleUnit = middle::getComponent<components::BubbleUnit>(childShape);
 				if(bubbleUnit){
@@ -73,10 +75,7 @@ public:
 				}
 			}
 			const float margin = 10;
-			circle->radius = totalArea / 4 + margin;
-			if (circle->radius < startingRadius) {
-				//circle->radius = startingRadius;
-			}
+			circle->radius = std::sqrt(totalArea / PI);
 		}
 
 	

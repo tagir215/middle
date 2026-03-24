@@ -441,23 +441,6 @@ public:
 		}
 
 
-		// attraction forces
-		const float attractionForce = 200;
-		for (Bubble& bubble : bubbles) {
-			Body& bubbleBody = bubble.bubbleBody;
-			for (Body& unit : bubble.bodies) {
-				float dirX = bubbleBody.pos->posX - unit.pos->posX;
-				float dirY = bubbleBody.pos->posY - unit.pos->posY;
-				float dirZ = bubbleBody.pos->posZ - unit.pos->posZ;
-				Vector3 attractionDir = Vector3Normalize({ dirX, dirY, dirZ });
-				Vector3 acc = Vector3Scale(attractionDir, attractionForce);
-				unit.physicsData->velX += acc.x * gameState->frameTime;
-				unit.physicsData->velY += acc.y * gameState->frameTime;
-				unit.physicsData->velZ += acc.z * gameState->frameTime;
-			}
-		}
-
-
 		std::vector<Collision>collisions;
 		findSiblingCollisions(pairVectors, collisions);
 		findCollisionsWithOutline(bubbles, collisions);
