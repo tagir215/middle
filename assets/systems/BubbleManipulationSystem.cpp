@@ -92,10 +92,10 @@ public:
 			auto& shape = middle::getShape(gameState, bubbleCache->relevantIdVector[i].index);
 			auto bubble = *bubbleIt;
 			auto grabbable = *bubbleGrabbableIt;
-			attachComponents(gameState, shape, grabbable);
 			if (grabbable->grabbing) {
 				move(gameState, shape);
 			}
+			attachComponents(gameState, shape, grabbable);
 		}
 
 		auto unitIt = unitCache->begin<components::BubbleUnit>();
@@ -105,6 +105,7 @@ public:
 			auto& shape = middle::getShape(gameState, unitCache->relevantIdVector[i].index);
 			auto unit = *unitIt;
 			auto loop = *loopIt;
+			auto grabbable = *unitGrabbableIt;
 			if (loop->parentLoopId.index != middle::UNASSIGNED) {
 				auto& parentShape = middle::getShape(gameState, loop->parentLoopId.index);
 				auto parentFraction = middle::getComponent<components::FractionalComponent>(parentShape);
@@ -112,11 +113,11 @@ public:
 					continue;
 				}
 			}
-			auto grabbable = *unitGrabbableIt;
-			attachComponents(gameState, shape, grabbable);
 			if (grabbable->grabbing) {
 				move(gameState, shape);
 			}
+			attachComponents(gameState, shape, grabbable);
+
 		}
 
 		auto fractionIt = fractionCache->begin<components::FractionalComponent>();
