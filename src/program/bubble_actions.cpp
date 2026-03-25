@@ -462,15 +462,15 @@ namespace bubbleActions {
 					}
 				}
 				if (value == sizeA) {
-					middle::Id someUnitId = replacementLoop->loopMemberIds[0];
-					middle::Id unitCopyId = middle::deepCopyShape(gameState, someUnitId.index, middle::UNASSIGNED);
 					auto deleteAction = std::make_unique<middle::EditorActionDeleteSingle>(copyShapeA.id);
 					deleteAction->execute(gameState);
 					actions.push_back(std::move(deleteAction));
-					auto& unitShape = middle::getShape(gameState, unitCopyId.index);
-					auto unitLoop = middle::getComponent<components::LoopSociety>(unitShape);
-					unitLoop->parentLoopId = middle::Id();
-					resultShapeId = unitCopyId;
+					Vector3 pos = middle::getShapePosition(gameState, shapeToAddInto.id.index);
+					auto unitProto = bubble::newUnit(gameState, pos);
+					auto registerAction = std::make_unique<middle::EditorActionRegisterShape>(unitProto);
+					registerAction->execute(gameState);
+					resultShapeId = registerAction->newShapeId;
+					actions.push_back(std::move(registerAction));
 				}
 			}
 

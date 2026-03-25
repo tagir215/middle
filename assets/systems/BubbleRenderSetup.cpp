@@ -47,6 +47,8 @@ public:
 		fractionCache->addType<components::LoopSociety>();
 		unitCache = middle::newCompCache(gameState);
 		unitCache->addType<components::BubbleUnit>();
+		unitCache->addType<components::Circle>();
+		unitCache->addType<components::Position>();
 		unitCache->addType<components::BubbleVariable>(components::NOTINTERESTED);
 		variableCache = middle::newCompCache(gameState);
 		variableCache->addType<components::BubbleUnit>();
@@ -170,17 +172,19 @@ public:
 
 		// render units
 		auto unitIt = unitCache->begin<components::BubbleUnit>();
+		auto unitCircleIt = unitCache->begin<components::Circle>();
+		auto unitPosIt = unitCache->begin<components::Position>();
 		for (int i = 0; i < unitCache->getSize(); ++i) {
 			auto unit = *unitIt;
+			auto circle = *unitCircleIt;
+			auto pos = *unitPosIt;
 			auto& shape = middle::getShape(gameState, unitCache->relevantIdVector[i].index);
 
-			auto pos = middle::getComponent<components::Position>(shape);
 			middle::RenderItem particle;
 			particle.center = { pos->posX, pos->posY, pos->posZ };
 			particle.length = 0.1f;
-			const float unitRadius = 2;
-			particle.ringRadius = unitRadius;
-			particle.radius = unitRadius;
+			particle.ringRadius = circle->radius;
+			particle.radius = circle->radius;
 			if (unit->value == 1) {
 				particle.type = middle::RenderItemType::CYLINDER;
 				particle.color = BLACK;

@@ -9,6 +9,9 @@
 #include "PhysicsData.h"
 #include "BubbleUnit.h"
 #include "Sphere.h"
+#include "FractionalComponent.h"
+#include "bubble_utils.h"
+
 
 class NewBubbleOutlineSystem : public middle::MiddleGameplaySystem {
 public:
@@ -16,6 +19,7 @@ public:
 	components::CompCache* circfullCache;
 	components::CompCache* circlessCache2;
 	components::CompCache* circfullCache2;
+	components::CompCache* fractionCache;
 
 	NewBubbleOutlineSystem() {
 		systemModeType = middle::SystemModeType::ENGINE;
@@ -38,6 +42,10 @@ public:
 		circfullCache2->addType<components::BubbleUnit>();
 		circfullCache2->addType<components::Circle>();
 		circfullCache2->addType<components::PhysicsData>();
+
+		fractionCache = middle::newCompCache(gameState);
+		fractionCache->addType<components::FractionalComponent>();
+		fractionCache->addType<components::LoopSociety>();
 	}
 
 	const float minBubbleRadius = 10;
@@ -54,6 +62,21 @@ public:
 			auto sphere = *sphereIt;
 			auto circle = middle::attachComponent<components::Circle>(gameState, circleId);
 			circle->radius = sphere->radius;
+		}
+		auto fractionIt = fractionCache->begin<components::LoopSociety>();
+		for (int i = 0; i < fractionCache->getSize(); ++i) {
+			auto fractionLoop = *fractionIt;
+			middle::Id quotientId = bubble::fractionQuotient(gameState, fractionCache->relevantIdVector[i]);
+			auto& quotientShape = middle::getShape(gameState, quotientId.index);
+			auto circle = middle::getComponent<components::Circle>(quotientShape);
+			float targetRadius = circle->radius;
+			for (middle::Id& childId : fractionLoop->loopMemberIds) {
+				if (childId == quotientId)
+					continue;
+				auto& childShape = middle::getShape(gameState, childId.index);
+				auto childCircle = middle::getComponent<components::Circle>(childShape);
+				childCircle->radius = circle->radius;
+			}
 		}
 
 		// calculate bubble size
