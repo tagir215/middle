@@ -244,6 +244,9 @@ namespace middle {
 			for (Id childId : loop->loopMemberIds) {
 				if (isShapeAlive(gameState, childId.index)) {
 					auto& childShape = gameState->shapes[childId.index];
+					if (childShape.componentMap.size() == 0) {
+						continue;
+					}
 					auto childLoop = getComponent<components::LoopSociety>(childShape);
 					childLoop->parentLoopId.index = UNASSIGNED;
 				}

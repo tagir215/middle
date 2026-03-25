@@ -7,6 +7,8 @@
 #include "bubble_actions.h"
 #include "MouseSelectable.h"
 #include "UiComponent.h"
+#include "component_utils.h"
+#include "BubbleAlgebraProblem.h"
 
 
 class BubbleLevelEditorSystem : public middle::MiddleGameplaySystem {
@@ -55,6 +57,7 @@ public:
 						middle::unselect(gameState);
 						auto bubbleProto = bubble::newBubble(gameState, {0,0,0});
 						auto& bubbleShape = middle::registerShape(gameState, bubbleProto);
+						middle::attachComponent<components::BubbleAlgebraProblem>(gameState, bubbleShape.id);
 						auto selectable = middle::getComponent<components::MouseSelectable>(bubbleShape);
 						selectable->selected = true;
 					}
@@ -65,7 +68,19 @@ public:
 						auto& bubbleShapeA = middle::registerShape(gameState, bubbleProtoA);
 						auto bubbleProtoB = bubble::newBubble(gameState, randomOffset());
 						auto& bubbleShapeB = middle::registerShape(gameState, bubbleProtoB);
-						bubble::newEquals(gameState, bubbleShapeA.id, bubbleShapeB.id, { 0,0,0 });
+						middle::Id equals = bubble::newEquals(gameState, bubbleShapeA.id, bubbleShapeB.id, { 0,0,0 });
+						middle::attachComponent<components::BubbleAlgebraProblem>(gameState, equals);
+					}
+
+
+					if (ImGui::Button("Import Level Stuff")) {
+						const std::string folder = "../assets/shapes/";
+						middle::loadShape(gameState, folder, "BubbleGameplaySystems", true, {400,0,-500});
+						middle::loadShape(gameState, folder, "ManipulationSystems", true, {800,0,-500});
+						middle::loadShape(gameState, folder, "GreatWallAndProcedureAndProblemContainers", true, {400,0,0});
+						middle::loadShape(gameState, folder, "BubbleAlgebraUi", true, {-800,0,-500});
+						Vector3 cameraPos = { 0,-1000,0 };
+						middle::loadShape(gameState, folder, "BubbleCamera", true, cameraPos);
 					}
 				}
 
