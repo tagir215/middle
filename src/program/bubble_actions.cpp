@@ -522,18 +522,27 @@ namespace bubbleActions {
 			middle::Shape& initialBubble = middle::registerShape(gameState, bubbleProto);
 			middle::Shape& initialUnit = middle::registerShape(gameState, unitProto);
 			middle::EditorActionReparent(initialBubble.id.index, initialUnit.id.index).execute(gameState);
+			auto bubbleCircle = middle::getComponent<components::Circle>(shapeToPower);
+
+			float bubGap = bubbleCircle->radius;
+			int sign = 1;
+			float totalTranslation = 0;
 
 			for (int i = 0; i < power; ++i) {
 				middle::Id copyId = middle::deepCopyShape(gameState, shapeToPowerId.index);
 				middle::queueComponentDeletion<components::BubbleRootComponent>(gameState, copyId);
 				// move so its not overlapping perfectly
-				middle::moveShape(gameState, copyId.index, { 1,0,0 });
+				sign *= -1;
+				const float varianceZ = 0.2f;
+				middle::moveShape(gameState, copyId.index, { bubGap * i, 0, varianceZ * sign });
+				totalTranslation += bubGap;
 				LinkMultiplicationTerm(initialBubble.id, copyId).execute(gameState);
 			}
 			middle::Id toContainId;
 			if (power > 0) {
 				// parent should be multiplication at this point
 				toContainId = middle::getParent(gameState, initialBubble.id);
+				middle::moveShape(gameState, toContainId.index, { -totalTranslation * 0.5f, 0, 0 });
 			}
 			else {
 				// else power by 0 = 1
