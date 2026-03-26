@@ -16,9 +16,10 @@
 #include "CodeFunction.h"
 #include "IfComponent.h"
 #include "ScopeComponent.h"
-#include "ProcedureComponent.h"
+#include "ProcedureContainer.h"
 #include "InputVariable.h"
 #include "component_utils.h"
+#include "ProcedureComponent.h"
 
 class CodeBlockSystem : public middle::MiddleGameplaySystem {
 public:
@@ -29,9 +30,11 @@ public:
 	components::CompCache* placementCache;
 	components::CompCache* grabbableCache;
 	components::CompCache* scopeCache;
+	components::CompCache* procScopeCache;
 	components::CompCache* procedureCache;
 	components::CompCache* codeBlockCache;
 	components::CompCache* inventoryCache;
+	components::CompCache* blockCache;
 
 	void init(middle::GameState* gameState) {
 		placementCache = middle::newCompCache(gameState);
@@ -39,15 +42,21 @@ public:
 		grabbableCache = middle::newCompCache(gameState);
 		grabbableCache->addType < components::MouseGrabbable>();
 		scopeCache = middle::newCompCache(gameState);
-		scopeCache->addType < components::ScopeComponent>();
+		scopeCache->addType <components::ScopeComponent>();
 		scopeCache->addType<components::MouseIntersectable>();
 		scopeCache->addType<components::LoopSociety>();
+		procScopeCache = middle::newCompCache(gameState);
+		procScopeCache->addType<components::LoopSociety>();
+		procScopeCache->addType<components::ProcedureComponent>();
 		procedureCache = middle::newCompCache(gameState);
-		procedureCache->addType<components::ProcedureComponent>();
+		procedureCache->addType<components::ProcedureContainer>();
 		codeBlockCache = middle::newCompCache(gameState);
 		codeBlockCache->addType<components::CodeBlock>();
 		inventoryCache = middle::newCompCache(gameState);
 		inventoryCache->addType<components::Inventory>();
+		blockCache = middle::newCompCache(gameState);
+		blockCache->addType<components::CodeBlock>();
+		blockCache->addType<components::MouseIntersectable>();
 	}
 
 	void update(middle::GameState* gameState) override {
@@ -67,17 +76,54 @@ public:
 		for (int i = 0; i < grabbableCache->getSize(); ++i) {
 			auto grabbable = *grabbableIt;
 			if (grabbable->grabbing) {
-				auto& shape = middle::getShape(gameState, placementCache->relevantIdVector[i].index);
+				auto& shape = middle::getShape(gameState, grabbableCache->relevantIdVector[i].index);
 				Vector3 currentPos = middle::getShapePosition(gameState, shape.id.index);
 				Vector3 targetPos = gameState->input.mouseXZ_PlanePos;
 				middle::moveShape(gameState, shape.id.index, targetPos - currentPos);
 			}
 		}
 
+		// get reference to proccontainer
+		components::ProcedureContainer* procContainer = nullptr;
+		if (procedureCache->getSize() > 0) {
+			auto procIt = procedureCache->begin<components::ProcedureContainer>();
+			procContainer = *procIt;
+		}
+
+		// update procedure size
+		components::LoopSociety* procLoop = nullptr;
+		if (procScopeCache->getSize() > 0) {
+			auto procScopeIt = procScopeCache->begin<components::LoopSociety>();
+			procLoop = *procScopeIt;
+			procContainer->size = procLoop->loopMemberIds.size();
+		}
+
+		// PROCEDURE POINTER POSITION, WARNING WARNING EXTERNAL SYSTEM
+		auto blockIntersectableIt = blockCache->begin<components::MouseIntersectable>();
+		for (int i = 0; i < blockCache->getSize(); ++i) {
+			auto intersectable = *blockIntersectableIt;
+			if (!intersectable->intersecting) {
+				continue;
+			}
+			middle::Id intersectedId = blockCache->relevantIdVector[i];
+			int targetSize = -1;
+			for (int j = 0; j < procContainer->size; ++j) {
+				middle::Id blockId = procLoop->loopMemberIds[j];
+				if (blockId == intersectedId) {
+					procContainer->targetActionStackSize = j + 1;
+					procContainer->updateInputs = true;
+					break;
+				}
+			}
+		}
+
+
 		middle::Id grabbedId = gameState->bubbleAlgebraState.grabbedId;
 		auto scopeIt = scopeCache->begin<components::ScopeComponent>();
 		auto scopeLoopIt = scopeCache->begin<components::LoopSociety>();
 		auto scopeIntersectableIt = scopeCache->begin<components::MouseIntersectable>();
+
+
 		if (grabbedId.index != middle::UNASSIGNED) {
 			for (int i = 0; i < scopeCache->getSize(); ++i) {
 				auto scope = *scopeIt;
@@ -185,8 +231,7 @@ public:
 					// if grabbing child from scope, can reorder it
 					auto childGrabbable = middle::getComponent<components::MouseGrabbable>(childShape);
 					auto childIntersectable = middle::getComponent<components::MouseIntersectable>(childShape);
-					assert(childGrabbable);
-					if (gameState->input.mouseHeld
+					if (childGrabbable && childIntersectable && gameState->input.mouseHeld
 						&& childIntersectable->intersectingTop
 						&& gameState->bubbleAlgebraState.grabbedId.index == middle::UNASSIGNED) {
 
@@ -199,6 +244,7 @@ public:
 			}
 		}
 
+		// copy from inventory
 		auto inventoryIt = inventoryCache->begin<components::Inventory>();
 		for (int i = 0; i < inventoryCache->getSize(); ++i) {
 			auto inventory = *inventoryIt;

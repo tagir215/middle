@@ -16,6 +16,7 @@
 #include "IdRef.h"
 #include "bubble_actions.h"
 #include "component_utils.h"
+#include "bubble_utils.h"
 
 class BubbleManipulationSystem : public middle::MiddleGameplaySystem {
 
@@ -29,6 +30,7 @@ public:
 		bubbleCache = middle::newCompCache(gameState);
 		bubbleCache->addType<components::MouseGrabbable>();
 		bubbleCache->addType<components::BubbleComponent>();
+		bubbleCache->addType<components::InventoryItem>(components::NOTINTERESTED);
 		unitCache = middle::newCompCache(gameState);
 		unitCache->addType<components::MouseGrabbable>();
 		unitCache->addType<components::BubbleUnit>();
@@ -56,12 +58,12 @@ public:
 
 	void attachComponents(middle::GameState* gameState, middle::Shape& shape, components::MouseGrabbable* grabbable) {
 
-		bool intersecting = bubbleActions::isIntersecting(gameState, shape);
+		bool intersecting = bubble::isIntersecting(gameState, shape);
 		if (intersecting && gameState->bubbleAlgebraState.grabbedId.index == middle::UNASSIGNED && gameState->input.mouseHeld) {
 			middle::Id& parentId = middle::getParent(gameState, shape.id);
 			if (parentId.index != middle::UNASSIGNED) {
 				// copy as grabbed
-				middle::Id copyId = middle::deepCopyShape(gameState, shape.id.index, middle::UNASSIGNED);
+				middle::Id copyId = middle::deepCopyShape(gameState, shape.id.index);
 				auto& copyShape = middle::getShape(gameState, copyId.index);
 				auto copyGrabbable = middle::getComponent<components::MouseGrabbable>(copyShape);
 				copyGrabbable->grabbing = true;
@@ -90,10 +92,10 @@ public:
 			auto& shape = middle::getShape(gameState, bubbleCache->relevantIdVector[i].index);
 			auto bubble = *bubbleIt;
 			auto grabbable = *bubbleGrabbableIt;
-			attachComponents(gameState, shape, grabbable);
 			if (grabbable->grabbing) {
 				move(gameState, shape);
 			}
+			attachComponents(gameState, shape, grabbable);
 		}
 
 		auto unitIt = unitCache->begin<components::BubbleUnit>();
@@ -103,6 +105,7 @@ public:
 			auto& shape = middle::getShape(gameState, unitCache->relevantIdVector[i].index);
 			auto unit = *unitIt;
 			auto loop = *loopIt;
+			auto grabbable = *unitGrabbableIt;
 			if (loop->parentLoopId.index != middle::UNASSIGNED) {
 				auto& parentShape = middle::getShape(gameState, loop->parentLoopId.index);
 				auto parentFraction = middle::getComponent<components::FractionalComponent>(parentShape);
@@ -110,11 +113,11 @@ public:
 					continue;
 				}
 			}
-			auto grabbable = *unitGrabbableIt;
-			attachComponents(gameState, shape, grabbable);
 			if (grabbable->grabbing) {
 				move(gameState, shape);
 			}
+			attachComponents(gameState, shape, grabbable);
+
 		}
 
 		auto fractionIt = fractionCache->begin<components::FractionalComponent>();

@@ -8,7 +8,6 @@
 namespace components {
 	struct CodeFunction : public middle::Serializable{
 		int type = middle::UNASSIGNED;
-		std::vector<std::shared_ptr<middle::EditorActionContainer>>actions;
 
 		void serialize(std::ostream& ostream) override;
 		void deserialize(const std::vector<std::string>& buffer, int indexOffset) override;
@@ -45,5 +44,6 @@ namespace functionTypes {
 	inline int BREAK = 18;
 	inline int COMPRESS = 19;
 	inline int FIND_UNIT = 20;
+	inline int BUBBLIFY = 21;
 }
 

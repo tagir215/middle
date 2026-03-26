@@ -1,16 +1,19 @@
 #pragma once
 #include "registrars.h"
 #include "editor_file_utils.h"
+#include "bubble_actions.h"
 #define MIDDLEINPUTVARIABLE(X) \
 	X(unitRef) \
 	X(label) \
-	X(snapId) 
+	X(structureId) \
+	X(structureDepth) 
 
 namespace components {
 	struct InputVariable : public middle::Serializable{
 		middle::Id unitRef;
-		std::string label;
-		middle::Id snapId;
+		middle::Id structureId;
+		std::string label = "";
+		int structureDepth = 0;
 
 		void serialize(std::ostream& ostream) override;
 		void deserialize(const std::vector<std::string>& buffer, int indexOffset) override;

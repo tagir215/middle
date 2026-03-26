@@ -33,8 +33,8 @@ b  1
 __q  82_0
 MouseGrabbable
 Position
-f  -58.111511
-f  -0.000031
+f  -58.111435
+f  0.000000
 f  46.188660
 MouseSelectable
 Sphere
@@ -68,12 +68,14 @@ f  0.000000
 f  0.000000
 f  0.000000
 b  0
+UiComponent
+i  -1
 __q  81_0
 MouseGrabbable
 Position
-f  -58.111511
-f  -0.000031
-f  7.115982
+f  -58.111435
+f  0.000000
+f  7.115967
 MouseSelectable
 Sphere
 f  2.000000
@@ -106,12 +108,16 @@ b  1
 LoopSociety
 q  74_0
 p  
+UiComponent
+i  -1
 __q  80_0
 MouseGrabbable
 Position
-f  -17.201477
-f  -0.000031
-f  -12.379852
+f  -17.201385
+f  0.000000
+f  -12.379822
+UiComponent
+i  -1
 MouseSelectable
 Sphere
 f  2.000000
@@ -128,8 +134,8 @@ i  8
 MouseSelectable
 MouseGrabbable
 Position
-f  80.688721
-f  -0.000092
+f  80.688690
+f  -0.000122
 f  -79.719116
 Sphere
 f  2.000000
@@ -152,3 +158,5 @@ f  1.000000
 b  1
 LevelReference
 s  LevelSelect
+UiComponent
+i  -1

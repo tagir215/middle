@@ -11,6 +11,11 @@
 #include "OutputVariable.h"
 #include "bubble_actions.h"
 #include "component_utils.h"
+#include "Highlight.h"
+#include "IdRef.h"
+#include "bubble_utils.h"
+#include "ProcedureContainer.h"
+#include "ProcedureInputVariable.h"
 
 class VariableLinkingSystem : public middle::MiddleGameplaySystem {
 public:
@@ -18,6 +23,8 @@ public:
 	components::CompCache* inputCache;
 	components::CompCache* outputCache;
 	components::CompCache* bubbleCache;
+	components::CompCache* procCache;
+	components::CompCache* algebraCache;
 
 	void init(middle::GameState* gameState) {
 		inputCache = middle::newCompCache(gameState);
@@ -29,6 +36,11 @@ public:
 		bubbleCache = middle::newCompCache(gameState);
 		bubbleCache->addType<components::BubbleComponent>();
 		bubbleCache->addType<components::MouseIntersectable>();
+		procCache = middle::newCompCache(gameState);
+		procCache->addType<components::ProcedureContainer>();
+		algebraCache = middle::newCompCache(gameState);
+		algebraCache->addType<components::AlgebraNode>();
+
 	}
 
 	void copy(middle::GameState* gameState, middle::Id toCopyId) {
@@ -37,41 +49,20 @@ public:
 			auto& copyShape = middle::getShape(gameState, copyId.index);
 			auto copyLoop = middle::getComponent<components::LoopSociety>(copyShape);
 			// set copy intersecting as false since, its copied
-			middle::deleteComponent<components::MouseIntersectable>(copyShape);
+			middle::queueComponentDeletion<components::MouseIntersectable>(gameState, copyShape.id);
+			auto idRef = middle::attachComponent<components::IdRef>(gameState, copyShape.id);
+			idRef->idRef = toCopyId;
 			copyLoop->parentLoopId = middle::Id();
 			gameState->bubbleAlgebraState.grabbedId = copyId;
 			}));
 	}
 
-	void variableTransfer(middle::GameState* gameState, middle::Id& grabbedId, bool& doDelete) {
+	void variableTransfer(middle::GameState* gameState, middle::Id& grabbedId, components::ProcedureContainer* procContainer) {
 		// variable transfer
 
 		auto& grabbedShape = middle::getShape(gameState, grabbedId.index);
 		auto grabbedInput = middle::getComponent<components::InputVariable>(grabbedShape);
-		auto grabbedOutput = middle::getComponent<components::OutputVariable>(grabbedShape);
-
-		auto inputIt = inputCache->begin<components::InputVariable>();
-		auto intersectableIt = inputCache->begin<components::MouseIntersectable>();
-		for (int i = 0; i < inputCache->getSize(); ++i) {
-			auto& shape = middle::getShape(gameState, inputCache->relevantIdVector[i].index);
-			if (shape.id == grabbedId) {
-				continue;
-			}
-			auto otherInput = *inputIt;
-			auto intersectable = *intersectableIt;
-			if (!intersectable->intersectingTop) {
-				continue;
-			}
-
-			if (otherInput && grabbedInput) {
-				otherInput->unitRef = grabbedInput->unitRef;
-				otherInput->label = grabbedInput->label;
-			}
-			else if (otherInput && grabbedOutput) {
-				otherInput->unitRef = grabbedOutput->unitRef;
-				otherInput->label = grabbedOutput->label;
-			}
-		}
+		auto grabbedProcedureInput = middle::getComponent<components::ProcedureInputVariable>(grabbedShape);
 
 		auto bubbleIt = bubbleCache->begin<components::BubbleComponent>();
 		auto bubbleIntersectableIt = bubbleCache->begin<components::MouseIntersectable>();
@@ -83,12 +74,32 @@ public:
 				continue;
 			}
 
-			if (otherBubble && grabbedInput) {
-				grabbedInput->snapId = shape.id;
-				middle::Id shapeId = shape.id;
-				bubbleActions::UpdateVariable(grabbedInput->label, [shapeId]() {return shapeId;}).execute(gameState);
-				doDelete = false;
+			// set bubble reference
+			auto ref = middle::getComponent<components::IdRef>(grabbedShape);
+			auto& ogShape = middle::getShape(gameState, ref->idRef.index);
+			auto ogInput = middle::getComponent<components::InputVariable>(ogShape);
+
+			middle::queueComponentAttachment<components::Highlight>(gameState, ogShape.id);
+
+			if (!grabbedProcedureInput || grabbedProcedureInput->editMode) {
+				middle::Id structureId = bubble::bubbleToStructure(gameState, shape.id);
+				// reparent algebra node to input, for automatic deletion and serialization
+				middle::queueAction(gameState, std::make_shared<middle::EditorActionReparent>(ogShape.id.index, structureId.index));
+				ogInput->structureId = structureId;
+				ogInput->structureDepth = bubble::findDepth(gameState, shape.id);
 			}
+
+			// if its procedre input update unit ref here, and set proc container to point to the ref
+			if(grabbedProcedureInput){
+				if (bubble::matchesStructureWithVariables(gameState, shape.id, ogInput->structureId)) {
+					ogInput->unitRef = shape.id;
+					procContainer->bubbleRef = shape.id;
+				}
+				else {
+					// TODO PRINT NOT MATCHING ERROR
+				}
+			}
+
 		}
 
 	}
@@ -96,6 +107,16 @@ public:
 	void update(middle::GameState* gameState) override {
 
 		middle::Id& grabbedId = gameState->bubbleAlgebraState.grabbedId;
+
+		components::ProcedureContainer* procContainer = nullptr;
+		if (procCache->getSize() > 0) {
+			auto procIt = procCache->begin<components::ProcedureContainer>();
+			procContainer = *procIt;
+			assert(procContainer);
+		}
+		else {
+			return;
+		}
 
 		if (!gameState->input.mouseHeld) {
 
@@ -107,13 +128,11 @@ public:
 
 				if (grabbedInputVariable || grabbedOutputVariable) {
 
-					bool doDelete = true;
+					variableTransfer(gameState, grabbedId, procContainer);
 
-					variableTransfer(gameState, grabbedId, doDelete);
+					procContainer->updateInputs = true;
 
-					if (doDelete) {
-						middle::queueAction(gameState, std::make_shared<middle::EditorActionDeleteSingle>(shape.id));
-					}
+					middle::queueAction(gameState, std::make_shared<middle::EditorActionDeleteSingle>(shape.id));
 
 					gameState->bubbleAlgebraState.grabbedId = middle::Id();
 				}
@@ -143,18 +162,24 @@ public:
 			auto intersectable = *intersectableIt;
 			if (intersectable->intersecting) {
 				auto& shape = middle::getShape(gameState, inputCache->relevantIdVector[i].index);
-				middle::Id toCopyId = shape.id;
-				copy(gameState, toCopyId);
-			}
-		}
 
-		auto outputIt = outputCache->begin<components::OutputVariable>();
-		auto outputIntersectableIt = outputCache->begin<components::MouseIntersectable>();
-		for (int i = 0; i < outputCache->getSize(); ++i) {
-			auto ouptut = *outputIt;
-			auto intersectable = *outputIntersectableIt;
-			if (intersectable->intersecting) {
-				auto& shape = middle::getShape(gameState, outputCache->relevantIdVector[i].index);
+				auto procedureInput = middle::getComponent<components::ProcedureInputVariable>(shape);
+
+				//reset input, if not procedureInput,  procedureInput can be edited if in edit mode
+				if (!procedureInput || procedureInput->editMode) {
+					if (input->structureId.index != middle::UNASSIGNED) {
+						middle::deleteShapeRecursive(gameState, input->structureId.index);
+					}
+					input->structureId = middle::Id();
+					input->unitRef = middle::Id();
+				}
+
+				if (middle::getComponent<components::Highlight>(shape)) {
+					middle::queueComponentDeletion<components::Highlight>(gameState, shape.id);
+				}
+
+				procContainer->updateInputs = true;
+
 				middle::Id toCopyId = shape.id;
 				copy(gameState, toCopyId);
 			}

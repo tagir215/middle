@@ -14,21 +14,23 @@
 #include "Sphere.h"
 #include "Text.h"
 #include "InputVariable.h"
+#include "AlgebraNode.h"
 
 namespace bubbleActions{
 
-	void setBubbleHidden(middle::GameState* gameState, middle::Id& id, bool hidden);
-	middle::Id inverseBubble(middle::GameState* gameState, middle::Id& id);
-	middle::Id topLevelBubble(middle::GameState* gameState);
-	middle::Shape newBubble(middle::GameState* gameState, const Vector3& targetPos);
-	middle::Shape newUnit(middle::GameState* gameState, const Vector3& targetPos);
-	bool isIntersecting(middle::GameState* gameState, middle::Shape& shape);
-	bool equals(middle::GameState* gameState, middle::Id& bubbleA, middle::Id& bubbleB);
-	float unitValue(middle::GameState* gameState, middle::Id& containerId);
-	int fractionUnitCount(middle::GameState* gameState, middle::Id& fractionId);
-	bool matchingBubbles(middle::GameState* gameState, middle::Id& bubbleA, middle::Id bubbleB);
-	middle::Id newFraction(middle::GameState* gameState, const Vector3& targetPos, int dividend);
-	middle::Id shapeToFraction(middle::GameState* gameState, middle::Id shpaeId, const Vector3& targetPos, int dividend);
+
+
+	class Bubblify : public middle::EditorActionContainer{
+	public:
+		middle::Id id;
+		std::vector<std::unique_ptr<middle::EditorActionContainer>> actions;
+		middle::Id resultId;
+		Bubblify(middle::Id id) {
+			this->id = id;
+		}
+		void execute(middle::GameState* gameState) override;
+		void undo(middle::GameState* gameState) override;
+	};
 
 	class UpdateVariable : public middle::EditorActionContainer {
 	public:
@@ -169,4 +171,33 @@ namespace bubbleActions{
 		void undo(middle::GameState* gameState) override;
 	};
 
+	class NewAdditionTerm : public middle::EditorActionContainer {
+	public:
+		middle::Id shapeToAddIntoId;
+		middle::Id newTermId;
+		Vector3 targetPosition;
+		std::vector<std::unique_ptr<middle::EditorActionContainer>> actions;
+		NewAdditionTerm(middle::Id& shapeToAddIntoId, middle::Id& newTermId, const Vector3& targetPosition) {
+			this->shapeToAddIntoId = shapeToAddIntoId;
+			this->newTermId = newTermId;
+			this->targetPosition = targetPosition;
+		}
+		void execute(middle::GameState* gameState) override;
+		void undo(middle::GameState* gameState) override;
+	};
+
+	class NewMultiplicationTerm : public middle::EditorActionContainer {
+	public:
+		middle::Id shapeToAddIntoId;
+		middle::Id newTermId;
+		Vector3 targetPosition;
+		std::vector<std::unique_ptr<middle::EditorActionContainer>> actions;
+		NewMultiplicationTerm(middle::Id& shapeToAddIntoId, middle::Id& newTermId, const Vector3& targetPosition) {
+			this->shapeToAddIntoId = shapeToAddIntoId;
+			this->newTermId = newTermId;
+			this->targetPosition = targetPosition;
+		}
+		void execute(middle::GameState* gameState) override;
+		void undo(middle::GameState* gameState) override;
+	};
 }

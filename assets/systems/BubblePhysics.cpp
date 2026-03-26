@@ -13,15 +13,22 @@
 #include "FractionalComponent.h"
 #include "Rectangle.h"
 #include "TopDogBubbleTag.h"
+#include "BubbleEqualsComponent.h"
 
 class BubblePhysics : public middle::MiddleGameplaySystem {
 public:
+
+	BubblePhysics() {
+		systemModeType = middle::SystemModeType::ENGINE;
+	}
+
 	components::CompCache* unitCache;
 	components::CompCache* bubbleCache;
 	components::CompCache* mulCache;
 	components::CompCache* fractionCache;
 	components::CompCache* rectCache;
 	components::CompCache* topDogBubbleCache;
+	components::CompCache* equalsCache;
 
 	void init(middle::GameState* gameState) override {
 		unitCache = middle::newCompCache(gameState);
@@ -44,6 +51,10 @@ public:
 		fractionCache->addType<components::FractionalComponent>();
 		fractionCache->addType<components::LoopSociety>();
 
+		equalsCache = middle::newCompCache(gameState);
+		equalsCache->addType<components::BubbleEqualsComponent>();
+		equalsCache->addType<components::LoopSociety>();
+
 		rectCache = middle::newCompCache(gameState);
 		rectCache->addType<components::Rectangle>();
 		rectCache->addType<components::Position>();
@@ -54,6 +65,8 @@ public:
 		topDogBubbleCache->addType<components::Position>();
 		topDogBubbleCache->addType<components::PhysicsData>();
 		topDogBubbleCache->addType<components::Circle>();
+		topDogBubbleCache->addType<components::LoopSociety>();
+
 	}
 
 	struct Body {
@@ -261,7 +274,41 @@ public:
 	bool debugField = false;
 	bool inverses = true;
 
+	bool isTopDog(middle::GameState* gameState, middle::Id id) {
+		middle::Id parentId = middle::getParent(gameState, id);
+		if (parentId.index == middle::UNASSIGNED) {
+			return true;
+		}
+		middle::Shape& parentShape = middle::getShape(gameState, parentId.index);
+		bool parentIsEquals = middle::getComponent<components::BubbleEqualsComponent>(parentShape) != nullptr;
+		return parentIsEquals;
+	}
+
+	void updateTopDogs(middle::GameState* gameState) {
+
+		// delete top dog components from non top dogs
+		auto topDogIt = topDogBubbleCache->begin<components::LoopSociety>();
+		for (int i = 0; i < topDogBubbleCache->getSize(); ++i) {
+			middle::Id id = topDogBubbleCache->relevantIdVector[i];
+			if (!isTopDog(gameState, id)){
+				middle::queueComponentDeletion<components::TopDogBubbleTag>(gameState, id);
+			}
+		}
+
+		auto bubbleIt = bubbleCache->begin<components::LoopSociety>();
+		for (int i = 0; i < bubbleCache->getSize(); ++i) {
+			auto bubbleLoop = *bubbleIt;
+			middle::Id id = bubbleCache->relevantIdVector[i];
+			if (isTopDog(gameState, id)) {
+				middle::attachComponent<components::TopDogBubbleTag>(gameState, id);
+			}
+		}
+	}
+
 	void update(middle::GameState* gameState) override {
+
+		updateTopDogs(gameState);
+
 		if (debugField) {
 			for (int i = 0; i < unitCache->getSize(); ++i) {
 				auto& shape = middle::getShape(gameState, unitCache->relevantIdVector[i].index);
@@ -382,6 +429,7 @@ public:
 		std::vector<MoleculeConstraint>moleculeConstraints;
 		collectMoleculeConstraints(gameState, mulCache, moleculeConstraints);
 		collectMoleculeConstraints(gameState, fractionCache, moleculeConstraints);
+		collectMoleculeConstraints(gameState, equalsCache, moleculeConstraints);
 
 		// CREATE COLLISION PAIRS
 
@@ -397,38 +445,6 @@ public:
 			pairVectors.push_back(pairs);
 		}
 
-
-		// attraction forces
-		const float attractionForce = 200;
-		for (Bubble& bubble : bubbles) {
-			Body& bubbleBody = bubble.bubbleBody;
-			for (Body& unit : bubble.bodies) {
-				float dirX = bubbleBody.pos->posX - unit.pos->posX;
-				float dirY = bubbleBody.pos->posY - unit.pos->posY;
-				float dirZ = bubbleBody.pos->posZ - unit.pos->posZ;
-				Vector3 attractionDir = Vector3Normalize({ dirX, dirY, dirZ });
-				Vector3 acc = Vector3Scale(attractionDir, attractionForce);
-				unit.physicsData->velX += acc.x * gameState->frameTime;
-				unit.physicsData->velY += acc.y * gameState->frameTime;
-				unit.physicsData->velZ += acc.z * gameState->frameTime;
-			}
-		}
-
-		// attraction Forces
-		//for (std::vector<BodyPair>& pairVector : pairVectors) {
-		//	for (BodyPair& pair : pairVector) {
-		//		auto& unitA = pair.bodyA;
-		//		auto& unitB = pair.bodyB;
-		//		Vector3 posA = { unitA.pos->posX, unitA.pos->posY, unitA.pos->posZ };
-		//		Vector3 posB = { unitB.pos->posX, unitB.pos->posY, unitB.pos->posZ };
-		//		Vector3 axis = Vector3Normalize(Vector3Subtract(posB, posA));
-		//		Vector3 acc = Vector3Scale(axis, -attractionForce * gameState->frameTime);
-		//		unitA.physicsData->velX -= acc.x;
-		//		unitA.physicsData->velZ -= acc.z;
-		//		unitB.physicsData->velX += acc.x;
-		//		unitB.physicsData->velZ += acc.z;
-		//	}
-		//}
 
 		std::vector<Collision>collisions;
 		findSiblingCollisions(pairVectors, collisions);
@@ -451,29 +467,6 @@ public:
 
 		integrate(gameState->frameTime, bubbleCache);
 		integrate(gameState->frameTime, unitCache);
-
-		//const float stiffness = 0.2f;
-		//for (int iteration = 0; iteration < 8; ++iteration) {
-		//	for (std::vector<BodyPair>& pairVector : pairVectors) {
-		//		for (BodyPair& pair : pairVector) {
-		//			auto& unitA = pair.bodyA;
-		//			auto& unitB = pair.bodyB;
-		//			Vector3 posA = { unitA.pos->posX, unitA.pos->posY, unitA.pos->posZ };
-		//			Vector3 posB = { unitB.pos->posX, unitB.pos->posY, unitB.pos->posZ };
-		//			Vector3 axis = Vector3Normalize(Vector3Subtract(posB, posA));
-		//			float dist = Vector3Distance(posA, posB);
-		//			float penetration = (unitA.radius + unitB.radius - dist);
-		//			if (penetration > 0) {
-		//				Vector3 correction = Vector3Scale(axis, penetration * 0.5f * stiffness);
-		//				unitA.pos->posX -= correction.x;
-		//				unitA.pos->posZ -= correction.z;
-		//				unitB.pos->posX += correction.x;
-		//				unitB.pos->posZ += correction.z;
-		//			}
-
-		//		}
-		//	}
-		//}
 
 	}
 };

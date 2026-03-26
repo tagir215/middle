@@ -1,12 +1,16 @@
 #pragma once
 #include "registrars.h"
 #include "editor_file_utils.h"
-#define MIDDLEBUBBLEUNIT(X) \
-	X(value)
+#define MIDDLEBUBBLEROOTCOMPONENT(X) \
+	X(power) \
+	X(isNegative) \
+	X(isInverse)
 
 namespace components {
-	struct BubbleUnit : public middle::Serializable{
-		int value = 1;
+	struct BubbleRootComponent : public middle::Serializable{
+		int power = 1;
+		bool isNegative = false;
+		bool isInverse = false;
 
 		void serialize(std::ostream& ostream) override;
 		void deserialize(const std::vector<std::string>& buffer, int indexOffset) override;
@@ -15,7 +19,7 @@ namespace components {
 		template<typename V>
 		void reflect(V& v) {
 #define X(f) v(#f, f);
-			MIDDLEBUBBLEUNIT(X)
+			MIDDLEBUBBLEROOTCOMPONENT(X)
 #undef X
 		}
 	};

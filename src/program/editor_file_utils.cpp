@@ -377,6 +377,10 @@ namespace middle {
 				continue;
 
 			auto& shape = gameState->shapes[i];
+			// skip empty shapes
+			if (shape.componentMap.size() == 0) {
+				continue;
+			}
 			std::string idString = fieldToString(shape.id);
 			outFile << "__" << idString;
 

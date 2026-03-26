@@ -6,17 +6,21 @@
 #include "Button.h"
 #include "BubbleAlgebraProblem.h"
 #include "bubble_actions.h"
+#include "bubble_utils.h"
 
 class AlgebraProblemSystem : public middle::MiddleGameplaySystem {
 public:
 
 
 	components::CompCache* cache = nullptr;
+	components::CompCache* problemCache = nullptr;
 
 	void init(middle::GameState* gameState) {
 		cache = middle::newCompCache(gameState);
 		cache->addType<components::MouseClickComponent>();
 		cache->addType<components::Button>();
+		problemCache = middle::newCompCache(gameState);
+		problemCache->addType<components::BubbleAlgebraProblem>();
 	}
 
 	void update(middle::GameState* gameState) override {
@@ -28,11 +32,10 @@ public:
 			auto button = *buttonIt;
 			if (button->function == bubbleButton::DONE) {
 				std::vector<middle::Id> formulas;
-				middle::findShapesWithComp(gameState, formulas, middle::getTypeId<components::BubbleAlgebraProblem>());
-				assert(formulas.size() == 2);
-				middle::Id& formulaA = formulas[0];
-				middle::Id& formulaB = formulas[1];
-				bool matching = bubbleActions::matchingBubbles(gameState, formulaA, formulaB);
+				assert(problemCache->getSize() == 2);
+				middle::Id& formulaA = problemCache->relevantIdVector[0];
+				middle::Id& formulaB = problemCache->relevantIdVector[1];
+				bool matching = bubble::matchingBubbles(gameState, formulaA, formulaB);
 
 				if (matching) {
 					middle::loadShape(gameState, "../assets/shapes/", "ScoreScreen", true);

@@ -15,6 +15,7 @@
 #include "Circle.h"
 #include "Rectangle.h"
 #include "PlacementComponent.h"
+#include "InventoryItem.h"
 
 class BubbleIntersectSystem : public middle::MiddleGameplaySystem {
 public:
@@ -34,7 +35,7 @@ public:
 		unitCache = middle::newCompCache(gameState);
 		unitCache->addType<components::BubbleUnit>();
 		unitCache->addType<components::MouseIntersectable>();
-		unitCache->addType<components::Sphere>();
+		unitCache->addType<components::Circle>();
 		unitCache->addType<components::Position>();
 
 		rectangleCache = middle::newCompCache(gameState);
@@ -144,13 +145,13 @@ public:
 
 		auto unitIt = unitCache->begin<components::BubbleUnit>();
 		auto unitIntersectableIt = unitCache->begin<components::MouseIntersectable>();
-		auto sphereIt = unitCache->begin<components::Sphere>();
+		auto unitCircleIt = unitCache->begin<components::Circle>();
 		auto unitPositionIt = unitCache->begin<components::Position>();
 		for (int i = 0; i < unitCache->getSize(); ++i) {
 			auto& shape = middle::getShape(gameState, unitCache->relevantIdVector[i].index);
 			auto unit = *unitIt;
 			auto intersectable = *unitIntersectableIt;
-			auto sphere = *sphereIt;
+			auto circle = *unitCircleIt;
 			auto position = *unitPositionIt;
 			intersectable->intersecting = false;
 			intersectable->intersectingTop = false;
@@ -161,7 +162,7 @@ public:
 
 			Vector3 pos = { position->posX, position->posY, position->posZ };
 			Vector3 intersectPos;
-			bool intersecting = middle::RayCastLineSphere(pos, sphere->radius, gameState->activeCamera.position,
+			bool intersecting = middle::RayCastLineSphere(pos, circle->radius, gameState->activeCamera.position,
 				gameState->activeCamera.position + gameState->input.mouseDir, intersectPos);
 
 			intersectable->intersecting = intersecting;
@@ -185,7 +186,8 @@ public:
 				continue;
 			}
 
-			if (uiIntersected) {
+			bool isInventoryItem = middle::getComponent<components::InventoryItem>(shape) != nullptr;
+			if (uiIntersected && !isInventoryItem) {
 				continue;
 			}
 

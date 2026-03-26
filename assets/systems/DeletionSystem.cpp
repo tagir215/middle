@@ -13,7 +13,7 @@ public:
 
 	DeletionSystem() {
 		systemModeType = middle::SystemModeType::ENGINE;
-		systemUpdateType = middle::SystemUpdateType::PREFRAME;
+		systemUpdateType = middle::SystemUpdateType::GAMEPLAY_POSTFRAME;
 	}
 	void init(middle::GameState* gameState) {
 		dependencyCache = middle::newCompCache(gameState);

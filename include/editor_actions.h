@@ -333,7 +333,7 @@ namespace middle {
 		middle::Id id;
 		int loopIndex = middle::UNASSIGNED;
 		std::unique_ptr<EditorActionRemoveFromLoop>removeFromLoop;
-		EditorActionDeleteSingle(middle::Id& id) {
+		EditorActionDeleteSingle(middle::Id id) {
 			this->id = id;
 		}
 		void execute(GameState* gameState) override;

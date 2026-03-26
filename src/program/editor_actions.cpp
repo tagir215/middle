@@ -293,7 +293,9 @@ namespace middle {
 		for (int i : selectedIndexes) {
 			auto& shape = gameState->shapes[i];
 			int componentTypeId = componentTypeMap[componentName];
-			assert(shape.componentMap.find(componentTypeId) == shape.componentMap.end());
+			if (shape.componentMap.find(componentTypeId) != shape.componentMap.end()) {
+				return;
+			}
 			Component component;
 			component.componentOffset = componentListMap[componentTypeId]->grow();
 			shape.componentMap[componentTypeId] = component;
@@ -573,7 +575,7 @@ namespace middle {
 			removeFromLoop->execute(gameState);
 		}
 		middle::saveTempShape(gameState, id);
-		middle::deleteShapeRecursive(gameState, id.index);
+		middle::deleteShapeRecursive(gameState, id.index, true);
 	}
 
 	void EditorActionDeleteSingle::undo(GameState* gameState)

@@ -2,14 +2,20 @@
 #include "registrars.h"
 #include "editor_file_utils.h"
 #define MIDDLEPROCEDURECONTAINER(X) \
-	X(startBlock)
+	X(startBlock) \
+	X(bubbleRef)
 
 namespace procedureConstants {
-	const int FORWARD = 1;
-	const int BACKWARD = -1;
-	const int IDLE = 0;
-	const int EXECUTING = 1;
-	const int STEPPING = 2;
+	enum Direction {
+		FORWARD = 1,
+		BACKWARD = -1,
+	};
+
+	enum Mode {
+		IDLE = 0,
+		EXECUTING = 1,
+		STEPPING = 2,
+	};
 
 	enum TransitionType {
 		Start,
@@ -24,6 +30,7 @@ namespace procedureConstants {
 		TransitionType type;
 		middle::Id previousId;
 		middle::Id destinationId;
+		std::shared_ptr<middle::EditorActionContainer>action;
 	};
 
 
@@ -38,10 +45,18 @@ namespace components {
 	struct ProcedureContainer : public middle::Serializable {
 		middle::Id activeBlock;
 		middle::Id startBlock;
+		middle::Id bubbleRef;
 		int mode = procedureConstants::IDLE;
 		int direction = procedureConstants::FORWARD;
+		// action container, and all actions in history
 		std::vector<procedureConstants::ProcedureTransition> procedureTransitionStack;
 		bool exitingLoop = false;
+		// target size or position for execution 
+		int targetActionStackSize = 0;
+		// whether should update inputs
+		bool updateInputs = false;
+		// number of top level blocks
+		int size = 0;
 
 		void serialize(std::ostream& ostream) override;
 		void deserialize(const std::vector<std::string>& buffer, int indexOffset) override;

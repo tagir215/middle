@@ -20,6 +20,11 @@
 #include "Sphere.h"
 #include "ProcedureImportContainer.h"
 #include "bubble_utils.h"
+#include "InputVariable.h"
+#include "Highlight.h"
+#include "Circle.h"
+#include "ProcedureInputVariable.h"
+
 
 
 class ProcedureUiSystem : public middle::MiddleGameplaySystem {
@@ -29,7 +34,11 @@ public:
 	components::CompCache* procedureCache;
 	components::CompCache* procedureUseCache;
 	components::CompCache* procedureImportContainerCache;
+	components::CompCache* inputCache;
 	std::vector<std::string>procedureNames;
+
+	Color highlightColor = { GREEN.r, GREEN.g, GREEN.b, 60 };
+	Color highlightColor2 = { 0, 255, 255, 30 };
 
 	void init(middle::GameState* gameState) {
 		buttonCache = middle::newCompCache(gameState);
@@ -43,6 +52,10 @@ public:
 		procedureUseCache->addType<components::LoopSociety>();
 		procedureImportContainerCache = middle::newCompCache(gameState);
 		procedureImportContainerCache->addType<components::ProcedureImportContainer>();
+		inputCache = middle::newCompCache(gameState);
+		inputCache->addType<components::InputVariable>();
+		inputCache->addType<components::Highlight>();
+		inputCache->addType<components::Position>();
 	}
 
 	void update(middle::GameState* gameState) override {
@@ -56,6 +69,7 @@ public:
 		}
 
 		// buttons
+		// TODO MOVE THIS OR MOVE RENDERING
 		auto buttonIt = buttonCache->begin<components::Button>();
 		auto buttonTextIt = buttonCache->begin<components::Text>();
 		for (int i = 0; i < buttonCache->getSize(); ++i) {
@@ -106,6 +120,14 @@ public:
 					// child of reference is the actual object
 					middle::Id loadedProcId = loadedReferenceLoop->loopMemberIds[0];
 
+					// set bubble ref to the ref import container is pointing to
+					auto& procContainerShape = middle::getShape(gameState, loadedProcId.index);
+					auto procContainer = middle::getComponent<components::ProcedureContainer>(procContainerShape);
+					assert(procContainer);
+					procContainer->bubbleRef = procImportContainer->bubbleRef;
+					// Unassign bubble ref, it might have been serialized
+					procContainer->bubbleRef = middle::Id();
+
 					// resize the container to fit the procedure
 					middle::queueAction(gameState, std::make_shared<middle::CustomAction>([loadedProcId, containerId](middle::GameState* gameState) {
 						float left, right, bottom, top;
@@ -124,27 +146,28 @@ public:
 
 		}
 
-		// execution iterator rendering
-		if (procComp && procComp->activeBlock.index != middle::UNASSIGNED) {
-			auto& activeBlockShape = middle::getShape(gameState, procComp->activeBlock.index);
-			Vector3 position = middle::getShapePosition(gameState, activeBlockShape.id.index);
-			auto rect = middle::getComponent<components::Rectangle>(activeBlockShape);
-			middle::RenderItem activeBlockItem;
-			activeBlockItem.type = middle::RenderItemType::RECTANGLE;
-			Color color = { GREEN.r, GREEN.g, GREEN.b, 0.2f };
-			activeBlockItem.color = GREEN;
-			activeBlockItem.width = rect->width;
-			activeBlockItem.height = rect->height;
-			activeBlockItem.length = 0.2f;
-			activeBlockItem.center = { 0,0,0 };
-			Transform transform = {
-				position, {0,0,0,0}, {1,1,1}
-			};
-			activeBlockItem.transform = transform;
-			gameState->renderData.push_back(activeBlockItem);
+		if (procedureCache->getSize() > 0) {
+			// execution iterator rendering
+			bool procedureInAction = procComp->procedureTransitionStack.size() > 0;
+			if (procComp && procComp->activeBlock.index != middle::UNASSIGNED && procedureInAction) {
+				auto& activeBlockShape = middle::getShape(gameState, procComp->activeBlock.index);
+				Vector3 position = middle::getShapePosition(gameState, activeBlockShape.id.index);
+				auto rect = middle::getComponent<components::Rectangle>(activeBlockShape);
+				middle::RenderItem activeBlockItem;
+				activeBlockItem.type = middle::RenderItemType::RECTANGLE;
+				activeBlockItem.color = highlightColor;
+				activeBlockItem.width = rect->width;
+				activeBlockItem.height = rect->height;
+				activeBlockItem.length = 0.2f;
+				activeBlockItem.center = { 0,1,0 };
+				Transform transform = {
+					position, {0,0,0,0}, {1,1,1}
+				};
+				activeBlockItem.transform = transform;
+				gameState->renderData.push_back(activeBlockItem);
+			}
 		}
 
-		auto procedureUseAiIt = procedureUseCache->begin<components::LoopSociety>();
 		for (int i = 0; i < procedureUseCache->getSize(); ++i) {
 			middle::Id procUiId = procedureUseCache->relevantIdVector[i];
 			if (procedureNames.size() == 0) {
@@ -171,6 +194,60 @@ public:
 			}
 		}
 
+
+		// render highlighted inputs
+		auto inputPosIt = inputCache->begin<components::Position>();
+		auto inputIt = inputCache->begin<components::InputVariable>();
+		for (int i = 0; i < inputCache->getSize(); ++i) {
+			auto position = *inputPosIt;
+			auto input = *inputIt;
+			auto& shape = middle::getShape(gameState, inputCache->relevantIdVector[i].index);
+			middle::RenderItem item;
+			item.type = middle::RenderItemType::CYLINDER;
+			item.center = { position->posX, position->posY, position->posZ };
+			item.radius = 4;
+			item.ringRadius = 4;
+			item.length = 0.1f;
+			item.color = highlightColor;
+			gameState->renderData.push_back(item);
+
+			// highlight reference bubble if it exists at the moment
+			if (input->unitRef.index != middle::UNASSIGNED) {
+				if (!middle::isShapeAlive(gameState, input->unitRef.index)) {
+					continue;
+				}
+				// todo refactor to always check generation
+				middle::Id id = gameState->ids[input->unitRef.index];
+				if (id != input->unitRef) {
+					continue;
+				}
+				middle::Shape& refShape = middle::getShape(gameState, input->unitRef.index);
+				if (refShape.componentMap.size() == 0) {
+					continue;
+				}
+				Vector3 pos = middle::getShapePosition(gameState, input->unitRef.index);
+				auto circle = middle::getComponent<components::Circle>(refShape);
+
+
+				Color color = highlightColor;
+
+				// highlight procedure refs with different color
+				auto procInput = middle::getComponent<components::ProcedureInputVariable>(shape);
+				if (procInput) {
+					color = highlightColor2;
+				}
+
+				middle::RenderItem inputHighlight;
+				inputHighlight.type = middle::RenderItemType::CYLINDER;
+				inputHighlight.center = pos;
+				inputHighlight.color = color;
+				inputHighlight.radius = circle->radius;
+				inputHighlight.ringRadius = circle->radius;
+				inputHighlight.length = 0.1f;
+				gameState->renderData.push_back(inputHighlight);
+			}
+
+		}
 	}
 };
 
