@@ -175,8 +175,7 @@ namespace bubbleActions{
 	class Compress : public middle::EditorActionContainer {
 	public:
 		middle::Id containerShapeId;
-		middle::Id resultCompressedBubbleId;
-		middle::Id resultCountBubbleId;
+		middle::Id resultShapeId;
 		std::vector<std::unique_ptr<middle::EditorActionContainer>> actions;
 		Compress(middle::Id containerShape);
 		void execute(middle::GameState* gameState) override;

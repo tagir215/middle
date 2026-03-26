@@ -356,7 +356,7 @@ public:
 			Vector3 bubblePos = { position->posX, position->posY, position->posZ };
 
 			const float powerRatioToBubble = 0.333f;
-			const float arrowGap = 5;
+			const float arrowGap = 6;
 
 			for (int i = 0; i < root->power; ++i) {
 
