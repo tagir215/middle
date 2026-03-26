@@ -130,7 +130,6 @@ public:
 			}
 
 			if (debugRendering) {
-
 				Vector3 axis = { bubble->axisX, bubble->axisY, bubble->axisZ };
 				Vector3 center = { bubble->centerX, bubble->centerY, bubble->centerZ };
 				float l = bubble->length;
@@ -352,52 +351,61 @@ public:
 		auto rootPositionIt = rootCache->begin<components::Position>();
 		for (int i = 0; i < rootCache->getSize(); ++i) {
 			auto root = *rootIt;
-			auto circle = *rootCircleIt;
+			auto bubbleCircle = *rootCircleIt;
 			auto position = *rootPositionIt;
-			Vector3 pos = { position->posX, position->posY, position->posZ };
+			Vector3 bubblePos = { position->posX, position->posY, position->posZ };
 
-			const float ratio = 0.333f;
-			float ra = circle->radius;
-			float rb = circle->radius * ratio;
-			float bz = ra + rb * ratio;
-			float intersectOffsetZ = (ra * ra - rb * rb + bz * bz) / (bz + bz);
-			float smallZ = intersectOffsetZ - bz;
-			float intersectOffsetX = std::sqrt(rb * rb - smallZ * smallZ);
+			const float powerRatioToBubble = 0.333f;
+			const float arrowGap = 5;
 
-			Vector3 powerPos = pos + Vector3{ 0,0,bz };
-			Vector3 intersectOffset = Vector3{ intersectOffsetX,0, intersectOffsetZ };
-			Vector3 intersectPos = pos + intersectOffset;
-			Vector3 toStartPoint = Vector3Subtract(intersectPos, powerPos);
-			float startingAngle = Vector3Angle({ 1,0,0 }, toStartPoint);
+			for (int i = 0; i < root->power; ++i) {
 
-			middle::RenderItem powerCircle;
-			powerCircle.type = middle::RenderItemType::CIRCLE_SECTOR;
-			powerCircle.center = powerPos;
-			powerCircle.radius = rb;
-			powerCircle.startAngle = -startingAngle;
-			powerCircle.endAngle = PI + startingAngle;
-			powerCircle.color = RED;
-			powerCircle.ringRadius = 0.2f;
-			powerCircle.segments = 20;
-			gameState->renderData.push_back(powerCircle);
+				float ra = bubbleCircle->radius;
+				float rb = bubbleCircle->radius * powerRatioToBubble + arrowGap * i;
+				float bz = ra + rb * powerRatioToBubble;
+				float intersectOffsetZ = (ra * ra - rb * rb + bz * bz) / (bz + bz);
+				float smallZ = intersectOffsetZ - bz;
+				float intersectOffsetX = std::sqrt(rb * rb - smallZ * smallZ);
 
-			const float helperAngleOffset = PI * 0.1f;
-			Vector3 toNextSegment = Vector3RotateByAxisAngle(toStartPoint, { 0,-1,0 }, helperAngleOffset);
-			Vector3 condeDir = Vector3Normalize(Vector3Subtract(intersectPos, powerPos + toNextSegment));
+				Vector3 powerPos = bubblePos + Vector3{ 0,0,bz };
+				Vector3 intersectOffset = Vector3{ intersectOffsetX,0, intersectOffsetZ };
+				Vector3 intersectPos = bubblePos + intersectOffset;
+				Vector3 toStartPoint = Vector3Subtract(intersectPos, powerPos);
+				float startingAngle = Vector3Angle({ 1,0,0 }, toStartPoint);
 
-			middle::RenderItem cone;
-			cone.type = middle::RenderItemType::CYLINDER;
-			const float arrowRadius = 5;
-			const float arrowLength = 4;
-			cone.radius = arrowRadius;
-			cone.ringRadius = 0;
-			cone.length = arrowLength;
-			cone.transform.rotation = QuaternionFromVector3ToVector3({ 0,-1,0 }, condeDir);
-			cone.transform.translation = intersectPos;
-			cone.transform.scale = { 1,1,0.001f };
-			cone.center = { 0,0,0 };
-			cone.color = RED;
-			gameState->renderData.push_back(cone);
+				middle::RenderItem powerCircle;
+				powerCircle.type = middle::RenderItemType::CIRCLE_SECTOR;
+				powerCircle.center = powerPos;
+				powerCircle.radius = rb;
+				powerCircle.startAngle = -startingAngle;
+				powerCircle.endAngle = PI + startingAngle;
+				powerCircle.color = RED;
+				powerCircle.ringRadius = 0.2f;
+				powerCircle.segments = 20;
+				gameState->renderData.push_back(powerCircle);
+
+				const float helperAngleOffset = PI * 0.1f;
+				Vector3 toNextSegment = Vector3RotateByAxisAngle(toStartPoint, { 0,-1,0 }, helperAngleOffset);
+				Vector3 condeDir = Vector3Normalize(Vector3Subtract(intersectPos, powerPos + toNextSegment));
+
+				middle::RenderItem cone;
+				cone.type = middle::RenderItemType::CYLINDER;
+				const float arrowLengthProportionToRadius = 0.41f;
+				const float arrowWidthProportionToLength = 0.75f;
+				float arrowLength = arrowLengthProportionToRadius * rb;
+				float arrowRadius = arrowLength * arrowWidthProportionToLength;
+				const Vector3 coneScale = { 1,1,0.001f };
+				cone.radius = arrowRadius;
+				cone.ringRadius = 0;
+				cone.length = arrowLength;
+				cone.transform.rotation = QuaternionFromVector3ToVector3({ 0,-1,0 }, condeDir);
+				cone.transform.translation = intersectPos;
+				cone.transform.scale = coneScale;
+				cone.center = { 0,0,0 };
+				cone.color = RED;
+				gameState->renderData.push_back(cone);
+
+			}
 		}
 	}
 };

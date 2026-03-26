@@ -130,6 +130,18 @@ namespace bubbleActions{
 		void undo(middle::GameState* gameState) override;
 	};
 
+	class ExecutePower : public middle::EditorActionContainer {
+	public:
+		middle::Id shapeToPowerId;
+		middle::Id resultShapeId;
+		std::vector<std::unique_ptr<middle::EditorActionContainer>> actions;
+		ExecutePower(middle::Id shapeToPowerId) {
+			this->shapeToPowerId = shapeToPowerId;
+		}
+		void execute(middle::GameState* gameState) override;
+		void undo(middle::GameState* gameState) override;
+	};
+
 	class Pop : public middle::EditorActionContainer {
 	public:
 		middle::Id id;

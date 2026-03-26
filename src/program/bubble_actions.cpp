@@ -12,6 +12,7 @@
 #include "BubbleVariable.h"
 #include "bubble_utils.h"
 #include "MouseSelectable.h"
+#include "BubbleRootComponent.h"
 
 namespace bubbleActions {
 
@@ -503,6 +504,69 @@ namespace bubbleActions {
 		}
 	}
 
+	void ExecutePower::execute(middle::GameState* gameState)
+	{
+		auto shapeToPower = middle::getShape(gameState, shapeToPowerId.index);
+		auto root = middle::getComponent<components::BubbleRootComponent>(shapeToPower);
+		int power = root->power;
+		bool isNegative = root->isNegative;
+		bool isInverse = root->isInverse;
+		Vector3 targetPos = middle::getShapePosition(gameState, shapeToPower.id.index);
+
+		middle::Id replacementShapeId;
+
+		// create replacement shape
+		if (!isNegative && !isInverse) {
+			auto bubbleProto = bubble::newBubble(gameState, targetPos);
+			auto unitProto = bubble::newUnit(gameState, targetPos);
+			middle::Shape& initialBubble = middle::registerShape(gameState, bubbleProto);
+			middle::Shape& initialUnit = middle::registerShape(gameState, unitProto);
+			middle::EditorActionReparent(initialBubble.id.index, initialUnit.id.index).execute(gameState);
+
+			for (int i = 0; i < power; ++i) {
+				middle::Id copyId = middle::deepCopyShape(gameState, shapeToPowerId.index);
+				middle::queueComponentDeletion<components::BubbleRootComponent>(gameState, copyId);
+				// move so its not overlapping perfectly
+				middle::moveShape(gameState, copyId.index, { 1,0,0 });
+				LinkMultiplicationTerm(initialBubble.id, copyId).execute(gameState);
+			}
+			middle::Id toContainId;
+			if (power > 0) {
+				// parent should be multiplication at this point
+				toContainId = middle::getParent(gameState, initialBubble.id);
+			}
+			else {
+				// else power by 0 = 1
+				toContainId = initialBubble.id;
+			}
+
+			// containerize
+			auto containerProto = bubble::newBubble(gameState, targetPos);
+			middle::Shape& container = middle::registerShape(gameState, containerProto);
+			auto reparent = middle::EditorActionReparent(container.id.index, toContainId.index);
+			reparent.execute(gameState);
+			replacementShapeId = container.id;
+		}
+
+		auto registerReplacementShapeAction = std::make_unique<middle::EditorActionRegisterId>(replacementShapeId);
+		registerReplacementShapeAction->execute(gameState);
+		actions.push_back(std::move(registerReplacementShapeAction));
+
+		auto replaceAction = std::make_unique<Replace>(shapeToPower.id, replacementShapeId);
+		replaceAction->execute(gameState);
+		actions.push_back(std::move(replaceAction));
+
+		resultShapeId = replacementShapeId;
+	}
+
+	void ExecutePower::undo(middle::GameState* gameState)
+	{
+		while (actions.size() > 0) {
+			actions.back()->undo(gameState);
+			actions.pop_back();
+		}
+	}
+
 	Pop::Pop(middle::Id id) {
 		this->id = id;
 	}
@@ -632,7 +696,7 @@ namespace bubbleActions {
 
 	void LinkMultiplicationTerm::execute(middle::GameState* gameState)
 	{
-		bool alreadyMultiplication = false;
+		// if already multiplication, link as next in line
 		middle::Id& parentId = middle::getParent(gameState, recieverShapeId);
 		if (parentId.index != middle::UNASSIGNED) {
 			auto& parent = middle::getShape(gameState, parentId.index);
@@ -647,6 +711,7 @@ namespace bubbleActions {
 			}
 		}
 
+		// else create new multiplication
 		auto newMul = std::make_unique<NewMultiplication>(recieverShapeId, linkingShapeId);
 		newMul->execute(gameState);
 		middle::Id newMulId = newMul->resultShapeId;
@@ -1145,5 +1210,6 @@ namespace bubbleActions {
 			actions.pop_back();
 		}
 	}
+
 
 }

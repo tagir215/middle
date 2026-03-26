@@ -13,6 +13,7 @@
 #include "BubbleVariable.h"
 #include "TopDogBubbleTag.h"
 #include "bubble_utils.h"
+#include "BubbleRootComponent.h"
 
 class BubbleModificationSystem : public middle::MiddleGameplaySystem {
 public:
@@ -69,7 +70,19 @@ public:
 		gameState->bubbleAlgebraState.bubbleActions.push_back(insert);
 	}
 
-	void combine(middle::GameState* gameState, middle::Shape& refParent, middle::Shape& refShape, middle::Shape& intersectedShape) {
+	void tryPower(middle::GameState* gameState, middle::Shape& shape) {
+		auto rootComp = middle::getComponent<components::BubbleRootComponent>(shape);
+		if(!rootComp){
+			return;
+		}
+
+		auto power = std::make_shared<bubbleActions::ExecutePower>(shape.id);
+		middle::queueAction(gameState, power);
+		gameState->bubbleAlgebraState.bubbleActions.push_back(power);
+	}
+
+	void tryCombine(middle::GameState* gameState, middle::Shape& refParent, middle::Shape& refShape, middle::Shape& intersectedShape) {
+
 		// is multiplication connection
 		if (isMultiplicationConnection(gameState, refParent)) {
 			auto multiply = std::make_shared<bubbleActions::ExecuteMultiplication>(refShape.id, intersectedShape.id);
@@ -226,6 +239,12 @@ public:
 					continue;
 				}
 
+				// if referencing itself, it can only be power
+				if (refShape.id == intersectableShape.id) {
+					tryPower(gameState, refShape);
+					continue;
+				}
+
 				// skip shapefordeletion (the copy being dragged) and ref shape (shape its copy is pointing to)
 				if (shapeForDeletion.id == intersectableShape.id || intersectableShape.id == refShape.id) {
 					continue;
@@ -233,7 +252,7 @@ public:
 
 				if (parentId.index != middle::UNASSIGNED && parentId == refParentId) {
 					auto& refParent = middle::getShape(gameState, refParentId.index);
-					combine(gameState, refParent, refShape, intersectableShape);
+					tryCombine(gameState, refParent, refShape, intersectableShape);
 					continue;
 				}
 
