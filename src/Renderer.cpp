@@ -12,10 +12,10 @@ namespace RendererSystem {
 
 	static std::string scriptName = "RendererSystem";
 
-	Matrix transformMatrix(middle::RenderItem& item) {
-		Matrix S = MatrixScale(item.transform.scale.x, item.transform.scale.y, item.transform.scale.z);
-		Matrix R = QuaternionToMatrix(item.transform.rotation);
-		Matrix T = MatrixTranslate(item.transform.translation.x, item.transform.translation.y, item.transform.translation.z);
+	Matrix transformMatrix(Transform& transform) {
+		Matrix S = MatrixScale(transform.scale.x, transform.scale.y, transform.scale.z);
+		Matrix R = QuaternionToMatrix(transform.rotation);
+		Matrix T = MatrixTranslate(transform.translation.x, transform.translation.y, transform.translation.z);
 		Matrix M = MatrixMultiply(MatrixMultiply(S, R), T);
 		return M;
 	}
@@ -50,7 +50,7 @@ namespace RendererSystem {
 				}
 
 				if (item.type == middle::RenderItemType::RECTANGLE) {
-					Matrix M = transformMatrix(item);
+					Matrix M = transformMatrix(item.transform);
 					rlPushMatrix();
 					rlMultMatrixf(MatrixToFloatV(M).v);
 					DrawCube(item.center, item.width, item.length, item.height, item.color);
@@ -58,7 +58,7 @@ namespace RendererSystem {
 				}
 
 				if (item.type == middle::RenderItemType::CYLINDER) {
-					Matrix M = transformMatrix(item);
+					Matrix M = transformMatrix(item.transform);
 					rlPushMatrix();
 					rlMultMatrixf(MatrixToFloatV(M).v);
 					DrawCylinder(item.center, item.radius, item.ringRadius, item.length, 23, item.color);
@@ -70,7 +70,7 @@ namespace RendererSystem {
 				}
 
 				if (item.type == middle::RenderItemType::VECTOR) {
-					Matrix M = transformMatrix(item);
+					Matrix M = transformMatrix(item.transform);
 					rlPushMatrix();
 					rlLoadIdentity();
 					rlMultMatrixf(MatrixToFloatV(M).v);
@@ -82,7 +82,7 @@ namespace RendererSystem {
 					//DrawSphere(conePos, 3, BLUE);
 					Vector3 conePos = item.transform.translation + Vector3Scale(dir, item.length);
 					item.transform.translation = conePos;
-					M = transformMatrix(item);
+					M = transformMatrix(item.transform);
 
 					rlPushMatrix();
 					rlMultMatrixf(MatrixToFloatV(M).v);
@@ -96,7 +96,7 @@ namespace RendererSystem {
 				}
 
 				if (item.type == middle::CIRCLE) {
-					Matrix M = transformMatrix(item);
+					Matrix M = transformMatrix(item.transform);
 					rlPushMatrix();
 					rlLoadIdentity();
 					rlMultMatrixf(MatrixToFloatV(M).v);
@@ -104,8 +104,38 @@ namespace RendererSystem {
 					rlPopMatrix();
 				}
 
+				if (item.type == middle::CIRCLE_SECTOR) {
+					if (item.segments > 0) {
+						Vector3 lastPos;
+						float deltaAngle = (item.endAngle - item.startAngle) / item.segments;
+						for (int i = 0; i < item.segments + 1; ++i) {
+							float angle = item.startAngle + deltaAngle * i;
+							Vector3 v = { 1,0,0 };
+							Vector3 vr = Vector3RotateByAxisAngle(v, { 0,-1,0 }, angle);
+							Vector3 pos = item.center + Vector3Scale(vr, item.radius);
+							if (i > 0) {
+								Transform transform;
+								Vector3 dir = Vector3Normalize(Vector3Subtract(lastPos, pos));
+								transform.rotation = QuaternionFromVector3ToVector3({ 0,-1,0 }, dir);
+								transform.translation = lastPos;
+								transform.scale = { 1,1,1 };
+								float length = Vector3Distance(lastPos, pos);
+								Matrix M = transformMatrix(transform);
+								DrawLine3D(lastPos, pos, item.color);
+								rlPushMatrix();
+								rlLoadIdentity();
+								rlMultMatrixf(MatrixToFloatV(M).v);
+								int slices = 10;
+								DrawCylinder({ 0,0,0 }, item.ringRadius, item.ringRadius, length, slices, item.color);
+								rlPopMatrix();
+							}
+							lastPos = pos;
+						}
+					}
+				}
+
 				if (item.type == middle::CUBOID) {
-					Matrix M = transformMatrix(item);
+					Matrix M = transformMatrix(item.transform);
 					rlPushMatrix();
 					rlLoadIdentity();
 					rlMultMatrixf(MatrixToFloatV(M).v);

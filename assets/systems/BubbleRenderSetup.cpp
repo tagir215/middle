@@ -17,6 +17,7 @@
 #include "Cuboid.h"
 #include "BubbleEqualsComponent.h"
 #include "BubbleVariable.h"
+#include "BubbleRootComponent.h" 
 
 
 class BubbleRenderSetup : public middle::MiddleGameplaySystem {
@@ -34,6 +35,7 @@ public:
 	components::CompCache* variableCache;
 	components::CompCache* cuboidCache;
 	components::CompCache* equalsCache;
+	components::CompCache* rootCache;
 
 	void init(middle::GameState* gameState) {
 		bubbleCache = middle::newCompCache(gameState);
@@ -59,6 +61,10 @@ public:
 		equalsCache = middle::newCompCache(gameState);
 		equalsCache->addType<components::BubbleEqualsComponent>();
 		equalsCache->addType<components::LoopSociety>();
+		rootCache = middle::newCompCache(gameState);
+		rootCache->addType<components::BubbleRootComponent>();
+		rootCache->addType<components::Circle>();
+		rootCache->addType<components::Position>();
 	}
 	bool debugRendering = false;
 
@@ -338,6 +344,60 @@ public:
 			equalsLine.linePointB = linePointB;
 			equalsLine.color = BLUE;
 			gameState->renderData.push_back(equalsLine);
+		}
+
+
+		auto rootIt = rootCache->begin<components::BubbleRootComponent>();
+		auto rootCircleIt = rootCache->begin<components::Circle>();
+		auto rootPositionIt = rootCache->begin<components::Position>();
+		for (int i = 0; i < rootCache->getSize(); ++i) {
+			auto root = *rootIt;
+			auto circle = *rootCircleIt;
+			auto position = *rootPositionIt;
+			Vector3 pos = { position->posX, position->posY, position->posZ };
+
+			const float ratio = 0.333f;
+			float ra = circle->radius;
+			float rb = circle->radius * ratio;
+			float bz = ra + rb * ratio;
+			float intersectOffsetZ = (ra * ra - rb * rb + bz * bz) / (bz + bz);
+			float smallZ = intersectOffsetZ - bz;
+			float intersectOffsetX = std::sqrt(rb * rb - smallZ * smallZ);
+
+			Vector3 powerPos = pos + Vector3{ 0,0,bz };
+			Vector3 intersectOffset = Vector3{ intersectOffsetX,0, intersectOffsetZ };
+			Vector3 intersectPos = pos + intersectOffset;
+			Vector3 toStartPoint = Vector3Subtract(intersectPos, powerPos);
+			float startingAngle = Vector3Angle({ 1,0,0 }, toStartPoint);
+
+			middle::RenderItem powerCircle;
+			powerCircle.type = middle::RenderItemType::CIRCLE_SECTOR;
+			powerCircle.center = powerPos;
+			powerCircle.radius = rb;
+			powerCircle.startAngle = -startingAngle;
+			powerCircle.endAngle = PI + startingAngle;
+			powerCircle.color = RED;
+			powerCircle.ringRadius = 0.2f;
+			powerCircle.segments = 20;
+			gameState->renderData.push_back(powerCircle);
+
+			const float helperAngleOffset = PI * 0.1f;
+			Vector3 toNextSegment = Vector3RotateByAxisAngle(toStartPoint, { 0,-1,0 }, helperAngleOffset);
+			Vector3 condeDir = Vector3Normalize(Vector3Subtract(intersectPos, powerPos + toNextSegment));
+
+			middle::RenderItem cone;
+			cone.type = middle::RenderItemType::CYLINDER;
+			const float arrowRadius = 5;
+			const float arrowLength = 4;
+			cone.radius = arrowRadius;
+			cone.ringRadius = 0;
+			cone.length = arrowLength;
+			cone.transform.rotation = QuaternionFromVector3ToVector3({ 0,-1,0 }, condeDir);
+			cone.transform.translation = intersectPos;
+			cone.transform.scale = { 1,1,0.001f };
+			cone.center = { 0,0,0 };
+			cone.color = RED;
+			gameState->renderData.push_back(cone);
 		}
 	}
 };
