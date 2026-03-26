@@ -17,6 +17,7 @@
 #include "TopDogBubbleTag.h"
 #include "MouseSelectable.h"
 #include "BubbleEqualsComponent.h"
+#include "BubbleRootComponent.h"
 
 namespace bubble {
 
@@ -752,7 +753,8 @@ namespace bubble {
 		auto& shape = middle::getShape(gameState, shapeId.index);
 		auto fraction = middle::getComponent<components::FractionalComponent>(shape);
 		auto multiplication = middle::getComponent<components::BubbleMultiplyComponent>(shape);
-		// hmm...?
+		auto root = middle::getComponent<components::BubbleRootComponent>(shape);
+
 		if (fraction) {
 			int fractionSize = bubble::fractionUnitCount(gameState, shapeId);
 			dividend *= fractionSize;
@@ -763,8 +765,8 @@ namespace bubble {
 			bubbleActions::Replace(genericQuotientId, quotientCopyId).execute(gameState);
 			return fractionShapeId;
 		}
-		// multiplication needs to be contained in a bubble
-		else if (multiplication) {
+		// multiplication or root needs to be contained in a bubble
+		else if (multiplication || root) {
 			middle::Id fractionShapeId = bubble::newFraction(gameState, targetPos, dividend);
 			middle::Id genericQuotientId = bubble::fractionQuotient(gameState, fractionShapeId);
 			middle::Shape newContainerBubbleProto = bubble::newBubble(gameState, targetPos);

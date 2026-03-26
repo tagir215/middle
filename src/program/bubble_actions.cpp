@@ -92,7 +92,22 @@ namespace bubbleActions {
 		auto fraction = middle::getComponent<components::FractionalComponent>(shapeToReplace);
 		auto unit = middle::getComponent<components::BubbleUnit>(shapeToReplace);
 		auto variable = middle::getComponent<components::BubbleVariable>(shapeToReplace);
+		auto root = middle::getComponent<components::BubbleRootComponent>(shapeToReplace);
 
+		// contain shape to replace in a new bubble and link to the new container
+		if (variable || root) {
+			middle::Shape newContainerBubbleProto = bubble::newBubble(gameState, targetPos);
+			middle::Shape& newContainerBubble = middle::registerShape(gameState, newContainerBubbleProto);
+			middle::Id copyId = middle::deepCopyShape(gameState, shapeToReplaceId.index);
+			middle::EditorActionReparent(newContainerBubble.id.index, copyId.index).execute(gameState);
+			middle::Id replacingCopyId = middle::deepCopyShape(gameState, replacingShapeId.index);
+
+			auto newMul = NewMultiplication(replacingCopyId, newContainerBubble.id);
+			newMul.execute(gameState);
+
+			resultShapeId = newMul.resultShapeId;
+			return;
+		}
 		// containe copies in a new multiplication
 		if (bubbleComp) {
 			// deep copy to replace and replacing
@@ -164,20 +179,6 @@ namespace bubbleActions {
 			return;
 		}
 
-		// if shape to replace is variable, variable is contained in a bubble and bubble in multiplication link
-		if (variable) {
-			middle::Shape newContainerBubbleProto = bubble::newBubble(gameState, targetPos);
-			middle::Shape& newContainerBubble = middle::registerShape(gameState, newContainerBubbleProto);
-			middle::Id variableCopyId = middle::deepCopyShape(gameState, shapeToReplaceId.index);
-			middle::EditorActionReparent(newContainerBubble.id.index, variableCopyId.index).execute(gameState);
-			middle::Id replacingCopyId = middle::deepCopyShape(gameState, replacingShapeId.index);
-
-			auto newMul = NewMultiplication(replacingCopyId, newContainerBubble.id);
-			newMul.execute(gameState);
-
-			resultShapeId = newMul.resultShapeId;
-			return;
-		}
 		// if shape to replace is a unit
 		else if (unit)
 		{
@@ -226,13 +227,15 @@ namespace bubbleActions {
 		auto bubbleB = middle::getComponent<components::BubbleComponent>(shapeB);
 		auto fractionA = middle::getComponent<components::FractionalComponent>(shapeA);
 		auto fractionB = middle::getComponent<components::FractionalComponent>(shapeB);
+		auto rootA = middle::getComponent<components::BubbleRootComponent>(shapeA);
+		auto rootB = middle::getComponent<components::BubbleRootComponent>(shapeB);
 
 		middle::Id replacementId;
 
 		// note same scale fractions are handled separatedly
 
-		// UNIT CASE, or different scale fractions
-		if ((unitA && unitB) || (fractionA && fractionB) || (unitA && fractionB) || (unitB && fractionA)) {
+		// NEW CONTAINING BUBBLE CASE
+		if ((unitA && unitB) || (fractionA && fractionB) || (unitA && fractionB) || (unitB && fractionA) || (rootA || rootB)) {
 			Vector3 targetPos = middle::getShapePosition(gameState, idA.index);
 			auto regAction = middle::EditorActionRegisterShape(bubble::newBubble(gameState, targetPos));
 			regAction.execute(gameState);
@@ -246,7 +249,7 @@ namespace bubbleActions {
 			reparentActionA.execute(gameState);
 			reparentActionB.execute(gameState);
 		}
-		// BUBBLE CASE
+		// COMBINE BUBBLE CASE
 		// add members from frombubble to intobubble
 		else if (bubbleA && bubbleB) {
 			auto loopA = middle::getComponent<components::LoopSociety>(shapeA);
@@ -291,7 +294,6 @@ namespace bubbleActions {
 	}
 
 	void ExecuteMultiplication::execute(middle::GameState* gameState) {
-
 		auto copyA = std::make_unique<middle::EditorActionCopySingle>(shapeToCopyId);
 		copyA->execute(gameState);
 		middle::Id idA = copyA->resultId;
@@ -586,8 +588,12 @@ namespace bubbleActions {
 		// check that there is a parent
 		auto bubble = middle::getComponent<components::BubbleComponent>(shape);
 		auto fraction = middle::getComponent<components::FractionalComponent>(shape);
+		auto root = middle::getComponent<components::BubbleRootComponent>(shape);
 		middle::Id parentId = middle::getParent(gameState, shape.id);
 		if (parentId.index == middle::UNASSIGNED) {
+			return;
+		}
+		if (root) {
 			return;
 		}
 		if (!bubble && !fraction) {
