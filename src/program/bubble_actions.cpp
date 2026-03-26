@@ -835,7 +835,7 @@ namespace bubbleActions {
 		int compressableCount = 0;
 
 		// check that all equal
-		for (int i = 1; i < loop->loopMemberIds.size(); ++i) {
+		for (int i = 0; i < loop->loopMemberIds.size(); ++i) {
 			middle::Id memberId = loop->loopMemberIds[i];
 			// ones are ignored, don't affect multiplication value
 			if (bubble::isBubbleWithValueOne(gameState, memberId)) {
