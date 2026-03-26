@@ -4,7 +4,10 @@
 #define MIDDLEALGEBRANODE(X) \
 	X(type) \
 	X(variableLabel) \
-	X(value) 
+	X(value) \
+	X(power) \
+	X(isInverse) \
+	X(isNegative)
 
 
 namespace components {
@@ -12,6 +15,9 @@ namespace components {
 		int type = middle::UNASSIGNED;
 		std::string variableLabel = "";
 		float value = 0;
+		int power = 1;
+		bool isInverse = false;
+		bool isNegative = false;
 
 		void serialize(std::ostream& ostream) override;
 		void deserialize(const std::vector<std::string>& buffer, int indexOffset) override;
@@ -31,6 +37,7 @@ namespace components {
 		UNIT,
 		FRACTION,
 		MULTIPLICATION,
+		ROOT,
 	};
 }
 

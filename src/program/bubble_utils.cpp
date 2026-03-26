@@ -295,11 +295,47 @@ namespace bubble {
 		return loop->loopMemberIds.size();
 	}
 
+	bool rootEquals(middle::GameState* gameState, middle::Id& idA, middle::Id& idB) {
+		auto& shapeA = middle::getShape(gameState, idA.index);
+		auto& shapeB = middle::getShape(gameState, idB.index);
+		auto rootA = middle::getComponent<components::BubbleRootComponent>(shapeA);
+		auto rootB = middle::getComponent<components::BubbleRootComponent>(shapeB);
+		auto nodeA = middle::getComponent<components::AlgebraNode>(shapeA);
+		auto nodeB = middle::getComponent<components::AlgebraNode>(shapeB);
+
+		// only idB is allowed to be AlgebraNode type
+		assert(!nodeA);
+
+		if (rootA && rootB) {
+			return rootA->power == rootB->power
+				&& rootA->isInverse == rootB->isInverse
+				&& rootA->isNegative == rootB->isNegative;
+		}
+		if (rootA && nodeB) {
+			return rootA->power == nodeB->power
+				&& rootA->isInverse == nodeB->isInverse
+				&& rootA->isNegative == nodeB->isNegative;
+		}
+		return false;
+	}
+
 	bool matchingBubbles(middle::GameState* gameState, middle::Id& idA, middle::Id idB) {
 		auto& shapeA = middle::getShape(gameState, idA.index);
 		auto& shapeB = middle::getShape(gameState, idB.index);
 		auto unitA = middle::getComponent<components::BubbleUnit>(shapeA);
 		auto unitB = middle::getComponent<components::BubbleUnit>(shapeB);
+		auto rootA = middle::getComponent<components::BubbleRootComponent>(shapeA);
+		auto rootB = middle::getComponent<components::BubbleRootComponent>(shapeA);
+		auto nodeA = middle::getComponent<components::AlgebraNode>(shapeA);
+		// idB is allowed to be AlgebraNode, but not idA
+		assert(!nodeA);
+
+		// if either is root return false if not equaling
+		if (rootA || rootB) {
+			if (!rootEquals(gameState, idA, idB)) {
+				return false;
+			}
+		}
 
 		// check that units equal
 		if (unitA && unitB) {
