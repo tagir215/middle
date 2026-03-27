@@ -721,6 +721,42 @@ q  757_0
 s  
 UiComponent
 i  -1
+__q  23_0
+CodeFunction
+i  22
+Rectangle
+f  20.000000
+f  10.000000
+MouseIntersectable
+MouseSelectable
+Sphere
+f  2.000000
+LoopSociety
+q  93_0
+p  
+q  29_0
+Position
+f  127.902939
+f  -142.000046
+f  -77.792206
+MouseGrabbable
+Text
+s  POWER
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  1.000000
+b  1
+Offset
+f  0.000000
+f  0.000000
+f  0.000000
+UiComponent
+i  -1
 __q  24_0
 Rectangle
 f  60.000000
@@ -888,6 +924,39 @@ MouseIntersectable
 Rectangle
 f  8.000000
 f  8.000000
+UiComponent
+i  -1
+__q  29_0
+Position
+f  107.902939
+f  -142.000046
+f  -77.792206
+MouseGrabbable
+MouseSelectable
+Sphere
+f  2.000000
+LoopSociety
+q  23_2
+p  
+Circle
+f  4.000000
+MouseIntersectable
+Text
+s  
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  3.000000
+b  1
+InputVariable
+q  -1_0
+s  
+q  -1_0
+i  0
 UiComponent
 i  -1
 __q  30_0
@@ -2667,6 +2736,7 @@ q  25_0
 q  32_0
 q  41_0
 q  102_0
+q  23_0
 Sphere
 f  2.000000
 Rectangle

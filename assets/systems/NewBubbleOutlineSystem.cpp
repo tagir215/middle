@@ -48,6 +48,18 @@ public:
 		fractionCache->addType<components::LoopSociety>();
 	}
 
+	void updateMasses(components::CompCache* cache) {
+		// update bubble masses based on area
+		auto circleIt = cache->begin<components::Circle>();
+		auto physicsIt = circfullCache->begin<components::PhysicsData>();
+		for (int i = 0; i < circfullCache->getSize(); ++i) {
+			auto circle = *circleIt;
+			auto physics = *physicsIt;
+			physics->mass = circle->radius * circle->radius * PI;
+			physics->invMass = 1.0f / physics->mass;
+		}
+	}
+
 	const float minBubbleRadius = 10;
 	void update(middle::GameState* gameState) override {
 		// add circles
@@ -110,15 +122,9 @@ public:
 		}
 
 	
-		// update bubble masses based on area
-		circleIt = circfullCache->begin<components::Circle>();
-		auto physicsIt = circfullCache->begin<components::PhysicsData>();
-		for (int i = 0; i < circfullCache->getSize(); ++i) {
-			auto circle = *circleIt;
-			auto physics = *physicsIt;
-			physics->mass = circle->radius * circle->radius * PI;
-			physics->invMass = 1.0f / physics->mass;
-		}
+		updateMasses(circfullCache);
+		updateMasses(circfullCache2);
+
 	}
 };
 

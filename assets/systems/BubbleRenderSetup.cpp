@@ -355,14 +355,19 @@ public:
 			auto position = *rootPositionIt;
 			Vector3 bubblePos = { position->posX, position->posY, position->posZ };
 
-			const float powerRatioToBubble = 0.333f;
-			const float arrowGap = 6;
+			float powerRatioToBubble = 0.333f;
+			float arrowGap = 6;
+			float positionRatioToPower = 0.333f;
 
-			for (int i = 0; i < root->power; ++i) {
+			bool isInverse = root->isInverse;
+			if (isInverse) {
+				positionRatioToPower *= -1;
+			}
 
+			for (int power = 0; power < root->power; ++power) {
 				float ra = bubbleCircle->radius;
-				float rb = bubbleCircle->radius * powerRatioToBubble + arrowGap * i;
-				float bz = ra + rb * powerRatioToBubble;
+				float rb = bubbleCircle->radius * powerRatioToBubble + arrowGap * power;
+				float bz = ra + rb * positionRatioToPower;
 				float intersectOffsetZ = (ra * ra - rb * rb + bz * bz) / (bz + bz);
 				float smallZ = intersectOffsetZ - bz;
 				float intersectOffsetX = std::sqrt(rb * rb - smallZ * smallZ);
@@ -370,15 +375,36 @@ public:
 				Vector3 powerPos = bubblePos + Vector3{ 0,0,bz };
 				Vector3 intersectOffset = Vector3{ intersectOffsetX,0, intersectOffsetZ };
 				Vector3 intersectPos = bubblePos + intersectOffset;
+
+
+				Vector3 refAngle = { 1,0,0 };
+
 				Vector3 toStartPoint = Vector3Subtract(intersectPos, powerPos);
-				float startingAngle = Vector3Angle({ 1,0,0 }, toStartPoint);
+				Vector3 endPoint = intersectPos + Vector3{-intersectOffsetX * 2, 0, 0};
+				Vector3 toEndPoint = Vector3Subtract(endPoint, powerPos);
+
+				if (isInverse) {
+					toStartPoint.x *= -1;
+					toEndPoint.x *= -1;
+				}
+
+				float startingAngle = Vector3Angle(refAngle, toStartPoint);
+				if (toStartPoint.z < refAngle.z) {
+					startingAngle *= -1;
+				}
+
+				float endAngle = startingAngle + PI;
+
+				Vector3 endPointVecNonComplete = Vector3RotateByAxisAngle(refAngle, { 0,-1,0 }, endAngle);
+				float remainingAngle = Vector3Angle(endPointVecNonComplete, toEndPoint);
+				endAngle += remainingAngle;
 
 				middle::RenderItem powerCircle;
 				powerCircle.type = middle::RenderItemType::CIRCLE_SECTOR;
 				powerCircle.center = powerPos;
 				powerCircle.radius = rb;
-				powerCircle.startAngle = -startingAngle;
-				powerCircle.endAngle = PI + startingAngle;
+				powerCircle.startAngle = startingAngle;
+				powerCircle.endAngle = endAngle;
 				powerCircle.color = RED;
 				powerCircle.ringRadius = 0.2f;
 				powerCircle.segments = 20;
@@ -386,7 +412,7 @@ public:
 
 				const float helperAngleOffset = PI * 0.1f;
 				Vector3 toNextSegment = Vector3RotateByAxisAngle(toStartPoint, { 0,-1,0 }, helperAngleOffset);
-				Vector3 condeDir = Vector3Normalize(Vector3Subtract(intersectPos, powerPos + toNextSegment));
+				Vector3 coneDir = Vector3Normalize(Vector3Subtract(powerPos + toStartPoint, powerPos + toNextSegment));
 
 				middle::RenderItem cone;
 				cone.type = middle::RenderItemType::CYLINDER;
@@ -398,8 +424,8 @@ public:
 				cone.radius = arrowRadius;
 				cone.ringRadius = 0;
 				cone.length = arrowLength;
-				cone.transform.rotation = QuaternionFromVector3ToVector3({ 0,-1,0 }, condeDir);
-				cone.transform.translation = intersectPos;
+				cone.transform.rotation = QuaternionFromVector3ToVector3({ 0,-1,0 }, coneDir);
+				cone.transform.translation = powerPos + toStartPoint;
 				cone.transform.scale = coneScale;
 				cone.center = { 0,0,0 };
 				cone.color = RED;
