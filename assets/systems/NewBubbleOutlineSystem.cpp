@@ -51,8 +51,8 @@ public:
 	void updateMasses(components::CompCache* cache) {
 		// update bubble masses based on area
 		auto circleIt = cache->begin<components::Circle>();
-		auto physicsIt = circfullCache->begin<components::PhysicsData>();
-		for (int i = 0; i < circfullCache->getSize(); ++i) {
+		auto physicsIt = cache->begin<components::PhysicsData>();
+		for (int i = 0; i < cache->getSize(); ++i) {
 			auto circle = *circleIt;
 			auto physics = *physicsIt;
 			physics->mass = circle->radius * circle->radius * PI;

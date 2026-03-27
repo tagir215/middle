@@ -1255,6 +1255,9 @@ namespace bubbleActions {
 
 	bool parentIsBubble(middle::GameState* gameState, middle::Id id) {
 		middle::Id parentId = middle::getParent(gameState, id);
+		if (parentId.index == middle::UNASSIGNED) {
+			return false;
+		}
 		auto& parentShape = middle::getShape(gameState, parentId.index);
 		auto bubble = middle::getComponent<components::BubbleComponent>(parentShape);
 		return bubble != nullptr;
@@ -1271,8 +1274,15 @@ namespace bubbleActions {
 		}
 		else {
 			targetId = middle::getParent(gameState, id);
+			if (targetId.index == middle::UNASSIGNED) {
+				return;
+			}
 			parentId = middle::getParent(gameState, targetId);
+			if (parentId.index == middle::UNASSIGNED) {
+				return;
+			}
 		}
+
 
 		middle::Shape bubbleProto = bubble::newBubble(gameState, targetPos);
 		auto registerBubble = std::make_unique<middle::EditorActionRegisterShape>(bubbleProto);
