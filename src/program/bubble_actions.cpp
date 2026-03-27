@@ -511,6 +511,10 @@ namespace bubbleActions {
 		auto shapeToPower = middle::getShape(gameState, shapeToPowerId.index);
 		auto root = middle::getComponent<components::BubbleRootComponent>(shapeToPower);
 		int power = root->power;
+		bool isNegative = root->power < 0;
+		if (isNegative) {
+			power = -power;
+		}
 		bool isInverse = root->isInverse;
 		Vector3 targetPos = middle::getShapePosition(gameState, shapeToPower.id.index);
 
@@ -530,8 +534,22 @@ namespace bubbleActions {
 			float totalTranslation = 0;
 
 			for (int i = 0; i < power; ++i) {
-				middle::Id copyId = middle::deepCopyShape(gameState, shapeToPowerId.index);
-				middle::queueComponentDeletion<components::BubbleRootComponent>(gameState, copyId);
+				middle::Id copyId;
+				if (!isNegative) {
+					copyId = middle::deepCopyShape(gameState, shapeToPowerId.index);
+					middle::queueComponentDeletion<components::BubbleRootComponent>(gameState, copyId);
+				}
+				else {
+					copyId = bubble::inverseBubble(gameState, shapeToPowerId);
+					auto& containerBubble = middle::getShape(gameState, copyId.index);
+					auto loop = middle::getComponent<components::LoopSociety>(containerBubble);
+					assert(loop->loopMemberIds.size() == 1);
+					middle::Id fractionId = loop->loopMemberIds[0];
+					middle::Id quotientId = bubble::fractionQuotient(gameState, fractionId);
+					middle::Id rootId = middle::getFirstChildWithComponent(gameState, quotientId, middle::getTypeId<components::BubbleRootComponent>());
+					middle::queueComponentDeletion<components::BubbleRootComponent>(gameState, rootId);
+					middle::queueAction(gameState, std::make_shared<Pop>(rootId));
+				}
 				// move so its not overlapping perfectly
 				sign *= -1;
 				const float varianceZ = 0.2f;

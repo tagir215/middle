@@ -355,6 +355,7 @@ public:
 			auto position = *rootPositionIt;
 			Vector3 bubblePos = { position->posX, position->posY, position->posZ };
 
+
 			const float powerRatioToBubble = 0.333f;
 			const float arrowGap = 6;
 			float positionRatioToPower = 0.333f;

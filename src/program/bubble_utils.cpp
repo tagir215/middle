@@ -189,7 +189,18 @@ namespace bubble {
 
 	middle::Id inverseBubble(middle::GameState* gameState, middle::Id& id)
 	{
-		return middle::Id();
+		auto& shape = middle::getShape(gameState, id.index);
+		auto loop = middle::getComponent<components::LoopSociety>(shape);
+		int dividend = loop->loopMemberIds.size();
+		if (dividend < 2) {
+			return id;
+		}
+		Vector3 pos = middle::getShapePosition(gameState, id.index);
+		middle::Id fractionId = shapeToFraction(gameState, id, pos, dividend);
+		middle::Shape bubbleProto = newBubble(gameState, pos);
+		middle::Shape& bubble = middle::registerShape(gameState, bubbleProto);
+		middle::EditorActionReparent(bubble.id.index, fractionId.index).execute(gameState);
+		return bubble.id;
 	}
 
 	middle::Id topLevelBubble(middle::GameState* gameState)
@@ -770,6 +781,8 @@ namespace bubble {
 
 	middle::Id fractionQuotient(middle::GameState* gameState, middle::Id& fractionId) {
 		std::vector<middle::Id> fractionChildren;
+		auto& fractionShape = middle::getShape(gameState, fractionId.index);
+		assert(middle::getComponent<components::FractionalComponent>(fractionShape));
 		middle::getChildren(gameState, fractionId, fractionChildren);
 		for (middle::Id& fractionPartId : fractionChildren) {
 			auto& unitShape = middle::getShape(gameState, fractionPartId.index);
