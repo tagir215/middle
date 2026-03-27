@@ -720,6 +720,13 @@ namespace bubble {
 		return shape;
 	}
 
+	middle::Shape newPower(middle::GameState* gameState, const Vector3& targetPos)
+	{
+		middle::Shape bubble = newBubble(gameState, targetPos);
+		middle::addComponent<components::BubbleRootComponent>(bubble);
+		return bubble;
+	}
+
 	middle::Id newEquals(middle::GameState* gameState, middle::Id bubbleAId, middle::Id bubbleBId, const Vector3& targetPos)
 	{
 		middle::Shape equalsProto;

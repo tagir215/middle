@@ -9,6 +9,7 @@
 #include "UiComponent.h"
 #include "component_utils.h"
 #include "BubbleAlgebraProblem.h"
+#include "BubbleRootComponent.h"
 
 
 class BubbleLevelEditorSystem : public middle::MiddleGameplaySystem {
@@ -71,7 +72,6 @@ public:
 						middle::Id equals = bubble::newEquals(gameState, bubbleShapeA.id, bubbleShapeB.id, { 0,0,0 });
 						middle::attachComponent<components::BubbleAlgebraProblem>(gameState, equals);
 					}
-
 
 					if (ImGui::Button("Import Level Stuff")) {
 						const std::string folder = "../assets/shapes/";
@@ -142,7 +142,19 @@ public:
 						middle::Id fraction = bubble::shapeToFraction(gameState, selectedId, containerPos, dividend);
 						bubbleActions::Replace(selectedId, fraction).execute(gameState);
 					}
-
+					ImGui::Separator();
+					static bool isInverse = false;
+					static int power = 1;
+					ImGui::SliderInt("power", &power, -4, 4);
+					ImGui::Checkbox("isInverse", &isInverse);
+					if(ImGui::Button("New Power")) {
+						Vector3 containerPos = middle::getShapePosition(gameState, selectedId.index);
+						middle::Shape& powerShape = middle::registerShape(gameState, bubble::newPower(gameState, containerPos + randomOffset()));
+						auto powerComp = middle::getComponent<components::BubbleRootComponent>(powerShape);
+						powerComp->power = power;
+						powerComp->isInverse = isInverse;
+						middle::EditorActionReparent(selectedId.index, powerShape.id.index).execute(gameState);
+					}
 				}
 
 				ImGui::End();

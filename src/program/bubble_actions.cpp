@@ -510,6 +510,10 @@ namespace bubbleActions {
 	{
 		auto shapeToPower = middle::getShape(gameState, shapeToPowerId.index);
 		auto root = middle::getComponent<components::BubbleRootComponent>(shapeToPower);
+		// todo: how to do inverse?
+		if (root->isInverse) {
+			return;
+		}
 		int power = root->power;
 		bool isNegative = root->power < 0;
 		if (isNegative) {
