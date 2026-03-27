@@ -511,14 +511,13 @@ namespace bubbleActions {
 		auto shapeToPower = middle::getShape(gameState, shapeToPowerId.index);
 		auto root = middle::getComponent<components::BubbleRootComponent>(shapeToPower);
 		int power = root->power;
-		bool isNegative = root->isNegative;
 		bool isInverse = root->isInverse;
 		Vector3 targetPos = middle::getShapePosition(gameState, shapeToPower.id.index);
 
 		middle::Id replacementShapeId;
 
 		// create replacement shape
-		if (!isNegative && !isInverse) {
+		if (power >= 0 && !isInverse) {
 			auto bubbleProto = bubble::newBubble(gameState, targetPos);
 			auto unitProto = bubble::newUnit(gameState, targetPos);
 			middle::Shape& initialBubble = middle::registerShape(gameState, bubbleProto);

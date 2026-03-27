@@ -355,8 +355,8 @@ public:
 			auto position = *rootPositionIt;
 			Vector3 bubblePos = { position->posX, position->posY, position->posZ };
 
-			float powerRatioToBubble = 0.333f;
-			float arrowGap = 6;
+			const float powerRatioToBubble = 0.333f;
+			const float arrowGap = 6;
 			float positionRatioToPower = 0.333f;
 
 			bool isInverse = root->isInverse;
@@ -364,7 +364,15 @@ public:
 				positionRatioToPower *= -1;
 			}
 
-			for (int power = 0; power < root->power; ++power) {
+			int powerIterations = root->power;
+			bool isNegative = root->power < 0;
+			if (isNegative) {
+				powerIterations = -root->power;
+			}
+
+			Color powerColor = isNegative ? BLUE : RED;
+
+			for (int power = 0; power < powerIterations; ++power) {
 				float ra = bubbleCircle->radius;
 				float rb = bubbleCircle->radius * powerRatioToBubble + arrowGap * power;
 				float bz = ra + rb * positionRatioToPower;
@@ -399,20 +407,34 @@ public:
 				float remainingAngle = Vector3Angle(endPointVecNonComplete, toEndPoint);
 				endAngle += remainingAngle;
 
+
 				middle::RenderItem powerCircle;
 				powerCircle.type = middle::RenderItemType::CIRCLE_SECTOR;
 				powerCircle.center = powerPos;
 				powerCircle.radius = rb;
 				powerCircle.startAngle = startingAngle;
 				powerCircle.endAngle = endAngle;
-				powerCircle.color = RED;
+				powerCircle.color = powerColor;
 				powerCircle.ringRadius = 0.2f;
 				powerCircle.segments = 20;
 				gameState->renderData.push_back(powerCircle);
 
 				const float helperAngleOffset = PI * 0.1f;
-				Vector3 toNextSegment = Vector3RotateByAxisAngle(toStartPoint, { 0,-1,0 }, helperAngleOffset);
-				Vector3 coneDir = Vector3Normalize(Vector3Subtract(powerPos + toStartPoint, powerPos + toNextSegment));
+
+				Vector3 conePos;
+				Vector3 toNextSegment;
+				Vector3 coneDir;
+
+				if (!isNegative) {
+					conePos = powerPos + toStartPoint;
+					toNextSegment = Vector3RotateByAxisAngle(toStartPoint, { 0,-1,0 }, helperAngleOffset);
+					coneDir = Vector3Normalize(Vector3Subtract(conePos, powerPos + toNextSegment));
+				}
+				else {
+					conePos = powerPos + toEndPoint;
+					toNextSegment = Vector3RotateByAxisAngle(toEndPoint, { 0,-1,0 }, -helperAngleOffset);
+					coneDir = Vector3Normalize(Vector3Subtract(conePos, powerPos + toNextSegment));
+				}
 
 				middle::RenderItem cone;
 				cone.type = middle::RenderItemType::CYLINDER;
@@ -425,10 +447,10 @@ public:
 				cone.ringRadius = 0;
 				cone.length = arrowLength;
 				cone.transform.rotation = QuaternionFromVector3ToVector3({ 0,-1,0 }, coneDir);
-				cone.transform.translation = powerPos + toStartPoint;
+				cone.transform.translation = conePos;
 				cone.transform.scale = coneScale;
 				cone.center = { 0,0,0 };
-				cone.color = RED;
+				cone.color = powerColor;
 				gameState->renderData.push_back(cone);
 
 			}

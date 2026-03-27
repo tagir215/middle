@@ -308,13 +308,11 @@ namespace bubble {
 
 		if (rootA && rootB) {
 			return rootA->power == rootB->power
-				&& rootA->isInverse == rootB->isInverse
-				&& rootA->isNegative == rootB->isNegative;
+				&& rootA->isInverse == rootB->isInverse;
 		}
 		if (rootA && nodeB) {
 			return rootA->power == nodeB->power
-				&& rootA->isInverse == nodeB->isInverse
-				&& rootA->isNegative == nodeB->isNegative;
+				&& rootA->isInverse == nodeB->isInverse;
 		}
 		return false;
 	}
