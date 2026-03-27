@@ -533,6 +533,11 @@ namespace bubbleActions {
 			middle::EditorActionReparent(initialBubble.id.index, initialUnit.id.index).execute(gameState);
 			auto bubbleCircle = middle::getComponent<components::Circle>(shapeToPower);
 
+			if (power != 0) {
+				auto delComp = middle::attachComponent<components::DeleteComponent>(gameState, initialBubble.id);
+				delComp->framesUntilDelete = 60;
+			}
+
 			float bubGap = bubbleCircle->radius;
 			int sign = 1;
 			float totalTranslation = 0;
