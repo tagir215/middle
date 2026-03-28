@@ -112,9 +112,12 @@ namespace middle {
 	};
 
 	struct BubbleAlgebraState {
+		// todo refactor away
 		middle::Id grabbedId;
 		bool intersectingUI = false;
 		std::vector<std::shared_ptr<middle::EditorActionContainer>>bubbleActions;
+		bool justCompletedLevel = false;
+		std::string completedLevelName;
 	};
 
 	struct ModelContainer {

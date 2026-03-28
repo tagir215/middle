@@ -2,12 +2,6 @@ __q  74_0
 MouseIntersectable
 MouseSelectable
 UiNode
-Position
-f  0.000000
-f  0.000000
-f  0.000000
-MouseGrabbable
-LoopTag
 Offset
 f  0.000000
 f  -500.000000
@@ -19,6 +13,12 @@ q  75_0
 q  80_0
 q  81_0
 q  82_0
+Position
+f  0.000000
+f  0.000000
+f  0.000000
+MouseGrabbable
+LoopTag
 Text
 s  ScoreScreen
 f  0.000000
@@ -33,16 +33,16 @@ b  1
 __q  82_0
 MouseGrabbable
 Position
-f  -58.111435
+f  -58.111450
 f  0.000000
-f  46.188660
+f  46.188538
 MouseSelectable
 Sphere
 f  2.000000
-MouseIntersectable
 LoopSociety
 q  74_0
 p  
+MouseIntersectable
 Text
 s  SOLVED!
 f  0.000000
@@ -73,12 +73,15 @@ i  -1
 __q  81_0
 MouseGrabbable
 Position
-f  -58.111435
+f  -58.111450
 f  0.000000
 f  7.115967
 MouseSelectable
 Sphere
 f  2.000000
+LoopSociety
+q  74_0
+p  
 MouseIntersectable
 PhysicsData
 f  1.000000
@@ -105,9 +108,6 @@ f  0.000000
 f  0.000000
 f  5.000000
 b  1
-LoopSociety
-q  74_0
-p  
 UiComponent
 i  -1
 __q  80_0
@@ -115,31 +115,31 @@ MouseGrabbable
 Position
 f  -17.201385
 f  0.000000
-f  -12.379822
+f  -12.379883
 UiComponent
 i  -1
 MouseSelectable
 Sphere
 f  2.000000
+LoopSociety
+q  74_0
+p  
 MouseIntersectable
 Rectangle
 f  300.000000
 f  200.000000
-LoopSociety
-q  74_0
-p  
 __q  75_0
 Button
 i  8
+MouseIntersectable
 MouseSelectable
 MouseGrabbable
 Position
-f  80.688690
+f  80.688843
 f  -0.000122
-f  -79.719116
+f  -79.719238
 Sphere
 f  2.000000
-MouseIntersectable
 LoopSociety
 q  74_0
 p  
@@ -158,5 +158,6 @@ f  1.000000
 b  1
 LevelReference
 s  LevelSelect
+b  0
 UiComponent
 i  -1
