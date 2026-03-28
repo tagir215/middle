@@ -57,6 +57,7 @@ public:
 				if (levelRef->levelName == gameState->bubbleAlgebraState.completedLevelName) {
 					gameState->bubbleAlgebraState.justCompletedLevel = false;
 					gameState->bubbleAlgebraState.completedLevelName = "";
+					levelRef->complete = true;
 				}
 			}
 
