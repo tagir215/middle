@@ -963,11 +963,6 @@ namespace bubbleActions {
 		middle::Id firstChild = quotientChildren[0];
 		auto& firstChildShape = middle::getShape(gameState, firstChild.index);
 
-		auto unit = middle::getComponent<components::BubbleUnit>(firstChildShape);
-		if (!unit) {
-			return middle::Id();
-		}
-
 		int fractionDividend = fractionChildren.size();
 		if (fractionDividend != quotientChildren.size()) {
 			return middle::Id();
@@ -981,7 +976,6 @@ namespace bubbleActions {
 
 		middle::Id unitCopyId = middle::deepCopyShape(gameState, firstChild.index);
 		return unitCopyId;
-
 	}
 
 	void Compress::execute(middle::GameState* gameState)
