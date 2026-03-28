@@ -46,4 +46,5 @@ namespace bubble {
 	int findDepth(middle::GameState* gameState, middle::Id id);
 	middle::Id findTopDog(middle::GameState* gameState, middle::Id id);
 	bool isBubbleWithValueOne(middle::GameState* gameState, middle::Id id);
+	bool isBubbleWithValueOneNegative(middle::GameState* gameState, middle::Id id);
 }
