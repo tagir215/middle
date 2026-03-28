@@ -4,9 +4,10 @@
 namespace bubbleColors {
 	inline Color BACKGROUND = WHITE;
 	inline Color POSITIVE_UNIT = BLACK;
-	inline Color ZERO_UNIT = {255,255,255,60};
-	inline Color NEGATIVE_UNIT = {0,255,255,255};
+	inline Color ZERO_UNIT = { 255,255,255,60 };
+	inline Color NEGATIVE_UNIT = { 0,255,255,255 };
 	inline Color BUBBLE_OUTLINE = BLACK;
+	inline Color BUBBLE_BACKGROUND = {0, 0, 0, 10};
 	inline Color VARIABLE_OUTLINE = BUBBLE_OUTLINE;
 	inline Color VARIABLE_TEXT = GREEN;
 	inline Color HOVERED_ITEM = {0,0,0,100};

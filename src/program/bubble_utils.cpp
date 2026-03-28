@@ -18,6 +18,7 @@
 #include "MouseSelectable.h"
 #include "BubbleEqualsComponent.h"
 #include "BubbleRootComponent.h"
+#include "Layer.h"
 
 namespace bubble {
 
@@ -571,6 +572,11 @@ namespace bubble {
 			++depth;
 
 			middle::Id parentId = middle::getParent(gameState, currentId);
+
+			if (parentId.index == middle::UNASSIGNED) {
+				return depth;
+			}
+
 			parents.push(parentId);
 		}
 		assert(false && "top dog not found");
@@ -707,6 +713,7 @@ namespace bubble {
 		middle::addComponent<components::LoopTag>(newBubbleShape);
 		middle::addComponent<components::LoopSociety>(newBubbleShape);
 		middle::addComponent<components::PhysicsData>(newBubbleShape);
+		middle::addComponent<components::Layer>(newBubbleShape);
 		auto circle = middle::addComponent<components::Circle>(newBubbleShape);
 		circle->radius = 10;
 		auto position = middle::addComponent<components::Position>(newBubbleShape);
@@ -725,6 +732,7 @@ namespace bubble {
 		middle::addComponent<components::MouseSelectable>(newUnitShape);
 		middle::addComponent<components::LoopSociety>(newUnitShape);
 		middle::addComponent<components::PhysicsData>(newUnitShape);
+		middle::addComponent<components::Layer>(newUnitShape);
 		auto sphere = middle::addComponent<components::Sphere>(newUnitShape);
 		sphere->radius = 2;
 		auto position = middle::addComponent<components::Position>(newUnitShape);

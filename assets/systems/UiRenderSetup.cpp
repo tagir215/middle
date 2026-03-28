@@ -14,6 +14,7 @@
 #include "ProcedureContainer.h"
 #include "ScopeComponent.h"
 #include "bubble_colors.h"
+#include "Scale.h"
 
 class UiRenderSetup : public middle::MiddleGameplaySystem {
 public:
@@ -38,32 +39,6 @@ public:
 		textCache->addType<components::UiComponent>();
 	}
 
-	void drawRect(middle::GameState* gameState, const std::vector<Vector3>& vertices, const Color& color) {
-		middle::RenderItem line1;
-		line1.type = middle::RenderItemType::LINE;
-		line1.linePointA = vertices[0];
-		line1.linePointB = vertices[1];
-		line1.color = color;
-		gameState->renderData.push_back(line1);
-		middle::RenderItem line2;
-		line2.type = middle::RenderItemType::LINE;
-		line2.linePointA = vertices[1];
-		line2.linePointB = vertices[2];
-		line2.color = color;
-		gameState->renderData.push_back(line2);
-		middle::RenderItem line3;
-		line3.type = middle::RenderItemType::LINE;
-		line3.linePointA = vertices[2];
-		line3.linePointB = vertices[3];
-		line3.color = color;
-		gameState->renderData.push_back(line3);
-		middle::RenderItem line4;
-		line4.type = middle::RenderItemType::LINE;
-		line4.linePointA = vertices[3];
-		line4.linePointB = vertices[0];
-		line4.color = color;
-		gameState->renderData.push_back(line4);
-	}
 
 	void update(middle::GameState* gameState) override {
 
@@ -74,8 +49,19 @@ public:
 			Vector3 position = middle::getShapePosition(gameState, shape.id.index);
 			auto intersectable = middle::getComponent<components::MouseIntersectable>(shape);
 			Color color = intersectable && intersectable->intersectingTop ? bubbleColors::HOVERED_ITEM : bubbleColors::UI_BUTTON;
-			std::vector<Vector3>vertices = middle::getRectVertices(gameState, shape.id);
-			drawRect(gameState, vertices, color);
+			auto rect = middle::getComponent<components::Rectangle>(shape);
+
+			middle::RenderItem rectItem;
+			rectItem.type = middle::RenderItemType::RECTANGLE;
+			rectItem.color = color;
+			rectItem.width = rect->width;
+			rectItem.height = rect->height;
+			rectItem.center = position;
+			auto scale = middle::getComponent<components::Scale>(shape);
+			if (scale) {
+				rectItem.scale = scale->scale;
+			}
+			gameState->renderData.push_back(rectItem);
 		}
 
 		auto circleIt = circleCache->begin<components::Circle>();

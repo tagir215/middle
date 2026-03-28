@@ -19,6 +19,7 @@
 #include "BubbleVariable.h"
 #include "BubbleRootComponent.h" 
 #include "bubble_colors.h"
+#include "Layer.h"
 
 
 class BubbleRenderSetup : public middle::MiddleGameplaySystem {
@@ -42,6 +43,7 @@ public:
 		bubbleCache = middle::newCompCache(gameState);
 		bubbleCache->addType<components::BubbleComponent>();
 		bubbleCache->addType<components::Circle>();
+		bubbleCache->addType<components::Layer>();
 		mulCache = middle::newCompCache(gameState);
 		mulCache->addType<components::BubbleMultiplyComponent>();
 		mulCache->addType<components::LoopSociety>();
@@ -52,9 +54,11 @@ public:
 		unitCache->addType<components::BubbleUnit>();
 		unitCache->addType<components::Circle>();
 		unitCache->addType<components::Position>();
+		unitCache->addType<components::Layer>();
 		unitCache->addType<components::BubbleVariable>(components::NOTINTERESTED);
 		variableCache = middle::newCompCache(gameState);
 		variableCache->addType<components::BubbleUnit>();
+		variableCache->addType<components::Layer>();
 		variableCache->addType<components::BubbleVariable>();
 		cuboidCache = middle::newCompCache(gameState);
 		cuboidCache->addType<components::Cuboid>();
@@ -66,6 +70,7 @@ public:
 		rootCache->addType<components::BubbleRootComponent>();
 		rootCache->addType<components::Circle>();
 		rootCache->addType<components::Position>();
+		rootCache->addType<components::Layer>();
 	}
 	bool debugRendering = false;
 
@@ -76,9 +81,11 @@ public:
 		// render bubbbles
 		auto bubbleIt = bubbleCache->begin<components::BubbleComponent>();
 		auto bubbleCircleIt = bubbleCache->begin<components::Circle>();
+		auto bubbleLayerIt = bubbleCache->begin<components::Layer>();
 		for (int i = 0; i < bubbleCache->getSize(); ++i) {
 			auto bubble = *bubbleIt;
 			auto circle = *bubbleCircleIt;
+			auto layer = *bubbleLayerIt;
 			auto& shape = middle::getShape(gameState, bubbleCache->relevantIdVector[i].index);
 
 			auto intersectable = middle::getComponent<components::MouseIntersectable>(shape);
@@ -87,6 +94,8 @@ public:
 			middle::RenderItem circleItem;
 			circleItem.type = middle::RenderItemType::CIRCLE;
 			circleItem.color = color;
+			circleItem.layer = layer->layer;
+			circleItem.backgroundColor = bubbleColors::BUBBLE_BACKGROUND;
 			circleItem.radius = circle->radius;
 			circleItem.center = middle::getShapePosition(gameState, shape.id.index);
 			gameState->renderData.push_back(circleItem);
@@ -97,10 +106,12 @@ public:
 		auto unitIt = unitCache->begin<components::BubbleUnit>();
 		auto unitCircleIt = unitCache->begin<components::Circle>();
 		auto unitPosIt = unitCache->begin<components::Position>();
+		auto unitLayerIt = unitCache->begin<components::Layer>();
 		for (int i = 0; i < unitCache->getSize(); ++i) {
 			auto unit = *unitIt;
 			auto circle = *unitCircleIt;
 			auto pos = *unitPosIt;
+			auto layer = *unitLayerIt;
 			auto& shape = middle::getShape(gameState, unitCache->relevantIdVector[i].index);
 
 			middle::RenderItem particle;
@@ -108,9 +119,10 @@ public:
 			particle.length = 0.1f;
 			particle.ringRadius = circle->radius;
 			particle.radius = circle->radius;
+			particle.layer = layer->layer;
 			if (unit->value == 1) {
-				particle.type = middle::RenderItemType::CYLINDER;
-				particle.color = bubbleColors::POSITIVE_UNIT;
+				particle.type = middle::RenderItemType::CIRCLE;
+				particle.backgroundColor = bubbleColors::POSITIVE_UNIT;
 			}
 			if (unit->value == 0) {
 				particle.type = middle::RenderItemType::CIRCLE;
@@ -130,15 +142,18 @@ public:
 		// render variables
 		auto variableIt = variableCache->begin<components::BubbleVariable>();
 		auto variableUnitIt = variableCache->begin<components::BubbleUnit>();
+		auto layerIt = variableCache->begin<components::Layer>();
 		for (int i = 0; i < variableCache->getSize(); ++i) {
 			auto variable = *variableIt;
 			auto unit = *variableUnitIt;
+			auto layer = *layerIt;
 			auto& shape = middle::getShape(gameState, variableCache->relevantIdVector[i].index);
 
 			auto pos = middle::getComponent<components::Position>(shape);
 			middle::RenderItem variableRing;
 			variableRing.center = { pos->posX, pos->posY, pos->posZ };
 			variableRing.length = 0.1f;
+			variableRing.layer = layer->layer;
 			const float variableRadius = 4;
 			variableRing.ringRadius = variableRadius;
 			variableRing.radius = variableRadius;
@@ -176,6 +191,7 @@ public:
 				auto positionB = middle::getComponent<components::Position>(shapeB);
 				auto circleA = middle::getComponent<components::Circle>(shapeA);
 				auto circleB = middle::getComponent<components::Circle>(shapeB);
+				auto layer = middle::getComponent<components::Layer>(shapeA);
 				if (!circleA || !circleB)
 					continue;
 				Vector3 posA = { positionA->posX, positionA->posY, positionA->posZ };
@@ -186,6 +202,7 @@ public:
 				line.linePointA = posA + Vector3Scale(axis, circleA->radius);
 				line.linePointB = posB + Vector3Scale(axis, -circleB->radius);
 				line.color = bubbleColors::MULTIPLICATION_CONNECTION;
+				line.layer = layer->layer;
 				gameState->renderData.push_back(line);
 			}
 		}
@@ -203,9 +220,11 @@ public:
 				auto circleB = middle::getComponent<components::Circle>(shapeB);
 				Vector3 posA = { positionA->posX, positionA->posY, positionA->posZ };
 				Vector3 posB = { positionB->posX, positionB->posY, positionB->posZ };
+				auto layer = middle::getComponent<components::Layer>(shapeA);
 				middle::RenderItem line;
 				line.type = middle::RenderItemType::LINE;
 				line.color = bubbleColors::FRACTION_CONNECTION;
+				line.layer = layer->layer;
 				Vector3 pointA = posA;
 				Vector3 pointB = posB;
 				Vector3 axis = Vector3Normalize(Vector3Subtract(posB, posA));
@@ -255,11 +274,13 @@ public:
 			Vector3 axis = Vector3Normalize(Vector3Subtract(posB, posA));
 			Vector3 linePointA = posA + Vector3Scale(axis, circleA->radius);
 			Vector3 linePointB = posB + Vector3Scale(axis, -circleB->radius);
+			auto layer = middle::getComponent<components::Layer>(shapeA);
 			middle::RenderItem equalsLine;
 			equalsLine.type = middle::RenderItemType::LINE;
 			equalsLine.linePointA = linePointA;
 			equalsLine.linePointB = linePointB;
 			equalsLine.color = bubbleColors::EQUALS_CONNECTION;
+			equalsLine.layer = layer->layer;
 			gameState->renderData.push_back(equalsLine);
 		}
 
@@ -267,10 +288,12 @@ public:
 		auto rootIt = rootCache->begin<components::BubbleRootComponent>();
 		auto rootCircleIt = rootCache->begin<components::Circle>();
 		auto rootPositionIt = rootCache->begin<components::Position>();
+		auto rootLayerIt = rootCache->begin<components::Layer>();
 		for (int i = 0; i < rootCache->getSize(); ++i) {
 			auto root = *rootIt;
 			auto bubbleCircle = *rootCircleIt;
 			auto position = *rootPositionIt;
+			auto layer = *rootLayerIt;
 			Vector3 bubblePos = { position->posX, position->posY, position->posZ };
 
 
@@ -336,6 +359,7 @@ public:
 				powerCircle.color = powerColor;
 				powerCircle.ringRadius = 0.2f;
 				powerCircle.segments = 20;
+				powerCircle.layer = layer->layer;
 				gameState->renderData.push_back(powerCircle);
 
 				const float helperAngleOffset = PI * 0.1f;
@@ -370,8 +394,8 @@ public:
 				cone.transform.scale = coneScale;
 				cone.center = { 0,0,0 };
 				cone.color = powerColor;
+				cone.layer = layer->layer;
 				gameState->renderData.push_back(cone);
-
 			}
 		}
 	}

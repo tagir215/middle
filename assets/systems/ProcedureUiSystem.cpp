@@ -156,15 +156,11 @@ public:
 				auto rect = middle::getComponent<components::Rectangle>(activeBlockShape);
 				middle::RenderItem activeBlockItem;
 				activeBlockItem.type = middle::RenderItemType::RECTANGLE;
-				activeBlockItem.color = highlightColor;
+				activeBlockItem.backgroundColor = highlightColor;
 				activeBlockItem.width = rect->width;
 				activeBlockItem.height = rect->height;
 				activeBlockItem.length = 0.2f;
-				activeBlockItem.center = { 0,1,0 };
-				Transform transform = {
-					position, {0,0,0,0}, {1,1,1}
-				};
-				activeBlockItem.transform = transform;
+				activeBlockItem.center = position;
 				gameState->renderData.push_back(activeBlockItem);
 			}
 		}

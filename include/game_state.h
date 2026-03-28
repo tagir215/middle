@@ -88,10 +88,13 @@ namespace middle {
 	struct RenderItem {
 		RenderItemType type;
 		Color color;
-		Vector3 center;
+		Color backgroundColor = {0,0,0,0};
+		Vector3 center = {0,0,0};
+		Vector3 scale = {1,1,1};
 		Vector3 linePointA;
 		Vector3 linePointB;
 		Transform transform;
+		int layer = 0;
 		float radius;
 		float ringRadius;
 		float startAngle;
