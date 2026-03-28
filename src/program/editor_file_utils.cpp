@@ -444,7 +444,7 @@ namespace middle {
 		}
 
 		outFile << "#activeScene" << "\n";
-		outFile << fieldToString(gameState->activeScene);
+		outFile << fieldToString(gameState->activeSceneName);
 		outFile << "#editorCameraPos" << "\n";
 		outFile << coordToLines(gameState->editorState.camera.position) << std::endl;
 
@@ -495,7 +495,7 @@ namespace middle {
 		}
 		if (field == "#activeScene") {
 			assert(buffer.size() == 1);
-			fillField(&gameState->activeScene, buffer[0]);
+			fillField(&gameState->activeSceneName, buffer[0]);
 			buffer.clear();
 		}
 		assert("something wrong about data");

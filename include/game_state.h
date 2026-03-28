@@ -151,7 +151,7 @@ namespace middle {
 		Matrix oldWorldM;
 		Matrix screenOrientorM;
 		Vector3 mouseIntersectTopPosition;
-		int activeScene = 0;
+		std::string activeSceneName = "";
 		int vertexIndex = 0;
 		int loopIndex = 0;
 		int uniqueComponentCount = 0;

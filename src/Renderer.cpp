@@ -160,7 +160,7 @@ namespace RendererSystem {
 			Vector3 center = { 0,0,0 };
 			Vector2 center2d = GetWorldToScreen(center, camera);
 			if (gameState->sceneNames.size() > 0) {
-				DrawText(gameState->sceneNames[gameState->activeScene].c_str(), center2d.x, center2d.y, 1, WHITE);
+				DrawText(gameState->activeSceneName.c_str(), center2d.x, center2d.y, 1, WHITE);
 			}
 
 			rlImGuiBegin();

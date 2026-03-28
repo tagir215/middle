@@ -16,6 +16,12 @@ public:
 		cache->addType<components::MouseClickComponent>();
 	}
 
+	void saveState(middle::GameState* gameState) {
+		std::string name = gameState->activeSceneName;
+		if (name == "LevelSelect") {
+			int a = 0;
+		}
+	}
 
 	void update(middle::GameState* gameState) override {
 
@@ -24,9 +30,10 @@ public:
 			auto levelRef = *levelIt;
 			std::string name = levelRef->levelName;
 			middle::queueAction(gameState, std::make_shared<middle::CustomAction>(
-				[name](middle::GameState* gameState) {
-				middle::resetScene(gameState);
-				middle::loadScene(gameState, "../assets/scenes/", name, false);
+				[name,this](middle::GameState* gameState) {
+					saveState(gameState);
+					middle::resetScene(gameState);
+					middle::loadScene(gameState, "../assets/scenes/", name, false);
 				}));
 		}
 	}

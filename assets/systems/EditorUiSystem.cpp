@@ -155,7 +155,7 @@ public:
 			}
 
 			if (ImGui::Button("SAVE SCENE")) {
-				middle::queueAction(gameState, std::make_shared<middle::EditorActionSaveScene>(gameState->sceneNames[gameState->activeScene]));
+				middle::queueAction(gameState, std::make_shared<middle::EditorActionSaveScene>(gameState->activeSceneName));
 			}
 
 			if (ImGui::Button("CREATE LOOP")) {
@@ -175,7 +175,7 @@ public:
 			ImGui::Begin("Scene");
 
 			if (gameState->sceneNames.size() > 0) {
-				ImGui::Text(("ActiveScene: " + gameState->sceneNames[gameState->activeScene]).c_str());
+				ImGui::Text(("ActiveScene: " + gameState->activeSceneName).c_str());
 			}
 
 			static int action = 0;
