@@ -24,6 +24,7 @@
 #include "Highlight.h"
 #include "Circle.h"
 #include "ProcedureInputVariable.h"
+#include "bubble_colors.h"
 
 
 
@@ -37,8 +38,8 @@ public:
 	components::CompCache* inputCache;
 	std::vector<std::string>procedureNames;
 
-	Color highlightColor = { GREEN.r, GREEN.g, GREEN.b, 60 };
-	Color highlightColor2 = { 0, 255, 255, 30 };
+	Color highlightColor = bubbleColors::HOVERED_ITEM;
+	Color highlightColor2 = bubbleColors::PROCEDURE_SELECTED;
 
 	void init(middle::GameState* gameState) {
 		buttonCache = middle::newCompCache(gameState);

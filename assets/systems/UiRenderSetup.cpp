@@ -13,6 +13,7 @@
 #include "Triangle.h"
 #include "ProcedureContainer.h"
 #include "ScopeComponent.h"
+#include "bubble_colors.h"
 
 class UiRenderSetup : public middle::MiddleGameplaySystem {
 public:
@@ -72,7 +73,7 @@ public:
 			auto& shape = middle::getShape(gameState, rectangleCache->relevantIdVector[i].index);
 			Vector3 position = middle::getShapePosition(gameState, shape.id.index);
 			auto intersectable = middle::getComponent<components::MouseIntersectable>(shape);
-			Color color = intersectable && intersectable->intersectingTop ? WHITE : Color{ 200,200,200,200 };
+			Color color = intersectable && intersectable->intersectingTop ? bubbleColors::HOVERED_ITEM : bubbleColors::UI_BUTTON;
 			std::vector<Vector3>vertices = middle::getRectVertices(gameState, shape.id);
 			drawRect(gameState, vertices, color);
 		}
@@ -83,7 +84,7 @@ public:
 			auto& shape = middle::getShape(gameState, circleCache->relevantIdVector[i].index);
 			auto intersectable = middle::getComponent<components::MouseIntersectable>(shape);
 			bool intersecting = intersectable && intersectable->intersectingTop;
-			Color color = intersecting ? WHITE : Color{ 200,200,200,200 };
+			Color color = intersecting ? bubbleColors::HOVERED_ITEM : bubbleColors::UI_BUTTON;
 			middle::RenderItem circleItem;
 			circleItem.type = middle::RenderItemType::CIRCLE;
 			circleItem.color = color;
@@ -110,6 +111,7 @@ public:
 			textItem.text = text->text;
 			Vector3 offset = { text->offsetX, text->offsetY, text->offsetZ };
 			textItem.center = pos + offset;
+			textItem.color = bubbleColors::UI_TEXT;
 			gameState->renderData.push_back(textItem);
 		}
 	}

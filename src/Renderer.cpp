@@ -36,8 +36,10 @@ namespace RendererSystem {
 
 			BeginMode3D(camera);
 
-			// center indicator
-			DrawCube({ 0,5,0 }, 5, 5, 5, BLACK);
+			if (gameState->applicationMode == middle::ApplicationMode::EDITOR_MODE) {
+				// center indicator
+				DrawCube({ 0,5,0 }, 5, 5, 5, BLACK);
+			}
 
 			rlSetClipPlanes(gameState->nearPlaneDistance, gameState->farPlaneDistance);
 
@@ -159,7 +161,7 @@ namespace RendererSystem {
 
 			Vector3 center = { 0,0,0 };
 			Vector2 center2d = GetWorldToScreen(center, camera);
-			if (gameState->sceneNames.size() > 0) {
+			if (gameState->sceneNames.size() > 0 && gameState->applicationMode == middle::ApplicationMode::EDITOR_MODE) {
 				DrawText(gameState->activeSceneName.c_str(), center2d.x, center2d.y, 1, WHITE);
 			}
 

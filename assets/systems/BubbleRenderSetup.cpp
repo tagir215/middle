@@ -18,6 +18,7 @@
 #include "BubbleEqualsComponent.h"
 #include "BubbleVariable.h"
 #include "BubbleRootComponent.h" 
+#include "bubble_colors.h"
 
 
 class BubbleRenderSetup : public middle::MiddleGameplaySystem {
@@ -70,6 +71,7 @@ public:
 
 	void update(middle::GameState* gameState) override {
 
+		gameState->editorState.backgroundColor = bubbleColors::BACKGROUND;
 
 		// render bubbbles
 		auto bubbleIt = bubbleCache->begin<components::BubbleComponent>();
@@ -81,97 +83,13 @@ public:
 
 			auto intersectable = middle::getComponent<components::MouseIntersectable>(shape);
 			bool intersecting = intersectable && intersectable->intersectingTop;
-			Color color = intersecting ? WHITE : Color{ 200,200,200,200 };
+			Color color = intersecting ? bubbleColors::HOVERED_ITEM : bubbleColors::BUBBLE_OUTLINE;
 			middle::RenderItem circleItem;
 			circleItem.type = middle::RenderItemType::CIRCLE;
 			circleItem.color = color;
 			circleItem.radius = circle->radius;
 			circleItem.center = middle::getShapePosition(gameState, shape.id.index);
 			gameState->renderData.push_back(circleItem);
-
-			auto ref = middle::getComponent<components::BubbleRef>(shape);
-			if (!ref || ref->idRef.index == middle::UNASSIGNED) {
-				continue;
-			}
-
-			if (!middle::isShapeAlive(gameState, ref->idRef.index)) {
-				continue;
-			}
-
-			auto& bubbleContainer = middle::getShape(gameState, ref->idRef.index);
-			auto containerLoop = middle::getComponent<components::LoopSociety>(bubbleContainer);
-
-			std::vector<middle::Id>outlineNodes = bubble::getNodes(gameState, containerLoop);
-
-			for (int index = 0; index < outlineNodes.size(); ++index) {
-				int indexA = index - 1;
-				int indexB = index;
-				if (index == 0) {
-					indexA = outlineNodes.size() - 1;
-				}
-				middle::Id nodeIdA = outlineNodes[indexA];
-				middle::Id nodeIdB = outlineNodes[indexB];
-				Vector3 posA = middle::getShapePosition(gameState, nodeIdA.index);
-				Vector3 posB = middle::getShapePosition(gameState, nodeIdB.index);
-
-				middle::RenderItem outlineItem;
-				outlineItem.type = middle::RenderItemType::LINE;
-				outlineItem.linePointA = posA;
-				outlineItem.linePointB = posB;
-
-				auto intersectable = middle::getComponent<components::MouseIntersectable>(shape);
-				if (intersectable->intersectingTop) {
-					outlineItem.color = WHITE;
-				}
-				else {
-					outlineItem.color = middle::UGLY_PINK;
-				}
-				gameState->renderData.push_back(outlineItem);
-			}
-
-			if (debugRendering) {
-				Vector3 axis = { bubble->axisX, bubble->axisY, bubble->axisZ };
-				Vector3 center = { bubble->centerX, bubble->centerY, bubble->centerZ };
-				float l = bubble->length;
-				float w = bubble->width;
-
-				middle::RenderItem p1;
-				p1.linePointA = center + axis * l * 0.5f;
-				p1.linePointB = center - axis * l * 0.5f;
-				p1.type = middle::RenderItemType::LINE;
-				p1.color = PINK;
-				gameState->renderData.push_back(p1);
-
-				middle::RenderItem c;
-				c.center = center;
-				c.radius = 10;
-				c.type = middle::RenderItemType::SPHERE;
-				c.color = PINK;
-				gameState->renderData.push_back(c);
-
-				middle::RenderItem d;
-				d.center = { bubble->aX, bubble->aY, bubble->aZ };
-				d.radius = 3;
-				d.type = middle::RenderItemType::SPHERE;
-				d.color = ORANGE;
-				gameState->renderData.push_back(d);
-
-				middle::RenderItem e;
-				e.center = { bubble->bX, bubble->bY, bubble->bZ };
-				e.radius = 3;
-				e.type = middle::RenderItemType::SPHERE;
-				e.color = ORANGE;
-				gameState->renderData.push_back(e);
-
-				middle::RenderItem nodeCountText;
-				nodeCountText.center = center;
-				nodeCountText.type = middle::RenderItemType::TEXT;
-				//nodeCountText.text = std::to_string(bubble->outline.size());
-				nodeCountText.text = std::to_string(bubble->nodeCountTarget);
-				gameState->renderData.push_back(nodeCountText);
-
-			}
-
 		}
 
 
@@ -192,19 +110,19 @@ public:
 			particle.radius = circle->radius;
 			if (unit->value == 1) {
 				particle.type = middle::RenderItemType::CYLINDER;
-				particle.color = BLACK;
+				particle.color = bubbleColors::POSITIVE_UNIT;
 			}
 			if (unit->value == 0) {
 				particle.type = middle::RenderItemType::CIRCLE;
-				particle.color = { 255,255,255, 60 };
+				particle.color = bubbleColors::BUBBLE_OUTLINE;
 			}
 			if (unit->value == -1) {
-				particle.color = { 0,255,255,255 };
+				particle.color = bubbleColors::NEGATIVE_UNIT;
 			}
 
 			auto intersectable = middle::getComponent<components::MouseIntersectable>(shape);
 			if (intersectable->intersectingTop) {
-				particle.color = WHITE;
+				particle.color = bubbleColors::HOVERED_ITEM;
 			}
 			gameState->renderData.push_back(particle);
 		}
@@ -225,20 +143,20 @@ public:
 			variableRing.ringRadius = variableRadius;
 			variableRing.radius = variableRadius;
 			variableRing.type = middle::RenderItemType::CIRCLE;
-			variableRing.color = BLACK;
+			variableRing.color = bubbleColors::VARIABLE_OUTLINE;
 			if (unit->value == -1) {
 				variableRing.color = { 0,255,255,255 };
 			}
 			auto intersectable = middle::getComponent<components::MouseIntersectable>(shape);
 			if (intersectable->intersectingTop) {
-				variableRing.color = WHITE;
+				variableRing.color = bubbleColors::HOVERED_ITEM;
 			}
 			gameState->renderData.push_back(variableRing);
 
 			middle::RenderItem variableText;
 			variableText.type = middle::RenderItemType::TEXT;
 			variableText.center = variableRing.center;
-			variableText.color = GREEN;
+			variableText.color = bubbleColors::VARIABLE_TEXT;
 			variableText.text = variable->label;
 			variableText.fontSize = 15;
 			gameState->renderData.push_back(variableText);
@@ -267,7 +185,7 @@ public:
 				line.type = middle::RenderItemType::LINE;
 				line.linePointA = posA + Vector3Scale(axis, circleA->radius);
 				line.linePointB = posB + Vector3Scale(axis, -circleB->radius);
-				line.color = RED;
+				line.color = bubbleColors::MULTIPLICATION_CONNECTION;
 				gameState->renderData.push_back(line);
 			}
 		}
@@ -287,7 +205,7 @@ public:
 				Vector3 posB = { positionB->posX, positionB->posY, positionB->posZ };
 				middle::RenderItem line;
 				line.type = middle::RenderItemType::LINE;
-				line.color = WHITE;
+				line.color = bubbleColors::FRACTION_CONNECTION;
 				Vector3 pointA = posA;
 				Vector3 pointB = posB;
 				Vector3 axis = Vector3Normalize(Vector3Subtract(posB, posA));
@@ -315,7 +233,7 @@ public:
 			cuboidItem.width = cuboid->width;
 			cuboidItem.height = cuboid->height;
 			cuboidItem.length = cuboid->length;
-			cuboidItem.color = WHITE;
+			cuboidItem.color = bubbleColors::BACKGROUND;
 			// TODO
 			cuboidItem.color.a = 30;
 			cuboidItem.center = { pos->posX, pos->posY, pos->posZ };
@@ -341,7 +259,7 @@ public:
 			equalsLine.type = middle::RenderItemType::LINE;
 			equalsLine.linePointA = linePointA;
 			equalsLine.linePointB = linePointB;
-			equalsLine.color = BLUE;
+			equalsLine.color = bubbleColors::EQUALS_CONNECTION;
 			gameState->renderData.push_back(equalsLine);
 		}
 
@@ -371,7 +289,7 @@ public:
 				powerIterations = -root->power;
 			}
 
-			Color powerColor = isNegative ? BLUE : RED;
+			Color powerColor = isNegative ? bubbleColors::NEGATIVE_POWER : bubbleColors::POSITIVE_POWER;
 
 			for (int power = 0; power < powerIterations; ++power) {
 				float ra = bubbleCircle->radius;
