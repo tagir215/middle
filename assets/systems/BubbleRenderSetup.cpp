@@ -359,7 +359,7 @@ public:
 				powerCircle.color = powerColor;
 				powerCircle.ringRadius = 0.2f;
 				powerCircle.segments = 20;
-				powerCircle.layer = layer->layer;
+				powerCircle.layer = layer->layer + 1;
 				gameState->renderData.push_back(powerCircle);
 
 				const float helperAngleOffset = PI * 0.1f;
@@ -394,7 +394,7 @@ public:
 				cone.transform.scale = coneScale;
 				cone.center = { 0,0,0 };
 				cone.color = powerColor;
-				cone.layer = layer->layer;
+				cone.layer = layer->layer + 1;
 				gameState->renderData.push_back(cone);
 			}
 		}

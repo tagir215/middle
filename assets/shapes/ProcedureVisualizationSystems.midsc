@@ -1,16 +1,9 @@
 __q  2_0
+MouseGrabbable
 Position
 f  0.000000
 f  0.000000
 f  0.000000
-LoopTag
-LoopSociety
-q  -1_0
-p  
-q  109_0
-q  107_0
-q  26_0
-q  55_0
 Text
 s  ProcedureVisualizationSystems
 f  0.000000
@@ -22,12 +15,17 @@ f  0.000000
 f  0.000000
 f  1.000000
 b  1
+LoopTag
+LoopSociety
+q  -1_0
+p  
+q  109_0
+q  105_0
 MouseSelectable
 MouseIntersectable
-MouseGrabbable
-__q  55_0
+__q  105_0
 Text
-s  OutputVariableSystem
+s  CodeBlockSystem
 f  255.000000
 f  255.000000
 f  255.000000
@@ -37,66 +35,18 @@ f  0.000000
 f  10.000000
 f  10.000000
 b  1
+LoopSociety
+q  2_0
+p  
+SystemReference
+s  CodeBlockSystem
 MouseSelectable
 MouseIntersectable
-SystemReference
-s  OutputVariableSystem
-MouseGrabbable
 Position
-f  -9.688324
+f  -126.826958
 f  -0.000012
-f  -54.834747
-LoopSociety
-q  2_0
-p  
-__q  26_0
-Text
-s  VariableLinkingSystem
-f  255.000000
-f  255.000000
-f  255.000000
-f  255.000000
-f  2.000000
-f  0.000000
-f  10.000000
-f  10.000000
-b  1
-MouseSelectable
-SystemReference
-s  VariableLinkingSystem
+f  72.399506
 MouseGrabbable
-MouseIntersectable
-Position
-f  -37.089371
-f  -0.000073
-f  -26.068756
-LoopSociety
-q  2_0
-p  
-__q  107_0
-Text
-s  RectangleIntersectionSystem
-f  255.000000
-f  255.000000
-f  255.000000
-f  255.000000
-f  2.000000
-f  0.000000
-f  10.000000
-f  10.000000
-b  1
-MouseSelectable
-SystemReference
-s  RectangleIntersectionSystem
-MouseGrabbable
-MouseIntersectable
-Position
-f  41.387177
-f  -0.000073
-f  30.037598
-LoopSociety
-q  2_0
-p  
 __q  109_0
 Text
 s  CodeBlockLayoutSystem
@@ -109,15 +59,15 @@ f  0.000000
 f  10.000000
 f  10.000000
 b  1
-MouseSelectable
-SystemReference
-s  CodeBlockLayoutSystem
-MouseGrabbable
-MouseIntersectable
-Position
-f  4.317780
-f  0.000110
-f  4.785553
 LoopSociety
 q  2_0
 p  
+SystemReference
+s  CodeBlockLayoutSystem
+MouseSelectable
+MouseIntersectable
+Position
+f  -108.506241
+f  0.000110
+f  41.485138
+MouseGrabbable

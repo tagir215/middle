@@ -1,0 +1,3746 @@
+#scene
+s  Procedure0
+__q  0_0
+MouseSelectable
+Position
+f  190.211304
+f  200.000000
+f  61.803402
+MouseGrabbable
+MouseIntersectable
+LoopSociety
+q  -1_0
+p  
+SystemReference
+s  EditorSystem
+Text
+s  EditorSystem
+f  255.000000
+f  255.000000
+f  255.000000
+f  255.000000
+f  2.000000
+f  0.000000
+f  10.000000
+f  10.000000
+b  1
+__q  1_0
+Rectangle
+f  20.000000
+f  10.000000
+CodeFunction
+i  12
+LoopSociety
+q  3_0
+p  
+q  5_0
+q  6_0
+Sphere
+f  2.000000
+MouseIntersectable
+MouseSelectable
+Position
+f  664.112549
+f  -52.000305
+f  51.457062
+MouseGrabbable
+Text
+s  NEGATE
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  1.000000
+b  1
+Offset
+f  0.000000
+f  0.000000
+f  0.000000
+UiComponent
+i  -1
+__q  2_0
+MouseGrabbable
+Position
+f  215.396637
+f  0.000012
+f  -388.682495
+Text
+s  ProcedureVisualizationSystems
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  1.000000
+b  1
+LoopTag
+LoopSociety
+q  -1_0
+p  
+q  109_0
+q  105_0
+MouseSelectable
+MouseIntersectable
+__q  3_0
+LoopSociety
+q  139_0
+p  
+q  48_0
+q  61_0
+q  69_0
+q  77_0
+q  85_0
+q  10_0
+q  20_0
+q  1_0
+Sphere
+f  2.000000
+MouseSelectable
+MouseIntersectable
+Inventory
+b  0
+i  1
+MouseGrabbable
+Position
+f  664.112549
+f  -52.000305
+f  129.234863
+Rectangle
+f  55.299999
+f  200.000000
+UiComponent
+i  -1
+__q  4_0
+Position
+f  -1023.825439
+f  -0.000122
+f  -934.265625
+MouseGrabbable
+MouseSelectable
+MouseIntersectable
+Reference
+s  BubbleGameplaySystems
+s  ../assets/shapes/
+LoopSociety
+__q  5_0
+MouseSelectable
+Circle
+f  4.000000
+LoopSociety
+q  1_0
+p  
+Sphere
+f  2.000000
+MouseIntersectable
+MouseGrabbable
+Position
+f  644.112549
+f  -52.000305
+f  51.457062
+Text
+s  
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  3.000000
+b  1
+InputVariable
+q  757_0
+s  
+q  -1_0
+i  0
+UiComponent
+i  -1
+__q  6_0
+MouseSelectable
+Circle
+f  4.000000
+LoopSociety
+q  1_0
+p  
+Sphere
+f  2.000000
+MouseIntersectable
+MouseGrabbable
+Position
+f  684.112549
+f  -52.000305
+f  51.457062
+Text
+s  
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  3.000000
+b  1
+OutputVariable
+q  757_0
+s  
+UiComponent
+i  -1
+__q  7_0
+MouseSelectable
+Position
+f  -135.235001
+f  200.000000
+f  147.348206
+MouseGrabbable
+MouseIntersectable
+LoopSociety
+q  -1_0
+p  
+SystemReference
+s  MiddlePhysicsSystem
+Text
+s  MiddlePhysicsSystem
+f  255.000000
+f  255.000000
+f  255.000000
+f  255.000000
+f  2.000000
+f  0.000000
+f  10.000000
+f  10.000000
+b  1
+__q  8_0
+Rectangle
+f  20.000000
+f  10.000000
+CodeFunction
+i  20
+LoopSociety
+q  45_0
+p  
+q  9_0
+q  46_0
+q  52_0
+q  53_0
+Sphere
+f  2.000000
+MouseIntersectable
+MouseSelectable
+Position
+f  647.351440
+f  -52.000244
+f  -286.299316
+MouseGrabbable
+Text
+s  FIND_UNIT
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  1.000000
+b  1
+IfComponent
+i  0
+Offset
+f  0.000000
+f  0.000000
+f  0.000000
+UiComponent
+i  -1
+__q  9_0
+Offset
+f  0.300000
+f  0.000000
+f  0.000000
+LoopSociety
+q  8_0
+p  
+q  11_0
+Sphere
+f  2.000000
+MouseSelectable
+Rectangle
+f  46.000000
+f  3.000000
+MouseIntersectable
+MouseGrabbable
+Position
+f  656.351440
+f  -52.000244
+f  -287.499329
+ScopeComponent
+Scale
+v  
+0.100000
+0.100000
+0.100000
+UiComponent
+i  -1
+__q  10_0
+Rectangle
+f  20.000000
+f  10.000000
+CodeFunction
+i  13
+LoopSociety
+q  3_0
+p  
+q  19_0
+Sphere
+f  2.000000
+MouseIntersectable
+MouseSelectable
+Position
+f  664.112549
+f  -52.000305
+f  95.901505
+MouseGrabbable
+Text
+s  0
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  1.000000
+b  1
+Offset
+f  0.000000
+f  0.000000
+f  0.000000
+UiComponent
+i  -1
+__q  11_0
+MouseIntersectable
+MouseSelectable
+CodeBlock
+i  0
+LoopSociety
+q  9_0
+p  
+Sphere
+f  2.000000
+Position
+f  656.351440
+f  -52.000244
+f  -287.499329
+MouseGrabbable
+Rectangle
+f  60.000000
+f  30.000000
+Offset
+f  3.000000
+f  0.000000
+f  0.000000
+Scale
+v  
+1.000000
+1.000000
+1.000000
+UiComponent
+i  -1
+__q  12_0
+MouseIntersectable
+Inventory
+b  0
+i  1
+Position
+f  154.115173
+f  -52.000244
+f  120.561493
+MouseGrabbable
+MouseSelectable
+LoopSociety
+q  139_0
+p  
+q  13_0
+Sphere
+f  2.000000
+Rectangle
+f  70.000000
+f  90.000000
+UiComponent
+i  -1
+__q  13_0
+Rectangle
+f  40.000000
+f  25.000000
+Sphere
+f  2.000000
+LoopSociety
+q  12_0
+p  
+Text
+s  
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  1.000000
+b  1
+Position
+f  154.115173
+f  -52.000244
+f  120.561493
+MouseGrabbable
+MouseSelectable
+MouseIntersectable
+CodeBlock
+i  0
+Offset
+f  0.000000
+f  0.000000
+f  0.000000
+Scale
+v  
+1.000000
+1.000000
+1.000000
+UiComponent
+i  -1
+__q  14_0
+MouseIntersectable
+MouseGrabbable
+Position
+f  -496.454956
+f  -52.000153
+f  174.222565
+Inventory
+b  0
+i  1
+MouseSelectable
+Sphere
+f  2.000000
+LoopSociety
+q  139_0
+p  
+UiComponent
+i  -1
+Text
+s  Back
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  1.000000
+b  1
+Circle
+f  10.000000
+Button
+i  -1
+__q  15_0
+MouseSelectable
+MouseIntersectable
+Sphere
+f  2.000000
+LoopSociety
+q  30_0
+p  
+Offset
+f  0.000000
+f  0.000000
+f  0.000000
+Text
+s  BubbleRef
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  1.000000
+b  1
+Position
+f  -186.222961
+f  -0.000122
+f  -77.114784
+MouseGrabbable
+Circle
+f  10.000000
+UiComponent
+i  -1
+InventoryItem
+i  0
+InputVariable
+q  -1_0
+s  BubbleRef
+q  -1_0
+i  0
+ProcedureInputVariable
+b  1
+__q  16_0
+Sphere
+f  2.000000
+LoopSociety
+q  30_0
+p  
+q  192_0
+Rectangle
+f  100.000000
+f  30.000000
+MouseSelectable
+ProcedureComponent
+MouseIntersectable
+Position
+f  -136.967651
+f  -0.000061
+f  -111.151344
+MouseGrabbable
+Offset
+f  30.000000
+f  0.000000
+f  0.000000
+ScopeComponent
+Scale
+v  
+1.000000
+1.000000
+1.000000
+UiComponent
+i  -1
+__q  17_0
+LoopSociety
+q  -1_0
+p  
+Sphere
+f  2.000000
+CameraComponent
+f  -135.964111
+f  9348.000000
+f  12.883064
+f  0.000000
+f  0.000000
+f  1.000000
+f  45.000000
+i  0
+b  1
+MouseIntersectable
+MouseSelectable
+MouseGrabbable
+Position
+f  -135.964111
+f  -652.000122
+f  12.883064
+__q  18_0
+MouseIntersectable
+MouseSelectable
+LoopSociety
+q  93_0
+p  
+q  21_0
+Sphere
+f  2.000000
+CodeFunction
+i  17
+Rectangle
+f  20.000000
+f  10.000000
+Position
+f  222.942719
+f  -52.000000
+f  69.589142
+MouseGrabbable
+Text
+s  MUL_ONE
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  1.000000
+b  1
+Offset
+f  0.000000
+f  0.000000
+f  0.000000
+UiComponent
+i  -1
+__q  19_0
+MouseSelectable
+Circle
+f  4.000000
+LoopSociety
+q  10_0
+p  
+Sphere
+f  2.000000
+MouseIntersectable
+MouseGrabbable
+Position
+f  684.112549
+f  -52.000305
+f  95.901505
+Text
+s  
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  3.000000
+b  1
+OutputVariable
+q  757_0
+s  
+UiComponent
+i  -1
+__q  20_0
+MouseIntersectable
+MouseSelectable
+LoopSociety
+q  3_0
+p  
+q  22_0
+Sphere
+f  2.000000
+CodeFunction
+i  14
+Rectangle
+f  20.000000
+f  10.000000
+Position
+f  664.112549
+f  -52.000305
+f  73.679283
+MouseGrabbable
+Text
+s  1
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  1.000000
+b  1
+Offset
+f  0.000000
+f  0.000000
+f  0.000000
+UiComponent
+i  -1
+__q  21_0
+MouseSelectable
+Circle
+f  4.000000
+LoopSociety
+q  18_0
+p  
+Sphere
+f  2.000000
+MouseIntersectable
+MouseGrabbable
+Position
+f  202.942719
+f  -52.000000
+f  69.589142
+Text
+s  
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  3.000000
+b  1
+InputVariable
+q  757_0
+s  
+q  -1_0
+i  0
+UiComponent
+i  -1
+__q  22_0
+MouseSelectable
+Circle
+f  4.000000
+LoopSociety
+q  20_0
+p  
+Sphere
+f  2.000000
+MouseIntersectable
+MouseGrabbable
+Position
+f  684.112549
+f  -52.000305
+f  73.679283
+Text
+s  
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  3.000000
+b  1
+OutputVariable
+q  757_0
+s  
+UiComponent
+i  -1
+__q  23_0
+CodeFunction
+i  22
+Sphere
+f  2.000000
+LoopSociety
+q  93_0
+p  
+q  29_0
+Rectangle
+f  20.000000
+f  10.000000
+MouseIntersectable
+MouseSelectable
+Position
+f  222.942719
+f  -52.000000
+f  -50.410858
+MouseGrabbable
+Text
+s  POWER
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  1.000000
+b  1
+Offset
+f  0.000000
+f  0.000000
+f  0.000000
+UiComponent
+i  -1
+__q  25_0
+Rectangle
+f  20.000000
+f  10.000000
+CodeFunction
+i  18
+LoopSociety
+q  93_0
+p  
+q  28_0
+q  31_0
+Sphere
+f  2.000000
+MouseIntersectable
+MouseSelectable
+MouseGrabbable
+Position
+f  222.942719
+f  -52.000000
+f  45.589142
+Text
+s  BREAK
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  1.000000
+b  1
+Offset
+f  0.000000
+f  0.000000
+f  0.000000
+UiComponent
+i  -1
+__q  26_0
+MouseIntersectable
+Inventory
+b  0
+i  1
+Position
+f  657.046997
+f  -52.000000
+f  -68.280167
+MouseGrabbable
+MouseSelectable
+LoopSociety
+q  139_0
+p  
+q  110_0
+q  27_0
+Sphere
+f  2.000000
+Rectangle
+f  55.299999
+f  150.000000
+UiComponent
+i  -1
+__q  27_0
+Rectangle
+f  20.000000
+f  10.000000
+CodeFunction
+i  5
+LoopSociety
+q  26_0
+p  
+Sphere
+f  2.000000
+MouseIntersectable
+MouseSelectable
+Position
+f  657.046997
+f  -52.000000
+f  -93.280167
+MouseGrabbable
+Text
+s  EXIT_LOOP
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  1.000000
+b  1
+Offset
+f  0.000000
+f  0.000000
+f  0.000000
+UiComponent
+i  -1
+__q  28_0
+Sphere
+f  2.000000
+LoopSociety
+q  25_0
+p  
+Text
+s  
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  3.000000
+b  1
+InputVariable
+q  757_0
+s  
+q  -1_0
+i  0
+Position
+f  202.942719
+f  -52.000000
+f  50.589142
+MouseGrabbable
+MouseSelectable
+MouseIntersectable
+Rectangle
+f  8.000000
+f  8.000000
+UiComponent
+i  -1
+__q  29_0
+Position
+f  202.942719
+f  -52.000000
+f  -50.410858
+MouseGrabbable
+MouseSelectable
+Circle
+f  4.000000
+Sphere
+f  2.000000
+LoopSociety
+q  23_2
+p  
+MouseIntersectable
+Text
+s  
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  3.000000
+b  1
+InputVariable
+q  -1_0
+s  
+q  -1_0
+i  0
+UiComponent
+i  -1
+__q  30_0
+MouseGrabbable
+Position
+f  -167.572708
+f  -0.000122
+f  -129.111847
+LoopTag
+LoopSociety
+q  -1_0
+p  
+q  56_0
+q  16_0
+q  158_0
+q  159_0
+q  15_0
+ProcedureContainer
+q  192_0
+q  739_0
+MouseSelectable
+MouseIntersectable
+Text
+s  ProcedureContainer
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  1.000000
+b  1
+__q  31_0
+Position
+f  202.942719
+f  -52.000000
+f  40.589142
+MouseGrabbable
+MouseSelectable
+Circle
+f  4.000000
+LoopSociety
+q  25_0
+p  
+Sphere
+f  2.000000
+MouseIntersectable
+Text
+s  
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  3.000000
+b  1
+InputVariable
+q  757_0
+s  
+q  -1_0
+i  0
+UiComponent
+i  -1
+__q  32_0
+MouseIntersectable
+MouseSelectable
+LoopSociety
+q  93_0
+p  
+q  33_0
+Sphere
+f  2.000000
+CodeFunction
+i  19
+Rectangle
+f  20.000000
+f  10.000000
+MouseGrabbable
+Position
+f  222.942719
+f  -52.000000
+f  21.589142
+Text
+s  COMPRESS
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  1.000000
+b  1
+Offset
+f  0.000000
+f  0.000000
+f  0.000000
+UiComponent
+i  -1
+__q  33_0
+InputVariable
+q  757_0
+s  
+q  -1_0
+i  0
+Text
+s  
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  3.000000
+b  1
+Position
+f  202.942719
+f  -52.000000
+f  21.589142
+MouseGrabbable
+MouseSelectable
+LoopSociety
+q  32_0
+p  
+Sphere
+f  2.000000
+MouseIntersectable
+UiComponent
+i  -1
+Circle
+f  4.000000
+__q  34_0
+MouseIntersectable
+Inventory
+b  0
+i  1
+Position
+f  130.764832
+f  -52.000183
+f  -170.861176
+MouseGrabbable
+MouseSelectable
+LoopSociety
+q  139_0
+p  
+Sphere
+f  2.000000
+UiComponent
+i  -1
+Text
+s  DONE
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  1.000000
+b  1
+Circle
+f  30.000000
+Button
+i  6
+__q  36_0
+Rectangle
+f  20.000000
+f  10.000000
+Sphere
+f  2.000000
+LoopSociety
+q  -1_0
+p  
+Text
+s  Procedure2
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  1.000000
+b  1
+MouseGrabbable
+Position
+f  0.981966
+f  0.000000
+f  135.230469
+MouseSelectable
+MouseIntersectable
+Button
+i  0
+Offset
+f  0.000000
+f  0.000000
+f  0.000000
+UiComponent
+i  -1
+__q  37_0
+MouseGrabbable
+Position
+f  0.229295
+f  -0.000031
+f  149.106903
+UiComponent
+i  -1
+MouseSelectable
+Sphere
+f  2.000000
+LoopSociety
+q  -1_0
+p  
+Text
+s  ProcedureName
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  1.000000
+b  1
+MouseIntersectable
+__q  41_0
+Rectangle
+f  20.000000
+f  10.000000
+CodeFunction
+i  12
+LoopSociety
+q  93_0
+p  
+q  42_0
+Sphere
+f  2.000000
+MouseIntersectable
+MouseSelectable
+Position
+f  222.942719
+f  -52.000000
+f  -2.410858
+MouseGrabbable
+Text
+s  COPY
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  1.000000
+b  1
+Offset
+f  0.000000
+f  0.000000
+f  0.000000
+UiComponent
+i  -1
+__q  42_0
+Position
+f  202.942719
+f  -52.000000
+f  -2.410858
+MouseGrabbable
+MouseSelectable
+Circle
+f  4.000000
+LoopSociety
+q  41_0
+p  
+Sphere
+f  2.000000
+MouseIntersectable
+Text
+s  
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  3.000000
+b  1
+InputVariable
+q  757_0
+s  
+q  -1_0
+i  0
+UiComponent
+i  -1
+__q  45_0
+Inventory
+b  0
+i  1
+MouseGrabbable
+Position
+f  647.351440
+f  -52.000244
+f  -241.299316
+MouseIntersectable
+MouseSelectable
+LoopSociety
+q  139_0
+p  
+q  130_0
+q  142_0
+q  143_0
+q  8_0
+Sphere
+f  2.000000
+Rectangle
+f  55.299999
+f  150.000000
+UiComponent
+i  -1
+__q  46_0
+Offset
+f  0.300000
+f  0.000000
+f  0.000000
+LoopSociety
+q  8_0
+p  
+q  47_0
+Sphere
+f  2.000000
+MouseSelectable
+Rectangle
+f  46.000000
+f  3.000000
+MouseIntersectable
+MouseGrabbable
+Position
+f  656.351440
+f  -52.000244
+f  -287.799316
+ScopeComponent
+Scale
+v  
+0.100000
+0.100000
+0.100000
+UiComponent
+i  -1
+__q  47_0
+Position
+f  656.351440
+f  -52.000244
+f  -287.799316
+MouseGrabbable
+Sphere
+f  2.000000
+LoopSociety
+q  46_0
+p  
+CodeBlock
+i  0
+Rectangle
+f  60.000000
+f  30.000000
+MouseSelectable
+MouseIntersectable
+Offset
+f  3.000000
+f  0.000000
+f  0.000000
+Scale
+v  
+1.000000
+1.000000
+1.000000
+UiComponent
+i  -1
+__q  48_0
+Rectangle
+f  20.000000
+f  10.000000
+CodeFunction
+i  6
+LoopSociety
+q  3_0
+p  
+q  49_0
+q  51_0
+q  58_0
+q  59_0
+q  60_0
+Sphere
+f  2.000000
+MouseIntersectable
+MouseSelectable
+Position
+f  664.112549
+f  -52.000305
+f  207.012634
+MouseGrabbable
+Text
+s  =
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  1.000000
+b  1
+IfComponent
+i  0
+Offset
+f  0.000000
+f  0.000000
+f  0.000000
+UiComponent
+i  -1
+__q  49_0
+Sphere
+f  2.000000
+Offset
+f  0.300000
+f  0.000000
+f  0.000000
+LoopSociety
+q  48_0
+p  
+q  50_0
+Rectangle
+f  46.000000
+f  3.000000
+MouseSelectable
+MouseIntersectable
+MouseGrabbable
+Position
+f  673.112549
+f  -52.000305
+f  205.812637
+ScopeComponent
+Scale
+v  
+0.100000
+0.100000
+0.100000
+UiComponent
+i  -1
+__q  50_0
+Position
+f  673.112549
+f  -52.000305
+f  205.812637
+MouseGrabbable
+Sphere
+f  2.000000
+LoopSociety
+q  49_0
+p  
+CodeBlock
+i  0
+Rectangle
+f  60.000000
+f  30.000000
+MouseSelectable
+MouseIntersectable
+Offset
+f  3.000000
+f  0.000000
+f  0.000000
+Scale
+v  
+1.000000
+1.000000
+1.000000
+UiComponent
+i  -1
+__q  51_0
+Sphere
+f  2.000000
+Offset
+f  0.300000
+f  0.000000
+f  0.000000
+LoopSociety
+q  48_0
+p  
+q  57_0
+Rectangle
+f  46.000000
+f  3.000000
+MouseSelectable
+MouseIntersectable
+MouseGrabbable
+Position
+f  673.112549
+f  -52.000305
+f  205.512634
+ScopeComponent
+Scale
+v  
+0.100000
+0.100000
+0.100000
+UiComponent
+i  -1
+__q  52_0
+Position
+f  627.351440
+f  -52.000244
+f  -286.299316
+MouseGrabbable
+MouseSelectable
+Circle
+f  4.000000
+LoopSociety
+q  8_0
+p  
+Sphere
+f  2.000000
+MouseIntersectable
+Text
+s  
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  3.000000
+b  1
+InputVariable
+q  757_0
+s  
+q  -1_0
+i  0
+UiComponent
+i  -1
+__q  53_0
+Position
+f  667.351440
+f  -52.000244
+f  -286.299316
+MouseGrabbable
+MouseSelectable
+Circle
+f  4.000000
+LoopSociety
+q  8_0
+p  
+Sphere
+f  2.000000
+MouseIntersectable
+Text
+s  
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  3.000000
+b  1
+OutputVariable
+q  757_0
+s  
+UiComponent
+i  -1
+__q  54_0
+MouseGrabbable
+Position
+f  -448.124817
+f  0.000000
+f  -58.158722
+MouseSelectable
+MouseIntersectable
+Reference
+s  aap2abpbb
+s  ../assets/shapes/
+LoopSociety
+__q  56_0
+MouseSelectable
+Button
+i  2
+MouseGrabbable
+Position
+f  -172.117142
+f  0.000122
+f  -98.328079
+MouseIntersectable
+Sphere
+f  2.000000
+LoopSociety
+q  30_0
+p  
+Text
+s  Start
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  1.000000
+b  1
+Offset
+f  0.000000
+f  0.000000
+f  0.000000
+Circle
+f  6.000000
+UiComponent
+i  -1
+__q  57_0
+Rectangle
+f  60.000000
+f  30.000000
+Sphere
+f  2.000000
+LoopSociety
+q  51_0
+p  
+CodeBlock
+i  0
+Position
+f  673.112549
+f  -52.000305
+f  205.512634
+MouseGrabbable
+MouseSelectable
+MouseIntersectable
+Offset
+f  3.000000
+f  0.000000
+f  0.000000
+Scale
+v  
+1.000000
+1.000000
+1.000000
+UiComponent
+i  -1
+__q  58_0
+MouseSelectable
+Circle
+f  4.000000
+LoopSociety
+q  48_0
+p  
+Sphere
+f  2.000000
+MouseIntersectable
+MouseGrabbable
+Position
+f  644.112549
+f  -52.000305
+f  212.012634
+Text
+s  
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  3.000000
+b  1
+InputVariable
+q  757_0
+s  
+q  -1_0
+i  0
+UiComponent
+i  -1
+__q  59_0
+MouseSelectable
+Circle
+f  4.000000
+LoopSociety
+q  48_0
+p  
+Sphere
+f  2.000000
+MouseIntersectable
+MouseGrabbable
+Position
+f  684.112549
+f  -52.000305
+f  207.012634
+Text
+s  
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  3.000000
+b  1
+OutputVariable
+q  757_0
+s  
+UiComponent
+i  -1
+__q  60_0
+MouseSelectable
+Circle
+f  4.000000
+LoopSociety
+q  48_0
+p  
+Sphere
+f  2.000000
+MouseIntersectable
+MouseGrabbable
+Position
+f  644.112549
+f  -52.000305
+f  202.012634
+Text
+s  
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  3.000000
+b  1
+InputVariable
+q  757_0
+s  
+q  -1_0
+i  0
+UiComponent
+i  -1
+__q  61_0
+MouseIntersectable
+MouseSelectable
+LoopSociety
+q  3_0
+p  
+q  62_0
+q  64_0
+q  66_0
+q  67_0
+q  68_0
+Sphere
+f  2.000000
+CodeFunction
+i  7
+Rectangle
+f  20.000000
+f  10.000000
+Position
+f  664.112549
+f  -52.000305
+f  184.790405
+MouseGrabbable
+Text
+s  >
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  1.000000
+b  1
+IfComponent
+i  0
+Offset
+f  0.000000
+f  0.000000
+f  0.000000
+UiComponent
+i  -1
+__q  62_0
+MouseIntersectable
+MouseSelectable
+Offset
+f  0.300000
+f  0.000000
+f  0.000000
+LoopSociety
+q  61_0
+p  
+q  63_0
+Sphere
+f  2.000000
+Rectangle
+f  46.000000
+f  3.000000
+MouseGrabbable
+Position
+f  673.112549
+f  -52.000305
+f  183.590408
+ScopeComponent
+Scale
+v  
+0.100000
+0.100000
+0.100000
+UiComponent
+i  -1
+__q  63_0
+Sphere
+f  2.000000
+LoopSociety
+q  62_0
+p  
+CodeBlock
+i  0
+Rectangle
+f  60.000000
+f  30.000000
+MouseSelectable
+Position
+f  673.112549
+f  -52.000305
+f  183.590408
+MouseGrabbable
+MouseIntersectable
+Offset
+f  3.000000
+f  0.000000
+f  0.000000
+Scale
+v  
+1.000000
+1.000000
+1.000000
+UiComponent
+i  -1
+__q  64_0
+MouseIntersectable
+MouseSelectable
+Offset
+f  0.300000
+f  0.000000
+f  0.000000
+LoopSociety
+q  61_0
+p  
+q  65_0
+Sphere
+f  2.000000
+Rectangle
+f  46.000000
+f  3.000000
+MouseGrabbable
+Position
+f  673.112549
+f  -52.000305
+f  183.290405
+ScopeComponent
+Scale
+v  
+0.100000
+0.100000
+0.100000
+UiComponent
+i  -1
+__q  65_0
+Rectangle
+f  60.000000
+f  30.000000
+Sphere
+f  2.000000
+LoopSociety
+q  64_0
+p  
+CodeBlock
+i  0
+Position
+f  673.112549
+f  -52.000305
+f  183.290405
+MouseGrabbable
+MouseSelectable
+MouseIntersectable
+Offset
+f  3.000000
+f  0.000000
+f  0.000000
+Scale
+v  
+1.000000
+1.000000
+1.000000
+UiComponent
+i  -1
+__q  66_0
+MouseSelectable
+Circle
+f  4.000000
+LoopSociety
+q  61_0
+p  
+Sphere
+f  2.000000
+MouseIntersectable
+MouseGrabbable
+Position
+f  644.112549
+f  -52.000305
+f  189.790405
+Text
+s  
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  3.000000
+b  1
+InputVariable
+q  757_0
+s  
+q  -1_0
+i  0
+UiComponent
+i  -1
+__q  67_0
+MouseSelectable
+Circle
+f  4.000000
+LoopSociety
+q  61_0
+p  
+Sphere
+f  2.000000
+MouseIntersectable
+MouseGrabbable
+Position
+f  684.112549
+f  -52.000305
+f  184.790405
+Text
+s  
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  3.000000
+b  1
+OutputVariable
+q  757_0
+s  
+UiComponent
+i  -1
+__q  68_0
+MouseSelectable
+Circle
+f  4.000000
+LoopSociety
+q  61_0
+p  
+Sphere
+f  2.000000
+MouseIntersectable
+MouseGrabbable
+Position
+f  644.112549
+f  -52.000305
+f  179.790405
+Text
+s  
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  3.000000
+b  1
+InputVariable
+q  757_0
+s  
+q  -1_0
+i  0
+UiComponent
+i  -1
+__q  69_0
+Rectangle
+f  20.000000
+f  10.000000
+CodeFunction
+i  8
+LoopSociety
+q  3_0
+p  
+q  70_0
+q  72_0
+q  74_0
+q  75_0
+q  76_0
+Sphere
+f  2.000000
+MouseIntersectable
+MouseSelectable
+Position
+f  664.112549
+f  -52.000305
+f  162.568176
+MouseGrabbable
+Text
+s  >=
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  1.000000
+b  1
+IfComponent
+i  0
+Offset
+f  0.000000
+f  0.000000
+f  0.000000
+UiComponent
+i  -1
+__q  70_0
+Sphere
+f  2.000000
+Offset
+f  0.300000
+f  0.000000
+f  0.000000
+LoopSociety
+q  69_0
+p  
+q  71_0
+Rectangle
+f  46.000000
+f  3.000000
+MouseSelectable
+MouseIntersectable
+MouseGrabbable
+Position
+f  673.112549
+f  -52.000305
+f  161.368179
+ScopeComponent
+Scale
+v  
+0.100000
+0.100000
+0.100000
+UiComponent
+i  -1
+__q  71_0
+Position
+f  673.112549
+f  -52.000305
+f  161.368179
+MouseGrabbable
+Sphere
+f  2.000000
+LoopSociety
+q  70_0
+p  
+CodeBlock
+i  0
+Rectangle
+f  60.000000
+f  30.000000
+MouseSelectable
+MouseIntersectable
+Offset
+f  3.000000
+f  0.000000
+f  0.000000
+Scale
+v  
+1.000000
+1.000000
+1.000000
+UiComponent
+i  -1
+__q  72_0
+Sphere
+f  2.000000
+Offset
+f  0.300000
+f  0.000000
+f  0.000000
+LoopSociety
+q  69_0
+p  
+q  73_0
+Rectangle
+f  46.000000
+f  3.000000
+MouseSelectable
+MouseIntersectable
+MouseGrabbable
+Position
+f  673.112549
+f  -52.000305
+f  161.068176
+ScopeComponent
+Scale
+v  
+0.100000
+0.100000
+0.100000
+UiComponent
+i  -1
+__q  73_0
+Rectangle
+f  60.000000
+f  30.000000
+Sphere
+f  2.000000
+LoopSociety
+q  72_0
+p  
+CodeBlock
+i  0
+Position
+f  673.112549
+f  -52.000305
+f  161.068176
+MouseGrabbable
+MouseSelectable
+MouseIntersectable
+Offset
+f  3.000000
+f  0.000000
+f  0.000000
+Scale
+v  
+1.000000
+1.000000
+1.000000
+UiComponent
+i  -1
+__q  74_0
+MouseSelectable
+Circle
+f  4.000000
+LoopSociety
+q  69_0
+p  
+Sphere
+f  2.000000
+MouseIntersectable
+MouseGrabbable
+Position
+f  644.112549
+f  -52.000305
+f  167.568176
+Text
+s  
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  3.000000
+b  1
+InputVariable
+q  757_0
+s  
+q  -1_0
+i  0
+UiComponent
+i  -1
+__q  75_0
+MouseSelectable
+Circle
+f  4.000000
+LoopSociety
+q  69_0
+p  
+Sphere
+f  2.000000
+MouseIntersectable
+MouseGrabbable
+Position
+f  684.112549
+f  -52.000305
+f  162.568176
+Text
+s  
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  3.000000
+b  1
+OutputVariable
+q  757_0
+s  
+UiComponent
+i  -1
+__q  76_0
+MouseSelectable
+Circle
+f  4.000000
+LoopSociety
+q  69_0
+p  
+Sphere
+f  2.000000
+MouseIntersectable
+MouseGrabbable
+Position
+f  644.112549
+f  -52.000305
+f  157.568176
+Text
+s  
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  3.000000
+b  1
+InputVariable
+q  757_0
+s  
+q  -1_0
+i  0
+UiComponent
+i  -1
+__q  77_0
+MouseIntersectable
+MouseSelectable
+LoopSociety
+q  3_0
+p  
+q  78_0
+q  80_0
+q  82_0
+q  83_0
+q  84_0
+Sphere
+f  2.000000
+CodeFunction
+i  9
+Rectangle
+f  20.000000
+f  10.000000
+Position
+f  664.112549
+f  -52.000305
+f  140.345947
+MouseGrabbable
+Text
+s  <
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  1.000000
+b  1
+IfComponent
+i  0
+Offset
+f  0.000000
+f  0.000000
+f  0.000000
+UiComponent
+i  -1
+__q  78_0
+MouseIntersectable
+MouseSelectable
+Offset
+f  0.300000
+f  0.000000
+f  0.000000
+LoopSociety
+q  77_0
+p  
+q  79_0
+Sphere
+f  2.000000
+Rectangle
+f  46.000000
+f  3.000000
+MouseGrabbable
+Position
+f  673.112549
+f  -52.000305
+f  139.145950
+ScopeComponent
+Scale
+v  
+0.100000
+0.100000
+0.100000
+UiComponent
+i  -1
+__q  79_0
+Sphere
+f  2.000000
+LoopSociety
+q  78_0
+p  
+CodeBlock
+i  0
+Rectangle
+f  60.000000
+f  30.000000
+MouseSelectable
+Position
+f  673.112549
+f  -52.000305
+f  139.145950
+MouseGrabbable
+MouseIntersectable
+Offset
+f  3.000000
+f  0.000000
+f  0.000000
+Scale
+v  
+1.000000
+1.000000
+1.000000
+UiComponent
+i  -1
+__q  80_0
+MouseIntersectable
+MouseSelectable
+Offset
+f  0.300000
+f  0.000000
+f  0.000000
+LoopSociety
+q  77_0
+p  
+q  81_0
+Sphere
+f  2.000000
+Rectangle
+f  46.000000
+f  3.000000
+MouseGrabbable
+Position
+f  673.112549
+f  -52.000305
+f  138.845947
+ScopeComponent
+Scale
+v  
+0.100000
+0.100000
+0.100000
+UiComponent
+i  -1
+__q  81_0
+Rectangle
+f  60.000000
+f  30.000000
+Sphere
+f  2.000000
+LoopSociety
+q  80_0
+p  
+CodeBlock
+i  0
+Position
+f  673.112549
+f  -52.000305
+f  138.845947
+MouseGrabbable
+MouseSelectable
+MouseIntersectable
+Offset
+f  3.000000
+f  0.000000
+f  0.000000
+Scale
+v  
+1.000000
+1.000000
+1.000000
+UiComponent
+i  -1
+__q  82_0
+MouseSelectable
+Circle
+f  4.000000
+LoopSociety
+q  77_0
+p  
+Sphere
+f  2.000000
+MouseIntersectable
+MouseGrabbable
+Position
+f  644.112549
+f  -52.000305
+f  145.345947
+Text
+s  
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  3.000000
+b  1
+InputVariable
+q  757_0
+s  
+q  -1_0
+i  0
+UiComponent
+i  -1
+__q  83_0
+MouseSelectable
+Circle
+f  4.000000
+LoopSociety
+q  77_0
+p  
+Sphere
+f  2.000000
+MouseIntersectable
+MouseGrabbable
+Position
+f  684.112549
+f  -52.000305
+f  140.345947
+Text
+s  
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  3.000000
+b  1
+OutputVariable
+q  757_0
+s  
+UiComponent
+i  -1
+__q  84_0
+MouseSelectable
+Circle
+f  4.000000
+LoopSociety
+q  77_0
+p  
+Sphere
+f  2.000000
+MouseIntersectable
+MouseGrabbable
+Position
+f  644.112549
+f  -52.000305
+f  135.345947
+Text
+s  
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  3.000000
+b  1
+InputVariable
+q  757_0
+s  
+q  -1_0
+i  0
+UiComponent
+i  -1
+__q  85_0
+Rectangle
+f  20.000000
+f  10.000000
+CodeFunction
+i  10
+LoopSociety
+q  3_0
+p  
+q  86_0
+q  88_0
+q  90_0
+q  91_0
+q  92_0
+Sphere
+f  2.000000
+MouseIntersectable
+MouseSelectable
+Position
+f  664.112549
+f  -52.000305
+f  118.123726
+MouseGrabbable
+Text
+s  <=
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  1.000000
+b  1
+IfComponent
+i  0
+Offset
+f  0.000000
+f  0.000000
+f  0.000000
+UiComponent
+i  -1
+__q  86_0
+Sphere
+f  2.000000
+Offset
+f  0.300000
+f  0.000000
+f  0.000000
+LoopSociety
+q  85_0
+p  
+q  87_0
+Rectangle
+f  46.000000
+f  3.000000
+MouseSelectable
+MouseIntersectable
+MouseGrabbable
+Position
+f  673.112549
+f  -52.000305
+f  116.923729
+ScopeComponent
+Scale
+v  
+0.100000
+0.100000
+0.100000
+UiComponent
+i  -1
+__q  87_0
+Position
+f  673.112549
+f  -52.000305
+f  116.923729
+MouseGrabbable
+Sphere
+f  2.000000
+LoopSociety
+q  86_0
+p  
+CodeBlock
+i  0
+Rectangle
+f  60.000000
+f  30.000000
+MouseSelectable
+MouseIntersectable
+Offset
+f  3.000000
+f  0.000000
+f  0.000000
+Scale
+v  
+1.000000
+1.000000
+1.000000
+UiComponent
+i  -1
+__q  88_0
+Sphere
+f  2.000000
+Offset
+f  0.300000
+f  0.000000
+f  0.000000
+LoopSociety
+q  85_0
+p  
+q  89_0
+Rectangle
+f  46.000000
+f  3.000000
+MouseSelectable
+MouseIntersectable
+MouseGrabbable
+Position
+f  673.112549
+f  -52.000305
+f  116.623726
+ScopeComponent
+Scale
+v  
+0.100000
+0.100000
+0.100000
+UiComponent
+i  -1
+__q  89_0
+Rectangle
+f  60.000000
+f  30.000000
+Sphere
+f  2.000000
+LoopSociety
+q  88_0
+p  
+CodeBlock
+i  0
+Position
+f  673.112549
+f  -52.000305
+f  116.623726
+MouseGrabbable
+MouseSelectable
+MouseIntersectable
+Offset
+f  3.000000
+f  0.000000
+f  0.000000
+Scale
+v  
+1.000000
+1.000000
+1.000000
+UiComponent
+i  -1
+__q  90_0
+MouseSelectable
+Circle
+f  4.000000
+LoopSociety
+q  85_0
+p  
+Sphere
+f  2.000000
+MouseIntersectable
+MouseGrabbable
+Position
+f  644.112549
+f  -52.000305
+f  123.123726
+Text
+s  
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  3.000000
+b  1
+InputVariable
+q  757_0
+s  
+q  -1_0
+i  0
+UiComponent
+i  -1
+__q  91_0
+MouseSelectable
+Circle
+f  4.000000
+LoopSociety
+q  85_0
+p  
+Sphere
+f  2.000000
+MouseIntersectable
+MouseGrabbable
+Position
+f  684.112549
+f  -52.000305
+f  118.123726
+Text
+s  
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  3.000000
+b  1
+OutputVariable
+q  757_0
+s  
+UiComponent
+i  -1
+__q  92_0
+MouseSelectable
+Circle
+f  4.000000
+LoopSociety
+q  85_0
+p  
+Sphere
+f  2.000000
+MouseIntersectable
+MouseGrabbable
+Position
+f  644.112549
+f  -52.000305
+f  113.123726
+Text
+s  
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  3.000000
+b  1
+InputVariable
+q  757_0
+s  
+q  -1_0
+i  0
+UiComponent
+i  -1
+__q  93_0
+Inventory
+b  0
+i  1
+MouseGrabbable
+Position
+f  222.942719
+f  -52.000000
+f  45.589142
+MouseIntersectable
+MouseSelectable
+LoopSociety
+q  139_0
+p  
+q  94_0
+q  111_0
+q  113_0
+q  18_0
+q  25_0
+q  32_0
+q  41_0
+q  102_0
+q  23_0
+Sphere
+f  2.000000
+Rectangle
+f  55.299999
+f  240.000000
+UiComponent
+i  -1
+__q  94_0
+Rectangle
+f  20.000000
+f  10.000000
+CodeFunction
+i  0
+LoopSociety
+q  93_0
+p  
+q  96_0
+q  97_0
+Sphere
+f  2.000000
+MouseIntersectable
+MouseSelectable
+Position
+f  222.942719
+f  -52.000000
+f  141.589142
+MouseGrabbable
+Text
+s  COMBINE
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  1.000000
+b  1
+Offset
+f  0.000000
+f  0.000000
+f  0.000000
+UiComponent
+i  -1
+__q  96_0
+Sphere
+f  2.000000
+LoopSociety
+q  94_0
+p  
+Text
+s  
+f  255.000000
+f  255.000000
+f  255.000000
+f  255.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  3.000000
+b  1
+InputVariable
+q  757_0
+s  
+q  -1_0
+i  0
+Position
+f  202.942719
+f  -52.000000
+f  146.589142
+MouseGrabbable
+MouseSelectable
+MouseIntersectable
+UiComponent
+i  -1
+Circle
+f  4.000000
+__q  97_0
+Sphere
+f  2.000000
+LoopSociety
+q  94_0
+p  
+Text
+s  
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  3.000000
+b  1
+InputVariable
+q  757_0
+s  
+q  -1_0
+i  0
+Position
+f  202.942719
+f  -52.000000
+f  136.589142
+MouseGrabbable
+MouseSelectable
+MouseIntersectable
+UiComponent
+i  -1
+Circle
+f  4.000000
+__q  102_0
+CodeFunction
+i  21
+LoopSociety
+q  93_0
+p  
+q  103_0
+q  165_0
+Sphere
+f  2.000000
+Rectangle
+f  20.000000
+f  10.000000
+MouseIntersectable
+MouseSelectable
+MouseGrabbable
+Position
+f  222.942719
+f  -52.000000
+f  -26.410858
+Text
+s  BUBBLIFY
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  1.000000
+b  1
+Offset
+f  0.000000
+f  0.000000
+f  0.000000
+UiComponent
+i  -1
+__q  103_0
+MouseGrabbable
+Position
+f  202.942719
+f  -52.000000
+f  -21.410858
+MouseSelectable
+Circle
+f  4.000000
+LoopSociety
+q  102_0
+p  
+Sphere
+f  2.000000
+MouseIntersectable
+Text
+s  
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  3.000000
+b  1
+InputVariable
+q  -1_0
+s  
+q  -1_0
+i  0
+UiComponent
+i  -1
+__q  105_0
+Text
+s  CodeBlockSystem
+f  255.000000
+f  255.000000
+f  255.000000
+f  255.000000
+f  2.000000
+f  0.000000
+f  10.000000
+f  10.000000
+b  1
+LoopSociety
+q  2_0
+p  
+SystemReference
+s  CodeBlockSystem
+MouseSelectable
+MouseIntersectable
+Position
+f  88.569679
+f  -0.000000
+f  -316.282990
+MouseGrabbable
+__q  109_0
+Text
+s  CodeBlockLayoutSystem
+f  255.000000
+f  255.000000
+f  255.000000
+f  255.000000
+f  2.000000
+f  0.000000
+f  10.000000
+f  10.000000
+b  1
+LoopSociety
+q  2_0
+p  
+SystemReference
+s  CodeBlockLayoutSystem
+MouseSelectable
+MouseIntersectable
+Position
+f  106.890396
+f  0.000122
+f  -347.197357
+MouseGrabbable
+__q  110_0
+Rectangle
+f  20.000000
+f  10.000000
+CodeFunction
+i  5
+LoopSociety
+q  26_0
+p  
+Sphere
+f  2.000000
+MouseIntersectable
+MouseSelectable
+MouseGrabbable
+Position
+f  657.046997
+f  -52.000000
+f  -43.280167
+Text
+s  EXIT_LOOP
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  1.000000
+b  1
+Offset
+f  0.000000
+f  0.000000
+f  0.000000
+UiComponent
+i  -1
+__q  111_0
+MouseIntersectable
+MouseSelectable
+LoopSociety
+q  93_0
+p  
+q  112_0
+Sphere
+f  2.000000
+CodeFunction
+i  3
+Rectangle
+f  20.000000
+f  10.000000
+Position
+f  222.942719
+f  -52.000000
+f  117.589142
+MouseGrabbable
+Text
+s  POP
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  1.000000
+b  1
+Offset
+f  0.000000
+f  0.000000
+f  0.000000
+UiComponent
+i  -1
+__q  112_0
+Sphere
+f  2.000000
+LoopSociety
+q  111_0
+p  
+Text
+s  
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  3.000000
+b  1
+InputVariable
+q  757_0
+s  
+q  -1_0
+i  0
+Position
+f  202.942719
+f  -52.000000
+f  117.589142
+MouseGrabbable
+MouseSelectable
+MouseIntersectable
+UiComponent
+i  -1
+Circle
+f  4.000000
+__q  113_0
+MouseIntersectable
+MouseSelectable
+LoopSociety
+q  93_0
+p  
+q  114_0
+Sphere
+f  2.000000
+CodeFunction
+i  4
+Rectangle
+f  20.000000
+f  10.000000
+Position
+f  222.942719
+f  -52.000000
+f  93.589142
+MouseGrabbable
+Text
+s  INVERSE
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  1.000000
+b  1
+Offset
+f  0.000000
+f  0.000000
+f  0.000000
+UiComponent
+i  -1
+__q  114_0
+MouseSelectable
+Circle
+f  4.000000
+LoopSociety
+q  113_0
+p  
+Sphere
+f  2.000000
+MouseIntersectable
+MouseGrabbable
+Position
+f  202.942719
+f  -52.000000
+f  93.589142
+Text
+s  
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  3.000000
+b  1
+InputVariable
+q  757_0
+s  
+q  -1_0
+i  0
+UiComponent
+i  -1
+__q  130_0
+MouseIntersectable
+MouseSelectable
+LoopSociety
+q  45_0
+p  
+q  131_0
+q  133_0
+q  135_0
+q  136_0
+Sphere
+f  2.000000
+CodeFunction
+i  15
+Rectangle
+f  20.000000
+f  10.000000
+Position
+f  647.351440
+f  -52.000244
+f  -196.299316
+MouseGrabbable
+Text
+s  FIND_BUBBLE
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  1.000000
+b  1
+IfComponent
+i  0
+Offset
+f  0.000000
+f  0.000000
+f  0.000000
+UiComponent
+i  -1
+__q  131_0
+MouseIntersectable
+MouseSelectable
+Offset
+f  0.300000
+f  0.000000
+f  0.000000
+LoopSociety
+q  130_0
+p  
+q  132_0
+Sphere
+f  2.000000
+Rectangle
+f  46.000000
+f  3.000000
+MouseGrabbable
+Position
+f  656.351440
+f  -52.000244
+f  -197.499313
+ScopeComponent
+Scale
+v  
+0.100000
+0.100000
+0.100000
+UiComponent
+i  -1
+__q  132_0
+Sphere
+f  2.000000
+LoopSociety
+q  131_0
+p  
+CodeBlock
+i  0
+Rectangle
+f  60.000000
+f  30.000000
+MouseSelectable
+Position
+f  656.351440
+f  -52.000244
+f  -197.499313
+MouseGrabbable
+MouseIntersectable
+Offset
+f  3.000000
+f  0.000000
+f  0.000000
+Scale
+v  
+1.000000
+1.000000
+1.000000
+UiComponent
+i  -1
+__q  133_0
+MouseIntersectable
+MouseSelectable
+Offset
+f  0.300000
+f  0.000000
+f  0.000000
+LoopSociety
+q  130_0
+p  
+q  134_0
+Sphere
+f  2.000000
+Rectangle
+f  46.000000
+f  3.000000
+MouseGrabbable
+Position
+f  656.351440
+f  -52.000244
+f  -197.799316
+ScopeComponent
+Scale
+v  
+0.100000
+0.100000
+0.100000
+UiComponent
+i  -1
+__q  134_0
+Rectangle
+f  60.000000
+f  30.000000
+Sphere
+f  2.000000
+LoopSociety
+q  133_0
+p  
+CodeBlock
+i  0
+Position
+f  656.351440
+f  -52.000244
+f  -197.799316
+MouseGrabbable
+MouseSelectable
+MouseIntersectable
+Offset
+f  3.000000
+f  0.000000
+f  0.000000
+Scale
+v  
+1.000000
+1.000000
+1.000000
+UiComponent
+i  -1
+__q  135_0
+MouseSelectable
+Circle
+f  4.000000
+LoopSociety
+q  130_0
+p  
+Sphere
+f  2.000000
+MouseIntersectable
+MouseGrabbable
+Position
+f  627.351440
+f  -52.000244
+f  -196.299316
+Text
+s  
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  3.000000
+b  1
+InputVariable
+q  757_0
+s  
+q  -1_0
+i  0
+UiComponent
+i  -1
+__q  136_0
+MouseSelectable
+Circle
+f  4.000000
+LoopSociety
+q  130_0
+p  
+Sphere
+f  2.000000
+MouseIntersectable
+MouseGrabbable
+Position
+f  667.351440
+f  -52.000244
+f  -196.299316
+Text
+s  
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  3.000000
+b  1
+OutputVariable
+q  757_0
+s  
+UiComponent
+i  -1
+__q  139_0
+MouseIntersectable
+Offset
+f  0.000000
+f  -600.000000
+f  0.000000
+LoopSociety
+q  -1_0
+p  
+q  12_0
+q  45_0
+q  93_0
+q  3_0
+q  26_0
+q  14_0
+q  34_0
+UiNode
+MouseGrabbable
+Position
+f  -135.964111
+f  -52.000122
+f  12.883064
+LoopTag
+MouseSelectable
+Text
+s  ProcedureUI
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  1.000000
+b  1
+__q  142_0
+Rectangle
+f  20.000000
+f  10.000000
+CodeFunction
+i  5
+LoopSociety
+q  45_0
+p  
+Sphere
+f  2.000000
+MouseIntersectable
+MouseSelectable
+Position
+f  647.351440
+f  -52.000244
+f  -226.299316
+MouseGrabbable
+Text
+s  EXIT_LOOP
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  1.000000
+b  1
+Offset
+f  0.000000
+f  0.000000
+f  0.000000
+UiComponent
+i  -1
+__q  143_0
+Rectangle
+f  20.000000
+f  10.000000
+CodeFunction
+i  16
+LoopSociety
+q  45_0
+p  
+q  144_0
+q  146_0
+q  148_0
+q  149_0
+Sphere
+f  2.000000
+MouseIntersectable
+MouseSelectable
+Position
+f  647.351440
+f  -52.000244
+f  -256.299316
+MouseGrabbable
+Text
+s  FIND_FRACTION
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  1.000000
+b  1
+IfComponent
+i  0
+Offset
+f  0.000000
+f  0.000000
+f  0.000000
+UiComponent
+i  -1
+__q  144_0
+Sphere
+f  2.000000
+Offset
+f  0.300000
+f  0.000000
+f  0.000000
+LoopSociety
+q  143_0
+p  
+q  145_0
+Rectangle
+f  46.000000
+f  3.000000
+MouseSelectable
+MouseIntersectable
+MouseGrabbable
+Position
+f  656.351440
+f  -52.000244
+f  -257.499329
+ScopeComponent
+Scale
+v  
+0.100000
+0.100000
+0.100000
+UiComponent
+i  -1
+__q  145_0
+Position
+f  656.351440
+f  -52.000244
+f  -257.499329
+MouseGrabbable
+Sphere
+f  2.000000
+LoopSociety
+q  144_0
+p  
+CodeBlock
+i  0
+Rectangle
+f  60.000000
+f  30.000000
+MouseSelectable
+MouseIntersectable
+Offset
+f  3.000000
+f  0.000000
+f  0.000000
+Scale
+v  
+1.000000
+1.000000
+1.000000
+UiComponent
+i  -1
+__q  146_0
+Sphere
+f  2.000000
+Offset
+f  0.300000
+f  0.000000
+f  0.000000
+LoopSociety
+q  143_0
+p  
+q  147_0
+Rectangle
+f  46.000000
+f  3.000000
+MouseSelectable
+MouseIntersectable
+MouseGrabbable
+Position
+f  656.351440
+f  -52.000244
+f  -257.799316
+ScopeComponent
+Scale
+v  
+0.100000
+0.100000
+0.100000
+UiComponent
+i  -1
+__q  147_0
+Rectangle
+f  60.000000
+f  30.000000
+Sphere
+f  2.000000
+LoopSociety
+q  146_0
+p  
+CodeBlock
+i  0
+Position
+f  656.351440
+f  -52.000244
+f  -257.799316
+MouseGrabbable
+MouseSelectable
+MouseIntersectable
+Offset
+f  3.000000
+f  0.000000
+f  0.000000
+Scale
+v  
+1.000000
+1.000000
+1.000000
+UiComponent
+i  -1
+__q  148_0
+MouseSelectable
+Circle
+f  4.000000
+LoopSociety
+q  143_0
+p  
+Sphere
+f  2.000000
+MouseIntersectable
+MouseGrabbable
+Position
+f  627.351440
+f  -52.000244
+f  -256.299316
+Text
+s  
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  3.000000
+b  1
+InputVariable
+q  757_0
+s  
+q  -1_0
+i  0
+UiComponent
+i  -1
+__q  149_0
+MouseSelectable
+Circle
+f  4.000000
+LoopSociety
+q  143_0
+p  
+Sphere
+f  2.000000
+MouseIntersectable
+MouseGrabbable
+Position
+f  667.351440
+f  -52.000244
+f  -256.299316
+Text
+s  
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  3.000000
+b  1
+OutputVariable
+q  757_0
+s  
+UiComponent
+i  -1
+__q  158_0
+MouseGrabbable
+Position
+f  -144.357925
+f  0.000031
+f  -70.101242
+Button
+i  3
+MouseIntersectable
+MouseSelectable
+LoopSociety
+q  30_0
+p  
+Sphere
+f  2.000000
+Text
+s  Step Forward
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  1.000000
+b  1
+Offset
+f  0.000000
+f  0.000000
+f  0.000000
+Circle
+f  6.000000
+UiComponent
+i  -1
+__q  159_0
+MouseSelectable
+Button
+i  4
+MouseGrabbable
+Position
+f  -144.126221
+f  -0.000015
+f  -85.072586
+MouseIntersectable
+Sphere
+f  2.000000
+LoopSociety
+q  30_0
+p  
+Text
+s  Step Back
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  1.000000
+b  1
+Offset
+f  0.000000
+f  0.000000
+f  0.000000
+Circle
+f  6.000000
+UiComponent
+i  -1
+__q  165_0
+Position
+f  202.942719
+f  -52.000000
+f  -31.410858
+MouseGrabbable
+MouseSelectable
+Circle
+f  4.000000
+LoopSociety
+q  102_0
+p  
+Sphere
+f  2.000000
+MouseIntersectable
+Text
+s  
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  3.000000
+b  1
+InputVariable
+q  -1_0
+s  
+q  -1_0
+i  0
+UiComponent
+i  -1
+__q  192_0
+Rectangle
+f  60.000000
+f  30.000000
+CodeBlock
+i  0
+Sphere
+f  2.000000
+LoopSociety
+q  16_0
+p  
+Text
+s  
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  1.000000
+b  1
+Position
+f  -136.967651
+f  -0.000061
+f  -111.151344
+MouseSelectable
+MouseIntersectable
+Offset
+f  30.000000
+f  0.000000
+f  0.000000
+Scale
+v  
+1.000000
+1.000000
+1.000000
+UiComponent
+i  -1

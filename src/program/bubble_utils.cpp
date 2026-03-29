@@ -747,8 +747,7 @@ namespace bubble {
 		middle::Shape variableProto = newUnit(gameState, targetPos);
 		auto varComp = middle::addComponent<components::BubbleVariable>(variableProto);
 		varComp->label = label;
-		auto& shape = middle::registerShape(gameState, variableProto);
-		return shape;
+		return variableProto;
 	}
 
 	middle::Shape newPower(middle::GameState* gameState, const Vector3& targetPos)

@@ -26,18 +26,15 @@ f  1.000000
 b  1
 __q  39_0
 LoopTag
-Rectangle
-f  300.000000
-f  200.000000
 LoopSociety
 q  40_2
 p  
 MouseSelectable
 MouseIntersectable
 Position
-f  7.184296
-f  -0.000122
-f  -128.922958
+f  8.207550
+f  -0.000488
+f  -191.076797
 MouseGrabbable
 ProcedureImportContainer
 q  1_0
@@ -45,13 +42,13 @@ UiComponent
 i  -1
 __q  24_0
 LoopTag
+BubbleAlgebraProblemContainer
 Rectangle
 f  300.000000
 f  200.000000
 UiComponent
 i  -1
 MouseSelectable
-BubbleAlgebraProblemContainer
 MouseGrabbable
 LoopSociety
 q  40_2
@@ -62,6 +59,7 @@ f  6.715057
 f  -0.000122
 f  135.960098
 __q  38_0
+MouseSelectable
 Cuboid
 f  7.000000
 f  1.000000
@@ -71,7 +69,6 @@ q  40_2
 p  
 Sphere
 f  2.000000
-MouseSelectable
 MouseGrabbable
 Position
 f  -189.230667

@@ -128,16 +128,6 @@ public:
 					procContainer->bubbleRef = procImportContainer->bubbleRef;
 					// Unassign bubble ref, it might have been serialized
 					procContainer->bubbleRef = middle::Id();
-
-					// resize the container to fit the procedure
-					middle::queueAction(gameState, std::make_shared<middle::CustomAction>([loadedProcId, containerId](middle::GameState* gameState) {
-						float left, right, bottom, top;
-						bubble::loopChildrenOnlyRectBoundingBox(gameState, loadedProcId, &left, &right, &bottom, &top);
-						auto& procContainer = middle::getShape(gameState, containerId.index);
-						auto containerRect = middle::getComponent<components::Rectangle>(procContainer);
-						containerRect->width = right - left;
-						containerRect->height = top - bottom;
-						}));
 				}
 
 

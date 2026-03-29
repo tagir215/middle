@@ -13,8 +13,8 @@ namespace bubbleColors {
 	inline Color HOVERED_ITEM = {0,0,0,100};
 	inline Color MULTIPLICATION_CONNECTION = RED;
 	inline Color FRACTION_CONNECTION = BLACK;
-	inline Color POSITIVE_POWER = BLACK;
-	inline Color NEGATIVE_POWER = BLACK;
+	inline Color POSITIVE_POWER = RED;
+	inline Color NEGATIVE_POWER = {0,255,255,255};
 	inline Color TEXT = BLACK;
 	inline Color EQUALS_CONNECTION = BLUE;
 	inline Color PROCEDURE_SELECTED = {0, 255,255,30};
