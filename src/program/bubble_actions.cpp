@@ -1345,10 +1345,42 @@ namespace bubbleActions {
 	void Simplify::execute(middle::GameState* gameState)
 	{
 		middle::Shape& shape = middle::getShape(gameState, id.index);
-		auto rootComp = middle::getComponent<components::ExponentComponent>(shape);
-		if (!rootComp) {
-			return;
+		auto expComp = middle::getComponent<components::ExponentComponent>(shape);
+		if (expComp) {
+			std::vector<middle::Id>children;
+			middle::getChildren(gameState, shape.id, children);
+
+			if (children.size() != 1) {
+				return;
+			}
+
+			auto& childShape = middle::getShape(gameState, children[0].index);
+			auto childExp = middle::getComponent<components::ExponentComponent>(childShape);
+
+			float powerA = expComp->isInverse ? 1.0f / expComp->power : expComp->power;
+			float powerB = childExp->isInverse ? 1.0f / childExp->power : childExp->power;
+
+			// check that same
+			const float tolerance = 1e-8f;
+			if (std::abs(powerA * powerB - 1) > tolerance) {
+				return;
+			}
+
+
+			auto copyAction = std::make_unique<middle::EditorActionCopySingle>(childShape.id);
+			copyAction->execute(gameState);
+			middle::Id copyId = copyAction->resultId;
+			actions.push_back(std::move(copyAction));
+			resultId = copyId;
+
+			middle::Shape& copyShape = middle::getShape(gameState, copyId.index);
+			middle::queueComponentDeletion<components::ExponentComponent>(gameState, copyShape.id);
+
+			auto replaceAction = std::make_unique<Replace>(shape.id, copyId);
+			replaceAction->execute(gameState);
+			actions.push_back(std::move(replaceAction));
 		}
+
 
 	}
 

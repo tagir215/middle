@@ -187,7 +187,7 @@ public:
 			action = std::make_shared<bubbleActions::Bubblify>(intersectedShape.id);
 		}
 		else if (actionType == bubbleInventoryItemType::SIMPLIFY) {
-
+			action = std::make_shared<bubbleActions::Simplify>(intersectedShape.id);
 		}
 		if (action) {
 			middle::queueAction(gameState, action);
