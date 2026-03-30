@@ -7,8 +7,8 @@
 
 namespace components {
 	struct ExponentComponent : public middle::Serializable{
-		int power;
-		bool isInverse;
+		int power = 1;
+		bool isInverse = false;
 
 		void serialize(std::ostream& ostream) override;
 		void deserialize(const std::vector<std::string>& buffer, int indexOffset) override;
