@@ -17,8 +17,8 @@
 #include "TopDogBubbleTag.h"
 #include "MouseSelectable.h"
 #include "BubbleEqualsComponent.h"
-#include "BubbleRootComponent.h"
 #include "Layer.h"
+#include "ExponentComponent.h"
 
 namespace bubble {
 
@@ -307,11 +307,11 @@ namespace bubble {
 		return loop->loopMemberIds.size();
 	}
 
-	bool rootEquals(middle::GameState* gameState, middle::Id& idA, middle::Id& idB) {
+	bool exponentEquals(middle::GameState* gameState, middle::Id& idA, middle::Id& idB) {
 		auto& shapeA = middle::getShape(gameState, idA.index);
 		auto& shapeB = middle::getShape(gameState, idB.index);
-		auto rootA = middle::getComponent<components::BubbleRootComponent>(shapeA);
-		auto rootB = middle::getComponent<components::BubbleRootComponent>(shapeB);
+		auto rootA = middle::getComponent<components::ExponentComponent>(shapeA);
+		auto rootB = middle::getComponent<components::ExponentComponent>(shapeB);
 		auto nodeA = middle::getComponent<components::AlgebraNode>(shapeA);
 		auto nodeB = middle::getComponent<components::AlgebraNode>(shapeB);
 
@@ -334,15 +334,15 @@ namespace bubble {
 		auto& shapeB = middle::getShape(gameState, idB.index);
 		auto unitA = middle::getComponent<components::BubbleUnit>(shapeA);
 		auto unitB = middle::getComponent<components::BubbleUnit>(shapeB);
-		auto rootA = middle::getComponent<components::BubbleRootComponent>(shapeA);
-		auto rootB = middle::getComponent<components::BubbleRootComponent>(shapeA);
+		auto rootA = middle::getComponent<components::ExponentComponent>(shapeA);
+		auto rootB = middle::getComponent<components::ExponentComponent>(shapeA);
 		auto nodeA = middle::getComponent<components::AlgebraNode>(shapeA);
 		// idB is allowed to be AlgebraNode, but not idA
 		assert(!nodeA);
 
 		// if either is root return false if not equaling
 		if (rootA || rootB) {
-			if (!rootEquals(gameState, idA, idB)) {
+			if (!exponentEquals(gameState, idA, idB)) {
 				return false;
 			}
 		}
@@ -750,10 +750,10 @@ namespace bubble {
 		return variableProto;
 	}
 
-	middle::Shape newPower(middle::GameState* gameState, const Vector3& targetPos)
+	middle::Shape newExponent(middle::GameState* gameState, const Vector3& targetPos)
 	{
 		middle::Shape bubble = newBubble(gameState, targetPos);
-		middle::addComponent<components::BubbleRootComponent>(bubble);
+		middle::addComponent<components::ExponentComponent>(bubble);
 		return bubble;
 	}
 
@@ -832,7 +832,7 @@ namespace bubble {
 		auto& shape = middle::getShape(gameState, shapeId.index);
 		auto fraction = middle::getComponent<components::FractionalComponent>(shape);
 		auto multiplication = middle::getComponent<components::BubbleMultiplyComponent>(shape);
-		auto root = middle::getComponent<components::BubbleRootComponent>(shape);
+		auto exponent = middle::getComponent<components::ExponentComponent>(shape);
 
 		if (fraction) {
 			int fractionSize = bubble::fractionUnitCount(gameState, shapeId);
@@ -845,7 +845,7 @@ namespace bubble {
 			return fractionShapeId;
 		}
 		// multiplication or root needs to be contained in a bubble
-		else if (multiplication || root) {
+		else if (multiplication || exponent) {
 			middle::Id fractionShapeId = bubble::newFraction(gameState, targetPos, dividend);
 			middle::Id genericQuotientId = bubble::fractionQuotient(gameState, fractionShapeId);
 			middle::Shape newContainerBubbleProto = bubble::newBubble(gameState, targetPos);

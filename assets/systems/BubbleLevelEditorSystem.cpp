@@ -9,7 +9,7 @@
 #include "UiComponent.h"
 #include "component_utils.h"
 #include "BubbleAlgebraProblem.h"
-#include "BubbleRootComponent.h"
+#include "ExponentComponent.h"
 
 
 class BubbleLevelEditorSystem : public middle::MiddleGameplaySystem {
@@ -166,8 +166,8 @@ public:
 					ImGui::Checkbox("isInverse", &isInverse);
 					if (ImGui::Button("New Power")) {
 						Vector3 containerPos = middle::getShapePosition(gameState, selectedId.index);
-						middle::Shape& powerShape = middle::registerShape(gameState, bubble::newPower(gameState, containerPos + randomOffset()));
-						auto powerComp = middle::getComponent<components::BubbleRootComponent>(powerShape);
+						middle::Shape& powerShape = middle::registerShape(gameState, bubble::newExponent(gameState, containerPos + randomOffset()));
+						auto powerComp = middle::getComponent<components::ExponentComponent>(powerShape);
 						powerComp->power = power;
 						powerComp->isInverse = isInverse;
 						middle::EditorActionReparent(selectedId.index, powerShape.id.index).execute(gameState);

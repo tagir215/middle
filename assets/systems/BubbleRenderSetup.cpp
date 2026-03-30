@@ -17,8 +17,8 @@
 #include "Cuboid.h"
 #include "BubbleEqualsComponent.h"
 #include "BubbleVariable.h"
-#include "BubbleRootComponent.h" 
 #include "bubble_colors.h"
+#include "ExponentComponent.h"
 #include "Layer.h"
 
 
@@ -37,7 +37,7 @@ public:
 	components::CompCache* variableCache;
 	components::CompCache* cuboidCache;
 	components::CompCache* equalsCache;
-	components::CompCache* rootCache;
+	components::CompCache* exponentCache;
 
 	void init(middle::GameState* gameState) {
 		bubbleCache = middle::newCompCache(gameState);
@@ -66,11 +66,11 @@ public:
 		equalsCache = middle::newCompCache(gameState);
 		equalsCache->addType<components::BubbleEqualsComponent>();
 		equalsCache->addType<components::LoopSociety>();
-		rootCache = middle::newCompCache(gameState);
-		rootCache->addType<components::BubbleRootComponent>();
-		rootCache->addType<components::Circle>();
-		rootCache->addType<components::Position>();
-		rootCache->addType<components::Layer>();
+		exponentCache = middle::newCompCache(gameState);
+		exponentCache->addType<components::ExponentComponent>();
+		exponentCache->addType<components::Circle>();
+		exponentCache->addType<components::Position>();
+		exponentCache->addType<components::Layer>();
 	}
 	bool debugRendering = false;
 
@@ -285,15 +285,15 @@ public:
 		}
 
 
-		auto rootIt = rootCache->begin<components::BubbleRootComponent>();
-		auto rootCircleIt = rootCache->begin<components::Circle>();
-		auto rootPositionIt = rootCache->begin<components::Position>();
-		auto rootLayerIt = rootCache->begin<components::Layer>();
-		for (int i = 0; i < rootCache->getSize(); ++i) {
-			auto root = *rootIt;
-			auto bubbleCircle = *rootCircleIt;
-			auto position = *rootPositionIt;
-			auto layer = *rootLayerIt;
+		auto exponentIt = exponentCache->begin<components::ExponentComponent>();
+		auto exponentCircleIt = exponentCache->begin<components::Circle>();
+		auto exponentPositionIt = exponentCache->begin<components::Position>();
+		auto exponentLayerIt = exponentCache->begin<components::Layer>();
+		for (int i = 0; i < exponentCache->getSize(); ++i) {
+			auto root = *exponentIt;
+			auto bubbleCircle = *exponentCircleIt;
+			auto position = *exponentPositionIt;
+			auto layer = *exponentLayerIt;
 			Vector3 bubblePos = { position->posX, position->posY, position->posZ };
 
 
@@ -312,7 +312,7 @@ public:
 				powerIterations = -root->power;
 			}
 
-			Color powerColor = isNegative ? bubbleColors::NEGATIVE_POWER : bubbleColors::POSITIVE_POWER;
+			Color exponentColor = isNegative ? bubbleColors::NEGATIVE_POWER : bubbleColors::POSITIVE_POWER;
 
 			for (int power = 0; power < powerIterations; ++power) {
 				float ra = bubbleCircle->radius;
@@ -356,7 +356,7 @@ public:
 				powerCircle.radius = rb;
 				powerCircle.startAngle = startingAngle;
 				powerCircle.endAngle = endAngle;
-				powerCircle.color = powerColor;
+				powerCircle.color = exponentColor;
 				powerCircle.ringRadius = 0.2f;
 				powerCircle.segments = 20;
 				powerCircle.layer = layer->layer + 1;
@@ -393,7 +393,7 @@ public:
 				cone.transform.translation = conePos;
 				cone.transform.scale = coneScale;
 				cone.center = { 0,0,0 };
-				cone.color = powerColor;
+				cone.color = exponentColor;
 				cone.layer = layer->layer + 1;
 				gameState->renderData.push_back(cone);
 			}

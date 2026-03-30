@@ -19,6 +19,17 @@
 namespace bubbleActions{
 
 
+	class Simplify : public middle::EditorActionContainer {
+	public:
+		middle::Id id;
+		middle::Id resultId;
+		std::vector<std::unique_ptr<middle::EditorActionContainer>> actions;
+		Simplify(middle::Id id){
+			this->id = id;
+		}
+		void execute(middle::GameState* gameState) override;
+		void undo(middle::GameState* gameState) override;
+	};
 
 	class Bubblify : public middle::EditorActionContainer{
 	public:

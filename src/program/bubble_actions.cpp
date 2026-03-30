@@ -12,7 +12,7 @@
 #include "BubbleVariable.h"
 #include "bubble_utils.h"
 #include "MouseSelectable.h"
-#include "BubbleRootComponent.h"
+#include "ExponentComponent.h"
 
 namespace bubbleActions {
 
@@ -92,7 +92,7 @@ namespace bubbleActions {
 		auto fraction = middle::getComponent<components::FractionalComponent>(shapeToReplace);
 		auto unit = middle::getComponent<components::BubbleUnit>(shapeToReplace);
 		auto variable = middle::getComponent<components::BubbleVariable>(shapeToReplace);
-		auto root = middle::getComponent<components::BubbleRootComponent>(shapeToReplace);
+		auto root = middle::getComponent<components::ExponentComponent>(shapeToReplace);
 
 		// contain shape to replace in a new bubble and link to the new container
 		if (variable || root) {
@@ -227,8 +227,8 @@ namespace bubbleActions {
 		auto bubbleB = middle::getComponent<components::BubbleComponent>(shapeB);
 		auto fractionA = middle::getComponent<components::FractionalComponent>(shapeA);
 		auto fractionB = middle::getComponent<components::FractionalComponent>(shapeB);
-		auto rootA = middle::getComponent<components::BubbleRootComponent>(shapeA);
-		auto rootB = middle::getComponent<components::BubbleRootComponent>(shapeB);
+		auto rootA = middle::getComponent<components::ExponentComponent>(shapeA);
+		auto rootB = middle::getComponent<components::ExponentComponent>(shapeB);
 
 		middle::Id replacementId;
 
@@ -483,17 +483,17 @@ namespace bubbleActions {
 	void ExecutePower::execute(middle::GameState* gameState)
 	{
 		auto shapeToPower = middle::getShape(gameState, shapeToPowerId.index);
-		auto root = middle::getComponent<components::BubbleRootComponent>(shapeToPower);
+		auto exponent = middle::getComponent<components::ExponentComponent>(shapeToPower);
 		// todo: how to do inverse?
-		if (root->isInverse) {
+		if (exponent->isInverse) {
 			return;
 		}
-		int power = root->power;
-		bool isNegative = root->power < 0;
+		int power = exponent->power;
+		bool isNegative = exponent->power < 0;
 		if (isNegative) {
 			power = -power;
 		}
-		bool isInverse = root->isInverse;
+		bool isInverse = exponent->isInverse;
 		Vector3 targetPos = middle::getShapePosition(gameState, shapeToPower.id.index);
 
 		middle::Id replacementShapeId;
@@ -520,7 +520,7 @@ namespace bubbleActions {
 				middle::Id copyId;
 				if (!isNegative) {
 					copyId = middle::deepCopyShape(gameState, shapeToPowerId.index);
-					middle::queueComponentDeletion<components::BubbleRootComponent>(gameState, copyId);
+					middle::queueComponentDeletion<components::ExponentComponent>(gameState, copyId);
 				}
 				else {
 					copyId = bubble::inverseBubble(gameState, shapeToPowerId);
@@ -529,8 +529,8 @@ namespace bubbleActions {
 					assert(loop->loopMemberIds.size() == 1);
 					middle::Id fractionId = loop->loopMemberIds[0];
 					middle::Id quotientId = bubble::fractionQuotient(gameState, fractionId);
-					middle::Id rootId = middle::getFirstChildWithComponent(gameState, quotientId, middle::getTypeId<components::BubbleRootComponent>());
-					middle::queueComponentDeletion<components::BubbleRootComponent>(gameState, rootId);
+					middle::Id rootId = middle::getFirstChildWithComponent(gameState, quotientId, middle::getTypeId<components::ExponentComponent>());
+					middle::queueComponentDeletion<components::ExponentComponent>(gameState, rootId);
 					middle::queueAction(gameState, std::make_shared<Pop>(rootId));
 				}
 				// move so its not overlapping perfectly
@@ -588,7 +588,7 @@ namespace bubbleActions {
 		// check that there is a parent
 		auto bubble = middle::getComponent<components::BubbleComponent>(shape);
 		auto fraction = middle::getComponent<components::FractionalComponent>(shape);
-		auto root = middle::getComponent<components::BubbleRootComponent>(shape);
+		auto root = middle::getComponent<components::ExponentComponent>(shape);
 		middle::Id parentId = middle::getParent(gameState, shape.id);
 		if (parentId.index == middle::UNASSIGNED) {
 			return;
@@ -862,7 +862,7 @@ namespace bubbleActions {
 		}
 
 		middle::Id replacementShapeId = middle::deepCopyShape(gameState, compressableShapeId.index);
-		auto root = middle::attachComponent<components::BubbleRootComponent>(gameState, replacementShapeId);
+		auto root = middle::attachComponent<components::ExponentComponent>(gameState, replacementShapeId);
 		root->power = compressableCount;
 		return replacementShapeId;
 	}
@@ -1341,5 +1341,23 @@ namespace bubbleActions {
 		}
 	}
 
+
+	void Simplify::execute(middle::GameState* gameState)
+	{
+		middle::Shape& shape = middle::getShape(gameState, id.index);
+		auto rootComp = middle::getComponent<components::ExponentComponent>(shape);
+		if (!rootComp) {
+			return;
+		}
+
+	}
+
+	void Simplify::undo(middle::GameState* gameState)
+	{
+		while (actions.size() > 0) {
+			actions.back()->undo(gameState);
+			actions.pop_back();
+		}
+	}
 
 }
