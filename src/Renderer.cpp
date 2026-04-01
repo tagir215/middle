@@ -64,7 +64,7 @@ namespace RendererSystem {
 		DrawLine3D(line4.linePointA, line4.linePointB, line4.color);
 	}
 
-	void draw3D(middle::GameState* gameState, bool disabledDepthTest) {
+	void draw3D(middle::GameState* gameState, bool disabledDepthTest, int layerPass = 0) {
 
 		if (gameState->applicationMode == middle::ApplicationMode::EDITOR_MODE) {
 			// center indicator
@@ -80,6 +80,9 @@ namespace RendererSystem {
 				continue;
 			}
 			if (!disabledDepthTest && item.disableDepthTest) {
+				continue;
+			}
+			if (item.disableDepthTest && item.layer != layerPass) {
 				continue;
 			}
 
@@ -221,11 +224,14 @@ namespace RendererSystem {
 			draw3D(gameState, false);
 			EndMode3D();
 
-			BeginMode3D(camera);
-			rlDisableDepthTest();
-			draw3D(gameState, true);
-			rlEnableDepthTest();
-			EndMode3D();
+			int maxLayers = 4;
+			for (int i = 0; i < maxLayers; ++i) {
+				BeginMode3D(camera);
+				rlDisableDepthTest();
+				draw3D(gameState, true, i);
+				rlEnableDepthTest();
+				EndMode3D();
+			}
 
 
 			for (int i = 0; i < gameState->renderData.size(); ++i) {

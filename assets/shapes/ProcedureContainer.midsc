@@ -59,10 +59,6 @@ f  0.000000
 f  51.997063
 Circle
 f  10.000000
-UiComponent
-i  -1
-InventoryItem
-i  0
 InputVariable
 q  -1_0
 s  BubbleRef
@@ -72,19 +68,6 @@ ProcedureInputVariable
 b  1
 __q  159_0
 MouseSelectable
-Position
-f  23.446487
-f  0.000107
-f  44.039261
-MouseGrabbable
-Button
-i  4
-MouseIntersectable
-LoopSociety
-q  30_0
-p  
-Sphere
-f  2.000000
 Text
 s  Step Back
 f  0.000000
@@ -96,29 +79,31 @@ f  0.000000
 f  0.000000
 f  1.000000
 b  1
+Button
+i  4
+Position
+f  23.446487
+f  0.000107
+f  44.039261
+MouseGrabbable
+MouseIntersectable
+LoopSociety
+q  30_0
+p  
+Sphere
+f  2.000000
 Offset
 f  0.000000
 f  0.000000
 f  0.000000
 Circle
 f  6.000000
-UiComponent
-i  -1
 __q  158_0
-Button
-i  3
 Position
 f  23.214783
 f  0.000153
 f  59.010605
 MouseGrabbable
-MouseIntersectable
-MouseSelectable
-Sphere
-f  2.000000
-LoopSociety
-q  30_0
-p  
 Text
 s  Step Forward
 f  0.000000
@@ -130,14 +115,21 @@ f  0.000000
 f  0.000000
 f  1.000000
 b  1
+Button
+i  3
+MouseIntersectable
+MouseSelectable
+Sphere
+f  2.000000
+LoopSociety
+q  30_0
+p  
 Offset
 f  0.000000
 f  0.000000
 f  0.000000
 Circle
 f  6.000000
-UiComponent
-i  -1
 __q  16_0
 LoopSociety
 q  30_0
@@ -166,12 +158,11 @@ v
 1.000000
 1.000000
 1.000000
-UiComponent
-i  -1
 __q  192_0
 Rectangle
 f  60.000000
 f  30.000000
+MouseSelectable
 CodeBlock
 i  0
 LoopSociety
@@ -194,7 +185,6 @@ Position
 f  30.605057
 f  0.000061
 f  17.960503
-MouseSelectable
 MouseIntersectable
 Offset
 f  30.000000
@@ -209,19 +199,6 @@ UiComponent
 i  -1
 __q  56_0
 MouseSelectable
-Position
-f  -4.544434
-f  0.000244
-f  30.783768
-MouseGrabbable
-Button
-i  2
-MouseIntersectable
-LoopSociety
-q  30_0
-p  
-Sphere
-f  2.000000
 Text
 s  Start
 f  0.000000
@@ -233,11 +210,22 @@ f  0.000000
 f  0.000000
 f  1.000000
 b  1
+Button
+i  2
+Position
+f  -4.544434
+f  0.000244
+f  30.783768
+MouseGrabbable
+MouseIntersectable
+LoopSociety
+q  30_0
+p  
+Sphere
+f  2.000000
 Offset
 f  0.000000
 f  0.000000
 f  0.000000
 Circle
 f  6.000000
-UiComponent
-i  -1

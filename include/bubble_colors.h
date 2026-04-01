@@ -21,5 +21,6 @@ namespace bubbleColors {
 	inline Color ELEMENT_SELECTED = {0,255,0,60};
 	inline Color UI_BUTTON = BLACK;
 	inline Color UI_BUTTON_BACKGROUND = RED;
+	inline Color UI_BACKGROUND = BLACK;
 	inline Color UI_TEXT = BLACK;
 }

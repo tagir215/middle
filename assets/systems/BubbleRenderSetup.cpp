@@ -22,7 +22,6 @@
 #include "Layer.h"
 #include "Rectangle.h"
 #include "UiComponent.h"
-#include "RuntimeHiddenTag.h" 
 
 
 class BubbleRenderSetup : public middle::MiddleGameplaySystem {
@@ -41,7 +40,6 @@ public:
 	components::CompCache* cuboidCache;
 	components::CompCache* equalsCache;
 	components::CompCache* exponentCache;
-	components::CompCache* nonUiRectangleCache;
 
 	void init(middle::GameState* gameState) {
 		bubbleCache = middle::newCompCache(gameState);
@@ -75,11 +73,6 @@ public:
 		exponentCache->addType<components::Circle>();
 		exponentCache->addType<components::Position>();
 		exponentCache->addType<components::Layer>();
-		nonUiRectangleCache = middle::newCompCache(gameState);
-		nonUiRectangleCache->addType<components::Rectangle>();
-		nonUiRectangleCache->addType<components::Position>();
-		nonUiRectangleCache->addType<components::UiComponent>(components::NOTINTERESTED);
-		nonUiRectangleCache->addType<components::RuntimeHiddenTag>(components::NOTINTERESTED);
 
 	}
 	bool debugRendering = false;
@@ -409,21 +402,6 @@ public:
 			}
 		}
 
-		auto rectangleIt = nonUiRectangleCache->begin<components::Rectangle>();
-		auto rectanglePosIt = nonUiRectangleCache->begin<components::Position>();
-		for (int i = 0; i < nonUiRectangleCache->getSize(); ++i) {
-			auto rectangle = *rectangleIt;
-			auto pos = *rectanglePosIt;
-
-			middle::RenderItem rectangleItem;
-			rectangleItem.type = middle::RenderItemType::RECTANGLE;
-			rectangleItem.center = { pos->posX, pos->posY, pos->posZ };
-			rectangleItem.color = bubbleColors::UI_BUTTON;
-			rectangleItem.width = rectangle->width;
-			rectangleItem.height = rectangle->height;
-			rectangleItem.length = 0.001f;
-			gameState->renderData.push_back(rectangleItem);
-		}
 	}
 };
 
