@@ -26,27 +26,60 @@ public:
 			auto camera = *cameraIt;
 			auto& shape = middle::getShape(gameState, compCache->relevantIdVector[i].index);
 
-			const float cameraSpeed = 2;
-			if (gameState->gameInput.zoomIn) {
-				middle::moveShape(gameState, shape.id.index, { 0,cameraSpeed,0 });
+			const float minDeceleration = 10;
+			float oldSpeedY = camera->speedY;;
+			float speedMag = std::abs(camera->speedY);
+			float yDeceleration = speedMag * 0.3f;
+			yDeceleration = yDeceleration > minDeceleration ? yDeceleration : minDeceleration;
+			if (speedMag > 0) {
+				camera->speedY -= yDeceleration * (camera->speedY / speedMag);
+				if (camera->speedY * oldSpeedY <= 0) {
+					camera->speedY = 0;
+				}
 			}
-			if (gameState->gameInput.zoomOut) {
-				middle::moveShape(gameState, shape.id.index, { 0,-cameraSpeed,0 });
-			}
-			if (gameState->gameInput.panUp) {
-				middle::moveShape(gameState, shape.id.index, { 0,0,cameraSpeed });
-			}
-			if (gameState->gameInput.panDown) {
-				middle::moveShape(gameState, shape.id.index, { 0,0,-cameraSpeed });
-			}
+			float mouseWheelMove = gameState->gameInput.mouseWheelMove;
+			const float wheelMouseMultiplier = 30;
+			camera->speedY += mouseWheelMove * wheelMouseMultiplier;
+			camera->speedX = 0;
+			camera->speedZ = 0;
+
+			const float panSpan = 5000;
+			const float minY = -100;
+			float maxY = minY - panSpan;
+
+			Vector3 oldPos = middle::getShapePosition(gameState, shape.id.index);
+			float zoomRatio = std::abs(oldPos.y - minY) / panSpan;
+
+			float panSpeed = 50 * zoomRatio;
 			if (gameState->gameInput.panLeft) {
-				middle::moveShape(gameState, shape.id.index, { -cameraSpeed, 0,0 });
+				camera->speedX = -panSpeed;
 			}
 			if (gameState->gameInput.panRight) {
-				middle::moveShape(gameState, shape.id.index, { cameraSpeed, 0,0 });
+				camera->speedX = panSpeed;
+			}
+			if (gameState->gameInput.panUp) {
+				camera->speedZ = panSpeed;
+			}
+			if (gameState->gameInput.panDown) {
+				camera->speedZ = -panSpeed;
 			}
 
+
+			middle::moveShape(gameState, shape.id.index, { camera->speedX,camera->speedY,camera->speedZ });
+
 			Vector3 newPos = middle::getShapePosition(gameState, shape.id.index);
+
+			float deltaMinY = newPos.y - minY;
+			if (deltaMinY > 0) {
+				middle::moveShape(gameState, shape.id.index, { camera->speedX,-deltaMinY,camera->speedZ });
+				newPos.y = minY;
+			}
+			float deltaMaxY = newPos.y - maxY;
+			if (deltaMaxY < 0) {
+				middle::moveShape(gameState, shape.id.index, { camera->speedX,-deltaMaxY,camera->speedZ });
+				newPos.y = maxY;
+			}
+
 			gameState->activeCamera.position = newPos;
 			gameState->activeCamera.target = { camera->targetX, camera->targetY, camera->targetZ };
 

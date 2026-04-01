@@ -28,26 +28,26 @@ SystemReference
 s  UiRenderSetup
 __q  1_0
 Position
-f  148.000000
-f  -623.999939
-f  138.000000
+f  122.000000
+f  -773.975525
+f  174.000000
 MouseGrabbable
-LoopSociety
-q  -1_0
-p  
-Sphere
-f  2.000000
-MouseSelectable
 CameraComponent
-f  148.000000
-f  9376.000000
-f  138.000000
+f  122.000000
+f  9226.024414
+f  174.000000
 f  0.000000
 f  0.000000
 f  1.000000
 f  45.000000
 i  0
 b  1
+LoopSociety
+q  -1_0
+p  
+Sphere
+f  2.000000
+MouseSelectable
 MouseIntersectable
 __q  2_0
 MouseSelectable
@@ -83,13 +83,13 @@ q  -1_0
 p  
 Circle
 f  20.000000
+MouseIntersectable
 MouseSelectable
 Position
 f  -36.000000
 f  0.000000
 f  0.000000
 MouseGrabbable
-MouseIntersectable
 Text
 s  PROBLEM 1
 f  0.000000
@@ -180,6 +180,7 @@ q  -1_0
 p  
 Circle
 f  20.000000
+MouseIntersectable
 MouseSelectable
 Position
 f  36.000000
@@ -197,7 +198,6 @@ f  0.000000
 f  0.000000
 f  1.000000
 b  1
-MouseIntersectable
 Button
 i  -1
 LevelReference
@@ -215,13 +215,13 @@ q  -1_0
 p  
 Circle
 f  20.000000
+MouseIntersectable
 MouseSelectable
 Position
 f  -36.000000
 f  0.000000
 f  108.000000
 MouseGrabbable
-MouseIntersectable
 Text
 s  PROBLEM 3
 f  0.000000
@@ -250,6 +250,7 @@ q  -1_0
 p  
 Circle
 f  20.000000
+MouseIntersectable
 MouseSelectable
 Position
 f  18.000000
@@ -267,7 +268,6 @@ f  0.000000
 f  0.000000
 f  1.000000
 b  1
-MouseIntersectable
 Button
 i  -1
 LevelReference
@@ -285,13 +285,13 @@ q  -1_0
 p  
 Circle
 f  20.000000
+MouseIntersectable
 MouseSelectable
 Position
 f  54.000000
 f  0.000000
 f  234.000000
 MouseGrabbable
-MouseIntersectable
 Text
 s  PROBLEM 5
 f  0.000000
@@ -415,13 +415,13 @@ Sphere
 f  2.000000
 Circle
 f  20.000000
+MouseIntersectable
 MouseSelectable
 MouseGrabbable
 Position
 f  90.000000
 f  0.000000
 f  306.000000
-MouseIntersectable
 Text
 s  PROBLEM 6
 f  0.000000
@@ -449,13 +449,13 @@ q  -1_0
 p  
 Circle
 f  20.000000
+MouseIntersectable
 MouseSelectable
 Position
 f  180.000000
 f  0.000000
 f  288.000000
 MouseGrabbable
-MouseIntersectable
 Text
 s  PROBLEM 7
 f  0.000000
