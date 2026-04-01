@@ -222,17 +222,17 @@ f  1.000000
 f  45.000000
 i  0
 b  1
+Position
+f  218.086365
+f  -1039.525269
+f  -33.490509
+MouseGrabbable
 MouseSelectable
 LoopSociety
 q  -1_0
 p  
 Sphere
 f  2.000000
-Position
-f  218.086365
-f  -1039.525269
-f  -33.490509
-MouseGrabbable
 __q  9_0
 MouseSelectable
 Position
@@ -397,7 +397,7 @@ __q  17_0
 MouseIntersectable
 BubbleComponent
 LoopSociety
-q  24_0
+q  -1_0
 p  
 q  18_0
 q  19_0
@@ -433,7 +433,8 @@ f  0.000000
 f  0.000000
 b  0
 Layer
-i  3
+i  0
+TopDogBubbleTag
 __q  18_0
 MouseSelectable
 LoopSociety
@@ -466,7 +467,7 @@ MouseGrabbable
 Circle
 f  2.000000
 Layer
-i  4
+i  1
 __q  19_0
 MouseSelectable
 LoopSociety
@@ -499,7 +500,7 @@ MouseGrabbable
 Circle
 f  2.000000
 Layer
-i  4
+i  1
 __q  20_0
 MouseSelectable
 LoopSociety
@@ -532,7 +533,7 @@ MouseGrabbable
 Circle
 f  2.000000
 Layer
-i  4
+i  1
 __q  21_0
 MouseSelectable
 LoopSociety
@@ -565,7 +566,7 @@ MouseGrabbable
 Circle
 f  2.000000
 Layer
-i  4
+i  1
 __q  22_0
 MouseSelectable
 LoopSociety
@@ -598,7 +599,7 @@ MouseGrabbable
 Circle
 f  2.000000
 Layer
-i  4
+i  1
 __q  23_0
 MouseSelectable
 LoopSociety
@@ -631,26 +632,23 @@ MouseGrabbable
 Circle
 f  2.000000
 Layer
-i  4
+i  1
 __q  24_0
 LoopTag
 BubbleAlgebraProblemContainer
 Rectangle
 f  300.000000
 f  200.000000
-UiComponent
-i  -1
 MouseSelectable
-MouseGrabbable
-LoopSociety
-q  40_2
-p  
-q  17_0
-MouseIntersectable
 Position
 f  340.876312
 f  -0.000122
 f  142.092682
+MouseGrabbable
+LoopSociety
+q  40_2
+p  
+MouseIntersectable
 __q  25_0
 MouseSelectable
 LoopSociety
@@ -683,7 +681,7 @@ MouseGrabbable
 Circle
 f  2.000000
 Layer
-i  4
+i  1
 __q  26_0
 MouseSelectable
 LoopSociety
@@ -716,7 +714,7 @@ MouseGrabbable
 Circle
 f  2.000000
 Layer
-i  4
+i  1
 __q  28_0
 MouseIntersectable
 BubbleComponent
@@ -935,6 +933,7 @@ Cuboid
 f  7.000000
 f  1.000000
 f  10000.000000
+MouseIntersectable
 LoopSociety
 q  40_2
 p  
@@ -959,7 +958,6 @@ f  0.000000
 f  0.000000
 f  0.000000
 b  1
-MouseIntersectable
 Rectangle
 f  7.000000
 f  10000.000000
@@ -974,6 +972,7 @@ f  0.000000
 f  0.000000
 f  1.000000
 b  1
+RuntimeHiddenTag
 __q  39_0
 LoopTag
 LoopSociety

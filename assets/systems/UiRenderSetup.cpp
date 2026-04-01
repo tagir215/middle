@@ -56,7 +56,10 @@ public:
 			rectItem.color = color;
 			rectItem.width = rect->width;
 			rectItem.height = rect->height;
+			rectItem.length = 0.01f;
 			rectItem.center = position;
+			rectItem.backgroundColor = bubbleColors::UI_BUTTON_BACKGROUND;
+			rectItem.disableDepthTest = true;
 			auto scale = middle::getComponent<components::Scale>(shape);
 			if (scale) {
 				rectItem.scale = scale->scale;
@@ -76,6 +79,7 @@ public:
 			circleItem.color = color;
 			circleItem.radius = circle->radius;
 			circleItem.center = middle::getShapePosition(gameState, shape.id.index);
+			circleItem.disableDepthTest = true;
 			gameState->renderData.push_back(circleItem);
 		}
 

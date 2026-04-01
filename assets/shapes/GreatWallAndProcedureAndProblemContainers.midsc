@@ -46,24 +46,23 @@ BubbleAlgebraProblemContainer
 Rectangle
 f  300.000000
 f  200.000000
-UiComponent
-i  -1
 MouseSelectable
+Position
+f  6.715057
+f  -0.000122
+f  135.960098
 MouseGrabbable
 LoopSociety
 q  40_2
 p  
 MouseIntersectable
-Position
-f  6.715057
-f  -0.000122
-f  135.960098
 __q  38_0
 MouseSelectable
 Cuboid
 f  7.000000
 f  1.000000
 f  10000.000000
+MouseIntersectable
 LoopSociety
 q  40_2
 p  
@@ -88,7 +87,6 @@ f  0.000000
 f  0.000000
 f  0.000000
 b  1
-MouseIntersectable
 Rectangle
 f  7.000000
 f  10000.000000
@@ -103,3 +101,4 @@ f  0.000000
 f  0.000000
 f  1.000000
 b  1
+RuntimeHiddenTag

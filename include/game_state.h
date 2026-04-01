@@ -104,6 +104,7 @@ namespace middle {
 		float width;
 		float height;
 		int fontSize;
+		bool disableDepthTest = false;
 		std::string text = "";
 		Model* model;
 
