@@ -49,8 +49,12 @@ public:
 
 			Vector3 oldPos = middle::getShapePosition(gameState, shape.id.index);
 			float zoomRatio = std::abs(oldPos.y - minY) / panSpan;
-
 			float panSpeed = 50 * zoomRatio;
+			const float minPanSpeed = 0.1f;
+			if (panSpeed < minPanSpeed) {
+				panSpeed = minPanSpeed;
+			}
+
 			if (gameState->gameInput.panLeft) {
 				camera->speedX = -panSpeed;
 			}
