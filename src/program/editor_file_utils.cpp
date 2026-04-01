@@ -295,6 +295,9 @@ namespace middle {
 			}
 		}
 		gameState->reset = true;
+		while (gameState->undoQueue.size() > 0) {
+			gameState->undoQueue.pop();
+		}
 	}
 
 	bool isEmptyOrWhitespace(const std::string& s) {
