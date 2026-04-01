@@ -133,6 +133,42 @@ namespace bubble {
 
 	}
 
+	void bubbleRectBoundingBox(GameState* gameState, const Id& shapeId, float* leftX, float* rightX, float* bottomZ, float* topZ)
+	{
+		auto& shape = middle::getShape(gameState, shapeId.index);
+		std::vector<middle::Id> allThingsInTheBubbleSinceTheBeginningOfTime;
+		allThingsInTheBubbleSinceTheBeginningOfTime.push_back(shape.id);
+		middle::getAllChildren(gameState, shapeId, allThingsInTheBubbleSinceTheBeginningOfTime);
+		*leftX = 100000;
+		*rightX = -100000;
+		*bottomZ = *leftX;
+		*topZ = *rightX;
+		for (middle::Id& id : allThingsInTheBubbleSinceTheBeginningOfTime) {
+			auto& child = middle::getShape(gameState, id.index);
+			auto circle = middle::getComponent<components::Circle>(child);
+			if (!circle) {
+				continue;
+			}
+			auto childPos = middle::getComponent<components::Position>(child);
+			float left = childPos->posX - circle->radius;
+			float right = childPos->posX + circle->radius;
+			float top = childPos->posZ + circle->radius;
+			float bottom = childPos->posZ - circle->radius;
+			if (left < *leftX) {
+				*leftX = left;
+			}
+			if (right > *rightX) {
+				*rightX = right;
+			}
+			if (bottom < *bottomZ) {
+				*bottomZ = bottom;
+			}
+			if (top > *topZ) {
+				*topZ = top;
+			}
+		}
+	}
+
 	bool buttonClicked(middle::GameState* gameState, middle::Shape& shape, int function)
 	{
 		if (!gameState->input.mouseClicked) {

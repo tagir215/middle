@@ -10,6 +10,7 @@ namespace bubble {
 	void loopRectBoundingBox(GameState* gameState, const Id& shapeId, float* leftX, float* rightX, float* bottomZ, float* topZ);
 	void loopChildrenOnlyRectBoundingBox(GameState* gameState, const Id& shapeId, float* leftX, float* rightX, float* bottomZ, float* topZ);
 	void loopRectBoundingBoxInternal(GameState* gameState, const Id& shapeId, float* leftX, float* rightX, float* bottomZ, float* topZ);
+	void bubbleRectBoundingBox(GameState* gameState, const Id& shapeId, float* leftX, float* rightX, float* bottomZ, float* topZ);
 	bool buttonClicked(middle::GameState* gameState, middle::Shape& shape, int function);
 	std::vector<middle::Id>getNodes(middle::GameState* gameState, components::LoopSociety* loop);
 	std::vector<middle::Id>getConstraints(middle::GameState* gameState, components::LoopSociety* loop);
