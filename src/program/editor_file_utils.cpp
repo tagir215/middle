@@ -298,6 +298,9 @@ namespace middle {
 		while (gameState->undoQueue.size() > 0) {
 			gameState->undoQueue.pop();
 		}
+		if (gameState->bubbleAlgebraState.bubbleActions.size() > 0) {
+			gameState->bubbleAlgebraState.bubbleActions.clear();
+		}
 	}
 
 	bool isEmptyOrWhitespace(const std::string& s) {
@@ -669,7 +672,7 @@ namespace middle {
 				}
 			}
 		}
-		catch (const std::filesystem::filesystem_error& err){
+		catch (const std::filesystem::filesystem_error& err) {
 			std::cerr << "hmm" << err.what();
 		}
 		return filenames;
