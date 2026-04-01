@@ -20,6 +20,7 @@
 #include "InputVariable.h"
 #include "component_utils.h"
 #include "ProcedureComponent.h"
+#include "Layer.h"
 
 class CodeBlockSystem : public middle::MiddleGameplaySystem {
 public:

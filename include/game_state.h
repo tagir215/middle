@@ -135,8 +135,8 @@ namespace middle {
 		float aspectRatio;
 		float frameTime;
 		float frameTimeAccumulator = 0;
-		const double nearPlaneDistance = 0.05;
-		const double farPlaneDistance = 5000;
+		const double nearPlaneDistance = 10;
+		const double farPlaneDistance = 4000;
 		bool systemsRegistered = false;
 		ApplicationMode applicationMode = ApplicationMode::EDITOR_MODE;
 		EditorState editorState;

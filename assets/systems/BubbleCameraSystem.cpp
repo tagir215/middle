@@ -43,7 +43,7 @@ public:
 			camera->speedX = 0;
 			camera->speedZ = 0;
 
-			const float panSpan = 5000;
+			const float panSpan = 4000;
 			const float minY = -100;
 			float maxY = minY - panSpan;
 

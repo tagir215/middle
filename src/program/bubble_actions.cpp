@@ -1289,7 +1289,6 @@ namespace bubbleActions {
 		resultId = registerBubble->newShapeId;
 		actions.push_back(std::move(registerBubble));
 
-
 		auto reparentToBubble = std::make_unique<middle::EditorActionReparent>(resultId.index, targetId.index);
 		reparentToBubble->execute(gameState);
 		actions.push_back(std::move(reparentToBubble));

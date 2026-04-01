@@ -57,16 +57,29 @@ public:
 		}
 
 		if (gameState->bubbleAlgebraState.grabbedId.index != middle::UNASSIGNED) {
-			middle::Id grabbedId = gameState->bubbleAlgebraState.grabbedId;
-			std::vector<middle::Id> children;
-			middle::getAllChildren(gameState, grabbedId, children);
-			const int layerOffset = 10;
 
-			for (middle::Id& childId : children) {
-				auto& childShape = middle::getShape(gameState, childId.index);
-				auto layer = middle::getComponent<components::Layer>(childShape);
-				layer += layerOffset;
+			middle::Id grabbedId = gameState->bubbleAlgebraState.grabbedId;
+			auto& grabbedShape = middle::getShape(gameState, grabbedId.index);
+			auto idRef = middle::getComponent<components::IdRef>(grabbedShape);
+
+			if (idRef) {
+
+				auto& refShape = middle::getShape(gameState, idRef->idRef.index);
+				int depth = bubble::findDepth(gameState, refShape.id);
+
+				std::vector<middle::Id> children;
+				middle::getAllChildren(gameState, grabbedId, children);
+				int layerOffset = depth;
+
+				for (middle::Id& childId : children) {
+					auto& childShape = middle::getShape(gameState, childId.index);
+					auto layer = middle::getComponent<components::Layer>(childShape);
+					if (layer) {
+						layer->layer += layerOffset;
+					}
+				}
 			}
+
 		}
 	}
 };
