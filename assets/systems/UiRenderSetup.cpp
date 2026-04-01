@@ -17,6 +17,7 @@
 #include "Scale.h"
 #include "Layer.h"
 #include "RuntimeHiddenTag.h"
+#include "Button.h"
 
 class UiRenderSetup : public middle::MiddleGameplaySystem {
 public:
@@ -42,7 +43,7 @@ public:
 		circleCache->addType<components::Layer>();
 		textCache = middle::newCompCache(gameState);
 		textCache->addType<components::Text>();
-		textCache->addType<components::UiComponent>();
+		textCache->addType<components::Button>();
 
 
 		nonUiRectangleCache = middle::newCompCache(gameState);
@@ -99,9 +100,11 @@ public:
 
 		auto circleIt = circleCache->begin<components::Circle>();
 		auto circleLayerIt = circleCache->begin<components::Layer>();
+		auto circleUiCompIt = circleCache->begin<components::UiComponent>();
 		for (int i = 0; i < circleCache->getSize(); ++i){
 			auto circle = *circleIt;
 			auto layer = *circleLayerIt;
+			auto uiComp = *circleUiCompIt;
 			auto& shape = middle::getShape(gameState, circleCache->relevantIdVector[i].index);
 			auto intersectable = middle::getComponent<components::MouseIntersectable>(shape);
 			bool intersecting = intersectable && intersectable->intersectingTop;
@@ -172,7 +175,6 @@ public:
 			middle::RenderItem circleItem;
 			circleItem.type = middle::RenderItemType::CIRCLE;
 			circleItem.color = color;
-			circleItem.backgroundColor = bubbleColors::UI_BUTTON_BACKGROUND;
 			circleItem.radius = circle->radius;
 			circleItem.center = middle::getShapePosition(gameState, shape.id.index);
 			gameState->renderData.push_back(circleItem);

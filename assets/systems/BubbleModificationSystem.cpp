@@ -14,6 +14,7 @@
 #include "TopDogBubbleTag.h"
 #include "bubble_utils.h"
 #include "ExponentComponent.h"
+#include "UiComponent.h"
 
 class BubbleModificationSystem : public middle::MiddleGameplaySystem {
 public:
@@ -103,7 +104,12 @@ public:
 		middle::Id& copyId = middle::deepCopyShape(gameState, inventoryItemId.index);
 		middle::queueComponentDeletion<components::InventoryItem>(gameState, copyId);
 		middle::queueComponentDeletion<components::IdRef>(gameState, copyId);
-		middle::Shape& shape = middle::getShape(gameState, copyId.index);
+		middle::queueComponentDeletion<components::UiComponent>(gameState, copyId);
+		std::vector<middle::Id>children;
+		middle::getAllChildren(gameState, copyId, children);
+		for (middle::Id& child : children) {
+			middle::queueComponentDeletion<components::UiComponent>(gameState, child);
+		}
 		return copyId;
 	}
 

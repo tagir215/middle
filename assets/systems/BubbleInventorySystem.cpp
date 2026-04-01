@@ -16,6 +16,7 @@
 #include "PlacementComponent.h"
 #include "CodeBlock.h"
 #include "CodeFunction.h"
+#include "UiComponent.h"
 
 
 class BubbleInventorySystem : public middle::MiddleGameplaySystem {
@@ -23,6 +24,7 @@ public:
 
 	components::CompCache* inventoryCache;
 	components::CompCache* grabbableCache;
+	components::CompCache* uiComponentlessBubbleInventoryItemCache;
 
 	void init(middle::GameState* gameState) {
 		inventoryCache = middle::newCompCache(gameState);
@@ -32,6 +34,11 @@ public:
 		grabbableCache = middle::newCompCache(gameState);
 		grabbableCache->addType<components::InventoryItem>();
 		grabbableCache->addType<components::MouseGrabbable>();
+
+		uiComponentlessBubbleInventoryItemCache = middle::newCompCache(gameState);
+		uiComponentlessBubbleInventoryItemCache->addType<components::InventoryItem>();
+		uiComponentlessBubbleInventoryItemCache->addType<components::BubbleComponent>();
+		uiComponentlessBubbleInventoryItemCache->addType<components::UiComponent>(components::NOTINTERESTED);
 	}
 	void update(middle::GameState* gameState) override {
 
@@ -62,6 +69,22 @@ public:
 					placement->grabbing = true;
 					ref->idRef = childId;
 					middle::queueComponentDeletion<components::MouseIntersectable>(gameState, copyShape.id);
+				}
+			}
+		}
+
+		// attach ui components to bubbles that are in the inventory
+		auto uiComponentlessIt = uiComponentlessBubbleInventoryItemCache->begin<components::BubbleComponent>();
+		for (int i = 0; i < uiComponentlessBubbleInventoryItemCache->getSize(); ++i) {
+			middle::Id id = uiComponentlessBubbleInventoryItemCache->relevantIdVector[i];
+			middle::queueComponentAttachment<components::UiComponent>(gameState, id);
+			std::vector<middle::Id>children;
+			middle::getAllChildren(gameState, id, children);
+			for (middle::Id& child : children) {
+				auto& childShape = middle::getShape(gameState, child.index);
+				auto comp = middle::getComponent<components::UiComponent>(childShape);
+				if (!comp) {
+					middle::queueComponentAttachment<components::UiComponent>(gameState, child);
 				}
 			}
 		}

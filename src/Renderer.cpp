@@ -224,7 +224,7 @@ namespace RendererSystem {
 			draw3D(gameState, false);
 			EndMode3D();
 
-			int maxLayers = 4;
+			int maxLayers = 7;
 			for (int i = 0; i < maxLayers; ++i) {
 				BeginMode3D(camera);
 				rlDisableDepthTest();
