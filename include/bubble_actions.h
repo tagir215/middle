@@ -100,6 +100,20 @@ namespace bubbleActions{
 		void undo(middle::GameState* gameState) override;
 	};
 
+	class UnlinkMultiplicationTerm : public middle::EditorActionContainer {
+	public:
+		middle::Id multiplicationId;
+		middle::Id unlinkingShapeId;
+		middle::Id resultShapeId;
+		std::vector<std::unique_ptr<middle::EditorActionContainer>> actions;
+		UnlinkMultiplicationTerm(middle::Id multiplicationId, middle::Id unlinkingShapeId) {
+			this->multiplicationId = multiplicationId;
+			this->unlinkingShapeId = unlinkingShapeId;
+		}
+		void execute(middle::GameState* gameState) override;
+		void undo(middle::GameState* gameState) override;
+	};
+
 	class MulOne : public middle::EditorActionContainer {
 	public:
 		middle::Id recieverShapeId;

@@ -758,6 +758,39 @@ namespace bubbleActions {
 			actions.pop_back();
 		}
 	}
+
+	void UnlinkMultiplicationTerm::execute(middle::GameState* gameState)
+	{
+		middle::Id mulParentId = middle::getParent(gameState, multiplicationId);
+
+		auto removeAction = std::make_unique<middle::EditorActionReparent>(mulParentId.index, unlinkingShapeId.index);
+		removeAction->execute(gameState);
+		actions.push_back(std::move(removeAction));
+
+		std::vector<middle::Id>children;
+		middle::getChildren(gameState, multiplicationId, children);
+		resultShapeId = multiplicationId;
+		if (children.size() == 1) {
+			auto reparent = std::make_unique<middle::EditorActionReparent>(mulParentId.index, children[0].index);
+			reparent->execute(gameState);
+			actions.push_back(std::move(reparent));
+			auto deleteMul = std::make_unique<middle::EditorActionDeleteSingle>(multiplicationId);
+			deleteMul->execute(gameState);
+			actions.push_back(std::move(deleteMul));
+			resultShapeId = children[0];
+		}
+	}
+
+	void UnlinkMultiplicationTerm::undo(middle::GameState* gameState)
+	{
+		while (actions.size() > 0) {
+			actions.back()->undo(gameState);
+			actions.pop_back();
+		}
+	}
+
+
+	
 	Break::Break(middle::Id containerShape, int dividend)
 	{
 		this->containerShapeId = containerShape;
@@ -820,13 +853,6 @@ namespace bubbleActions {
 		this->containerShapeId = containerShape;
 	}
 
-	struct TypeRepresentative {
-		middle::Id id;
-		int count = 0;
-	};
-
-
-
 	middle::Id compressToPower(middle::GameState* gameState, middle::Shape& multiplicationShape) {
 		assert(middle::getComponent<components::BubbleMultiplyComponent>(multiplicationShape));
 		auto loop = middle::getComponent<components::LoopSociety>(multiplicationShape);
@@ -867,83 +893,135 @@ namespace bubbleActions {
 		return replacementShapeId;
 	}
 
-	middle::Id compressToMultiplication(middle::GameState* gameState, middle::Id compressTargetId, std::vector<middle::Id>& candidateChildren) {
+	struct RepresentativeGroup {
+		middle::Id containerId;
+		std::vector<middle::Id>representatives;
+		int commonIndex = -1;
+	};
 
-		std::vector<TypeRepresentative>typeRepresentatives;
-
-		for (middle::Id id : candidateChildren) {
-			if (typeRepresentatives.size() == 0) {
-				typeRepresentatives.push_back({ id, 1 });
-				continue;
-			}
-			bool friendFound = false;
-			for (auto& representative : typeRepresentatives) {
-				bool typeEquals = bubble::matchingBubbles(gameState, id, representative.id);
-				if (typeEquals) {
-					++representative.count;
-					friendFound = true;
-				}
-			}
-			if (!friendFound) {
-				typeRepresentatives.push_back({ id, 1 });
+	bool groupContains(middle::GameState* gameState, RepresentativeGroup& group, middle::Id representativeId) {
+		for (int i = 0; i < group.representatives.size(); ++i) {
+			middle::Id& id = group.representatives[i];
+			if (bubble::matchingBubbles(gameState, id, representativeId)) {
+				group.commonIndex = i;
+				return true;
 			}
 		}
-		int compressCount = typeRepresentatives[0].count;
-		for (auto& representative : typeRepresentatives) {
-			if (representative.count != compressCount) {
-				// exit if not all same size, can't compress if there are different counts
-				return middle::Id();
+		return false;
+	}
+
+	struct CommonVariableResult {
+		bool commonVariableFound = false;
+		middle::Id commonVariableId;
+		// indexes where the common variable can be found in multiplications
+		std::vector<RepresentativeGroup>groups;
+	};
+
+	CommonVariableResult findCommonVariable(middle::GameState* gameState, middle::Id bubbleId) {
+		std::vector<RepresentativeGroup>groups;
+		std::vector<middle::Id>children;
+		middle::getChildren(gameState, bubbleId, children);
+		for (middle::Id& childId : children) {
+			auto& childShape = middle::getShape(gameState, childId.index);
+			auto bubbleComp = middle::getComponent<components::BubbleComponent>(childShape);
+			if (bubbleComp) {
+				RepresentativeGroup group;
+				group.containerId = childId;
+				group.representatives.push_back(childId);
+				groups.push_back(group);
+				continue;
 			}
+
+			auto fractionComp = middle::getComponent<components::FractionalComponent>(childShape);
+			if (fractionComp) {
+				RepresentativeGroup group;
+				group.containerId = childId;
+				group.representatives.push_back(childId);
+				groups.push_back(group);
+				continue;
+			}
+
+			auto multiplicationComp = middle::getComponent<components::BubbleMultiplyComponent>(childShape);
+			if (multiplicationComp) {
+				std::vector<middle::Id>mulChildren;
+				middle::getChildren(gameState, childId, mulChildren);
+				RepresentativeGroup group;
+				group.containerId = childId;
+				group.representatives = mulChildren;
+				groups.push_back(group);
+				continue;
+			}
+		}
+
+		if (groups.size() < 2) {
+			return CommonVariableResult();
+		}
+
+		RepresentativeGroup& firstGroup = groups[0];
+		// check that all the other groups contain a similar representative to one of representatives of the first group
+		for (int i = 0; i < firstGroup.representatives.size(); ++i) {
+			middle::Id& baseRepresentativeId = firstGroup.representatives[i];
+
+			bool foundCommonInAllGroups = true;
+			for (int j = 1; j < groups.size(); ++j) {
+				if (!groupContains(gameState, groups[j], baseRepresentativeId)) {
+					foundCommonInAllGroups = false;
+					break;
+				}
+			}
+			if (foundCommonInAllGroups) {
+				CommonVariableResult result;
+				result.commonVariableFound = true;
+				result.commonVariableId = baseRepresentativeId;
+				firstGroup.commonIndex = i;
+				result.groups = groups;
+				return result;
+			}
+		}
+
+		return CommonVariableResult();
+	}
+
+	middle::Id compressToMultiplication(middle::GameState* gameState, middle::Id compressTargetId) {
+
+		CommonVariableResult commonVariableResult = findCommonVariable(gameState, compressTargetId);
+		if (!commonVariableResult.commonVariableFound) {
+			return middle::Id();
 		}
 
 		Vector3 targetPos = middle::getShapePosition(gameState, compressTargetId.index);
+		middle::Shape bubbleProto = bubble::newBubble(gameState, targetPos);
+		middle::Shape& resultBubble = middle::registerShape(gameState, bubbleProto);
 
-		// create new container bubble
-		middle::Shape newContainerProto = bubble::newBubble(gameState, targetPos);
-		middle::Shape& newContainer = middle::registerShape(gameState, newContainerProto);
+		middle::Id commonCopyId = middle::deepCopyShape(gameState, commonVariableResult.commonVariableId.index);
+		middle::EditorActionReparent(resultBubble.id.index, commonCopyId.index).execute(gameState);
 
+		middle::Shape compressedProto = bubble::newBubble(gameState, targetPos);
+		middle::Shape& compressedBubble = middle::registerShape(gameState, compressedProto);
+		LinkMultiplicationTerm(commonCopyId, compressedBubble.id).execute(gameState);
 
-		// reparent copy of each representative to the new container
-		for (auto& representative : typeRepresentatives) {
-
-			// otherwise compress to itself
-			middle::Id copyRepresentativeId = middle::deepCopyShape(gameState, representative.id.index);
-			middle::EditorActionReparent(newContainer.id.index, copyRepresentativeId.index).execute(gameState);
-
-		}
-
-		middle::Id countBubbleId;
-		if (compressCount > 1) {
-			// create bubble with compress count
-			middle::Shape countBubbleProto = bubble::newBubble(gameState, targetPos);
-			middle::Shape& countBubble = middle::registerShape(gameState, countBubbleProto);
-			countBubbleId = countBubble.id;
-			Vector3 refPos = targetPos;
-			for (int i = 0; i < compressCount; ++i) {
-				middle::Shape unitProto = bubble::newUnit(gameState, refPos);
-				middle::Shape& unit = middle::registerShape(gameState, unitProto);
-				middle::EditorActionReparent(countBubble.id.index, unit.id.index).execute(gameState);
-				refPos.x += 5;
+		for (RepresentativeGroup& group : commonVariableResult.groups) {
+			// assume singular thing, it will be replaced with bubble containing unit one
+			if (group.representatives.size() == 1) {
+				targetPos.x += 1;
+				middle::Shape unitProto = bubble::newUnit(gameState, targetPos);
+				auto& newUnit = middle::registerShape(gameState, unitProto);
+				middle::EditorActionReparent(compressedBubble.id.index, newUnit.id.index).execute(gameState);
+			}
+			//assume is multiplication, it will be replaced with unlinked version of itself
+			else {
+				middle::Id copyMulId = middle::deepCopyShape(gameState, group.containerId.index);
+				std::vector<middle::Id>copyChildren;
+				middle::getChildren(gameState, copyMulId, copyChildren);
+				middle::Id unlinkingId = copyChildren[group.commonIndex];
+				auto unlink = UnlinkMultiplicationTerm(copyMulId, unlinkingId);
+				unlink.execute(gameState);
+				middle::EditorActionReparent(compressedBubble.id.index, unlink.resultShapeId.index).execute(gameState);
+				middle::deleteShapeRecursive(gameState, unlinkingId.index);
 			}
 		}
 
-		// link compress count bubble to compressed bubble
-		if (countBubbleId.index != middle::UNASSIGNED) {
-			auto link = LinkMultiplicationTerm(newContainer.id, countBubbleId);
-			link.execute(gameState);
-			middle::Id newMultiplicationId = link.resultShapeId;
-
-			// create antoher container, beacuse in fractions or some places multiplication doesn't work as container
-			middle::Shape multiplicationContainerProto = bubble::newBubble(gameState, targetPos);
-			middle::Shape& multiplicationContainer = middle::registerShape(gameState, multiplicationContainerProto);
-
-			EditorActionReparent(multiplicationContainer.id.index, newMultiplicationId.index).execute(gameState);
-			return multiplicationContainer.id;
-		}
-		else {
-			return newContainer.id;
-		}
-
+		return resultBubble.id;
 	}
 
 
@@ -963,7 +1041,6 @@ namespace bubbleActions {
 		middle::getChildren(gameState, compressTarget, candidateChildren);
 		int childCount = candidateChildren.size();
 
-
 		if (childCount == 0) {
 			return;
 		}
@@ -979,7 +1056,7 @@ namespace bubbleActions {
 			}
 		}
 		else {
-			replacementShapeId = compressToMultiplication(gameState, compressTarget, candidateChildren);
+			replacementShapeId = compressToMultiplication(gameState, compressTarget);
 		}
 
 		if (replacementShapeId.index == middle::UNASSIGNED) {
@@ -996,6 +1073,7 @@ namespace bubbleActions {
 
 		resultShapeId = replacementShapeId;
 	}
+
 	void Compress::undo(middle::GameState* gameState)
 	{
 		while (actions.size() > 0) {
