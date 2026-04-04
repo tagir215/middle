@@ -136,7 +136,8 @@ public:
 			particle.disableDepthTest = isUiItem;
 			if (unit->value == 1) {
 				particle.type = middle::RenderItemType::CIRCLE;
-				particle.backgroundColor = bubbleColors::POSITIVE_UNIT;
+				particle.color = bubbleColors::POSITIVE_UNIT;
+				particle.backgroundColor = particle.color;
 			}
 			if (unit->value == 0) {
 				particle.type = middle::RenderItemType::CIRCLE;
@@ -144,6 +145,7 @@ public:
 			}
 			if (unit->value == -1) {
 				particle.color = bubbleColors::NEGATIVE_UNIT;
+				particle.backgroundColor = particle.color;
 			}
 
 			auto intersectable = middle::getComponent<components::MouseIntersectable>(shape);

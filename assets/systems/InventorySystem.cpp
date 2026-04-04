@@ -36,6 +36,9 @@ public:
 			auto inventory = *inventoryIt;
 			auto loop = *loopIt;
 			auto inventoryRect = *rectangleIt;
+			if (inventory->freeLayout) {
+				continue;
+			}
 
 			std::vector<middle::Id>items = loop->loopMemberIds;
 
@@ -56,8 +59,15 @@ public:
 				referencePos.z += totalHeight * 0.5f - spacing;
 			}
 
+			float rowSpacing = 0;
+			if (inventory->rows > 1) {
+				spacing *= inventory->rows;
+				rowSpacing = totalHeight / inventory->rows;
+			}
 
-			for (middle::Id& childId : items) {
+			Vector3 initialPos = referencePos;
+			for (int j = 0; j < items.size(); ++j) {
+				middle::Id childId = items[j];
 				middle::Shape& child = middle::getShape(gameState, childId.index);
 
 				Vector3 displacement = referencePos - middle::getShapePosition(gameState, child.id.index);
@@ -67,6 +77,13 @@ public:
 				}
 				else {
 					referencePos.z -= spacing;
+				}
+
+				if (inventory->horizontal) {
+					if (referencePos.x >= initialPos.x + totalWidth - 0.01f) {
+						referencePos.x = initialPos.x;
+						referencePos.z -= rowSpacing;
+					}
 				}
 			}
 
