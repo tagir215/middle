@@ -67,6 +67,7 @@ public:
 		cuboidCache = middle::newCompCache(gameState);
 		cuboidCache->addType<components::Cuboid>();
 		cuboidCache->addType<components::Position>();
+		cuboidCache->addType<components::TextureComponent>(components::NOTINTERESTED);
 		equalsCache = middle::newCompCache(gameState);
 		equalsCache->addType<components::BubbleEqualsComponent>();
 		equalsCache->addType<components::LoopSociety>();
@@ -78,6 +79,7 @@ public:
 		textureCache = middle::newCompCache(gameState);
 		textureCache->addType<components::TextureComponent>();
 		textureCache->addType<components::Position>();
+		textureCache->addType<components::UiComponent>();
 
 	}
 	bool debugRendering = false;
@@ -95,6 +97,7 @@ public:
 			auto circle = *bubbleCircleIt;
 			auto layer = *bubbleLayerIt;
 			auto& shape = middle::getShape(gameState, bubbleCache->relevantIdVector[i].index);
+			bool isUiItem = middle::getComponent<components::UiComponent>(shape);
 
 			auto intersectable = middle::getComponent<components::MouseIntersectable>(shape);
 			bool intersecting = intersectable && intersectable->intersectingTop;
@@ -106,6 +109,7 @@ public:
 			circleItem.backgroundColor = bubbleColors::BUBBLE_BACKGROUND;
 			circleItem.radius = circle->radius;
 			circleItem.center = middle::getShapePosition(gameState, shape.id.index);
+			circleItem.disableDepthTest = isUiItem;
 			gameState->renderData.push_back(circleItem);
 		}
 
@@ -121,6 +125,7 @@ public:
 			auto pos = *unitPosIt;
 			auto layer = *unitLayerIt;
 			auto& shape = middle::getShape(gameState, unitCache->relevantIdVector[i].index);
+			bool isUiItem = middle::getComponent<components::UiComponent>(shape);
 
 			middle::RenderItem particle;
 			particle.center = { pos->posX, pos->posY, pos->posZ };
@@ -128,6 +133,7 @@ public:
 			particle.ringRadius = circle->radius;
 			particle.radius = circle->radius;
 			particle.layer = layer->layer;
+			particle.disableDepthTest = isUiItem;
 			if (unit->value == 1) {
 				particle.type = middle::RenderItemType::CIRCLE;
 				particle.backgroundColor = bubbleColors::POSITIVE_UNIT;
@@ -156,6 +162,7 @@ public:
 			auto unit = *variableUnitIt;
 			auto layer = *layerIt;
 			auto& shape = middle::getShape(gameState, variableCache->relevantIdVector[i].index);
+			bool isUiItem = middle::getComponent<components::UiComponent>(shape);
 
 			auto pos = middle::getComponent<components::Position>(shape);
 			middle::RenderItem variableRing;
@@ -182,6 +189,7 @@ public:
 			variableText.color = bubbleColors::VARIABLE_TEXT;
 			variableText.text = variable->label;
 			variableText.fontSize = 15;
+			variableText.disableDepthTest = isUiItem;
 			gameState->renderData.push_back(variableText);
 		}
 
@@ -200,6 +208,8 @@ public:
 				auto circleA = middle::getComponent<components::Circle>(shapeA);
 				auto circleB = middle::getComponent<components::Circle>(shapeB);
 				auto layer = middle::getComponent<components::Layer>(shapeA);
+				bool isUiItem = middle::getComponent<components::UiComponent>(shapeA);
+
 				if (!circleA || !circleB)
 					continue;
 				Vector3 posA = { positionA->posX, positionA->posY, positionA->posZ };
@@ -211,6 +221,8 @@ public:
 				line.linePointB = posB + Vector3Scale(axis, -circleB->radius);
 				line.color = bubbleColors::MULTIPLICATION_CONNECTION;
 				line.layer = layer->layer;
+				line.disableDepthTest = isUiItem;
+
 				gameState->renderData.push_back(line);
 			}
 		}
@@ -226,6 +238,8 @@ public:
 				auto positionB = middle::getComponent<components::Position>(shapeB);
 				auto circleA = middle::getComponent<components::Circle>(shapeA);
 				auto circleB = middle::getComponent<components::Circle>(shapeB);
+				bool isUiItem = middle::getComponent<components::UiComponent>(shapeA);
+
 				Vector3 posA = { positionA->posX, positionA->posY, positionA->posZ };
 				Vector3 posB = { positionB->posX, positionB->posY, positionB->posZ };
 				auto layer = middle::getComponent<components::Layer>(shapeA);
@@ -233,6 +247,8 @@ public:
 				line.type = middle::RenderItemType::LINE;
 				line.color = bubbleColors::FRACTION_CONNECTION;
 				line.layer = layer->layer;
+				line.disableDepthTest = isUiItem;
+
 				Vector3 pointA = posA;
 				Vector3 pointB = posB;
 				Vector3 axis = Vector3Normalize(Vector3Subtract(posB, posA));
@@ -304,6 +320,8 @@ public:
 			auto layer = *exponentLayerIt;
 			Vector3 bubblePos = { position->posX, position->posY, position->posZ };
 
+			auto& shape = middle::getShape(gameState, exponentCache->relevantIdVector[i].index);
+			bool isUiItem = middle::getComponent<components::UiComponent>(shape);
 
 			const float powerRatioToBubble = 0.333f;
 			const float arrowGap = 6;
@@ -368,6 +386,7 @@ public:
 				powerCircle.ringRadius = 0.2f;
 				powerCircle.segments = 20;
 				powerCircle.layer = layer->layer + 1;
+				powerCircle.disableDepthTest = isUiItem;
 				gameState->renderData.push_back(powerCircle);
 
 				const float helperAngleOffset = PI * 0.1f;
@@ -403,6 +422,7 @@ public:
 				cone.center = { 0,0,0 };
 				cone.color = exponentColor;
 				cone.layer = layer->layer + 1;
+				cone.disableDepthTest = isUiItem;
 				gameState->renderData.push_back(cone);
 			}
 		}
@@ -413,6 +433,8 @@ public:
 		for (int i = 0; i < textureCache->getSize(); ++i) {
 			auto texture = *textureIt;
 			auto pos = *texturePosIt;
+			auto& shape = middle::getShape(gameState, textureCache->relevantIdVector[i].index);
+			bool isUiItem = middle::getComponent<components::UiComponent>(shape);
 
 			middle::RenderItem textureItem;
 			textureItem.type = middle::RenderItemType::BILLBOARD;
@@ -420,6 +442,7 @@ public:
 			textureItem.transform.translation = { pos->posX, pos->posY, pos->posZ };
 			textureItem.color = WHITE;
 			textureItem.textureScale = texture->scale;
+			textureItem.disableDepthTest = isUiItem;
 			gameState->renderData.push_back(textureItem);
 		}
 

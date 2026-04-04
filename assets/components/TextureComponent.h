@@ -10,6 +10,7 @@ namespace components {
 		std::string path;
 		float scale = 1;
 		Texture2D texture;
+		bool initialized = false;
 
 		void serialize(std::ostream& ostream) override;
 		void deserialize(const std::vector<std::string>& buffer, int indexOffset) override;

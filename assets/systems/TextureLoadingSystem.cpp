@@ -7,7 +7,6 @@
 #include "editor_actions.h"
 #include "component_utils.h"
 
-
 class TextureLoadingSystem : public middle::MiddleGameplaySystem {
 public:
 	TextureLoadingSystem() {
@@ -22,15 +21,22 @@ public:
 		selectableCache = middle::newCompCache(gameState);
 		selectableCache->addType<components::MouseSelectable>();
 
+		textureCache = middle::newCompCache(gameState);
+		textureCache->addType<components::TextureComponent>();
 	}
+
+
 	void update(middle::GameState* gameState) override {
 
-		if (gameState->loadedTextures.size() > 0) {
+		if (gameState->loadedTextureMap.size() > 0) {
 			auto selectableIt = selectableCache->begin<components::MouseSelectable>();
+
+			auto it = gameState->loadedTextureMap.begin();
+			middle::TextureContainer& textureContainer = it->second;
+
 			for (int i = 0; i < selectableCache->getSize(); ++i) {
 				auto selectable = *selectableIt;
 				if (selectable->selected) {
-					middle::TextureContainer& textureContainer = gameState->loadedTextures.back();
 					Texture2D texture = textureContainer.texture;
 					std::string path = textureContainer.path;
 					middle::Id id = selectableCache->relevantIdVector[i];
@@ -44,17 +50,40 @@ public:
 							comp->texture = texture;
 							comp->path = path;
 							comp->scale = 30;
+							comp->initialized = true;
 						},
 						[id](middle::GameState* gameState) {
 							auto& selectableShape = middle::getShape(gameState, id.index);
 							middle::queueComponentDeletion<components::TextureComponent>(gameState, selectableShape.id);
 						});
 					middle::queueEditorAction(gameState, customAction);
-					gameState->loadedTextures.pop_back();
+					gameState->loadedTextureMap.clear();
 					break;
 				}
 			}
 		}
+
+		// TODO REFACTOR SLOW
+		if (gameState->loadedTextureMap.size() > 0) {
+			auto textureIt = textureCache->begin<components::TextureComponent>();
+			for (int i = 0; i < textureCache->getSize(); ++i) {
+				auto textureComp = *textureIt;
+				if (!textureComp->initialized && gameState->loadedTextureMap.find(textureComp->path) != gameState->loadedTextureMap.end()) {
+					textureComp->texture = gameState->loadedTextureMap[textureComp->path].texture;
+					textureComp->initialized = true;
+				}
+			}
+			gameState->loadedTextureMap.clear();
+		}
+
+		auto textureIt = textureCache->begin<components::TextureComponent>();
+		for (int i = 0; i < textureCache->getSize(); ++i) {
+			auto texture = *textureIt;
+			if (!texture->initialized) {
+				gameState->texturesToLoadQueue.push(texture->path);
+			}
+		}
+
 	}
 };
 

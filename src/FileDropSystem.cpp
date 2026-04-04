@@ -45,13 +45,15 @@ class FileDropSystem : public middle::MiddleGameplaySystem {
         }
 
         if (gameState->texturesToLoadQueue.size() > 0) {
-            std::string path = gameState->texturesToLoadQueue.front();
-            gameState->texturesToLoadQueue.pop();
-            Texture2D texture = LoadTexture(path.c_str());
-            gameState->loadedTextures.push_back(middle::TextureContainer{ path, texture });
-        }
+            while (gameState->texturesToLoadQueue.size() > 0) {
+				std::string path = gameState->texturesToLoadQueue.front();
+				gameState->texturesToLoadQueue.pop();
+				Texture2D texture = LoadTexture(path.c_str());
+                gameState->loadedTextureMap[path] = middle::TextureContainer{ path, texture };
+			}
+		}
 
-        //-------------------------
+		//-------------------------
 	}
 };
 

@@ -18,6 +18,8 @@
 #include "Layer.h"
 #include "RuntimeHiddenTag.h"
 #include "Button.h"
+#include "TextureComponent.h"
+#include "Inventory.h"
 
 class UiRenderSetup : public middle::MiddleGameplaySystem {
 public:
@@ -37,20 +39,24 @@ public:
 		rectangleCache->addType<components::Rectangle>();
 		rectangleCache->addType<components::UiComponent>();
 		rectangleCache->addType<components::Layer>();
+		rectangleCache->addType<components::TextureComponent>(components::NOTINTERESTED);
+		rectangleCache->addType<components::Inventory>(components::NOTINTERESTED);
 		circleCache = middle::newCompCache(gameState);
 		circleCache->addType<components::Circle>();
 		circleCache->addType<components::UiComponent>();
 		circleCache->addType<components::Layer>();
+		circleCache->addType<components::TextureComponent>(components::NOTINTERESTED);
+		circleCache->addType<components::BubbleComponent>(components::NOTINTERESTED);
+		circleCache->addType<components::BubbleUnit>(components::NOTINTERESTED);
 		textCache = middle::newCompCache(gameState);
 		textCache->addType<components::Text>();
 		textCache->addType<components::Button>();
-
-
 		nonUiRectangleCache = middle::newCompCache(gameState);
 		nonUiRectangleCache->addType<components::Rectangle>();
 		nonUiRectangleCache->addType<components::Position>();
 		nonUiRectangleCache->addType<components::UiComponent>(components::NOTINTERESTED);
 		nonUiRectangleCache->addType<components::RuntimeHiddenTag>(components::NOTINTERESTED);
+		nonUiRectangleCache->addType<components::TextureComponent>(components::NOTINTERESTED);
 		nonUiCircleCache = middle::newCompCache(gameState);
 		nonUiCircleCache->addType<components::Circle>();
 		nonUiCircleCache->addType<components::Position>();
@@ -58,6 +64,7 @@ public:
 		nonUiCircleCache->addType<components::BubbleComponent>(components::NOTINTERESTED);
 		nonUiCircleCache->addType<components::BubbleUnit>(components::NOTINTERESTED);
 		nonUiCircleCache->addType<components::RuntimeHiddenTag>(components::NOTINTERESTED);
+		nonUiCircleCache->addType<components::TextureComponent>(components::NOTINTERESTED);
 	}
 
 

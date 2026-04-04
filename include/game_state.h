@@ -196,7 +196,7 @@ namespace middle {
 		std::queue<std::shared_ptr<EditorActionContainer>>actionQueue;
 		std::queue<std::shared_ptr<EditorActionContainer>>undoQueue;
 		std::vector<ModelContainer> loadedModels;
-		std::vector<TextureContainer> loadedTextures;
+		std::unordered_map<std::string, TextureContainer>loadedTextureMap;
 		std::queue<std::string>modelsToLoadQueue;
 		std::queue<std::string>texturesToLoadQueue;
 	};
