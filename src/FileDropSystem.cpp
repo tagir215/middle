@@ -25,6 +25,12 @@ class FileDropSystem : public middle::MiddleGameplaySystem {
                 {
                     gameState->modelsToLoadQueue.push(droppedFiles.paths[0]);
                 }
+
+                if (IsFileExtension(droppedFiles.paths[0], ".png") ||
+                    IsFileExtension(droppedFiles.paths[0], ".jpg"))
+                {
+                    gameState->texturesToLoadQueue.push(droppedFiles.paths[0]);
+                }
             }
 
             UnloadDroppedFiles(droppedFiles);    // Unload filepaths from memory
@@ -35,7 +41,14 @@ class FileDropSystem : public middle::MiddleGameplaySystem {
             std::string path = gameState->modelsToLoadQueue.front();
             gameState->modelsToLoadQueue.pop();
             Model model = LoadModel(path.c_str());
-            gameState->loadedModels.push_back({path, model});
+            gameState->loadedModels.push_back(middle::ModelContainer{path, model});
+        }
+
+        if (gameState->texturesToLoadQueue.size() > 0) {
+            std::string path = gameState->texturesToLoadQueue.front();
+            gameState->texturesToLoadQueue.pop();
+            Texture2D texture = LoadTexture(path.c_str());
+            gameState->loadedTextures.push_back(middle::TextureContainer{ path, texture });
         }
 
         //-------------------------

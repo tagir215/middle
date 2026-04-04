@@ -83,6 +83,7 @@ namespace middle {
 		RING,
 		CYLINDER,
 		CUBOID,
+		BILLBOARD,
 	};
 
 	struct RenderItem {
@@ -103,10 +104,12 @@ namespace middle {
 		float length;
 		float width;
 		float height;
+		float textureScale = 10;
 		int fontSize;
 		bool disableDepthTest = false;
 		std::string text = "";
 		Model* model;
+		Texture2D* texture;
 
 		RenderItem() {
 			transform.translation = { 0,0,0 };
@@ -127,6 +130,11 @@ namespace middle {
 	struct ModelContainer {
 		std::string path = "";
 		Model model;
+	};
+
+	struct TextureContainer {
+		std::string path = "";
+		Texture2D texture;
 	};
 
 	struct GameState {
@@ -188,7 +196,9 @@ namespace middle {
 		std::queue<std::shared_ptr<EditorActionContainer>>actionQueue;
 		std::queue<std::shared_ptr<EditorActionContainer>>undoQueue;
 		std::vector<ModelContainer> loadedModels;
+		std::vector<TextureContainer> loadedTextures;
 		std::queue<std::string>modelsToLoadQueue;
+		std::queue<std::string>texturesToLoadQueue;
 	};
 
 }

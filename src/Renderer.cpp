@@ -200,6 +200,23 @@ namespace RendererSystem {
 				rlPopMatrix();
 			}
 
+			if (item.type == middle::BILLBOARD) {
+				// billboard default angle is toward y,  
+				item.transform.rotation = QuaternionFromVector3ToVector3({ 0,-1,0 }, { 0, 0, -1 });
+				Matrix M = transformMatrix(item.transform, item.layer);
+				rlPushMatrix();
+				rlLoadIdentity();
+				rlMultMatrixf(MatrixToFloatV(M).v);
+				Vector3 pos = item.center;
+				if (item.texture == nullptr) {
+					DrawCube(pos, 4, 4, 4, BLACK);
+				}
+				else {
+					DrawBillboard(gameState->activeCamera, *item.texture, pos, item.textureScale, item.color);
+				}
+				rlPopMatrix();
+			}
+
 		}
 
 

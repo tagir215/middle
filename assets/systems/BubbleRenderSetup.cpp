@@ -22,6 +22,7 @@
 #include "Layer.h"
 #include "Rectangle.h"
 #include "UiComponent.h"
+#include "TextureComponent.h"
 
 
 class BubbleRenderSetup : public middle::MiddleGameplaySystem {
@@ -40,6 +41,7 @@ public:
 	components::CompCache* cuboidCache;
 	components::CompCache* equalsCache;
 	components::CompCache* exponentCache;
+	components::CompCache* textureCache;
 
 	void init(middle::GameState* gameState) {
 		bubbleCache = middle::newCompCache(gameState);
@@ -73,6 +75,9 @@ public:
 		exponentCache->addType<components::Circle>();
 		exponentCache->addType<components::Position>();
 		exponentCache->addType<components::Layer>();
+		textureCache = middle::newCompCache(gameState);
+		textureCache->addType<components::TextureComponent>();
+		textureCache->addType<components::Position>();
 
 	}
 	bool debugRendering = false;
@@ -400,6 +405,22 @@ public:
 				cone.layer = layer->layer + 1;
 				gameState->renderData.push_back(cone);
 			}
+		}
+
+
+		auto textureIt = textureCache->begin<components::TextureComponent>();
+		auto texturePosIt = textureCache->begin<components::Position>();
+		for (int i = 0; i < textureCache->getSize(); ++i) {
+			auto texture = *textureIt;
+			auto pos = *texturePosIt;
+
+			middle::RenderItem textureItem;
+			textureItem.type = middle::RenderItemType::BILLBOARD;
+			textureItem.texture = &texture->texture;
+			textureItem.transform.translation = { pos->posX, pos->posY, pos->posZ };
+			textureItem.color = WHITE;
+			textureItem.textureScale = texture->scale;
+			gameState->renderData.push_back(textureItem);
 		}
 
 	}
