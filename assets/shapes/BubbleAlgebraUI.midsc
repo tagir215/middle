@@ -2,11 +2,44 @@ __q  73_0
 MouseIntersectable
 MouseSelectable
 UiNode
-MouseGrabbable
+LoopTag
+LoopSociety
+q  -1_0
+p  
+q  31_0
+q  42_0
+q  77_0
+q  83_0
+q  85_0
+q  86_0
+q  54_0
+q  104_0
+q  133_0
+q  76_0
+q  139_0
+q  140_0
+q  141_0
+q  142_0
+q  143_0
+q  144_0
+q  145_0
+q  146_0
+q  147_0
+q  148_0
+q  151_0
+q  155_0
+q  156_0
+q  157_0
+q  173_0
+q  174_0
+q  175_0
+q  176_0
+q  177_0
 Position
 f  0.000000
 f  0.000000
 f  0.000000
+MouseGrabbable
 Text
 s  BubbleAlgebraUI
 f  0.000000
@@ -18,36 +51,625 @@ f  0.000000
 f  0.000000
 f  1.000000
 b  1
-LoopTag
-LoopSociety
-q  -1_0
-p  
-q  31_0
-q  42_0
-q  77_0
-q  76_0
-q  83_0
-q  85_0
-q  86_0
 Offset
 f  0.000000
 f  -500.000000
 f  0.000000
-__q  86_0
+__q  177_0
 MouseGrabbable
 Position
-f  -340.888611
-f  -0.000122
-f  177.863419
+f  235.464142
+f  -0.000317
+f  -8.698181
 MouseSelectable
+MouseIntersectable
+UiComponent
+i  -1
+LoopSociety
+q  73_0
+p  
 Sphere
 f  2.000000
+LevelReference
+s  LevelSelect
+b  0
+Layer
+i  1
+TextureComponent
+s  C:\Users\tagir\raylib_projects\middle\assets\textures\moveBlock.png
+f  10.000000
+Rectangle
+f  40.000000
+f  30.000000
+__q  176_0
+Position
+f  235.799683
+f  -0.000366
+f  -24.834778
+MouseGrabbable
+MouseSelectable
+MouseIntersectable
+Sphere
+f  2.000000
+LoopSociety
+q  73_0
+p  
+UiComponent
+i  -1
+LevelReference
+s  LevelSelect
+b  0
+Layer
+i  1
+TextureComponent
+s  C:\Users\tagir\raylib_projects\middle\assets\textures\moveBlock.png
+f  10.000000
+Rectangle
+f  40.000000
+f  30.000000
+__q  175_0
+MouseGrabbable
+Position
+f  235.798981
+f  -0.000416
+f  -41.542419
+MouseSelectable
+MouseIntersectable
+UiComponent
+i  -1
+LoopSociety
+q  73_0
+p  
+Sphere
+f  2.000000
+LevelReference
+s  LevelSelect
+b  0
+Layer
+i  1
+TextureComponent
+s  C:\Users\tagir\raylib_projects\middle\assets\textures\moveBlock.png
+f  10.000000
+Rectangle
+f  40.000000
+f  30.000000
+__q  174_0
+Position
+f  235.416351
+f  -0.000381
+f  -55.713318
+MouseGrabbable
+MouseSelectable
+MouseIntersectable
+Sphere
+f  2.000000
+LoopSociety
+q  73_0
+p  
+UiComponent
+i  -1
+LevelReference
+s  LevelSelect
+b  0
+Layer
+i  1
+TextureComponent
+s  C:\Users\tagir\raylib_projects\middle\assets\textures\moveBlock.png
+f  10.000000
+Rectangle
+f  40.000000
+f  30.000000
+__q  173_0
+Position
+f  302.096344
+f  -0.000282
+f  -96.032654
+MouseGrabbable
+MouseSelectable
+MouseIntersectable
+Sphere
+f  2.000000
+LoopSociety
+q  73_0
+p  
+UiComponent
+i  -1
+LevelReference
+s  LevelSelect
+b  0
+Layer
+i  1
+TextureComponent
+s  C:\Users\tagir\raylib_projects\middle\assets\textures\procedureInventoryRect.png
+f  30.000000
+Rectangle
+f  40.000000
+f  30.000000
+__q  157_0
+MouseGrabbable
+Position
+f  302.522522
+f  -0.000347
+f  -59.618469
+MouseSelectable
+MouseIntersectable
+UiComponent
+i  -1
+LoopSociety
+q  73_0
+p  
+Sphere
+f  2.000000
+LevelReference
+s  LevelSelect
+b  0
+Layer
+i  1
+TextureComponent
+s  C:\Users\tagir\raylib_projects\middle\assets\textures\procedureInventoryRect.png
+f  30.000000
+Rectangle
+f  40.000000
+f  30.000000
+__q  156_0
+Position
+f  302.552643
+f  -0.000347
+f  -22.332031
+MouseGrabbable
+MouseSelectable
+MouseIntersectable
+Sphere
+f  2.000000
+LoopSociety
+q  73_0
+p  
+UiComponent
+i  -1
+LevelReference
+s  LevelSelect
+b  0
+Layer
+i  1
+TextureComponent
+s  C:\Users\tagir\raylib_projects\middle\assets\textures\procedureInventoryRect.png
+f  30.000000
+Rectangle
+f  40.000000
+f  30.000000
+__q  155_0
+MouseGrabbable
+Position
+f  303.006256
+f  -0.000315
+f  14.559875
+MouseSelectable
+MouseIntersectable
+UiComponent
+i  -1
+LoopSociety
+q  73_0
+p  
+Sphere
+f  2.000000
+LevelReference
+s  LevelSelect
+b  0
+Layer
+i  1
+TextureComponent
+s  C:\Users\tagir\raylib_projects\middle\assets\textures\procedureInventoryRect.png
+f  30.000000
+Rectangle
+f  40.000000
+f  30.000000
+__q  151_0
+Position
+f  303.006195
+f  -0.000315
+f  50.541870
+MouseGrabbable
+MouseSelectable
+MouseIntersectable
+Sphere
+f  2.000000
+LoopSociety
+q  73_0
+p  
+UiComponent
+i  -1
+LevelReference
+s  LevelSelect
+b  0
+Layer
+i  1
+TextureComponent
+s  C:\Users\tagir\raylib_projects\middle\assets\textures\procedureInventoryRect.png
+f  30.000000
+Rectangle
+f  40.000000
+f  30.000000
+__q  148_0
+MouseGrabbable
+Position
+f  303.006195
+f  -0.000315
+f  86.064941
+MouseSelectable
+MouseIntersectable
+UiComponent
+i  -1
+LoopSociety
+q  73_0
+p  
+Sphere
+f  2.000000
+LevelReference
+s  LevelSelect
+b  0
+Layer
+i  1
+TextureComponent
+s  C:\Users\tagir\raylib_projects\middle\assets\textures\procedureInventoryRect.png
+f  30.000000
+Rectangle
+f  40.000000
+f  30.000000
+__q  147_0
+MouseGrabbable
+Position
+f  -310.895569
+f  0.000065
+f  120.043884
+MouseSelectable
+MouseIntersectable
+Sphere
+f  2.000000
+LoopSociety
+q  73_0
+p  
+Button
+i  -1
+Text
+s  ADD
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  1.000000
+b  1
+UiComponent
+i  -1
+Layer
+i  1
+TextureComponent
+s  C:\Users\tagir\raylib_projects\middle\assets\textures\toggleRect.png
+f  15.000000
+Rectangle
+f  40.000000
+f  30.000000
+__q  146_0
+Position
+f  -277.615112
+f  0.000107
+f  120.027466
+MouseGrabbable
+MouseSelectable
 MouseIntersectable
 LoopSociety
 q  73_0
 p  
-Circle
-f  10.000000
+Sphere
+f  2.000000
+Text
+s  MULTIPLY
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  1.000000
+b  1
+Button
+i  -1
+UiComponent
+i  -1
+Layer
+i  1
+TextureComponent
+s  C:\Users\tagir\raylib_projects\middle\assets\textures\toggleRect.png
+f  15.000000
+Rectangle
+f  40.000000
+f  30.000000
+__q  145_0
+Position
+f  -323.707947
+f  -0.000290
+f  -124.907166
+MouseGrabbable
+MouseSelectable
+MouseIntersectable
+Sphere
+f  2.000000
+LoopSociety
+q  73_0
+p  
+UiComponent
+i  -1
+LevelReference
+s  LevelSelect
+b  0
+Layer
+i  1
+TextureComponent
+s  C:\Users\tagir\raylib_projects\middle\assets\textures\inventoryRect.png
+f  60.000000
+Rectangle
+f  40.000000
+f  30.000000
+__q  144_0
+MouseGrabbable
+Position
+f  -260.574280
+f  -0.000322
+f  -124.907166
+MouseSelectable
+MouseIntersectable
+UiComponent
+i  -1
+LoopSociety
+q  73_0
+p  
+Sphere
+f  2.000000
+LevelReference
+s  LevelSelect
+b  0
+Layer
+i  1
+TextureComponent
+s  C:\Users\tagir\raylib_projects\middle\assets\textures\inventoryRect.png
+f  60.000000
+Rectangle
+f  40.000000
+f  30.000000
+__q  143_0
+Position
+f  -324.291473
+f  -0.000288
+f  -60.901306
+MouseGrabbable
+MouseSelectable
+MouseIntersectable
+Sphere
+f  2.000000
+LoopSociety
+q  73_0
+p  
+UiComponent
+i  -1
+LevelReference
+s  LevelSelect
+b  0
+Layer
+i  1
+TextureComponent
+s  C:\Users\tagir\raylib_projects\middle\assets\textures\inventoryRect.png
+f  60.000000
+Rectangle
+f  40.000000
+f  30.000000
+__q  142_0
+MouseGrabbable
+Position
+f  -261.157806
+f  -0.000320
+f  -60.901306
+MouseSelectable
+MouseIntersectable
+UiComponent
+i  -1
+LoopSociety
+q  73_0
+p  
+Sphere
+f  2.000000
+LevelReference
+s  LevelSelect
+b  0
+Layer
+i  1
+TextureComponent
+s  C:\Users\tagir\raylib_projects\middle\assets\textures\inventoryRect.png
+f  60.000000
+Rectangle
+f  40.000000
+f  30.000000
+__q  141_0
+MouseGrabbable
+Position
+f  -324.291473
+f  -0.000284
+f  2.910583
+MouseSelectable
+MouseIntersectable
+UiComponent
+i  -1
+LoopSociety
+q  73_0
+p  
+Sphere
+f  2.000000
+LevelReference
+s  LevelSelect
+b  0
+Layer
+i  1
+TextureComponent
+s  C:\Users\tagir\raylib_projects\middle\assets\textures\inventoryRect.png
+f  60.000000
+Rectangle
+f  40.000000
+f  30.000000
+__q  140_0
+Position
+f  -261.157806
+f  -0.000317
+f  2.910583
+MouseGrabbable
+MouseSelectable
+MouseIntersectable
+Sphere
+f  2.000000
+LoopSociety
+q  73_0
+p  
+UiComponent
+i  -1
+LevelReference
+s  LevelSelect
+b  0
+Layer
+i  1
+TextureComponent
+s  C:\Users\tagir\raylib_projects\middle\assets\textures\inventoryRect.png
+f  60.000000
+Rectangle
+f  40.000000
+f  30.000000
+__q  139_0
+Position
+f  -324.291443
+f  -0.000216
+f  67.062378
+MouseGrabbable
+MouseSelectable
+MouseIntersectable
+Sphere
+f  2.000000
+LoopSociety
+q  73_0
+p  
+UiComponent
+i  -1
+LevelReference
+s  LevelSelect
+b  0
+Layer
+i  1
+TextureComponent
+s  C:\Users\tagir\raylib_projects\middle\assets\textures\inventoryRect.png
+f  60.000000
+Rectangle
+f  40.000000
+f  30.000000
+__q  76_0
+MouseGrabbable
+Position
+f  -261.157806
+f  -0.000248
+f  67.062378
+MouseSelectable
+MouseIntersectable
+UiComponent
+i  -1
+LoopSociety
+q  73_0
+p  
+Sphere
+f  2.000000
+LevelReference
+s  LevelSelect
+b  0
+Layer
+i  1
+TextureComponent
+s  C:\Users\tagir\raylib_projects\middle\assets\textures\inventoryRect.png
+f  60.000000
+Rectangle
+f  40.000000
+f  30.000000
+__q  133_0
+ProcedureUseUiTag
+LoopTag
+Rectangle
+f  700.000000
+f  130.000000
+MouseGrabbable
+Position
+f  -15.264618
+f  0.000059
+f  199.303650
+LoopSociety
+q  73_0
+p  
+MouseSelectable
+MouseIntersectable
+UiComponent
+i  1
+Layer
+i  0
+__q  104_0
+LoopTag
+ProcedureUseUiTag
+Rectangle
+f  200.000000
+f  450.000000
+Position
+f  -325.840668
+f  0.000126
+f  -9.127502
+MouseGrabbable
+LoopSociety
+q  73_0
+p  
+MouseSelectable
+MouseIntersectable
+UiComponent
+i  1
+Layer
+i  0
+__q  54_0
+ProcedureUseUiTag
+LoopTag
+Rectangle
+f  200.000000
+f  450.000000
+MouseGrabbable
+Position
+f  306.936859
+f  -0.000059
+f  -8.073669
+LoopSociety
+q  73_0
+p  
+MouseSelectable
+MouseIntersectable
+UiComponent
+i  1
+Layer
+i  0
+__q  86_0
+Position
+f  -306.335358
+f  -0.000128
+f  177.890259
+MouseGrabbable
+MouseSelectable
+MouseIntersectable
+Sphere
+f  2.000000
+LoopSociety
+q  73_0
+p  
+Button
+i  7
 Text
 s  BACK
 f  0.000000
@@ -59,46 +681,58 @@ f  0.000000
 f  0.000000
 f  1.000000
 b  1
-Button
-i  7
 UiComponent
 i  -1
+LevelReference
+s  LevelSelect
+b  0
+Layer
+i  1
+TextureComponent
+s  C:\Users\tagir\raylib_projects\middle\assets\textures\navRect.png
+f  30.000000
+Rectangle
+f  40.000000
+f  30.000000
 __q  85_0
+LoopTag
 Rectangle
 f  150.000000
 f  350.000000
-LoopTag
-MouseGrabbable
-Position
-f  252.430893
-f  0.000000
-f  -9.697876
-LoopSociety
-q  73_0
-p  
-MouseSelectable
-MouseIntersectable
 Inventory
 b  0
 i  2
-ProcedureUseUiTag
-UiComponent
-i  -1
-__q  83_0
-MouseSelectable
-Sphere
-f  2.000000
-MouseIntersectable
+b  0
 Position
-f  121.665451
-f  0.000061
-f  -98.816528
+f  252.430939
+f  0.000000
+f  -9.698059
 MouseGrabbable
-Circle
-f  25.000000
 LoopSociety
 q  73_0
 p  
+MouseSelectable
+MouseIntersectable
+ProcedureUseUiTag
+UiComponent
+i  -1
+Layer
+i  1
+__q  83_0
+MouseSelectable
+MouseIntersectable
+Circle
+f  25.000000
+Sphere
+f  2.000000
+LoopSociety
+q  73_0
+p  
+MouseGrabbable
+Position
+f  251.669067
+f  -0.000038
+f  -145.878418
 Text
 s  DONE
 f  0.000000
@@ -114,49 +748,26 @@ Button
 i  6
 UiComponent
 i  -1
-__q  76_0
-Text
-s  10 Moves Left
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-f  1.000000
-b  1
-Rectangle
-f  50.000000
-f  50.000000
-LoopTag
-LoopSociety
-q  73_0
-p  
+Layer
+i  1
+TextureComponent
+s  C:\Users\tagir\raylib_projects\middle\assets\textures\navRect.png
+f  30.000000
+__q  77_0
+MouseGrabbable
+Position
+f  -257.854706
+f  0.000067
+f  177.589783
 MouseSelectable
 MouseIntersectable
-MouseGrabbable
-Position
-f  72.155991
-f  0.000000
-f  148.246613
-UiComponent
-i  0
-__q  77_0
-Position
-f  -316.314453
-f  -0.000061
-f  121.948212
-MouseGrabbable
-MouseSelectable
 Sphere
 f  2.000000
-MouseIntersectable
-Circle
-f  25.000000
 LoopSociety
 q  73_0
 p  
+Button
+i  5
 Text
 s  UNDO
 f  0.000000
@@ -168,54 +779,65 @@ f  0.000000
 f  0.000000
 f  1.000000
 b  1
-Button
-i  5
 UiComponent
 i  -1
+Layer
+i  1
+TextureComponent
+s  C:\Users\tagir\raylib_projects\middle\assets\textures\navRect.png
+f  30.000000
+Rectangle
+f  40.000000
+f  30.000000
 __q  42_0
-Position
-f  -92.118484
-f  -0.000427
-f  -163.783020
+Inventory
+b  1
+i  1
+b  1
 MouseGrabbable
+Position
+f  -187.685120
+f  -0.000526
+f  60.564270
+LoopTag
 Rectangle
 f  500.000000
 f  60.000000
-LoopTag
 LoopSociety
-q  73_2
+q  73_0
 p  
 q  43_0
 q  59_0
 MouseSelectable
-Inventory
-b  1
-i  1
 MouseIntersectable
 UiComponent
 i  -1
+Layer
+i  2
 __q  59_0
-Position
-f  -8.785141
-f  -0.000427
-f  -163.783020
+BubbleComponent
 MouseGrabbable
+Position
+f  -261.288666
+f  -0.000525
+f  65.894592
 LoopSociety
 q  42_0
 p  
 q  60_0
+MouseIntersectable
 InventoryItem
 i  2
 MouseSelectable
-BubbleComponent
 LoopTag
-MouseIntersectable
 BubbleRef
+UiComponent
+i  -1
 Circle
-f  23.500000
+f  21.013073
 PhysicsData
-f  1734.944580
-f  0.000576
+f  1387.167847
+f  0.000721
 f  1.000000
 f  0.000000
 f  0.000000
@@ -227,9 +849,17 @@ f  0.000000
 f  0.000000
 f  0.000000
 b  0
+Layer
+i  3
 __q  60_0
-FractionalComponent
 MouseSelectable
+MouseIntersectable
+MouseGrabbable
+Position
+f  -255.135193
+f  -0.000648
+f  70.707703
+FractionalComponent
 LoopSociety
 q  59_0
 p  
@@ -237,20 +867,14 @@ q  61_0
 q  62_0
 q  63_0
 LoopTag
-Position
-f  -7.141968
-f  -0.000549
-f  -158.836487
-MouseGrabbable
-MouseIntersectable
 __q  63_0
 PhysicsData
+f  12.566371
+f  0.079577
 f  1.000000
-f  1.000000
-f  1.000000
-f  0.001907
-f  0.000243
-f  -0.007113
+f  -0.000005
+f  0.000000
+f  -0.000007
 f  0.800000
 f  0.800000
 f  0.800000
@@ -258,30 +882,34 @@ f  0.000000
 f  0.000000
 f  0.000000
 b  0
-LoopSociety
-q  60_0
-p  
-Sphere
-f  2.000000
-MouseSelectable
-Position
-f  -10.262146
-f  -0.000549
-f  -170.324463
-MouseGrabbable
 BubbleUnit
 i  1
+LoopSociety
+q  60_0
+p  
+Sphere
+f  2.000000
+MouseSelectable
+MouseGrabbable
+Position
+f  -259.379211
+f  -0.000526
+f  57.154663
 MouseIntersectable
 Circle
 f  2.000000
+Layer
+i  5
+UiComponent
+i  -1
 __q  62_0
 PhysicsData
+f  12.566371
+f  0.079577
 f  1.000000
-f  1.000000
-f  1.000000
-f  0.001094
-f  0.000181
-f  -0.005679
+f  0.000065
+f  0.000000
+f  -0.000008
 f  0.800000
 f  0.800000
 f  0.800000
@@ -289,30 +917,34 @@ f  0.000000
 f  0.000000
 f  0.000000
 b  0
+BubbleUnit
+i  0
 LoopSociety
 q  60_0
 p  
 Sphere
 f  2.000000
 MouseSelectable
-Position
-f  -0.219345
-f  -0.000549
-f  -161.106628
 MouseGrabbable
-BubbleUnit
-i  0
+Position
+f  -251.754471
+f  -0.000526
+f  68.896179
 MouseIntersectable
 Circle
 f  2.000000
+Layer
+i  5
+UiComponent
+i  -1
 __q  61_0
 PhysicsData
+f  12.566371
+f  0.079577
 f  1.000000
-f  1.000000
-f  1.000000
-f  0.001348
-f  0.000242
-f  -0.007033
+f  -0.000060
+f  0.000000
+f  0.000015
 f  0.800000
 f  0.800000
 f  0.800000
@@ -320,46 +952,50 @@ f  0.000000
 f  0.000000
 f  0.000000
 b  0
+BubbleUnit
+i  0
 LoopSociety
 q  60_0
 p  
 Sphere
 f  2.000000
 MouseSelectable
-Position
-f  -13.725266
-f  -0.000549
-f  -159.219360
 MouseGrabbable
-BubbleUnit
-i  0
+Position
+f  -265.340485
+f  -0.000526
+f  72.275513
 MouseIntersectable
 Circle
 f  2.000000
+Layer
+i  5
+UiComponent
+i  -1
 __q  43_0
-Position
-f  -175.451813
-f  -0.000427
-f  -163.783020
+BubbleComponent
 MouseGrabbable
+Position
+f  -324.001343
+f  -0.000458
+f  67.636780
 LoopSociety
 q  42_0
 p  
 q  44_0
 q  45_0
 q  49_0
+MouseIntersectable
 InventoryItem
 i  1
 MouseSelectable
-BubbleComponent
 LoopTag
-MouseIntersectable
 BubbleRef
 Circle
-f  23.500000
+f  21.013073
 PhysicsData
-f  1734.944580
-f  0.000576
+f  1387.167847
+f  0.000721
 f  1.000000
 f  0.000000
 f  0.000000
@@ -371,28 +1007,26 @@ f  0.000000
 f  0.000000
 f  0.000000
 b  0
+Layer
+i  3
+UiComponent
+i  -1
 __q  49_0
 Sphere
 f  2.000000
-MouseSelectable
-Position
-f  -177.218582
-f  -0.000427
-f  -170.383270
-MouseGrabbable
-BubbleUnit
-i  1
-MouseIntersectable
 LoopSociety
 q  43_0
 p  
+MouseSelectable
+BubbleUnit
+i  1
 PhysicsData
+f  12.566371
+f  0.079577
 f  1.000000
-f  1.000000
-f  1.000000
-f  0.006367
+f  -0.000158
 f  0.000000
-f  0.004200
+f  0.000101
 f  0.800000
 f  0.800000
 f  0.800000
@@ -400,30 +1034,34 @@ f  0.000000
 f  0.000000
 f  0.000000
 b  0
+MouseGrabbable
+Position
+f  -329.824188
+f  -0.000458
+f  62.483337
+MouseIntersectable
 Circle
 f  2.000000
+Layer
+i  4
+UiComponent
+i  -1
 __q  45_0
 Sphere
 f  2.000000
-MouseSelectable
-Position
-f  -168.859299
-f  -0.000427
-f  -162.008789
-MouseGrabbable
-BubbleUnit
-i  1
-MouseIntersectable
 LoopSociety
 q  43_0
 p  
+MouseSelectable
+BubbleUnit
+i  1
 PhysicsData
+f  12.566371
+f  0.079577
 f  1.000000
-f  1.000000
-f  1.000000
-f  0.009755
 f  0.000000
-f  0.003114
+f  0.000000
+f  0.000000
 f  0.800000
 f  0.800000
 f  0.800000
@@ -431,30 +1069,34 @@ f  0.000000
 f  0.000000
 f  0.000000
 b  0
+MouseGrabbable
+Position
+f  -315.231689
+f  -0.000458
+f  70.644836
+MouseIntersectable
 Circle
 f  2.000000
+Layer
+i  4
+UiComponent
+i  -1
 __q  44_0
 Sphere
 f  2.000000
-MouseSelectable
-Position
-f  -180.313187
-f  -0.000427
-f  -158.942993
-MouseGrabbable
-BubbleUnit
-i  1
-MouseIntersectable
 LoopSociety
 q  43_0
 p  
+MouseSelectable
+BubbleUnit
+i  1
 PhysicsData
+f  12.566371
+f  0.079577
 f  1.000000
-f  1.000000
-f  1.000000
-f  0.007088
+f  0.000158
 f  0.000000
-f  0.000724
+f  -0.000101
 f  0.800000
 f  0.800000
 f  0.800000
@@ -462,20 +1104,31 @@ f  0.000000
 f  0.000000
 f  0.000000
 b  0
+MouseGrabbable
+Position
+f  -318.012482
+f  -0.000458
+f  54.967957
+MouseIntersectable
 Circle
 f  2.000000
+Layer
+i  4
+UiComponent
+i  -1
 __q  31_0
-Position
-f  -123.003799
-f  -0.000183
-f  147.420685
+Inventory
+b  1
+i  2
+b  0
 MouseGrabbable
-Rectangle
-f  300.000000
-f  60.000000
+Position
+f  -6.367294
+f  -0.000057
+f  187.282959
 LoopTag
 LoopSociety
-q  73_2
+q  73_0
 p  
 q  32_0
 q  34_0
@@ -490,25 +1143,77 @@ q  68_0
 q  69_0
 q  28_0
 q  36_0
-MouseSelectable
-Inventory
-b  1
-i  1
-MouseIntersectable
+q  132_0
 UiComponent
 i  -1
-__q  36_0
+MouseSelectable
+MouseIntersectable
+Layer
+i  1
+Rectangle
+f  400.000000
+f  70.000000
+__q  132_0
 MouseGrabbable
 Position
-f  5.567657
-f  -0.000183
-f  147.420685
+f  143.449097
+f  -0.000057
+f  186.500305
 MouseSelectable
+InventoryItem
+i  16
+MouseIntersectable
+LoopSociety
+q  31_0
+p  
+Sphere
+f  2.000000
+PhysicsData
+f  1.000000
+f  1.000000
+f  1.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.800000
+f  0.800000
+f  0.800000
+f  0.000000
+f  0.000000
+f  0.000000
+b  0
+Text
+s  SIM
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  1.000000
+b  1
+Circle
+f  10.000000
+UiComponent
+i  -1
+Layer
+i  2
+TextureComponent
+s  C:\Users\tagir\raylib_projects\middle\assets\textures\activeRect.png
+f  30.000000
+__q  36_0
+Position
+f  122.203888
+f  -0.000057
+f  187.282959
+MouseGrabbable
+MouseSelectable
+MouseIntersectable
 InventoryItem
 i  15
 Sphere
 f  2.000000
-MouseIntersectable
 LoopSociety
 q  31_0
 p  
@@ -541,18 +1246,23 @@ Circle
 f  10.000000
 UiComponent
 i  -1
+Layer
+i  2
+TextureComponent
+s  C:\Users\tagir\raylib_projects\middle\assets\textures\activeRect.png
+f  30.000000
 __q  28_0
-Position
-f  -15.860916
-f  -0.000183
-f  147.420685
 MouseGrabbable
+Position
+f  100.775391
+f  -0.000057
+f  187.282959
+MouseIntersectable
 InventoryItem
 i  14
 MouseSelectable
 Sphere
 f  2.000000
-MouseIntersectable
 LoopSociety
 q  31_0
 p  
@@ -585,10 +1295,17 @@ Circle
 f  10.000000
 UiComponent
 i  -1
+Layer
+i  2
+TextureComponent
+s  C:\Users\tagir\raylib_projects\middle\assets\textures\activeRect.png
+f  30.000000
 __q  69_0
 LoopSociety
 q  31_0
 p  
+Sphere
+f  2.000000
 PhysicsData
 f  1.000000
 f  1.000000
@@ -603,17 +1320,15 @@ f  0.000000
 f  0.000000
 f  0.000000
 b  0
-Position
-f  -37.289490
-f  -0.000183
-f  147.420685
 MouseGrabbable
+Position
+f  79.346863
+f  -0.000057
+f  187.282959
+MouseIntersectable
 InventoryItem
 i  13
 MouseSelectable
-Sphere
-f  2.000000
-MouseIntersectable
 Text
 s  B 10
 f  0.000000
@@ -629,6 +1344,11 @@ Circle
 f  10.000000
 UiComponent
 i  -1
+Layer
+i  2
+TextureComponent
+s  C:\Users\tagir\raylib_projects\middle\assets\textures\inactiveRect.png
+f  30.000000
 __q  68_0
 PhysicsData
 f  1.000000
@@ -649,15 +1369,15 @@ q  31_0
 p  
 Sphere
 f  2.000000
+MouseIntersectable
 InventoryItem
 i  12
 MouseSelectable
-Position
-f  -58.718056
-f  -0.000183
-f  147.420685
 MouseGrabbable
-MouseIntersectable
+Position
+f  57.918335
+f  -0.000057
+f  187.282959
 Text
 s  B 9
 f  0.000000
@@ -673,10 +1393,17 @@ Circle
 f  10.000000
 UiComponent
 i  -1
+Layer
+i  2
+TextureComponent
+s  C:\Users\tagir\raylib_projects\middle\assets\textures\inactiveRect.png
+f  30.000000
 __q  67_0
 LoopSociety
 q  31_0
 p  
+Sphere
+f  2.000000
 PhysicsData
 f  1.000000
 f  1.000000
@@ -691,17 +1418,15 @@ f  0.000000
 f  0.000000
 f  0.000000
 b  0
-Position
-f  -80.146629
-f  -0.000183
-f  147.420685
 MouseGrabbable
+Position
+f  36.489777
+f  -0.000057
+f  187.282959
+MouseIntersectable
 InventoryItem
 i  11
 MouseSelectable
-Sphere
-f  2.000000
-MouseIntersectable
 Text
 s  B 8
 f  0.000000
@@ -717,6 +1442,11 @@ Circle
 f  10.000000
 UiComponent
 i  -1
+Layer
+i  2
+TextureComponent
+s  C:\Users\tagir\raylib_projects\middle\assets\textures\inactiveRect.png
+f  30.000000
 __q  66_0
 PhysicsData
 f  1.000000
@@ -737,15 +1467,15 @@ q  31_0
 p  
 Sphere
 f  2.000000
+MouseIntersectable
 InventoryItem
 i  10
 MouseSelectable
-Position
-f  -101.575211
-f  -0.000183
-f  147.420685
 MouseGrabbable
-MouseIntersectable
+Position
+f  15.061249
+f  -0.000057
+f  187.282959
 Text
 s  B 7
 f  0.000000
@@ -761,10 +1491,17 @@ Circle
 f  10.000000
 UiComponent
 i  -1
+Layer
+i  2
+TextureComponent
+s  C:\Users\tagir\raylib_projects\middle\assets\textures\inactiveRect.png
+f  30.000000
 __q  65_0
 LoopSociety
 q  31_0
 p  
+Sphere
+f  2.000000
 PhysicsData
 f  1.000000
 f  1.000000
@@ -779,17 +1516,15 @@ f  0.000000
 f  0.000000
 f  0.000000
 b  0
-Position
-f  -123.003792
-f  -0.000183
-f  147.420685
 MouseGrabbable
+Position
+f  -6.367279
+f  -0.000057
+f  187.282959
+MouseIntersectable
 InventoryItem
 i  9
 MouseSelectable
-Sphere
-f  2.000000
-MouseIntersectable
 Text
 s  B 6
 f  0.000000
@@ -805,10 +1540,17 @@ Circle
 f  10.000000
 UiComponent
 i  -1
+Layer
+i  2
+TextureComponent
+s  C:\Users\tagir\raylib_projects\middle\assets\textures\inactiveRect.png
+f  30.000000
 __q  64_0
 LoopSociety
 q  31_0
 p  
+Sphere
+f  2.000000
 PhysicsData
 f  1.000000
 f  1.000000
@@ -823,17 +1565,15 @@ f  0.000000
 f  0.000000
 f  0.000000
 b  0
-Position
-f  -144.432343
-f  -0.000183
-f  147.420685
 MouseGrabbable
+Position
+f  -27.795853
+f  -0.000057
+f  187.282959
+MouseIntersectable
 InventoryItem
 i  8
 MouseSelectable
-Sphere
-f  2.000000
-MouseIntersectable
 Text
 s  B 5
 f  0.000000
@@ -849,10 +1589,17 @@ Circle
 f  10.000000
 UiComponent
 i  -1
+Layer
+i  2
+TextureComponent
+s  C:\Users\tagir\raylib_projects\middle\assets\textures\inactiveRect.png
+f  30.000000
 __q  53_0
 LoopSociety
 q  31_0
 p  
+Sphere
+f  2.000000
 PhysicsData
 f  1.000000
 f  1.000000
@@ -867,17 +1614,15 @@ f  0.000000
 f  0.000000
 f  0.000000
 b  0
-Position
-f  -165.860916
-f  -0.000183
-f  147.420685
 MouseGrabbable
+Position
+f  -49.224426
+f  -0.000057
+f  187.282959
+MouseIntersectable
 InventoryItem
 i  7
 MouseSelectable
-Sphere
-f  2.000000
-MouseIntersectable
 Text
 s  B 4
 f  0.000000
@@ -893,10 +1638,17 @@ Circle
 f  10.000000
 UiComponent
 i  -1
+Layer
+i  2
+TextureComponent
+s  C:\Users\tagir\raylib_projects\middle\assets\textures\inactiveRect.png
+f  30.000000
 __q  52_0
 LoopSociety
 q  31_0
 p  
+Sphere
+f  2.000000
 PhysicsData
 f  1.000000
 f  1.000000
@@ -911,17 +1663,15 @@ f  0.000000
 f  0.000000
 f  0.000000
 b  0
-Position
-f  -187.289505
-f  -0.000183
-f  147.420685
 MouseGrabbable
+Position
+f  -70.653030
+f  -0.000057
+f  187.282959
+MouseIntersectable
 InventoryItem
 i  6
 MouseSelectable
-Sphere
-f  2.000000
-MouseIntersectable
 Text
 s  B 3
 f  0.000000
@@ -937,6 +1687,11 @@ Circle
 f  10.000000
 UiComponent
 i  -1
+Layer
+i  2
+TextureComponent
+s  C:\Users\tagir\raylib_projects\middle\assets\textures\inactiveRect.png
+f  30.000000
 __q  51_0
 PhysicsData
 f  1.000000
@@ -957,15 +1712,15 @@ q  31_0
 p  
 Sphere
 f  2.000000
+MouseIntersectable
 InventoryItem
 i  5
 MouseSelectable
-Position
-f  -208.718079
-f  -0.000183
-f  147.420685
 MouseGrabbable
-MouseIntersectable
+Position
+f  -92.081650
+f  -0.000057
+f  187.282959
 Text
 s  B 2
 f  0.000000
@@ -981,10 +1736,17 @@ Circle
 f  10.000000
 UiComponent
 i  -1
+Layer
+i  2
+TextureComponent
+s  C:\Users\tagir\raylib_projects\middle\assets\textures\inactiveRect.png
+f  30.000000
 __q  34_0
 LoopSociety
 q  31_0
 p  
+Sphere
+f  2.000000
 PhysicsData
 f  1.000000
 f  1.000000
@@ -999,17 +1761,15 @@ f  0.000000
 f  0.000000
 f  0.000000
 b  0
-Position
-f  -230.146637
-f  -0.000183
-f  147.420685
 MouseGrabbable
+Position
+f  -113.510239
+f  -0.000057
+f  187.282959
+MouseIntersectable
 InventoryItem
 i  4
 MouseSelectable
-Sphere
-f  2.000000
-MouseIntersectable
 Text
 s  * 1
 f  0.000000
@@ -1025,6 +1785,11 @@ Circle
 f  10.000000
 UiComponent
 i  -1
+Layer
+i  2
+TextureComponent
+s  C:\Users\tagir\raylib_projects\middle\assets\textures\activeRect.png
+f  30.000000
 __q  32_0
 PhysicsData
 f  1.000000
@@ -1045,15 +1810,15 @@ q  31_0
 p  
 Sphere
 f  2.000000
+MouseIntersectable
 InventoryItem
 i  3
 MouseSelectable
-Position
-f  -251.575195
-f  -0.000183
-f  147.420685
 MouseGrabbable
-MouseIntersectable
+Position
+f  -148.905838
+f  -0.000025
+f  185.875977
 Text
 s  POP
 f  0.000000
@@ -1069,3 +1834,8 @@ Circle
 f  10.000000
 UiComponent
 i  -1
+Layer
+i  2
+TextureComponent
+s  C:\Users\tagir\raylib_projects\middle\assets\textures\activeRect.png
+f  30.000000

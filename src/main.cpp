@@ -37,6 +37,14 @@
 #include "middle_math.h"
 #include "game.h"
 
+#if defined(_DEBUG)
+static const char* DLL_PATH = "Debug/game.dll";
+static const char* TEMP_PATH = "Debug/game.load.dll";
+#else
+static const char* DLL_PATH = "Release/game.dll";
+static const char* TEMP_PATH = "Release/game.load.dll";
+#endif
+
 void UpdateGame(GameState* gameState);
 void ReloadGameDLL();
 
@@ -147,25 +155,27 @@ void UpdateGame(GameState* gameState)
 void ReloadGameDLL()
 {
 	static void* gameDLL;
-	static std::filesystem::file_time_type lastWriteTime;
 
-	auto writeTime = std::filesystem::last_write_time("Debug/game.dll");
+	static std::filesystem::file_time_type lastWriteTime;
+	auto writeTime = std::filesystem::last_write_time(DLL_PATH);
+
 	if (writeTime != lastWriteTime) {
 
 		if (gameDLL) {
 			bool freeResult = platform_free_dynamic_library(gameDLL);
 			if (!freeResult)
 				return;
+
 			gameDLL = nullptr;
 
 			std::this_thread::sleep_for(std::chrono::milliseconds(100));
 		}
 
-		if (std::filesystem::exists("Debug/game.load.dll")) {
-			std::filesystem::remove("Debug/game.load.dll");
+		if (std::filesystem::exists(TEMP_PATH)) {
+			std::filesystem::remove(TEMP_PATH);
 		}
 
-		while (!std::filesystem::copy_file("Debug/game.dll", "Debug/game.load.dll")) {
+		while (!std::filesystem::copy_file(DLL_PATH, TEMP_PATH)) {
 			std::this_thread::sleep_for(std::chrono::milliseconds(10));
 		}
 

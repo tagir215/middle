@@ -90,7 +90,7 @@ public:
 		}
 
 		if (gameState->input.saveClick) {
-			middle::queueAction(gameState, std::make_shared<middle::EditorActionSaveScene>(gameState->sceneNames[gameState->activeScene]));
+			middle::queueAction(gameState, std::make_shared<middle::EditorActionSaveScene>(gameState->activeSceneName));
 		}
 
 		if (gameState->input.loopClick) {

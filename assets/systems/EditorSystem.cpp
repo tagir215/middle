@@ -74,7 +74,7 @@ public:
 			reset(gameState);
 			importEngineSystemReferences(gameState);
 			if (gameState->sceneNames.size() > 0) {
-				loadScene(gameState, "../assets/scenes/", gameState->sceneNames[gameState->activeScene], false);
+				loadScene(gameState, "../assets/scenes/", gameState->activeSceneName, false);
 			}
 			gameState->reload = false;
 		}

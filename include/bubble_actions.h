@@ -19,6 +19,17 @@
 namespace bubbleActions{
 
 
+	class Simplify : public middle::EditorActionContainer {
+	public:
+		middle::Id id;
+		middle::Id resultId;
+		std::vector<std::unique_ptr<middle::EditorActionContainer>> actions;
+		Simplify(middle::Id id){
+			this->id = id;
+		}
+		void execute(middle::GameState* gameState) override;
+		void undo(middle::GameState* gameState) override;
+	};
 
 	class Bubblify : public middle::EditorActionContainer{
 	public:
@@ -89,6 +100,20 @@ namespace bubbleActions{
 		void undo(middle::GameState* gameState) override;
 	};
 
+	class UnlinkMultiplicationTerm : public middle::EditorActionContainer {
+	public:
+		middle::Id multiplicationId;
+		middle::Id unlinkingShapeId;
+		middle::Id resultShapeId;
+		std::vector<std::unique_ptr<middle::EditorActionContainer>> actions;
+		UnlinkMultiplicationTerm(middle::Id multiplicationId, middle::Id unlinkingShapeId) {
+			this->multiplicationId = multiplicationId;
+			this->unlinkingShapeId = unlinkingShapeId;
+		}
+		void execute(middle::GameState* gameState) override;
+		void undo(middle::GameState* gameState) override;
+	};
+
 	class MulOne : public middle::EditorActionContainer {
 	public:
 		middle::Id recieverShapeId;
@@ -130,6 +155,18 @@ namespace bubbleActions{
 		void undo(middle::GameState* gameState) override;
 	};
 
+	class ExecutePower : public middle::EditorActionContainer {
+	public:
+		middle::Id shapeToPowerId;
+		middle::Id resultShapeId;
+		std::vector<std::unique_ptr<middle::EditorActionContainer>> actions;
+		ExecutePower(middle::Id shapeToPowerId) {
+			this->shapeToPowerId = shapeToPowerId;
+		}
+		void execute(middle::GameState* gameState) override;
+		void undo(middle::GameState* gameState) override;
+	};
+
 	class Pop : public middle::EditorActionContainer {
 	public:
 		middle::Id id;
@@ -163,8 +200,7 @@ namespace bubbleActions{
 	class Compress : public middle::EditorActionContainer {
 	public:
 		middle::Id containerShapeId;
-		middle::Id resultCompressedBubbleId;
-		middle::Id resultCountBubbleId;
+		middle::Id resultShapeId;
 		std::vector<std::unique_ptr<middle::EditorActionContainer>> actions;
 		Compress(middle::Id containerShape);
 		void execute(middle::GameState* gameState) override;

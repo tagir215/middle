@@ -163,14 +163,7 @@ namespace middle {
 		middle::resetScene(gameState);
 		gameState->reload = true;
 
-		int index = -1;
-		for (int i = 0; i < gameState->sceneNames.size(); ++i) {
-			if (gameState->sceneNames[i] == sceneName) {
-				index = i;
-				break;
-			}
-		}
-		gameState->activeScene = index;
+		gameState->activeSceneName = sceneName;
 		gameState->loopIndex = 0;
 	}
 
@@ -186,7 +179,7 @@ namespace middle {
 		}
 		gameState->sceneNames.push_back(sceneName);
 		int index = gameState->sceneNames.size() - 1;
-		gameState->activeScene = index;
+		gameState->activeSceneName = sceneName;
 		gameState->reload = true;
 		gameState->reset = true;
 		saveScene(gameState, sceneName);

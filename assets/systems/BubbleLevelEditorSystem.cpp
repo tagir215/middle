@@ -9,6 +9,7 @@
 #include "UiComponent.h"
 #include "component_utils.h"
 #include "BubbleAlgebraProblem.h"
+#include "ExponentComponent.h"
 
 
 class BubbleLevelEditorSystem : public middle::MiddleGameplaySystem {
@@ -46,7 +47,13 @@ public:
 	void update(middle::GameState* gameState) override {
 		auto ui = [gameState, this]()
 			{
+
 				ImGui::Begin("BubbleEditor");
+
+				if (ImGui::IsWindowHovered()) {
+					gameState->inputBlockers.insert(middle::InputBlockers::KEYBOARD_BLOCK);
+				}
+
 
 				middle::Id selectedId = getSelected();
 
@@ -55,7 +62,7 @@ public:
 				if (!somethingSelected) {
 					if (ImGui::Button("New Bubble")) {
 						middle::unselect(gameState);
-						auto bubbleProto = bubble::newBubble(gameState, {0,0,0});
+						auto bubbleProto = bubble::newBubble(gameState, { 0,0,0 });
 						auto& bubbleShape = middle::registerShape(gameState, bubbleProto);
 						middle::attachComponent<components::BubbleAlgebraProblem>(gameState, bubbleShape.id);
 						auto selectable = middle::getComponent<components::MouseSelectable>(bubbleShape);
@@ -72,13 +79,23 @@ public:
 						middle::attachComponent<components::BubbleAlgebraProblem>(gameState, equals);
 					}
 
-
-					if (ImGui::Button("Import Level Stuff")) {
+					if (ImGui::Button("Import Bubble Level Content")) {
 						const std::string folder = "../assets/shapes/";
-						middle::loadShape(gameState, folder, "BubbleGameplaySystems", true, {400,0,-500});
-						middle::loadShape(gameState, folder, "ManipulationSystems", true, {800,0,-500});
-						middle::loadShape(gameState, folder, "GreatWallAndProcedureAndProblemContainers", true, {400,0,0});
-						middle::loadShape(gameState, folder, "BubbleAlgebraUi", true, {-800,0,-500});
+						middle::loadShape(gameState, folder, "BubbleGameplaySystems", true, { 400,0,-500 });
+						middle::loadShape(gameState, folder, "ManipulationSystems", true, { 800,0,-500 });
+						middle::loadShape(gameState, folder, "GreatWallAndProcedureAndProblemContainers", true, { 400,0,0 });
+						middle::loadShape(gameState, folder, "BubbleAlgebraUi", true, { -800,0,-500 });
+						Vector3 cameraPos = { 0,-1000,0 };
+						middle::loadShape(gameState, folder, "BubbleCamera", true, cameraPos);
+					}
+
+					if (ImGui::Button("Import Procedure Level Content")) {
+						const std::string folder = "../assets/shapes/";
+						middle::loadShape(gameState, folder, "BubbleGameplaySystems", true, { 400,0,-500 });
+						middle::loadShape(gameState, folder, "ProcedureContainer", true, { 300,0,-0200 });
+						middle::loadShape(gameState, folder, "ProcedureVisualizationSystems", true, { 1000,0,0 });
+						middle::loadShape(gameState, folder, "GreatWallAndProcedureAndProblemContainers", true, { 400,0,0 });
+						middle::loadShape(gameState, folder, "ProcedureUI", true, { 0,800,0 });
 						Vector3 cameraPos = { 0,-1000,0 };
 						middle::loadShape(gameState, folder, "BubbleCamera", true, cameraPos);
 					}
@@ -142,7 +159,19 @@ public:
 						middle::Id fraction = bubble::shapeToFraction(gameState, selectedId, containerPos, dividend);
 						bubbleActions::Replace(selectedId, fraction).execute(gameState);
 					}
-
+					ImGui::Separator();
+					static bool isInverse = false;
+					static int power = 1;
+					ImGui::SliderInt("power", &power, -4, 4);
+					ImGui::Checkbox("isInverse", &isInverse);
+					if (ImGui::Button("New Power")) {
+						Vector3 containerPos = middle::getShapePosition(gameState, selectedId.index);
+						middle::Shape& powerShape = middle::registerShape(gameState, bubble::newExponent(gameState, containerPos + randomOffset()));
+						auto powerComp = middle::getComponent<components::ExponentComponent>(powerShape);
+						powerComp->power = power;
+						powerComp->isInverse = isInverse;
+						middle::EditorActionReparent(selectedId.index, powerShape.id.index).execute(gameState);
+					}
 				}
 
 				ImGui::End();

@@ -24,6 +24,7 @@
 #include "Highlight.h"
 #include "Circle.h"
 #include "ProcedureInputVariable.h"
+#include "bubble_colors.h"
 
 
 
@@ -37,8 +38,8 @@ public:
 	components::CompCache* inputCache;
 	std::vector<std::string>procedureNames;
 
-	Color highlightColor = { GREEN.r, GREEN.g, GREEN.b, 60 };
-	Color highlightColor2 = { 0, 255, 255, 30 };
+	Color highlightColor = bubbleColors::HOVERED_ITEM;
+	Color highlightColor2 = bubbleColors::PROCEDURE_SELECTED;
 
 	void init(middle::GameState* gameState) {
 		buttonCache = middle::newCompCache(gameState);
@@ -127,16 +128,6 @@ public:
 					procContainer->bubbleRef = procImportContainer->bubbleRef;
 					// Unassign bubble ref, it might have been serialized
 					procContainer->bubbleRef = middle::Id();
-
-					// resize the container to fit the procedure
-					middle::queueAction(gameState, std::make_shared<middle::CustomAction>([loadedProcId, containerId](middle::GameState* gameState) {
-						float left, right, bottom, top;
-						bubble::loopChildrenOnlyRectBoundingBox(gameState, loadedProcId, &left, &right, &bottom, &top);
-						auto& procContainer = middle::getShape(gameState, containerId.index);
-						auto containerRect = middle::getComponent<components::Rectangle>(procContainer);
-						containerRect->width = right - left;
-						containerRect->height = top - bottom;
-						}));
 				}
 
 
@@ -155,15 +146,11 @@ public:
 				auto rect = middle::getComponent<components::Rectangle>(activeBlockShape);
 				middle::RenderItem activeBlockItem;
 				activeBlockItem.type = middle::RenderItemType::RECTANGLE;
-				activeBlockItem.color = highlightColor;
+				activeBlockItem.backgroundColor = highlightColor;
 				activeBlockItem.width = rect->width;
 				activeBlockItem.height = rect->height;
 				activeBlockItem.length = 0.2f;
-				activeBlockItem.center = { 0,1,0 };
-				Transform transform = {
-					position, {0,0,0,0}, {1,1,1}
-				};
-				activeBlockItem.transform = transform;
+				activeBlockItem.center = position;
 				gameState->renderData.push_back(activeBlockItem);
 			}
 		}

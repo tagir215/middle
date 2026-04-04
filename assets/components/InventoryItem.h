@@ -21,7 +21,7 @@ namespace components {
 	};
 }
 
-namespace bubbleInventoryitemType {
+namespace bubbleInventoryItemType {
 	inline int DEFAULT = 0;
 	inline int NEW_ADDITION_TERM = 1;
 	inline int NEW_MULTIPLICATION_TERM = 2;
@@ -38,4 +38,5 @@ namespace bubbleInventoryitemType {
 	inline int BREAK_10 = 13;
 	inline int COMPRESS = 14;
 	inline int BUBBLIFY = 15;
+	inline int SIMPLIFY = 16;
 }

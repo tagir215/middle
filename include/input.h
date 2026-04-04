@@ -60,6 +60,7 @@ namespace middle {
 		bool panUp;
 		bool panLeft;
 		bool panRight;
+		float mouseWheelMove;
 	};
 
 }

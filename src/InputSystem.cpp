@@ -110,10 +110,11 @@ public:
 				gameState->gameInput.pop = IsKeyPressed(KEY_B);
 				gameState->gameInput.zoomIn = IsKeyDown(KEY_W);
 				gameState->gameInput.zoomOut = IsKeyDown(KEY_S);
-				gameState->gameInput.panUp = IsKeyDown(KEY_E);
-				gameState->gameInput.panDown = IsKeyDown(KEY_Q);
+				gameState->gameInput.panUp = IsKeyDown(KEY_W);
+				gameState->gameInput.panDown = IsKeyDown(KEY_S);
 				gameState->gameInput.panLeft = IsKeyDown(KEY_A);
 				gameState->gameInput.panRight = IsKeyDown(KEY_D);
+				gameState->gameInput.mouseWheelMove = GetMouseWheelMove();
 			}
 		}
 

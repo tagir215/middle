@@ -351,6 +351,16 @@ public:
 			middle::queueAction(gameState, bubblifyAction);
 			container->procedureTransitionStack.back().action = bubblifyAction;
 		}
+		else if (function->type == functionTypes::POWER) {
+			components::InputVariable input;
+			if (!getOneInput(gameState, funcShape, input)) {
+				return;
+			}
+			assert(input.unitRef.index != middle::UNASSIGNED);
+			auto powerAction = std::make_shared<bubbleActions::ExecutePower>(input.unitRef);
+			middle::queueAction(gameState, powerAction);
+			container->procedureTransitionStack.back().action = powerAction;
+		}
 	}
 
 	void undoFunctions(middle::GameState* gameState, components::ProcedureContainer* container) {

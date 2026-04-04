@@ -34,6 +34,9 @@ namespace middle {
 	void queueComponentDeletion(middle::GameState* gameState, middle::Id id) {
 		middle::queueAction(gameState, std::make_shared<middle::CustomAction>([id](middle::GameState* gameState) {
 			middle::Shape& shape = middle::getShape(gameState, id.index);
+			if (!middle::getComponent<CompType>(shape)) {
+				return;
+			}
 			middle::deleteComponent<CompType>(shape);
 			gameState->componentTypeIdSetWithStructuralChanges.insert(middle::getTypeId<CompType>());
 			}));

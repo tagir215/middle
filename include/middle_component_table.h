@@ -20,7 +20,7 @@ namespace middle {
 	template<typename T> 
 	struct ComponentVectorContainer : public IComponentVectorContainer {
 		std::vector<T> vectorData;
-		std::vector<int>freeList;
+		std::vector<int>freeList = {};
 		int grow() override {
 			if (freeList.size() > 0) {
 				int nextFreeIndex = freeList.back();

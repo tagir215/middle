@@ -2,11 +2,13 @@
 #include "registrars.h"
 #include "editor_file_utils.h"
 #define MIDDLELEVELREFERENCE(X) \
-	X(levelName)
+	X(levelName) \
+	X(complete)
 
 namespace components {
 	struct LevelReference : public middle::Serializable{
 		std::string levelName = "";
+		bool complete = false;
 
 		void serialize(std::ostream& ostream) override;
 		void deserialize(const std::vector<std::string>& buffer, int indexOffset) override;

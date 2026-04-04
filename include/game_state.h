@@ -83,15 +83,19 @@ namespace middle {
 		RING,
 		CYLINDER,
 		CUBOID,
+		BILLBOARD,
 	};
 
 	struct RenderItem {
 		RenderItemType type;
 		Color color;
-		Vector3 center;
+		Color backgroundColor = {0,0,0,0};
+		Vector3 center = {0,0,0};
+		Vector3 scale = {1,1,1};
 		Vector3 linePointA;
 		Vector3 linePointB;
 		Transform transform;
+		int layer = 0;
 		float radius;
 		float ringRadius;
 		float startAngle;
@@ -100,9 +104,12 @@ namespace middle {
 		float length;
 		float width;
 		float height;
+		float textureScale = 10;
 		int fontSize;
+		bool disableDepthTest = false;
 		std::string text = "";
 		Model* model;
+		Texture2D* texture;
 
 		RenderItem() {
 			transform.translation = { 0,0,0 };
@@ -112,14 +119,22 @@ namespace middle {
 	};
 
 	struct BubbleAlgebraState {
+		// todo refactor away
 		middle::Id grabbedId;
 		bool intersectingUI = false;
 		std::vector<std::shared_ptr<middle::EditorActionContainer>>bubbleActions;
+		bool justCompletedLevel = false;
+		std::string completedLevelName;
 	};
 
 	struct ModelContainer {
 		std::string path = "";
 		Model model;
+	};
+
+	struct TextureContainer {
+		std::string path = "";
+		Texture2D texture;
 	};
 
 	struct GameState {
@@ -129,8 +144,8 @@ namespace middle {
 		float aspectRatio;
 		float frameTime;
 		float frameTimeAccumulator = 0;
-		const double nearPlaneDistance = 0.05;
-		const double farPlaneDistance = 5000;
+		const double nearPlaneDistance = 10;
+		const double farPlaneDistance = 4000;
 		bool systemsRegistered = false;
 		ApplicationMode applicationMode = ApplicationMode::EDITOR_MODE;
 		EditorState editorState;
@@ -151,7 +166,7 @@ namespace middle {
 		Matrix oldWorldM;
 		Matrix screenOrientorM;
 		Vector3 mouseIntersectTopPosition;
-		int activeScene = 0;
+		std::string activeSceneName = "";
 		int vertexIndex = 0;
 		int loopIndex = 0;
 		int uniqueComponentCount = 0;
@@ -181,7 +196,9 @@ namespace middle {
 		std::queue<std::shared_ptr<EditorActionContainer>>actionQueue;
 		std::queue<std::shared_ptr<EditorActionContainer>>undoQueue;
 		std::vector<ModelContainer> loadedModels;
+		std::unordered_map<std::string, TextureContainer>loadedTextureMap;
 		std::queue<std::string>modelsToLoadQueue;
+		std::queue<std::string>texturesToLoadQueue;
 	};
 
 }

@@ -93,8 +93,8 @@ public:
 			model->model.transform = M;
 		}
 
-		modelIt = modelCache->begin<components::ModelComponent>();
 		if (gameState->loadedModels.size() > 0) {
+			modelIt = modelCache->begin<components::ModelComponent>();
 			middle::ModelContainer& container = gameState->loadedModels.back();
 			for (int i = 0; i < modelCache->getSize(); ++i) {
 				auto modelComp = *modelIt;

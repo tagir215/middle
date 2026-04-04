@@ -23,6 +23,9 @@ namespace components {
 		float fovy;             
 		int projection;        
 		bool active = false;
+		float speedY = 0;
+		float speedX = 0;
+		float speedZ = 0;
 
 
 		void serialize(std::ostream& ostream) override;

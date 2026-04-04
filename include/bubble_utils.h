@@ -10,6 +10,7 @@ namespace bubble {
 	void loopRectBoundingBox(GameState* gameState, const Id& shapeId, float* leftX, float* rightX, float* bottomZ, float* topZ);
 	void loopChildrenOnlyRectBoundingBox(GameState* gameState, const Id& shapeId, float* leftX, float* rightX, float* bottomZ, float* topZ);
 	void loopRectBoundingBoxInternal(GameState* gameState, const Id& shapeId, float* leftX, float* rightX, float* bottomZ, float* topZ);
+	void bubbleRectBoundingBox(GameState* gameState, const Id& shapeId, float* leftX, float* rightX, float* bottomZ, float* topZ);
 	bool buttonClicked(middle::GameState* gameState, middle::Shape& shape, int function);
 	std::vector<middle::Id>getNodes(middle::GameState* gameState, components::LoopSociety* loop);
 	std::vector<middle::Id>getConstraints(middle::GameState* gameState, components::LoopSociety* loop);
@@ -24,9 +25,11 @@ namespace bubble {
 	middle::Shape newBubble(middle::GameState* gameState, const Vector3& targetPos);
 	middle::Shape newUnit(middle::GameState* gameState, const Vector3& targetPos);
 	middle::Shape newVariable(middle::GameState* gameState, const std::string& label, const Vector3& targetPos);
+	middle::Shape newExponent(middle::GameState* gameState, const Vector3& targetPos);
 	middle::Id newEquals(middle::GameState* gameState, middle::Id bubbleAId, middle::Id bubbleBId, const Vector3& targetPos);
 	bool isIntersecting(middle::GameState* gameState, middle::Shape& shape);
-	bool unitEquals(middle::GameState* gameState, middle::Id& bubbleA, middle::Id& bubbleB);
+	bool unitEquals(middle::GameState* gameState, middle::Id& idA, middle::Id& idB);
+	bool exponentEquals(middle::GameState* gameState, middle::Id& idA, middle::Id& idB);
 	BubbleValue unitValue(middle::GameState* gameState, middle::Id& containerId);
 	int fractionUnitCount(middle::GameState* gameState, middle::Id& fractionId);
 	bool matchingBubbles(middle::GameState* gameState, middle::Id& bubbleA, middle::Id bubbleB);
@@ -43,4 +46,6 @@ namespace bubble {
 	components::AlgebraNodeType getStructureType(middle::GameState* gameState, middle::Id id);
 	int findDepth(middle::GameState* gameState, middle::Id id);
 	middle::Id findTopDog(middle::GameState* gameState, middle::Id id);
+	bool isBubbleWithValueOne(middle::GameState* gameState, middle::Id id);
+	bool isBubbleWithValueOneNegative(middle::GameState* gameState, middle::Id id);
 }
