@@ -255,7 +255,14 @@ namespace RendererSystem {
 				middle::RenderItem item = gameState->renderData[i];
 				if (item.type == middle::RenderItemType::TEXT) {
 					Vector2 pos = GetWorldToScreen(item.center, camera);
-					DrawText(item.text.c_str(), pos.x, pos.y, item.fontSize, item.color);
+					const int spacing = 1;
+					float distFactor = 1.0f / Vector3Distance(camera.position, item.center);
+					float fontSize = item.fontSize * gameState->fontUnitFactor * distFactor;
+					Vector2 size = MeasureTextEx(gameState->globalFont, item.text.c_str(), fontSize, spacing);
+					float offsetX = - size.x * 0.5f;
+					float offsetY = -size.y * 0.5f;
+					pos += {offsetX, offsetY};
+					DrawTextEx(gameState->globalFont, item.text.c_str(), pos, fontSize, spacing, item.color);
 				}
 			}
 

@@ -105,7 +105,7 @@ namespace middle {
 		float width;
 		float height;
 		float textureScale = 10;
-		int fontSize;
+		int fontSize = 10;
 		bool disableDepthTest = false;
 		std::string text = "";
 		Model* model;
@@ -184,6 +184,8 @@ namespace middle {
 		bool reset = false;
 		bool loaded = false;
 		bool quit = false;
+		int fontUnitFactor = 1024;
+		Font globalFont;
 
 		const char* workingDir;
 		std::vector<RenderItem>renderData;

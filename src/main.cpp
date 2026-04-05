@@ -102,6 +102,9 @@ int main(void)
 
 	gameState->startGame = true;
 
+	// TODO move somewhere
+	gameState->globalFont = LoadFontEx("../assets/fonts/Libertinus_Math/LibertinusMath-Regular.ttf", gameState->fontUnitFactor, NULL, 0);
+
 	// Main game loop
 	while (!WindowShouldClose())    // Detect window close button or ESC key
 	{

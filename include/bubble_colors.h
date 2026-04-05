@@ -20,7 +20,7 @@ namespace bubbleColors {
 	inline Color PROCEDURE_SELECTED = {0, 255,255,30};
 	inline Color ELEMENT_SELECTED = {0,255,0,60};
 	inline Color UI_BUTTON = BLACK;
-	inline Color UI_BUTTON_BACKGROUND = RED;
+	inline Color UI_BUTTON_BACKGROUND = {0,0,0,0};
 	inline Color UI_BACKGROUND = BLACK;
-	inline Color UI_TEXT = BLACK;
+	inline Color UI_TEXT = WHITE;
 }
