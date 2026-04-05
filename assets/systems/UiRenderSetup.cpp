@@ -152,6 +152,7 @@ public:
 			textItem.color.g = text->fontColorG;
 			textItem.color.b = text->fontColorB;
 			textItem.color.a = text->fontColorA;
+			textItem.fontSize = text->fontSize;
 			gameState->renderData.push_back(textItem);
 		}
 

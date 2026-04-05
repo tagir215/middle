@@ -51,6 +51,7 @@ namespace middle {
 		virtual ~EditorActionContainer() = default;
 		virtual void execute(GameState* gameState) = 0;
 		virtual void undo(GameState* gameState) = 0;
+		bool cancelled = false;
 	};
 
 

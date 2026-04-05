@@ -962,9 +962,6 @@ MouseSelectable
 MouseIntersectable
 Layer
 i  1
-Rectangle
-f  400.000000
-f  70.000000
 __q  32_0
 PhysicsData
 f  1.000000
@@ -1335,9 +1332,8 @@ b  1
 i  1
 b  1
 LoopTag
-Rectangle
-f  500.000000
-f  60.000000
+UiComponent
+i  -1
 LoopSociety
 q  73_0
 p  
@@ -1345,8 +1341,6 @@ q  43_0
 q  59_0
 MouseSelectable
 MouseIntersectable
-UiComponent
-i  -1
 Layer
 i  2
 __q  43_0
@@ -2326,9 +2320,6 @@ f  10.000000
 b  1
 Layer
 i  1
-Rectangle
-f  200.000000
-f  30.000000
 RuntimeHiddenTag
 __q  70_0
 Text
@@ -2451,11 +2442,9 @@ q  155_0
 q  156_0
 q  157_0
 q  173_0
-q  174_0
-q  175_0
-q  176_0
-q  177_0
 q  69_0
+q  178_0
+q  179_0
 MouseGrabbable
 Position
 f  188.274231
@@ -3014,9 +3003,9 @@ PhysicsData
 f  12.566371
 f  0.079577
 f  1.000000
-f  -0.000091
+f  -0.000033
 f  0.000000
-f  0.000868
+f  0.000852
 f  0.800000
 f  0.800000
 f  0.800000
@@ -3080,9 +3069,9 @@ PhysicsData
 f  12.566371
 f  0.079577
 f  1.000000
-f  0.000042
+f  0.000044
 f  0.000000
-f  -0.000940
+f  -0.000948
 f  0.800000
 f  0.800000
 f  0.800000
@@ -3129,7 +3118,7 @@ f  0.002163
 f  1.000000
 f  0.000149
 f  0.000000
-f  -0.000032
+f  -0.000031
 f  0.000000
 f  0.000000
 f  0.000000
@@ -4686,8 +4675,8 @@ TextureComponent
 s  C:\Users\tagir\raylib_projects\middle\assets\textures\toggleRect.png
 f  15.000000
 Rectangle
-f  40.000000
-f  30.000000
+f  20.000000
+f  20.000000
 __q  147_0
 Position
 f  -122.621338
@@ -4722,8 +4711,8 @@ TextureComponent
 s  C:\Users\tagir\raylib_projects\middle\assets\textures\toggleRect.png
 f  15.000000
 Rectangle
-f  40.000000
-f  30.000000
+f  20.000000
+f  20.000000
 __q  148_0
 Position
 f  491.280426
@@ -5551,107 +5540,220 @@ f  30.000000
 Rectangle
 f  40.000000
 f  30.000000
-__q  174_0
-MouseGrabbable
-Position
-f  423.690582
-f  28.540209
-f  -815.684631
+__q  178_0
 MouseSelectable
 MouseIntersectable
 UiComponent
-i  -1
-LoopSociety
-q  73_0
-p  
-Sphere
-f  2.000000
-LevelReference
-s  LevelSelect
-b  0
-Layer
-i  1
-TextureComponent
-s  C:\Users\tagir\raylib_projects\middle\assets\textures\moveBlock.png
-f  10.000000
-Rectangle
-f  40.000000
-f  30.000000
-__q  175_0
-Position
-f  424.073212
-f  28.540174
-f  -801.513733
-MouseGrabbable
-MouseSelectable
-MouseIntersectable
+i  3
 Sphere
 f  2.000000
 LoopSociety
 q  73_0
 p  
-UiComponent
-i  -1
-LevelReference
-s  LevelSelect
-b  0
-Layer
-i  1
-TextureComponent
-s  C:\Users\tagir\raylib_projects\middle\assets\textures\moveBlock.png
-f  10.000000
-Rectangle
-f  40.000000
-f  30.000000
-__q  176_0
 MouseGrabbable
 Position
-f  424.073914
-f  28.540224
-f  -784.806091
+f  422.295685
+f  28.540522
+f  -830.363037
+Text
+s  4
+f  255.000000
+f  0.000000
+f  0.000000
+f  255.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  25.000000
+b  1
+Layer
+i  1
+__q  179_0
 MouseSelectable
 MouseIntersectable
-UiComponent
-i  -1
 LoopSociety
 q  73_0
 p  
 Sphere
 f  2.000000
-LevelReference
-s  LevelSelect
-b  0
+UiComponent
+i  -1
+Position
+f  422.656464
+f  28.540585
+f  -845.983459
+MouseGrabbable
+Text
+s  MOVES LEFT
+f  255.000000
+f  255.000000
+f  255.000000
+f  255.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  7.000000
+b  1
 Layer
 i  1
-TextureComponent
-s  C:\Users\tagir\raylib_projects\middle\assets\textures\moveBlock.png
-f  10.000000
-Rectangle
-f  40.000000
-f  30.000000
-__q  177_0
-Position
-f  423.738373
-f  28.540274
-f  -768.669495
-MouseGrabbable
-MouseSelectable
-MouseIntersectable
+__q  180_0
 Sphere
 f  2.000000
 LoopSociety
-q  73_0
+q  -1_0
 p  
-UiComponent
-i  -1
-LevelReference
-s  LevelSelect
+Position
+f  432.193054
+f  -409.808014
+f  -824.199524
+CameraComponent
+f  433.267914
+f  -309.807831
+f  -825.271301
+f  0.000000
+f  0.000000
+f  1.000000
+f  45.000000
+i  0
 b  0
-Layer
-i  1
-TextureComponent
-s  C:\Users\tagir\raylib_projects\middle\assets\textures\moveBlock.png
-f  10.000000
-Rectangle
-f  40.000000
-f  30.000000
+MouseGrabbable
+MouseSelectable
+MouseIntersectable
+__q  181_0
+Sphere
+f  2.000000
+LoopSociety
+q  -1_0
+p  
+Position
+f  433.267914
+f  -150.433640
+f  -825.271301
+CameraComponent
+f  433.267914
+f  -50.433548
+f  -825.271301
+f  0.000000
+f  0.000000
+f  1.000000
+f  45.000000
+i  0
+b  0
+MouseGrabbable
+MouseSelectable
+MouseIntersectable
+__q  182_0
+Sphere
+f  2.000000
+LoopSociety
+q  -1_0
+p  
+Position
+f  433.267914
+f  -150.433640
+f  -825.271301
+CameraComponent
+f  433.267914
+f  -50.433548
+f  -825.271301
+f  0.000000
+f  0.000000
+f  1.000000
+f  45.000000
+i  0
+b  0
+MouseGrabbable
+MouseSelectable
+MouseIntersectable
+__q  183_0
+Sphere
+f  2.000000
+LoopSociety
+q  -1_0
+p  
+Position
+f  433.267914
+f  -150.433640
+f  -825.271301
+CameraComponent
+f  433.267914
+f  -50.433548
+f  -825.271301
+f  0.000000
+f  0.000000
+f  1.000000
+f  45.000000
+i  0
+b  0
+MouseGrabbable
+MouseSelectable
+MouseIntersectable
+__q  184_0
+Sphere
+f  2.000000
+LoopSociety
+q  -1_0
+p  
+Position
+f  433.267914
+f  -150.433640
+f  -825.271301
+CameraComponent
+f  433.267914
+f  -50.433548
+f  -825.271301
+f  0.000000
+f  0.000000
+f  1.000000
+f  45.000000
+i  0
+b  0
+MouseGrabbable
+MouseSelectable
+MouseIntersectable
+__q  185_0
+Sphere
+f  2.000000
+LoopSociety
+q  -1_0
+p  
+Position
+f  433.267914
+f  -150.433640
+f  -825.271301
+CameraComponent
+f  433.267914
+f  -50.433548
+f  -825.271301
+f  0.000000
+f  0.000000
+f  1.000000
+f  45.000000
+i  0
+b  0
+MouseGrabbable
+MouseSelectable
+MouseIntersectable
+__q  186_0
+Sphere
+f  2.000000
+LoopSociety
+q  -1_0
+p  
+Position
+f  400.059235
+f  -1188.544922
+f  -825.271301
+CameraComponent
+f  400.059235
+f  -1088.544800
+f  -825.271301
+f  0.000000
+f  0.000000
+f  1.000000
+f  45.000000
+i  0
+b  0
+MouseGrabbable
+MouseSelectable
+MouseIntersectable

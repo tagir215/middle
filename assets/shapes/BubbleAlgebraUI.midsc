@@ -31,11 +31,9 @@ q  155_0
 q  156_0
 q  157_0
 q  173_0
-q  174_0
-q  175_0
-q  176_0
-q  177_0
 q  69_0
+q  178_0
+q  179_0
 MouseGrabbable
 Position
 f  0.000000
@@ -56,6 +54,62 @@ Offset
 f  0.000000
 f  -500.000000
 f  0.000000
+__q  179_0
+MouseSelectable
+MouseIntersectable
+LoopSociety
+q  73_0
+p  
+Sphere
+f  2.000000
+UiComponent
+i  -1
+Position
+f  234.382233
+f  -0.000006
+f  -86.012146
+MouseGrabbable
+Text
+s  MOVES LEFT
+f  255.000000
+f  255.000000
+f  255.000000
+f  255.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  7.000000
+b  1
+Layer
+i  1
+__q  178_0
+MouseSelectable
+MouseIntersectable
+UiComponent
+i  3
+Sphere
+f  2.000000
+LoopSociety
+q  73_0
+p  
+MouseGrabbable
+Position
+f  234.021454
+f  -0.000069
+f  -70.391724
+Text
+s  4
+f  255.000000
+f  0.000000
+f  0.000000
+f  255.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  25.000000
+b  1
+Layer
+i  1
 __q  69_0
 MouseSelectable
 MouseIntersectable
@@ -84,114 +138,7 @@ f  10.000000
 b  1
 Layer
 i  1
-Rectangle
-f  200.000000
-f  30.000000
 RuntimeHiddenTag
-__q  177_0
-Position
-f  235.464142
-f  -0.000317
-f  -8.698181
-MouseGrabbable
-MouseSelectable
-MouseIntersectable
-Sphere
-f  2.000000
-LoopSociety
-q  73_0
-p  
-UiComponent
-i  -1
-LevelReference
-s  LevelSelect
-b  0
-Layer
-i  1
-TextureComponent
-s  C:\Users\tagir\raylib_projects\middle\assets\textures\moveBlock.png
-f  10.000000
-Rectangle
-f  40.000000
-f  30.000000
-__q  176_0
-MouseGrabbable
-Position
-f  235.799683
-f  -0.000366
-f  -24.834778
-MouseSelectable
-MouseIntersectable
-UiComponent
-i  -1
-LoopSociety
-q  73_0
-p  
-Sphere
-f  2.000000
-LevelReference
-s  LevelSelect
-b  0
-Layer
-i  1
-TextureComponent
-s  C:\Users\tagir\raylib_projects\middle\assets\textures\moveBlock.png
-f  10.000000
-Rectangle
-f  40.000000
-f  30.000000
-__q  175_0
-Position
-f  235.798981
-f  -0.000416
-f  -41.542419
-MouseGrabbable
-MouseSelectable
-MouseIntersectable
-Sphere
-f  2.000000
-LoopSociety
-q  73_0
-p  
-UiComponent
-i  -1
-LevelReference
-s  LevelSelect
-b  0
-Layer
-i  1
-TextureComponent
-s  C:\Users\tagir\raylib_projects\middle\assets\textures\moveBlock.png
-f  10.000000
-Rectangle
-f  40.000000
-f  30.000000
-__q  174_0
-MouseGrabbable
-Position
-f  235.416351
-f  -0.000381
-f  -55.713318
-MouseSelectable
-MouseIntersectable
-UiComponent
-i  -1
-LoopSociety
-q  73_0
-p  
-Sphere
-f  2.000000
-LevelReference
-s  LevelSelect
-b  0
-Layer
-i  1
-TextureComponent
-s  C:\Users\tagir\raylib_projects\middle\assets\textures\moveBlock.png
-f  10.000000
-Rectangle
-f  40.000000
-f  30.000000
 __q  173_0
 MouseGrabbable
 Position
@@ -382,8 +329,8 @@ TextureComponent
 s  C:\Users\tagir\raylib_projects\middle\assets\textures\toggleRect.png
 f  15.000000
 Rectangle
-f  40.000000
-f  30.000000
+f  20.000000
+f  20.000000
 __q  146_0
 MouseGrabbable
 Position
@@ -418,8 +365,8 @@ TextureComponent
 s  C:\Users\tagir\raylib_projects\middle\assets\textures\toggleRect.png
 f  15.000000
 Rectangle
-f  40.000000
-f  30.000000
+f  20.000000
+f  20.000000
 __q  145_0
 MouseGrabbable
 Position
@@ -834,9 +781,8 @@ b  1
 i  1
 b  1
 LoopTag
-Rectangle
-f  500.000000
-f  60.000000
+UiComponent
+i  -1
 LoopSociety
 q  73_0
 p  
@@ -844,8 +790,6 @@ q  43_0
 q  59_0
 MouseSelectable
 MouseIntersectable
-UiComponent
-i  -1
 Layer
 i  2
 __q  59_0
@@ -1183,9 +1127,6 @@ MouseSelectable
 MouseIntersectable
 Layer
 i  1
-Rectangle
-f  400.000000
-f  70.000000
 __q  132_0
 Position
 f  -48.025925

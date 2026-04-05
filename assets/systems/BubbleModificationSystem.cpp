@@ -211,36 +211,53 @@ public:
 		}
 	}
 
-	void updateMessageVisibility(middle::GameState* gameState, bool visible) {
+	// TODO moves these
+	void updateUi(middle::GameState* gameState, int movesLeft) {
 			auto uiCompIt = uiCompCache->begin<components::UiComponent>();
 			for (int i = 0; i < uiCompCache->getSize(); ++i) {
 				auto uiComp = *uiCompIt;
 				auto& shape = middle::getShape(gameState, uiCompCache->relevantIdVector[i].index);
 				if (uiComp->type == UiElementTypes::OUT_OF_STEPS) {
 					bool isHidden = middle::getComponent<components::RuntimeHiddenTag>(shape) != nullptr;
-					if (visible && isHidden) {
+					if (movesLeft <= 0 && isHidden) {
 						middle::queueComponentDeletion<components::RuntimeHiddenTag>(gameState, shape.id);
 					}
 
-					if (!visible && !isHidden){
-						middle::queueComponentAttachment<components::RuntimeHiddenTag>(gameState, uiCompCache->relevantIdVector[i]);
+					if (movesLeft > 0 && !isHidden){
+						middle::queueComponentAttachment<components::RuntimeHiddenTag>(gameState, shape.id);
 					}
+				}
+				if (uiComp->type == UiElementTypes::STEPS_LEFT_TEXT) {
+					auto text = middle::getComponent<components::Text>(shape);
+					std::string updatedString = std::to_string(movesLeft);
+					text->text = updatedString;
 				}
 			}
 	}
 
 	void update(middle::GameState* gameState) override {
 
+
 		if (levelConfigsCache->getSize() > 0) {
 			auto configsIt = levelConfigsCache->begin<components::BubbleAlgebraLevelConfigs>();
 			auto configs = *configsIt;
+
+			if (gameState->bubbleAlgebraState.bubbleActions.size() > 0) {
+				if (gameState->bubbleAlgebraState.bubbleActions.back()->cancelled) {
+					++configs->allowedMoves;
+					middle::queueAction(gameState, std::make_shared<middle::CustomAction>([](middle::GameState* gameState) {
+						gameState->bubbleAlgebraState.bubbleActions.back()->undo(gameState);
+						gameState->bubbleAlgebraState.bubbleActions.pop_back();
+						}));
+					return;
+				}
+			}
+
+			updateUi(gameState, configs->allowedMoves);
 			if (configs->allowedMoves <= 0) {
-				//updateMessageVisibility(gameState, true);
 				return;
 			}
-			else {
-				//updateMessageVisibility(gameState, false);
-			}
+
 		}
 
 		int actionCountPreFrame = gameState->bubbleAlgebraState.bubbleActions.size();
@@ -327,10 +344,14 @@ public:
 		if (actionCountPostFrame > actionCountPreFrame) {
 			auto configsIt = levelConfigsCache->begin<components::BubbleAlgebraLevelConfigs>();
 			auto configs = *configsIt;
-			--configs->allowedMoves;
-			if (configs->allowedMoves < 0) {
-				configs->allowedMoves = 0;
-			}
+			middle::queueAction(gameState, std::make_unique<middle::CustomAction>(
+				[configs](middle::GameState* gameState)
+				{
+					--configs->allowedMoves;
+					if (configs->allowedMoves < 0) {
+						configs->allowedMoves = 0;
+					}
+				}));
 		}
 	}
 	};

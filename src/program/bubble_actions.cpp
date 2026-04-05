@@ -1042,6 +1042,7 @@ namespace bubbleActions {
 		int childCount = candidateChildren.size();
 
 		if (childCount == 0) {
+			cancelled = true;
 			return;
 		}
 
@@ -1060,6 +1061,7 @@ namespace bubbleActions {
 		}
 
 		if (replacementShapeId.index == middle::UNASSIGNED) {
+			cancelled = true;
 			return;
 		}
 
@@ -1089,6 +1091,7 @@ namespace bubbleActions {
 	{
 		middle::Id parentId = middle::getParent(gameState, recieverShapeId);
 		if (parentId.index == middle::UNASSIGNED) {
+			cancelled = true;
 			return;
 		}
 		Vector3 targetPos = middle::getShapePosition(gameState, recieverShapeId.index);
@@ -1210,6 +1213,7 @@ namespace bubbleActions {
 			auto& parentShape = middle::getShape(gameState, parentId.index);
 			auto equalsComp = middle::getComponent<components::BubbleEqualsComponent>(parentShape);
 			if (!equalsComp) {
+				cancelled = true;
 				return;
 			}
 			shapesToAddIds.push_back(newTermId);
@@ -1258,6 +1262,7 @@ namespace bubbleActions {
 			auto& parentShape = middle::getShape(gameState, parentId.index);
 			auto equalsComp = middle::getComponent<components::BubbleEqualsComponent>(parentShape);
 			if (!equalsComp) {
+				cancelled = true;
 				return;
 			}
 			shapesToAddIds.push_back(newTermId);
@@ -1352,10 +1357,12 @@ namespace bubbleActions {
 		else {
 			targetId = middle::getParent(gameState, id);
 			if (targetId.index == middle::UNASSIGNED) {
+				cancelled = true;
 				return;
 			}
 			parentId = middle::getParent(gameState, targetId);
 			if (parentId.index == middle::UNASSIGNED) {
+				cancelled = true;
 				return;
 			}
 		}
@@ -1425,6 +1432,7 @@ namespace bubbleActions {
 			middle::getChildren(gameState, shape.id, children);
 
 			if (children.size() != 1) {
+				cancelled = true;
 				return;
 			}
 
@@ -1437,6 +1445,7 @@ namespace bubbleActions {
 			// check that same
 			const float tolerance = 1e-8f;
 			if (std::abs(powerA * powerB - 1) > tolerance) {
+				cancelled = true;
 				return;
 			}
 
@@ -1453,12 +1462,14 @@ namespace bubbleActions {
 			auto replaceAction = std::make_unique<Replace>(shape.id, copyId);
 			replaceAction->execute(gameState);
 			actions.push_back(std::move(replaceAction));
+			return;
 		}
 
 		auto fraction = middle::getComponent<components::FractionalComponent>(shape);
 		if (fraction) {
 			middle::Id replacementShapeId = simplifyToOne(gameState, shape.id);
 			if (replacementShapeId.index == middle::UNASSIGNED) {
+				cancelled = true;
 				return;
 			}
 
@@ -1469,8 +1480,10 @@ namespace bubbleActions {
 			auto replaceAction = std::make_unique<Replace>(shape.id, replacementShapeId);
 			replaceAction->execute(gameState);
 			actions.push_back(std::move(replaceAction));
+			return;
 		}
 
+		cancelled = true;
 	}
 
 	void Simplify::undo(middle::GameState* gameState)

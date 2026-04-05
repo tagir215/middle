@@ -25,4 +25,5 @@ namespace UiElementTypes {
 	static int MOVES_LEFT_INDICATOR = 0;
 	static int UI_BACKGROUND = 1;
 	static int OUT_OF_STEPS = 2;
+	static int STEPS_LEFT_TEXT = 3;
 }
