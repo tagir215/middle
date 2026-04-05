@@ -23,6 +23,7 @@
 #include "Rectangle.h"
 #include "UiComponent.h"
 #include "TextureComponent.h"
+#include "RuntimeHiddenTag.h"
 
 
 class BubbleRenderSetup : public middle::MiddleGameplaySystem {
@@ -48,6 +49,7 @@ public:
 		bubbleCache->addType<components::BubbleComponent>();
 		bubbleCache->addType<components::Circle>();
 		bubbleCache->addType<components::Layer>();
+		bubbleCache->addType<components::RuntimeHiddenTag>(components::NOTINTERESTED);
 		mulCache = middle::newCompCache(gameState);
 		mulCache->addType<components::BubbleMultiplyComponent>();
 		mulCache->addType<components::LoopSociety>();
@@ -60,14 +62,17 @@ public:
 		unitCache->addType<components::Position>();
 		unitCache->addType<components::Layer>();
 		unitCache->addType<components::BubbleVariable>(components::NOTINTERESTED);
+		unitCache->addType<components::RuntimeHiddenTag>(components::NOTINTERESTED);
 		variableCache = middle::newCompCache(gameState);
 		variableCache->addType<components::BubbleUnit>();
 		variableCache->addType<components::Layer>();
 		variableCache->addType<components::BubbleVariable>();
+		variableCache->addType<components::RuntimeHiddenTag>(components::NOTINTERESTED);
 		cuboidCache = middle::newCompCache(gameState);
 		cuboidCache->addType<components::Cuboid>();
 		cuboidCache->addType<components::Position>();
 		cuboidCache->addType<components::TextureComponent>(components::NOTINTERESTED);
+		cuboidCache->addType<components::RuntimeHiddenTag>(components::NOTINTERESTED);
 		equalsCache = middle::newCompCache(gameState);
 		equalsCache->addType<components::BubbleEqualsComponent>();
 		equalsCache->addType<components::LoopSociety>();
@@ -76,10 +81,12 @@ public:
 		exponentCache->addType<components::Circle>();
 		exponentCache->addType<components::Position>();
 		exponentCache->addType<components::Layer>();
+		exponentCache->addType<components::RuntimeHiddenTag>(components::NOTINTERESTED);
 		textureCache = middle::newCompCache(gameState);
 		textureCache->addType<components::TextureComponent>();
 		textureCache->addType<components::Position>();
 		textureCache->addType<components::UiComponent>();
+		textureCache->addType<components::RuntimeHiddenTag>(components::NOTINTERESTED);
 
 	}
 	bool debugRendering = false;

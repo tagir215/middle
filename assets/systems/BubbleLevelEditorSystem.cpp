@@ -10,6 +10,7 @@
 #include "component_utils.h"
 #include "BubbleAlgebraProblem.h"
 #include "ExponentComponent.h"
+#include "BubbleAlgebraLevelConfigs.h"
 
 
 class BubbleLevelEditorSystem : public middle::MiddleGameplaySystem {
@@ -98,6 +99,12 @@ public:
 						middle::loadShape(gameState, folder, "ProcedureUI", true, { 0,800,0 });
 						Vector3 cameraPos = { 0,-1000,0 };
 						middle::loadShape(gameState, folder, "BubbleCamera", true, cameraPos);
+					}
+
+					if (ImGui::Button("Create Configs")) {
+						middle::Shape configProto = bubble::newBubble(gameState, { 200,0,0 });
+						auto& config = middle::registerShape(gameState, configProto);
+						middle::attachComponent<components::BubbleAlgebraLevelConfigs>(gameState, config.id);
 					}
 				}
 

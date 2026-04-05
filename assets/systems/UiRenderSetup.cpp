@@ -41,6 +41,7 @@ public:
 		rectangleCache->addType<components::Layer>();
 		rectangleCache->addType<components::TextureComponent>(components::NOTINTERESTED);
 		rectangleCache->addType<components::Inventory>(components::NOTINTERESTED);
+		rectangleCache->addType<components::RuntimeHiddenTag>(components::NOTINTERESTED);
 		circleCache = middle::newCompCache(gameState);
 		circleCache->addType<components::Circle>();
 		circleCache->addType<components::UiComponent>();
@@ -48,9 +49,11 @@ public:
 		circleCache->addType<components::TextureComponent>(components::NOTINTERESTED);
 		circleCache->addType<components::BubbleComponent>(components::NOTINTERESTED);
 		circleCache->addType<components::BubbleUnit>(components::NOTINTERESTED);
+		circleCache->addType<components::RuntimeHiddenTag>(components::NOTINTERESTED);
 		textCache = middle::newCompCache(gameState);
 		textCache->addType<components::Text>();
 		textCache->addType<components::UiComponent>();
+		textCache->addType<components::RuntimeHiddenTag>(components::NOTINTERESTED);
 		nonUiRectangleCache = middle::newCompCache(gameState);
 		nonUiRectangleCache->addType<components::Rectangle>();
 		nonUiRectangleCache->addType<components::Position>();
@@ -145,7 +148,10 @@ public:
 			textItem.text = text->text;
 			Vector3 offset = { text->offsetX, text->offsetY, text->offsetZ };
 			textItem.center = pos + offset;
-			textItem.color = bubbleColors::UI_TEXT;
+			textItem.color.r = text->fontColorR;
+			textItem.color.g = text->fontColorG;
+			textItem.color.b = text->fontColorB;
+			textItem.color.a = text->fontColorA;
 			gameState->renderData.push_back(textItem);
 		}
 

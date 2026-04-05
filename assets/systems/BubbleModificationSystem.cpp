@@ -15,12 +15,16 @@
 #include "bubble_utils.h"
 #include "ExponentComponent.h"
 #include "UiComponent.h"
+#include "BubbleAlgebraLevelConfigs.h"
+#include "RuntimeHiddenTag.h"
 
 class BubbleModificationSystem : public middle::MiddleGameplaySystem {
 public:
 	components::CompCache* deletionCache;
 	components::CompCache* intersectableCache;
 	components::CompCache* placementCache;
+	components::CompCache* levelConfigsCache;
+	components::CompCache* uiCompCache;
 
 	void init(middle::GameState* gameState) {
 		deletionCache = middle::newCompCache(gameState);
@@ -34,6 +38,12 @@ public:
 		placementCache->addType<components::BubbleComponent>();
 		placementCache->addType<components::PlacementComponent>();
 		placementCache->addType<components::IdRef>();
+
+		levelConfigsCache = middle::newCompCache(gameState);
+		levelConfigsCache->addType<components::BubbleAlgebraLevelConfigs>();
+
+		uiCompCache = middle::newCompCache(gameState);
+		uiCompCache->addType<components::UiComponent>();
 	}
 
 	bool isMultiplicationConnection(middle::GameState* gameState, middle::Shape& parentShape) {
@@ -201,7 +211,36 @@ public:
 		}
 	}
 
+	void updateMessageVisibility(middle::GameState* gameState, bool visible) {
+			auto uiCompIt = uiCompCache->begin<components::UiComponent>();
+			for (int i = 0; i < uiCompCache->getSize(); ++i) {
+				auto uiComp = *uiCompIt;
+				if (uiComp->type == UiElementTypes::OUT_OF_STEPS) {
+					if (visible) {
+						middle::queueComponentDeletion<components::RuntimeHiddenTag>(gameState, uiCompCache->relevantIdVector[i]);
+					}
+					else {
+						middle::queueComponentAttachment<components::RuntimeHiddenTag>(gameState, uiCompCache->relevantIdVector[i]);
+					}
+				}
+			}
+	}
+
 	void update(middle::GameState* gameState) override {
+
+		if (levelConfigsCache->getSize() > 0) {
+			auto configsIt = levelConfigsCache->begin<components::BubbleAlgebraLevelConfigs>();
+			auto configs = *configsIt;
+			if (configs->allowedMoves <= 0) {
+				updateMessageVisibility(gameState, true);
+				return;
+			}
+			else {
+				updateMessageVisibility(gameState, false);
+			}
+		}
+
+		int actionCountPreFrame = gameState->bubbleAlgebraState.bubbleActions.size();
 
 		for (int i = 0; i < deletionCache->getSize(); ++i) {
 
@@ -279,7 +318,18 @@ public:
 			}
 
 		}
-	}
-};
 
-static middle::SystemRegistrar<BubbleModificationSystem> reg("BubbleModificationSystem");
+		int actionCountPostFrame = gameState->bubbleAlgebraState.bubbleActions.size();
+
+		if (actionCountPostFrame > actionCountPreFrame) {
+			auto configsIt = levelConfigsCache->begin<components::BubbleAlgebraLevelConfigs>();
+			auto configs = *configsIt;
+			--configs->allowedMoves;
+			if (configs->allowedMoves < 0) {
+				configs->allowedMoves = 0;
+			}
+		}
+	}
+	};
+
+	static middle::SystemRegistrar<BubbleModificationSystem> reg("BubbleModificationSystem");

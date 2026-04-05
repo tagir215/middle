@@ -861,10 +861,10 @@ f  0.000000
 b  0
 Text
 s  COMP
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
+f  255.000000
+f  255.000000
+f  255.000000
+f  255.000000
 f  0.000000
 f  0.000000
 f  0.000000
@@ -990,16 +990,16 @@ i  3
 MouseIntersectable
 MouseSelectable
 Position
-f  -6.554959
+f  -6.554962
 f  28.540562
 f  -595.520203
 MouseGrabbable
 Text
 s  POP
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
+f  255.000000
+f  255.000000
+f  255.000000
+f  255.000000
 f  0.000000
 f  0.000000
 f  0.000000
@@ -1059,7 +1059,7 @@ f  0.000000
 f  0.000000
 b  0
 Position
-f  29.119310
+f  29.119308
 f  28.540546
 f  -594.948608
 MouseGrabbable
@@ -1069,10 +1069,10 @@ MouseIntersectable
 MouseSelectable
 Text
 s  * 1
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
+f  255.000000
+f  255.000000
+f  255.000000
+f  255.000000
 f  0.000000
 f  0.000000
 f  0.000000
@@ -1153,10 +1153,10 @@ f  0.000000
 b  0
 Text
 s  BUB
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
+f  255.000000
+f  255.000000
+f  255.000000
+f  255.000000
 f  0.000000
 f  0.000000
 f  0.000000
@@ -1620,10 +1620,10 @@ f  -563.261047
 MouseGrabbable
 Text
 s  B 2
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
+f  255.000000
+f  255.000000
+f  255.000000
+f  255.000000
 f  0.000000
 f  0.000000
 f  0.000000
@@ -1669,10 +1669,10 @@ MouseIntersectable
 MouseSelectable
 Text
 s  B 3
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
+f  255.000000
+f  255.000000
+f  255.000000
+f  255.000000
 f  0.000000
 f  0.000000
 f  0.000000
@@ -1718,10 +1718,10 @@ MouseIntersectable
 MouseSelectable
 Text
 s  B 4
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
+f  255.000000
+f  255.000000
+f  255.000000
+f  255.000000
 f  0.000000
 f  0.000000
 f  0.000000
@@ -2084,10 +2084,10 @@ MouseIntersectable
 MouseSelectable
 Text
 s  B 5
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
+f  255.000000
+f  255.000000
+f  255.000000
+f  255.000000
 f  0.000000
 f  0.000000
 f  0.000000
@@ -2133,10 +2133,10 @@ MouseIntersectable
 MouseSelectable
 Text
 s  B 6
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
+f  255.000000
+f  255.000000
+f  255.000000
+f  255.000000
 f  0.000000
 f  0.000000
 f  0.000000
@@ -2182,10 +2182,10 @@ f  -591.338623
 MouseGrabbable
 Text
 s  B 7
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
+f  255.000000
+f  255.000000
+f  255.000000
+f  255.000000
 f  0.000000
 f  0.000000
 f  0.000000
@@ -2231,10 +2231,10 @@ MouseIntersectable
 MouseSelectable
 Text
 s  B 8
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
+f  255.000000
+f  255.000000
+f  255.000000
+f  255.000000
 f  0.000000
 f  0.000000
 f  0.000000
@@ -2280,10 +2280,10 @@ f  -591.818787
 MouseGrabbable
 Text
 s  B 9
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
+f  255.000000
+f  255.000000
+f  255.000000
+f  255.000000
 f  0.000000
 f  0.000000
 f  0.000000
@@ -2298,6 +2298,38 @@ i  2
 TextureComponent
 s  C:\Users\tagir\raylib_projects\middle\assets\textures\inactiveRect.png
 f  30.000000
+__q  69_0
+MouseSelectable
+MouseIntersectable
+UiComponent
+i  2
+Sphere
+f  2.000000
+LoopSociety
+q  73_0
+p  
+MouseGrabbable
+Position
+f  177.081085
+f  28.540607
+f  -665.518738
+Text
+s  0 Moves Left! Press UNDO to revert steps
+f  255.000000
+f  0.000000
+f  0.000000
+f  255.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  10.000000
+b  1
+Layer
+i  1
+Rectangle
+f  200.000000
+f  30.000000
+RuntimeHiddenTag
 __q  70_0
 Text
 s  BubbleModificationSystem
@@ -2423,6 +2455,7 @@ q  174_0
 q  175_0
 q  176_0
 q  177_0
+q  69_0
 MouseGrabbable
 Position
 f  188.274231
@@ -2482,9 +2515,9 @@ f  20.000000
 Button
 i  8
 Position
-f  -763.112549
+f  -744.348999
 f  28.540308
-f  -1052.903320
+f  -1026.093872
 MouseGrabbable
 MouseSelectable
 LoopSociety
@@ -2551,10 +2584,10 @@ Sphere
 f  2.000000
 Text
 s  UNDO
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
+f  255.000000
+f  255.000000
+f  255.000000
+f  255.000000
 f  0.000000
 f  0.000000
 f  0.000000
@@ -2642,9 +2675,9 @@ Layer
 i  1
 __q  81_0
 Position
-f  -901.912720
-f  28.540430
-f  -966.068176
+f  -854.735107
+f  28.540462
+f  -948.379089
 MouseGrabbable
 MouseSelectable
 LoopSociety
@@ -2682,9 +2715,9 @@ UiComponent
 i  -1
 __q  82_0
 Position
-f  -901.912720
-f  28.540430
-f  -926.995483
+f  -851.321655
+f  28.540426
+f  -909.781311
 MouseGrabbable
 MouseSelectable
 LoopSociety
@@ -2702,7 +2735,7 @@ f  0.000000
 f  0.000000
 f  0.000000
 f  0.000000
-f  20.000000
+f  30.000000
 b  1
 PhysicsData
 f  1.000000
@@ -2722,8 +2755,6 @@ UiComponent
 i  -1
 __q  83_0
 MouseSelectable
-Circle
-f  25.000000
 MouseIntersectable
 LoopSociety
 q  73_0
@@ -2735,25 +2766,28 @@ f  439.943298
 f  28.540552
 f  -905.849731
 MouseGrabbable
+Button
+i  6
 Text
 s  DONE
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
+f  255.000000
+f  255.000000
+f  255.000000
+f  255.000000
 f  0.000000
 f  0.000000
 f  0.000000
 f  10.000000
 b  1
-Button
-i  6
 UiComponent
 i  -1
 Layer
 i  1
 TextureComponent
 s  C:\Users\tagir\raylib_projects\middle\assets\textures\navRect.png
+f  30.000000
+Rectangle
+f  40.000000
 f  30.000000
 __q  84_0
 MouseSelectable
@@ -2818,10 +2852,10 @@ Sphere
 f  2.000000
 Text
 s  BACK
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
+f  255.000000
+f  255.000000
+f  255.000000
+f  255.000000
 f  0.000000
 f  0.000000
 f  0.000000
@@ -2961,7 +2995,7 @@ PhysicsData
 f  1387.167847
 f  0.000721
 f  1.000000
-f  0.000090
+f  0.000091
 f  0.000000
 f  -0.000167
 f  0.000000
@@ -2980,9 +3014,9 @@ PhysicsData
 f  12.566371
 f  0.079577
 f  1.000000
-f  0.000034
+f  -0.000091
 f  0.000000
-f  0.000819
+f  0.000868
 f  0.800000
 f  0.800000
 f  0.800000
@@ -3001,7 +3035,7 @@ MouseSelectable
 MouseIntersectable
 MouseGrabbable
 Position
-f  43.154663
+f  43.154667
 f  -0.000001
 f  -1135.658569
 Circle
@@ -3048,7 +3082,7 @@ f  0.079577
 f  1.000000
 f  0.000042
 f  0.000000
-f  -0.000943
+f  -0.000940
 f  0.800000
 f  0.800000
 f  0.800000
@@ -4240,10 +4274,10 @@ f  0.000000
 b  0
 Text
 s  SIM
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
+f  255.000000
+f  255.000000
+f  255.000000
+f  255.000000
 f  0.000000
 f  0.000000
 f  0.000000
@@ -4635,10 +4669,10 @@ Button
 i  -1
 Text
 s  MULTIPLY
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
+f  255.000000
+f  255.000000
+f  255.000000
+f  255.000000
 f  0.000000
 f  0.000000
 f  0.000000
@@ -4669,10 +4703,10 @@ Sphere
 f  2.000000
 Text
 s  ADD
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
+f  255.000000
+f  255.000000
+f  255.000000
+f  255.000000
 f  0.000000
 f  0.000000
 f  0.000000

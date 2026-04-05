@@ -24,4 +24,5 @@ namespace components {
 namespace UiElementTypes {
 	static int MOVES_LEFT_INDICATOR = 0;
 	static int UI_BACKGROUND = 1;
+	static int OUT_OF_STEPS = 2;
 }
