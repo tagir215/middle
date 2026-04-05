@@ -215,11 +215,14 @@ public:
 			auto uiCompIt = uiCompCache->begin<components::UiComponent>();
 			for (int i = 0; i < uiCompCache->getSize(); ++i) {
 				auto uiComp = *uiCompIt;
+				auto& shape = middle::getShape(gameState, uiCompCache->relevantIdVector[i].index);
 				if (uiComp->type == UiElementTypes::OUT_OF_STEPS) {
-					if (visible) {
-						middle::queueComponentDeletion<components::RuntimeHiddenTag>(gameState, uiCompCache->relevantIdVector[i]);
+					bool isHidden = middle::getComponent<components::RuntimeHiddenTag>(shape) != nullptr;
+					if (visible && isHidden) {
+						middle::queueComponentDeletion<components::RuntimeHiddenTag>(gameState, shape.id);
 					}
-					else {
+
+					if (!visible && !isHidden){
 						middle::queueComponentAttachment<components::RuntimeHiddenTag>(gameState, uiCompCache->relevantIdVector[i]);
 					}
 				}
@@ -232,11 +235,11 @@ public:
 			auto configsIt = levelConfigsCache->begin<components::BubbleAlgebraLevelConfigs>();
 			auto configs = *configsIt;
 			if (configs->allowedMoves <= 0) {
-				updateMessageVisibility(gameState, true);
+				//updateMessageVisibility(gameState, true);
 				return;
 			}
 			else {
-				updateMessageVisibility(gameState, false);
+				//updateMessageVisibility(gameState, false);
 			}
 		}
 

@@ -11,6 +11,7 @@
 #include "BubbleAlgebraProblem.h"
 #include "ExponentComponent.h"
 #include "BubbleAlgebraLevelConfigs.h"
+#include "JointEntity.h"
 
 
 class BubbleLevelEditorSystem : public middle::MiddleGameplaySystem {
@@ -102,9 +103,12 @@ public:
 					}
 
 					if (ImGui::Button("Create Configs")) {
-						middle::Shape configProto = bubble::newBubble(gameState, { 200,0,0 });
-						auto& config = middle::registerShape(gameState, configProto);
-						middle::attachComponent<components::BubbleAlgebraLevelConfigs>(gameState, config.id);
+						int freeIndex = middle::findFreeIndex(gameState);
+						entities::initJoint(gameState, freeIndex, { 200,0,0 });
+						auto& shape = middle::getShape(gameState, freeIndex);
+						middle::attachComponent<components::BubbleAlgebraLevelConfigs>(gameState, shape.id);
+						auto sphere = middle::getComponent<components::Sphere>(shape);
+						sphere->radius = 10;
 					}
 				}
 

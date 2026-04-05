@@ -9,6 +9,7 @@
 #include "bubble_utils.h"
 #include "BubbleAlgebraProblemContainer.h"
 #include "Rectangle.h"
+#include "BubbleAlgebraLevelConfigs.h"
 
 class AlgebraProblemSystem : public middle::MiddleGameplaySystem {
 public:
@@ -17,6 +18,7 @@ public:
 	components::CompCache* cache = nullptr;
 	components::CompCache* problemCache = nullptr;
 	components::CompCache* containerCache = nullptr;
+	components::CompCache* levelCache = nullptr;
 
 	void init(middle::GameState* gameState) {
 		cache = middle::newCompCache(gameState);
@@ -29,6 +31,8 @@ public:
 		problemCache = middle::newCompCache(gameState);
 		problemCache->addType<components::BubbleAlgebraProblem>();
 		problemCache->addType<components::Position>();
+		levelCache = middle::newCompCache(gameState);
+		levelCache->addType<components::BubbleAlgebraLevelConfigs>();
 	}
 
 	void update(middle::GameState* gameState) override {
@@ -57,11 +61,17 @@ public:
 						gameState->bubbleAlgebraState.bubbleActions.back()->undo(gameState);
 						gameState->bubbleAlgebraState.bubbleActions.pop_back();
 						}));
+
+					if (levelCache->getSize() > 0) {
+						auto configsIt = levelCache->begin<components::BubbleAlgebraLevelConfigs>();
+						auto configs = *configsIt;
+						++configs->allowedMoves;
+					}
 				}
 			}
 		}
 
-		if(containerCache->getSize() == 1){
+		if (containerCache->getSize() == 1) {
 			auto containerPosIt = containerCache->begin<components::Position>();
 			auto containerRectIt = containerCache->begin<components::Rectangle>();
 			auto containerPos = *containerPosIt;
