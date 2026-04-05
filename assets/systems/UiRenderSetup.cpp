@@ -50,7 +50,7 @@ public:
 		circleCache->addType<components::BubbleUnit>(components::NOTINTERESTED);
 		textCache = middle::newCompCache(gameState);
 		textCache->addType<components::Text>();
-		textCache->addType<components::Button>();
+		textCache->addType<components::UiComponent>();
 		nonUiRectangleCache = middle::newCompCache(gameState);
 		nonUiRectangleCache->addType<components::Rectangle>();
 		nonUiRectangleCache->addType<components::Position>();

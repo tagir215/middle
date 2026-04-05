@@ -602,9 +602,9 @@ Rectangle
 f  700.000000
 f  130.000000
 Position
-f  -15.264618
+f  -7.847717
 f  0.000059
-f  199.303650
+f  202.792969
 MouseGrabbable
 LoopSociety
 q  73_0
@@ -1118,14 +1118,14 @@ UiComponent
 i  -1
 __q  31_0
 Position
-f  -6.367294
-f  -0.000057
-f  187.282959
+f  4.649902
+f  -0.000061
+f  131.270813
 MouseGrabbable
 Inventory
 b  1
 i  2
-b  0
+b  1
 LoopTag
 UiComponent
 i  -1
@@ -1142,7 +1142,6 @@ q  65_0
 q  66_0
 q  67_0
 q  68_0
-q  69_0
 q  28_0
 q  36_0
 q  132_0
@@ -1155,9 +1154,9 @@ f  400.000000
 f  70.000000
 __q  132_0
 Position
-f  143.449097
-f  -0.000057
-f  186.500305
+f  -48.025925
+f  -0.000065
+f  164.121155
 MouseGrabbable
 MouseSelectable
 MouseIntersectable
@@ -1205,9 +1204,9 @@ f  30.000000
 __q  36_0
 MouseGrabbable
 Position
-f  122.203888
-f  -0.000057
-f  187.282959
+f  -86.395889
+f  -0.000063
+f  164.175537
 MouseSelectable
 InventoryItem
 i  15
@@ -1253,9 +1252,9 @@ s  C:\Users\tagir\raylib_projects\middle\assets\textures\activeRect.png
 f  30.000000
 __q  28_0
 Position
-f  100.775391
-f  -0.000057
-f  187.282959
+f  -123.856499
+f  -0.000095
+f  164.539185
 MouseGrabbable
 InventoryItem
 i  14
@@ -1300,55 +1299,6 @@ i  2
 TextureComponent
 s  C:\Users\tagir\raylib_projects\middle\assets\textures\activeRect.png
 f  30.000000
-__q  69_0
-Sphere
-f  2.000000
-LoopSociety
-q  31_0
-p  
-PhysicsData
-f  1.000000
-f  1.000000
-f  1.000000
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.800000
-f  0.800000
-f  0.800000
-f  0.000000
-f  0.000000
-f  0.000000
-b  0
-Position
-f  79.346863
-f  -0.000057
-f  187.282959
-MouseGrabbable
-InventoryItem
-i  13
-MouseIntersectable
-MouseSelectable
-Text
-s  B 10
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-f  10.000000
-b  1
-Circle
-f  10.000000
-UiComponent
-i  -1
-Layer
-i  2
-TextureComponent
-s  C:\Users\tagir\raylib_projects\middle\assets\textures\inactiveRect.png
-f  30.000000
 __q  68_0
 PhysicsData
 f  1.000000
@@ -1374,9 +1324,9 @@ i  12
 MouseIntersectable
 MouseSelectable
 Position
-f  57.918335
-f  -0.000057
-f  187.282959
+f  118.150818
+f  -0.000193
+f  168.152527
 MouseGrabbable
 Text
 s  B 9
@@ -1419,9 +1369,9 @@ f  0.000000
 f  0.000000
 b  0
 Position
-f  36.489777
-f  -0.000057
-f  187.282959
+f  85.847961
+f  -0.000092
+f  168.342896
 MouseGrabbable
 InventoryItem
 i  11
@@ -1472,9 +1422,9 @@ i  10
 MouseIntersectable
 MouseSelectable
 Position
-f  15.061249
-f  -0.000057
-f  187.282959
+f  55.550446
+f  0.000002
+f  168.632690
 MouseGrabbable
 Text
 s  B 7
@@ -1517,9 +1467,9 @@ f  0.000000
 f  0.000000
 b  0
 Position
-f  -6.367279
-f  -0.000057
-f  187.282959
+f  28.385574
+f  -0.000061
+f  168.799072
 MouseGrabbable
 InventoryItem
 i  9
@@ -1566,9 +1516,9 @@ f  0.000000
 f  0.000000
 b  0
 Position
-f  -27.795853
-f  -0.000057
-f  187.282959
+f  120.742065
+f  -0.000029
+f  196.099670
 MouseGrabbable
 InventoryItem
 i  8
@@ -1615,9 +1565,9 @@ f  0.000000
 f  0.000000
 b  0
 Position
-f  -49.224426
-f  -0.000057
-f  187.282959
+f  87.683136
+f  -0.000095
+f  195.764221
 MouseGrabbable
 InventoryItem
 i  7
@@ -1664,9 +1614,9 @@ f  0.000000
 f  0.000000
 b  0
 Position
-f  -70.653030
-f  -0.000057
-f  187.282959
+f  55.089920
+f  -0.000097
+f  196.488281
 MouseGrabbable
 InventoryItem
 i  6
@@ -1717,9 +1667,9 @@ i  5
 MouseIntersectable
 MouseSelectable
 Position
-f  -92.081650
-f  -0.000057
-f  187.282959
+f  29.040390
+f  -0.000093
+f  196.710266
 MouseGrabbable
 Text
 s  B 2
@@ -1762,9 +1712,9 @@ f  0.000000
 f  0.000000
 b  0
 Position
-f  -113.510239
-f  -0.000057
-f  187.282959
+f  -159.154922
+f  -0.000044
+f  165.022705
 MouseGrabbable
 InventoryItem
 i  4
@@ -1815,9 +1765,9 @@ i  3
 MouseIntersectable
 MouseSelectable
 Position
-f  -148.905838
-f  -0.000025
-f  185.875977
+f  -194.829193
+f  -0.000029
+f  164.451111
 MouseGrabbable
 Text
 s  POP
