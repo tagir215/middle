@@ -67,6 +67,7 @@ public:
 		variableCache->addType<components::BubbleUnit>();
 		variableCache->addType<components::Layer>();
 		variableCache->addType<components::BubbleVariable>();
+		variableCache->addType<components::Circle>();
 		variableCache->addType<components::RuntimeHiddenTag>(components::NOTINTERESTED);
 		cuboidCache = middle::newCompCache(gameState);
 		cuboidCache->addType<components::Cuboid>();
@@ -165,22 +166,28 @@ public:
 		// render variables
 		auto variableIt = variableCache->begin<components::BubbleVariable>();
 		auto variableUnitIt = variableCache->begin<components::BubbleUnit>();
+		auto variableCircleIt = variableCache->begin<components::Circle>();
 		auto layerIt = variableCache->begin<components::Layer>();
 		for (int i = 0; i < variableCache->getSize(); ++i) {
 			auto variable = *variableIt;
 			auto unit = *variableUnitIt;
 			auto layer = *layerIt;
+			auto circle = *variableCircleIt;
 			auto& shape = middle::getShape(gameState, variableCache->relevantIdVector[i].index);
 			bool isUiItem = middle::getComponent<components::UiComponent>(shape);
+
+			// todo temp
+			if (circle->radius < bubble::variableRadius) {
+				circle->radius = bubble::variableRadius;
+			}
 
 			auto pos = middle::getComponent<components::Position>(shape);
 			middle::RenderItem variableRing;
 			variableRing.center = { pos->posX, pos->posY, pos->posZ };
 			variableRing.length = 0.1f;
 			variableRing.layer = layer->layer;
-			const float variableRadius = 4;
-			variableRing.ringRadius = variableRadius;
-			variableRing.radius = variableRadius;
+			variableRing.ringRadius = circle->radius;
+			variableRing.radius = circle->radius;
 			variableRing.type = middle::RenderItemType::CIRCLE;
 			variableRing.color = bubbleColors::VARIABLE_OUTLINE;
 			if (unit->value == -1) {
@@ -197,7 +204,7 @@ public:
 			variableText.center = variableRing.center;
 			variableText.color = bubbleColors::VARIABLE_TEXT;
 			variableText.text = variable->label;
-			variableText.fontSize = 15;
+			variableText.fontSize = bubble::variableTextFontSize;
 			variableText.disableDepthTest = isUiItem;
 			gameState->renderData.push_back(variableText);
 		}

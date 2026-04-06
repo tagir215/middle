@@ -21,6 +21,10 @@
 #include "ExponentComponent.h"
 
 namespace bubble {
+	float unitRadius = 2;
+	float variableRadius = 20;
+	float bubbleMinRadius = 10;
+	float variableTextFontSize = 25;
 
 	bool pointIntersectBubble(middle::GameState* gameState, middle::Shape& bubbleShape, const Vector3& point)
 	{
@@ -751,7 +755,7 @@ namespace bubble {
 		middle::addComponent<components::PhysicsData>(newBubbleShape);
 		middle::addComponent<components::Layer>(newBubbleShape);
 		auto circle = middle::addComponent<components::Circle>(newBubbleShape);
-		circle->radius = 10;
+		circle->radius = bubbleMinRadius;
 		auto position = middle::addComponent<components::Position>(newBubbleShape);
 		position->posX = targetPos.x;
 		position->posY = targetPos.y;
@@ -769,8 +773,11 @@ namespace bubble {
 		middle::addComponent<components::LoopSociety>(newUnitShape);
 		middle::addComponent<components::PhysicsData>(newUnitShape);
 		middle::addComponent<components::Layer>(newUnitShape);
+		middle::addComponent<components::Circle>(newUnitShape);
+		auto circle = middle::addComponent<components::Circle>(newUnitShape);
+		circle->radius = unitRadius;
 		auto sphere = middle::addComponent<components::Sphere>(newUnitShape);
-		sphere->radius = 2;
+		sphere->radius = unitRadius;
 		auto position = middle::addComponent<components::Position>(newUnitShape);
 		position->posX = targetPos.x;
 		position->posY = targetPos.y;
@@ -783,6 +790,8 @@ namespace bubble {
 		middle::Shape variableProto = newUnit(gameState, targetPos);
 		auto varComp = middle::addComponent<components::BubbleVariable>(variableProto);
 		varComp->label = label;
+		auto circle = middle::getComponent<components::Circle>(variableProto);
+		circle->radius = variableRadius;
 		return variableProto;
 	}
 

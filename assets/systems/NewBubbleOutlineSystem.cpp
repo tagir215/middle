@@ -11,6 +11,7 @@
 #include "Sphere.h"
 #include "FractionalComponent.h"
 #include "bubble_utils.h"
+#include "BubbleVariable.h"
 
 
 class NewBubbleOutlineSystem : public middle::MiddleGameplaySystem {
