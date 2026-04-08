@@ -33,6 +33,7 @@ public:
 	components::CompCache* textCache;
 	components::CompCache* nonUiRectangleCache;
 	components::CompCache* nonUiCircleCache;
+	components::CompCache* nonUiTextCache;
 
 	void init(middle::GameState* gameState) {
 		rectangleCache = middle::newCompCache(gameState);
@@ -68,6 +69,11 @@ public:
 		nonUiCircleCache->addType<components::BubbleUnit>(components::NOTINTERESTED);
 		nonUiCircleCache->addType<components::RuntimeHiddenTag>(components::NOTINTERESTED);
 		nonUiCircleCache->addType<components::TextureComponent>(components::NOTINTERESTED);
+		nonUiTextCache = middle::newCompCache(gameState);
+		nonUiTextCache->addType<components::Text>();
+		nonUiTextCache->addType<components::Button>();
+		nonUiTextCache->addType<components::RuntimeHiddenTag>(components::NOTINTERESTED);
+		nonUiTextCache->addType<components::UiComponent>(components::NOTINTERESTED);
 	}
 
 
@@ -142,6 +148,24 @@ public:
 			if (outputVariable) {
 				text->text = outputVariable->label;
 			}
+			middle::RenderItem textItem;
+			Vector3 pos = middle::getShapePosition(gameState, shape.id.index);
+			textItem.type = middle::RenderItemType::TEXT;
+			textItem.text = text->text;
+			Vector3 offset = { text->offsetX, text->offsetY, text->offsetZ };
+			textItem.center = pos + offset;
+			textItem.color.r = text->fontColorR;
+			textItem.color.g = text->fontColorG;
+			textItem.color.b = text->fontColorB;
+			textItem.color.a = text->fontColorA;
+			textItem.fontSize = text->fontSize;
+			gameState->renderData.push_back(textItem);
+		}
+
+		auto nonUiTextIt = nonUiTextCache->begin<components::Text>();
+		for (int i = 0; i < nonUiTextCache->getSize(); ++i) {
+			auto text = *nonUiTextIt;
+			auto& shape = middle::getShape(gameState, nonUiTextCache->relevantIdVector[i].index);
 			middle::RenderItem textItem;
 			Vector3 pos = middle::getShapePosition(gameState, shape.id.index);
 			textItem.type = middle::RenderItemType::TEXT;
