@@ -13,6 +13,8 @@
 #include "bubble_utils.h"
 #include "MouseSelectable.h"
 #include "ExponentComponent.h"
+#include "TopDogBubbleTag.h"
+#include "BubbleAlgebraProblem.h"
 
 namespace bubbleActions {
 
@@ -1108,6 +1110,12 @@ namespace bubbleActions {
 	}
 	void MulOne::execute(middle::GameState* gameState)
 	{
+		middle::Shape& shape = middle::getShape(gameState, recieverShapeId.index);
+		auto bubble = middle::getComponent<components::BubbleComponent>(shape);
+		if (!bubble) {
+			cancelled = true;
+			return;
+		}
 		middle::Id parentId = middle::getParent(gameState, recieverShapeId);
 		if (parentId.index == middle::UNASSIGNED) {
 			cancelled = true;
@@ -1470,6 +1478,8 @@ namespace bubbleActions {
 	{
 		middle::Shape& shape = middle::getShape(gameState, id.index);
 		auto expComp = middle::getComponent<components::ExponentComponent>(shape);
+		bool isTopDog = middle::getComponent<components::TopDogBubbleTag>(shape) != nullptr;
+
 		if (expComp) {
 			std::vector<middle::Id>children;
 			middle::getChildren(gameState, shape.id, children);
@@ -1504,6 +1514,10 @@ namespace bubbleActions {
 
 			auto replaceAction = std::make_unique<Replace>(shape.id, copyId);
 			replaceAction->execute(gameState);
+			if (isTopDog) {
+				middle::attachComponent<components::TopDogBubbleTag>(gameState, copyId);
+				middle::attachComponent<components::BubbleAlgebraProblem>(gameState, copyId);
+			}
 			actions.push_back(std::move(replaceAction));
 			return;
 		}
@@ -1523,6 +1537,10 @@ namespace bubbleActions {
 			auto replaceAction = std::make_unique<Replace>(shape.id, replacementShapeId);
 			replaceAction->execute(gameState);
 			actions.push_back(std::move(replaceAction));
+			if (isTopDog) {
+				middle::attachComponent<components::TopDogBubbleTag>(gameState, replacementShapeId);
+				middle::attachComponent<components::BubbleAlgebraProblem>(gameState, replacementShapeId);
+			}
 			return;
 		}
 

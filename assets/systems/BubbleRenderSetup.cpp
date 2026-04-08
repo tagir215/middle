@@ -61,6 +61,7 @@ public:
 		unitCache->addType<components::Circle>();
 		unitCache->addType<components::Position>();
 		unitCache->addType<components::Layer>();
+		unitCache->addType<components::MouseIntersectable>();
 		unitCache->addType<components::BubbleVariable>(components::NOTINTERESTED);
 		unitCache->addType<components::RuntimeHiddenTag>(components::NOTINTERESTED);
 		variableCache = middle::newCompCache(gameState);
@@ -127,19 +128,26 @@ public:
 		auto unitCircleIt = unitCache->begin<components::Circle>();
 		auto unitPosIt = unitCache->begin<components::Position>();
 		auto unitLayerIt = unitCache->begin<components::Layer>();
+		auto unitIntersectableIt = unitCache->begin<components::MouseIntersectable>();
 		for (int i = 0; i < unitCache->getSize(); ++i) {
 			auto unit = *unitIt;
 			auto circle = *unitCircleIt;
 			auto pos = *unitPosIt;
 			auto layer = *unitLayerIt;
+			auto intersectable = *unitIntersectableIt;
 			auto& shape = middle::getShape(gameState, unitCache->relevantIdVector[i].index);
 			bool isUiItem = middle::getComponent<components::UiComponent>(shape);
+
+			float radius = circle->radius;
+			if (intersectable->intersectingTop) {
+				radius *= 1.5f;
+			}
 
 			middle::RenderItem particle;
 			particle.center = { pos->posX, pos->posY, pos->posZ };
 			particle.length = 0.1f;
-			particle.ringRadius = circle->radius;
-			particle.radius = circle->radius;
+			particle.ringRadius = radius;
+			particle.radius = radius;
 			particle.layer = layer->layer;
 			particle.disableDepthTest = isUiItem;
 			if (unit->value == 1) {
@@ -156,10 +164,6 @@ public:
 				particle.backgroundColor = particle.color;
 			}
 
-			auto intersectable = middle::getComponent<components::MouseIntersectable>(shape);
-			if (intersectable->intersectingTop) {
-				particle.color = bubbleColors::HOVERED_ITEM;
-			}
 			gameState->renderData.push_back(particle);
 		}
 
@@ -182,29 +186,19 @@ public:
 			}
 
 			auto pos = middle::getComponent<components::Position>(shape);
-			middle::RenderItem variableRing;
-			variableRing.center = { pos->posX, pos->posY, pos->posZ };
-			variableRing.length = 0.1f;
-			variableRing.layer = layer->layer;
-			variableRing.ringRadius = circle->radius;
-			variableRing.radius = circle->radius;
-			variableRing.type = middle::RenderItemType::CIRCLE;
-			variableRing.color = bubbleColors::VARIABLE_OUTLINE;
-			if (unit->value == -1) {
-				variableRing.color = { 0,255,255,255 };
-			}
 			auto intersectable = middle::getComponent<components::MouseIntersectable>(shape);
-			if (intersectable->intersectingTop) {
-				variableRing.color = bubbleColors::HOVERED_ITEM;
+
+			float fontSize = bubble::variableTextFontSize;
+			if (intersectable && intersectable->intersectingTop) {
+				fontSize *= 1.5f;
 			}
-			gameState->renderData.push_back(variableRing);
 
 			middle::RenderItem variableText;
 			variableText.type = middle::RenderItemType::TEXT;
-			variableText.center = variableRing.center;
+			variableText.center = { pos->posX, pos->posY, pos->posZ };
 			variableText.color = bubbleColors::VARIABLE_TEXT;
 			variableText.text = variable->label;
-			variableText.fontSize = bubble::variableTextFontSize;
+			variableText.fontSize = fontSize;
 			variableText.disableDepthTest = isUiItem;
 			gameState->renderData.push_back(variableText);
 		}
@@ -372,7 +366,7 @@ public:
 				Vector3 refAngle = { 1,0,0 };
 
 				Vector3 toStartPoint = Vector3Subtract(intersectPos, powerPos);
-				Vector3 endPoint = intersectPos + Vector3{-intersectOffsetX * 2, 0, 0};
+				Vector3 endPoint = intersectPos + Vector3{ -intersectOffsetX * 2, 0, 0 };
 				Vector3 toEndPoint = Vector3Subtract(endPoint, powerPos);
 
 				if (isInverse) {

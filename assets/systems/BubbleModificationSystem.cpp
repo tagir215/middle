@@ -262,6 +262,35 @@ public:
 
 		int actionCountPreFrame = gameState->bubbleAlgebraState.bubbleActions.size();
 
+
+		bool hotKeyPressed = gameState->gameInput.pop || gameState->gameInput.comp || gameState->gameInput.mulOne || gameState->gameInput.sim || gameState->gameInput.bub;
+
+		if (hotKeyPressed) {
+			auto intersectingIt = intersectableCache->begin<components::MouseIntersectable>();
+			for (int i = 0; i < intersectableCache->getSize(); ++i) {
+				auto intersectable = *intersectingIt;
+				if (intersectable->intersectingTop) {
+					middle::Shape& intersectingShape = middle::getShape(gameState, intersectableCache->relevantIdVector[i].index);
+					if (gameState->gameInput.pop) {
+						inventoryAction(gameState, bubbleInventoryItemType::POP, middle::Id(), intersectingShape);
+					}
+					if (gameState->gameInput.comp) {
+						inventoryAction(gameState, bubbleInventoryItemType::COMPRESS, middle::Id(), intersectingShape);
+					}
+					if (gameState->gameInput.mulOne) {
+						inventoryAction(gameState, bubbleInventoryItemType::TIMES_ONE, middle::Id(), intersectingShape);
+					}
+					if (gameState->gameInput.sim) {
+						inventoryAction(gameState, bubbleInventoryItemType::SIMPLIFY, middle::Id(), intersectingShape);
+					}
+					if (gameState->gameInput.bub) {
+						inventoryAction(gameState, bubbleInventoryItemType::BUBBLIFY, middle::Id(), intersectingShape);
+					}
+				}
+			}
+		}
+
+
 		for (int i = 0; i < deletionCache->getSize(); ++i) {
 
 			auto deletionIt = deletionCache->begin<components::DeleteComponent>();
@@ -274,12 +303,14 @@ public:
 				shapeIdForDeletion = deletionCache->relevantIdVector[0];
 			}
 
+
 			if (shapeIdForDeletion.index == middle::UNASSIGNED) {
 				return;
 			}
 
+
 			auto& shapeForDeletion = middle::getShape(gameState, shapeIdForDeletion.index);
-			if (!middle::isShapeAlive(gameState, ref->idRef.index)) {
+			if (!middle::isShapeAlive(gameState, ref->idRef.index) && !hotKeyPressed) {
 				return;
 			}
 			auto& refShape = middle::getShape(gameState, ref->idRef.index);
@@ -336,8 +367,8 @@ public:
 					break;
 				}
 			}
-
 		}
+
 
 		int actionCountPostFrame = gameState->bubbleAlgebraState.bubbleActions.size();
 

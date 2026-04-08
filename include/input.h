@@ -53,14 +53,19 @@ namespace middle {
 	};
 
 	struct GameInput {
-		bool pop;
-		bool zoomIn;
-		bool zoomOut;
-		bool panDown;
-		bool panUp;
-		bool panLeft;
-		bool panRight;
-		float mouseWheelMove;
+		bool pop = false;
+		bool mulOne = false;
+		bool comp = false;
+		bool sim = false;
+		bool bub = false;
+		bool zoomIn = false;
+		bool zoomOut = false;
+		bool panDown = false;
+		bool panUp = false;
+		bool panLeft = false;
+		bool panRight = false;
+		bool undo = false;
+		float mouseWheelMove = false;
 	};
 
 }

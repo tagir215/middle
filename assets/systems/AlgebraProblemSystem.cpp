@@ -35,11 +35,29 @@ public:
 		levelCache->addType<components::BubbleAlgebraLevelConfigs>();
 	}
 
+	void undo(middle::GameState* gameState) {
+		if (gameState->bubbleAlgebraState.bubbleActions.size() > 0) {
+			middle::queueAction(gameState, std::make_shared<middle::CustomAction>([](middle::GameState* gameState) {
+				gameState->bubbleAlgebraState.bubbleActions.back()->undo(gameState);
+				gameState->bubbleAlgebraState.bubbleActions.pop_back();
+				}));
+
+			if (levelCache->getSize() > 0) {
+				auto configsIt = levelCache->begin<components::BubbleAlgebraLevelConfigs>();
+				auto configs = *configsIt;
+				++configs->allowedMoves;
+			}
+		}
+	}
+
 	void update(middle::GameState* gameState) override {
+
+		if (gameState->gameInput.undo) {
+			undo(gameState);
+		}
 
 		auto buttonIt = cache->begin<components::Button>();
 		int size = cache->getSize();
-
 		for (int i = 0; i < size; ++i) {
 			auto button = *buttonIt;
 			if (button->function == bubbleButton::DONE) {
@@ -56,18 +74,7 @@ public:
 				}
 			}
 			if (button->function == bubbleButton::UNDO) {
-				if (gameState->bubbleAlgebraState.bubbleActions.size() > 0) {
-					middle::queueAction(gameState, std::make_shared<middle::CustomAction>([](middle::GameState* gameState) {
-						gameState->bubbleAlgebraState.bubbleActions.back()->undo(gameState);
-						gameState->bubbleAlgebraState.bubbleActions.pop_back();
-						}));
-
-					if (levelCache->getSize() > 0) {
-						auto configsIt = levelCache->begin<components::BubbleAlgebraLevelConfigs>();
-						auto configs = *configsIt;
-						++configs->allowedMoves;
-					}
-				}
+				undo(gameState);
 			}
 		}
 
