@@ -270,7 +270,7 @@ public:
 	}
 
 	const float attractionForce = 20;
-	const float fieldMargin = 5.0f;
+	const float fieldMargin = 10.0f;
 	bool debugField = false;
 	bool inverses = true;
 

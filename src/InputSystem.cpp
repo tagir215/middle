@@ -125,6 +125,16 @@ public:
 				gameState->gameInput.mulOne = IsKeyPressed(KEY_V);
 				gameState->gameInput.bub = IsKeyPressed(KEY_B);
 				gameState->gameInput.undo = IsKeyPressed(KEY_SPACE);
+				gameState->gameInput.one = IsKeyPressed(KEY_ONE);
+				gameState->gameInput.two = IsKeyPressed(KEY_TWO);
+				gameState->gameInput.three = IsKeyPressed(KEY_THREE);
+				gameState->gameInput.four = IsKeyPressed(KEY_FOUR);
+				gameState->gameInput.five = IsKeyPressed(KEY_FIVE);
+				gameState->gameInput.six = IsKeyPressed(KEY_SIX);
+				gameState->gameInput.seven = IsKeyPressed(KEY_SEVEN);
+				gameState->gameInput.eight = IsKeyPressed(KEY_EIGHT);
+				gameState->gameInput.nine = IsKeyPressed(KEY_NINE);
+				gameState->gameInput.zero = IsKeyPressed(KEY_ZERO);
 				gameState->gameInput.mouseWheelMove = GetMouseWheelMove();
 			}
 		}

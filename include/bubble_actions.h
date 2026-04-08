@@ -188,7 +188,7 @@ namespace bubbleActions{
 
 	class Break : public middle::EditorActionContainer {
 	public:
-		middle::Id containerShapeId;
+		middle::Id unitShapeId;
 		middle::Id resultShapeId;
 		int dividend;
 		std::vector<std::unique_ptr<middle::EditorActionContainer>> actions;

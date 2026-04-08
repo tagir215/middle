@@ -65,6 +65,16 @@ namespace middle {
 		bool panLeft = false;
 		bool panRight = false;
 		bool undo = false;
+		bool one = false;
+		bool two = false;
+		bool three = false;
+		bool four = false;
+		bool five = false;
+		bool six = false;
+		bool seven = false;
+		bool eight = false;
+		bool nine = false;
+		bool zero = false;
 		float mouseWheelMove = false;
 	};
 

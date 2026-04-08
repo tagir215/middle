@@ -263,7 +263,16 @@ public:
 		int actionCountPreFrame = gameState->bubbleAlgebraState.bubbleActions.size();
 
 
-		bool hotKeyPressed = gameState->gameInput.pop || gameState->gameInput.comp || gameState->gameInput.mulOne || gameState->gameInput.sim || gameState->gameInput.bub;
+		auto& inp = gameState->gameInput;
+		bool hotKeyPressed = inp.pop || inp.comp || inp.mulOne || inp.sim || inp.bub
+			|| inp.two
+			|| inp.three
+			|| inp.four
+			|| inp.five
+			|| inp.six
+			|| inp.seven
+			|| inp.eight
+			|| inp.nine;
 
 		if (hotKeyPressed) {
 			auto intersectingIt = intersectableCache->begin<components::MouseIntersectable>();
@@ -285,6 +294,31 @@ public:
 					}
 					if (gameState->gameInput.bub) {
 						inventoryAction(gameState, bubbleInventoryItemType::BUBBLIFY, middle::Id(), intersectingShape);
+					}
+
+					if (gameState->gameInput.two) {
+						inventoryAction(gameState, bubbleInventoryItemType::BREAK_2, middle::Id(), intersectingShape);
+					}
+					if (gameState->gameInput.three) {
+						inventoryAction(gameState, bubbleInventoryItemType::BREAK_3, middle::Id(), intersectingShape);
+					}
+					if (gameState->gameInput.four) {
+						inventoryAction(gameState, bubbleInventoryItemType::BREAK_4, middle::Id(), intersectingShape);
+					}
+					if (gameState->gameInput.five) {
+						inventoryAction(gameState, bubbleInventoryItemType::BREAK_5, middle::Id(), intersectingShape);
+					}
+					if (gameState->gameInput.six) {
+						inventoryAction(gameState, bubbleInventoryItemType::BREAK_6, middle::Id(), intersectingShape);
+					}
+					if (gameState->gameInput.seven) {
+						inventoryAction(gameState, bubbleInventoryItemType::BREAK_7, middle::Id(), intersectingShape);
+					}
+					if (gameState->gameInput.eight) {
+						inventoryAction(gameState, bubbleInventoryItemType::BREAK_8, middle::Id(), intersectingShape);
+					}
+					if (gameState->gameInput.nine) {
+						inventoryAction(gameState, bubbleInventoryItemType::BREAK_9, middle::Id(), intersectingShape);
 					}
 				}
 			}

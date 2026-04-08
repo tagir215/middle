@@ -814,51 +814,51 @@ namespace bubbleActions {
 	
 	Break::Break(middle::Id containerShape, int dividend)
 	{
-		this->containerShapeId = containerShape;
+		this->unitShapeId = containerShape;
 		this->dividend = dividend;
 	}
 	void Break::execute(middle::GameState* gameState)
 	{
-		auto& containerShape = middle::getShape(gameState, containerShapeId.index);
-		auto unit = middle::getComponent<components::BubbleUnit>(containerShape);
-		if (!unit) {
+		auto& unitShape = middle::getShape(gameState, unitShapeId.index);
+		auto unit = middle::getComponent<components::BubbleUnit>(unitShape);
+		auto variable = middle::getComponent<components::BubbleVariable>(unitShape);
+		if (!unit || variable) {
+			cancelled = true;
 			return;
 		}
-		Vector3 containerPos = middle::getShapePosition(gameState, containerShapeId.index);
-		Vector3 referencePos = containerPos;
-		auto newBubbleProto = bubble::newBubble(gameState, containerPos);
-		auto registerAction = std::make_unique<middle::EditorActionRegisterShape>(newBubbleProto);
+
+		// create and register inverse bubble
+		Vector3 targetPos = middle::getShapePosition(gameState, unitShape.id.index);
+		middle::Shape containerBubbleProto = bubble::newBubble(gameState, targetPos);
+		auto registerAction = std::make_unique<middle::EditorActionRegisterShape>(containerBubbleProto);
 		registerAction->execute(gameState);
-		middle::Id newBubbleId = registerAction->newShapeId;
+		middle::Id newContainerId = registerAction->newShapeId;
 		actions.push_back(std::move(registerAction));
 
-		// replace unit with fractions
 		for (int i = 0; i < dividend; ++i) {
-			middle::Id& newFractionId = bubble::newFraction(gameState, referencePos, dividend);
-			auto registerFraction = std::make_unique<middle::EditorActionRegisterId>(newFractionId);
-			registerFraction->execute(gameState);
-			actions.push_back(std::move(registerFraction));
 
-			// replace default 1 unit with the actual unit value, because new fraction returns a generic fraction
-			middle::Id& quotientId = bubble::fractionQuotient(gameState, newFractionId);
-			auto copyAction = std::make_unique<middle::EditorActionCopySingle>(containerShapeId);
-			copyAction->execute(gameState);
-			auto replace = std::make_unique<Replace>(quotientId, copyAction->resultId);
-			replace->execute(gameState);
-			actions.push_back(std::move(copyAction));
-			actions.push_back(std::move(replace));
+			// create and register inverse bubble
+			Vector3 targetPos = middle::getShapePosition(gameState, unitShape.id.index);
+			middle::Shape containerBubbleProto = bubble::newBubble(gameState, targetPos + Vector3{1.0f * i, 0,0});
+			middle::Shape& containerBubble = middle::registerShape(gameState, containerBubbleProto);
+			auto bubble = middle::getComponent<components::BubbleComponent>(containerBubble);
+			bubble->inverse = true;
 
-			auto reparent = std::make_unique<middle::EditorActionReparent>(newBubbleId.index, newFractionId.index);
-			reparent->execute(gameState);
-			actions.push_back(std::move(reparent));
-			referencePos.x += 5;
+			// create units 
+			for (int j = 0; j < dividend; ++j) {
+				middle::Shape unitProto = bubble::newUnit(gameState, targetPos + Vector3{ 1.0f * j,0,0 });
+				middle::Shape& unitShape = middle::registerShape(gameState, unitProto);
+				middle::EditorActionReparent(containerBubble.id.index, unitShape.id.index).execute(gameState);
+			}
+
+			middle::EditorActionReparent(newContainerId.index, containerBubble.id.index).execute(gameState);
 		}
 
-		auto replace = std::make_unique<bubbleActions::Replace>(containerShapeId, newBubbleId);
+		auto replace = std::make_unique<Replace>(unitShapeId, newContainerId);
 		replace->execute(gameState);
 		actions.push_back(std::move(replace));
 
-		resultShapeId = newBubbleId;
+		resultShapeId = newContainerId;
 	}
 
 	void Break::undo(middle::GameState* gameState)
@@ -945,6 +945,16 @@ namespace bubbleActions {
 		for (middle::Id& childId : children) {
 			auto& childShape = middle::getShape(gameState, childId.index);
 			auto bubbleComp = middle::getComponent<components::BubbleComponent>(childShape);
+			auto unitComp = middle::getComponent<components::BubbleUnit>(childShape);
+
+			if (unitComp) {
+				RepresentativeGroup group;
+				group.containerId = childId;
+				group.representatives.push_back(childId);
+				groups.push_back(group);
+				continue;
+			}
+
 			if (bubbleComp) {
 				RepresentativeGroup group;
 				group.containerId = childId;
@@ -1009,12 +1019,22 @@ namespace bubbleActions {
 		if (!commonVariableResult.commonVariableFound) {
 			return middle::Id();
 		}
+		auto& shapeToCompress = middle::getShape(gameState, compressTargetId.index);
+		auto bubble1 = middle::getComponent<components::BubbleComponent>(shapeToCompress);
+		bool isInverse = bubble1->inverse;
 
 		Vector3 targetPos = middle::getShapePosition(gameState, compressTargetId.index);
 		middle::Shape bubbleProto = bubble::newBubble(gameState, targetPos);
 		middle::Shape& resultBubble = middle::registerShape(gameState, bubbleProto);
 
 		middle::Id commonCopyId = middle::deepCopyShape(gameState, commonVariableResult.commonVariableId.index);
+		auto& commonShape = middle::getShape(gameState, commonCopyId.index);
+		if (middle::getComponent<components::BubbleUnit>(commonShape)) {
+			middle::Shape bubbleProto = bubble::newBubble(gameState, targetPos);
+			middle::Shape& newBubbleShape = middle::registerShape(gameState, bubbleProto);
+			middle::EditorActionReparent(newBubbleShape.id.index, commonCopyId.index).execute(gameState);
+			commonCopyId = newBubbleShape.id;
+		}
 		middle::EditorActionReparent(resultBubble.id.index, commonCopyId.index).execute(gameState);
 
 		middle::Shape compressedProto = bubble::newBubble(gameState, targetPos);
@@ -1040,6 +1060,11 @@ namespace bubbleActions {
 				middle::EditorActionReparent(compressedBubble.id.index, unlink.resultShapeId.index).execute(gameState);
 				middle::deleteShapeRecursive(gameState, unlinkingId.index);
 			}
+		}
+
+		if (isInverse) {
+			auto bub = middle::getComponent<components::BubbleComponent>(resultBubble);
+			bub->inverse = isInverse;
 		}
 
 		return resultBubble.id;
@@ -1122,7 +1147,7 @@ namespace bubbleActions {
 			return;
 		}
 		Vector3 targetPos = middle::getShapePosition(gameState, recieverShapeId.index);
-		middle::Shape newBubbleProto = bubble::newBubble(gameState, targetPos + Vector3{1,0,0});
+		middle::Shape newBubbleProto = bubble::newBubble(gameState, targetPos + Vector3{ 1,0,0 });
 		middle::Shape newUnitProto = bubble::newUnit(gameState, targetPos);
 		auto register1 = std::make_unique<middle::EditorActionRegisterShape>(newBubbleProto);
 		register1->execute(gameState);
