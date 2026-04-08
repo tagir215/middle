@@ -142,18 +142,18 @@ public:
 		middle::getChildren(gameState, bubbleId, children);
 		int size = children.size();
 		int index = 0;
-		while (index < size) {
-			if (bubbleComp->searchIndex >= size) {
-				bubbleComp->searchIndex = 0;
-			}
-			middle::Id id = children[bubbleComp->searchIndex];
-			++bubbleComp->searchIndex;
-			auto& shape = middle::getShape(gameState, id.index);
-			if (shape.componentMap.find(typeId) != shape.componentMap.end()) {
-				return id;
-			}
-			++index;
-		}
+		//while (index < size) {
+		//	if (bubbleComp->searchIndex >= size) {
+		//		bubbleComp->searchIndex = 0;
+		//	}
+		//	middle::Id id = children[bubbleComp->searchIndex];
+		//	++bubbleComp->searchIndex;
+		//	auto& shape = middle::getShape(gameState, id.index);
+		//	if (shape.componentMap.find(typeId) != shape.componentMap.end()) {
+		//		return id;
+		//	}
+		//	++index;
+		//}
 		return middle::Id();
 	}
 

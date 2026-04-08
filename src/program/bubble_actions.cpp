@@ -35,6 +35,23 @@ namespace bubbleActions {
 		return false;
 	}
 
+	bool multiplicativeInverses(middle::GameState* gameState, middle::Id idA, middle::Id idB)
+	{
+		auto& shapeA = middle::getShape(gameState, idA.index);
+		auto& shapeB = middle::getShape(gameState, idB.index);
+		auto bubbleA = middle::getComponent<components::BubbleComponent>(shapeA);
+		auto bubbleB = middle::getComponent<components::BubbleComponent>(shapeB);
+		assert(bubbleA && bubbleB);
+		if (bubbleA->inverse != bubbleB->inverse) {
+			bool oldInverse = bubbleA->inverse;
+			bubbleA->inverse = !oldInverse;
+			bool areMatching = bubble::matchingBubbles(gameState, idA, idB);
+			bubbleA->inverse = oldInverse;
+			return areMatching;
+		}
+		return false;
+	}
+
 	bool validateAdditionInitialState(middle::GameState* gameState, ExecuteAddition* addition) {
 
 		middle::Id& parentAId = middle::getParent(gameState, addition->shapeToAddId);
@@ -235,7 +252,7 @@ namespace bubbleActions {
 		// note same scale fractions are handled separatedly
 
 		// NEW CONTAINING BUBBLE CASE
-		if ((unitA && unitB) || (fractionA && fractionB) || (unitA && fractionB) || (unitB && fractionA) || (rootA || rootB)) {
+		if ((unitA && unitB) || (fractionA && fractionB) || (unitA && fractionB) || (unitB && fractionA) || (rootA || rootB) || (bubbleA && bubbleB)) {
 			Vector3 targetPos = middle::getShapePosition(gameState, idA.index);
 			auto regAction = middle::EditorActionRegisterShape(bubble::newBubble(gameState, targetPos));
 			regAction.execute(gameState);
@@ -248,19 +265,6 @@ namespace bubbleActions {
 			auto reparentActionB = middle::EditorActionReparent(newBubbleShape.id.index, idB.index);
 			reparentActionA.execute(gameState);
 			reparentActionB.execute(gameState);
-		}
-		// COMBINE BUBBLE CASE
-		// add members from frombubble to intobubble
-		else if (bubbleA && bubbleB) {
-			auto loopA = middle::getComponent<components::LoopSociety>(shapeA);
-			for (middle::Id& id : loopA->loopMemberIds) {
-				auto copyId = middle::deepCopyShape(gameState, id.index, idB.index);
-				auto loopB = middle::getComponent<components::LoopSociety>(shapeB);
-				loopB->loopMemberIds.push_back(copyId);
-			}
-			deleteShapeRecursive(gameState, idA.index, true);
-			auto deleteActio = std::make_unique<middle::EditorActionDeleteSingle>(idA);
-			replacementId = idB;
 		}
 		// BUBBLE & UNIT CASE
 		else if (unitA && bubbleB || unitB && bubbleA) {
@@ -591,14 +595,29 @@ namespace bubbleActions {
 		auto root = middle::getComponent<components::ExponentComponent>(shape);
 		middle::Id parentId = middle::getParent(gameState, shape.id);
 		if (parentId.index == middle::UNASSIGNED) {
+			cancelled = true;
 			return;
 		}
 		if (root) {
+			cancelled = true;
 			return;
 		}
 		if (!bubble && !fraction) {
+			cancelled = true;
 			return;
 		}
+
+		auto& parentShape = middle::getShape(gameState, parentId.index);
+		auto parentBubble = middle::getComponent<components::BubbleComponent>(parentShape);
+		if (!parentBubble) {
+			cancelled = true;
+			return;
+		}
+		if (bubble->inverse) {
+			cancelled = true;
+			return;
+		}
+
 		// if it's fraction, the children are converted to fractions when container bubbe
 		// is popped
 		if (fraction) {
@@ -1095,7 +1114,7 @@ namespace bubbleActions {
 			return;
 		}
 		Vector3 targetPos = middle::getShapePosition(gameState, recieverShapeId.index);
-		middle::Shape newBubbleProto = bubble::newBubble(gameState, targetPos);
+		middle::Shape newBubbleProto = bubble::newBubble(gameState, targetPos + Vector3{1,0,0});
 		middle::Shape newUnitProto = bubble::newUnit(gameState, targetPos);
 		auto register1 = std::make_unique<middle::EditorActionRegisterShape>(newBubbleProto);
 		register1->execute(gameState);
@@ -1391,7 +1410,31 @@ namespace bubbleActions {
 		}
 	}
 
-	middle::Id simplifyToOne(middle::GameState* gameState, middle::Id fractionId) {
+	middle::Id simplifyToOne(middle::GameState* gameState, middle::Id bubbleId) {
+		std::vector<middle::Id>children;
+		middle::getChildren(gameState, bubbleId, children);
+		if (children.size() == 1) {
+			middle::Id& childId = children[0];
+			auto& childShape = middle::getShape(gameState, childId.index);
+			auto mul = middle::getComponent<components::BubbleMultiplyComponent>(childShape);
+			std::vector<middle::Id> mulChildren;
+			middle::getChildren(gameState, childShape.id, mulChildren);
+			if (mulChildren.size() == 2) {
+				if (multiplicativeInverses(gameState, mulChildren[0], mulChildren[1])) {
+					Vector3 targetPos = middle::getShapePosition(gameState, bubbleId.index);
+					middle::Shape unitProto = bubble::newUnit(gameState, targetPos);
+					middle::Shape bubbleProto = bubble::newBubble(gameState, targetPos);
+					middle::Shape& unitShape = middle::registerShape(gameState, unitProto);
+					middle::Shape& bubbleShape = middle::registerShape(gameState, bubbleProto);
+					middle::EditorActionReparent(bubbleShape.id.index, unitShape.id.index).execute(gameState);
+					return bubbleShape.id;
+				}
+			}
+		}
+		return middle::Id();
+	}
+
+	middle::Id simplifyToOneOld(middle::GameState* gameState, middle::Id fractionId) {
 		middle::Shape& fractionShape = middle::getShape(gameState, fractionId.index);
 		assert(middle::getComponent<components::FractionalComponent>(fractionShape));
 
@@ -1465,9 +1508,27 @@ namespace bubbleActions {
 			return;
 		}
 
+		auto bubble = middle::getComponent<components::BubbleComponent>(shape);
+		if (bubble) {
+			middle::Id replacementShapeId = simplifyToOne(gameState, shape.id);
+			if (replacementShapeId.index == middle::UNASSIGNED) {
+				cancelled = true;
+				return;
+			}
+
+			auto registerAction = std::make_unique<middle::EditorActionRegisterId>(replacementShapeId);
+			registerAction->execute(gameState);
+			actions.push_back(std::move(registerAction));
+
+			auto replaceAction = std::make_unique<Replace>(shape.id, replacementShapeId);
+			replaceAction->execute(gameState);
+			actions.push_back(std::move(replaceAction));
+			return;
+		}
+
 		auto fraction = middle::getComponent<components::FractionalComponent>(shape);
 		if (fraction) {
-			middle::Id replacementShapeId = simplifyToOne(gameState, shape.id);
+			middle::Id replacementShapeId = simplifyToOneOld(gameState, shape.id);
 			if (replacementShapeId.index == middle::UNASSIGNED) {
 				cancelled = true;
 				return;

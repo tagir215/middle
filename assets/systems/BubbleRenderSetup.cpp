@@ -86,7 +86,6 @@ public:
 		textureCache = middle::newCompCache(gameState);
 		textureCache->addType<components::TextureComponent>();
 		textureCache->addType<components::Position>();
-		textureCache->addType<components::UiComponent>();
 		textureCache->addType<components::RuntimeHiddenTag>(components::NOTINTERESTED);
 
 	}
@@ -110,11 +109,12 @@ public:
 			auto intersectable = middle::getComponent<components::MouseIntersectable>(shape);
 			bool intersecting = intersectable && intersectable->intersectingTop;
 			Color color = intersecting ? bubbleColors::HOVERED_ITEM : bubbleColors::BUBBLE_OUTLINE;
+			Color backgroundColor = bubble->inverse ? bubbleColors::BUBBLE_BACKGROUND_INVERSE : bubbleColors::BUBBLE_BACKGROUND;
 			middle::RenderItem circleItem;
 			circleItem.type = middle::RenderItemType::CIRCLE;
 			circleItem.color = color;
 			circleItem.layer = layer->layer;
-			circleItem.backgroundColor = bubbleColors::BUBBLE_BACKGROUND;
+			circleItem.backgroundColor = backgroundColor;
 			circleItem.radius = circle->radius;
 			circleItem.center = middle::getShapePosition(gameState, shape.id.index);
 			circleItem.disableDepthTest = isUiItem;

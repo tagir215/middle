@@ -34,7 +34,7 @@ namespace bubble {
 		if (!ref || ref->idRef.index == middle::UNASSIGNED) {
 			return false;
 		}
-		Vector3 center = { bubbleComponent->centerX, bubbleComponent->centerY, bubbleComponent->centerZ };
+		Vector3 center = middle::getShapePosition(gameState, bubbleShape.id.index);
 
 		auto& bubbleContainer = middle::getShape(gameState, ref->idRef.index);
 		components::LoopSociety* loop = middle::getComponent<components::LoopSociety>(bubbleContainer);
@@ -372,13 +372,22 @@ namespace bubble {
 	bool matchingBubbles(middle::GameState* gameState, middle::Id& idA, middle::Id idB) {
 		auto& shapeA = middle::getShape(gameState, idA.index);
 		auto& shapeB = middle::getShape(gameState, idB.index);
+		auto bubbleA = middle::getComponent<components::BubbleComponent>(shapeA);
+		auto bubbleB = middle::getComponent<components::BubbleComponent>(shapeB);
 		auto unitA = middle::getComponent<components::BubbleUnit>(shapeA);
 		auto unitB = middle::getComponent<components::BubbleUnit>(shapeB);
 		auto rootA = middle::getComponent<components::ExponentComponent>(shapeA);
-		auto rootB = middle::getComponent<components::ExponentComponent>(shapeA);
+		auto rootB = middle::getComponent<components::ExponentComponent>(shapeB);
 		auto nodeA = middle::getComponent<components::AlgebraNode>(shapeA);
 		// idB is allowed to be AlgebraNode, but not idA
 		assert(!nodeA);
+
+		// if one is inverse other is not return false
+		if (bubbleA && bubbleB) {
+			if (bubbleA->inverse != bubbleB->inverse) {
+				return false;
+			}
+		}
 
 		// if either is root return false if not equaling
 		if (rootA || rootB) {

@@ -47,6 +47,7 @@ namespace bubble {
 	middle::Id shapeToFraction(middle::GameState* gameState, middle::Id shpaeId, const Vector3& targetPos, int dividend);
 	middle::Id fractionQuotient(middle::GameState* gameState, middle::Id& fractionId);
 	bool additiveInverses(middle::GameState* gameState, middle::Id idA, middle::Id idB);
+	bool multiplicativeInverses(middle::GameState* gameState, middle::Id idA, middle::Id idB);
 	void negate(middle::GameState* gameState, middle::Id id);
 	middle::Id bubbleToStructure(middle::GameState* gameState, middle::Id bubbleId);
 	components::AlgebraNodeType getStructureType(middle::GameState* gameState, middle::Id id);
