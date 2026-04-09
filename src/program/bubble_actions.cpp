@@ -835,9 +835,8 @@ namespace bubbleActions {
 
 			// create units 
 			for (int j = 0; j < dividend; ++j) {
-				middle::Shape unitProto = bubble::newUnit(gameState, targetPos + Vector3{ 1.0f * j,0,0 });
-				middle::Shape& unitShape = middle::registerShape(gameState, unitProto);
-				middle::EditorActionReparent(containerBubble.id.index, unitShape.id.index).execute(gameState);
+				middle::Id& copyId = middle::deepCopyShape(gameState, unitShape.id.index);
+				middle::EditorActionReparent(containerBubble.id.index, copyId.index).execute(gameState);
 			}
 
 			middle::EditorActionReparent(newContainerId.index, containerBubble.id.index).execute(gameState);
@@ -1454,26 +1453,36 @@ namespace bubbleActions {
 		return middle::Id();
 	}
 
-	middle::Id simplifyToOne(middle::GameState* gameState, middle::Id bubbleId) {
-		std::vector<middle::Id>children;
-		middle::getChildren(gameState, bubbleId, children);
-		if (children.size() == 1) {
-			middle::Id& childId = children[0];
-			auto& childShape = middle::getShape(gameState, childId.index);
-			auto mul = middle::getComponent<components::BubbleMultiplyComponent>(childShape);
-			std::vector<middle::Id> mulChildren;
-			middle::getChildren(gameState, childShape.id, mulChildren);
-			if (mulChildren.size() == 2) {
-				if (multiplicativeInverses(gameState, mulChildren[0], mulChildren[1])) {
-					Vector3 targetPos = middle::getShapePosition(gameState, bubbleId.index);
-					middle::Shape unitProto = bubble::newUnit(gameState, targetPos);
-					middle::Shape bubbleProto = bubble::newBubble(gameState, targetPos);
-					middle::Shape& unitShape = middle::registerShape(gameState, unitProto);
-					middle::Shape& bubbleShape = middle::registerShape(gameState, bubbleProto);
-					middle::EditorActionReparent(bubbleShape.id.index, unitShape.id.index).execute(gameState);
-					return bubbleShape.id;
+	middle::Id simplifyToOneOrNegativeOne(middle::GameState* gameState, middle::Id bubbleId) {
+
+		bool valueIsOne = false;
+		bubble::BubbleValue value = bubble::calculateBubbleValue(gameState, bubbleId);
+		const float epsilon = 1e-4f;
+		float absValue = std::abs(value.scale);
+		if (std::abs(absValue - 1) < epsilon) {
+			valueIsOne = true;
+			for (auto& pair : value.variableValueMap) {
+				if (pair.second.scale != 0) {
+					valueIsOne = false;
 				}
 			}
+		}
+
+		if (valueIsOne) {
+			Vector3 targetPos = middle::getShapePosition(gameState, bubbleId.index);
+			middle::Shape unitProto = bubble::newUnit(gameState, targetPos);
+			middle::Shape bubbleProto = bubble::newBubble(gameState, targetPos);
+			middle::Shape& unitShape = middle::registerShape(gameState, unitProto);
+			middle::Shape& bubbleShape = middle::registerShape(gameState, bubbleProto);
+			auto unitComp = middle::getComponent<components::BubbleUnit>(unitShape);
+			if (value.scale > 0) {
+				unitComp->value = 1;
+			}
+			else {
+				unitComp->value = -1;
+			}
+			middle::EditorActionReparent(bubbleShape.id.index, unitShape.id.index).execute(gameState);
+			return bubbleShape.id;
 		}
 		return middle::Id();
 	}
@@ -1560,7 +1569,7 @@ namespace bubbleActions {
 
 		auto bubble = middle::getComponent<components::BubbleComponent>(shape);
 		if (bubble) {
-			middle::Id replacementShapeId = simplifyToOne(gameState, shape.id);
+			middle::Id replacementShapeId = simplifyToOneOrNegativeOne(gameState, shape.id);
 
 			if (replacementShapeId.index == middle::UNASSIGNED) {
 				replacementShapeId = simplifyToZero(gameState, shape.id);
