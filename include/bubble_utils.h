@@ -22,9 +22,14 @@ namespace bubble {
 	std::vector<middle::Id>getConstraints(middle::GameState* gameState, components::LoopSociety* loop);
 	middle::Id findBubbleWithPatern(middle::GameState* gameState, middle::Id containerBubble);
 	middle::Id shapeToFraction(middle::GameState* gameState, middle::Id shapeId, const Vector3& targetPos, int dividend);
+	struct UnitValue {
+		float scale = 0;
+		float power = 1;
+		std::string variableLabel = "";
+	};
 	struct BubbleValue {
 		float scale = 0;
-		std::string variableLabel = "";
+		std::unordered_map<std::string, UnitValue> variableValueMap;
 	};
 	middle::Id inverseBubble(middle::GameState* gameState, middle::Id& id);
 	middle::Id topLevelBubble(middle::GameState* gameState);
@@ -36,10 +41,11 @@ namespace bubble {
 	bool isIntersecting(middle::GameState* gameState, middle::Shape& shape);
 	bool unitEquals(middle::GameState* gameState, middle::Id& idA, middle::Id& idB);
 	bool exponentEquals(middle::GameState* gameState, middle::Id& idA, middle::Id& idB);
-	BubbleValue unitValue(middle::GameState* gameState, middle::Id& containerId);
+	UnitValue unitValue(middle::GameState* gameState, middle::Id& containerId);
 	int fractionUnitCount(middle::GameState* gameState, middle::Id& fractionId);
 	bool matchingBubbles(middle::GameState* gameState, middle::Id& bubbleA, middle::Id bubbleB);
 	bool matchesStructureWithVariables(middle::GameState* gameState, middle::Id bubbleId, middle::Id algebraNodeId);
+	BubbleValue calculateBubbleValue(middle::GameState* gameState, middle::Id bubbleId);
 	middle::Id findMatchingStructureWithVariables(middle::GameState* gameState, middle::Id containerId, middle::Id algebraNodeId, int targetDepth, std::set<int>ignoreSet = {});
 	middle::Id findMatchingStructureWithVariablesFromSibling(middle::GameState* gameState, middle::Id siblingId, middle::Id algebraNodeId);
 	void findMatchingStructurePairWithVariables(middle::GameState* gameState, middle::Id containerId, middle::Id algebraNodeIdA, middle::Id algebraNodeIdB, int targetDepth, middle::Id& resultIdA, middle::Id& resultIdB);

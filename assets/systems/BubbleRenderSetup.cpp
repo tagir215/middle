@@ -150,18 +150,17 @@ public:
 			particle.radius = radius;
 			particle.layer = layer->layer;
 			particle.disableDepthTest = isUiItem;
+			particle.type = middle::RenderItemType::CIRCLE;
 			if (unit->value == 1) {
-				particle.type = middle::RenderItemType::CIRCLE;
 				particle.color = bubbleColors::POSITIVE_UNIT;
-				particle.backgroundColor = particle.color;
+				particle.backgroundColor = bubbleColors::POSITIVE_UNIT;
 			}
 			if (unit->value == 0) {
-				particle.type = middle::RenderItemType::CIRCLE;
 				particle.color = bubbleColors::BUBBLE_OUTLINE;
 			}
 			if (unit->value == -1) {
 				particle.color = bubbleColors::NEGATIVE_UNIT;
-				particle.backgroundColor = particle.color;
+				particle.backgroundColor = bubbleColors::NEGATIVE_UNIT;
 			}
 
 			gameState->renderData.push_back(particle);

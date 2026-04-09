@@ -230,18 +230,11 @@ namespace bubble {
 
 	middle::Id inverseBubble(middle::GameState* gameState, middle::Id& id)
 	{
+		middle::Id copy = middle::deepCopyShape(gameState, id.index);
 		auto& shape = middle::getShape(gameState, id.index);
-		auto loop = middle::getComponent<components::LoopSociety>(shape);
-		int dividend = loop->loopMemberIds.size();
-		if (dividend < 2) {
-			return id;
-		}
-		Vector3 pos = middle::getShapePosition(gameState, id.index);
-		middle::Id fractionId = shapeToFraction(gameState, id, pos, dividend);
-		middle::Shape bubbleProto = newBubble(gameState, pos);
-		middle::Shape& bubble = middle::registerShape(gameState, bubbleProto);
-		middle::EditorActionReparent(bubble.id.index, fractionId.index).execute(gameState);
-		return bubble.id;
+		auto bubble = middle::getComponent<components::BubbleComponent>(shape);
+		bubble->inverse = !bubble->inverse;
+		return copy;
 	}
 
 	middle::Id topLevelBubble(middle::GameState* gameState)
@@ -288,8 +281,8 @@ namespace bubble {
 
 	bool unitEquals(middle::GameState* gameState, middle::Id& idA, middle::Id& idB)
 	{
-		BubbleValue valueA = unitValue(gameState, idA);
-		BubbleValue valueB = unitValue(gameState, idB);
+		UnitValue valueA = unitValue(gameState, idA);
+		UnitValue valueB = unitValue(gameState, idB);
 		const float epsilon = 1e-4f;
 		bool equalMagnitude = std::abs(valueA.scale - valueB.scale) < epsilon;
 		bool equalLabel = valueA.variableLabel == valueB.variableLabel;
@@ -320,9 +313,9 @@ namespace bubble {
 	}
 
 
-	BubbleValue unitValue(middle::GameState* gameState, middle::Id& containerId)
+	UnitValue unitValue(middle::GameState* gameState, middle::Id& containerId)
 	{
-		BubbleValue result;
+		UnitValue result;
 		middle::Shape& shape = middle::getShape(gameState, containerId.index);
 		auto unit = middle::getComponent<components::BubbleUnit>(shape);
 		auto node = middle::getComponent<components::AlgebraNode>(shape);
@@ -493,6 +486,89 @@ namespace bubble {
 		}
 
 		return false;
+	}
+
+
+	BubbleValue calculateBubbleValue(middle::GameState* gameState, middle::Id bubbleId)
+	{
+		BubbleValue result;
+		std::vector<middle::Id>children;
+		middle::getChildren(gameState, bubbleId, children);
+		for (middle::Id& id : children) {
+			auto& shape = middle::getShape(gameState, id.index);
+			auto unit = middle::getComponent<components::BubbleUnit>(shape);
+			if (unit) {
+				UnitValue value = unitValue(gameState, id);
+				if (value.variableLabel != "") {
+					if (result.variableValueMap.find(value.variableLabel) == result.variableValueMap.end()) {
+						result.variableValueMap[value.variableLabel] = {value.scale, 1, value.variableLabel};
+					}
+					else {
+						result.variableValueMap[value.variableLabel].scale += result.scale;
+					}
+				}
+				else {
+					result.scale += value.scale;
+				}
+			}
+			auto bubble = middle::getComponent<components::BubbleComponent>(shape);
+			if (bubble) {
+				BubbleValue value = calculateBubbleValue(gameState, shape.id);
+				result.scale += value.scale;
+				for (auto& pair : value.variableValueMap) {
+					if (result.variableValueMap.find(pair.first) == result.variableValueMap.end()) {
+						result.variableValueMap[pair.first] = pair.second;
+					}
+					else {
+						result.variableValueMap[pair.first].scale += pair.second.scale;
+					}
+				}
+			}
+			auto mul = middle::getComponent<components::BubbleMultiplyComponent>(shape);
+			if (mul) {
+				std::vector<middle::Id> mulChildren;
+				middle::getChildren(gameState, shape.id, mulChildren);
+				BubbleValue mulResult = calculateBubbleValue(gameState, mulChildren[0]);
+				for (int i = 1; i < mulChildren.size(); ++i) {
+					BubbleValue mulResult2 = calculateBubbleValue(gameState, mulChildren[i]);
+					for (auto& pair : mulResult2.variableValueMap) {
+						if (mulResult.variableValueMap.find(pair.first) == mulResult.variableValueMap.end()) {
+							mulResult.variableValueMap[pair.first] = pair.second;
+						}
+						else {
+							mulResult.variableValueMap[pair.first].scale *= pair.second.scale;
+							++mulResult.variableValueMap[pair.first].power;
+						}
+					}
+					mulResult.scale *= mulResult2.scale;
+				}
+				result = mulResult;
+			}
+		}
+
+		auto& shape = middle::getShape(gameState, bubbleId.index);
+		auto bubble = middle::getComponent<components::BubbleComponent>(shape);
+		auto exp = middle::getComponent<components::ExponentComponent>(shape);
+		if (bubble->inverse) {
+			if (result.scale != 0) {
+				result.scale = 1.0f / result.scale;
+			}
+			for (auto& pair : result.variableValueMap) {
+				auto& val = pair.second;
+				if (val.scale != 0) {
+					val.scale = 1.0f / val.scale;
+				}
+			}
+		}
+		if (exp) {
+			float power = exp->isInverse ? 1.0f / exp->power : exp->power;
+			result.scale = std::powf(result.scale, power);
+			for (auto& pair : result.variableValueMap) {
+				pair.second.power *= power;
+			}
+		}
+
+		return result;
 	}
 
 	middle::Id findMatchingStructureWithVariables(middle::GameState* gameState, middle::Id containerId, middle::Id algebraNodeId, int targetDepth, std::set<int>ignoreSet)
@@ -734,7 +810,7 @@ namespace bubble {
 				middle::Shape& nodeShape = middle::registerShape(gameState, nodeShapeProto);
 
 				if (node->type == static_cast<int>(components::AlgebraNodeType::UNIT) || node->type == static_cast<int>(components::AlgebraNodeType::VARIABLE)) {
-					BubbleValue value = unitValue(gameState, realChildId);
+					UnitValue value = unitValue(gameState, realChildId);
 					node->value = value.scale;
 					node->variableLabel = value.variableLabel;
 				}

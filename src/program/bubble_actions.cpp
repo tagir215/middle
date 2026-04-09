@@ -394,17 +394,6 @@ namespace bubbleActions {
 			return;
 		}
 
-		if (additiveInverses(gameState, shapeToAddId, shapeToAddIntoId)) {
-			auto deleteA = std::make_unique<middle::EditorActionDeleteSingle>(shapeToAddId);
-			deleteA->execute(gameState);
-			actions.push_back(std::move(deleteA));
-
-			auto deleteB = std::make_unique<middle::EditorActionDeleteSingle>(shapeToAddIntoId);
-			deleteB->execute(gameState);
-			actions.push_back(std::move(deleteB));
-			return;
-		}
-
 		auto copyA = std::make_unique<middle::EditorActionCopySingle>(shapeToAdd.id);
 		copyA->execute(gameState);
 		middle::Id idA = copyA->resultId;
