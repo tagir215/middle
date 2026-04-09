@@ -34,5 +34,7 @@ namespace bubbleButton{
 	inline int BACK = 7;
 	inline int CONTINUE = 8;
 	inline int IMPORT_PROCEDURE = 9;
+	inline int SELECT_PLUS = 10;
+	inline int SELECT_MULTIPLY = 11;
 }
 

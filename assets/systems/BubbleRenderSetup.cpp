@@ -24,6 +24,7 @@
 #include "UiComponent.h"
 #include "TextureComponent.h"
 #include "RuntimeHiddenTag.h"
+#include "ActiveCheckBoxTag.h"
 
 
 class BubbleRenderSetup : public middle::MiddleGameplaySystem {
@@ -43,6 +44,7 @@ public:
 	components::CompCache* equalsCache;
 	components::CompCache* exponentCache;
 	components::CompCache* textureCache;
+	components::CompCache* activeCheckBoxCache;
 
 	void init(middle::GameState* gameState) {
 		bubbleCache = middle::newCompCache(gameState);
@@ -88,6 +90,10 @@ public:
 		textureCache->addType<components::TextureComponent>();
 		textureCache->addType<components::Position>();
 		textureCache->addType<components::RuntimeHiddenTag>(components::NOTINTERESTED);
+		activeCheckBoxCache = middle::newCompCache(gameState);
+		activeCheckBoxCache->addType<components::ActiveCheckBoxTag>();
+		activeCheckBoxCache->addType<components::Position>();
+		activeCheckBoxCache->addType<components::Layer>();
 
 	}
 	bool debugRendering = false;
@@ -453,6 +459,24 @@ public:
 			textureItem.textureScale = texture->scale;
 			textureItem.disableDepthTest = isUiItem;
 			gameState->renderData.push_back(textureItem);
+		}
+
+		auto checkBoxPositionIt = activeCheckBoxCache->begin<components::Position>();
+		auto checkBoxLayerIt = activeCheckBoxCache->begin<components::Layer>();
+		for (int i = 0; i < activeCheckBoxCache->getSize(); ++i) {
+			auto pos = *checkBoxPositionIt;
+			auto layer = *checkBoxLayerIt;
+
+			middle::RenderItem powerCircle;
+			powerCircle.type = middle::RenderItemType::CYLINDER;
+			powerCircle.center = { pos->posX, pos->posY, pos->posZ };
+			powerCircle.radius = 3;
+			powerCircle.ringRadius = 3;
+			powerCircle.length = 0.001f;
+			powerCircle.color = RED;
+			powerCircle.layer = layer->layer + 1;
+			powerCircle.disableDepthTest = true;
+			gameState->renderData.push_back(powerCircle);
 		}
 
 	}
