@@ -1432,6 +1432,28 @@ namespace bubbleActions {
 		}
 	}
 
+	middle::Id simplifyToZero(middle::GameState* gameState, middle::Id bubbleId) {
+		bubble::BubbleValue value = bubble::calculateBubbleValue(gameState, bubbleId);
+		bool valueIsZero = false;
+		if (value.scale == 0) {
+			valueIsZero = true;
+			for (auto& pair : value.variableValueMap) {
+				if (pair.second.scale != 0) {
+					valueIsZero = false;
+				}
+			}
+		}
+
+		if (valueIsZero) {
+			Vector3 targetPos = middle::getShapePosition(gameState, bubbleId.index);
+			auto bubbleProto = bubble::newBubble(gameState, targetPos);
+			auto& result = middle::registerShape(gameState, bubbleProto);
+			return result.id;
+		}
+
+		return middle::Id();
+	}
+
 	middle::Id simplifyToOne(middle::GameState* gameState, middle::Id bubbleId) {
 		std::vector<middle::Id>children;
 		middle::getChildren(gameState, bubbleId, children);
@@ -1490,6 +1512,7 @@ namespace bubbleActions {
 
 	void Simplify::execute(middle::GameState* gameState)
 	{
+
 		middle::Shape& shape = middle::getShape(gameState, id.index);
 		auto expComp = middle::getComponent<components::ExponentComponent>(shape);
 		bool isTopDog = middle::getComponent<components::TopDogBubbleTag>(shape) != nullptr;
@@ -1516,7 +1539,6 @@ namespace bubbleActions {
 				return;
 			}
 
-
 			auto copyAction = std::make_unique<middle::EditorActionCopySingle>(childShape.id);
 			copyAction->execute(gameState);
 			middle::Id copyId = copyAction->resultId;
@@ -1539,6 +1561,11 @@ namespace bubbleActions {
 		auto bubble = middle::getComponent<components::BubbleComponent>(shape);
 		if (bubble) {
 			middle::Id replacementShapeId = simplifyToOne(gameState, shape.id);
+
+			if (replacementShapeId.index == middle::UNASSIGNED) {
+				replacementShapeId = simplifyToZero(gameState, shape.id);
+			}
+
 			if (replacementShapeId.index == middle::UNASSIGNED) {
 				cancelled = true;
 				return;
