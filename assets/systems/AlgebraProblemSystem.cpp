@@ -122,6 +122,7 @@ public:
 				auto cameraPosIt = cameraCache->begin<components::Position>();
 				auto camPos = *cameraPosIt;
 				camPos->posX = problemCenterX;
+				camPos->posZ = 0;
 				configs->initialized = true;
 			}
 		}

@@ -36,5 +36,11 @@ namespace bubbleButton{
 	inline int IMPORT_PROCEDURE = 9;
 	inline int SELECT_PLUS = 10;
 	inline int SELECT_MULTIPLY = 11;
+	inline int SELECT_POSITIVE = 12;
+	inline int SELECT_NEGATIVE = 13;
+	inline int SELECT_NON_INVERSE = 14;
+	inline int SELECT_INVERSE = 15;
+	inline int NEXT_UNIT = 16;
+	inline int PREV_UNIT = 17;
 }
 
