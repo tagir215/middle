@@ -26,6 +26,7 @@ class BubbleInventorySystem : public middle::MiddleGameplaySystem {
 public:
 
 	components::CompCache* inventoryCache;
+	components::CompCache* inventoryItemCache;
 	components::CompCache* grabbableCache;
 	components::CompCache* uiComponentlessBubbleInventoryItemCache;
 	components::CompCache* uiButtonsCache;
@@ -35,6 +36,8 @@ public:
 		inventoryCache = middle::newCompCache(gameState);
 		inventoryCache->addType<components::Inventory>();
 		inventoryCache->addType<components::LoopSociety>();
+		inventoryItemCache = middle::newCompCache(gameState);
+		inventoryItemCache->addType<components::InventoryItem>();
 		grabbableCache = middle::newCompCache(gameState);
 		grabbableCache->addType<components::InventoryItem>();
 		grabbableCache->addType<components::MouseGrabbable>();
@@ -54,6 +57,19 @@ public:
 		auto activeIt = activeCheckBoxesCache->begin<components::ActiveCheckBoxTag>();
 		for (int i = 0; i < activeCheckBoxesCache->getSize(); ++i) {
 			middle::queueComponentDeletion<components::ActiveCheckBoxTag>(gameState, activeCheckBoxesCache->relevantIdVector[i]);
+		}
+	}
+
+	void changeTermAdditionTypes(middle::GameState* gameState, int newType) {
+		auto termIt = inventoryItemCache->begin<components::InventoryItem>();
+		for (int i = 0; i < inventoryItemCache->getSize(); ++i) {
+			auto* term = *termIt;
+			if (term->itemType == bubbleInventoryItemType::NEW_ADDITION_TERM) {
+				term->itemType = newType;
+			}
+			if (term->itemType == bubbleInventoryItemType::NEW_MULTIPLICATION_TERM) {
+				term->itemType = newType;
+			}
 		}
 	}
 
@@ -116,12 +132,14 @@ public:
 				if (!middle::getComponent<components::ActiveCheckBoxTag>(shape)) {
 					deactivateCheckboxes(gameState);
 					middle::queueComponentAttachment<components::ActiveCheckBoxTag>(gameState, buttonId);
+					changeTermAdditionTypes(gameState, bubbleInventoryItemType::NEW_ADDITION_TERM);
 				}
 			}
 			if (button->function == bubbleButton::SELECT_MULTIPLY) {
 				if (!middle::getComponent<components::ActiveCheckBoxTag>(shape)) {
 					deactivateCheckboxes(gameState);
 					middle::queueComponentAttachment<components::ActiveCheckBoxTag>(gameState, buttonId);
+					changeTermAdditionTypes(gameState, bubbleInventoryItemType::NEW_MULTIPLICATION_TERM);
 				}
 			}
 		}
