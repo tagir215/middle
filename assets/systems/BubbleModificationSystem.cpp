@@ -295,7 +295,6 @@ public:
 					if (gameState->gameInput.bub) {
 						inventoryAction(gameState, bubbleInventoryItemType::BUBBLIFY, middle::Id(), intersectingShape);
 					}
-
 					if (gameState->gameInput.two) {
 						inventoryAction(gameState, bubbleInventoryItemType::BREAK_2, middle::Id(), intersectingShape);
 					}

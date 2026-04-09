@@ -1240,8 +1240,12 @@ namespace bubbleActions {
 
 	void NewAdditionTerm::execute(middle::GameState* gameState)
 	{
+		middle::Id topDog = bubble::findTopDog(gameState, shapeToAddIntoId);
+		shapeToAddIntoId = topDog;
+
 		middle::Id parentId = middle::getParent(gameState, shapeToAddIntoId);
 		std::vector<middle::Id>shapesToAddIntoIds;
+
 		std::vector<middle::Id>shapesToAddIds;
 		// if no parent, add just the og shapeToAddIntoId
 		if (parentId.index == middle::UNASSIGNED) {
@@ -1289,6 +1293,9 @@ namespace bubbleActions {
 
 	void NewMultiplicationTerm::execute(middle::GameState* gameState)
 	{
+		middle::Id topDog = bubble::findTopDog(gameState, shapeToAddIntoId);
+		shapeToAddIntoId = topDog;
+
 		middle::Id parentId = middle::getParent(gameState, shapeToAddIntoId);
 		std::vector<middle::Id>shapesToAddIntoIds;
 		std::vector<middle::Id>shapesToAddIds;

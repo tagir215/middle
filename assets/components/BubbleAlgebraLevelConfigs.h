@@ -7,6 +7,7 @@
 namespace components {
 	struct BubbleAlgebraLevelConfigs : public middle::Serializable{
 		int allowedMoves = 5;
+		bool initialized = false;
 
 		void serialize(std::ostream& ostream) override;
 		void deserialize(const std::vector<std::string>& buffer, int indexOffset) override;

@@ -10,6 +10,9 @@
 #include "BubbleAlgebraProblemContainer.h"
 #include "Rectangle.h"
 #include "BubbleAlgebraLevelConfigs.h"
+#include "CameraComponent.h"
+#include "Position.h"
+
 
 class AlgebraProblemSystem : public middle::MiddleGameplaySystem {
 public:
@@ -19,6 +22,7 @@ public:
 	components::CompCache* problemCache = nullptr;
 	components::CompCache* containerCache = nullptr;
 	components::CompCache* levelCache = nullptr;
+	components::CompCache* cameraCache = nullptr;
 
 	void init(middle::GameState* gameState) {
 		cache = middle::newCompCache(gameState);
@@ -27,12 +31,14 @@ public:
 		containerCache = middle::newCompCache(gameState);
 		containerCache->addType<components::BubbleAlgebraProblemContainer>();
 		containerCache->addType<components::Position>();
-		containerCache->addType<components::Rectangle>();
 		problemCache = middle::newCompCache(gameState);
 		problemCache->addType<components::BubbleAlgebraProblem>();
 		problemCache->addType<components::Position>();
 		levelCache = middle::newCompCache(gameState);
 		levelCache->addType<components::BubbleAlgebraLevelConfigs>();
+		cameraCache = middle::newCompCache(gameState);
+		cameraCache->addType<components::CameraComponent>();
+		cameraCache->addType<components::Position>();
 	}
 
 	void undo(middle::GameState* gameState) {
@@ -50,11 +56,15 @@ public:
 		}
 	}
 
+	bool initialized = false;
+
 	void update(middle::GameState* gameState) override {
 
 		if (gameState->gameInput.undo) {
 			undo(gameState);
 		}
+
+
 
 		auto buttonIt = cache->begin<components::Button>();
 		int size = cache->getSize();
@@ -78,40 +88,45 @@ public:
 			}
 		}
 
-		if (containerCache->getSize() == 1) {
-			auto containerPosIt = containerCache->begin<components::Position>();
-			auto containerRectIt = containerCache->begin<components::Rectangle>();
-			auto containerPos = *containerPosIt;
-			auto containerRect = *containerRectIt;
 
-			const float minMargin = 40;
+		auto levelConfigsIt = levelCache->begin<components::BubbleAlgebraLevelConfigs>();
+		if (levelCache->getSize() > 0) {
+			auto configs = *levelConfigsIt;
+			if (!configs->initialized) {
 
-			components::Position* problemPos;
-			int problemIndex = -1;
-			auto posIt = problemCache->begin<components::Position>();
-			for (int i = 0; i < problemCache->getSize(); ++i) {
-				auto pos = *posIt;
-				if (pos->posX > containerPos->posX - minMargin) {
-					problemPos = pos;
-					problemIndex = i;
+				float problemCenterX = 0;
+
+				if (containerCache->getSize() == 1) {
+					auto containerPosIt = containerCache->begin<components::Position>();
+					auto containerPos = *containerPosIt;
+
+					const float minMargin = 40;
+
+					int problemIndex = -1;
+					auto posIt = problemCache->begin<components::Position>();
+					for (int i = 0; i < problemCache->getSize(); ++i) {
+						auto pos = *posIt;
+						if (pos->posX > containerPos->posX - minMargin) {
+							problemIndex = i;
+						}
+
+						problemCenterX += pos->posX;
+
+						float deltaZ = pos->posZ;
+						middle::moveShape(gameState, problemCache->relevantIdVector[i].index, { 0,0, -deltaZ });
+					}
 				}
+
+
+				problemCenterX /= 2.0f;
+				auto cameraPosIt = cameraCache->begin<components::Position>();
+				auto camPos = *cameraPosIt;
+				camPos->posX = problemCenterX;
+				configs->initialized = true;
 			}
-
-			auto& problemShape = middle::getShape(gameState, problemCache->relevantIdVector[problemIndex].index);
-
-			const float margin = 10;
-
-			// resize to match child
-			float left, right, bottom, top;
-			bubble::bubbleRectBoundingBox(gameState, problemShape.id, &left, &right, &bottom, &top);
-			containerRect->width = right - left + margin;
-			containerRect->height = top - bottom + margin;
-
-			// move to center of problem
-			containerPos->posX = left + containerRect->width * 0.5f - margin * 0.5f;
-			containerPos->posZ = bottom + containerRect->height * 0.5f - margin * 0.5f;
 		}
 	}
+
 };
 
 static middle::SystemRegistrar<AlgebraProblemSystem> reg("AlgebraProblemSystem");
