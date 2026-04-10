@@ -746,6 +746,27 @@ namespace bubbleActions {
 			}
 		}
 
+		middle::Shape& recieverShape = middle::getShape(gameState, recieverShapeId.index);
+		auto unit = middle::getComponent<components::BubbleUnit>(recieverShape);
+		if (unit) {
+			Vector3 targetPos = middle::getShapePosition(gameState, recieverShape.id.index);
+			middle::Shape bubbleProto = bubble::newBubble(gameState, targetPos);
+			auto regAction = std::make_unique<middle::EditorActionRegisterShape>(bubbleProto);
+			regAction->execute(gameState);
+			middle::Id bubbleId = regAction->newShapeId;
+			actions.push_back(std::move(regAction));
+
+			auto reparentAction = std::make_unique<middle::EditorActionReparent>(bubbleId.index, recieverShapeId.index);
+			reparentAction->execute(gameState);
+			actions.push_back(std::move(reparentAction));
+
+			auto reparentAction2 = std::make_unique<middle::EditorActionReparent>(parentId.index, bubbleId.index);
+			reparentAction2->execute(gameState);
+			actions.push_back(std::move(reparentAction2));
+
+			recieverShapeId = bubbleId;
+		}
+
 		// else create new multiplication
 		auto newMul = std::make_unique<NewMultiplication>(recieverShapeId, linkingShapeId);
 		newMul->execute(gameState);
