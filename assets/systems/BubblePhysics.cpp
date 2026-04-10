@@ -231,7 +231,7 @@ public:
 
 	}
 
-	void collectMoleculeConstraints(middle::GameState* gameState, components::CompCache* cache, std::vector<MoleculeConstraint>& constraints) {
+	void collectMoleculeConstraints(middle::GameState* gameState, components::CompCache* cache, std::vector<MoleculeConstraint>& constraints, float targetSeparation) {
 		auto mulLoopIt = cache->begin<components::LoopSociety>();
 		for (int i = 0; i < cache->getSize(); ++i) {
 			auto loop = *mulLoopIt;
@@ -256,7 +256,6 @@ public:
 				}
 				moleculeConstraint.bodies.push_back(body);
 
-				const float targetSeparation = 10;
 				if (j > 0 && childCircle) {
 					moleculeConstraint.targetDistances.push_back(prevBody.radius + targetSeparation + childCircle->radius);
 				}
@@ -427,9 +426,9 @@ public:
 
 		// COLLECT MOLECULE CONSTRAINTS
 		std::vector<MoleculeConstraint>moleculeConstraints;
-		collectMoleculeConstraints(gameState, mulCache, moleculeConstraints);
-		collectMoleculeConstraints(gameState, fractionCache, moleculeConstraints);
-		collectMoleculeConstraints(gameState, equalsCache, moleculeConstraints);
+		collectMoleculeConstraints(gameState, mulCache, moleculeConstraints, 10);
+		collectMoleculeConstraints(gameState, fractionCache, moleculeConstraints, 10);
+		collectMoleculeConstraints(gameState, equalsCache, moleculeConstraints, 30);
 
 		// CREATE COLLISION PAIRS
 

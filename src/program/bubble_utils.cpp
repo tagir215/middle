@@ -19,6 +19,7 @@
 #include "BubbleEqualsComponent.h"
 #include "Layer.h"
 #include "ExponentComponent.h"
+#include "BubbleAlgebraProblem.h"
 
 namespace bubble {
 	float unitRadius = 2;
@@ -504,7 +505,7 @@ namespace bubble {
 						result.variableValueMap[value.variableLabel] = {value.scale, 1, value.variableLabel};
 					}
 					else {
-						result.variableValueMap[value.variableLabel].scale += result.scale;
+						result.variableValueMap[value.variableLabel].scale += value.scale;
 					}
 				}
 				else {
@@ -658,7 +659,8 @@ namespace bubble {
 
 	components::AlgebraNodeType getStructureType(middle::GameState* gameState, middle::Id id) {
 		auto& shape = middle::getShape(gameState, id.index);
-		if (middle::getComponent<components::BubbleComponent>(shape)) {
+		if (middle::getComponent<components::BubbleComponent>(shape) 
+			|| middle::getComponent<components::BubbleAlgebraProblem>(shape)) {
 			return components::AlgebraNodeType::BUBBLE;
 		}
 		if (middle::getComponent<components::BubbleVariable>(shape)) {
@@ -895,6 +897,7 @@ namespace bubble {
 		middle::addComponent<components::MouseIntersectable>(equalsProto);
 		middle::addComponent<components::MouseGrabbable>(equalsProto);
 		middle::addComponent<components::MouseSelectable>(equalsProto);
+		middle::addComponent<components::LoopTag>(equalsProto);
 		middle::addComponent<components::LoopSociety>(equalsProto);
 		position->posX = targetPos.x;
 		position->posY = targetPos.y;

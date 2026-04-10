@@ -2,11 +2,13 @@
 #include "registrars.h"
 #include "editor_file_utils.h"
 #define MIDDLEINVENTORYITEM(X) \
-	X(itemType)
+	X(itemType) \
+	X(idRef)
 
 namespace components {
 	struct InventoryItem : public middle::Serializable{
 		int itemType = 0;
+		middle::Id idRef;
 
 		void serialize(std::ostream& ostream) override;
 		void deserialize(const std::vector<std::string>& buffer, int indexOffset) override;

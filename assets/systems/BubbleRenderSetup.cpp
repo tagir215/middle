@@ -197,11 +197,21 @@ public:
 			if (intersectable && intersectable->intersectingTop) {
 				fontSize *= 1.5f;
 			}
+			Color color;
+			if (unit->value == 1) {
+				color = bubbleColors::POSITIVE_UNIT;
+			}
+			else if (unit->value == -1) {
+				color = bubbleColors::NEGATIVE_UNIT;
+			}
+			else {
+				color = ORANGE;
+			}
 
 			middle::RenderItem variableText;
 			variableText.type = middle::RenderItemType::TEXT;
 			variableText.center = { pos->posX, pos->posY, pos->posZ };
-			variableText.color = bubbleColors::VARIABLE_TEXT;
+			variableText.color = color;
 			variableText.text = variable->label;
 			variableText.fontSize = fontSize;
 			variableText.disableDepthTest = isUiItem;
