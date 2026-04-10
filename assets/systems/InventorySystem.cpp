@@ -45,6 +45,9 @@ public:
 			for (middle::Id id : loop->loopMemberIds) {
 				auto& shape = middle::getShape(gameState, id.index);
 				auto item = middle::getComponent<components::InventoryItem>(shape);
+				if (!item) {
+					continue;
+				}
 				if (item->idRef.index != middle::UNASSIGNED) {
 					Vector3 pos = middle::getShapePosition(gameState, item->idRef.index);
 					Vector3 currPos = middle::getShapePosition(gameState, id.index);

@@ -17,6 +17,8 @@
 #include "UiComponent.h"
 #include "BubbleAlgebraLevelConfigs.h"
 #include "RuntimeHiddenTag.h"
+#include "BubbleAlgebraProblem.h"
+#include "Layer.h"
 
 class BubbleModificationSystem : public middle::MiddleGameplaySystem {
 public:
@@ -125,6 +127,18 @@ public:
 
 
 	void inventoryAction(middle::GameState* gameState, int actionType, middle::Id& refId, middle::Shape& intersectedShape) {
+
+		// check that it has a top dog and check that the top dog is editable problem
+		middle::Id algebraProblemId = bubble::findAlgebraProblem(gameState, intersectedShape.id);
+		if (algebraProblemId.index == middle::UNASSIGNED) {
+			return;
+		}
+		auto& algebraProblemShape = middle::getShape(gameState, algebraProblemId.index);
+		auto algebraProblem = middle::getComponent < components::BubbleAlgebraProblem>(algebraProblemShape);
+		if (!algebraProblem->editable) {
+			return;
+		}
+
 		std::shared_ptr<middle::EditorActionContainer>action;
 
 		if (actionType == bubbleInventoryItemType::NEW_ADDITION_TERM) {
@@ -346,9 +360,11 @@ public:
 			if (!middle::isShapeAlive(gameState, ref->idRef.index) && !hotKeyPressed) {
 				return;
 			}
-			auto& refShape = middle::getShape(gameState, ref->idRef.index);
-			middle::Id refParentId = middle::getParent(gameState, refShape.id);
-			assert(refShape.id.index != middle::UNASSIGNED);
+			auto& deletionsRefShape = middle::getShape(gameState, ref->idRef.index);
+			middle::Id refParentId = middle::getParent(gameState, deletionsRefShape.id);
+			assert(deletionsRefShape.id.index != middle::UNASSIGNED);
+			auto deletionsRefShapeLayer = middle::getComponent<components::Layer>(deletionsRefShape);
+			bool shapeForDeletionIsInventoryItem = middle::getComponent<components::InventoryItem>(shapeForDeletion);
 
 
 			auto intersectableIt = intersectableCache->begin<components::MouseIntersectable>();
@@ -367,34 +383,38 @@ public:
 					}
 				}
 
-				if (!bubble::isIntersecting(gameState, intersectableShape)) {
+				if (!intersectable->intersecting) {
+					continue;
+				}
+				auto intersectingLayer = middle::getComponent<components::Layer>(intersectableShape);
+				if (intersectingLayer->layer != deletionsRefShapeLayer->layer && !shapeForDeletionIsInventoryItem) {
 					continue;
 				}
 
 				// if referencing itself, it can only be power
-				if (refShape.id == intersectableShape.id) {
-					tryPower(gameState, refShape);
+				if (deletionsRefShape.id == intersectableShape.id) {
+					tryPower(gameState, deletionsRefShape);
 					continue;
 				}
 
 				// skip shapefordeletion (the copy being dragged) and ref shape (shape its copy is pointing to)
-				if (shapeForDeletion.id == intersectableShape.id || intersectableShape.id == refShape.id) {
+				if (shapeForDeletion.id == intersectableShape.id || intersectableShape.id == deletionsRefShape.id) {
 					continue;
 				}
 
 				if (parentId.index != middle::UNASSIGNED && parentId == refParentId) {
 					auto& refParent = middle::getShape(gameState, refParentId.index);
-					tryCombine(gameState, refParent, refShape, intersectableShape);
+					tryCombine(gameState, refParent, deletionsRefShape, intersectableShape);
 					continue;
 				}
 
 				auto variableComp = middle::getComponent<components::BubbleVariable>(intersectableShape);
-				auto topDogComp = middle::getComponent<components::TopDogBubbleTag>(refShape);
+				auto topDogComp = middle::getComponent<components::TopDogBubbleTag>(deletionsRefShape);
 				if (variableComp && topDogComp) {
-					insert(gameState, intersectableShape, refShape);
+					insert(gameState, intersectableShape, deletionsRefShape);
 				}
 
-				auto inventoryItem = middle::getComponent<components::InventoryItem>(refShape);
+				auto inventoryItem = middle::getComponent<components::InventoryItem>(deletionsRefShape);
 				if (inventoryItem) {
 					inventoryAction(gameState, inventoryItem->itemType, ref->idRef, intersectableShape);
 					break;

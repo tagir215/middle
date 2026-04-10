@@ -716,6 +716,9 @@ namespace bubble {
 		while (parents.size() > 0) {
 			middle::Id currentId = parents.top();
 			parents.pop();
+			if (currentId.index == middle::UNASSIGNED) {
+				return middle::Id();
+			}
 			auto& parentShape = middle::getShape(gameState, currentId.index);
 			if (middle::getComponent<components::TopDogBubbleTag>(parentShape)) {
 				return parentShape.id;
@@ -725,6 +728,26 @@ namespace bubble {
 		}
 		assert(false && "top dog not found");
 	}
+
+	middle::Id findAlgebraProblem(middle::GameState* gameState, middle::Id id) {
+		std::stack < middle::Id> parents;
+		parents.push(id);
+		while (parents.size() > 0) {
+			middle::Id currentId = parents.top();
+			parents.pop();
+			if (currentId.index == middle::UNASSIGNED) {
+				return middle::Id();
+			}
+			auto& parentShape = middle::getShape(gameState, currentId.index);
+			if (middle::getComponent<components::BubbleAlgebraProblem>(parentShape)) {
+				return parentShape.id;
+			}
+			middle::Id parentId = middle::getParent(gameState, currentId);
+			parents.push(parentId);
+		}
+		assert(false && "top dog not found");
+	}
+
 
 	bool isBubbleWithValueOne(middle::GameState* gameState, middle::Id id)
 	{
