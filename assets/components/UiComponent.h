@@ -30,4 +30,6 @@ namespace UiElementTypes {
 	static int POSITIVE_NEGATIVE_CHECK_BOX = 5;
 	static int INVERSE_CHECK_BOX = 6;
 	static int UNIT_TYPE_INDICATOR = 7;
+	static int PROCEDURE_RECT = 8;
+	static int PROCEDURE_INPUT = 9;
 }

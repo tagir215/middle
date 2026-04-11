@@ -96,6 +96,10 @@ public:
 			if (uiComp->type == UiElementTypes::UI_BACKGROUND) {
 				backgroundColor = bubbleColors::UI_BACKGROUND;
 			}
+			if (uiComp->type == UiElementTypes::PROCEDURE_RECT) {
+				color = bubbleColors::PROCEDURE_RECT;
+				backgroundColor = bubbleColors::PROCEDURE_BACKGROUND;
+			}
 
 			middle::RenderItem rectItem;
 			rectItem.type = middle::RenderItemType::RECTANGLE;
@@ -125,6 +129,9 @@ public:
 			auto intersectable = middle::getComponent<components::MouseIntersectable>(shape);
 			bool intersecting = intersectable && intersectable->intersectingTop;
 			Color color = intersecting ? bubbleColors::HOVERED_ITEM : bubbleColors::UI_BUTTON;
+			if (uiComp->type == UiElementTypes::PROCEDURE_INPUT) {
+				color = bubbleColors::PROCEDURE_RECT;
+			}
 			middle::RenderItem circleItem;
 			circleItem.type = middle::RenderItemType::CIRCLE;
 			circleItem.color = color;
@@ -159,6 +166,7 @@ public:
 			textItem.color.b = text->fontColorB;
 			textItem.color.a = text->fontColorA;
 			textItem.fontSize = text->fontSize;
+			textItem.disableDepthTest = true;
 			gameState->renderData.push_back(textItem);
 		}
 

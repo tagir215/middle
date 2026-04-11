@@ -25,6 +25,7 @@
 #include "Circle.h"
 #include "ProcedureInputVariable.h"
 #include "bubble_colors.h"
+#include "ProcedureComponent.h"
 
 
 
@@ -32,11 +33,11 @@ class ProcedureUiSystem : public middle::MiddleGameplaySystem {
 public:
 
 	components::CompCache* buttonCache;
-	components::CompCache* procedureCache;
+	components::CompCache* procedureContainerCache;
 	components::CompCache* procedureUseCache;
 	components::CompCache* procedureImportContainerCache;
 	components::CompCache* inputCache;
-	std::vector<std::string>procedureNames;
+	components::CompCache* procedureCodeCache;
 
 	Color highlightColor = bubbleColors::HOVERED_ITEM;
 	Color highlightColor2 = bubbleColors::PROCEDURE_SELECTED;
@@ -46,8 +47,10 @@ public:
 		buttonCache->addType<components::Button>();
 		buttonCache->addType<components::MouseClickComponent>();
 		buttonCache->addType<components::Text>();
-		procedureCache = middle::newCompCache(gameState);
-		procedureCache->addType<components::ProcedureContainer>();
+		procedureContainerCache = middle::newCompCache(gameState);
+		procedureContainerCache->addType<components::ProcedureContainer>();
+		procedureCodeCache = middle::newCompCache(gameState);
+		procedureCodeCache->addType<components::ProcedureComponent>();
 		procedureUseCache = middle::newCompCache(gameState);
 		procedureUseCache->addType<components::ProcedureUseUiTag>();
 		procedureUseCache->addType<components::LoopSociety>();
@@ -61,12 +64,16 @@ public:
 
 	void update(middle::GameState* gameState) override {
 
-		auto procedureIt = procedureCache->begin<components::ProcedureContainer>();
+		auto procedureIt = procedureContainerCache->begin<components::ProcedureContainer>();
+		middle::Id procContainerId;
+		components::ProcedureContainer* procContainer = nullptr;
+		if (procedureContainerCache->getSize() == 1) {
+			procContainerId = procedureContainerCache->relevantIdVector[0];
+			procContainer = *procedureIt;
+		}
 		middle::Id procId;
-		components::ProcedureContainer* procComp = nullptr;
-		if (procedureCache->getSize() == 1) {
-			procId = procedureCache->relevantIdVector[0];
-			procComp = *procedureIt;
+		if (procedureCodeCache->getSize() == 1) {
+			procId = procedureCodeCache->relevantIdVector[0];
 		}
 
 		// buttons
@@ -76,9 +83,16 @@ public:
 		for (int i = 0; i < buttonCache->getSize(); ++i) {
 			auto button = *buttonIt;
 			auto text = *buttonTextIt;
-			if (button->function == bubbleButton::SAVE_BUTTON) {
-				middle::saveShape(gameState, procId, "../bubbleData/procedures/", text->text);
+
+			const float scrollSpeed = 50;
+			if (button->function == bubbleButton::SCROLL_UP) {
+				middle::moveShape(gameState, procId.index, { 0,0, -scrollSpeed });
 			}
+			if (button->function == bubbleButton::SCROLL_DOWN) {
+				middle::moveShape(gameState, procId.index, { 0,0, scrollSpeed });
+			}
+
+
 			if (button->function == bubbleButton::IMPORT_PROCEDURE) {
 				std::string folder = "../bubbleData/procedures/";
 				std::string shapeName = text->text;
@@ -131,17 +145,17 @@ public:
 				}
 
 
-				procComp = nullptr;
+				procContainer = nullptr;
 
 			}
 
 		}
 
-		if (procedureCache->getSize() > 0) {
+		if (procedureContainerCache->getSize() > 0) {
 			// execution iterator rendering
-			bool procedureInAction = procComp->procedureTransitionStack.size() > 0;
-			if (procComp && procComp->activeBlock.index != middle::UNASSIGNED && procedureInAction) {
-				auto& activeBlockShape = middle::getShape(gameState, procComp->activeBlock.index);
+			bool procedureInAction = procContainer->procedureTransitionStack.size() > 0;
+			if (procContainer && procContainer->activeBlock.index != middle::UNASSIGNED && procedureInAction) {
+				auto& activeBlockShape = middle::getShape(gameState, procContainer->activeBlock.index);
 				Vector3 position = middle::getShapePosition(gameState, activeBlockShape.id.index);
 				auto rect = middle::getComponent<components::Rectangle>(activeBlockShape);
 				middle::RenderItem activeBlockItem;
@@ -157,6 +171,10 @@ public:
 
 		for (int i = 0; i < procedureUseCache->getSize(); ++i) {
 			middle::Id procUiId = procedureUseCache->relevantIdVector[i];
+			std::vector<middle::Id>procUiBlocks;
+			middle::getChildren(gameState, procUiId, procUiBlocks);
+
+			auto& procedureNames = gameState->bubbleAlgebraState.procedureNames;
 			if (procedureNames.size() == 0) {
 				procedureNames = middle::loadFileNamesInFolder("../bubbleData/procedures");
 				for (int j = 0; j < procedureNames.size(); ++j) {
@@ -164,19 +182,25 @@ public:
 					middle::addComponent<components::UiComponent>(shape);
 					middle::addComponent<components::MouseIntersectable>(shape);
 					middle::addComponent<components::Position>(shape);
-					middle::addComponent<components::InventoryItem>(shape);
+					middle::addComponent<components::LoopTag>(shape);
 					middle::addComponent<components::LoopSociety>(shape);
 					auto sphere = middle::addComponent<components::Sphere>(shape);
+					auto inventoryItem = middle::addComponent<components::InventoryItem>(shape);
 					sphere->radius = middle::DEF_RADIUS;
 					auto text = middle::addComponent<components::Text>(shape);
 					auto button = middle::addComponent<components::Button>(shape);
 					auto rectangle = middle::addComponent<components::Rectangle>(shape);
+					text->fontColorA = 255;
+					text->fontColorB = 255;
 					text->text = procedureNames[j];
 					rectangle->width = 100;
 					rectangle->height = 50;
-					button->function = bubbleButton::IMPORT_PROCEDURE;
-					middle::Shape& registeredShape = middle::registerAsGhostShape(gameState, shape);
-					middle::queueAction(gameState, std::make_shared<middle::EditorActionReparent>(procUiId.index, registeredShape.id.index));
+					// set to reference proc block in ui
+					if(procUiBlocks.size() > i){
+						inventoryItem->idRef = procUiBlocks[i];
+						button->function = bubbleButton::IMPORT_PROCEDURE;
+						middle::Shape& registeredShape = middle::registerAsGhostShape(gameState, shape);
+					}
 				}
 			}
 		}

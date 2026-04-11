@@ -62,6 +62,7 @@ int main(void)
 {
 	// Initialization
 	//--------------------------------------------------------------------------------------
+	// todo 
 	const int screenWidth = 1400;
 	const int screenHeight = 800;
 
@@ -104,6 +105,8 @@ int main(void)
 
 	// TODO move somewhere
 	gameState->globalFont = LoadFontEx("../assets/fonts/Libertinus_Math/LibertinusMath-Regular.ttf", gameState->fontUnitFactor, NULL, 0);
+	GenTextureMipmaps(&gameState->globalFont.texture);
+	SetTextureFilter(gameState->globalFont.texture, TEXTURE_FILTER_TRILINEAR);
 
 	// Main game loop
 	while (!WindowShouldClose())    // Detect window close button or ESC key

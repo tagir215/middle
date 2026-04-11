@@ -28,9 +28,9 @@ SystemReference
 s  UiRenderSetup
 __q  1_0
 CameraComponent
-f  127.030045
-f  9567.974609
-f  -70.675903
+f  97.305557
+f  9537.633789
+f  -27.104267
 f  0.000000
 f  0.000000
 f  1.000000
@@ -38,9 +38,9 @@ f  45.000000
 i  0
 b  1
 Position
-f  127.030045
-f  -432.025055
-f  -70.675903
+f  97.305557
+f  -462.366394
+f  -27.104267
 MouseGrabbable
 LoopSociety
 q  -1_0
@@ -506,11 +506,9 @@ f  18.000000
 f  0.000000
 f  -18.000000
 MouseGrabbable
-Circle
-f  20.000000
 MouseSelectable
 Text
-s  PROBLEM 9
+s  PROCEDURE1
 f  0.000000
 f  0.000000
 f  0.000000
@@ -523,10 +521,13 @@ b  1
 Button
 i  -1
 LevelReference
-s  Problem9
+s  PROCEDURE1
 b  0
 GridElement
 Node
+Rectangle
+f  40.000000
+f  40.000000
 __q  19_0
 LoopSociety
 q  -1_0

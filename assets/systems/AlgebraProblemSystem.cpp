@@ -12,6 +12,7 @@
 #include "BubbleAlgebraLevelConfigs.h"
 #include "CameraComponent.h"
 #include "Position.h"
+#include "ProcedureContainer.h"
 
 
 class AlgebraProblemSystem : public middle::MiddleGameplaySystem {
@@ -23,6 +24,7 @@ public:
 	components::CompCache* containerCache = nullptr;
 	components::CompCache* levelCache = nullptr;
 	components::CompCache* cameraCache = nullptr;
+	components::CompCache* procContainerCache = nullptr;
 
 	void init(middle::GameState* gameState) {
 		cache = middle::newCompCache(gameState);
@@ -39,6 +41,8 @@ public:
 		cameraCache = middle::newCompCache(gameState);
 		cameraCache->addType<components::CameraComponent>();
 		cameraCache->addType<components::Position>();
+		procContainerCache = middle::newCompCache(gameState);
+		procContainerCache->addType<components::ProcedureContainer>();
 	}
 
 	void undo(middle::GameState* gameState) {
@@ -64,13 +68,18 @@ public:
 			undo(gameState);
 		}
 
+		auto procedureIt = procContainerCache->begin<components::ProcedureContainer>();
+		middle::Id procContainerId;
+		if (procContainerCache->getSize() == 1) {
+			procContainerId = procContainerCache->relevantIdVector[0];
+		}
 
 
 		auto buttonIt = cache->begin<components::Button>();
 		int size = cache->getSize();
 		for (int i = 0; i < size; ++i) {
 			auto button = *buttonIt;
-			if (button->function == bubbleButton::DONE) {
+			if (button->function == bubbleButton::DONE || button->function == bubbleButton::SAVE_PROCEDURE_BUTTON) {
 				std::vector<middle::Id> formulas;
 				assert(problemCache->getSize() == 2);
 				middle::Id& formulaA = problemCache->relevantIdVector[0];
@@ -81,8 +90,21 @@ public:
 					middle::loadShape(gameState, "../assets/shapes/", "ScoreScreen", true);
 					gameState->bubbleAlgebraState.justCompletedLevel = true;
 					gameState->bubbleAlgebraState.completedLevelName = gameState->activeSceneName;
+
+					if (button->function == bubbleButton::SAVE_PROCEDURE_BUTTON) {
+						auto& procShape = middle::getShape(gameState, procContainerId.index);
+						auto text = middle::getComponent<components::Text>(procShape);
+
+						auto levelConfigsIt = levelCache->begin<components::BubbleAlgebraLevelConfigs>();
+						auto configsComp = *levelConfigsIt;
+						assert(configsComp);
+						middle::saveShape(gameState, procContainerId, "../bubbleData/procedures/", configsComp->levelName);
+
+					}
 				}
 			}
+
+
 			if (button->function == bubbleButton::UNDO) {
 				undo(gameState);
 			}

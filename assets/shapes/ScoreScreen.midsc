@@ -1,24 +1,23 @@
 __q  74_0
 MouseIntersectable
 MouseSelectable
-UiNode
 LoopTag
-Offset
-f  0.000000
-f  -500.000000
-f  0.000000
+UiNode
 LoopSociety
 q  -1_0
 p  
 q  75_0
 q  80_0
-q  81_0
 q  82_0
+Offset
+f  0.000000
+f  -500.000000
+f  0.000000
+MouseGrabbable
 Position
 f  0.000000
 f  0.000000
 f  0.000000
-MouseGrabbable
 Text
 s  ScoreScreen
 f  0.000000
@@ -31,24 +30,24 @@ f  0.000000
 f  10.000000
 b  1
 __q  82_0
-MouseGrabbable
 Position
-f  -7.520508
-f  -0.000004
-f  63.402832
+f  -6.592407
+f  0.000000
+f  9.219025
+MouseGrabbable
 MouseSelectable
-Sphere
-f  2.000000
 LoopSociety
 q  74_0
 p  
+Sphere
+f  2.000000
 MouseIntersectable
 Text
 s  SOLVED!
 f  0.000000
+f  255.000000
 f  0.000000
-f  0.000000
-f  0.000000
+f  255.000000
 f  0.000000
 f  0.000000
 f  0.000000
@@ -70,59 +69,19 @@ f  0.000000
 b  0
 UiComponent
 i  -1
-__q  81_0
-MouseGrabbable
-Position
-f  -10.933960
-f  0.000032
-f  24.805054
-MouseSelectable
-Sphere
-f  2.000000
-LoopSociety
-q  74_0
-p  
-MouseIntersectable
-PhysicsData
-f  1.000000
-f  1.000000
-f  1.000000
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.800000
-f  0.800000
-f  0.800000
-f  0.000000
-f  0.000000
-f  0.000000
-b  0
-Text
-s  SCORE 100/100
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-f  20.000000
-b  1
-UiComponent
-i  -1
 __q  80_0
-MouseGrabbable
 Position
 f  -9.583923
-f  0.000126
+f  0.000122
 f  9.074829
-UiComponent
-i  -1
-Sphere
-f  2.000000
+MouseGrabbable
 LoopSociety
 q  74_0
 p  
+Sphere
+f  2.000000
+UiComponent
+i  1
 MouseSelectable
 MouseIntersectable
 Rectangle
@@ -131,28 +90,28 @@ f  200.000000
 Layer
 i  1
 __q  75_0
+Position
+f  99.452026
+f  -0.000122
+f  -52.909760
+MouseGrabbable
 Circle
-f  20.000000
+f  30.000000
 MouseIntersectable
 Button
 i  8
-MouseGrabbable
-Position
-f  99.452148
-f  -0.000122
-f  -52.909729
 MouseSelectable
-Sphere
-f  2.000000
 LoopSociety
 q  74_0
 p  
+Sphere
+f  2.000000
 Text
 s  CONTINUE
 f  0.000000
+f  255.000000
 f  0.000000
-f  0.000000
-f  0.000000
+f  255.000000
 f  0.000000
 f  0.000000
 f  0.000000

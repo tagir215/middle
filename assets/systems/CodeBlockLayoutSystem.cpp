@@ -231,6 +231,7 @@ public:
 				auto pos = middle::getComponent<components::Position>(childShape);
 				auto offset = middle::getComponent<components::Offset>(childShape);
 				pos->posX = targetX + childRect->width * 0.5f;
+				pos->posY = codeBlockPos.y;
 				pos->posZ = targetZ;
 			}
 		}

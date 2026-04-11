@@ -223,6 +223,26 @@ namespace RendererSystem {
 		EndMode3D();
 	}
 
+	void drawText(middle::GameState* gameState, bool uiText) {
+		for (int i = 0; i < gameState->renderData.size(); ++i) {
+			middle::RenderItem item = gameState->renderData[i];
+			if (item.disableDepthTest != uiText) {
+				continue;
+			}
+			if (item.type == middle::RenderItemType::TEXT) {
+				Vector2 pos = GetWorldToScreen(item.center, gameState->activeCamera);
+				const int spacing = 1;
+				float distFactor = 1.0f / Vector3Distance(gameState->activeCamera.position, item.center);
+				float fontSize = item.fontSize * gameState->fontUnitFactor * distFactor;
+				Vector2 size = MeasureTextEx(gameState->globalFont, item.text.c_str(), fontSize, spacing);
+				float offsetX = -size.x * 0.5f;
+				float offsetY = -size.y * 0.5f;
+				pos += {offsetX, offsetY};
+				DrawTextEx(gameState->globalFont, item.text.c_str(), pos, fontSize, spacing, item.color);
+			}
+		}
+	}
+
 	class RendererSystem : public middle::MiddleGameplaySystem {
 	public:
 		void init(middle::GameState* gameState) {
@@ -241,6 +261,8 @@ namespace RendererSystem {
 			draw3D(gameState, false);
 			EndMode3D();
 
+			drawText(gameState, false);
+
 			int maxLayers = 7;
 			for (int i = 0; i < maxLayers; ++i) {
 				BeginMode3D(camera);
@@ -250,21 +272,7 @@ namespace RendererSystem {
 				EndMode3D();
 			}
 
-
-			for (int i = 0; i < gameState->renderData.size(); ++i) {
-				middle::RenderItem item = gameState->renderData[i];
-				if (item.type == middle::RenderItemType::TEXT) {
-					Vector2 pos = GetWorldToScreen(item.center, camera);
-					const int spacing = 1;
-					float distFactor = 1.0f / Vector3Distance(camera.position, item.center);
-					float fontSize = item.fontSize * gameState->fontUnitFactor * distFactor;
-					Vector2 size = MeasureTextEx(gameState->globalFont, item.text.c_str(), fontSize, spacing);
-					float offsetX = - size.x * 0.5f;
-					float offsetY = -size.y * 0.5f;
-					pos += {offsetX, offsetY};
-					DrawTextEx(gameState->globalFont, item.text.c_str(), pos, fontSize, spacing, item.color);
-				}
-			}
+			drawText(gameState, true);
 
 			Vector3 center = { 0,0,0 };
 			Vector2 center2d = GetWorldToScreen(center, camera);

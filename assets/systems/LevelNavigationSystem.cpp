@@ -42,6 +42,7 @@ public:
 					middle::resetScene(gameState);
 					middle::loadScene(gameState, "../assets/scenes/", name, false);
 					gameState->activeSceneName = name;
+					gameState->bubbleAlgebraState.procedureNames.clear();
 				}));
 		}
 

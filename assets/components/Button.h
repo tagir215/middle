@@ -24,8 +24,8 @@ namespace components {
 
 
 namespace bubbleButton{
-    inline int SAVE_BUTTON = 0;
-    inline int LOAD_BUTTON = 1;
+    inline int SAVE_PROCEDURE_BUTTON = 0;
+    inline int LOAD_PROCEDURE_BUTTON = 1;
     inline int START_PROCEDURE_BUTTON = 2;
     inline int STEP_FORWARD = 3;
     inline int STEP_BACKWARD = 4;
@@ -42,5 +42,7 @@ namespace bubbleButton{
 	inline int SELECT_INVERSE = 15;
 	inline int NEXT_UNIT = 16;
 	inline int PREV_UNIT = 17;
+	inline int SCROLL_UP = 18;
+	inline int SCROLL_DOWN = 19;
 }
 

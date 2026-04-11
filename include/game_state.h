@@ -126,6 +126,7 @@ namespace middle {
 		std::vector<std::shared_ptr<middle::EditorActionContainer>>bubbleActions;
 		bool justCompletedLevel = false;
 		std::string completedLevelName;
+		std::vector<std::string>procedureNames;
 	};
 
 	struct ModelContainer {
