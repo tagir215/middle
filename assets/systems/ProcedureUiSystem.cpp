@@ -193,10 +193,11 @@ public:
 					text->fontColorA = 255;
 					text->fontColorB = 255;
 					text->text = procedureNames[j];
+					text->fontSize = 15;
 					rectangle->width = 100;
 					rectangle->height = 50;
 					// set to reference proc block in ui
-					if(procUiBlocks.size() > i){
+					if(procUiBlocks.size() > i) {
 						inventoryItem->idRef = procUiBlocks[i];
 						button->function = bubbleButton::IMPORT_PROCEDURE;
 						middle::Shape& registeredShape = middle::registerAsGhostShape(gameState, shape);

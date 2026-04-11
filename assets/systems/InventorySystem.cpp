@@ -13,7 +13,7 @@
 class InventorySystem : public middle::MiddleGameplaySystem {
 
 public:
-	components::CompCache* inventoryCache;
+	components::CompCache* inventoryItemCache;
 	components::CompCache* inventoryRectCache;
 
 	InventorySystem() {
@@ -25,10 +25,8 @@ public:
 		inventoryRectCache->addType<components::Inventory>();
 		inventoryRectCache->addType<components::LoopSociety>();
 		inventoryRectCache->addType<components::Rectangle>();
-		inventoryCache = middle::newCompCache(gameState);
-		inventoryCache->addType<components::Inventory>();
-		inventoryCache->addType<components::LoopSociety>();
-		inventoryCache->addType<components::Rectangle>(components::NOTINTERESTED);
+		inventoryItemCache = middle::newCompCache(gameState);
+		inventoryItemCache->addType<components::InventoryItem>();
 	}
 
 
@@ -36,23 +34,15 @@ public:
 
 	void update(middle::GameState* gameState) override {
 
-		auto inventoryIt = inventoryCache->begin<components::Inventory>();
-		auto inventoryLoopIt = inventoryCache->begin<components::LoopSociety>();
-		for (int i = 0; i < inventoryCache->getSize(); ++i) {
-			auto inventory = *inventoryIt;
-			auto loop = *inventoryLoopIt;
+		auto inventoryItemIt = inventoryItemCache->begin<components::InventoryItem>();
+		for (int i = 0; i < inventoryItemCache->getSize(); ++i) {
+			auto item = *inventoryItemIt;
+			middle::Id id = inventoryItemCache->relevantIdVector[i];
 
-			for (middle::Id id : loop->loopMemberIds) {
-				auto& shape = middle::getShape(gameState, id.index);
-				auto item = middle::getComponent<components::InventoryItem>(shape);
-				if (!item) {
-					continue;
-				}
-				if (item->idRef.index != middle::UNASSIGNED) {
-					Vector3 pos = middle::getShapePosition(gameState, item->idRef.index);
-					Vector3 currPos = middle::getShapePosition(gameState, id.index);
-					middle::moveShape(gameState, id.index, pos - currPos);
-				}
+			if (item->idRef.index != middle::UNASSIGNED) {
+				Vector3 pos = middle::getShapePosition(gameState, item->idRef.index);
+				Vector3 currPos = middle::getShapePosition(gameState, id.index);
+				middle::moveShape(gameState, id.index, pos - currPos);
 			}
 		}
 
