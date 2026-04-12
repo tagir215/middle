@@ -502,13 +502,6 @@ namespace bubble {
 			return unitEquals(gameState, bubbleId, algebraNodeId);
 		}
 
-		// uhh hmm
-		if (varOverrides.size() == 0) {
-			// if node is bubble with single variable, bubble can be anything
-			if (!isBubbleWithSingleVariable(gameState, bubbleId) && isBubbleWithSingleVariable(gameState, algebraNodeId)) {
-				return true;
-			}
-		}
 
 		// if node type is variable and bubble is variable return true if both have same label, otherwise if algebra node is variable bubble can be anything
 		if (algebraNodeType == components::AlgebraNodeType::VARIABLE) {
@@ -586,6 +579,9 @@ namespace bubble {
 
 
 	std::unordered_map<std::string, middle::Id> generateVariableOverrides(middle::GameState* gameState, middle::Id bubbleId, middle::Id algebraRootNodeId) {
+		std::unordered_map<std::string, middle::Id> resultMap;
+		return resultMap;
+
 		std::unordered_map<std::string, std::vector<middle::Id>> varMap;
 		getVariableStructuresMap(gameState, algebraRootNodeId, varMap);
 		std::vector<middle::Id>uniqueSetOfMatchingStructures;
@@ -598,7 +594,6 @@ namespace bubble {
 		}
 		assert(uniqueSetOfMatchingStructures.size() <= varMap.size());
 
-		std::unordered_map<std::string, middle::Id> resultMap;
 		int index = 0;
 		for (auto& pair : varMap) {
 			auto& variableLabel = pair.first;
@@ -813,12 +808,12 @@ namespace bubble {
 
 	components::AlgebraNodeType getStructureType(middle::GameState* gameState, middle::Id id) {
 		auto& shape = middle::getShape(gameState, id.index);
+		if (middle::getComponent<components::BubbleVariable>(shape)) {
+			return components::AlgebraNodeType::VARIABLE;
+		}
 		if (middle::getComponent<components::BubbleComponent>(shape)
 			|| middle::getComponent<components::BubbleAlgebraProblem>(shape)) {
 			return components::AlgebraNodeType::BUBBLE;
-		}
-		if (middle::getComponent<components::BubbleVariable>(shape)) {
-			return components::AlgebraNodeType::VARIABLE;
 		}
 		if (middle::getComponent<components::BubbleUnit>(shape)) {
 			return components::AlgebraNodeType::UNIT;
@@ -852,14 +847,14 @@ namespace bubble {
 			if (middle::getComponent<components::InputVariable>(parentShape)) {
 				return depth - 1;
 			}
-
-			++depth;
-
 			middle::Id parentId = middle::getParent(gameState, currentId);
-
 			if (parentId.index == middle::UNASSIGNED) {
 				return depth;
 			}
+
+			++depth;
+
+
 
 			parents.push(parentId);
 		}
@@ -990,11 +985,15 @@ namespace bubble {
 				middle::addComponent<components::LoopSociety>(nodeShapeProto);
 				node->type = static_cast<int>(getStructureType(gameState, realChildId));
 				middle::Shape& nodeShape = middle::registerShape(gameState, nodeShapeProto);
+				if (node->type == static_cast<int>(components::AlgebraNodeType::VARIABLE)) {
+					auto varComp = middle::getComponent<components::BubbleVariable>(realChildShape);
+					node->value = varComp->isNegative ? -1 : 1;
+					node->variableLabel = varComp->label;
+				}
 
-				if (node->type == static_cast<int>(components::AlgebraNodeType::UNIT) || node->type == static_cast<int>(components::AlgebraNodeType::VARIABLE)) {
+				if (node->type == static_cast<int>(components::AlgebraNodeType::UNIT)) {
 					UnitValue value = unitValue(gameState, realChildId);
 					node->value = value.scale;
-					node->variableLabel = value.variableLabel;
 				}
 
 				// refresh pointer
