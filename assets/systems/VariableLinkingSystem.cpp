@@ -84,9 +84,6 @@ public:
 			// update structure, unless inputting it during normal level
 			if (procContainer->editMode) {
 				middle::Id structureId = bubble::bubbleToStructure(gameState, shape.id);
-				auto& structShape = middle::getShape(gameState, structureId.index);
-				auto idk = middle::getComponent<components::AlgebraNode>(structShape);
-
 				// reparent algebra node to input, for automatic deletion and serialization
 				middle::queueAction(gameState, std::make_shared<middle::EditorActionReparent>(ogShape.id.index, structureId.index));
 				ogInput->structureId = structureId;
@@ -96,18 +93,13 @@ public:
 			}
 
 			// if its procedre input update unit ref here, and set proc container to point to the ref
-			if(grabbedProcedureInput){
-				if (bubble::matchesStructureWithVariables(gameState, shape.id, ogInput->structureId)) {
-					ogInput->unitRef = shape.id;
-					procContainer->bubbleRef = shape.id;
-					procContainer->variableOverrides = bubble::generateVariableOverrides(gameState, shape.id, ogInput->structureId);
+			if (grabbedProcedureInput) {
+				ogInput->unitRef = shape.id;
+				procContainer->bubbleRef = shape.id;
+				procContainer->variableOverrides = bubble::generateVariableOverrides(gameState, shape.id, ogInput->structureId);
 
-					if (!highlighted) {
-						middle::queueComponentAttachment<components::Highlight>(gameState, ogShape.id);
-					}
-				}
-				else {
-					// TODO PRINT NOT MATCHING ERROR
+				if (!highlighted) {
+					middle::queueComponentAttachment<components::Highlight>(gameState, ogShape.id);
 				}
 			}
 

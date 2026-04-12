@@ -551,6 +551,28 @@ namespace bubble {
 		return false;
 	}
 
+	void findMembersAtDepth(middle::GameState* gameState, middle::Id containerId, int targetDepth, std::vector<middle::Id>& results) {
+		std::queue<middle::Id>idQueue;
+		std::queue<int>depthQueue;
+		idQueue.push(containerId);
+		depthQueue.push(0);
+		while (idQueue.size() > 0) {
+			middle::Id currentId = idQueue.front();
+			idQueue.pop();
+			int currentDepth = depthQueue.front();
+			depthQueue.pop();
+			if (currentDepth == targetDepth) {
+				results.push_back(currentId);
+			}
+			auto& shape = middle::getShape(gameState, currentId.index);
+			std::vector<middle::Id>children;
+			middle::getChildren(gameState, shape.id, children);
+			for (middle::Id& id : children) {
+				idQueue.push(id);
+				depthQueue.push(currentDepth + 1);
+			}
+		}
+	}
 
 
 	bool appendBubbleAsStrcuctureIfNotExisting(middle::GameState* gameState, middle::Id idToAppend, std::vector<middle::Id>& list) {
@@ -567,20 +589,16 @@ namespace bubble {
 		std::set<int>ignoreSet;
 		std::unordered_map<std::string, middle::Id> overrides;
 		int depth = findDepth(gameState, structureId);
-		while (true) {
-			middle::Id matchingId = findMatchingBubbleWithVariables(gameState, containerId, structureId, depth, overrides, ignoreSet);
-			if (matchingId.index == middle::UNASSIGNED) {
-				break;
-			}
-			appendBubbleAsStrcuctureIfNotExisting(gameState, matchingId, results);
-			ignoreSet.insert(matchingId.index);
+		std::vector<middle::Id> idsAtDepth;
+		findMembersAtDepth(gameState, containerId, depth, idsAtDepth);
+		for (middle::Id id : idsAtDepth) {
+			appendBubbleAsStrcuctureIfNotExisting(gameState, id, results);
 		}
 	}
 
 
 	std::unordered_map<std::string, middle::Id> generateVariableOverrides(middle::GameState* gameState, middle::Id bubbleId, middle::Id algebraRootNodeId) {
 		std::unordered_map<std::string, middle::Id> resultMap;
-		return resultMap;
 
 		std::unordered_map<std::string, std::vector<middle::Id>> varMap;
 		getVariableStructuresMap(gameState, algebraRootNodeId, varMap);
