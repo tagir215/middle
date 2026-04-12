@@ -52,6 +52,7 @@ public:
 		bubbleCache->addType<components::Circle>();
 		bubbleCache->addType<components::Layer>();
 		bubbleCache->addType<components::RuntimeHiddenTag>(components::NOTINTERESTED);
+		bubbleCache->addType<components::BubbleVariable>(components::NOTINTERESTED);
 		mulCache = middle::newCompCache(gameState);
 		mulCache->addType<components::BubbleMultiplyComponent>();
 		mulCache->addType<components::LoopSociety>();
@@ -64,10 +65,9 @@ public:
 		unitCache->addType<components::Position>();
 		unitCache->addType<components::Layer>();
 		unitCache->addType<components::MouseIntersectable>();
-		unitCache->addType<components::BubbleVariable>(components::NOTINTERESTED);
 		unitCache->addType<components::RuntimeHiddenTag>(components::NOTINTERESTED);
 		variableCache = middle::newCompCache(gameState);
-		variableCache->addType<components::BubbleUnit>();
+		variableCache->addType<components::BubbleComponent>();
 		variableCache->addType<components::Layer>();
 		variableCache->addType<components::BubbleVariable>();
 		variableCache->addType<components::Circle>();
@@ -175,12 +175,12 @@ public:
 
 		// render variables
 		auto variableIt = variableCache->begin<components::BubbleVariable>();
-		auto variableUnitIt = variableCache->begin<components::BubbleUnit>();
+		auto variableBubbleIt = variableCache->begin<components::BubbleComponent>();
 		auto variableCircleIt = variableCache->begin<components::Circle>();
 		auto layerIt = variableCache->begin<components::Layer>();
 		for (int i = 0; i < variableCache->getSize(); ++i) {
 			auto variable = *variableIt;
-			auto unit = *variableUnitIt;
+			auto bubble = *variableBubbleIt;
 			auto layer = *layerIt;
 			auto circle = *variableCircleIt;
 			auto& shape = middle::getShape(gameState, variableCache->relevantIdVector[i].index);
@@ -199,15 +199,7 @@ public:
 				fontSize *= 1.5f;
 			}
 			Color color;
-			if (unit->value == 1) {
-				color = bubbleColors::POSITIVE_UNIT;
-			}
-			else if (unit->value == -1) {
-				color = bubbleColors::NEGATIVE_UNIT;
-			}
-			else {
-				color = ORANGE;
-			}
+			color = bubbleColors::POSITIVE_UNIT;
 
 			middle::RenderItem variableText;
 			variableText.type = middle::RenderItemType::TEXT;

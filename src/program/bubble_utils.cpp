@@ -1032,7 +1032,7 @@ namespace bubble {
 
 	middle::Shape newVariable(middle::GameState* gameState, const std::string& label, const Vector3& targetPos)
 	{
-		middle::Shape variableProto = newUnit(gameState, targetPos);
+		middle::Shape variableProto = newBubble(gameState, targetPos);
 		auto varComp = middle::addComponent<components::BubbleVariable>(variableProto);
 		varComp->label = label;
 		auto circle = middle::getComponent<components::Circle>(variableProto);
