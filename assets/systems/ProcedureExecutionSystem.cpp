@@ -633,10 +633,11 @@ public:
 	}
 
 
-	void updateInputVariableReferences(middle::GameState* gameState, middle::Id codeBlockId, middle::Id topDogContainerId) {
+	void updateInputVariableReferences(middle::GameState* gameState, middle::Id codeBlockId, middle::Id topDogContainerId, std::unordered_map<std::string, middle::Id>& overrideMap) {
 		if (codeBlockId.index == middle::UNASSIGNED) {
 			return;
 		}
+		assert(topDogContainerId.index != middle::UNASSIGNED);
 		middle::Id funcId = getCodeBlockFunc(gameState, codeBlockId);
 		if (funcId.index == middle::UNASSIGNED) {
 			return;
@@ -654,8 +655,8 @@ public:
 			if (input->structureId.index == middle::UNASSIGNED) {
 				return;
 			}
-			middle::Id result = bubble::findMatchingStructureWithVariables(gameState, topDogContainerId,
-				input->structureId, input->structureDepth);
+			middle::Id result = bubble::findMatchingBubbleWithVariables(gameState, topDogContainerId,
+				input->structureId, input->structureDepth, overrideMap);
 			input->unitRef = result;
 		}
 		// update two input case
@@ -667,30 +668,30 @@ public:
 
 			bool bothValid = inputA->structureId.index != middle::UNASSIGNED && inputB->structureId.index != middle::UNASSIGNED;
 			if (bothValid) {
+
 				middle::Id idA, idB;
 				bubble::findMatchingStructurePairWithVariables(gameState, topDogContainerId,
-					inputA->structureId, inputB->structureId, inputA->structureDepth, idA, idB);
+					inputA->structureId, inputB->structureId, inputA->structureDepth, overrideMap, idA, idB);
 				inputA->unitRef = idA;
 				inputB->unitRef = idB;
 			}
 			// if one is valid update it for visual indicators
 			else if (inputA->structureId.index != middle::UNASSIGNED) {
-				middle::Id result = bubble::findMatchingStructureWithVariables(gameState, topDogContainerId,
-					inputA->structureId, inputA->structureDepth);
+				middle::Id result = bubble::findMatchingBubbleWithVariables(gameState, topDogContainerId,
+					inputA->structureId, inputA->structureDepth, overrideMap);
 				inputA->unitRef = result;
 			}
 			else if (inputB->structureId.index != middle::UNASSIGNED) {
-				middle::Id result = bubble::findMatchingStructureWithVariables(gameState, topDogContainerId,
-					inputB->structureId, inputB->structureDepth);
+				middle::Id result = bubble::findMatchingBubbleWithVariables(gameState, topDogContainerId,
+					inputB->structureId, inputB->structureDepth, overrideMap);
 				inputB->unitRef = result;
 			}
 
 		}
 	}
 
+
 	void update(middle::GameState* gameState) override {
-
-
 
 		auto buttonIt = buttonCache->begin<components::Button>();
 		for (int i = 0; i < buttonCache->getSize(); ++i) {
@@ -706,6 +707,19 @@ public:
 				procedureContainer->mode = procedureConstants::EXECUTING;
 				procedureContainer->direction = procedureConstants::FORWARD;
 				procedureContainer->procedureTransitionStack.clear();
+
+				std::unordered_map<std::string, std::vector<middle::Id>> variableMap;
+				std::vector<middle::Id>children;
+				middle::getChildren(gameState, parentShape.id, children);
+				for (middle::Id& childId : children) {
+					auto& childShape = middle::getShape(gameState, childId.index);
+					auto input = middle::getComponent<components::InputVariable>(childShape);
+					if (input) {
+						bubble::getVariableStructuresMap(gameState, childId, variableMap);
+						break;
+					}
+				}
+
 			}
 
 			// step
@@ -738,7 +752,7 @@ public:
 			auto& shape = middle::getShape(gameState, procedureCache->relevantIdVector[i].index);
 
 			if (procedure->procedureTransitionStack.size() > 0 && procedure->updateInputs) {
-				updateInputVariableReferences(gameState, procedure->procedureTransitionStack.back().destinationId, procedure->bubbleRef);
+				updateInputVariableReferences(gameState, procedure->procedureTransitionStack.back().destinationId, procedure->bubbleRef, procedure->variableOverrides);
 			}
 
 			if ((procedure->mode == procedureConstants::EXECUTING
@@ -765,7 +779,7 @@ public:
 			while (procedure->procedureTransitionStack.size() < procedure->targetActionStackSize) {
 
 				if (procedure->procedureTransitionStack.size() > 0) {
-					updateInputVariableReferences(gameState, procedure->procedureTransitionStack.back().destinationId, procedure->bubbleRef);
+					updateInputVariableReferences(gameState, procedure->procedureTransitionStack.back().destinationId, procedure->bubbleRef, procedure->variableOverrides);
 				}
 
 				auto status = procedureStepForward(gameState, procedure);
@@ -777,7 +791,7 @@ public:
 			while (procedure->procedureTransitionStack.size() > procedure->targetActionStackSize) {
 
 				if (procedure->procedureTransitionStack.size() > 0) {
-					updateInputVariableReferences(gameState, procedure->procedureTransitionStack.back().destinationId, procedure->bubbleRef);
+					updateInputVariableReferences(gameState, procedure->procedureTransitionStack.back().destinationId, procedure->bubbleRef, procedure->variableOverrides);
 				}
 
 				auto status = procedureStepBackward(gameState, procedure);

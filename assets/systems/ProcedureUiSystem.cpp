@@ -26,6 +26,7 @@
 #include "ProcedureInputVariable.h"
 #include "bubble_colors.h"
 #include "ProcedureComponent.h"
+#include "component_utils.h"
 
 
 
@@ -142,6 +143,7 @@ public:
 					procContainer->bubbleRef = procImportContainer->bubbleRef;
 					// Unassign bubble ref, it might have been serialized
 					procContainer->bubbleRef = middle::Id();
+					procContainer->editMode = false;
 				}
 
 

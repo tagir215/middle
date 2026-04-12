@@ -1,12 +1,10 @@
 #pragma once
 #include "registrars.h"
 #include "editor_file_utils.h"
-#define MIDDLEPROCEDUREINPUTVARIABLE(X) \
-	X(editMode)
+#define MIDDLEPROCEDUREINPUTVARIABLE(X) 
 
 namespace components {
 	struct ProcedureInputVariable : public middle::Serializable{
-		bool editMode = false;
 
 		void serialize(std::ostream& ostream) override;
 		void deserialize(const std::vector<std::string>& buffer, int indexOffset) override;

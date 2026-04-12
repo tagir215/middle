@@ -48,6 +48,7 @@ namespace components {
 		middle::Id bubbleRef;
 		int mode = procedureConstants::IDLE;
 		int direction = procedureConstants::FORWARD;
+		std::unordered_map<std::string, middle::Id> variableOverrides;
 		// action container, and all actions in history
 		std::vector<procedureConstants::ProcedureTransition> procedureTransitionStack;
 		bool exitingLoop = false;
@@ -57,6 +58,7 @@ namespace components {
 		bool updateInputs = false;
 		// number of top level blocks
 		int size = 0;
+		bool editMode = true;
 
 		void serialize(std::ostream& ostream) override;
 		void deserialize(const std::vector<std::string>& buffer, int indexOffset) override;
