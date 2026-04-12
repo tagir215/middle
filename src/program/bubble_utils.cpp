@@ -328,17 +328,8 @@ namespace bubble {
 		UnitValue result;
 		middle::Shape& shape = middle::getShape(gameState, containerId.index);
 		auto unit = middle::getComponent<components::BubbleUnit>(shape);
-		auto node = middle::getComponent<components::AlgebraNode>(shape);
 		if (unit) {
 			result.scale = unit->value;
-			auto variable = middle::getComponent<components::BubbleVariable>(shape);
-			if (variable) {
-				result.variableLabel = variable->label;
-			}
-		}
-		if (node) {
-			result.scale = node->value;
-			result.variableLabel = node->variableLabel;
 		}
 		return result;
 	}
@@ -379,14 +370,32 @@ namespace bubble {
 		auto bubbleB = middle::getComponent<components::BubbleComponent>(shapeB);
 		auto nodeA = middle::getComponent<components::AlgebraNode>(shapeA);
 		auto nodeB = middle::getComponent<components::AlgebraNode>(shapeB);
+		auto varA = middle::getComponent<components::BubbleVariable>(shapeA);
 		// only idB is allowed to be AlgebraNode type
 		assert(!nodeA);
 
 		if (bubbleA && bubbleB) {
-			return bubbleA->inverse == bubbleB->inverse;
+			auto varB = middle::getComponent<components::BubbleVariable>(shapeA);
+			if (varA && varB) {
+				if (varA->isNegative != varB->isNegative) {
+					return false;
+				}
+			}
+			if (bubbleA->inverse != bubbleB->inverse) {
+				return false;
+			}
+			return true;
 		}
 		if (bubbleA && nodeB) {
-			return bubbleA->inverse == nodeB->isInverse;
+			if (varA) {
+				if (varA->isNegative != nodeB->isNegative) {
+					return false;
+				}
+			}
+			if (bubbleA->inverse != bubbleB->inverse) {
+				return false;
+			}
+			return true;
 		}
 		return false;
 	}
@@ -504,7 +513,7 @@ namespace bubble {
 		// if node type is variable and bubble is variable return true if both have same label, otherwise if algebra node is variable bubble can be anything
 		if (algebraNodeType == components::AlgebraNodeType::VARIABLE) {
 			if (bubbleType == components::AlgebraNodeType::VARIABLE) {
-				return unitEquals(gameState, bubbleId, algebraNodeId);
+				return bubblePropertiesEqual(gameState, bubbleId, algebraNodeId);
 			}
 			return true;
 		}
@@ -607,6 +616,28 @@ namespace bubble {
 	BubbleValue calculateBubbleValue(middle::GameState* gameState, middle::Id bubbleId)
 	{
 		BubbleValue result;
+
+		auto& bubbleShape = middle::getShape(gameState, bubbleId.index);
+		auto variable = middle::getComponent<components::BubbleVariable>(bubbleShape);
+		if (variable) {
+			UnitValue value;
+			value.variableLabel = variable->label;
+			value.scale = variable->isNegative ? -1 : 1;
+			result.variableValueMap[variable->label] = value;
+			result.scale = 0;
+			return result;
+		}
+
+		auto node = middle::getComponent<components::AlgebraNode>(bubbleShape);
+		if (node) {
+			UnitValue value;
+			value.scale = node->value;
+			value.variableLabel = node->variableLabel;
+			result.variableValueMap[value.variableLabel] = value;
+			result.scale = 0;
+			return result;
+		}
+
 		std::vector<middle::Id>children;
 		middle::getChildren(gameState, bubbleId, children);
 		for (middle::Id& id : children) {
@@ -614,17 +645,7 @@ namespace bubble {
 			auto unit = middle::getComponent<components::BubbleUnit>(shape);
 			if (unit) {
 				UnitValue value = unitValue(gameState, id);
-				if (value.variableLabel != "") {
-					if (result.variableValueMap.find(value.variableLabel) == result.variableValueMap.end()) {
-						result.variableValueMap[value.variableLabel] = { value.scale, 1, value.variableLabel };
-					}
-					else {
-						result.variableValueMap[value.variableLabel].scale += value.scale;
-					}
-				}
-				else {
-					result.scale += value.scale;
-				}
+				result.scale += value.scale;
 			}
 			auto bubble = middle::getComponent<components::BubbleComponent>(shape);
 			if (bubble) {
@@ -638,6 +659,7 @@ namespace bubble {
 						result.variableValueMap[pair.first].scale += pair.second.scale;
 					}
 				}
+
 			}
 			auto mul = middle::getComponent<components::BubbleMultiplyComponent>(shape);
 			if (mul) {

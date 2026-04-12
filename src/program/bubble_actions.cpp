@@ -584,6 +584,7 @@ namespace bubbleActions {
 		auto bubble = middle::getComponent<components::BubbleComponent>(shape);
 		auto fraction = middle::getComponent<components::FractionalComponent>(shape);
 		auto root = middle::getComponent<components::ExponentComponent>(shape);
+		auto variable = middle::getComponent<components::BubbleVariable>(shape);
 		middle::Id parentId = middle::getParent(gameState, shape.id);
 		if (parentId.index == middle::UNASSIGNED) {
 			cancelled = true;
@@ -594,6 +595,10 @@ namespace bubbleActions {
 			return;
 		}
 		if (!bubble && !fraction) {
+			cancelled = true;
+			return;
+		}
+		if (variable) {
 			cancelled = true;
 			return;
 		}
@@ -1554,6 +1559,13 @@ namespace bubbleActions {
 		middle::Shape& shape = middle::getShape(gameState, id.index);
 		auto expComp = middle::getComponent<components::ExponentComponent>(shape);
 		bool isTopDog = middle::getComponent<components::TopDogBubbleTag>(shape) != nullptr;
+
+		// if its a variable bubble,  don't simplify
+		auto bubbleVariable = middle::getComponent<components::BubbleVariable>(shape);
+		if (bubbleVariable) {
+			cancelled = true;
+			return;
+		}
 
 		if (expComp) {
 			std::vector<middle::Id>children;
