@@ -677,6 +677,8 @@ public:
 			}
 			// if one is valid update it for visual indicators
 			else if (inputA->structureId.index != middle::UNASSIGNED) {
+				auto& inputShape = middle::getShape(gameState, inputA->structureId.index);
+				auto comp = middle::getComponent<components::AlgebraNode>(inputShape);
 				middle::Id result = bubble::findMatchingBubbleWithVariables(gameState, topDogContainerId,
 					inputA->structureId, inputA->structureDepth, overrideMap);
 				inputA->unitRef = result;

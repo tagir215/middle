@@ -84,6 +84,9 @@ public:
 			// update structure, unless inputting it during normal level
 			if (procContainer->editMode) {
 				middle::Id structureId = bubble::bubbleToStructure(gameState, shape.id);
+				auto& structShape = middle::getShape(gameState, structureId.index);
+				auto idk = middle::getComponent<components::AlgebraNode>(structShape);
+
 				// reparent algebra node to input, for automatic deletion and serialization
 				middle::queueAction(gameState, std::make_shared<middle::EditorActionReparent>(ogShape.id.index, structureId.index));
 				ogInput->structureId = structureId;

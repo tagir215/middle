@@ -301,7 +301,7 @@ namespace bubbleActions {
 
 	void ExecuteMultiplication::execute(middle::GameState* gameState) {
 
-		// cancel if trying to add into variable
+		// cancel if trying to expand into variable
 		auto& shapeToAddInto = middle::getShape(gameState, shapeToCopyIntoId.index);
 		auto varComp = middle::getComponent<components::BubbleVariable>(shapeToAddInto);
 		if (varComp) {
