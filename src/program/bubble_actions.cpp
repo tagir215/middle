@@ -1558,7 +1558,6 @@ namespace bubbleActions {
 
 		middle::Shape& shape = middle::getShape(gameState, id.index);
 		auto expComp = middle::getComponent<components::ExponentComponent>(shape);
-		bool isTopDog = middle::getComponent<components::TopDogBubbleTag>(shape) != nullptr;
 
 		// if its a variable bubble,  don't simplify
 		auto bubbleVariable = middle::getComponent<components::BubbleVariable>(shape);
@@ -1600,9 +1599,11 @@ namespace bubbleActions {
 
 			auto replaceAction = std::make_unique<Replace>(shape.id, copyId);
 			replaceAction->execute(gameState);
-			if (isTopDog) {
-				middle::attachComponent<components::TopDogBubbleTag>(gameState, copyId);
+			if (middle::getComponent<components::BubbleAlgebraProblem>(shape)) {
 				middle::attachComponent<components::BubbleAlgebraProblem>(gameState, copyId);
+			}
+			if (middle::getComponent<components::TopDogBubbleTag>(shape)) {
+				middle::attachComponent<components::TopDogBubbleTag>(gameState, copyId);
 			}
 			actions.push_back(std::move(replaceAction));
 			return;
@@ -1628,9 +1629,11 @@ namespace bubbleActions {
 			auto replaceAction = std::make_unique<Replace>(shape.id, replacementShapeId);
 			replaceAction->execute(gameState);
 			actions.push_back(std::move(replaceAction));
-			if (isTopDog) {
-				middle::attachComponent<components::TopDogBubbleTag>(gameState, replacementShapeId);
+			if (middle::getComponent<components::BubbleAlgebraProblem>(shape)) {
 				middle::attachComponent<components::BubbleAlgebraProblem>(gameState, replacementShapeId);
+			}
+			if (middle::getComponent<components::TopDogBubbleTag>(shape)) {
+				middle::attachComponent<components::TopDogBubbleTag>(gameState, replacementShapeId);
 			}
 			return;
 		}

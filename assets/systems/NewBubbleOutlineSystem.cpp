@@ -11,7 +11,6 @@
 #include "Sphere.h"
 #include "FractionalComponent.h"
 #include "bubble_utils.h"
-#include "BubbleVariable.h"
 
 
 class NewBubbleOutlineSystem : public middle::MiddleGameplaySystem {
@@ -116,8 +115,8 @@ public:
 			}
 
 			float radius = std::sqrt(totalArea / PI);
-			if (radius < minBubbleRadius) {
-				radius = minBubbleRadius;
+			if (radius < bubble::variableRadius) {
+				radius = bubble::variableRadius;
 			}
 			circle->radius = radius;
 		}

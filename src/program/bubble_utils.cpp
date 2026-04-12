@@ -375,9 +375,9 @@ namespace bubble {
 		assert(!nodeA);
 
 		if (bubbleA && bubbleB) {
-			auto varB = middle::getComponent<components::BubbleVariable>(shapeA);
+			auto varB = middle::getComponent<components::BubbleVariable>(shapeB);
 			if (varA && varB) {
-				if (varA->isNegative != varB->isNegative) {
+				if (varA->isNegative != varB->isNegative || varA->label != varB->label) {
 					return false;
 				}
 			}
@@ -388,11 +388,11 @@ namespace bubble {
 		}
 		if (bubbleA && nodeB) {
 			if (varA) {
-				if (varA->isNegative != nodeB->isNegative) {
+				if (varA->isNegative != nodeB->isNegative || varA->label != nodeB->variableLabel) {
 					return false;
 				}
 			}
-			if (bubbleA->inverse != bubbleB->inverse) {
+			if (bubbleA->inverse != nodeB->isInverse) {
 				return false;
 			}
 			return true;

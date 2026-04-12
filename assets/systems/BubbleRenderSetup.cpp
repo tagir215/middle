@@ -200,6 +200,9 @@ public:
 			}
 			Color color;
 			color = bubbleColors::POSITIVE_UNIT;
+			if (variable->isNegative) {
+				color = bubbleColors::NEGATIVE_UNIT;
+			}
 
 			middle::RenderItem variableText;
 			variableText.type = middle::RenderItemType::TEXT;
