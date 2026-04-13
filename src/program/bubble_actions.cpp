@@ -15,6 +15,7 @@
 #include "ExponentComponent.h"
 #include "TopDogBubbleTag.h"
 #include "BubbleAlgebraProblem.h"
+#include "ProcedureContainer.h"
 
 namespace bubbleActions {
 
@@ -1668,6 +1669,30 @@ namespace bubbleActions {
 	}
 
 	void Simplify::undo(middle::GameState* gameState)
+	{
+		while (actions.size() > 0) {
+			actions.back()->undo(gameState);
+			actions.pop_back();
+		}
+	}
+
+	void StartProcedure::execute(middle::GameState* gameState)
+	{
+		auto& procContainerShape = middle::getShape(gameState, procContainer.index);
+		auto procContainerComp = middle::getComponent<components::ProcedureContainer>(procContainerShape);
+		procContainerComp->bubbleRef = input;
+		procContainerComp->mode = procedureConstants::EXECUTING;
+
+		std::vector<middle::Id> children;
+		middle::getChildren(gameState, procContainerShape.id, children);
+		middle::Id inputId = middle::getFirstChildWithComponent(gameState, procContainerShape.id, middle::getTypeId<components::InputVariable>());
+		auto& inputShape = middle::getShape(gameState, inputId.index);
+		auto inputComp = middle::getComponent<components::InputVariable>(inputShape);
+		inputComp->unitRef = input;
+		procContainerComp->variableOverrides = bubble::generateVariableOverrides(gameState, input, inputComp->structureId);
+	}
+
+	void StartProcedure::undo(middle::GameState* gameState)
 	{
 		while (actions.size() > 0) {
 			actions.back()->undo(gameState);

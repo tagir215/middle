@@ -236,4 +236,18 @@ namespace bubbleActions{
 		void execute(middle::GameState* gameState) override;
 		void undo(middle::GameState* gameState) override;
 	};
+
+	class StartProcedure : public middle::EditorActionContainer {
+	public:
+		middle::Id procContainer;
+		middle::Id input;
+		std::vector<std::shared_ptr<middle::EditorActionContainer>> actions;
+		StartProcedure(middle::Id procContainerId, middle::Id inputId) {
+			this->procContainer = procContainerId;
+			this->input = inputId;
+		}
+		void execute(middle::GameState* gameState) override;
+		void undo(middle::GameState* gameState) override;
+	};
+
 }

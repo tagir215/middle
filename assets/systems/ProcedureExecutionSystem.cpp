@@ -751,7 +751,7 @@ public:
 		auto procedureIt = procedureCache->begin<components::ProcedureContainer>();
 		for (int i = 0; i < procedureCache->getSize(); ++i) {
 			auto procedure = *procedureIt;
-			auto& shape = middle::getShape(gameState, procedureCache->relevantIdVector[i].index);
+			auto& procedureShape = middle::getShape(gameState, procedureCache->relevantIdVector[i].index);
 
 			if (procedure->procedureTransitionStack.size() > 0 && procedure->updateInputs) {
 				updateInputVariableReferences(gameState, procedure->procedureTransitionStack.back().destinationId, procedure->bubbleRef, procedure->variableOverrides);
@@ -803,7 +803,7 @@ public:
 			}
 
 			if (procedure->mode == procedureConstants::EXECUTING) {
-				auto timer = middle::attachComponent<components::TimerComponent>(gameState, shape.id);
+				auto timer = middle::attachComponent<components::TimerComponent>(gameState, procedureShape.id);
 				timer->timeLeft = 0.1f;
 			}
 
@@ -815,20 +815,29 @@ public:
 				if (procedure->procedureTransitionStack.back().type == procedureConstants::End) {
 					procedure->mode = procedureConstants::IDLE;
 					procedure->procedureTransitionStack;
-					auto customAction = std::make_unique<middle::CustomActionWithUndo>(
-						[](middle::GameState* gameState) {
+					auto lastAction = gameState->bubbleAlgebraState.bubbleActions.back();
+					auto startProcedure = static_cast<bubbleActions::StartProcedure*>(lastAction.get());
+					for (auto& transition : procedure->procedureTransitionStack) {
+						if (transition.action) {
+							startProcedure->actions.push_back(transition.action);
+						}
+					}
+					//auto customAction = std::make_unique<middle::CustomActionWithUndo>(
+					//	[](middle::GameState* gameState) {
 
-						},
-						[procedure](middle::GameState* gameState) {
-							//while (procedure->procedureTransitionStack.size() > 0) {
-							//	if (procedure->procedureTransitionStack.back().action != nullptr) {
-							//		procedure->procedureTransitionStack.back().action->undo(gameState);
-							//	}
-							//	procedure->procedureTransitionStack.pop_back();
-							//}
-							procedure->targetActionStackSize = 0;
-						});
-					gameState->bubbleAlgebraState.bubbleActions.push_back(std::move(customAction));
+					//	},
+					//	[procedure](middle::GameState* gameState) {
+					//		//while (procedure->procedureTransitionStack.size() > 0) {
+					//		//	if (procedure->procedureTransitionStack.back().action != nullptr) {
+					//		//		procedure->procedureTransitionStack.back().action->undo(gameState);
+					//		//	}
+					//		//	procedure->procedureTransitionStack.pop_back();
+					//		//}
+					//		procedure->targetActionStackSize = 0;
+					//	});
+					//gameState->bubbleAlgebraState.bubbleActions.push_back(std::move(customAction));
+					auto deleteShape = std::make_shared<middle::EditorActionDeleteSingle>(procedureShape.id);
+					middle::queueAction(gameState, deleteShape);
 				}
 			}
 		}

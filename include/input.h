@@ -58,6 +58,7 @@ namespace middle {
 		bool comp = false;
 		bool sim = false;
 		bool bub = false;
+		bool proc = false;
 		bool zoomIn = false;
 		bool zoomOut = false;
 		bool panDown = false;

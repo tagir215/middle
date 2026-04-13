@@ -41,4 +41,5 @@ namespace bubbleInventoryItemType {
 	inline int COMPRESS = 14;
 	inline int BUBBLIFY = 15;
 	inline int SIMPLIFY = 16;
+	inline int PROCEDURE = 17;
 }

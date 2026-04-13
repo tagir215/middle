@@ -103,6 +103,7 @@ public:
 			gameState->gameInput.comp = false;
 			gameState->gameInput.sim = false;
 			gameState->gameInput.bub = false;
+			gameState->gameInput.proc = false;
 			gameState->gameInput.zoomIn = false;
 			gameState->gameInput.zoomOut = false;
 			gameState->gameInput.panUp = false;
@@ -122,6 +123,7 @@ public:
 				gameState->gameInput.pop = IsKeyPressed(KEY_Z);
 				gameState->gameInput.sim = IsKeyPressed(KEY_X);
 				gameState->gameInput.comp = IsKeyPressed(KEY_C);
+				gameState->gameInput.proc = IsKeyPressed(KEY_E);
 				gameState->gameInput.mulOne = IsKeyPressed(KEY_V);
 				gameState->gameInput.bub = IsKeyPressed(KEY_B);
 				gameState->gameInput.undo = IsKeyPressed(KEY_SPACE);

@@ -19,6 +19,7 @@
 #include "RuntimeHiddenTag.h"
 #include "BubbleAlgebraProblem.h"
 #include "Layer.h"
+#include "ProcedureContainer.h"
 
 class BubbleModificationSystem : public middle::MiddleGameplaySystem {
 public:
@@ -27,6 +28,7 @@ public:
 	components::CompCache* placementCache;
 	components::CompCache* levelConfigsCache;
 	components::CompCache* uiCompCache;
+	components::CompCache* procContainerCache;
 
 	void init(middle::GameState* gameState) {
 		deletionCache = middle::newCompCache(gameState);
@@ -46,6 +48,9 @@ public:
 
 		uiCompCache = middle::newCompCache(gameState);
 		uiCompCache->addType<components::UiComponent>();
+
+		procContainerCache = middle::newCompCache(gameState);
+		procContainerCache->addType<components::ProcedureContainer>();
 	}
 
 	bool isMultiplicationConnection(middle::GameState* gameState, middle::Shape& parentShape) {
@@ -180,6 +185,12 @@ public:
 				action = std::make_shared<bubbleActions::Pop>(intersectedShape.id);
 			}
 		}
+		else if (actionType == bubbleInventoryItemType::PROCEDURE) {
+			if (procContainerCache->getSize() == 1) {
+				middle::Id procContainerId = procContainerCache->relevantIdVector[0];
+				action = std::make_shared<bubbleActions::StartProcedure>(procContainerId, intersectedShape.id);
+			}
+		}
 		else if (actionType == bubbleInventoryItemType::TIMES_ONE) {
 			action = std::make_shared<bubbleActions::MulOne>(intersectedShape.id);
 		}
@@ -278,7 +289,7 @@ public:
 
 
 		auto& inp = gameState->gameInput;
-		bool hotKeyPressed = inp.pop || inp.comp || inp.mulOne || inp.sim || inp.bub
+		bool hotKeyPressed = inp.pop || inp.comp || inp.mulOne || inp.sim || inp.bub || inp.proc
 			|| inp.two
 			|| inp.three
 			|| inp.four
@@ -308,6 +319,9 @@ public:
 					}
 					if (gameState->gameInput.bub) {
 						inventoryAction(gameState, bubbleInventoryItemType::BUBBLIFY, middle::Id(), intersectingShape);
+					}
+					if (gameState->gameInput.proc) {
+						inventoryAction(gameState, bubbleInventoryItemType::PROCEDURE, middle::Id(), intersectingShape);
 					}
 					if (gameState->gameInput.two) {
 						inventoryAction(gameState, bubbleInventoryItemType::BREAK_2, middle::Id(), intersectingShape);
