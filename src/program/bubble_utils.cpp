@@ -612,6 +612,12 @@ namespace bubble {
 		}
 		assert(uniqueSetOfMatchingStructures.size() <= varMap.size());
 
+		int totalVarCount = 0;
+		for (auto& pair : varMap) {
+			totalVarCount += pair.second.size();
+		}
+
+		// TODO 
 		int index = 0;
 		for (auto& pair : varMap) {
 			auto& variableLabel = pair.first;

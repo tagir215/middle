@@ -96,7 +96,10 @@ public:
 			if (grabbedProcedureInput) {
 				ogInput->unitRef = shape.id;
 				procContainer->bubbleRef = shape.id;
-				procContainer->variableOverrides = bubble::generateVariableOverrides(gameState, shape.id, ogInput->structureId);
+
+				if (!procContainer->editMode) {
+					procContainer->variableOverrides = bubble::generateVariableOverrides(gameState, shape.id, ogInput->structureId);
+				}
 
 				if (!highlighted) {
 					middle::queueComponentAttachment<components::Highlight>(gameState, ogShape.id);

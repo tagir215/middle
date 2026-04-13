@@ -100,6 +100,13 @@ public:
 				color = bubbleColors::PROCEDURE_RECT;
 				backgroundColor = bubbleColors::PROCEDURE_BACKGROUND;
 			}
+			if (uiComp->type == UiElementTypes::PROCEDURE_BACKGROUND) {
+				backgroundColor = bubbleColors::PROCEDURE_BACKGROUND;
+			}
+			if (uiComp->type == UiElementTypes::PROCEDURE_SCOPE) {
+				//backgroundColor = bubbleColors::PROCEDURE_SCOPE;
+				color = bubbleColors::PROCEDURE_SCOPE;
+			}
 
 			middle::RenderItem rectItem;
 			rectItem.type = middle::RenderItemType::RECTANGLE;

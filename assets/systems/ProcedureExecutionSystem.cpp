@@ -802,7 +802,6 @@ public:
 				}
 			}
 
-
 			if (procedure->mode == procedureConstants::EXECUTING) {
 				auto timer = middle::attachComponent<components::TimerComponent>(gameState, shape.id);
 				timer->timeLeft = 0.1f;
@@ -810,6 +809,27 @@ public:
 
 			if (procedure->mode == procedureConstants::STEPPING) {
 				procedure->mode = procedureConstants::IDLE;
+			}
+
+			if (procedure->procedureTransitionStack.size() > 0) {
+				if (procedure->procedureTransitionStack.back().type == procedureConstants::End) {
+					procedure->mode = procedureConstants::IDLE;
+					procedure->procedureTransitionStack;
+					auto customAction = std::make_unique<middle::CustomActionWithUndo>(
+						[](middle::GameState* gameState) {
+
+						},
+						[procedure](middle::GameState* gameState) {
+							//while (procedure->procedureTransitionStack.size() > 0) {
+							//	if (procedure->procedureTransitionStack.back().action != nullptr) {
+							//		procedure->procedureTransitionStack.back().action->undo(gameState);
+							//	}
+							//	procedure->procedureTransitionStack.pop_back();
+							//}
+							procedure->targetActionStackSize = 0;
+						});
+					gameState->bubbleAlgebraState.bubbleActions.push_back(std::move(customAction));
+				}
 			}
 		}
 	}

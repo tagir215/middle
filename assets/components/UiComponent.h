@@ -32,4 +32,6 @@ namespace UiElementTypes {
 	static int UNIT_TYPE_INDICATOR = 7;
 	static int PROCEDURE_RECT = 8;
 	static int PROCEDURE_INPUT = 9;
+	static int PROCEDURE_BACKGROUND = 10;
+	static int PROCEDURE_SCOPE = 11;
 }
