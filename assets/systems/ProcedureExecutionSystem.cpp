@@ -706,16 +706,16 @@ public:
 			// start
 			if (button->function == bubbleButton::START_PROCEDURE_BUTTON) {
 				// navigate to procedure scope... 
-				middle::Id parentId = middle::getParent(gameState, shape.id);
-				auto& parentShape = middle::getShape(gameState, parentId.index);
-				auto procedureContainer = middle::getComponent<components::ProcedureContainer>(parentShape);
+				middle::Id procContainerId = procedureCache->relevantIdVector[0];
+				auto procedureShape = middle::getShape(gameState, procContainerId.index);
+				auto procedureContainer = middle::getComponent<components::ProcedureContainer>(procedureShape);
 				procedureContainer->mode = procedureConstants::EXECUTING;
 				procedureContainer->direction = procedureConstants::FORWARD;
 				procedureContainer->procedureTransitionStack.clear();
 
 				std::unordered_map<std::string, std::vector<middle::Id>> variableMap;
 				std::vector<middle::Id>children;
-				middle::getChildren(gameState, parentShape.id, children);
+				middle::getChildren(gameState, procedureShape.id, children);
 				for (middle::Id& childId : children) {
 					auto& childShape = middle::getShape(gameState, childId.index);
 					auto input = middle::getComponent<components::InputVariable>(childShape);
@@ -730,9 +730,9 @@ public:
 			// step
 			if (button->function == bubbleButton::STEP_FORWARD) {
 				// navigate to procedure scope... 
-				middle::Id parentId = middle::getParent(gameState, shape.id);
-				auto& parentShape = middle::getShape(gameState, parentId.index);
-				auto procedureContainer = middle::getComponent<components::ProcedureContainer>(parentShape);
+				middle::Id procedureId = procedureCache->relevantIdVector[0];
+				auto& procedureShape = middle::getShape(gameState, procedureId.index);
+				auto procedureContainer = middle::getComponent<components::ProcedureContainer>(procedureShape);
 				procedureContainer->mode = procedureConstants::STEPPING;
 				procedureContainer->direction = procedureConstants::FORWARD;
 				if (procedureContainer->procedureTransitionStack.size() == 0) {
@@ -742,9 +742,9 @@ public:
 			// step back
 			if (button->function == bubbleButton::STEP_BACKWARD) {
 				// navigate to procedure scope... 
-				middle::Id parentId = middle::getParent(gameState, shape.id);
-				auto& parentShape = middle::getShape(gameState, parentId.index);
-				auto procedureContainer = middle::getComponent<components::ProcedureContainer>(parentShape);
+				middle::Id procedureId = procedureCache->relevantIdVector[0];
+				auto& procedureShape = middle::getShape(gameState, procedureId.index);
+				auto procedureContainer = middle::getComponent<components::ProcedureContainer>(procedureShape);
 				procedureContainer->mode = procedureConstants::STEPPING;
 				procedureContainer->direction = procedureConstants::BACKWARD;
 			}
@@ -822,16 +822,20 @@ public:
 			if (procedure->procedureTransitionStack.size() > 0) {
 				if (procedure->procedureTransitionStack.back().type == procedureConstants::End) {
 					procedure->mode = procedureConstants::IDLE;
-					procedure->procedureTransitionStack;
-					auto lastAction = gameState->bubbleAlgebraState.bubbleActions.back();
-					auto startProcedure = static_cast<bubbleActions::StartProcedure*>(lastAction.get());
-					for (auto& transition : procedure->procedureTransitionStack) {
-						if (transition.action) {
-							startProcedure->actions.push_back(transition.action);
+
+					// add unod actions to last actions, which is assumed to be start procedure, in action solve mode
+					// also delete procedure after execution
+					if (gameState->bubbleAlgebraState.bubbleActions.size() > 0) {
+						auto lastAction = gameState->bubbleAlgebraState.bubbleActions.back();
+						auto startProcedure = static_cast<bubbleActions::StartProcedure*>(lastAction.get());
+						for (auto& transition : procedure->procedureTransitionStack) {
+							if (transition.action) {
+								startProcedure->actions.push_back(transition.action);
+							}
 						}
+						auto deleteShape = std::make_shared<middle::EditorActionDeleteSingle>(procedureShape.id);
+						middle::queueAction(gameState, deleteShape);
 					}
-					auto deleteShape = std::make_shared<middle::EditorActionDeleteSingle>(procedureShape.id);
-					middle::queueAction(gameState, deleteShape);
 				}
 			}
 		}

@@ -127,10 +127,21 @@ public:
 					procContainer->editMode = false;
 					middle::queueComponentDeletion<components::UiNode>(gameState, procContainerShape.id);
 
+					// move procedure to center
 					middle::Id procCompId = middle::getFirstChildWithComponent(gameState, procContainerShape.id, middle::getTypeId<components::ProcedureComponent>());
 					Vector3 currentPos = middle::getShapePosition(gameState, procCompId.index);
 					Vector3 targetPos = middle::getShapePosition(gameState, procedureImportCache->relevantIdVector[0].index);
 					middle::moveShape(gameState, procCompId.index, targetPos - currentPos);
+
+					// delete ui components to not have it appear on top of ui
+					std::vector<middle::Id>procChildren;
+					middle::getAllChildren(gameState, procCompId, procChildren);
+					for (middle::Id& id : procChildren) {
+						auto& childShape = middle::getShape(gameState, id.index);
+						if (middle::getComponent<components::UiComponent>(childShape)) {
+							middle::queueComponentDeletion<components::UiComponent>(gameState, id);
+						}
+					}
 				}
 
 
