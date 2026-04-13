@@ -601,7 +601,10 @@ public:
 			}
 			else {
 				auto status = stepForward(gameState, procedure);
-				return status;
+				if (status == procedureConstants::StepStatus::CannotStep) {
+					return status;
+				}
+				return procedureConstants::StepStatus::StepWithoutFunction;
 			}
 		}
 
@@ -777,6 +780,8 @@ public:
 				}
 			}
 
+			bool skipPause = false;
+
 			// move 
 			while (procedure->procedureTransitionStack.size() < procedure->targetActionStackSize) {
 
@@ -787,6 +792,9 @@ public:
 				auto status = procedureStepForward(gameState, procedure);
 				if (status == procedureConstants::CannotStep) {
 					break;
+				}
+				if (status == procedureConstants::StepWithoutFunction) {
+					skipPause = true;
 				}
 			}
 
@@ -802,7 +810,7 @@ public:
 				}
 			}
 
-			if (procedure->mode == procedureConstants::EXECUTING) {
+			if (procedure->mode == procedureConstants::EXECUTING && !skipPause) {
 				auto timer = middle::attachComponent<components::TimerComponent>(gameState, procedureShape.id);
 				timer->timeLeft = 0.1f;
 			}

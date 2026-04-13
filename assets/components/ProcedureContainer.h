@@ -38,6 +38,7 @@ namespace procedureConstants {
 		CanStep,
 		CannotStep,
 		Stationary,
+		StepWithoutFunction,
 	};
 }
 
