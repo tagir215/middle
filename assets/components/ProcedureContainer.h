@@ -3,7 +3,7 @@
 #include "editor_file_utils.h"
 #define MIDDLEPROCEDURECONTAINER(X) \
 	X(startBlock) \
-	X(bubbleRef)
+	X(bubbleRef) 
 
 namespace procedureConstants {
 	enum Direction {
