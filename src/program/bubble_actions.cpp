@@ -1682,7 +1682,6 @@ namespace bubbleActions {
 		auto procContainerComp = middle::getComponent<components::ProcedureContainer>(procContainerShape);
 		procContainerComp->bubbleRef = input;
 		procContainerComp->mode = procedureConstants::EXECUTING;
-
 		std::vector<middle::Id> children;
 		middle::getChildren(gameState, procContainerShape.id, children);
 		middle::Id inputId = middle::getFirstChildWithComponent(gameState, procContainerShape.id, middle::getTypeId<components::InputVariable>());

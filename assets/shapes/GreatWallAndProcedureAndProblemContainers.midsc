@@ -8,11 +8,11 @@ q  24_0
 q  39_0
 MouseSelectable
 MouseIntersectable
-MouseGrabbable
 Position
 f  0.000000
 f  0.000000
 f  0.000000
+MouseGrabbable
 Text
 s  GreatWallAndProcedureAndProblemContainers
 f  0.000000
@@ -22,54 +22,54 @@ f  0.000000
 f  0.000000
 f  0.000000
 f  0.000000
-f  10.000000
+f  5.000000
 b  1
 __q  39_0
 LoopTag
+UiComponent
+i  -1
 LoopSociety
 q  40_2
 p  
-UiComponent
-i  -1
 MouseSelectable
 MouseIntersectable
-Position
-f  8.207550
-f  -0.000488
-f  -191.076797
 MouseGrabbable
+Position
+f  -189.801620
+f  -0.000549
+f  -8.120433
 ProcedureImportContainer
 q  1_0
 __q  24_0
-LoopTag
 BubbleAlgebraProblemContainer
+LoopTag
 MouseSelectable
-Position
-f  0.569580
-f  -0.000122
-f  18.271910
 MouseGrabbable
+Position
+f  -1.469940
+f  -0.000122
+f  28.193649
 LoopSociety
 q  40_2
 p  
 MouseIntersectable
 __q  38_0
 MouseSelectable
+Position
+f  -189.230667
+f  0.000061
+f  -2.058214
+MouseGrabbable
 Cuboid
 f  7.000000
 f  1.000000
 f  10000.000000
 MouseIntersectable
+Sphere
+f  2.000000
 LoopSociety
 q  40_2
 p  
-Sphere
-f  2.000000
-MouseGrabbable
-Position
-f  -189.230667
-f  0.000061
-f  -2.058214
 PhysicsData
 f  10000.000000
 f  0.000000

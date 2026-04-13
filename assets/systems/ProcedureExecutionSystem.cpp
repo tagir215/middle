@@ -830,20 +830,6 @@ public:
 							startProcedure->actions.push_back(transition.action);
 						}
 					}
-					//auto customAction = std::make_unique<middle::CustomActionWithUndo>(
-					//	[](middle::GameState* gameState) {
-
-					//	},
-					//	[procedure](middle::GameState* gameState) {
-					//		//while (procedure->procedureTransitionStack.size() > 0) {
-					//		//	if (procedure->procedureTransitionStack.back().action != nullptr) {
-					//		//		procedure->procedureTransitionStack.back().action->undo(gameState);
-					//		//	}
-					//		//	procedure->procedureTransitionStack.pop_back();
-					//		//}
-					//		procedure->targetActionStackSize = 0;
-					//	});
-					//gameState->bubbleAlgebraState.bubbleActions.push_back(std::move(customAction));
 					auto deleteShape = std::make_shared<middle::EditorActionDeleteSingle>(procedureShape.id);
 					middle::queueAction(gameState, deleteShape);
 				}

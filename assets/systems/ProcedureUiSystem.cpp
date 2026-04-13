@@ -39,6 +39,7 @@ public:
 	components::CompCache* procContainerCache;
 	components::CompCache* inputCache;
 	components::CompCache* procedureCodeCache;
+	components::CompCache* procedureImportCache;
 
 	Color highlightColor = bubbleColors::HOVERED_ITEM;
 	Color highlightColor2 = bubbleColors::PROCEDURE_SELECTED;
@@ -61,6 +62,9 @@ public:
 		inputCache->addType<components::InputVariable>();
 		inputCache->addType<components::Highlight>();
 		inputCache->addType<components::Position>();
+		procedureImportCache = middle::newCompCache(gameState);
+		procedureImportCache->addType<components::ProcedureImportContainer>();
+		procedureImportCache->addType<components::Position>();
 	}
 
 	void update(middle::GameState* gameState) override {
@@ -122,6 +126,11 @@ public:
 					procContainer->bubbleRef = middle::Id();
 					procContainer->editMode = false;
 					middle::queueComponentDeletion<components::UiNode>(gameState, procContainerShape.id);
+
+					middle::Id procCompId = middle::getFirstChildWithComponent(gameState, procContainerShape.id, middle::getTypeId<components::ProcedureComponent>());
+					Vector3 currentPos = middle::getShapePosition(gameState, procCompId.index);
+					Vector3 targetPos = middle::getShapePosition(gameState, procedureImportCache->relevantIdVector[0].index);
+					middle::moveShape(gameState, procCompId.index, targetPos - currentPos);
 				}
 
 
