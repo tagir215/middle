@@ -613,7 +613,8 @@ namespace bubble {
 			}
 		}
 
-		if (uniqueSetOfMatchingStructures.size() == 0) {
+		// TODO .  in future allow the same kinds
+		if (uniqueSetOfMatchingStructures.size() != varMap.size()) {
 			return resultMap;
 		}
 

@@ -28,9 +28,9 @@ SystemReference
 s  UiRenderSetup
 __q  1_0
 CameraComponent
-f  629.391296
-f  8774.118164
-f  -61.277279
+f  1400.011475
+f  9455.556641
+f  -135.390457
 f  0.000000
 f  0.000000
 f  1.000000
@@ -38,9 +38,9 @@ f  45.000000
 i  0
 b  1
 Position
-f  629.391296
-f  -1225.881836
-f  -61.277279
+f  1400.011475
+f  -544.443848
+f  -135.390457
 MouseGrabbable
 Sphere
 f  2.000000
@@ -990,18 +990,6 @@ s  Problem23
 b  0
 GridElement
 Node
-__q  33_0
-MouseGrabbable
-Position
-f  400.000000
-f  0.000000
-f  -500.000000
-MouseSelectable
-MouseIntersectable
-Reference
-s  BubbleGameplaySystems
-s  ../assets/shapes/
-LoopSociety
 __q  34_0
 Sphere
 f  2.000000
@@ -1167,54 +1155,6 @@ s  Problem28
 b  0
 GridElement
 Node
-__q  39_0
-MouseGrabbable
-Position
-f  300.000000
-f  0.000000
-f  -128.000000
-MouseSelectable
-MouseIntersectable
-Reference
-s  ProcedureContainer
-s  ../assets/shapes/
-LoopSociety
-__q  40_0
-MouseGrabbable
-Position
-f  1000.000000
-f  0.000000
-f  0.000000
-MouseSelectable
-MouseIntersectable
-Reference
-s  ProcedureVisualizationSystems
-s  ../assets/shapes/
-LoopSociety
-__q  41_0
-MouseGrabbable
-Position
-f  400.000000
-f  0.000000
-f  0.000000
-MouseSelectable
-MouseIntersectable
-Reference
-s  GreatWallAndProcedureAndProblemContainers
-s  ../assets/shapes/
-LoopSociety
-__q  42_0
-MouseGrabbable
-Position
-f  0.000000
-f  500.000000
-f  0.000000
-MouseSelectable
-MouseIntersectable
-Reference
-s  ProcedureUI
-s  ../assets/shapes/
-LoopSociety
 __q  43_0
 MouseGrabbable
 Position
