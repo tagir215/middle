@@ -1568,6 +1568,9 @@ namespace bubbleActions {
 		middle::Shape& shape = middle::getShape(gameState, id.index);
 		auto expComp = middle::getComponent<components::ExponentComponent>(shape);
 
+		bool isTopDog = middle::getComponent<components::TopDogBubbleTag>(shape);
+		bool isProblem = middle::getComponent<components::BubbleAlgebraProblem>(shape);
+
 		// if its a variable bubble,  don't simplify
 		auto bubbleVariable = middle::getComponent<components::BubbleVariable>(shape);
 		if (bubbleVariable) {
@@ -1608,10 +1611,10 @@ namespace bubbleActions {
 
 			auto replaceAction = std::make_unique<Replace>(shape.id, copyId);
 			replaceAction->execute(gameState);
-			if (middle::getComponent<components::BubbleAlgebraProblem>(shape)) {
+			if (isProblem) {
 				middle::attachComponent<components::BubbleAlgebraProblem>(gameState, copyId);
 			}
-			if (middle::getComponent<components::TopDogBubbleTag>(shape)) {
+			if (isTopDog) {
 				middle::attachComponent<components::TopDogBubbleTag>(gameState, copyId);
 			}
 			actions.push_back(std::move(replaceAction));
@@ -1638,30 +1641,12 @@ namespace bubbleActions {
 			auto replaceAction = std::make_unique<Replace>(shape.id, replacementShapeId);
 			replaceAction->execute(gameState);
 			actions.push_back(std::move(replaceAction));
-			if (middle::getComponent<components::BubbleAlgebraProblem>(shape)) {
+			if (isProblem) {
 				middle::attachComponent<components::BubbleAlgebraProblem>(gameState, replacementShapeId);
 			}
-			if (middle::getComponent<components::TopDogBubbleTag>(shape)) {
+			if (isTopDog) {
 				middle::attachComponent<components::TopDogBubbleTag>(gameState, replacementShapeId);
 			}
-			return;
-		}
-
-		auto fraction = middle::getComponent<components::FractionalComponent>(shape);
-		if (fraction) {
-			middle::Id replacementShapeId = simplifyToOneOld(gameState, shape.id);
-			if (replacementShapeId.index == middle::UNASSIGNED) {
-				cancelled = true;
-				return;
-			}
-
-			auto registerAction = std::make_unique<middle::EditorActionRegisterId>(replacementShapeId);
-			registerAction->execute(gameState);
-			actions.push_back(std::move(registerAction));
-
-			auto replaceAction = std::make_unique<Replace>(shape.id, replacementShapeId);
-			replaceAction->execute(gameState);
-			actions.push_back(std::move(replaceAction));
 			return;
 		}
 
@@ -1680,16 +1665,21 @@ namespace bubbleActions {
 	{
 		auto& procContainerShape = middle::getShape(gameState, procContainer.index);
 		auto procContainerComp = middle::getComponent<components::ProcedureContainer>(procContainerShape);
-		procContainerComp->bubbleRef = input;
-		procContainerComp->mode = procedureConstants::EXECUTING;
 
 		std::vector<middle::Id> children;
 		middle::getChildren(gameState, procContainerShape.id, children);
 		middle::Id inputId = middle::getFirstChildWithComponent(gameState, procContainerShape.id, middle::getTypeId<components::InputVariable>());
 		auto& inputShape = middle::getShape(gameState, inputId.index);
 		auto inputComp = middle::getComponent<components::InputVariable>(inputShape);
-		inputComp->unitRef = input;
 		procContainerComp->variableOverrides = bubble::generateVariableOverrides(gameState, input, inputComp->structureId);
+		if (procContainerComp->variableOverrides.size() == 0) {
+			cancelled = true;
+			return;
+		}
+
+		inputComp->unitRef = input;
+		procContainerComp->bubbleRef = input;
+		procContainerComp->mode = procedureConstants::EXECUTING;
 	}
 
 	void StartProcedure::undo(middle::GameState* gameState)

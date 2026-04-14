@@ -603,6 +603,8 @@ namespace bubble {
 		std::unordered_map<std::string, std::vector<middle::Id>> varMap;
 		getVariableStructuresMap(gameState, algebraRootNodeId, varMap);
 		std::vector<middle::Id>uniqueSetOfMatchingStructures;
+
+
 		for (auto& pair : varMap) {
 			auto& variableLabel = pair.first;
 			auto& variableStructureIds = pair.second;
@@ -610,6 +612,11 @@ namespace bubble {
 				getUniqueSetOfMatchingStructures(gameState, bubbleId, structureId, uniqueSetOfMatchingStructures);
 			}
 		}
+
+		if (uniqueSetOfMatchingStructures.size() == 0) {
+			return resultMap;
+		}
+
 		assert(uniqueSetOfMatchingStructures.size() <= varMap.size());
 
 		int totalVarCount = 0;
