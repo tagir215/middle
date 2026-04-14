@@ -12,6 +12,9 @@
 #include "ExponentComponent.h"
 #include "BubbleAlgebraLevelConfigs.h"
 #include "JointEntity.h"
+#include "Inventory.h"
+#include "InventorySlot.h"
+#include "InventoryItem.h"
 
 
 class BubbleLevelEditorSystem : public middle::MiddleGameplaySystem {
@@ -22,11 +25,14 @@ public:
 	}
 
 	components::CompCache* selectableCache = nullptr;
+	components::CompCache* inventorySlotCache = nullptr;
 
 	void init(middle::GameState* gameState) override {
 		selectableCache = middle::newCompCache(gameState);
 		selectableCache->addType<components::MouseSelectable>();
 		selectableCache->addType<components::UiComponent>(components::NOTINTERESTED);
+		inventorySlotCache = middle::newCompCache(gameState);
+		inventorySlotCache->addType <components::InventorySlot>();
 	}
 
 	middle::Id getSelected() {
@@ -109,6 +115,36 @@ public:
 						middle::attachComponent<components::BubbleAlgebraLevelConfigs>(gameState, shape.id);
 						auto sphere = middle::getComponent<components::Sphere>(shape);
 						sphere->radius = 10;
+					}
+
+					if (ImGui::Button("Create Inventory")) {
+						middle::Shape inventoryProto;
+						middle::addComponent<components::LoopTag>(inventoryProto);
+						middle::addComponent<components::LoopSociety>(inventoryProto);
+						auto position = middle::addComponent<components::Position>(inventoryProto);
+						middle::addComponent<components::Inventory>(inventoryProto);
+						auto selectable = middle::addComponent<components::MouseSelectable>(inventoryProto);
+						middle::addComponent<components::MouseGrabbable>(inventoryProto);
+						middle::addComponent<components::MouseIntersectable>(inventoryProto);
+						Vector3 initPos = { 0,0,-50 };
+						position->posX = initPos.x;
+						position->posY = initPos.y;
+						position->posZ = initPos.z;
+						selectable->selected = true;
+						middle::Shape& inventoryShape = middle::registerShape(gameState, inventoryProto);
+
+						// setup placeholder inventory items
+						int inventorySize = inventorySlotCache->getSize();
+						const float zOffset = -20;
+						const float xDist = 20;
+						for (int i = 0; i < inventorySize; ++i) {
+							auto bubble = bubble::newBubble(gameState, initPos + Vector3{xDist* i, 0, 0});
+							auto& bubbleShape = middle::registerShape(gameState, bubble);
+							auto inventoryItem = middle::attachComponent<components::InventoryItem>(gameState, bubbleShape.id);
+							inventoryItem->itemType = bubbleInventoryItemType::NEW_ADDITION_TERM;
+							inventoryItem->idRef = inventorySlotCache->relevantIdVector[i];
+							middle::EditorActionReparent(inventoryShape.id.index, bubbleShape.id.index).execute(gameState);
+						}
 					}
 				}
 
