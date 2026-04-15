@@ -491,7 +491,9 @@ namespace bubble {
 		if (varOverrides.size() > 0 && algebraNodeType == components::AlgebraNodeType::VARIABLE) {
 			auto& nodeShape = middle::getShape(gameState, algebraNodeId.index);
 			auto node = middle::getComponent<components::AlgebraNode>(nodeShape);
-			assert(varOverrides.find(node->variableLabel) != varOverrides.end());
+			if (varOverrides.find(node->variableLabel) == varOverrides.end()) {
+				return false;
+			}
 			algebraNodeId = varOverrides[node->variableLabel];
 			// update node type
 			algebraNodeType = getStructureType(gameState, algebraNodeId);
