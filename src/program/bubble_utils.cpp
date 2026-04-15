@@ -421,7 +421,8 @@ namespace bubble {
 		auto typeB = getStructureType(gameState, idB);
 
 		// if one is inverse other is not return false
-		if (bubbleA && bubbleB) {
+		if ((typeA == components::AlgebraNodeType::BUBBLE && (typeB == components::AlgebraNodeType::BUBBLE)) || 
+			(typeA == components::AlgebraNodeType::VARIABLE && typeB == components::AlgebraNodeType::VARIABLE)) {
 			if (!bubblePropertiesEqual(gameState, idA, idB)) {
 				return false;
 			}
@@ -667,8 +668,15 @@ namespace bubble {
 		std::vector<std::vector<int>> variations;
 		variationTreeToVectors(rootNode, variations);
 
-		// TODO 
+
+
 		int varCount = varMap.size();
+
+		// TODO
+		// TODO 
+		if (count < varCount) {
+			return resultMap;
+		}
 
 		for (auto& variation : variations) {
 			resultMap.clear();
@@ -686,6 +694,7 @@ namespace bubble {
 			}
 		}
 
+		resultMap.clear();
 		return resultMap;
 	}
 
@@ -893,8 +902,7 @@ namespace bubble {
 		if (middle::getComponent<components::BubbleVariable>(shape)) {
 			return components::AlgebraNodeType::VARIABLE;
 		}
-		if (middle::getComponent<components::BubbleComponent>(shape)
-			|| middle::getComponent<components::BubbleAlgebraProblem>(shape)) {
+		if (middle::getComponent<components::BubbleComponent>(shape)) {
 			return components::AlgebraNodeType::BUBBLE;
 		}
 		if (middle::getComponent<components::BubbleUnit>(shape)) {
@@ -905,6 +913,9 @@ namespace bubble {
 		}
 		if (middle::getComponent<components::FractionalComponent>(shape)) {
 			return components::AlgebraNodeType::FRACTION;
+		}
+		if (middle::getComponent<components::BubbleEqualsComponent>(shape)) {
+			return components::AlgebraNodeType::EQUALS;
 		}
 		auto algebraNode = middle::getComponent<components::AlgebraNode>(shape);
 		if (algebraNode) {
@@ -923,11 +934,11 @@ namespace bubble {
 			parents.pop();
 
 			auto& parentShape = middle::getShape(gameState, currentId.index);
-			if (middle::getComponent<components::TopDogBubbleTag>(parentShape)) {
-				return depth;
-			}
 			if (middle::getComponent<components::InputVariable>(parentShape)) {
 				return depth - 1;
+			}
+			if (middle::getComponent<components::TopDogBubbleTag>(parentShape)) {
+				return depth;
 			}
 			middle::Id parentId = middle::getParent(gameState, currentId);
 			if (parentId.index == middle::UNASSIGNED) {

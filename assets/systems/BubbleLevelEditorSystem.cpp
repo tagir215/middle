@@ -137,7 +137,7 @@ public:
 						// setup placeholder inventory items
 						int inventorySize = inventorySlotCache->getSize();
 						const float zOffset = -20;
-						const float xDist = 20;
+						const float xDist = 100;
 						for (int i = 0; i < inventorySize; ++i) {
 							auto bubble = bubble::newBubble(gameState, initPos + Vector3{xDist* i + 1, 0, 0});
 							auto& bubbleShape = middle::registerShape(gameState, bubble);

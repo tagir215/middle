@@ -38,6 +38,7 @@ namespace components {
 		FRACTION,
 		MULTIPLICATION,
 		ROOT,
+		EQUALS,
 	};
 }
 
