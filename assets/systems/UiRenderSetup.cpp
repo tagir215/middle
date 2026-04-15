@@ -98,7 +98,7 @@ public:
 			}
 			if (uiComp->type == UiElementTypes::PROCEDURE_RECT) {
 				color = bubbleColors::PROCEDURE_RECT;
-				backgroundColor = bubbleColors::PROCEDURE_BACKGROUND;
+				backgroundColor = bubbleColors::PROCEDURE_RECT;
 			}
 			if (uiComp->type == UiElementTypes::PROCEDURE_BACKGROUND) {
 				backgroundColor = bubbleColors::PROCEDURE_BACKGROUND;

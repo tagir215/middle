@@ -232,8 +232,8 @@ namespace bubble {
 	middle::Id inverseBubble(middle::GameState* gameState, middle::Id& id)
 	{
 		middle::Id copy = middle::deepCopyShape(gameState, id.index);
-		auto& shape = middle::getShape(gameState, id.index);
-		auto bubble = middle::getComponent<components::BubbleComponent>(shape);
+		auto& copyShape = middle::getShape(gameState, copy.index);
+		auto bubble = middle::getComponent<components::BubbleComponent>(copyShape);
 		bubble->inverse = !bubble->inverse;
 		return copy;
 	}

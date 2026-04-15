@@ -19,6 +19,7 @@
 #include "component_utils.h"
 #include "MouseClickComponent.h"
 #include "PlacementComponent.h"
+#include "ExponentComponent.h"
 
 class ProcedureExecutionSystem : public middle::MiddleGameplaySystem {
 public:
@@ -203,25 +204,33 @@ public:
 		if (function->type == functionTypes::COMBINE) {
 			components::InputVariable varA;
 			components::InputVariable varB;
-			if (!getTwoInputs(gameState, funcShape, varA, varB)) {
-				return;
-			}
-			assert(varA.unitRef.index != middle::UNASSIGNED);
-			assert(varB.unitRef.index != middle::UNASSIGNED);
-			assert(varA.unitRef.index != varB.unitRef.index);
-			middle::Id& parentId = middle::getParent(gameState, varA.unitRef);
-			auto& parentShape = middle::getShape(gameState, parentId.index);
-			auto bubbleMultiplication = middle::getComponent<components::BubbleMultiplyComponent>(parentShape);
+			if (getTwoInputs(gameState, funcShape, varA, varB)) {
+				assert(varA.unitRef.index != middle::UNASSIGNED);
+				assert(varB.unitRef.index != middle::UNASSIGNED);
+				assert(varA.unitRef.index != varB.unitRef.index);
+				middle::Id& parentId = middle::getParent(gameState, varA.unitRef);
+				auto& parentShape = middle::getShape(gameState, parentId.index);
+				auto bubbleMultiplication = middle::getComponent<components::BubbleMultiplyComponent>(parentShape);
 
-			if (bubbleMultiplication) {
-				auto multiply = std::make_shared<bubbleActions::ExecuteMultiplication>(varA.unitRef, varB.unitRef);
-				middle::queueAction(gameState, multiply);
-				container->procedureTransitionStack.back().action = multiply;
+				if (bubbleMultiplication) {
+					auto multiply = std::make_shared<bubbleActions::ExecuteMultiplication>(varA.unitRef, varB.unitRef);
+					middle::queueAction(gameState, multiply);
+					container->procedureTransitionStack.back().action = multiply;
+				}
+				else {
+					auto combine = std::make_shared<bubbleActions::ExecuteAddition>(varA.unitRef, varB.unitRef);
+					middle::queueAction(gameState, combine);
+					container->procedureTransitionStack.back().action = combine;
+				}
 			}
-			else {
-				auto combine = std::make_shared<bubbleActions::ExecuteAddition>(varA.unitRef, varB.unitRef);
-				middle::queueAction(gameState, combine);
-				container->procedureTransitionStack.back().action = combine;
+			if (getOneInput(gameState, funcShape, varA)) {
+				assert(varA.unitRef.index != middle::UNASSIGNED);
+				auto& shape = middle::getShape(gameState, varA.unitRef.index);
+				if (middle::getComponent<components::ExponentComponent>(shape)) {
+					auto power = std::make_shared<bubbleActions::ExecutePower>(varA.unitRef);
+					middle::queueAction(gameState, power);
+					container->procedureTransitionStack.back().action = power;
+				}
 			}
 
 		}
@@ -244,7 +253,7 @@ public:
 				[copyAction, update](middle::GameState* gameState) {
 					copyAction->execute(gameState);
 					// move away from view
-					middle::moveShape(gameState, copyAction->resultId.index, {400,0,100});
+					middle::moveShape(gameState, copyAction->resultId.index, { 400,0,100 });
 					update->execute(gameState);
 				},
 				[copyAction, update](middle::GameState* gameState) {
@@ -273,7 +282,7 @@ public:
 			auto reparent = std::make_shared<middle::EditorActionReparent>(topBubbleId.index, copyId.index);
 			middle::queueAction(gameState, reparent);
 			container->procedureTransitionStack.back().action = reparent;
-			
+
 		}
 
 		else if (function->type == functionTypes::NEW_MULTERM) {

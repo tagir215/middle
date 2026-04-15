@@ -511,10 +511,10 @@ namespace bubbleActions {
 			middle::EditorActionReparent(initialBubble.id.index, initialUnit.id.index).execute(gameState);
 			auto bubbleCircle = middle::getComponent<components::Circle>(shapeToPower);
 
-			if (power != 0) {
-				auto delComp = middle::attachComponent<components::DeleteComponent>(gameState, initialBubble.id);
-				delComp->framesUntilDelete = 60;
-			}
+			//if (power != 0) {
+			//	auto delComp = middle::attachComponent<components::DeleteComponent>(gameState, initialBubble.id);
+			//	delComp->framesUntilDelete = 60;
+			//}
 
 			float bubGap = bubbleCircle->radius;
 			int sign = 1;
@@ -524,19 +524,13 @@ namespace bubbleActions {
 				middle::Id copyId;
 				if (!isNegative) {
 					copyId = middle::deepCopyShape(gameState, shapeToPowerId.index);
-					middle::queueComponentDeletion<components::ExponentComponent>(gameState, copyId);
 				}
 				else {
 					copyId = bubble::inverseBubble(gameState, shapeToPowerId);
-					auto& containerBubble = middle::getShape(gameState, copyId.index);
-					auto loop = middle::getComponent<components::LoopSociety>(containerBubble);
-					assert(loop->loopMemberIds.size() == 1);
-					middle::Id fractionId = loop->loopMemberIds[0];
-					middle::Id quotientId = bubble::fractionQuotient(gameState, fractionId);
-					middle::Id rootId = middle::getFirstChildWithComponent(gameState, quotientId, middle::getTypeId<components::ExponentComponent>());
-					middle::queueComponentDeletion<components::ExponentComponent>(gameState, rootId);
-					middle::queueAction(gameState, std::make_shared<Pop>(rootId));
 				}
+				middle::queueComponentDeletion<components::ExponentComponent>(gameState, copyId);
+
+
 				// move so its not overlapping perfectly
 				sign *= -1;
 				const float varianceZ = 0.2f;

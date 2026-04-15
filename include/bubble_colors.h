@@ -24,7 +24,7 @@ namespace bubbleColors {
 	inline Color UI_BUTTON_BACKGROUND = {0,0,0,0};
 	inline Color UI_BACKGROUND = BLACK;
 	inline Color UI_TEXT = WHITE;
-	inline Color PROCEDURE_RECT = WHITE;
+	inline Color PROCEDURE_RECT = {0,0,50,255};
 	inline Color PROCEDURE_BACKGROUND = {50,50,50,255};
 	inline Color PROCEDURE_SCOPE = {100,100,100,255};
 }
