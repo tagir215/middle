@@ -596,6 +596,44 @@ namespace bubble {
 		}
 	}
 
+	struct VariationNode {
+		int index;
+		std::shared_ptr<VariationNode>parentNode;
+		std::vector<std::shared_ptr<VariationNode>>children;
+		std::vector<int> indexPool;
+	};
+	void indexPoolToChildren(std::shared_ptr<VariationNode>node) {
+		for (int i : node->indexPool) {
+			auto newNode = std::make_shared<VariationNode>();
+			newNode->parentNode = node;
+			newNode->index = i;
+			newNode->indexPool = {};
+			for (int index : node->indexPool) {
+				if (index == i)
+					continue;
+				newNode->indexPool.push_back(index);
+			}
+			node->children.push_back(newNode);
+			indexPoolToChildren(newNode);
+		}
+	}
+	void braveTraveller(std::shared_ptr<VariationNode>& node, std::vector<int>& result) {
+		if (node->parentNode) {
+			result.push_back(node->index);
+			braveTraveller(node->parentNode, result);
+		}
+	}
+	void variationTreeToVectors(std::shared_ptr<VariationNode>& node, std::vector<std::vector<int>>& result) {
+		if (node->children.size() == 0) {
+			result.push_back({});
+			braveTraveller(node, result.back());
+		}
+		else {
+			for (auto& child : node->children) {
+				variationTreeToVectors(child, result);
+			}
+		}
+	}
 
 	std::unordered_map<std::string, middle::Id> generateVariableOverrides(middle::GameState* gameState, middle::Id bubbleId, middle::Id algebraRootNodeId) {
 		std::unordered_map<std::string, middle::Id> resultMap;
@@ -603,7 +641,6 @@ namespace bubble {
 		std::unordered_map<std::string, std::vector<middle::Id>> varMap;
 		getVariableStructuresMap(gameState, algebraRootNodeId, varMap);
 		std::vector<middle::Id>uniqueSetOfMatchingStructures;
-
 
 		for (auto& pair : varMap) {
 			auto& variableLabel = pair.first;
@@ -613,27 +650,38 @@ namespace bubble {
 			}
 		}
 
-		// TODO .  in future allow the same kinds
-		if (uniqueSetOfMatchingStructures.size() != varMap.size()) {
+		int count = uniqueSetOfMatchingStructures.size();
+
+		if (count == 0) {
 			return resultMap;
 		}
 
-		assert(uniqueSetOfMatchingStructures.size() <= varMap.size());
-
-		int totalVarCount = 0;
-		for (auto& pair : varMap) {
-			totalVarCount += pair.second.size();
+		auto rootNode = std::make_shared<VariationNode>();
+		for (int i = 0; i < count; ++i) {
+			rootNode->indexPool.push_back(i);
 		}
+		indexPoolToChildren(rootNode);
+
+		std::vector<std::vector<int>> variations;
+		variationTreeToVectors(rootNode, variations);
 
 		// TODO 
-		int index = 0;
-		for (auto& pair : varMap) {
-			auto& variableLabel = pair.first;
-			resultMap[variableLabel] = uniqueSetOfMatchingStructures[index];
-			++index;
-		}
-		if (matchesStructureWithVariables(gameState, bubbleId, algebraRootNodeId, resultMap)) {
-			return resultMap;
+		int varCount = varMap.size();
+
+		for (auto& variation : variations) {
+			resultMap.clear();
+
+			int varIndex = 0;
+			for (auto& pair : varMap) {
+				auto& variableLabel = pair.first;
+				middle::Id& structureId = uniqueSetOfMatchingStructures[variation[varIndex]];
+				resultMap[variableLabel] = structureId;
+				++varIndex;
+
+			}
+			if (matchesStructureWithVariables(gameState, bubbleId, algebraRootNodeId, resultMap)) {
+				return resultMap;
+			}
 		}
 
 		return resultMap;

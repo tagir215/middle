@@ -195,8 +195,8 @@ public:
 					rectangle->width = 100;
 					rectangle->height = 50;
 					// set to reference proc block in ui
-					if(procUiBlocks.size() > i) {
-						inventoryItem->idRef = procUiBlocks[i];
+					if(procUiBlocks.size() > j) {
+						inventoryItem->idRef = procUiBlocks[j];
 						button->function = bubbleButton::IMPORT_PROCEDURE;
 						middle::Shape& registeredShape = middle::registerAsGhostShape(gameState, shape);
 					}
