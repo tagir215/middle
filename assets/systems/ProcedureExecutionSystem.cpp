@@ -352,7 +352,9 @@ public:
 			components::InputVariable inputA;
 			components::InputVariable inputB;
 			if (!getTwoInputs(gameState, funcShape, inputA, inputB)) {
-				return;
+				if (!getOneInput(gameState, funcShape, inputA)) {
+					return;
+				}
 			}
 			assert(inputA.unitRef.index != middle::UNASSIGNED);
 			assert(inputB.unitRef.index != middle::UNASSIGNED);
