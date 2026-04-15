@@ -18,7 +18,6 @@
 
 namespace bubbleActions{
 
-
 	class Simplify : public middle::EditorActionContainer {
 	public:
 		middle::Id id;
@@ -246,6 +245,20 @@ namespace bubbleActions{
 			this->procContainer = procContainerId;
 			this->input = inputId;
 		}
+		void execute(middle::GameState* gameState) override;
+		void undo(middle::GameState* gameState) override;
+	};
+
+
+	class Insert : public middle::EditorActionContainer {
+	public:
+		middle::Id shapeToInsertId;
+		middle::Id variableContainerId;
+		Insert(middle::Id variableContainerId, middle::Id shapeToInsertId) {
+			this->variableContainerId = variableContainerId;
+			this->shapeToInsertId = shapeToInsertId;
+		}
+		std::vector<std::unique_ptr<middle::EditorActionContainer>> actions;
 		void execute(middle::GameState* gameState) override;
 		void undo(middle::GameState* gameState) override;
 	};

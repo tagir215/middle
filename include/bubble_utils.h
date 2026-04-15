@@ -61,8 +61,26 @@ namespace bubble {
 	middle::Id bubbleToStructure(middle::GameState* gameState, middle::Id bubbleId);
 	components::AlgebraNodeType getStructureType(middle::GameState* gameState, middle::Id id);
 	int findDepth(middle::GameState* gameState, middle::Id id);
-	middle::Id findTopDog(middle::GameState* gameState, middle::Id id);
-	middle::Id findAlgebraProblem(middle::GameState* gameState, middle::Id id);
 	bool isBubbleWithValueOne(middle::GameState* gameState, middle::Id id);
 	bool isBubbleWithValueOneNegative(middle::GameState* gameState, middle::Id id);
+
+	template<typename T>
+	middle::Id findCompFromParents(middle::GameState* gameState, middle::Id id) {
+		std::stack < middle::Id> parents;
+		parents.push(id);
+		while (parents.size() > 0) {
+			middle::Id currentId = parents.top();
+			parents.pop();
+			if (currentId.index == middle::UNASSIGNED) {
+				return middle::Id();
+			}
+			auto& parentShape = middle::getShape(gameState, currentId.index);
+			if (middle::getComponent<T>(parentShape)) {
+				return parentShape.id;
+			}
+			middle::Id parentId = middle::getParent(gameState, currentId);
+			parents.push(parentId);
+		}
+		return middle::Id();
+	}
 }

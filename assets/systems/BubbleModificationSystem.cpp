@@ -20,6 +20,8 @@
 #include "BubbleAlgebraProblem.h"
 #include "Layer.h"
 #include "ProcedureContainer.h"
+#include "BubbleEqualsVariable.h"
+#include "HelperBubbleEquation.h"
 
 class BubbleModificationSystem : public middle::MiddleGameplaySystem {
 public:
@@ -61,36 +63,20 @@ public:
 		return false;
 	}
 
-	void insert(middle::GameState* gameState, middle::Shape& variableShape, middle::Shape& shapeToInsert) {
-		auto copy = std::make_shared <middle::EditorActionCopySingle>(shapeToInsert.id);
-		auto replace = std::make_shared<bubbleActions::Replace>(variableShape.id, middle::Id());
-		auto insert = std::make_shared<middle::CustomActionWithUndo>(
-			[copy, replace](middle::GameState* gameState) {
-				// copy shape to insert
-				copy->execute(gameState);
-				middle::Id copyId = copy->resultId;
-				// negate if variable where inserting to is negative
-				middle::Id variableId = replace->shapeToReplaceId;
-				auto& varShape = middle::getShape(gameState, variableId.index);
-				auto varUnit = middle::getComponent<components::BubbleUnit>(varShape);
-				if (varUnit->value == -1) {
-					bubble::negate(gameState, copyId);
-				}
-				// replace, update variable first
-				replace->replacingShapeId = copyId;
-				replace->execute(gameState);
-			},
-			[copy, replace](middle::GameState* gameState) {
-				replace->undo(gameState);
-				copy->undo(gameState);
-			});
-		middle::queueAction(gameState, insert);
-		gameState->bubbleAlgebraState.bubbleActions.push_back(insert);
+	void insert(middle::GameState* gameState, middle::Shape& variableShape, middle::Shape& shapeToInsert, middle::Shape& shapeForDeletion) {
+		// check that grabbed bubble equals a variable and that variable where is being inserted has the same label
+		auto bubbleEqualsVar = middle::getComponent<components::BubbleEqualsVariable>(shapeForDeletion);
+		auto varComp = middle::getComponent<components::BubbleVariable>(variableShape);
+		if (bubbleEqualsVar && varComp && bubbleEqualsVar->variableLabel == varComp->label) {
+			auto insertAction = std::make_shared<bubbleActions::Insert>(variableShape.id, shapeToInsert.id);
+			middle::queueAction(gameState, insertAction);
+			gameState->bubbleAlgebraState.bubbleActions.push_back(insertAction);
+		}
 	}
 
 	void tryPower(middle::GameState* gameState, middle::Shape& shape) {
 		auto rootComp = middle::getComponent<components::ExponentComponent>(shape);
-		if(!rootComp){
+		if (!rootComp) {
 			return;
 		}
 
@@ -133,16 +119,6 @@ public:
 
 	void inventoryAction(middle::GameState* gameState, int actionType, middle::Id& refId, middle::Shape& intersectedShape) {
 
-		// check that it has a top dog and check that the top dog is editable problem
-		middle::Id algebraProblemId = bubble::findAlgebraProblem(gameState, intersectedShape.id);
-		if (algebraProblemId.index == middle::UNASSIGNED) {
-			return;
-		}
-		auto& algebraProblemShape = middle::getShape(gameState, algebraProblemId.index);
-		auto algebraProblem = middle::getComponent < components::BubbleAlgebraProblem>(algebraProblemShape);
-		if (!algebraProblem->editable) {
-			return;
-		}
 
 		std::shared_ptr<middle::EditorActionContainer>action;
 
@@ -238,26 +214,43 @@ public:
 
 	// TODO moves these
 	void updateUi(middle::GameState* gameState, int movesLeft) {
-			auto uiCompIt = uiCompCache->begin<components::UiComponent>();
-			for (int i = 0; i < uiCompCache->getSize(); ++i) {
-				auto uiComp = *uiCompIt;
-				auto& shape = middle::getShape(gameState, uiCompCache->relevantIdVector[i].index);
-				if (uiComp->type == UiElementTypes::OUT_OF_STEPS) {
-					bool isHidden = middle::getComponent<components::RuntimeHiddenTag>(shape) != nullptr;
-					if (movesLeft <= 0 && isHidden) {
-						middle::queueComponentDeletion<components::RuntimeHiddenTag>(gameState, shape.id);
-					}
-
-					if (movesLeft > 0 && !isHidden){
-						middle::queueComponentAttachment<components::RuntimeHiddenTag>(gameState, shape.id);
-					}
+		auto uiCompIt = uiCompCache->begin<components::UiComponent>();
+		for (int i = 0; i < uiCompCache->getSize(); ++i) {
+			auto uiComp = *uiCompIt;
+			auto& shape = middle::getShape(gameState, uiCompCache->relevantIdVector[i].index);
+			if (uiComp->type == UiElementTypes::OUT_OF_STEPS) {
+				bool isHidden = middle::getComponent<components::RuntimeHiddenTag>(shape) != nullptr;
+				if (movesLeft <= 0 && isHidden) {
+					middle::queueComponentDeletion<components::RuntimeHiddenTag>(gameState, shape.id);
 				}
-				if (uiComp->type == UiElementTypes::STEPS_LEFT_TEXT) {
-					auto text = middle::getComponent<components::Text>(shape);
-					std::string updatedString = std::to_string(movesLeft);
-					text->text = updatedString;
+
+				if (movesLeft > 0 && !isHidden) {
+					middle::queueComponentAttachment<components::RuntimeHiddenTag>(gameState, shape.id);
 				}
 			}
+			if (uiComp->type == UiElementTypes::STEPS_LEFT_TEXT) {
+				auto text = middle::getComponent<components::Text>(shape);
+				std::string updatedString = std::to_string(movesLeft);
+				text->text = updatedString;
+			}
+		}
+	}
+
+
+	bool canEdit(middle::GameState* gameState, middle::Shape& intersectableShape) {
+		middle::Id algebraProblemId = bubble::findCompFromParents<components::BubbleAlgebraProblem>(gameState, intersectableShape.id);
+		if (algebraProblemId.index != middle::UNASSIGNED) {
+			auto& algebraProblemShape = middle::getShape(gameState, algebraProblemId.index);
+			auto algebraProblem = middle::getComponent < components::BubbleAlgebraProblem>(algebraProblemShape);
+			if (!algebraProblem->editable) {
+				return false;
+			}
+		}
+		middle::Id helperId = bubble::findCompFromParents<components::HelperBubbleEquation>(gameState, intersectableShape.id);
+		if (algebraProblemId.index == middle::UNASSIGNED && helperId.index == middle::UNASSIGNED) {
+			return false;
+		}
+		return true;
 	}
 
 	void update(middle::GameState* gameState) override {
@@ -305,6 +298,11 @@ public:
 				auto intersectable = *intersectingIt;
 				if (intersectable->intersectingTop) {
 					middle::Shape& intersectingShape = middle::getShape(gameState, intersectableCache->relevantIdVector[i].index);
+
+					if (!canEdit(gameState, intersectingShape)) {
+						continue;
+					}
+
 					if (gameState->gameInput.pop) {
 						inventoryAction(gameState, bubbleInventoryItemType::POP, middle::Id(), intersectingShape);
 					}
@@ -388,6 +386,12 @@ public:
 				auto& intersectableShape = middle::getShape(gameState, intersectableCache->relevantIdVector[i].index);
 				middle::Id parentId = middle::getParent(gameState, intersectableShape.id);
 
+
+				if (!canEdit(gameState, intersectableShape)) {
+					continue;
+				}
+
+
 				// check if there's parent, the parent is not a fraction
 				if (parentId.index != middle::UNASSIGNED) {
 					auto parentShape = middle::getShape(gameState, parentId.index);
@@ -400,6 +404,17 @@ public:
 				if (!intersectable->intersecting) {
 					continue;
 				}
+
+				// variables can be non same layer, so check before layer filter, but it needs to intersect at top
+				if (intersectable->intersectingTop) {
+					auto variableComp = middle::getComponent<components::BubbleVariable>(intersectableShape);
+					auto topDogComp = middle::getComponent<components::TopDogBubbleTag>(deletionsRefShape);
+					if (variableComp && topDogComp) {
+						insert(gameState, intersectableShape, deletionsRefShape, shapeForDeletion);
+					}
+				}
+
+				// all other actions need to be in the same layer 
 				auto intersectingLayer = middle::getComponent<components::Layer>(intersectableShape);
 				if (intersectingLayer->layer != deletionsRefShapeLayer->layer && !shapeForDeletionIsInventoryItem) {
 					continue;
@@ -422,11 +437,6 @@ public:
 					continue;
 				}
 
-				auto variableComp = middle::getComponent<components::BubbleVariable>(intersectableShape);
-				auto topDogComp = middle::getComponent<components::TopDogBubbleTag>(deletionsRefShape);
-				if (variableComp && topDogComp) {
-					insert(gameState, intersectableShape, deletionsRefShape);
-				}
 
 				auto inventoryItem = middle::getComponent<components::InventoryItem>(deletionsRefShape);
 				if (inventoryItem) {
@@ -452,6 +462,6 @@ public:
 				}));
 		}
 	}
-	};
+};
 
-	static middle::SystemRegistrar<BubbleModificationSystem> reg("BubbleModificationSystem");
+static middle::SystemRegistrar<BubbleModificationSystem> reg("BubbleModificationSystem");

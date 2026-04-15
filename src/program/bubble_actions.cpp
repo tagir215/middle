@@ -1270,7 +1270,7 @@ namespace bubbleActions {
 
 	void NewAdditionTerm::execute(middle::GameState* gameState)
 	{
-		middle::Id topDog = bubble::findTopDog(gameState, shapeToAddIntoId);
+		middle::Id topDog = bubble::findCompFromParents<components::TopDogBubbleTag>(gameState, shapeToAddIntoId);
 		shapeToAddIntoId = topDog;
 
 		middle::Id parentId = middle::getParent(gameState, shapeToAddIntoId);
@@ -1323,7 +1323,7 @@ namespace bubbleActions {
 
 	void NewMultiplicationTerm::execute(middle::GameState* gameState)
 	{
-		middle::Id topDog = bubble::findTopDog(gameState, shapeToAddIntoId);
+		middle::Id topDog = bubble::findCompFromParents<components::TopDogBubbleTag>(gameState, shapeToAddIntoId);
 		shapeToAddIntoId = topDog;
 
 		middle::Id parentId = middle::getParent(gameState, shapeToAddIntoId);
@@ -1677,6 +1677,37 @@ namespace bubbleActions {
 	}
 
 	void StartProcedure::undo(middle::GameState* gameState)
+	{
+		while (actions.size() > 0) {
+			actions.back()->undo(gameState);
+			actions.pop_back();
+		}
+	}
+
+	void Insert::execute(middle::GameState* gameState)
+	{
+		auto copy = std::make_unique <middle::EditorActionCopySingle>(shapeToInsertId);
+		copy->execute(gameState);
+		middle::Id copyId = copy->resultId;
+		actions.push_back(std::move(copy));
+
+		auto& varShape = middle::getShape(gameState, variableContainerId.index);
+		auto bubVar = middle::getComponent<components::BubbleVariable>(varShape);
+		if (bubVar->isNegative) {
+			bubble::negate(gameState, copyId);
+		}
+
+		Vector3 targetPos = middle::getShapePosition(gameState, variableContainerId.index);
+		Vector3 currentPos = middle::getShapePosition(gameState, copyId.index);
+		middle::moveShape(gameState, copyId.index, targetPos - currentPos);
+
+		auto replace = std::make_unique<bubbleActions::Replace>(variableContainerId, copyId);
+		replace->replacingShapeId = copyId;
+		replace->execute(gameState);
+		actions.push_back(std::move(replace));
+	}
+
+	void Insert::undo(middle::GameState* gameState)
 	{
 		while (actions.size() > 0) {
 			actions.back()->undo(gameState);

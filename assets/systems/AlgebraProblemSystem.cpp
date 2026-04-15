@@ -134,7 +134,8 @@ public:
 
 						problemCenterX += pos->posX;
 
-						float deltaZ = pos->posZ;
+						//float deltaZ = pos->posZ;
+						float deltaZ = 0;
 						middle::moveShape(gameState, problemCache->relevantIdVector[i].index, { 0,0, -deltaZ });
 					}
 				}
