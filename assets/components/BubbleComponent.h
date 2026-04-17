@@ -2,7 +2,7 @@
 #include "registrars.h"
 #include "editor_file_utils.h"
 #define MIDDLEBUBBLECOMPONENT(X) \
-	X(inverse)
+	X(inverse) 
 
 
 namespace components {

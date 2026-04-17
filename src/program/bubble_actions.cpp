@@ -112,10 +112,10 @@ namespace bubbleActions {
 		auto fraction = middle::getComponent<components::FractionalComponent>(shapeToReplace);
 		auto unit = middle::getComponent<components::BubbleUnit>(shapeToReplace);
 		auto variable = middle::getComponent<components::BubbleVariable>(shapeToReplace);
-		auto root = middle::getComponent<components::ExponentComponent>(shapeToReplace);
+		auto exp = middle::getComponent<components::ExponentComponent>(shapeToReplace);
 
 		// contain shape to replace in a new bubble and link to the new container
-		if (root) {
+		if (exp) {
 			middle::Shape newContainerBubbleProto = bubble::newBubble(gameState, targetPos);
 			middle::Shape& newContainerBubble = middle::registerShape(gameState, newContainerBubbleProto);
 			middle::Id copyId = middle::deepCopyShape(gameState, shapeToReplaceId.index);
@@ -208,6 +208,8 @@ namespace bubbleActions {
 			}
 
 			middle::Id copyId = middle::deepCopyShape(gameState, shapeToCopyId.index);
+			// 
+			unit = middle::getComponent<components::BubbleUnit>(shapeToReplace);
 
 			if (unit->value == -1) {
 				bubble::negate(gameState, copyId);
@@ -490,6 +492,7 @@ namespace bubbleActions {
 		auto exponent = middle::getComponent<components::ExponentComponent>(shapeToPower);
 		// todo: how to do inverse?
 		if (exponent->isInverse) {
+			cancelled = true;
 			return;
 		}
 		int power = exponent->power;
@@ -508,13 +511,10 @@ namespace bubbleActions {
 			auto unitProto = bubble::newUnit(gameState, targetPos);
 			middle::Shape& initialBubble = middle::registerShape(gameState, bubbleProto);
 			middle::Shape& initialUnit = middle::registerShape(gameState, unitProto);
+			auto unitComp = middle::getComponent<components::BubbleUnit>(initialUnit);
+			unitComp->value = exponent->isNegative ? -1 : 1;
 			middle::EditorActionReparent(initialBubble.id.index, initialUnit.id.index).execute(gameState);
 			auto bubbleCircle = middle::getComponent<components::Circle>(shapeToPower);
-
-			//if (power != 0) {
-			//	auto delComp = middle::attachComponent<components::DeleteComponent>(gameState, initialBubble.id);
-			//	delComp->framesUntilDelete = 60;
-			//}
 
 			float bubGap = bubbleCircle->radius;
 			int sign = 1;
@@ -529,7 +529,6 @@ namespace bubbleActions {
 					copyId = bubble::inverseBubble(gameState, shapeToPowerId);
 				}
 				middle::queueComponentDeletion<components::ExponentComponent>(gameState, copyId);
-
 
 				// move so its not overlapping perfectly
 				sign *= -1;

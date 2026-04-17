@@ -886,6 +886,11 @@ namespace bubble {
 
 	void negate(middle::GameState* gameState, middle::Id id) {
 		auto& shape = middle::getShape(gameState, id.index);
+		auto exp = middle::getComponent<components::ExponentComponent>(shape);
+		if (exp) {
+			exp->isNegative = !exp->isNegative;
+			return;
+		}
 		auto unit = middle::getComponent<components::BubbleUnit>(shape);
 		if (unit) {
 			unit->value = -unit->value;

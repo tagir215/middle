@@ -354,12 +354,12 @@ public:
 			}
 
 			int powerIterations = root->power;
-			bool isNegative = root->power < 0;
-			if (isNegative) {
+			bool isPowerNegative = root->power < 0;
+			if (isPowerNegative) {
 				powerIterations = -root->power;
 			}
 
-			Color exponentColor = isNegative ? bubbleColors::NEGATIVE_POWER : bubbleColors::POSITIVE_POWER;
+			Color exponentColor = isPowerNegative ? bubbleColors::NEGATIVE_POWER : bubbleColors::POSITIVE_POWER;
 
 			for (int power = 0; power < powerIterations; ++power) {
 				float ra = bubbleCircle->radius;
@@ -373,12 +373,24 @@ public:
 				Vector3 intersectOffset = Vector3{ intersectOffsetX,0, intersectOffsetZ };
 				Vector3 intersectPos = bubblePos + intersectOffset;
 
-
 				Vector3 refAngle = { 1,0,0 };
 
 				Vector3 toStartPoint = Vector3Subtract(intersectPos, powerPos);
 				Vector3 endPoint = intersectPos + Vector3{ -intersectOffsetX * 2, 0, 0 };
 				Vector3 toEndPoint = Vector3Subtract(endPoint, powerPos);
+
+				if (power == 0) {
+					Color unitColor = root->isNegative ? bubbleColors::NEGATIVE_UNIT : bubbleColors::POSITIVE_UNIT;
+					middle::RenderItem unitIndicator;
+					unitIndicator.type = middle::RenderItemType::CIRCLE;
+					Vector3 pos = root->isInverse || isPowerNegative ? intersectPos : endPoint;
+					unitIndicator.center = pos;
+					unitIndicator.backgroundColor = unitColor;
+					unitIndicator.color = unitColor;
+					unitIndicator.radius = bubble::unitRadius * 1.5f;
+					unitIndicator.layer = layer->layer + 2;
+					gameState->renderData.push_back(unitIndicator);
+				}
 
 				if (isInverse) {
 					toStartPoint.x *= -1;
@@ -416,7 +428,7 @@ public:
 				Vector3 toNextSegment;
 				Vector3 coneDir;
 
-				if (!isNegative) {
+				if (!isPowerNegative) {
 					conePos = powerPos + toStartPoint;
 					toNextSegment = Vector3RotateByAxisAngle(toStartPoint, { 0,-1,0 }, helperAngleOffset);
 					coneDir = Vector3Normalize(Vector3Subtract(conePos, powerPos + toNextSegment));
