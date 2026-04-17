@@ -63,12 +63,21 @@ public:
 		return false;
 	}
 
-	void insert(middle::GameState* gameState, middle::Shape& variableShape, middle::Shape& shapeToInsert, middle::Shape& shapeForDeletion) {
+	void insert(middle::GameState* gameState, middle::Shape& intersectedShape, middle::Shape& deletionRefShape, middle::Shape& shapeForDeletion) {
 		// check that grabbed bubble equals a variable and that variable where is being inserted has the same label
 		auto bubbleEqualsVar = middle::getComponent<components::BubbleEqualsVariable>(shapeForDeletion);
-		auto varComp = middle::getComponent<components::BubbleVariable>(variableShape);
-		if (bubbleEqualsVar && varComp && bubbleEqualsVar->variableLabel == varComp->label) {
-			auto insertAction = std::make_shared<bubbleActions::Insert>(variableShape.id, shapeToInsert.id);
+		auto varComp = middle::getComponent<components::BubbleVariable>(intersectedShape);
+
+		// Insert bubble to variable
+		if (bubbleEqualsVar && bubbleEqualsVar->wantsToReplaceVariable && varComp && bubbleEqualsVar->variableLabel == varComp->label) {
+			auto insertAction = std::make_shared<bubbleActions::Insert>(intersectedShape.id, deletionRefShape.id);
+			middle::queueAction(gameState, insertAction);
+			gameState->bubbleAlgebraState.bubbleActions.push_back(insertAction);
+		}
+
+		// Replace bubble with variable
+		else if (bubbleEqualsVar && bubbleEqualsVar->wantsToReplaceBubble && bubble::matchingBubbles(gameState, bubbleEqualsVar->matchingIdRef, intersectedShape.id)) {
+			auto insertAction = std::make_shared<bubbleActions::Insert>(intersectedShape.id, deletionRefShape.id);
 			middle::queueAction(gameState, insertAction);
 			gameState->bubbleAlgebraState.bubbleActions.push_back(insertAction);
 		}
@@ -407,9 +416,8 @@ public:
 
 				// variables can be non same layer, so check before layer filter, but it needs to intersect at top
 				if (intersectable->intersectingTop) {
-					auto variableComp = middle::getComponent<components::BubbleVariable>(intersectableShape);
 					auto topDogComp = middle::getComponent<components::TopDogBubbleTag>(deletionsRefShape);
-					if (variableComp && topDogComp) {
+					if (topDogComp) {
 						insert(gameState, intersectableShape, deletionsRefShape, shapeForDeletion);
 					}
 				}

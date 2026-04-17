@@ -253,9 +253,9 @@ namespace bubbleActions{
 	class Insert : public middle::EditorActionContainer {
 	public:
 		middle::Id shapeToInsertId;
-		middle::Id variableContainerId;
-		Insert(middle::Id variableContainerId, middle::Id shapeToInsertId) {
-			this->variableContainerId = variableContainerId;
+		middle::Id shapeToReplaceId;
+		Insert(middle::Id shapeToReplaceId, middle::Id shapeToInsertId) {
+			this->shapeToReplaceId = shapeToReplaceId;
 			this->shapeToInsertId = shapeToInsertId;
 		}
 		std::vector<std::unique_ptr<middle::EditorActionContainer>> actions;

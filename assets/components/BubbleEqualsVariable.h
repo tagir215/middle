@@ -1,12 +1,14 @@
 #pragma once
 #include "registrars.h"
 #include "editor_file_utils.h"
-#define MIDDLEBUBBLEEQUALSVARIABLE(X) \
-	X(variableLabel);
+#define MIDDLEBUBBLEEQUALSVARIABLE(X) 
 
 namespace components {
 	struct BubbleEqualsVariable : public middle::Serializable{
 		std::string variableLabel;
+		bool wantsToReplaceVariable = false;
+		bool wantsToReplaceBubble = false;
+		middle::Id matchingIdRef;
 
 		void serialize(std::ostream& ostream) override;
 		void deserialize(const std::vector<std::string>& buffer, int indexOffset) override;

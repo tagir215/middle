@@ -62,19 +62,41 @@ public:
 
 	// attach bubble equals variable component to indicate this grabbed bubble equals to a variable
 	void handleEqualsToVariableCase(middle::GameState* gameState, middle::Id parentId, middle::Id grabbedCopyId) {
+
 		// check if the parent is equals comp
 		auto& parentShape = middle::getShape(gameState, parentId.index);
 		if (!middle::getComponent<components::BubbleEqualsComponent>(parentShape)) {
 			return;
 		}
-		std::vector<middle::Id> children;
-		middle::getChildren(gameState, parentShape.id, children);
+
+		std::vector<middle::Id> siblings;
+		middle::getChildren(gameState, parentShape.id, siblings);
 
 		auto& grabbedShape = middle::getShape(gameState, grabbedCopyId.index);
 		auto ref = middle::getComponent<components::IdRef>(grabbedShape);
+		middle::Id grabbedRefId = ref->idRef;
 
-		for (middle::Id& id : children) {
-			if (id == ref->idRef) {
+		// GRABBED VARIABLE CASE
+		std::vector<middle::Id> grabbedChildren;
+		middle::getChildren(gameState, grabbedShape.id, grabbedChildren);
+		if (grabbedChildren.size() == 1) {
+			auto& childShape = middle::getShape(gameState, grabbedChildren[0].index);
+			auto var = middle::getComponent<components::BubbleVariable>(childShape);
+			if (var) {
+				auto bubbleEqualsVar = middle::attachComponent<components::BubbleEqualsVariable>(gameState, grabbedCopyId);
+				for (middle::Id& siblingId : siblings) {
+					if (siblingId != grabbedRefId) {
+						bubbleEqualsVar->matchingIdRef = siblingId;
+					}
+				}
+				bubbleEqualsVar->wantsToReplaceBubble = true;
+				return;
+			}
+		}
+
+		// GRABBED BUBBLE CASE
+		for (middle::Id& id : siblings) {
+			if (id == grabbedRefId) {
 				continue;
 			}
 			// other children should be 1 and a variable, for this to work
@@ -98,6 +120,7 @@ public:
 
 			auto bubbleEqualsVar = middle::attachComponent<components::BubbleEqualsVariable>(gameState, grabbedCopyId);
 			bubbleEqualsVar->variableLabel = varComp->label;
+			bubbleEqualsVar->wantsToReplaceVariable = true;
 		}
 	}
 

@@ -1690,17 +1690,17 @@ namespace bubbleActions {
 		middle::Id copyId = copy->resultId;
 		actions.push_back(std::move(copy));
 
-		auto& varShape = middle::getShape(gameState, variableContainerId.index);
+		auto& varShape = middle::getShape(gameState, shapeToReplaceId.index);
 		auto bubVar = middle::getComponent<components::BubbleVariable>(varShape);
-		if (bubVar->isNegative) {
+		if (bubVar && bubVar->isNegative) {
 			bubble::negate(gameState, copyId);
 		}
 
-		Vector3 targetPos = middle::getShapePosition(gameState, variableContainerId.index);
+		Vector3 targetPos = middle::getShapePosition(gameState, shapeToReplaceId.index);
 		Vector3 currentPos = middle::getShapePosition(gameState, copyId.index);
 		middle::moveShape(gameState, copyId.index, targetPos - currentPos);
 
-		auto replace = std::make_unique<bubbleActions::Replace>(variableContainerId, copyId);
+		auto replace = std::make_unique<bubbleActions::Replace>(shapeToReplaceId, copyId);
 		replace->replacingShapeId = copyId;
 		replace->execute(gameState);
 		actions.push_back(std::move(replace));
