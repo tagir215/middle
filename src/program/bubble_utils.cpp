@@ -358,11 +358,13 @@ namespace bubble {
 
 		if (rootA && rootB) {
 			return rootA->power == rootB->power
-				&& rootA->isInverse == rootB->isInverse;
+				&& rootA->isInverse == rootB->isInverse 
+				&& rootA->isNegative == rootB->isNegative;
 		}
 		if (rootA && nodeB) {
 			return rootA->power == nodeB->power
-				&& rootA->isInverse == nodeB->isInverse;
+				&& rootA->isInverse == nodeB->isInverse
+				&& rootA->isNegative == nodeB->isNegative;
 		}
 		return false;
 	}
@@ -429,7 +431,7 @@ namespace bubble {
 		}
 
 		// if either is root return false if not equaling
-		if (typeA == components::AlgebraNodeType::ROOT || typeB == components::AlgebraNodeType::ROOT) {
+		if (typeA == components::AlgebraNodeType::EXPONENT || typeB == components::AlgebraNodeType::EXPONENT) {
 			if (!exponentEquals(gameState, idA, idB)) {
 				return false;
 			}
@@ -906,6 +908,9 @@ namespace bubble {
 		auto& shape = middle::getShape(gameState, id.index);
 		if (middle::getComponent<components::BubbleVariable>(shape)) {
 			return components::AlgebraNodeType::VARIABLE;
+		}
+		if (middle::getComponent<components::ExponentComponent>(shape)) {
+			return components::AlgebraNodeType::EXPONENT;
 		}
 		if (middle::getComponent<components::BubbleComponent>(shape)) {
 			return components::AlgebraNodeType::BUBBLE;

@@ -37,7 +37,7 @@ namespace components {
 		UNIT,
 		FRACTION,
 		MULTIPLICATION,
-		ROOT,
+		EXPONENT,
 		EQUALS,
 	};
 }
