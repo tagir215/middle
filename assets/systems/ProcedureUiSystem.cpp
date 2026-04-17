@@ -151,7 +151,7 @@ public:
 
 		if (procedureContainerCache->getSize() > 0) {
 			// execution iterator rendering
-			bool procedureInAction = procContainer->procedureTransitionStack.size() > 0;
+			bool procedureInAction = procContainer && procContainer->procedureTransitionStack.size() > 0;
 			if (procContainer && procContainer->activeBlock.index != middle::UNASSIGNED && procedureInAction) {
 				auto& activeBlockShape = middle::getShape(gameState, procContainer->activeBlock.index);
 				Vector3 position = middle::getShapePosition(gameState, activeBlockShape.id.index);

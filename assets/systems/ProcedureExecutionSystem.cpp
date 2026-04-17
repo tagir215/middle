@@ -356,8 +356,6 @@ public:
 					return;
 				}
 			}
-			assert(inputA.unitRef.index != middle::UNASSIGNED);
-			assert(inputB.unitRef.index != middle::UNASSIGNED);
 			auto bubblifyAction = std::make_shared<bubbleActions::Bubblify>(inputA.unitRef);
 			middle::queueAction(gameState, bubblifyAction);
 			container->procedureTransitionStack.back().action = bubblifyAction;
