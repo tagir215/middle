@@ -136,6 +136,18 @@ namespace bubbleActions{
 		void undo(middle::GameState* gameState) override;
 	};
 
+	class MulNegativeOne : public middle::EditorActionContainer {
+	public:
+		middle::Id recieverShapeId;
+		middle::Id resultShapeId;
+		std::vector<std::unique_ptr<middle::EditorActionContainer>> actions;
+		MulNegativeOne(middle::Id recieverShapeId) {
+			this->recieverShapeId = recieverShapeId;
+		}
+		void execute(middle::GameState* gameState) override;
+		void undo(middle::GameState* gameState) override;
+	};
+
 
 	struct MultiplyPair {
 		middle::Id parentId;

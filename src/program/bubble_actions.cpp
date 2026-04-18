@@ -1162,6 +1162,7 @@ namespace bubbleActions {
 
 		resultShapeId = newBubbleId;
 	}
+
 	void MulOne::undo(middle::GameState* gameState)
 	{
 		while (actions.size() > 0) {
@@ -1169,6 +1170,29 @@ namespace bubbleActions {
 			actions.pop_back();
 		}
 	}
+
+
+	void MulNegativeOne::execute(middle::GameState* gameState)
+	{
+		bubble::negate(gameState, recieverShapeId);
+		auto mulOne = std::make_unique<MulOne>(recieverShapeId);
+		mulOne->execute(gameState);
+		middle::Id one = mulOne->resultShapeId;
+		actions.push_back(std::move(mulOne));
+		bubble::negate(gameState, one);
+	}
+
+	void MulNegativeOne::undo(middle::GameState* gameState)
+	{
+		while (actions.size() > 0) {
+			actions.back()->undo(gameState);
+			actions.pop_back();
+		}
+		bubble::negate(gameState, recieverShapeId);
+	}
+
+
+
 	UpdateVariable::UpdateVariable(std::string label, std::function<middle::Id()> newUnitRefProvider)
 	{
 		this->label = label;

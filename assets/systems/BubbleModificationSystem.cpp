@@ -202,8 +202,11 @@ public:
 				action = std::make_shared<bubbleActions::StartProcedure>(procContainerId, intersectedShape.id);
 			}
 		}
-		else if (actionType == bubbleInventoryItemType::TIMES_ONE) {
+		else if (actionType == bubbleInventoryItemType::MUL_ONE) {
 			action = std::make_shared<bubbleActions::MulOne>(intersectedShape.id);
+		}
+		else if (actionType == bubbleInventoryItemType::MUL_NEGATIVE_ONE) {
+			action = std::make_shared<bubbleActions::MulNegativeOne>(intersectedShape.id);
 		}
 		else if (actionType == bubbleInventoryItemType::COMPRESS) {
 			action = std::make_shared<bubbleActions::Compress>(intersectedShape.id);
@@ -320,7 +323,7 @@ public:
 
 
 		auto& inp = gameState->gameInput;
-		bool hotKeyPressed = inp.pop || inp.comp || inp.mulOne || inp.sim || inp.bub || inp.proc || inp.can
+		bool hotKeyPressed = inp.pop || inp.comp || inp.mulOne || inp.mulNegativeOne || inp.sim || inp.bub || inp.proc || inp.can
 			|| inp.two
 			|| inp.three
 			|| inp.four
@@ -348,7 +351,10 @@ public:
 						inventoryAction(gameState, bubbleInventoryItemType::COMPRESS, middle::Id(), intersectingShape);
 					}
 					if (gameState->gameInput.mulOne) {
-						inventoryAction(gameState, bubbleInventoryItemType::TIMES_ONE, middle::Id(), intersectingShape);
+						inventoryAction(gameState, bubbleInventoryItemType::MUL_ONE, middle::Id(), intersectingShape);
+					}
+					if (gameState->gameInput.mulNegativeOne) {
+						inventoryAction(gameState, bubbleInventoryItemType::MUL_NEGATIVE_ONE, middle::Id(), intersectingShape);
 					}
 					if (gameState->gameInput.sim) {
 						inventoryAction(gameState, bubbleInventoryItemType::SIMPLIFY, middle::Id(), intersectingShape);

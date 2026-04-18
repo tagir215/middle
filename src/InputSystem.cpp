@@ -100,10 +100,12 @@ public:
 		if (gameState->applicationMode == middle::ApplicationMode::GAME_MODE) {
 			gameState->gameInput.pop = false;
 			gameState->gameInput.mulOne = false;
+			gameState->gameInput.mulNegativeOne = false;
 			gameState->gameInput.comp = false;
 			gameState->gameInput.sim = false;
 			gameState->gameInput.bub = false;
 			gameState->gameInput.proc = false;
+			gameState->gameInput.can = false;
 			gameState->gameInput.zoomIn = false;
 			gameState->gameInput.zoomOut = false;
 			gameState->gameInput.panUp = false;
@@ -126,6 +128,7 @@ public:
 				gameState->gameInput.can = IsKeyPressed(KEY_V);
 				gameState->gameInput.bub = IsKeyPressed(KEY_B);
 				gameState->gameInput.mulOne = IsKeyPressed(KEY_N);
+				gameState->gameInput.mulNegativeOne = IsKeyPressed(KEY_M);
 				gameState->gameInput.proc = IsKeyPressed(KEY_E);
 				gameState->gameInput.undo = IsKeyPressed(KEY_SPACE);
 				gameState->gameInput.one = IsKeyPressed(KEY_ONE);

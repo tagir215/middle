@@ -55,6 +55,7 @@ namespace middle {
 	struct GameInput {
 		bool pop = false;
 		bool mulOne = false;
+		bool mulNegativeOne = false;
 		bool comp = false;
 		bool sim = false;
 		bool bub = false;
