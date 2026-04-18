@@ -9,7 +9,7 @@ namespace bubbleColors {
 	inline Color BUBBLE_OUTLINE = WHITE;
 	inline Color BUBBLE_BACKGROUND = {0, 0, 0, 10};
 	inline Color BUBBLE_BACKGROUND_INVERSE = {0, 255, 0, 20};
-	inline Color VARIABLE_OUTLINE = BUBBLE_OUTLINE;
+	inline Color VARIABLE_OUTLINE = {100, 20,20 , 100};
 	inline Color VARIABLE_TEXT = WHITE;
 	inline Color HOVERED_ITEM = {255,255,255,150};
 	inline Color MULTIPLICATION_CONNECTION = RED;

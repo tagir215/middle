@@ -71,6 +71,7 @@ public:
 		variableCache->addType<components::Layer>();
 		variableCache->addType<components::BubbleVariable>();
 		variableCache->addType<components::Circle>();
+		variableCache->addType<components::Circle>();
 		variableCache->addType<components::RuntimeHiddenTag>(components::NOTINTERESTED);
 		cuboidCache = middle::newCompCache(gameState);
 		cuboidCache->addType<components::Cuboid>();
@@ -191,17 +192,24 @@ public:
 				circle->radius = bubble::variableRadius;
 			}
 
+
 			auto pos = middle::getComponent<components::Position>(shape);
 			auto intersectable = middle::getComponent<components::MouseIntersectable>(shape);
 
+			float radius = circle->radius;
 			float fontSize = bubble::variableTextFontSize;
 			if (intersectable && intersectable->intersectingTop) {
-				fontSize *= 1.5f;
+				fontSize *= 1.2f;
+				radius *= 1.2f;
 			}
 			Color color;
 			color = bubbleColors::POSITIVE_UNIT;
 			if (variable->isNegative) {
 				color = bubbleColors::NEGATIVE_UNIT;
+			}
+			Color backgroundColor = bubbleColors::BUBBLE_BACKGROUND;
+			if ((bubble->inverse)) {
+				backgroundColor = bubbleColors::BUBBLE_BACKGROUND_INVERSE;
 			}
 
 			middle::RenderItem variableText;
@@ -212,6 +220,16 @@ public:
 			variableText.fontSize = fontSize;
 			variableText.disableDepthTest = isUiItem;
 			gameState->renderData.push_back(variableText);
+
+			middle::RenderItem variableCircle;
+			variableCircle.type = middle::RenderItemType::CIRCLE;
+			variableCircle.center = variableText.center;
+			variableCircle.radius = radius;
+			variableCircle.backgroundColor = backgroundColor;
+			variableCircle.color = bubbleColors::VARIABLE_OUTLINE;
+			variableCircle.disableDepthTest = isUiItem;
+			variableCircle.layer = layer->layer + 1;
+			gameState->renderData.push_back(variableCircle);
 		}
 
 

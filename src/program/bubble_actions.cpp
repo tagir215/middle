@@ -1710,6 +1710,7 @@ namespace bubbleActions {
 
 	void InsertAsXOverX::execute(middle::GameState* gameState)
 	{
+
 		Vector3 currPos = middle::getShapePosition(gameState, newTermId.index);
 		middle::moveShape(gameState, newTermId.index, targetPos - currPos);
 
@@ -1770,6 +1771,13 @@ namespace bubbleActions {
 
 	void InsertAsXMinusX::execute(middle::GameState* gameState)
 	{
+		auto& shapeToAddInto = middle::getShape(gameState, shapeToAddIntoId.index);
+		// don't add to variable
+		if (middle::getComponent<components::BubbleVariable>(shapeToAddInto)) {
+			cancelled = true;
+			return;
+		}
+
 		Vector3 currppos = middle::getShapePosition(gameState, newTermId.index);
 		middle::moveShape(gameState, newTermId.index, targetPos - currppos);
 		middle::Id inverseFriend = deepCopyShape(gameState, newTermId.index);
