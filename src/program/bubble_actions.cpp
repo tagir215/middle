@@ -1523,37 +1523,71 @@ namespace bubbleActions {
 		return middle::Id();
 	}
 
-	middle::Id simplifyToOneOld(middle::GameState* gameState, middle::Id fractionId) {
-		middle::Shape& fractionShape = middle::getShape(gameState, fractionId.index);
-		assert(middle::getComponent<components::FractionalComponent>(fractionShape));
+	middle::Id simplifyToSame(middle::GameState* gameState, middle::Id bubbleId) {
+		auto& shape = middle::getShape(gameState, bubbleId.index);
+		auto expComp = middle::getComponent<components::ExponentComponent>(shape);
 
-		std::vector < middle::Id>fractionChildren;
-		middle::getChildren(gameState, fractionId, fractionChildren);
-		middle::Id quotientId = bubble::fractionQuotient(gameState, fractionId);
-		std::vector < middle::Id>quotientChildren;
-		middle::getChildren(gameState, quotientId, quotientChildren);
-
-		if (quotientChildren.size() == 0) {
-			return middle::Id();
-		}
-
-		middle::Id firstChild = quotientChildren[0];
-		auto& firstChildShape = middle::getShape(gameState, firstChild.index);
-
-		int fractionDividend = fractionChildren.size();
-		if (fractionDividend != quotientChildren.size()) {
-			return middle::Id();
-		}
-
-		for (int i = 1; i < quotientChildren.size(); ++i) {
-			if (!bubble::matchingBubbles(gameState, quotientChildren[i], firstChild)) {
+		// simplify exp
+		if (expComp) {
+			std::vector<middle::Id>children;
+			middle::getChildren(gameState, shape.id, children);
+			if (children.size() != 1) {
 				return middle::Id();
+			}
+
+			auto& childShape = middle::getShape(gameState, children[0].index);
+			auto childExp = middle::getComponent<components::ExponentComponent>(childShape);
+			float powerA = expComp->isInverse ? 1.0f / expComp->power : expComp->power;
+			float powerB = childExp->isInverse ? 1.0f / childExp->power : childExp->power;
+
+			// check that same
+			const float tolerance = 1e-8f;
+			if (std::abs(powerA * powerB - 1) > tolerance) {
+				return middle::Id();
+			}
+			middle::Id copyId = middle::deepCopyShape(gameState, childShape.id.index);
+			middle::Shape& copyShape = middle::getShape(gameState, copyId.index);
+			middle::queueComponentDeletion<components::ExponentComponent>(gameState, copyShape.id);
+			return copyShape.id;
+		}
+
+		// remove mul ones
+		middle::Id copyId = middle::deepCopyShape(gameState, bubbleId.index);
+		bool unlinkdedSomething = false;
+		std::vector<middle::Id> copyChildren;
+		middle::getChildren(gameState, copyId, copyChildren);
+
+		for (middle::Id& id : copyChildren) {
+			auto& childShape = middle::getShape(gameState, id.index);
+			auto mul = middle::getComponent<components::BubbleMultiplyComponent>(childShape);
+			if (!mul) {
+				continue;
+			}
+			std::vector<middle::Id> mulChildren;
+			middle::getChildren(gameState, id, mulChildren);
+			for (int i = mulChildren.size() - 1; i >= 0; --i) {
+				auto& mulChildId = mulChildren[i];
+				if (bubble::isBubbleWithValueOne(gameState, mulChildId)) {
+					auto unlinkAction = UnlinkMultiplicationTerm(childShape.id, mulChildId);
+					middle::deleteShapeRecursive(gameState, mulChildId.index);
+					unlinkdedSomething = true;
+					if (unlinkAction.resultShapeId != childShape.id) {
+						break;
+					}
+				}
 			}
 		}
 
-		middle::Id unitCopyId = middle::deepCopyShape(gameState, firstChild.index);
-		return unitCopyId;
+		if (unlinkdedSomething) {
+			return copyId;
+		}
+		else {
+			middle::deleteShapeRecursive(gameState, copyId.index);
+		}
+
+		return middle::Id();
 	}
+
 
 	void Simplify::execute(middle::GameState* gameState)
 	{
@@ -1571,79 +1605,42 @@ namespace bubbleActions {
 			return;
 		}
 
-		if (expComp) {
-			std::vector<middle::Id>children;
-			middle::getChildren(gameState, shape.id, children);
+		middle::Id replacementShapeId;
 
-			if (children.size() != 1) {
-				cancelled = true;
-				return;
+		replacementShapeId = simplifyToSame(gameState, shape.id);
+
+		if (replacementShapeId.index == middle::UNASSIGNED) {
+
+			auto bubble = middle::getComponent<components::BubbleComponent>(shape);
+
+			if (!expComp && bubble) {
+				replacementShapeId = simplifyToOneOrNegativeOne(gameState, shape.id);
+
+				if (replacementShapeId.index == middle::UNASSIGNED) {
+					replacementShapeId = simplifyToZero(gameState, shape.id);
+				}
 			}
+		}
 
-			auto& childShape = middle::getShape(gameState, children[0].index);
-			auto childExp = middle::getComponent<components::ExponentComponent>(childShape);
-
-			float powerA = expComp->isInverse ? 1.0f / expComp->power : expComp->power;
-			float powerB = childExp->isInverse ? 1.0f / childExp->power : childExp->power;
-
-			// check that same
-			const float tolerance = 1e-8f;
-			if (std::abs(powerA * powerB - 1) > tolerance) {
-				cancelled = true;
-				return;
-			}
-
-			auto copyAction = std::make_unique<middle::EditorActionCopySingle>(childShape.id);
-			copyAction->execute(gameState);
-			middle::Id copyId = copyAction->resultId;
-			actions.push_back(std::move(copyAction));
-			resultId = copyId;
-
-			middle::Shape& copyShape = middle::getShape(gameState, copyId.index);
-			middle::queueComponentDeletion<components::ExponentComponent>(gameState, copyShape.id);
-
-			auto replaceAction = std::make_unique<Replace>(shape.id, copyId);
-			replaceAction->execute(gameState);
-			if (isProblem) {
-				middle::attachComponent<components::BubbleAlgebraProblem>(gameState, copyId);
-			}
-			if (isTopDog) {
-				middle::attachComponent<components::TopDogBubbleTag>(gameState, copyId);
-			}
-			actions.push_back(std::move(replaceAction));
+		if (replacementShapeId.index == middle::UNASSIGNED) {
+			cancelled = true;
 			return;
 		}
 
-		auto bubble = middle::getComponent<components::BubbleComponent>(shape);
-		if (bubble) {
-			middle::Id replacementShapeId = simplifyToOneOrNegativeOne(gameState, shape.id);
+		auto registerAction = std::make_unique<middle::EditorActionRegisterId>(replacementShapeId);
+		registerAction->execute(gameState);
+		actions.push_back(std::move(registerAction));
 
-			if (replacementShapeId.index == middle::UNASSIGNED) {
-				replacementShapeId = simplifyToZero(gameState, shape.id);
-			}
-
-			if (replacementShapeId.index == middle::UNASSIGNED) {
-				cancelled = true;
-				return;
-			}
-
-			auto registerAction = std::make_unique<middle::EditorActionRegisterId>(replacementShapeId);
-			registerAction->execute(gameState);
-			actions.push_back(std::move(registerAction));
-
-			auto replaceAction = std::make_unique<Replace>(shape.id, replacementShapeId);
-			replaceAction->execute(gameState);
-			actions.push_back(std::move(replaceAction));
-			if (isProblem) {
-				middle::attachComponent<components::BubbleAlgebraProblem>(gameState, replacementShapeId);
-			}
-			if (isTopDog) {
-				middle::attachComponent<components::TopDogBubbleTag>(gameState, replacementShapeId);
-			}
-			return;
+		auto replaceAction = std::make_unique<Replace>(shape.id, replacementShapeId);
+		replaceAction->execute(gameState);
+		actions.push_back(std::move(replaceAction));
+		if (isProblem) {
+			middle::attachComponent<components::BubbleAlgebraProblem>(gameState, replacementShapeId);
+		}
+		if (isTopDog) {
+			middle::attachComponent<components::TopDogBubbleTag>(gameState, replacementShapeId);
 		}
 
-		cancelled = true;
 	}
 
 	void Simplify::undo(middle::GameState* gameState)
