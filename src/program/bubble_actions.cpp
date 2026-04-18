@@ -1708,4 +1708,40 @@ namespace bubbleActions {
 	}
 
 
+	void InsertAsXOverX::execute(middle::GameState* gameState)
+	{
+		Vector3 targetPos = middle::getShapePosition(gameState, shapeToAddIntoId.index);
+
+		Vector3 currPos = middle::getShapePosition(gameState, newTermId.index);
+		middle::moveShape(gameState, newTermId.index, targetPos - currPos);
+
+		middle::Id inverseId = bubble::inverseBubble(gameState, newTermId);
+		middle::moveShape(gameState, inverseId.index, {1,0,0});
+
+		auto linkAction = LinkMultiplicationTerm(newTermId, inverseId);
+		linkAction.execute(gameState);
+		middle::Id mulId = linkAction.resultShapeId;
+
+		// container Bubble
+		middle::Shape bubbleProto = bubble::newBubble(gameState, targetPos);
+		middle::Shape& bubbleShape = middle::registerShape(gameState, bubbleProto);
+		middle::EditorActionReparent(bubbleShape.id.index, mulId.index).execute(gameState);
+
+		auto registerAction = std::make_unique<middle::EditorActionRegisterId>(bubbleShape.id);
+		registerAction->execute(gameState);
+		actions.push_back(std::move(registerAction));
+
+		auto linkToReciever = std::make_unique<LinkMultiplicationTerm>(shapeToAddIntoId, bubbleShape.id);
+		linkToReciever->execute(gameState);
+		actions.push_back(std::move(linkToReciever));
+	}
+
+	void InsertAsXOverX::undo(middle::GameState* gameState)
+	{
+		while (actions.size() > 0) {
+			actions.back()->undo(gameState);
+			actions.pop_back();
+		}
+	}
+
 }

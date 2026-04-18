@@ -43,4 +43,6 @@ namespace bubbleInventoryItemType {
 	inline int SIMPLIFY = 16;
 	inline int PROCEDURE = 17;
 	inline int CANCEL = 18;
+	inline int INSERT_X_OVER_X = 19;
+	inline int INSERT_X_MINUS_X = 20;
 }

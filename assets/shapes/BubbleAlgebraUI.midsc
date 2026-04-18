@@ -32,6 +32,10 @@ q  60_0
 q  54_0
 q  14_0
 q  26_0
+q  35_0
+q  38_0
+q  39_0
+q  40_0
 Text
 s  BubbleAlgebraUI
 f  0.000000
@@ -52,6 +56,116 @@ Offset
 f  0.000000
 f  -500.000000
 f  0.000000
+__q  40_0
+Text
+s  insert as x - x
+f  255.000000
+f  255.000000
+f  255.000000
+f  255.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  10.000000
+b  1
+MouseGrabbable
+Position
+f  -295.345825
+f  0.000122
+f  47.966064
+MouseSelectable
+MouseIntersectable
+LoopSociety
+q  73_0
+p  
+UiComponent
+i  -1
+Button
+i  5
+Sphere
+f  2.000000
+Layer
+i  1
+__q  39_0
+Position
+f  -296.445068
+f  0.000122
+f  70.552368
+MouseGrabbable
+Text
+s  insert as x/x
+f  255.000000
+f  255.000000
+f  255.000000
+f  255.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  10.000000
+b  1
+MouseSelectable
+MouseIntersectable
+LoopSociety
+q  73_0
+p  
+UiComponent
+i  -1
+Button
+i  5
+Sphere
+f  2.000000
+Layer
+i  1
+__q  38_0
+Position
+f  -341.112793
+f  0.000000
+f  46.219116
+MouseGrabbable
+MouseSelectable
+MouseIntersectable
+UiComponent
+i  4
+Button
+i  21
+Sphere
+f  2.000000
+LoopSociety
+q  73_0
+p  
+Layer
+i  1
+TextureComponent
+s  C:\Users\tagir\raylib_projects\middle\assets\textures\toggleRect.png
+f  15.000000
+Rectangle
+f  20.000000
+f  20.000000
+__q  35_0
+MouseGrabbable
+Position
+f  -341.947021
+f  0.000000
+f  70.473755
+MouseSelectable
+MouseIntersectable
+Sphere
+f  2.000000
+UiComponent
+i  4
+Button
+i  20
+LoopSociety
+q  73_0
+p  
+Layer
+i  1
+TextureComponent
+s  C:\Users\tagir\raylib_projects\middle\assets\textures\toggleRect.png
+f  15.000000
+Rectangle
+f  20.000000
+f  20.000000
 __q  26_0
 MouseGrabbable
 Position
@@ -97,15 +211,15 @@ MouseSelectable
 MouseIntersectable
 MouseGrabbable
 Position
-f  -192.409302
-f  0.595215
-f  15.878296
+f  -193.050293
+f  0.595337
+f  -20.543945
 __q  61_0
 MouseGrabbable
 Position
-f  -326.222412
-f  -0.000244
-f  -87.212524
+f  -326.863403
+f  -0.000122
+f  -123.634766
 MouseSelectable
 Layer
 i  1
@@ -128,9 +242,9 @@ i  -1
 i  -1
 __q  45_0
 Position
-f  -264.434448
-f  -0.000244
-f  -87.594360
+f  -265.075439
+f  -0.000122
+f  -124.016602
 MouseGrabbable
 MouseSelectable
 Layer
@@ -155,9 +269,9 @@ i  -1
 __q  44_0
 MouseGrabbable
 Position
-f  -265.008057
-f  -0.000122
-f  -27.826294
+f  -265.649048
+f  0.000000
+f  -64.248535
 MouseSelectable
 Layer
 i  1
@@ -180,9 +294,9 @@ i  -1
 i  -1
 __q  145_0
 Position
-f  -326.416504
-f  -0.000122
-f  -27.446411
+f  -327.057495
+f  0.000000
+f  -63.868652
 MouseGrabbable
 MouseSelectable
 Layer
@@ -207,9 +321,9 @@ i  -1
 __q  206_0
 MouseGrabbable
 Position
-f  -326.523926
-f  -0.000122
-f  32.999756
+f  -327.164917
+f  0.000000
+f  -3.422485
 MouseSelectable
 Layer
 i  1
@@ -232,9 +346,9 @@ i  -1
 i  -1
 __q  62_0
 Position
-f  -265.333862
-f  -0.000244
-f  33.088013
+f  -265.974854
+f  -0.000122
+f  -3.334229
 MouseGrabbable
 MouseSelectable
 Layer
@@ -472,7 +586,7 @@ Layer
 i  0
 __q  191_0
 Text
-s  add
+s  add both sides
 f  255.000000
 f  255.000000
 f  255.000000
@@ -483,9 +597,9 @@ f  0.000000
 f  10.000000
 b  1
 Position
-f  -309.176636
-f  -0.000122
-f  102.524170
+f  -293.325317
+f  -0.000488
+f  118.989258
 MouseGrabbable
 MouseSelectable
 MouseIntersectable
@@ -502,7 +616,7 @@ Layer
 i  1
 __q  190_0
 Text
-s  mul
+s  multiply both sides
 f  255.000000
 f  255.000000
 f  255.000000
@@ -514,9 +628,9 @@ f  10.000000
 b  1
 MouseGrabbable
 Position
-f  -276.023193
-f  -0.000122
-f  102.307129
+f  -282.966064
+f  0.000122
+f  95.689575
 MouseSelectable
 MouseIntersectable
 LoopSociety
@@ -828,9 +942,9 @@ RuntimeHiddenTag
 __q  147_0
 MouseGrabbable
 Position
-f  -309.720093
-f  -0.000122
-f  82.826904
+f  -341.607300
+f  0.000244
+f  117.276611
 MouseSelectable
 MouseIntersectable
 LoopSociety
@@ -853,9 +967,9 @@ f  20.000000
 ActiveCheckBoxTag
 __q  146_0
 Position
-f  -276.439819
-f  0.000000
-f  82.810425
+f  -341.932739
+f  0.000366
+f  94.298706
 MouseGrabbable
 MouseSelectable
 MouseIntersectable

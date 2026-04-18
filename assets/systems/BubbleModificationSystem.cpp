@@ -157,6 +157,23 @@ public:
 					registerAction->undo(gameState);
 				});
 		}
+		else if (actionType == bubbleInventoryItemType::INSERT_X_OVER_X) {
+			middle::Id copyId = copyOfInventoryItem(gameState, refId);
+			auto registerAction = std::make_shared<middle::EditorActionRegisterId>(copyId);
+			auto insertAction = std::make_shared<bubbleActions::InsertAsXOverX>(intersectedShape.id, copyId);
+			action = std::make_shared < middle::CustomActionWithUndo>(
+				[registerAction, insertAction](middle::GameState* gameState) {
+					registerAction->execute(gameState);
+					insertAction->execute(gameState);
+				},
+				[registerAction, insertAction](middle::GameState* gameState) {
+					insertAction->undo(gameState);
+					registerAction->undo(gameState);
+				});
+		}
+		else if (actionType == bubbleInventoryItemType::INSERT_X_MINUS_X) {
+
+		}
 		// pop as long as not multiplication
 		else if (actionType == bubbleInventoryItemType::POP) {
 			middle::Id& parentId = middle::getParent(gameState, intersectedShape.id);
@@ -414,6 +431,14 @@ public:
 					}
 				}
 
+				if (intersectable->intersectingTop) {
+					auto inventoryItem = middle::getComponent<components::InventoryItem>(deletionsRefShape);
+					if (inventoryItem) {
+						inventoryAction(gameState, inventoryItem->itemType, ref->idRef, intersectableShape);
+						break;
+					}
+				}
+
 				if (!intersectable->intersecting) {
 					continue;
 				}
@@ -450,11 +475,6 @@ public:
 				}
 
 
-				auto inventoryItem = middle::getComponent<components::InventoryItem>(deletionsRefShape);
-				if (inventoryItem) {
-					inventoryAction(gameState, inventoryItem->itemType, ref->idRef, intersectableShape);
-					break;
-				}
 			}
 		}
 

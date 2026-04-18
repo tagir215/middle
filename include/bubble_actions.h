@@ -18,6 +18,7 @@
 
 namespace bubbleActions{
 
+
 	class Cancel : public middle::EditorActionContainer {
 	public:
 		middle::Id id;
@@ -256,6 +257,19 @@ namespace bubbleActions{
 			this->shapeToAddIntoId = shapeToAddIntoId;
 			this->newTermId = newTermId;
 			this->targetPosition = targetPosition;
+		}
+		void execute(middle::GameState* gameState) override;
+		void undo(middle::GameState* gameState) override;
+	};
+
+	class InsertAsXOverX : public middle::EditorActionContainer {
+	public:
+		middle::Id shapeToAddIntoId;
+		middle::Id newTermId;
+		std::vector<std::unique_ptr<middle::EditorActionContainer>> actions;
+		InsertAsXOverX(middle::Id shapeToAddIntoId, middle::Id newTermId) {
+			this->shapeToAddIntoId = shapeToAddIntoId;
+			this->newTermId = newTermId;
 		}
 		void execute(middle::GameState* gameState) override;
 		void undo(middle::GameState* gameState) override;

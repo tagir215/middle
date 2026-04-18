@@ -44,5 +44,7 @@ namespace bubbleButton{
 	inline int PREV_UNIT = 17;
 	inline int SCROLL_UP = 18;
 	inline int SCROLL_DOWN = 19;
+	inline int SELECT_INSERT_X_OVER_X = 20;
+	inline int SELECT_INSERT_X_MINUS_X = 21;
 }
 

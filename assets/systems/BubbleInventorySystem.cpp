@@ -70,6 +70,12 @@ public:
 			if (term->itemType == bubbleInventoryItemType::NEW_MULTIPLICATION_TERM) {
 				term->itemType = newType;
 			}
+			if (term->itemType == bubbleInventoryItemType::INSERT_X_OVER_X) {
+				term->itemType = newType;
+			}
+			if (term->itemType == bubbleInventoryItemType::INSERT_X_MINUS_X) {
+				term->itemType = newType;
+			}
 		}
 	}
 
@@ -140,6 +146,20 @@ public:
 					deactivateCheckboxes(gameState);
 					middle::queueComponentAttachment<components::ActiveCheckBoxTag>(gameState, buttonId);
 					changeTermAdditionTypes(gameState, bubbleInventoryItemType::NEW_MULTIPLICATION_TERM);
+				}
+			}
+			if (button->function == bubbleButton::SELECT_INSERT_X_OVER_X) {
+				if (!middle::getComponent<components::ActiveCheckBoxTag>(shape)) {
+					deactivateCheckboxes(gameState);
+					middle::queueComponentAttachment<components::ActiveCheckBoxTag>(gameState, buttonId);
+					changeTermAdditionTypes(gameState, bubbleInventoryItemType::INSERT_X_OVER_X);
+				}
+			}
+			if (button->function == bubbleButton::SELECT_INSERT_X_MINUS_X) {
+				if (!middle::getComponent<components::ActiveCheckBoxTag>(shape)) {
+					deactivateCheckboxes(gameState);
+					middle::queueComponentAttachment<components::ActiveCheckBoxTag>(gameState, buttonId);
+					changeTermAdditionTypes(gameState, bubbleInventoryItemType::INSERT_X_MINUS_X);
 				}
 			}
 		}
