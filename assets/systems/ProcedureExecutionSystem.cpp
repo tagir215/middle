@@ -360,15 +360,25 @@ public:
 			middle::queueAction(gameState, bubblifyAction);
 			container->procedureTransitionStack.back().action = bubblifyAction;
 		}
-		else if (function->type == functionTypes::POWER) {
+		else if (function->type == functionTypes::CANCEL) {
 			components::InputVariable input;
 			if (!getOneInput(gameState, funcShape, input)) {
 				return;
 			}
 			assert(input.unitRef.index != middle::UNASSIGNED);
-			auto powerAction = std::make_shared<bubbleActions::ExecutePower>(input.unitRef);
-			middle::queueAction(gameState, powerAction);
-			container->procedureTransitionStack.back().action = powerAction;
+			auto cancelAction = std::make_shared<bubbleActions::Cancel>(input.unitRef);
+			middle::queueAction(gameState, cancelAction);
+			container->procedureTransitionStack.back().action = cancelAction;
+		}
+		else if (function->type == functionTypes::SIMPLIFY) {
+			components::InputVariable input;
+			if (!getOneInput(gameState, funcShape, input)) {
+				return;
+			}
+			assert(input.unitRef.index != middle::UNASSIGNED);
+			auto simplifyAction = std::make_shared<bubbleActions::Simplify>(input.unitRef);
+			middle::queueAction(gameState, simplifyAction);
+			container->procedureTransitionStack.back().action = simplifyAction;
 		}
 	}
 

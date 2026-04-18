@@ -127,8 +127,6 @@ public:
 
 
 	void inventoryAction(middle::GameState* gameState, int actionType, middle::Id& refId, middle::Shape& intersectedShape) {
-
-
 		std::shared_ptr<middle::EditorActionContainer>action;
 
 		if (actionType == bubbleInventoryItemType::NEW_ADDITION_TERM) {
@@ -215,6 +213,9 @@ public:
 		else if (actionType == bubbleInventoryItemType::SIMPLIFY) {
 			action = std::make_shared<bubbleActions::Simplify>(intersectedShape.id);
 		}
+		else if (actionType == bubbleInventoryItemType::CANCEL) {
+			action = std::make_shared<bubbleActions::Cancel>(intersectedShape.id);
+		}
 		if (action) {
 			middle::queueAction(gameState, action);
 			gameState->bubbleAlgebraState.bubbleActions.push_back(action);
@@ -291,7 +292,7 @@ public:
 
 
 		auto& inp = gameState->gameInput;
-		bool hotKeyPressed = inp.pop || inp.comp || inp.mulOne || inp.sim || inp.bub || inp.proc
+		bool hotKeyPressed = inp.pop || inp.comp || inp.mulOne || inp.sim || inp.bub || inp.proc || inp.can
 			|| inp.two
 			|| inp.three
 			|| inp.four
@@ -326,6 +327,9 @@ public:
 					}
 					if (gameState->gameInput.bub) {
 						inventoryAction(gameState, bubbleInventoryItemType::BUBBLIFY, middle::Id(), intersectingShape);
+					}
+					if (gameState->gameInput.can) {
+						inventoryAction(gameState, bubbleInventoryItemType::CANCEL, middle::Id(), intersectingShape);
 					}
 					if (gameState->gameInput.proc) {
 						inventoryAction(gameState, bubbleInventoryItemType::PROCEDURE, middle::Id(), intersectingShape);

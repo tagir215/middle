@@ -60,10 +60,10 @@ f  38.033081
 f  -81.081650
 Button
 i  19
-MouseIntersectable
-MouseSelectable
 Sphere
 f  2.000000
+MouseIntersectable
+MouseSelectable
 LoopSociety
 q  139_0
 p  
@@ -92,13 +92,13 @@ f  -65.090530
 MouseGrabbable
 Button
 i  18
+Sphere
+f  2.000000
 MouseIntersectable
 MouseSelectable
 LoopSociety
 q  139_0
 p  
-Sphere
-f  2.000000
 Offset
 f  0.000000
 f  0.000000
@@ -124,10 +124,10 @@ f  38.033081
 f  -21.648422
 Button
 i  3
-MouseIntersectable
-MouseSelectable
 Sphere
 f  2.000000
+MouseIntersectable
+MouseSelectable
 LoopSociety
 q  139_0
 p  
@@ -141,6 +141,8 @@ __q  159_0
 MouseSelectable
 Button
 i  4
+Sphere
+f  2.000000
 MouseGrabbable
 Position
 f  121.641975
@@ -161,8 +163,6 @@ MouseIntersectable
 LoopSociety
 q  139_0
 p  
-Sphere
-f  2.000000
 Offset
 f  0.000000
 f  0.000000
@@ -173,6 +173,8 @@ __q  56_0
 MouseSelectable
 Button
 i  2
+Sphere
+f  2.000000
 MouseGrabbable
 Position
 f  121.971077
@@ -193,8 +195,6 @@ MouseIntersectable
 LoopSociety
 q  139_0
 p  
-Sphere
-f  2.000000
 Offset
 f  0.000000
 f  0.000000
@@ -356,6 +356,8 @@ MouseGrabbable
 MouseSelectable
 Sphere
 f  2.000000
+Button
+i  0
 UiComponent
 i  -1
 LoopSociety
@@ -374,8 +376,6 @@ f  5.000000
 b  1
 Circle
 f  15.000000
-Button
-i  0
 Layer
 i  0
 TextureComponent
@@ -396,6 +396,8 @@ i  -1
 MouseSelectable
 Sphere
 f  2.000000
+Button
+i  -1
 UiComponent
 i  -1
 LoopSociety
@@ -414,8 +416,6 @@ f  5.000000
 b  1
 Circle
 f  10.000000
-Button
-i  -1
 TextureComponent
 s  C:\Users\tagir\raylib_projects\middle\assets\textures\navRect.png
 f  15.000000
@@ -446,6 +446,7 @@ q  18_0
 q  32_0
 q  102_0
 q  11_0
+q  67_0
 Rectangle
 f  250.000000
 f  100.000000
@@ -453,10 +454,84 @@ UiComponent
 i  -1
 Layer
 i  0
+__q  67_0
+MouseSelectable
+MouseIntersectable
+CodeFunction
+i  23
+Sphere
+f  2.000000
+LoopSociety
+q  93_0
+p  
+q  68_0
+Rectangle
+f  20.000000
+f  15.000000
+Position
+f  106.257004
+f  -45.076660
+f  88.736816
+MouseGrabbable
+Text
+s  CANCEL
+f  255.000000
+f  255.000000
+f  0.000000
+f  255.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  4.000000
+b  1
+Offset
+f  0.000000
+f  0.000000
+f  0.000000
+UiComponent
+i  8
+Layer
+i  3
+__q  68_0
+Position
+f  86.257004
+f  -45.076660
+f  88.736816
+MouseGrabbable
+Text
+s  
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  3.000000
+b  1
+Circle
+f  4.000000
+MouseSelectable
+MouseIntersectable
+Sphere
+f  2.000000
+LoopSociety
+q  67_2
+p  
+InputVariable
+q  -1_0
+s  
+q  -1_0
+i  0
+UiComponent
+i  9
+Layer
+i  3
 __q  11_0
 MouseSelectable
 CodeFunction
 i  22
+MouseIntersectable
 Sphere
 f  2.000000
 LoopSociety
@@ -466,7 +541,6 @@ q  19_0
 Rectangle
 f  20.000000
 f  15.000000
-MouseIntersectable
 MouseGrabbable
 Position
 f  65.637451
@@ -503,13 +577,13 @@ f  0.000000
 f  0.000000
 f  3.000000
 b  1
-Circle
-f  4.000000
 MouseGrabbable
 Position
 f  45.637451
 f  -45.076660
 f  88.736816
+Circle
+f  4.000000
 MouseSelectable
 MouseIntersectable
 Sphere
@@ -529,6 +603,7 @@ i  3
 __q  102_0
 CodeFunction
 i  21
+MouseIntersectable
 MouseSelectable
 Sphere
 f  2.000000
@@ -540,7 +615,6 @@ q  165_0
 Rectangle
 f  20.000000
 f  15.000000
-MouseIntersectable
 MouseGrabbable
 Position
 f  29.923164
@@ -637,9 +711,9 @@ Layer
 i  3
 __q  32_0
 MouseIntersectable
-MouseSelectable
 CodeFunction
 i  19
+MouseSelectable
 Sphere
 f  2.000000
 LoopSociety
@@ -710,9 +784,9 @@ Layer
 i  3
 __q  18_0
 MouseIntersectable
-MouseSelectable
 CodeFunction
 i  17
+MouseSelectable
 Sphere
 f  2.000000
 LoopSociety
@@ -759,13 +833,13 @@ f  0.000000
 f  0.000000
 f  3.000000
 b  1
-Circle
-f  4.000000
 MouseGrabbable
 Position
 f  -61.505417
 f  -45.076660
 f  88.736816
+Circle
+f  4.000000
 MouseIntersectable
 Sphere
 f  2.000000
@@ -783,9 +857,9 @@ Layer
 i  3
 __q  111_0
 MouseIntersectable
-MouseSelectable
 CodeFunction
 i  3
+MouseSelectable
 Sphere
 f  2.000000
 LoopSociety
@@ -860,6 +934,7 @@ f  20.000000
 f  15.000000
 CodeFunction
 i  0
+MouseIntersectable
 MouseSelectable
 Sphere
 f  2.000000
@@ -868,7 +943,6 @@ q  93_0
 p  
 q  96_0
 q  97_0
-MouseIntersectable
 Position
 f  -112.934006
 f  -45.076660

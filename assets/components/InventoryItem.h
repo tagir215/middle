@@ -42,4 +42,5 @@ namespace bubbleInventoryItemType {
 	inline int BUBBLIFY = 15;
 	inline int SIMPLIFY = 16;
 	inline int PROCEDURE = 17;
+	inline int CANCEL = 18;
 }

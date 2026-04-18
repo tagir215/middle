@@ -18,6 +18,18 @@
 
 namespace bubbleActions{
 
+	class Cancel : public middle::EditorActionContainer {
+	public:
+		middle::Id id;
+		middle::Id resultId;
+		std::vector<std::unique_ptr<middle::EditorActionContainer>> actions;
+		Cancel(middle::Id id) {
+			this->id = id;
+		}
+		void execute(middle::GameState* gameState) override;
+		void undo(middle::GameState* gameState) override;
+	};
+
 	class Simplify : public middle::EditorActionContainer {
 	public:
 		middle::Id id;
@@ -171,6 +183,19 @@ namespace bubbleActions{
 		middle::Id id;
 		Pop(middle::Id id);
 		std::vector<std::unique_ptr<middle::EditorActionContainer>> actions;
+		void execute(middle::GameState* gameState) override;
+		void undo(middle::GameState* gameState) override;
+	};
+
+	class ReplaceBubbleAndTransferTags : public middle::EditorActionContainer {
+	public:
+		middle::Id shapeToReplaceId;
+		middle::Id replacingShapeId;
+		std::vector<std::unique_ptr<middle::EditorActionContainer>> actions;
+		ReplaceBubbleAndTransferTags(middle::Id shapeToReplace, middle::Id replacingShape) {
+			this->shapeToReplaceId = shapeToReplace;
+			this->replacingShapeId = replacingShape;
+		}
 		void execute(middle::GameState* gameState) override;
 		void undo(middle::GameState* gameState) override;
 	};

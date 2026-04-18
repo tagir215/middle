@@ -123,9 +123,10 @@ public:
 				gameState->gameInput.pop = IsKeyPressed(KEY_Z);
 				gameState->gameInput.sim = IsKeyPressed(KEY_X);
 				gameState->gameInput.comp = IsKeyPressed(KEY_C);
-				gameState->gameInput.proc = IsKeyPressed(KEY_E);
-				gameState->gameInput.mulOne = IsKeyPressed(KEY_V);
+				gameState->gameInput.can = IsKeyPressed(KEY_V);
 				gameState->gameInput.bub = IsKeyPressed(KEY_B);
+				gameState->gameInput.mulOne = IsKeyPressed(KEY_N);
+				gameState->gameInput.proc = IsKeyPressed(KEY_E);
 				gameState->gameInput.undo = IsKeyPressed(KEY_SPACE);
 				gameState->gameInput.one = IsKeyPressed(KEY_ONE);
 				gameState->gameInput.two = IsKeyPressed(KEY_TWO);

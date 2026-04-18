@@ -257,6 +257,7 @@ __q  11_0
 MouseSelectable
 CodeFunction
 i  22
+MouseIntersectable
 Sphere
 f  2.000000
 LoopSociety
@@ -266,7 +267,6 @@ q  19_0
 Rectangle
 f  20.000000
 f  15.000000
-MouseIntersectable
 MouseGrabbable
 Position
 f  -85.735428
@@ -322,13 +322,6 @@ f  60.000000
 f  30.000000
 CodeBlock
 i  0
-MouseIntersectable
-MouseSelectable
-LoopSociety
-q  16_0
-p  
-Sphere
-f  2.000000
 Position
 f  7.132751
 f  -1356.211426
@@ -344,6 +337,13 @@ f  0.000000
 f  0.000000
 f  1.000000
 b  1
+MouseIntersectable
+MouseSelectable
+LoopSociety
+q  16_0
+p  
+Sphere
+f  2.000000
 Offset
 f  30.000000
 f  0.000000
@@ -372,6 +372,8 @@ i  -1
 MouseSelectable
 Sphere
 f  2.000000
+Button
+i  -1
 UiComponent
 i  -1
 LoopSociety
@@ -390,8 +392,6 @@ f  5.000000
 b  1
 Circle
 f  10.000000
-Button
-i  -1
 TextureComponent
 s  C:\Users\tagir\raylib_projects\middle\assets\textures\navRect.png
 f  15.000000
@@ -519,9 +519,9 @@ MouseIntersectable
 MouseSelectable
 __q  18_0
 MouseIntersectable
-MouseSelectable
 CodeFunction
 i  17
+MouseSelectable
 Sphere
 f  2.000000
 LoopSociety
@@ -567,13 +567,13 @@ f  0.000000
 f  0.000000
 f  3.000000
 b  1
-Circle
-f  4.000000
 MouseGrabbable
 Position
 f  -105.735428
 f  -1439.320801
 f  31.154007
+Circle
+f  4.000000
 MouseSelectable
 MouseIntersectable
 Sphere
@@ -623,13 +623,13 @@ f  0.000000
 f  0.000000
 f  3.000000
 b  1
-Circle
-f  4.000000
 MouseGrabbable
 Position
 f  -212.878296
 f  -1439.320801
 f  31.154007
+Circle
+f  4.000000
 MouseIntersectable
 Sphere
 f  2.000000
@@ -732,12 +732,6 @@ f  30.000000
 MouseIntersectable
 CodeBlock
 i  0
-MouseSelectable
-Sphere
-f  2.000000
-LoopSociety
-q  16_0
-p  
 Position
 f  7.132751
 f  -1356.211426
@@ -753,6 +747,12 @@ f  0.000000
 f  0.000000
 f  1.000000
 b  1
+MouseSelectable
+Sphere
+f  2.000000
+LoopSociety
+q  16_0
+p  
 Offset
 f  30.000000
 f  0.000000
@@ -772,13 +772,6 @@ f  60.000000
 f  30.000000
 CodeBlock
 i  0
-MouseIntersectable
-MouseSelectable
-LoopSociety
-q  16_0
-p  
-Sphere
-f  2.000000
 Position
 f  7.132751
 f  -1356.211426
@@ -794,6 +787,13 @@ f  0.000000
 f  0.000000
 f  1.000000
 b  1
+MouseIntersectable
+MouseSelectable
+LoopSociety
+q  16_0
+p  
+Sphere
+f  2.000000
 Offset
 f  30.000000
 f  0.000000
@@ -814,12 +814,6 @@ f  30.000000
 MouseIntersectable
 CodeBlock
 i  0
-MouseSelectable
-Sphere
-f  2.000000
-LoopSociety
-q  16_0
-p  
 Position
 f  7.132751
 f  -1356.211426
@@ -835,6 +829,12 @@ f  0.000000
 f  0.000000
 f  1.000000
 b  1
+MouseSelectable
+Sphere
+f  2.000000
+LoopSociety
+q  16_0
+p  
 Offset
 f  30.000000
 f  0.000000
@@ -904,12 +904,6 @@ f  30.000000
 MouseIntersectable
 CodeBlock
 i  0
-MouseSelectable
-Sphere
-f  2.000000
-LoopSociety
-q  16_0
-p  
 Position
 f  7.132751
 f  -1356.211426
@@ -925,6 +919,12 @@ f  0.000000
 f  0.000000
 f  1.000000
 b  1
+MouseSelectable
+Sphere
+f  2.000000
+LoopSociety
+q  16_0
+p  
 Offset
 f  30.000000
 f  0.000000
@@ -940,9 +940,9 @@ Layer
 i  2
 __q  32_0
 MouseIntersectable
-MouseSelectable
 CodeFunction
 i  19
+MouseSelectable
 Sphere
 f  2.000000
 LoopSociety
@@ -1026,6 +1026,8 @@ MouseGrabbable
 MouseSelectable
 Sphere
 f  2.000000
+Button
+i  0
 UiComponent
 i  -1
 LoopSociety
@@ -1044,8 +1046,6 @@ f  5.000000
 b  1
 Circle
 f  15.000000
-Button
-i  0
 Layer
 i  0
 TextureComponent
@@ -1057,13 +1057,6 @@ f  60.000000
 f  30.000000
 CodeBlock
 i  0
-MouseIntersectable
-MouseSelectable
-LoopSociety
-q  16_0
-p  
-Sphere
-f  2.000000
 Position
 f  7.132751
 f  -1356.211426
@@ -1079,6 +1072,13 @@ f  0.000000
 f  0.000000
 f  1.000000
 b  1
+MouseIntersectable
+MouseSelectable
+LoopSociety
+q  16_0
+p  
+Sphere
+f  2.000000
 Offset
 f  30.000000
 f  0.000000
@@ -1121,12 +1121,12 @@ MouseSelectable
 MouseIntersectable
 Button
 i  0
+UiComponent
+i  -1
 Offset
 f  0.000000
 f  0.000000
 f  0.000000
-UiComponent
-i  -1
 __q  37_0
 Text
 s  ProcedureName
@@ -1160,12 +1160,6 @@ f  30.000000
 MouseIntersectable
 CodeBlock
 i  0
-MouseSelectable
-Sphere
-f  2.000000
-LoopSociety
-q  16_0
-p  
 Position
 f  7.132751
 f  -1356.211426
@@ -1181,6 +1175,12 @@ f  0.000000
 f  0.000000
 f  1.000000
 b  1
+MouseSelectable
+Sphere
+f  2.000000
+LoopSociety
+q  16_0
+p  
 Offset
 f  30.000000
 f  0.000000
@@ -1200,13 +1200,6 @@ f  60.000000
 f  30.000000
 CodeBlock
 i  0
-MouseIntersectable
-MouseSelectable
-LoopSociety
-q  16_0
-p  
-Sphere
-f  2.000000
 Position
 f  7.132751
 f  -1356.211426
@@ -1222,6 +1215,13 @@ f  0.000000
 f  0.000000
 f  1.000000
 b  1
+MouseIntersectable
+MouseSelectable
+LoopSociety
+q  16_0
+p  
+Sphere
+f  2.000000
 Offset
 f  30.000000
 f  0.000000
@@ -1242,12 +1242,6 @@ f  30.000000
 MouseIntersectable
 CodeBlock
 i  0
-MouseSelectable
-Sphere
-f  2.000000
-LoopSociety
-q  16_0
-p  
 Position
 f  7.132751
 f  -1356.211426
@@ -1263,6 +1257,12 @@ f  0.000000
 f  0.000000
 f  1.000000
 b  1
+MouseSelectable
+Sphere
+f  2.000000
+LoopSociety
+q  16_0
+p  
 Offset
 f  30.000000
 f  0.000000
@@ -1282,13 +1282,6 @@ f  60.000000
 f  30.000000
 CodeBlock
 i  0
-MouseIntersectable
-MouseSelectable
-LoopSociety
-q  16_0
-p  
-Sphere
-f  2.000000
 Position
 f  7.132751
 f  -1356.211426
@@ -1304,6 +1297,13 @@ f  0.000000
 f  0.000000
 f  1.000000
 b  1
+MouseIntersectable
+MouseSelectable
+LoopSociety
+q  16_0
+p  
+Sphere
+f  2.000000
 Offset
 f  30.000000
 f  0.000000
@@ -1324,12 +1324,6 @@ f  30.000000
 MouseIntersectable
 CodeBlock
 i  0
-MouseSelectable
-Sphere
-f  2.000000
-LoopSociety
-q  16_0
-p  
 Position
 f  7.132751
 f  -1356.211426
@@ -1345,6 +1339,12 @@ f  0.000000
 f  0.000000
 f  1.000000
 b  1
+MouseSelectable
+Sphere
+f  2.000000
+LoopSociety
+q  16_0
+p  
 Offset
 f  30.000000
 f  0.000000
@@ -1364,13 +1364,6 @@ f  60.000000
 f  30.000000
 CodeBlock
 i  0
-MouseIntersectable
-MouseSelectable
-LoopSociety
-q  16_0
-p  
-Sphere
-f  2.000000
 Position
 f  7.132751
 f  -1356.211426
@@ -1386,6 +1379,13 @@ f  0.000000
 f  0.000000
 f  1.000000
 b  1
+MouseIntersectable
+MouseSelectable
+LoopSociety
+q  16_0
+p  
+Sphere
+f  2.000000
 Offset
 f  30.000000
 f  0.000000
@@ -1406,12 +1406,6 @@ f  30.000000
 MouseIntersectable
 CodeBlock
 i  0
-MouseSelectable
-Sphere
-f  2.000000
-LoopSociety
-q  16_0
-p  
 Position
 f  7.132751
 f  -1356.211426
@@ -1427,6 +1421,12 @@ f  0.000000
 f  0.000000
 f  1.000000
 b  1
+MouseSelectable
+Sphere
+f  2.000000
+LoopSociety
+q  16_0
+p  
 Offset
 f  30.000000
 f  0.000000
@@ -1446,13 +1446,6 @@ f  60.000000
 f  30.000000
 CodeBlock
 i  0
-MouseIntersectable
-MouseSelectable
-LoopSociety
-q  16_0
-p  
-Sphere
-f  2.000000
 Position
 f  7.132751
 f  -1356.211426
@@ -1468,6 +1461,13 @@ f  0.000000
 f  0.000000
 f  1.000000
 b  1
+MouseIntersectable
+MouseSelectable
+LoopSociety
+q  16_0
+p  
+Sphere
+f  2.000000
 Offset
 f  30.000000
 f  0.000000
@@ -1488,12 +1488,6 @@ f  30.000000
 MouseIntersectable
 CodeBlock
 i  0
-MouseSelectable
-Sphere
-f  2.000000
-LoopSociety
-q  16_0
-p  
 Position
 f  7.132751
 f  -1356.211426
@@ -1509,6 +1503,12 @@ f  0.000000
 f  0.000000
 f  1.000000
 b  1
+MouseSelectable
+Sphere
+f  2.000000
+LoopSociety
+q  16_0
+p  
 Offset
 f  30.000000
 f  0.000000
@@ -1528,13 +1528,6 @@ f  60.000000
 f  30.000000
 CodeBlock
 i  0
-MouseIntersectable
-MouseSelectable
-LoopSociety
-q  16_0
-p  
-Sphere
-f  2.000000
 Position
 f  7.132751
 f  -1356.211426
@@ -1550,6 +1543,13 @@ f  0.000000
 f  0.000000
 f  1.000000
 b  1
+MouseIntersectable
+MouseSelectable
+LoopSociety
+q  16_0
+p  
+Sphere
+f  2.000000
 Offset
 f  30.000000
 f  0.000000
@@ -1570,12 +1570,6 @@ f  30.000000
 MouseIntersectable
 CodeBlock
 i  0
-MouseSelectable
-Sphere
-f  2.000000
-LoopSociety
-q  16_0
-p  
 Position
 f  7.132751
 f  -1356.211426
@@ -1591,6 +1585,12 @@ f  0.000000
 f  0.000000
 f  1.000000
 b  1
+MouseSelectable
+Sphere
+f  2.000000
+LoopSociety
+q  16_0
+p  
 Offset
 f  30.000000
 f  0.000000
@@ -1610,13 +1610,6 @@ f  60.000000
 f  30.000000
 CodeBlock
 i  0
-MouseIntersectable
-MouseSelectable
-LoopSociety
-q  16_0
-p  
-Sphere
-f  2.000000
 Position
 f  7.132751
 f  -1356.211426
@@ -1632,6 +1625,13 @@ f  0.000000
 f  0.000000
 f  1.000000
 b  1
+MouseIntersectable
+MouseSelectable
+LoopSociety
+q  16_0
+p  
+Sphere
+f  2.000000
 Offset
 f  30.000000
 f  0.000000
@@ -1652,12 +1652,6 @@ f  30.000000
 MouseIntersectable
 CodeBlock
 i  0
-MouseSelectable
-Sphere
-f  2.000000
-LoopSociety
-q  16_0
-p  
 Position
 f  7.132751
 f  -1356.211426
@@ -1673,6 +1667,12 @@ f  0.000000
 f  0.000000
 f  1.000000
 b  1
+MouseSelectable
+Sphere
+f  2.000000
+LoopSociety
+q  16_0
+p  
 Offset
 f  30.000000
 f  0.000000
@@ -1692,13 +1692,6 @@ f  60.000000
 f  30.000000
 CodeBlock
 i  0
-MouseIntersectable
-MouseSelectable
-LoopSociety
-q  16_0
-p  
-Sphere
-f  2.000000
 Position
 f  7.132751
 f  -1356.211426
@@ -1714,6 +1707,13 @@ f  0.000000
 f  0.000000
 f  1.000000
 b  1
+MouseIntersectable
+MouseSelectable
+LoopSociety
+q  16_0
+p  
+Sphere
+f  2.000000
 Offset
 f  30.000000
 f  0.000000
@@ -1734,12 +1734,6 @@ f  30.000000
 MouseIntersectable
 CodeBlock
 i  0
-MouseSelectable
-Sphere
-f  2.000000
-LoopSociety
-q  16_0
-p  
 Position
 f  7.132751
 f  -1356.211426
@@ -1755,6 +1749,12 @@ f  0.000000
 f  0.000000
 f  1.000000
 b  1
+MouseSelectable
+Sphere
+f  2.000000
+LoopSociety
+q  16_0
+p  
 Offset
 f  30.000000
 f  0.000000
@@ -1774,13 +1774,6 @@ f  60.000000
 f  30.000000
 CodeBlock
 i  0
-MouseIntersectable
-MouseSelectable
-LoopSociety
-q  16_0
-p  
-Sphere
-f  2.000000
 Position
 f  7.132751
 f  -1356.211426
@@ -1796,6 +1789,13 @@ f  0.000000
 f  0.000000
 f  1.000000
 b  1
+MouseIntersectable
+MouseSelectable
+LoopSociety
+q  16_0
+p  
+Sphere
+f  2.000000
 Offset
 f  30.000000
 f  0.000000
@@ -1828,12 +1828,6 @@ f  30.000000
 MouseIntersectable
 CodeBlock
 i  0
-MouseSelectable
-Sphere
-f  2.000000
-LoopSociety
-q  16_0
-p  
 Position
 f  7.132751
 f  -1356.211426
@@ -1849,6 +1843,12 @@ f  0.000000
 f  0.000000
 f  1.000000
 b  1
+MouseSelectable
+Sphere
+f  2.000000
+LoopSociety
+q  16_0
+p  
 Offset
 f  30.000000
 f  0.000000
@@ -1866,6 +1866,8 @@ __q  56_0
 MouseSelectable
 Button
 i  2
+Sphere
+f  2.000000
 MouseGrabbable
 Position
 f  -29.401802
@@ -1886,8 +1888,6 @@ MouseIntersectable
 LoopSociety
 q  139_0
 p  
-Sphere
-f  2.000000
 Offset
 f  0.000000
 f  0.000000
@@ -1900,13 +1900,6 @@ f  60.000000
 f  30.000000
 CodeBlock
 i  0
-MouseIntersectable
-MouseSelectable
-LoopSociety
-q  16_0
-p  
-Sphere
-f  2.000000
 Position
 f  7.132751
 f  -1356.211426
@@ -1922,6 +1915,13 @@ f  0.000000
 f  0.000000
 f  1.000000
 b  1
+MouseIntersectable
+MouseSelectable
+LoopSociety
+q  16_0
+p  
+Sphere
+f  2.000000
 Offset
 f  30.000000
 f  0.000000
@@ -1942,12 +1942,6 @@ f  30.000000
 MouseIntersectable
 CodeBlock
 i  0
-MouseSelectable
-Sphere
-f  2.000000
-LoopSociety
-q  16_0
-p  
 Position
 f  7.132751
 f  -1356.211426
@@ -1963,6 +1957,12 @@ f  0.000000
 f  0.000000
 f  1.000000
 b  1
+MouseSelectable
+Sphere
+f  2.000000
+LoopSociety
+q  16_0
+p  
 Offset
 f  30.000000
 f  0.000000
@@ -1982,13 +1982,6 @@ f  60.000000
 f  30.000000
 CodeBlock
 i  0
-MouseIntersectable
-MouseSelectable
-LoopSociety
-q  16_0
-p  
-Sphere
-f  2.000000
 Position
 f  7.132751
 f  -1356.211426
@@ -2004,6 +1997,13 @@ f  0.000000
 f  0.000000
 f  1.000000
 b  1
+MouseIntersectable
+MouseSelectable
+LoopSociety
+q  16_0
+p  
+Sphere
+f  2.000000
 Offset
 f  30.000000
 f  0.000000
@@ -2024,12 +2024,6 @@ f  30.000000
 MouseIntersectable
 CodeBlock
 i  0
-MouseSelectable
-Sphere
-f  2.000000
-LoopSociety
-q  16_0
-p  
 Position
 f  7.132751
 f  -1356.211426
@@ -2045,6 +2039,12 @@ f  0.000000
 f  0.000000
 f  1.000000
 b  1
+MouseSelectable
+Sphere
+f  2.000000
+LoopSociety
+q  16_0
+p  
 Offset
 f  30.000000
 f  0.000000
@@ -2064,13 +2064,6 @@ f  60.000000
 f  30.000000
 CodeBlock
 i  0
-MouseIntersectable
-MouseSelectable
-LoopSociety
-q  16_0
-p  
-Sphere
-f  2.000000
 Position
 f  7.132751
 f  -1356.211426
@@ -2086,6 +2079,13 @@ f  0.000000
 f  0.000000
 f  1.000000
 b  1
+MouseIntersectable
+MouseSelectable
+LoopSociety
+q  16_0
+p  
+Sphere
+f  2.000000
 Offset
 f  30.000000
 f  0.000000
@@ -2106,12 +2106,6 @@ f  30.000000
 MouseIntersectable
 CodeBlock
 i  0
-MouseSelectable
-Sphere
-f  2.000000
-LoopSociety
-q  16_0
-p  
 Position
 f  7.132751
 f  -1356.211426
@@ -2127,6 +2121,12 @@ f  0.000000
 f  0.000000
 f  1.000000
 b  1
+MouseSelectable
+Sphere
+f  2.000000
+LoopSociety
+q  16_0
+p  
 Offset
 f  30.000000
 f  0.000000
@@ -2146,13 +2146,6 @@ f  60.000000
 f  30.000000
 CodeBlock
 i  0
-MouseIntersectable
-MouseSelectable
-LoopSociety
-q  16_0
-p  
-Sphere
-f  2.000000
 Position
 f  7.132751
 f  -1356.211426
@@ -2168,6 +2161,13 @@ f  0.000000
 f  0.000000
 f  1.000000
 b  1
+MouseIntersectable
+MouseSelectable
+LoopSociety
+q  16_0
+p  
+Sphere
+f  2.000000
 Offset
 f  30.000000
 f  0.000000
@@ -2200,13 +2200,13 @@ f  -122.673340
 MouseGrabbable
 Button
 i  18
+Sphere
+f  2.000000
 MouseIntersectable
 MouseSelectable
 LoopSociety
 q  139_0
 p  
-Sphere
-f  2.000000
 Offset
 f  0.000000
 f  0.000000
@@ -2252,10 +2252,10 @@ f  -1356.211060
 f  -138.664459
 Button
 i  19
-MouseIntersectable
-MouseSelectable
 Sphere
 f  2.000000
+MouseIntersectable
+MouseSelectable
 LoopSociety
 q  139_0
 p  
@@ -2265,6 +2265,79 @@ f  0.000000
 f  0.000000
 Circle
 f  6.000000
+__q  67_0
+MouseSelectable
+MouseIntersectable
+CodeFunction
+i  23
+Sphere
+f  2.000000
+LoopSociety
+q  93_0
+p  
+q  68_0
+Rectangle
+f  20.000000
+f  15.000000
+Position
+f  -45.115871
+f  -1439.320801
+f  31.154007
+MouseGrabbable
+Text
+s  CANCEL
+f  255.000000
+f  255.000000
+f  0.000000
+f  255.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  4.000000
+b  1
+Offset
+f  0.000000
+f  0.000000
+f  0.000000
+UiComponent
+i  8
+Layer
+i  3
+__q  68_0
+Position
+f  -65.115875
+f  -1439.320801
+f  31.154007
+MouseGrabbable
+Text
+s  
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  3.000000
+b  1
+Circle
+f  4.000000
+MouseSelectable
+MouseIntersectable
+Sphere
+f  2.000000
+LoopSociety
+q  67_2
+p  
+InputVariable
+q  -1_0
+s  
+q  -1_0
+i  0
+UiComponent
+i  9
+Layer
+i  3
 __q  93_0
 Inventory
 b  1
@@ -2289,6 +2362,7 @@ q  18_0
 q  32_0
 q  102_0
 q  11_0
+q  67_0
 Rectangle
 f  250.000000
 f  100.000000
@@ -2302,6 +2376,7 @@ f  20.000000
 f  15.000000
 CodeFunction
 i  0
+MouseIntersectable
 MouseSelectable
 Sphere
 f  2.000000
@@ -2310,7 +2385,6 @@ q  93_0
 p  
 q  96_0
 q  97_0
-MouseIntersectable
 Position
 f  -264.306885
 f  -1439.320801
@@ -2408,6 +2482,7 @@ i  3
 __q  102_0
 CodeFunction
 i  21
+MouseIntersectable
 MouseSelectable
 Sphere
 f  2.000000
@@ -2419,7 +2494,6 @@ q  165_0
 Rectangle
 f  20.000000
 f  15.000000
-MouseIntersectable
 MouseGrabbable
 Position
 f  -121.449715
@@ -2529,9 +2603,9 @@ MouseSelectable
 MouseIntersectable
 __q  111_0
 MouseIntersectable
-MouseSelectable
 CodeFunction
 i  3
+MouseSelectable
 Sphere
 f  2.000000
 LoopSociety
@@ -2662,10 +2736,10 @@ f  -1356.211060
 f  -79.231232
 Button
 i  3
-MouseIntersectable
-MouseSelectable
 Sphere
 f  2.000000
+MouseIntersectable
+MouseSelectable
 LoopSociety
 q  139_0
 p  
@@ -2679,6 +2753,8 @@ __q  159_0
 MouseSelectable
 Button
 i  4
+Sphere
+f  2.000000
 MouseGrabbable
 Position
 f  -29.730904
@@ -2699,8 +2775,6 @@ MouseIntersectable
 LoopSociety
 q  139_0
 p  
-Sphere
-f  2.000000
 Offset
 f  0.000000
 f  0.000000
@@ -2748,13 +2822,6 @@ f  60.000000
 f  30.000000
 CodeBlock
 i  0
-MouseIntersectable
-MouseSelectable
-LoopSociety
-q  16_0
-p  
-Sphere
-f  2.000000
 Position
 f  7.132751
 f  -1356.211426
@@ -2770,6 +2837,13 @@ f  0.000000
 f  0.000000
 f  1.000000
 b  1
+MouseIntersectable
+MouseSelectable
+LoopSociety
+q  16_0
+p  
+Sphere
+f  2.000000
 Offset
 f  30.000000
 f  0.000000
