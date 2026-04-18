@@ -160,7 +160,7 @@ public:
 		else if (actionType == bubbleInventoryItemType::INSERT_X_OVER_X) {
 			middle::Id copyId = copyOfInventoryItem(gameState, refId);
 			auto registerAction = std::make_shared<middle::EditorActionRegisterId>(copyId);
-			auto insertAction = std::make_shared<bubbleActions::InsertAsXOverX>(intersectedShape.id, copyId);
+			auto insertAction = std::make_shared<bubbleActions::InsertAsXOverX>(intersectedShape.id, copyId, gameState->input.mouseXZ_PlanePos);
 			action = std::make_shared < middle::CustomActionWithUndo>(
 				[registerAction, insertAction](middle::GameState* gameState) {
 					registerAction->execute(gameState);
@@ -172,7 +172,18 @@ public:
 				});
 		}
 		else if (actionType == bubbleInventoryItemType::INSERT_X_MINUS_X) {
-
+			middle::Id copyId = copyOfInventoryItem(gameState, refId);
+			auto registerAction = std::make_shared<middle::EditorActionRegisterId>(copyId);
+			auto insertAction = std::make_shared<bubbleActions::InsertAsXMinusX>(intersectedShape.id, copyId, gameState->input.mouseXZ_PlanePos);
+			action = std::make_shared < middle::CustomActionWithUndo>(
+				[registerAction, insertAction](middle::GameState* gameState) {
+					registerAction->execute(gameState);
+					insertAction->execute(gameState);
+				},
+				[registerAction, insertAction](middle::GameState* gameState) {
+					insertAction->undo(gameState);
+					registerAction->undo(gameState);
+				});
 		}
 		// pop as long as not multiplication
 		else if (actionType == bubbleInventoryItemType::POP) {
