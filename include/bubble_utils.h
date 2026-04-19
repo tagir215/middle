@@ -10,6 +10,7 @@ namespace bubble {
 	extern float variableRadius;
 	extern float bubbleMinRadius;
 	extern float variableTextFontSize;
+	extern float minTopDogRadius;
 
 	bool pointIntersectBubble(middle::GameState* gameState, middle::Shape& bubble, const Vector3& point);
 	// get left right top bottom of a rect containing rect children 

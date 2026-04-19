@@ -26,6 +26,7 @@ namespace bubble {
 	float variableRadius = 20;
 	float bubbleMinRadius = 10;
 	float variableTextFontSize = 25;
+	float minTopDogRadius = 50;
 
 	bool pointIntersectBubble(middle::GameState* gameState, middle::Shape& bubbleShape, const Vector3& point)
 	{

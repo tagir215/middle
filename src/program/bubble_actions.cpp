@@ -592,11 +592,12 @@ namespace bubbleActions {
 			cancelled = true;
 			return;
 		}
+
 		if (root) {
 			cancelled = true;
 			return;
 		}
-		if (!bubble && !fraction) {
+		if (!bubble) {
 			cancelled = true;
 			return;
 		}
@@ -686,7 +687,11 @@ namespace bubbleActions {
 	{
 		auto& shapeToReplace = middle::getShape(gameState, shapeToReplaceId.index);
 		bool isTopDog = middle::getComponent<components::TopDogBubbleTag>(shapeToReplace) != nullptr;
-		bool isAlgProblem = middle::getComponent<components::BubbleAlgebraProblem>(shapeToReplace) != nullptr;
+		auto algProb = middle::getComponent<components::BubbleAlgebraProblem>(shapeToReplace);
+		bool isEditable = false;
+		if (algProb) {
+			isEditable = algProb->editable;
+		}
 
 		auto replaceAction = std::make_unique<Replace>(shapeToReplace.id, replacingShapeId);
 		replaceAction->execute(gameState);
@@ -695,8 +700,9 @@ namespace bubbleActions {
 		if (isTopDog) {
 			middle::attachComponent<components::TopDogBubbleTag>(gameState, replacingShapeId);
 		}
-		if (isAlgProblem) {
-			middle::attachComponent<components::BubbleAlgebraProblem>(gameState, replacingShapeId);
+		if (algProb) {
+			auto newComp = middle::attachComponent<components::BubbleAlgebraProblem>(gameState, replacingShapeId);
+			newComp->editable = isEditable;
 		}
 	}
 
@@ -732,26 +738,6 @@ namespace bubbleActions {
 			}
 		}
 
-		//middle::Shape& recieverShape = middle::getShape(gameState, recieverShapeId.index);
-		//auto unit = middle::getComponent<components::BubbleUnit>(recieverShape);
-		//if (unit) {
-		//	Vector3 targetPos = middle::getShapePosition(gameState, recieverShape.id.index);
-		//	middle::Shape bubbleProto = bubble::newBubble(gameState, targetPos);
-		//	auto regAction = std::make_unique<middle::EditorActionRegisterShape>(bubbleProto);
-		//	regAction->execute(gameState);
-		//	middle::Id bubbleId = regAction->newShapeId;
-		//	actions.push_back(std::move(regAction));
-
-		//	auto reparentAction = std::make_unique<middle::EditorActionReparent>(bubbleId.index, recieverShapeId.index);
-		//	reparentAction->execute(gameState);
-		//	actions.push_back(std::move(reparentAction));
-
-		//	auto reparentAction2 = std::make_unique<middle::EditorActionReparent>(parentId.index, bubbleId.index);
-		//	reparentAction2->execute(gameState);
-		//	actions.push_back(std::move(reparentAction2));
-
-		//	recieverShapeId = bubbleId;
-		//}
 
 		// else create new multiplication
 		auto newMul = std::make_unique<NewMultiplication>(recieverShapeId, linkingShapeId);
@@ -1136,6 +1122,14 @@ namespace bubbleActions {
 			cancelled = true;
 			return;
 		}
+		if (middle::getComponent<components::ExponentComponent>(shape)) {
+			cancelled = true;
+			return;
+		}
+		if (middle::getComponent<components::TopDogBubbleTag>(shape)) {
+			cancelled = true;
+			return;
+		}
 		middle::Id parentId = middle::getParent(gameState, recieverShapeId);
 		if (parentId.index == middle::UNASSIGNED) {
 			cancelled = true;
@@ -1178,6 +1172,10 @@ namespace bubbleActions {
 		auto mulOne = std::make_unique<MulOne>(recieverShapeId);
 		mulOne->execute(gameState);
 		middle::Id one = mulOne->resultShapeId;
+		if (mulOne->cancelled) {
+			cancelled = true;
+			return;
+		}
 		actions.push_back(std::move(mulOne));
 		bubble::negate(gameState, one);
 	}

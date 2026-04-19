@@ -25,6 +25,7 @@
 #include "TextureComponent.h"
 #include "RuntimeHiddenTag.h"
 #include "ActiveCheckBoxTag.h"
+#include "BubbleAlgebraProblem.h"
 
 
 class BubbleRenderSetup : public middle::MiddleGameplaySystem {
