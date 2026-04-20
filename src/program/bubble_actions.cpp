@@ -1485,18 +1485,13 @@ namespace bubbleActions {
 	}
 
 	middle::Id simplifyToZero(middle::GameState* gameState, middle::Id bubbleId) {
-		bubble::BubbleValue value = bubble::calculateBubbleValue(gameState, bubbleId);
-		bool valueIsZero = false;
-		if (value.scale == 0) {
-			valueIsZero = true;
-			for (auto& pair : value.variableValueMap) {
-				if (pair.second.scale != 0) {
-					valueIsZero = false;
-				}
-			}
-		}
+		std::unordered_map<std::string, int>randomVars;
+		int counter = 2;
+		bubble::generateRandomVariablesValues(gameState, bubbleId, randomVars, counter);
+		bubble::BubbleValue value = bubble::calculateBubbleValue(gameState, bubbleId, randomVars);
 
-		if (valueIsZero) {
+		const float epsilon = 1e-4f;
+		if (std::abs(value.scale) < epsilon) {
 			Vector3 targetPos = middle::getShapePosition(gameState, bubbleId.index);
 			auto bubbleProto = bubble::newBubble(gameState, targetPos);
 			auto& result = middle::registerShape(gameState, bubbleProto);
@@ -1507,17 +1502,16 @@ namespace bubbleActions {
 	}
 
 	middle::Id simplifyToOneOrNegativeOne(middle::GameState* gameState, middle::Id bubbleId) {
-		bool valueIsOne = false;
-		bubble::BubbleValue value = bubble::calculateBubbleValue(gameState, bubbleId);
+		std::unordered_map<std::string, int>randomVars;
+		int counter = 2;
+		bubble::generateRandomVariablesValues(gameState, bubbleId, randomVars, counter);
+		bubble::BubbleValue value = bubble::calculateBubbleValue(gameState, bubbleId, randomVars);
+
 		const float epsilon = 1e-4f;
 		float absValue = std::abs(value.scale);
+		bool valueIsOne = false;
 		if (std::abs(absValue - 1) < epsilon) {
 			valueIsOne = true;
-			for (auto& pair : value.variableValueMap) {
-				if (pair.second.scale != 0) {
-					valueIsOne = false;
-				}
-			}
 		}
 
 		if (valueIsOne) {

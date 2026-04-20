@@ -30,7 +30,6 @@ namespace bubble {
 	};
 	struct BubbleValue {
 		float scale = 0;
-		std::unordered_map<std::string, UnitValue> variableValueMap;
 	};
 	middle::Id inverseBubble(middle::GameState* gameState, middle::Id& id);
 	middle::Id topLevelBubble(middle::GameState* gameState);
@@ -41,14 +40,14 @@ namespace bubble {
 	middle::Id newEquals(middle::GameState* gameState, middle::Id bubbleAId, middle::Id bubbleBId, const Vector3& targetPos);
 	bool isIntersecting(middle::GameState* gameState, middle::Shape& shape);
 	bool unitEquals(middle::GameState* gameState, middle::Id& idA, middle::Id& idB);
-	bool exponentEquals(middle::GameState* gameState, middle::Id& idA, middle::Id& idB);
 	UnitValue unitValue(middle::GameState* gameState, middle::Id& containerId);
 	int fractionUnitCount(middle::GameState* gameState, middle::Id& fractionId);
 	bool matchingBubbles(middle::GameState* gameState, middle::Id& bubbleA, middle::Id bubbleB);
 	bool matchesStructureWithVariables(middle::GameState* gameState, middle::Id bubbleId, middle::Id algebraNodeId);
 	bool matchesStructureWithVariables(middle::GameState* gameState, middle::Id bubbleId, middle::Id algebraNodeId, std::unordered_map<std::string, middle::Id>& varOverrides);
 	void getVariableStructuresMap(middle::GameState* gameState, middle::Id structureId, std::unordered_map<std::string, std::vector<middle::Id>>& resultMap);
-	BubbleValue calculateBubbleValue(middle::GameState* gameState, middle::Id bubbleId);
+	BubbleValue calculateBubbleValue(middle::GameState* gameState, middle::Id bubbleId, std::unordered_map<std::string, int>& variableValues);
+	void generateRandomVariablesValues(middle::GameState* gameState, middle::Id bubbleId, std::unordered_map<std::string, int>& result, int& valueCounter);
 	std::unordered_map<std::string, middle::Id> generateVariableOverrides(middle::GameState* gameState, middle::Id bubbleId, middle::Id algebraRootNodeId);
 	middle::Id findMatchingBubbleWithVariables(middle::GameState* gameState, middle::Id containerId, middle::Id algebraNodeId, int targetDepth, std::unordered_map<std::string, middle::Id>& varOverrides, std::set<int>ignoreSet = {});
 	middle::Id findMatchingStructureWithVariablesFromSibling(middle::GameState* gameState, middle::Id siblingId, middle::Id algebraNodeId, std::unordered_map<std::string, middle::Id>& varOverrides);

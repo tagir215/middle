@@ -629,6 +629,19 @@ namespace bubble {
 		}
 	}
 
+	void generateRandomVariablesValues(middle::GameState* gameState, middle::Id bubbleId, std::unordered_map<std::string, int>& result, int& valueCounter) {
+		auto shape = middle::getShape(gameState, bubbleId.index);
+		auto var = middle::getComponent<components::BubbleVariable>(shape);
+		if (var && result.find(var->label) == result.end()) {
+			result[var->label] = valueCounter++;
+		}
+		std::vector<middle::Id> children;
+		middle::getChildren(gameState, bubbleId, children);
+		for (middle::Id& id : children) {
+			generateRandomVariablesValues(gameState, id, result, valueCounter);
+		}
+	}
+
 	std::unordered_map<std::string, middle::Id> generateVariableOverrides(middle::GameState* gameState, middle::Id bubbleId, middle::Id algebraRootNodeId) {
 		std::unordered_map<std::string, middle::Id> resultMap;
 
@@ -688,30 +701,36 @@ namespace bubble {
 	}
 
 
-	BubbleValue calculateBubbleValue(middle::GameState* gameState, middle::Id bubbleId)
+	BubbleValue calculateBubbleValue(middle::GameState* gameState, middle::Id bubbleId, std::unordered_map<std::string, int>& variableValues)
 	{
+
 		BubbleValue result;
 
 		auto& bubbleShape = middle::getShape(gameState, bubbleId.index);
 		auto variable = middle::getComponent<components::BubbleVariable>(bubbleShape);
 		if (variable) {
-			UnitValue value;
-			value.variableLabel = variable->label;
-			value.scale = variable->isNegative ? -1 : 1;
-			result.variableValueMap[variable->label] = value;
-			result.scale = 0;
+			result.scale = variableValues[variable->label];
+			if (variable->isNegative) {
+				result.scale = -result.scale;
+			}
 			return result;
 		}
 
 		auto node = middle::getComponent<components::AlgebraNode>(bubbleShape);
 		if (node) {
-			UnitValue value;
-			value.scale = node->value;
-			value.variableLabel = node->variableLabel;
-			result.variableValueMap[value.variableLabel] = value;
-			result.scale = 0;
+			if (getStructureType(gameState, bubbleId) == components::AlgebraNodeType::VARIABLE) {
+				result.scale = variableValues[node->variableLabel];
+				if (node->isNegative) {
+					result.scale = -result.scale;
+				}
+			}
+			else {
+				result.scale = node->value;
+			}
 			return result;
 		}
+
+
 
 		std::vector<middle::Id>children;
 		middle::getChildren(gameState, bubbleId, children);
@@ -724,37 +743,23 @@ namespace bubble {
 			}
 			auto bubble = middle::getComponent<components::BubbleComponent>(shape);
 			if (bubble) {
-				BubbleValue value = calculateBubbleValue(gameState, shape.id);
+				BubbleValue value = calculateBubbleValue(gameState, shape.id, variableValues);
 				result.scale += value.scale;
-				for (auto& pair : value.variableValueMap) {
-					if (result.variableValueMap.find(pair.first) == result.variableValueMap.end()) {
-						result.variableValueMap[pair.first] = pair.second;
-					}
-					else {
-						result.variableValueMap[pair.first].scale += pair.second.scale;
-					}
-				}
-
 			}
 			auto mul = middle::getComponent<components::BubbleMultiplyComponent>(shape);
 			if (mul) {
 				std::vector<middle::Id> mulChildren;
 				middle::getChildren(gameState, shape.id, mulChildren);
-				BubbleValue mulResult = calculateBubbleValue(gameState, mulChildren[0]);
-				for (int i = 1; i < mulChildren.size(); ++i) {
-					BubbleValue mulResult2 = calculateBubbleValue(gameState, mulChildren[i]);
-					for (auto& pair : mulResult2.variableValueMap) {
-						if (mulResult.variableValueMap.find(pair.first) == mulResult.variableValueMap.end()) {
-							mulResult.variableValueMap[pair.first] = pair.second;
-						}
-						else {
-							mulResult.variableValueMap[pair.first].scale *= pair.second.scale;
-							++mulResult.variableValueMap[pair.first].power;
-						}
+				BubbleValue mulResult;
+				mulResult.scale = 0;
+				for (int x = 0; x < mulChildren.size(); ++x) {
+					BubbleValue valueA = calculateBubbleValue(gameState, mulChildren[x], variableValues);
+					for (int y = x+1; y < mulChildren.size(); ++y) {
+						BubbleValue valueB = calculateBubbleValue(gameState, mulChildren[y], variableValues);
+						mulResult.scale += valueA.scale * valueB.scale;
 					}
-					mulResult.scale *= mulResult2.scale;
 				}
-				result = mulResult;
+				result.scale += mulResult.scale;
 			}
 		}
 
@@ -765,19 +770,10 @@ namespace bubble {
 			if (result.scale != 0) {
 				result.scale = 1.0f / result.scale;
 			}
-			for (auto& pair : result.variableValueMap) {
-				auto& val = pair.second;
-				if (val.scale != 0) {
-					val.scale = 1.0f / val.scale;
-				}
-			}
 		}
 		if (exp) {
 			float power = exp->isInverse ? 1.0f / exp->power : exp->power;
 			result.scale = std::powf(result.scale, power);
-			for (auto& pair : result.variableValueMap) {
-				pair.second.power *= power;
-			}
 		}
 
 		return result;
@@ -792,10 +788,19 @@ namespace bubble {
 			if (getStructureType(gameState, childId) == components::AlgebraNodeType::VARIABLE) {
 				auto& childShape = middle::getShape(gameState, childId.index);
 				auto node = middle::getComponent<components::AlgebraNode>(childShape);
-				if (resultMap.find(node->variableLabel) == resultMap.end()) {
-					resultMap[node->variableLabel] = {};
+				auto var = middle::getComponent<components::BubbleVariable>(childShape);
+				if (node) {
+					if (resultMap.find(node->variableLabel) == resultMap.end()) {
+						resultMap[node->variableLabel] = {};
+					}
+					resultMap[node->variableLabel].push_back(childId);
 				}
-				resultMap[node->variableLabel].push_back(childId);
+				else if (var) {
+					if (resultMap.find(var->label) == resultMap.end()) {
+						resultMap[var->label] = {};
+					}
+					resultMap[var->label].push_back(childId);
+				}
 			}
 			getVariableStructuresMap(gameState, childId, resultMap);
 		}
