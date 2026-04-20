@@ -863,7 +863,7 @@ namespace bubbleActions {
 		middle::Id compressableShapeId = loop->loopMemberIds[0];
 		bool compressableIsOne = true;
 		for (middle::Id& id : loop->loopMemberIds) {
-			if (!bubble::isBubbleWithValueOne(gameState, id)) {
+			if (!bubble::isBubbleWithValueOne(gameState, id) && !bubble::isBubbleWithValueOneNegative(gameState, id)) {
 				compressableIsOne = false;
 				compressableShapeId = id;
 				break;
@@ -871,6 +871,18 @@ namespace bubbleActions {
 		}
 
 		int compressableCount = 0;
+
+		int negativeCount = 0;
+		bool compressToNegative = false;
+		for (int i = 0; i < loop->loopMemberIds.size(); ++i) {
+			middle::Id memberId = loop->loopMemberIds[i];
+			if (bubble::isBubbleWithValueOneNegative(gameState, memberId)) {
+				++negativeCount;
+			}
+		}
+		if (negativeCount > 0 && negativeCount % 2 != 0) {
+			compressToNegative = true;
+		}
 
 		// check that all equal
 		for (int i = 0; i < loop->loopMemberIds.size(); ++i) {
@@ -880,6 +892,9 @@ namespace bubbleActions {
 				if (compressableIsOne) {
 					++compressableCount;
 				}
+				continue;
+			}
+			if (bubble::isBubbleWithValueOneNegative(gameState, memberId)) {
 				continue;
 			}
 			if (!bubble::matchingBubbles(gameState, memberId, compressableShapeId)) {
@@ -892,6 +907,7 @@ namespace bubbleActions {
 		middle::Id replacementShapeId = middle::deepCopyShape(gameState, compressableShapeId.index);
 		auto exponent = middle::attachComponent<components::ExponentComponent>(gameState, replacementShapeId);
 		exponent->power = compressableCount;
+		exponent->isNegative = compressToNegative;
 		return replacementShapeId;
 	}
 
