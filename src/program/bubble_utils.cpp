@@ -1030,6 +1030,7 @@ namespace bubble {
 				auto varComp = middle::getComponent<components::BubbleVariable>(realBubbleShape);
 				node->value = varComp->isNegative ? -1 : 1;
 				node->variableLabel = varComp->label;
+				node->isNegative = varComp->isNegative;
 			}
 			if (node->type == static_cast<int>(components::AlgebraNodeType::UNIT)) {
 				UnitValue value = unitValue(gameState, realBubbleId);

@@ -523,7 +523,7 @@ namespace middle {
 
 		std::ifstream inputFile(path);
 		if (!inputFile.is_open()) {
-			throw std::runtime_error("Failed to open file to open");
+		throw std::runtime_error("Failed to open file to open");
 		}
 		std::string line;
 

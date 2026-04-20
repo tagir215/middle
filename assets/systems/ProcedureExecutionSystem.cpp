@@ -321,6 +321,17 @@ public:
 			container->procedureTransitionStack.back().action = mulOneAction;
 		}
 
+		else if (function->type == functionTypes::MUL_NEGATIVE_ONE) {
+			components::InputVariable input;
+			if (!getOneInput(gameState, funcShape, input)) {
+				return;
+			}
+			assert(input.unitRef.index != middle::UNASSIGNED);
+			auto mulOneAction = std::make_shared<bubbleActions::MulNegativeOne>(input.unitRef);
+			middle::queueAction(gameState, mulOneAction);
+			container->procedureTransitionStack.back().action = mulOneAction;
+		}
+
 		else if (function->type == functionTypes::BREAK) {
 			components::InputVariable inputA;
 			components::InputVariable inputB;

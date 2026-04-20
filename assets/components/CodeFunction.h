@@ -47,5 +47,6 @@ namespace functionTypes {
 	inline int BUBBLIFY = 21;
 	inline int SIMPLIFY = 22;
 	inline int CANCEL = 23;
+	inline int MUL_NEGATIVE_ONE = 23;
 }
 
