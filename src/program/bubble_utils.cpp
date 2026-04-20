@@ -392,7 +392,7 @@ namespace bubble {
 			}
 			if (expA) {
 				if (expA->isInverse != nodeB->isInversePower
-					|| expA->isNegative != nodeB->isNegative
+					|| expA->isNegative != nodeB->isNegativePower
 					|| expA->power != nodeB->power) {
 					return false;
 				}
