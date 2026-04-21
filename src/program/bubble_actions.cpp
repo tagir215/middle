@@ -321,6 +321,12 @@ namespace bubbleActions {
 		middle::Id idB = copyB->resultId;
 		actions.push_back(std::move(copyB));
 
+		// if shape to add into is inverse, invert the input 
+		auto bub = middle::getComponent<components::BubbleComponent>(shapeToAddInto);
+		if (bub->inverse) {
+			bubble::invert(gameState, idA);
+		}
+
 		std::vector<middle::Id>children;
 		middle::getChildren(gameState, idB, children);
 

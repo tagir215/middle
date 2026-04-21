@@ -919,6 +919,13 @@ namespace bubble {
 		}
 	}
 
+	void invert(middle::GameState* gameState, middle::Id id)
+	{
+		auto& shape = middle::getShape(gameState, id.index);
+		auto bub = middle::getComponent<components::BubbleComponent>(shape);
+		bub->inverse = !bub->inverse;
+	}
+
 	components::AlgebraNodeType getStructureType(middle::GameState* gameState, middle::Id id) {
 		auto& shape = middle::getShape(gameState, id.index);
 		if (middle::getComponent<components::BubbleVariable>(shape)) {

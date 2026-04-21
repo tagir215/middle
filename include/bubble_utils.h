@@ -59,6 +59,7 @@ namespace bubble {
 	bool additiveInverses(middle::GameState* gameState, middle::Id idA, middle::Id idB);
 	bool multiplicativeInverses(middle::GameState* gameState, middle::Id idA, middle::Id idB);
 	void negate(middle::GameState* gameState, middle::Id id);
+	void invert(middle::GameState* gameState, middle::Id id);
 	middle::Id bubbleToStructure(middle::GameState* gameState, middle::Id bubbleId);
 	components::AlgebraNodeType getStructureType(middle::GameState* gameState, middle::Id id);
 	int findDepth(middle::GameState* gameState, middle::Id id);
