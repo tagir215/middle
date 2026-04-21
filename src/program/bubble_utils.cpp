@@ -481,12 +481,11 @@ namespace bubble {
 
 		// replace node from algebra structure with overriding value
 		if (varOverrides.size() > 0 && algebraNodeType == components::AlgebraNodeType::VARIABLE) {
-			auto& nodeShape = middle::getShape(gameState, algebraNodeId.index);
-			auto node = middle::getComponent<components::AlgebraNode>(nodeShape);
-			if (varOverrides.find(node->variableLabel) == varOverrides.end()) {
+			std::string varName = getVariableLabel(gameState, algebraNodeId);
+			if (varOverrides.find(varName) == varOverrides.end()) {
 				return false;
 			}
-			algebraNodeId = varOverrides[node->variableLabel];
+			algebraNodeId = varOverrides[varName];
 			// update node type
 			algebraNodeType = getStructureType(gameState, algebraNodeId);
 		}
@@ -751,13 +750,10 @@ namespace bubble {
 				std::vector<middle::Id> mulChildren;
 				middle::getChildren(gameState, shape.id, mulChildren);
 				BubbleValue mulResult;
-				mulResult.scale = 0;
+				mulResult.scale = 1;
 				for (int x = 0; x < mulChildren.size(); ++x) {
-					BubbleValue valueA = calculateBubbleValue(gameState, mulChildren[x], variableValues);
-					for (int y = x+1; y < mulChildren.size(); ++y) {
-						BubbleValue valueB = calculateBubbleValue(gameState, mulChildren[y], variableValues);
-						mulResult.scale += valueA.scale * valueB.scale;
-					}
+					BubbleValue val = calculateBubbleValue(gameState, mulChildren[x], variableValues);
+					mulResult.scale *= val.scale;
 				}
 				result.scale += mulResult.scale;
 			}
@@ -779,6 +775,38 @@ namespace bubble {
 		return result;
 	}
 
+	std::string getVariableLabel(middle::GameState* gameState, middle::Id id) {
+			std::string result;
+			auto& shape = middle::getShape(gameState, id.index);
+			if (getStructureType(gameState, id) != components::AlgebraNodeType::VARIABLE) {
+				assert(false);
+			}
+			auto node = middle::getComponent<components::AlgebraNode>(shape);
+			auto var = middle::getComponent<components::BubbleVariable>(shape);
+			auto bub = middle::getComponent<components::BubbleComponent>(shape);
+			if (node) {
+				if (node->isNegative) {
+					result += "-";
+				}
+				if (node->isInverse) {
+
+					result += "1/";
+				}
+				result += node->variableLabel;
+			}
+			else {
+				assert(var && bub);
+				if (var->isNegative) {
+					result += "-";
+				}
+				if (bub->inverse) {
+					result += "1/";
+				}
+				result += var->label;
+			}
+			return result;
+	}
+
 	void getVariableStructuresMap(middle::GameState* gameState, middle::Id structureId, std::unordered_map<std::string, std::vector<middle::Id>>& resultMap) {
 
 		std::vector<middle::Id>children;
@@ -786,21 +814,11 @@ namespace bubble {
 
 		for (middle::Id& childId : children) {
 			if (getStructureType(gameState, childId) == components::AlgebraNodeType::VARIABLE) {
-				auto& childShape = middle::getShape(gameState, childId.index);
-				auto node = middle::getComponent<components::AlgebraNode>(childShape);
-				auto var = middle::getComponent<components::BubbleVariable>(childShape);
-				if (node) {
-					if (resultMap.find(node->variableLabel) == resultMap.end()) {
-						resultMap[node->variableLabel] = {};
-					}
-					resultMap[node->variableLabel].push_back(childId);
+				std::string label = getVariableLabel(gameState, childId);
+				if (resultMap.find(label) == resultMap.end()) {
+					resultMap[label] = {};
 				}
-				else if (var) {
-					if (resultMap.find(var->label) == resultMap.end()) {
-						resultMap[var->label] = {};
-					}
-					resultMap[var->label].push_back(childId);
-				}
+				resultMap[label].push_back(childId);
 			}
 			getVariableStructuresMap(gameState, childId, resultMap);
 		}
