@@ -16,6 +16,7 @@
 #include "TopDogBubbleTag.h"
 #include "BubbleAlgebraProblem.h"
 #include "ProcedureContainer.h"
+#include "bubble_constants.h"
 
 namespace bubbleActions {
 
@@ -386,6 +387,7 @@ namespace bubbleActions {
 			}
 		}
 
+		queueSound(gameState, bubbleSounds::EXPAND_MULTIPLICATION_SOUND);
 	}
 
 	void ExecuteMultiplication::undo(middle::GameState* gameState) {
@@ -408,6 +410,7 @@ namespace bubbleActions {
 		auto addLoop = middle::getComponent<components::LoopSociety>(shapeToAdd);
 
 		if (!validateAdditionInitialState(gameState, this)) {
+			cancelled = true;
 			return;
 		}
 
@@ -483,6 +486,8 @@ namespace bubbleActions {
 		auto replace = std::make_unique<Replace>(shapeToAddIntoId, resultShapeId);
 		replace->execute(gameState);
 		actions.push_back(std::move(replace));
+
+		queueSound(gameState, bubbleSounds::COMBINE_SOUND);
 	}
 
 	void ExecuteAddition::undo(middle::GameState* gameState) {
@@ -571,6 +576,8 @@ namespace bubbleActions {
 		actions.push_back(std::move(replaceAction));
 
 		resultShapeId = replacementShapeId;
+
+		queueSound(gameState, bubbleSounds::EXPAND_POWER_SOUND);
 	}
 
 	void ExecutePower::undo(middle::GameState* gameState)
@@ -636,6 +643,8 @@ namespace bubbleActions {
 		auto deleteAction = std::make_unique<middle::EditorActionDeleteSingle>(shape.id);
 		deleteAction->execute(gameState);
 		actions.push_back(std::move(deleteAction));
+
+		queueSound(gameState, bubbleSounds::POP_SOUND);
 	}
 
 	void Pop::undo(middle::GameState* gameState) {
@@ -1130,6 +1139,8 @@ namespace bubbleActions {
 		actions.push_back(std::move(replace));
 
 		resultShapeId = replacementShapeId;
+
+		queueSound(gameState, bubbleSounds::COMPRESS_SOUND);
 	}
 
 	void Compress::undo(middle::GameState* gameState)
@@ -1184,6 +1195,8 @@ namespace bubbleActions {
 		actions.push_back(std::move(link));
 
 		resultShapeId = newBubbleId;
+
+		queueSound(gameState, bubbleSounds::MUL_ONE_SOUND);
 	}
 
 	void MulOne::undo(middle::GameState* gameState)
@@ -1340,6 +1353,8 @@ namespace bubbleActions {
 			middle::moveShape(gameState, toAddId.index, targetPosition - currentPos);
 			actions.push_back(std::move(reparentAction));
 		}
+
+		queueSound(gameState, bubbleSounds::ADD_TERM_SOUND);
 	}
 
 	void NewAdditionTerm::undo(middle::GameState* gameState)
@@ -1430,6 +1445,7 @@ namespace bubbleActions {
 			middle::moveShape(gameState, toAddId.index, targetPosition - currentPos);
 			actions.push_back(std::move(linkAction));
 
+			queueSound(gameState, bubbleSounds::ADD_TERM_SOUND);
 		}
 	}
 
@@ -1487,6 +1503,8 @@ namespace bubbleActions {
 		auto reparentBubble = std::make_unique<middle::EditorActionReparent>(parentId.index, resultId.index);
 		reparentBubble->execute(gameState);
 		actions.push_back(std::move(reparentBubble));
+
+		queueSound(gameState, bubbleSounds::BUBBLIFY_SOUND);
 	}
 
 	void Bubblify::undo(middle::GameState* gameState)
@@ -1638,6 +1656,7 @@ namespace bubbleActions {
 		replaceAction->execute(gameState);
 		actions.push_back(std::move(replaceAction));
 
+		queueSound(gameState, bubbleSounds::SIMPLIFY_SOUND);
 	}
 
 	void Simplify::undo(middle::GameState* gameState)
@@ -1681,6 +1700,8 @@ namespace bubbleActions {
 		auto replaceAction = std::make_unique<ReplaceBubbleAndTransferTags>(shape.id, replacementShapeId);
 		replaceAction->execute(gameState);
 		actions.push_back(std::move(replaceAction));
+
+		queueSound(gameState, bubbleSounds::CANCEL_SOUND);
 	}
 
 	void Cancel::undo(middle::GameState* gameState)
@@ -1712,6 +1733,8 @@ namespace bubbleActions {
 		inputComp->unitRef = input;
 		procContainerComp->bubbleRef = input;
 		procContainerComp->mode = procedureConstants::EXECUTING;
+
+
 	}
 
 	void StartProcedure::undo(middle::GameState* gameState)
@@ -1743,6 +1766,8 @@ namespace bubbleActions {
 		replace->replacingShapeId = copyId;
 		replace->execute(gameState);
 		actions.push_back(std::move(replace));
+
+		queueSound(gameState, bubbleSounds::ADD_TERM_SOUND);
 	}
 
 	void Insert::undo(middle::GameState* gameState)
@@ -1805,6 +1830,8 @@ namespace bubbleActions {
 		auto linkToReciever = std::make_unique<LinkMultiplicationTerm>(targetLinkReciever, bubbleShape.id);
 		linkToReciever->execute(gameState);
 		actions.push_back(std::move(linkToReciever));
+
+		queueSound(gameState, bubbleSounds::ADD_TERM_SOUND);
 	}
 
 	void InsertAsXOverX::undo(middle::GameState* gameState)
@@ -1843,6 +1870,8 @@ namespace bubbleActions {
 		auto reparent = std::make_unique<middle::EditorActionReparent>(shapeToAddIntoId.index, bubbleShape.id.index);
 		reparent->execute(gameState);
 		actions.push_back(std::move(reparent));
+
+		queueSound(gameState, bubbleSounds::ADD_TERM_SOUND);
 	}
 
 	void InsertAsXMinusX::undo(middle::GameState* gameState)

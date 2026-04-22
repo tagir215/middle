@@ -13,6 +13,7 @@
 #include "CameraComponent.h"
 #include "Position.h"
 #include "ProcedureContainer.h"
+#include "bubble_constants.h"
 
 
 class AlgebraProblemSystem : public middle::MiddleGameplaySystem {
@@ -58,6 +59,7 @@ public:
 				++configs->allowedMoves;
 			}
 		}
+		queueSound(gameState, bubbleSounds::UNDO_SOUND);
 	}
 
 	bool initialized = false;
@@ -99,8 +101,8 @@ public:
 						auto configsComp = *levelConfigsIt;
 						assert(configsComp);
 						middle::saveShape(gameState, procContainerId, "../bubbleData/procedures/", configsComp->levelName);
-
 					}
+					queueSound(gameState, bubbleSounds::VICTORY_SOUND);
 				}
 			}
 

@@ -176,6 +176,7 @@ namespace middle {
 		std::vector<std::string>shapeNames;
 		std::vector<std::string>systemNames;
 		std::vector<std::string>componentNames;
+		std::unordered_map<std::string, Sound>soundMap;
 		EditorInput input;
 		GameInput gameInput;
 		std::set<InputBlockers> inputBlockers;
@@ -203,6 +204,7 @@ namespace middle {
 		std::unordered_map<std::string, TextureContainer>loadedTextureMap;
 		std::queue<std::string>modelsToLoadQueue;
 		std::queue<std::string>texturesToLoadQueue;
+		std::queue<Sound>soundQueue;
 	};
 
 }

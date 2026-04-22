@@ -22,6 +22,7 @@
 #include "ProcedureContainer.h"
 #include "BubbleEqualsVariable.h"
 #include "HelperBubbleEquation.h"
+#include "bubble_constants.h"
 
 class BubbleModificationSystem : public middle::MiddleGameplaySystem {
 public:
@@ -189,6 +190,7 @@ public:
 		else if (actionType == bubbleInventoryItemType::POP) {
 			middle::Id& parentId = middle::getParent(gameState, intersectedShape.id);
 			if (parentId.index == middle::UNASSIGNED) {
+				queueSound(gameState, bubbleSounds::ERROR_SOUND);
 				return;
 			}
 			auto& parentShape = middle::getShape(gameState, parentId.index);
@@ -251,6 +253,9 @@ public:
 			middle::queueAction(gameState, action);
 			gameState->bubbleAlgebraState.bubbleActions.push_back(action);
 		}
+		else {
+			queueSound(gameState, bubbleSounds::ERROR_SOUND);
+		}
 	}
 
 	// TODO moves these
@@ -304,6 +309,7 @@ public:
 			if (gameState->bubbleAlgebraState.bubbleActions.size() > 0) {
 				if (gameState->bubbleAlgebraState.bubbleActions.back()->cancelled) {
 					++configs->allowedMoves;
+					queueSound(gameState, bubbleSounds::ERROR_SOUND);
 					middle::queueAction(gameState, std::make_shared<middle::CustomAction>([](middle::GameState* gameState) {
 						gameState->bubbleAlgebraState.bubbleActions.back()->undo(gameState);
 						gameState->bubbleAlgebraState.bubbleActions.pop_back();
