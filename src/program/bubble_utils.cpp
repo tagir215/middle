@@ -482,12 +482,11 @@ namespace bubble {
 		// replace node from algebra structure with overriding value
 		if (varOverrides.size() > 0 && algebraNodeType == components::AlgebraNodeType::VARIABLE) {
 			std::string varName = getVariableLabel(gameState, algebraNodeId);
-			if (varOverrides.find(varName) == varOverrides.end()) {
-				return false;
+			if (varOverrides.find(varName) != varOverrides.end()) {
+				algebraNodeId = varOverrides[varName];
+				// update node type
+				algebraNodeType = getStructureType(gameState, algebraNodeId);
 			}
-			algebraNodeId = varOverrides[varName];
-			// update node type
-			algebraNodeType = getStructureType(gameState, algebraNodeId);
 		}
 
 		auto bubbleType = getStructureType(gameState, bubbleId);
