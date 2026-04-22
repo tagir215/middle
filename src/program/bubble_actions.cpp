@@ -910,11 +910,18 @@ namespace bubbleActions {
 			++compressableCount;
 		}
 
-		middle::Id replacementShapeId = middle::deepCopyShape(gameState, compressableShapeId.index);
-		auto exponent = middle::attachComponent<components::ExponentComponent>(gameState, replacementShapeId);
+		middle::Id exponentId = middle::deepCopyShape(gameState, compressableShapeId.index);
+		auto exponent = middle::attachComponent<components::ExponentComponent>(gameState, exponentId);
 		exponent->power = compressableCount;
 		exponent->isNegative = compressToNegative;
-		return replacementShapeId;
+
+		Vector3 targetPos = middle::getShapePosition(gameState, exponentId.index);
+		middle::Shape newBubbleProto = bubble::newBubble(gameState, targetPos);
+		middle::Shape& newBubble = middle::registerShape(gameState, newBubbleProto);
+
+		middle::EditorActionReparent(newBubble.id.index, exponentId.index).execute(gameState);
+
+		return newBubble.id;
 	}
 
 	struct RepresentativeGroup {
