@@ -1585,6 +1585,7 @@ namespace bubbleActions {
 				auto& mulChildId = mulChildren[i];
 				if (bubble::isBubbleWithValueOne(gameState, mulChildId)) {
 					auto unlinkAction = UnlinkMultiplicationTerm(childShape.id, mulChildId);
+					unlinkAction.execute(gameState);
 					middle::deleteShapeRecursive(gameState, mulChildId.index);
 					unlinkdedSomething = true;
 					if (unlinkAction.resultShapeId != childShape.id) {
