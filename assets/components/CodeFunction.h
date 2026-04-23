@@ -42,11 +42,12 @@ namespace functionTypes {
 	inline int FIND_FRACTION = 16;
 	inline int MUL_ONE = 17;
 	inline int BREAK = 18;
-	inline int COMPRESS = 19;
+	inline int COMPRESS_MULTIPLICATION = 19;
 	inline int FIND_UNIT = 20;
 	inline int BUBBLIFY = 21;
 	inline int SIMPLIFY = 22;
 	inline int CANCEL = 23;
 	inline int MUL_NEGATIVE_ONE = 24;
+	inline int COMPRESS_EXPONENT = 25;
 }
 

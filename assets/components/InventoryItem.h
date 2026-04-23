@@ -38,7 +38,7 @@ namespace bubbleInventoryItemType {
 	inline int BREAK_8 = 11;
 	inline int BREAK_9 = 12;
 	inline int BREAK_10 = 13;
-	inline int COMPRESS = 14;
+	inline int COMPRESS_MULTIPLICATION = 14;
 	inline int BUBBLIFY = 15;
 	inline int SIMPLIFY = 16;
 	inline int PROCEDURE = 17;
@@ -46,4 +46,5 @@ namespace bubbleInventoryItemType {
 	inline int INSERT_X_OVER_X = 19;
 	inline int INSERT_X_MINUS_X = 20;
 	inline int MUL_NEGATIVE_ONE = 21;
+	inline int COMPRESS_EXPONENT = 22;
 }

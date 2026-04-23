@@ -348,13 +348,23 @@ public:
 
 		}
 
-		else if (function->type == functionTypes::COMPRESS) {
+		else if (function->type == functionTypes::COMPRESS_MULTIPLICATION) {
 			components::InputVariable input;
 			if (!getOneInput(gameState, funcShape, input)) {
 				return;
 			}
 			assert(input.unitRef.index != middle::UNASSIGNED);
-			auto compressAction = std::make_shared<bubbleActions::Compress>(input.unitRef);
+			auto compressAction = std::make_shared<bubbleActions::Compress>(input.unitRef, false);
+			middle::queueAction(gameState, compressAction);
+			container->procedureTransitionStack.back().action = compressAction;
+		}
+		else if (function->type == functionTypes::COMPRESS_EXPONENT) {
+			components::InputVariable input;
+			if (!getOneInput(gameState, funcShape, input)) {
+				return;
+			}
+			assert(input.unitRef.index != middle::UNASSIGNED);
+			auto compressAction = std::make_shared<bubbleActions::Compress>(input.unitRef, true);
 			middle::queueAction(gameState, compressAction);
 			container->procedureTransitionStack.back().action = compressAction;
 		}
@@ -688,7 +698,7 @@ public:
 					structureId, input->structureDepth, overrideMap);
 				input->unitRef = result;
 			}
-			else if (input->structureIds.size() == 2) {
+			else if (input->structureIds.size() >= 2) {
 				middle::Id& structureIdA = input->structureIds[0];
 				middle::Id& structureIdB = input->structureIds[1];
 				middle::Id idA, idB;

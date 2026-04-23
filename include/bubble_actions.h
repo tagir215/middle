@@ -238,8 +238,9 @@ namespace bubbleActions{
 	public:
 		middle::Id commonFactorId;
 		middle::Id resultShapeId;
+		bool compressToExponent = false;
 		std::vector<std::unique_ptr<middle::EditorActionContainer>> actions;
-		Compress(middle::Id containerShape);
+		Compress(middle::Id containerShape, bool compressToExponent);
 		void execute(middle::GameState* gameState) override;
 		void undo(middle::GameState* gameState) override;
 	};

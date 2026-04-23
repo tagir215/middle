@@ -55,10 +55,7 @@ namespace middle {
 	struct GameInput {
 		bool pop = false;
 		bool mulOne = false;
-		bool mulNegativeOne = false;
 		bool comp = false;
-		bool sim = false;
-		bool bub = false;
 		bool can = false;
 		bool proc = false;
 		bool zoomIn = false;
@@ -78,6 +75,7 @@ namespace middle {
 		bool eight = false;
 		bool nine = false;
 		bool zero = false;
+		bool shiftHeld = false;
 		float mouseWheelMove = false;
 	};
 

@@ -269,9 +269,9 @@ f  20.000000
 f  15.000000
 MouseGrabbable
 Position
-f  32.191147
+f  58.090176
 f  -1380.000000
-f  209.760696
+f  209.760727
 Text
 s  SIMPLIFY
 f  255.000000
@@ -571,9 +571,9 @@ f  3.000000
 b  1
 MouseGrabbable
 Position
-f  12.191147
+f  38.090176
 f  -1380.000000
-f  209.760696
+f  209.760727
 Circle
 f  4.000000
 MouseSelectable
@@ -964,7 +964,7 @@ f  -36.697739
 f  -1380.000000
 f  209.760696
 Text
-s  COMPRESS
+s  COMP M
 f  255.000000
 f  255.000000
 f  0.000000
@@ -2288,9 +2288,9 @@ Rectangle
 f  20.000000
 f  15.000000
 Position
-f  66.635590
+f  92.534668
 f  -1380.000000
-f  209.760696
+f  209.760727
 MouseGrabbable
 Text
 s  CANCEL
@@ -2313,9 +2313,9 @@ Layer
 i  3
 __q  68_0
 Position
-f  46.635590
+f  72.534668
 f  -1380.000000
-f  209.760696
+f  209.760727
 MouseGrabbable
 Text
 s  
@@ -2364,9 +2364,9 @@ f  20.000000
 f  15.000000
 MouseGrabbable
 Position
-f  101.080032
+f  126.979111
 f  -1380.000000
-f  209.760696
+f  209.760727
 Text
 s  *(-1)
 f  255.000000
@@ -2400,9 +2400,9 @@ f  3.000000
 b  1
 MouseGrabbable
 Position
-f  81.080032
+f  106.979111
 f  -1380.000000
-f  209.760696
+f  209.760727
 Circle
 f  4.000000
 MouseSelectable
@@ -2421,6 +2421,81 @@ p
 p  
 UiComponent
 i  9
+Layer
+i  3
+__q  71_0
+CodeFunction
+i  25
+MouseIntersectable
+MouseSelectable
+Sphere
+f  2.000000
+LoopSociety
+q  93_0
+p  
+q  72_0
+Rectangle
+f  20.000000
+f  15.000000
+Position
+f  -5.296513
+f  -1380.000122
+f  199.414703
+MouseGrabbable
+Text
+s  COMP P
+f  255.000000
+f  255.000000
+f  0.000000
+f  255.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  3.000000
+b  1
+Offset
+f  0.000000
+f  0.000000
+f  0.000000
+UiComponent
+i  8
+Layer
+i  3
+__q  72_0
+InputVariable
+q  -1_0
+s  
+q  -1_0
+i  0
+p  
+p  
+Text
+s  
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  3.000000
+b  1
+MouseGrabbable
+Position
+f  -25.296513
+f  -1380.000122
+f  199.414703
+MouseSelectable
+Sphere
+f  2.000000
+LoopSociety
+q  71_2
+p  
+MouseIntersectable
+UiComponent
+i  9
+Circle
+f  4.000000
 Layer
 i  3
 __q  93_0
@@ -2449,8 +2524,9 @@ q  102_0
 q  11_0
 q  67_0
 q  69_0
+q  71_0
 Rectangle
-f  310.000000
+f  330.000000
 f  100.000000
 UiComponent
 i  -1
@@ -2585,9 +2661,9 @@ f  20.000000
 f  15.000000
 MouseGrabbable
 Position
-f  -2.253296
+f  23.645741
 f  -1380.000000
-f  209.760696
+f  209.760727
 Text
 s  BUBBLIFY
 f  255.000000
@@ -2621,9 +2697,9 @@ f  3.000000
 b  1
 MouseGrabbable
 Position
-f  -22.253296
+f  3.645741
 f  -1380.000000
-f  209.760696
+f  209.760727
 Circle
 f  4.000000
 MouseSelectable

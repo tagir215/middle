@@ -865,9 +865,10 @@ namespace bubbleActions {
 		}
 	}
 
-	Compress::Compress(middle::Id containerShape)
+	Compress::Compress(middle::Id containerShape, bool compressToExponent)
 	{
 		this->commonFactorId = containerShape;
+		this->compressToExponent = compressToExponent;
 	}
 
 	middle::Id compressToPower(middle::GameState* gameState, middle::Id compressTargetId, middle::Id commonFactorId) {
@@ -1106,10 +1107,10 @@ namespace bubbleActions {
 		auto& parentShape = middle::getShape(gameState, compressTargetId.index);
 		auto mul = middle::getComponent<components::BubbleMultiplyComponent>(parentShape);
 
-		if (mul) {
+		if (compressToExponent && mul) {
 			replacementShapeId = compressToPower(gameState, compressTargetId, commonFactorId);
 		}
-		if(replacementShapeId.index == middle::UNASSIGNED) {
+		else {
 			if (mul) {
 				compressTargetId = getParent(gameState, compressTargetId);
 			}

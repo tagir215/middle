@@ -100,10 +100,7 @@ public:
 		if (gameState->applicationMode == middle::ApplicationMode::GAME_MODE) {
 			gameState->gameInput.pop = false;
 			gameState->gameInput.mulOne = false;
-			gameState->gameInput.mulNegativeOne = false;
 			gameState->gameInput.comp = false;
-			gameState->gameInput.sim = false;
-			gameState->gameInput.bub = false;
 			gameState->gameInput.proc = false;
 			gameState->gameInput.can = false;
 			gameState->gameInput.zoomIn = false;
@@ -113,6 +110,7 @@ public:
 			gameState->gameInput.panLeft = false;
 			gameState->gameInput.panRight = false;
 			gameState->gameInput.undo = false;
+			gameState->gameInput.shiftHeld = false;
 
 			if (gameState->inputBlockers.find(middle::InputBlockers::KEYBOARD_BLOCK) == gameState->inputBlockers.end()) {
 				gameState->gameInput.pop = IsKeyPressed(KEY_B);
@@ -123,12 +121,9 @@ public:
 				gameState->gameInput.panLeft = IsKeyDown(KEY_A);
 				gameState->gameInput.panRight = IsKeyDown(KEY_D);
 				gameState->gameInput.pop = IsKeyPressed(KEY_Z);
-				gameState->gameInput.sim = IsKeyPressed(KEY_X);
+				gameState->gameInput.can = IsKeyPressed(KEY_X);
 				gameState->gameInput.comp = IsKeyPressed(KEY_C);
-				gameState->gameInput.can = IsKeyPressed(KEY_V);
-				gameState->gameInput.bub = IsKeyPressed(KEY_B);
-				gameState->gameInput.mulOne = IsKeyPressed(KEY_N);
-				gameState->gameInput.mulNegativeOne = IsKeyPressed(KEY_M);
+				gameState->gameInput.mulOne = IsKeyPressed(KEY_V);
 				gameState->gameInput.proc = IsKeyPressed(KEY_E);
 				gameState->gameInput.undo = IsKeyPressed(KEY_SPACE);
 				gameState->gameInput.one = IsKeyPressed(KEY_ONE);
@@ -141,6 +136,7 @@ public:
 				gameState->gameInput.eight = IsKeyPressed(KEY_EIGHT);
 				gameState->gameInput.nine = IsKeyPressed(KEY_NINE);
 				gameState->gameInput.zero = IsKeyPressed(KEY_ZERO);
+				gameState->gameInput.shiftHeld = IsKeyDown(KEY_LEFT_SHIFT) || IsKeyDown(KEY_RIGHT_SHIFT);
 				gameState->gameInput.mouseWheelMove = GetMouseWheelMove();
 			}
 		}
