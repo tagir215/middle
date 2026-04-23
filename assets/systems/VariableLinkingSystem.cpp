@@ -67,11 +67,23 @@ public:
 		auto bubbleIt = bubbleCache->begin<components::BubbleComponent>();
 		auto bubbleIntersectableIt = bubbleCache->begin<components::MouseIntersectable>();
 		for (int i = 0; i < bubbleCache->getSize(); ++i) {
-			auto& shape = middle::getShape(gameState, bubbleCache->relevantIdVector[i].index);
+			auto& intersectingShape = middle::getShape(gameState, bubbleCache->relevantIdVector[i].index);
+
 			auto otherBubble = *bubbleIt;
 			auto intersectable = *bubbleIntersectableIt;
 			if (!intersectable->intersectingTop) {
 				continue;
+			}
+
+			// in mul case we take the siblings as constraining factor
+			std::vector<middle::Id>children;
+			middle::Id parentId = middle::getParent(gameState, intersectingShape.id);
+			if (parentId.index != middle::UNASSIGNED) {
+				middle::Shape& parentShape = middle::getShape(gameState, parentId.index);
+				auto mul = middle::getComponent<components::BubbleMultiplyComponent>(parentShape);
+				if (mul) {
+					middle::getChildren(gameState, parentId, children);
+				}
 			}
 
 			// set bubble reference
@@ -83,22 +95,35 @@ public:
 
 			// update structure, unless inputting it during normal level
 			if (procContainer->editMode) {
-				middle::Id structureId = bubble::bubbleToStructure(gameState, shape.id);
+				middle::Id structureId = bubble::bubbleToStructure(gameState, intersectingShape.id);
+				ogInput->structureIds.clear();
+				ogInput->structureIds.push_back(structureId);
+				ogInput->structureDepth = bubble::findDepth(gameState, intersectingShape.id);
 				// reparent algebra node to input, for automatic deletion and serialization
 				middle::queueAction(gameState, std::make_shared<middle::EditorActionReparent>(ogShape.id.index, structureId.index));
-				ogInput->structureId = structureId;
-				ogInput->structureDepth = bubble::findDepth(gameState, shape.id);
+
+				// add also constrainting siblings,
+				for (middle::Id id : children) {
+					if (id == intersectingShape.id) {
+						continue;
+					}
+					// reparent algebra node to input, for automatic deletion and serialization
+					middle::Id childStructureId = bubble::bubbleToStructure(gameState, id);
+					middle::queueAction(gameState, std::make_shared<middle::EditorActionReparent>(ogShape.id.index, childStructureId.index));
+					ogInput->structureIds.push_back(childStructureId);
+				}
+
 				middle::queueComponentAttachment<components::Highlight>(gameState, ogShape.id);
 				highlighted = true;
 			}
 
 			// if its procedre input update unit ref here, and set proc container to point to the ref
 			if (grabbedProcedureInput) {
-				ogInput->unitRef = shape.id;
-				procContainer->bubbleRef = shape.id;
+				ogInput->unitRef = intersectingShape.id;
+				procContainer->bubbleRef = intersectingShape.id;
 
 				if (!procContainer->editMode) {
-					procContainer->variableOverrides = bubble::generateVariableOverrides(gameState, shape.id, ogInput->structureId);
+					procContainer->variableOverrides = bubble::generateVariableOverrides(gameState, intersectingShape.id, ogInput->structureIds[0]);
 				}
 
 				if (!highlighted) {
@@ -173,10 +198,12 @@ public:
 
 				//reset input, if not procedureInput,  procedureInput can be edited if in edit mode
 				if (!procedureInput || procContainer->editMode) {
-					if (input->structureId.index != middle::UNASSIGNED) {
-						middle::deleteShapeRecursive(gameState, input->structureId.index);
+					if (input->structureIds.size() > 0) {
+						for (middle::Id id : input->structureIds) {
+							middle::deleteShapeRecursive(gameState, id.index);
+						}
 					}
-					input->structureId = middle::Id();
+					input->structureIds.clear();
 					input->unitRef = middle::Id();
 				}
 

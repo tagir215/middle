@@ -56,7 +56,7 @@ public:
 			if (inputVariable.unitRef.index == middle::UNASSIGNED) {
 				return false;
 			}
-			if (inputVariable.structureId.index == middle::UNASSIGNED) {
+			if (inputVariable.structureIds.size() == 0) {
 				return false;
 			}
 
@@ -87,7 +87,7 @@ public:
 				if (varA.unitRef.index == middle::UNASSIGNED || varB.unitRef.index == middle::UNASSIGNED) {
 					return false;
 				}
-				if (varA.structureId.index == middle::UNASSIGNED || varB.structureId.index == middle::UNASSIGNED) {
+				if (varA.structureIds.size() == 0 || varB.structureIds.size() == 0) {
 					return false;
 				}
 				return true;
@@ -360,14 +360,11 @@ public:
 		}
 
 		else if (function->type == functionTypes::BUBBLIFY) {
-			components::InputVariable inputA;
-			components::InputVariable inputB;
-			if (!getTwoInputs(gameState, funcShape, inputA, inputB)) {
-				if (!getOneInput(gameState, funcShape, inputA)) {
-					return;
-				}
+			components::InputVariable input;
+			if (!getOneInput(gameState, funcShape, input)) {
+				return;
 			}
-			auto bubblifyAction = std::make_shared<bubbleActions::Bubblify>(inputA.unitRef);
+			auto bubblifyAction = std::make_shared<bubbleActions::Bubblify>(input.unitRef);
 			middle::queueAction(gameState, bubblifyAction);
 			container->procedureTransitionStack.back().action = bubblifyAction;
 		}
@@ -685,12 +682,21 @@ public:
 		if (inputChildren.size() == 1) {
 			auto& inputChild = middle::getShape(gameState, inputChildren[0].index);
 			auto input = middle::getComponent<components::InputVariable>(inputChild);
-			if (input->structureId.index == middle::UNASSIGNED) {
-				return;
+			if (input->structureIds.size() == 1) {
+				middle::Id& structureId = input->structureIds[0];
+				middle::Id result = bubble::findMatchingBubbleWithVariables(gameState, topDogContainerId,
+					structureId, input->structureDepth, overrideMap);
+				input->unitRef = result;
 			}
-			middle::Id result = bubble::findMatchingBubbleWithVariables(gameState, topDogContainerId,
-				input->structureId, input->structureDepth, overrideMap);
-			input->unitRef = result;
+			else if (input->structureIds.size() == 2) {
+				middle::Id& structureIdA = input->structureIds[0];
+				middle::Id& structureIdB = input->structureIds[1];
+				middle::Id idA, idB;
+				bubble::findMatchingStructurePairWithVariables(gameState, topDogContainerId,
+					structureIdA, structureIdB, input->structureDepth, overrideMap, idA, idB);
+				input->unitRef = idA;
+			}
+
 		}
 		// update two input case
 		if (inputChildren.size() == 2) {
@@ -698,27 +704,28 @@ public:
 			auto& inputChildB = middle::getShape(gameState, inputChildren[1].index);
 			auto inputA = middle::getComponent<components::InputVariable>(inputChildA);
 			auto inputB = middle::getComponent<components::InputVariable>(inputChildB);
+			middle::Id structureIdA = inputA->structureIds.size() > 0 ? inputA->structureIds[0] : middle::Id();
+			middle::Id structureIdB = inputB->structureIds.size() > 0 ? inputB->structureIds[0] : middle::Id();
 
-			bool bothValid = inputA->structureId.index != middle::UNASSIGNED && inputB->structureId.index != middle::UNASSIGNED;
+			bool bothValid = structureIdA.index != middle::UNASSIGNED && structureIdB.index != middle::UNASSIGNED;
 			if (bothValid) {
-
 				middle::Id idA, idB;
 				bubble::findMatchingStructurePairWithVariables(gameState, topDogContainerId,
-					inputA->structureId, inputB->structureId, inputA->structureDepth, overrideMap, idA, idB);
+					structureIdA, structureIdB, inputA->structureDepth, overrideMap, idA, idB);
 				inputA->unitRef = idA;
 				inputB->unitRef = idB;
 			}
 			// if one is valid update it for visual indicators
-			else if (inputA->structureId.index != middle::UNASSIGNED) {
-				auto& inputShape = middle::getShape(gameState, inputA->structureId.index);
+			else if (structureIdA.index != middle::UNASSIGNED) {
+				auto& inputShape = middle::getShape(gameState, structureIdA.index);
 				auto comp = middle::getComponent<components::AlgebraNode>(inputShape);
 				middle::Id result = bubble::findMatchingBubbleWithVariables(gameState, topDogContainerId,
-					inputA->structureId, inputA->structureDepth, overrideMap);
+					structureIdA, inputA->structureDepth, overrideMap);
 				inputA->unitRef = result;
 			}
-			else if (inputB->structureId.index != middle::UNASSIGNED) {
+			else if (structureIdB.index != middle::UNASSIGNED) {
 				middle::Id result = bubble::findMatchingBubbleWithVariables(gameState, topDogContainerId,
-					inputB->structureId, inputB->structureDepth, overrideMap);
+					structureIdB, inputB->structureDepth, overrideMap);
 				inputB->unitRef = result;
 			}
 

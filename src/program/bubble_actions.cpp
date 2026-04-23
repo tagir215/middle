@@ -1766,7 +1766,7 @@ namespace bubbleActions {
 		middle::Id inputId = middle::getFirstChildWithComponent(gameState, procContainerShape.id, middle::getTypeId<components::InputVariable>());
 		auto& inputShape = middle::getShape(gameState, inputId.index);
 		auto inputComp = middle::getComponent<components::InputVariable>(inputShape);
-		procContainerComp->variableOverrides = bubble::generateVariableOverrides(gameState, input, inputComp->structureId);
+		procContainerComp->variableOverrides = bubble::generateVariableOverrides(gameState, input, inputComp->structureIds[0]);
 		if (procContainerComp->variableOverrides.size() == 0) {
 			cancelled = true;
 			return;
