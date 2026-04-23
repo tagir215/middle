@@ -236,7 +236,7 @@ namespace bubbleActions{
 
 	class Compress : public middle::EditorActionContainer {
 	public:
-		middle::Id containerShapeId;
+		middle::Id commonFactorId;
 		middle::Id resultShapeId;
 		std::vector<std::unique_ptr<middle::EditorActionContainer>> actions;
 		Compress(middle::Id containerShape);

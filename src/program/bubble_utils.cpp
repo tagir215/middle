@@ -1229,6 +1229,16 @@ namespace bubble {
 		assert(false);
 	}
 
+	middle::Id containerize(middle::GameState* gameState, middle::Id id)
+	{
+		Vector3 targetPos = middle::getShapePosition(gameState, id.index);
+		middle::Shape bubbleProto = newBubble(gameState, targetPos);
+		middle::Shape& newParent = middle::registerShape(gameState, bubbleProto);
+		middle::EditorActionReparent(newParent.id.index, id.index).execute(gameState);
+		return newParent.id;
+	}
+
+
 
 	middle::Id shapeToFraction(middle::GameState* gameState, middle::Id shapeId, const Vector3& targetPos, int dividend)
 	{

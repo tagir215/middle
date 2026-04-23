@@ -6,6 +6,7 @@
 #include "MouseClickComponent.h"
 #include "Button.h"
 #include "component_utils.h"
+#include "bubble_constants.h"
 
 class MouseClickSystem : public middle::MiddleGameplaySystem {
 public:
@@ -37,6 +38,7 @@ public:
 				auto& shape = middle::getShape(gameState, buttonCache->relevantIdVector[i].index);
 				if (intersectable->intersecting) {
 					middle::attachComponent<components::MouseClickComponent>(gameState, shape.id);
+					middle::queueSound(gameState, bubbleSounds::CLICK_SOUND);
 				}
 			}
 		}

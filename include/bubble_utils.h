@@ -56,6 +56,7 @@ namespace bubble {
 	middle::Id newFraction(middle::GameState* gameState, const Vector3& targetPos, int dividend);
 	middle::Id shapeToFraction(middle::GameState* gameState, middle::Id shpaeId, const Vector3& targetPos, int dividend);
 	middle::Id fractionQuotient(middle::GameState* gameState, middle::Id& fractionId);
+	middle::Id containerize(middle::GameState* gameState, middle::Id id);
 	bool additiveInverses(middle::GameState* gameState, middle::Id idA, middle::Id idB);
 	bool multiplicativeInverses(middle::GameState* gameState, middle::Id idA, middle::Id idB);
 	void negate(middle::GameState* gameState, middle::Id id);
