@@ -1060,9 +1060,17 @@ namespace bubbleActions {
 			}
 		}
 
+		// if inverse, invert the things
 		if (isInverse) {
 			bubble::invert(gameState, compressedBubble.id);
 			bubble::invert(gameState, commonCopyId);
+		}
+		// if common is variable, and its negative, since variable bubbles can be negative, negate the compressed then
+		auto commonVar = middle::getComponent<components::BubbleVariable>(commonShape);
+		if (commonVar) {
+			if (commonVar->isNegative) {
+				bubble::negate(gameState, compressedBubble.id);
+			}
 		}
 
 		middle::Id parentMul = middle::getParent(gameState, commonCopyId);
