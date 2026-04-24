@@ -3,7 +3,7 @@
 #include "editor_file_utils.h"
 #define MIDDLEBUBBLEALGEBRALEVELCONFIGS(X) \
 	X(allowedMoves) \
-	X(levelName)
+	X(levelName) 
 
 namespace components {
 	struct BubbleAlgebraLevelConfigs : public middle::Serializable{

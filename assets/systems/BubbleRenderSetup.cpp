@@ -100,6 +100,20 @@ public:
 	}
 	bool debugRendering = false;
 
+
+	void calculateExponentVisualFactors(float radius, int power, float positionRatioToPower, float& intersectOffsetX, float& intersectOffsetZ, float& bz, float& rb) {
+		const float powerRatioToBubble = 0.333f;
+		const float arrowGap = 6;
+
+		float ra = radius;
+		rb = radius * powerRatioToBubble + arrowGap * power;
+		bz = ra + rb * positionRatioToPower;
+		intersectOffsetZ = (ra * ra - rb * rb + bz * bz) / (bz + bz);
+		float smallZ = intersectOffsetZ - bz;
+		intersectOffsetX = std::sqrt(rb * rb - smallZ * smallZ);
+	}
+
+
 	void update(middle::GameState* gameState) override {
 
 		gameState->editorState.backgroundColor = bubbleColors::BACKGROUND;
@@ -126,9 +140,24 @@ public:
 			circleItem.layer = layer->layer;
 			circleItem.backgroundColor = backgroundColor;
 			circleItem.radius = radius;
-			circleItem.center = middle::getShapePosition(gameState, shape.id.index);
+			Vector3 pos = middle::getShapePosition(gameState, shape.id.index);
+			circleItem.center = pos;
 			circleItem.disableDepthTest = isUiItem;
 			gameState->renderData.push_back(circleItem);
+
+			if (bubble->inverse) {
+				float offsetX, offsetZ, bz, rb;
+				calculateExponentVisualFactors(circle->radius, 1, -0.33f, offsetX, offsetZ, bz, rb);
+				middle::RenderItem inverseIndicator;
+				inverseIndicator.type = middle::RenderItemType::CIRCLE;
+				inverseIndicator.color = bubbleColors::POSITIVE_UNIT;
+				inverseIndicator.backgroundColor = bubbleColors::POSITIVE_UNIT;
+				inverseIndicator.layer = layer->layer + 2;
+				inverseIndicator.radius = bubble::unitRadius;
+				inverseIndicator.center = Vector3{ pos.x + offsetX, pos.y, pos.z + offsetZ };
+				inverseIndicator.disableDepthTest = isUiItem;
+				gameState->renderData.push_back(inverseIndicator);
+			}
 		}
 
 
@@ -231,6 +260,21 @@ public:
 			variableCircle.disableDepthTest = isUiItem;
 			variableCircle.layer = layer->layer + 1;
 			gameState->renderData.push_back(variableCircle);
+
+			if (bubble->inverse) {
+				float offsetX, offsetZ, bz, rb;
+				calculateExponentVisualFactors(circle->radius, 1, -0.33f, offsetX, offsetZ, bz, rb);
+				middle::RenderItem inverseIndicator;
+				inverseIndicator.type = middle::RenderItemType::CIRCLE;
+				inverseIndicator.color = bubbleColors::POSITIVE_UNIT;
+				inverseIndicator.backgroundColor = bubbleColors::POSITIVE_UNIT;
+				inverseIndicator.layer = layer->layer + 2;
+				inverseIndicator.radius = bubble::unitRadius;
+				Vector3 pos = variableText.center;
+				inverseIndicator.center = Vector3{ pos.x + offsetX, pos.y, pos.z + offsetZ };
+				inverseIndicator.disableDepthTest = isUiItem;
+				gameState->renderData.push_back(inverseIndicator);
+			}
 		}
 
 
@@ -267,43 +311,6 @@ public:
 			}
 		}
 
-
-		auto fractionLoopIt = fractionCache->begin<components::LoopSociety>();
-		for (int i = 0; i < fractionCache->getSize(); ++i) {
-			auto loop = *fractionLoopIt;
-			for (int x = 1; x < loop->loopMemberIds.size(); ++x) {
-				auto& shapeA = middle::getShape(gameState, loop->loopMemberIds[x - 1].index);
-				auto& shapeB = middle::getShape(gameState, loop->loopMemberIds[x].index);
-				auto positionA = middle::getComponent<components::Position>(shapeA);
-				auto positionB = middle::getComponent<components::Position>(shapeB);
-				auto circleA = middle::getComponent<components::Circle>(shapeA);
-				auto circleB = middle::getComponent<components::Circle>(shapeB);
-				bool isUiItem = middle::getComponent<components::UiComponent>(shapeA);
-
-				Vector3 posA = { positionA->posX, positionA->posY, positionA->posZ };
-				Vector3 posB = { positionB->posX, positionB->posY, positionB->posZ };
-				auto layer = middle::getComponent<components::Layer>(shapeA);
-				middle::RenderItem line;
-				line.type = middle::RenderItemType::LINE;
-				line.color = bubbleColors::FRACTION_CONNECTION;
-				line.layer = layer->layer;
-				line.disableDepthTest = isUiItem;
-
-				Vector3 pointA = posA;
-				Vector3 pointB = posB;
-				Vector3 axis = Vector3Normalize(Vector3Subtract(posB, posA));
-				if (circleA) {
-					pointA += Vector3Scale(axis, circleA->radius);
-				}
-				if (circleB) {
-					pointB += Vector3Scale(axis, -circleB->radius);
-				}
-
-				line.linePointA = pointA;
-				line.linePointB = pointB;
-				gameState->renderData.push_back(line);
-			}
-		}
 
 
 		auto cuboidIt = cuboidCache->begin<components::Cuboid>();
@@ -363,8 +370,6 @@ public:
 			auto& shape = middle::getShape(gameState, exponentCache->relevantIdVector[i].index);
 			bool isUiItem = middle::getComponent<components::UiComponent>(shape);
 
-			const float powerRatioToBubble = 0.333f;
-			const float arrowGap = 6;
 			float positionRatioToPower = 0.333f;
 
 			bool isInverse = root->isInverse;
@@ -381,12 +386,9 @@ public:
 			Color exponentColor = isPowerNegative ? bubbleColors::NEGATIVE_POWER : bubbleColors::POSITIVE_POWER;
 
 			for (int power = 0; power < powerIterations; ++power) {
-				float ra = bubbleCircle->radius;
-				float rb = bubbleCircle->radius * powerRatioToBubble + arrowGap * power;
-				float bz = ra + rb * positionRatioToPower;
-				float intersectOffsetZ = (ra * ra - rb * rb + bz * bz) / (bz + bz);
-				float smallZ = intersectOffsetZ - bz;
-				float intersectOffsetX = std::sqrt(rb * rb - smallZ * smallZ);
+
+				float intersectOffsetX, intersectOffsetZ, bz, rb;
+				calculateExponentVisualFactors(bubbleCircle->radius, power, positionRatioToPower, intersectOffsetX, intersectOffsetZ, bz, rb);
 
 				Vector3 powerPos = bubblePos + Vector3{ 0,0,bz };
 				Vector3 intersectOffset = Vector3{ intersectOffsetX,0, intersectOffsetZ };
@@ -515,8 +517,9 @@ public:
 			powerCircle.disableDepthTest = true;
 			gameState->renderData.push_back(powerCircle);
 		}
-
 	}
+
+
 };
 
 static middle::SystemRegistrar<BubbleRenderSetup> reg("BubbleRenderSetup");

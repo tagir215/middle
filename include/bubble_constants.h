@@ -1,7 +1,8 @@
 #pragma once
 #include <string>
+#include <vector>
 
-namespace bubbleSounds{
+namespace bubbleSounds {
 	const inline std::string POP_SOUND = "pop1";
 	const inline std::string MUL_ONE_SOUND = "mulOne1";
 	const inline std::string MUL_NEGATIVE_ONE_SOUND = "mulNegativeOne1";
@@ -18,4 +19,40 @@ namespace bubbleSounds{
 	const inline std::string BUBBLIFY_SOUND = "bubblify1";
 	const inline std::string CANCEL_SOUND = "cancel1";
 	const inline std::string ERROR_SOUND = "error1";
+
+}
+
+namespace bubbleLevels{
+
+	const inline std::vector<std::string> LEVEL_NAMES = {
+		"Problem1",
+		"Problem2",
+		"Problem3",
+		"Problem4",
+		"Problem5",
+		"Problem6",
+		"Problem7",
+		"Problem8",
+		"Procedure1",
+		"Problem9",
+		"Problem10",
+		"Problem11",
+		"Problem12",
+		"Procedure2",
+		"Problem13",
+		"Problem14",
+		"Problem15",
+		"Problem16",
+		"Problem17",
+		"Problem18",
+		"Problem19",
+		"Procedure3",
+		"Problem20",
+		"Problem21",
+		"Problem22",
+		"Problem23",
+		"Problem24",
+		"Problem25",
+		"Problem26",
+	};
 }

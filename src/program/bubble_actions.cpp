@@ -248,8 +248,6 @@ namespace bubbleActions {
 		auto unitB = middle::getComponent<components::BubbleUnit>(shapeB);
 		auto bubbleA = middle::getComponent<components::BubbleComponent>(shapeA);
 		auto bubbleB = middle::getComponent<components::BubbleComponent>(shapeB);
-		auto fractionA = middle::getComponent<components::FractionalComponent>(shapeA);
-		auto fractionB = middle::getComponent<components::FractionalComponent>(shapeB);
 		auto rootA = middle::getComponent<components::ExponentComponent>(shapeA);
 		auto rootB = middle::getComponent<components::ExponentComponent>(shapeB);
 
@@ -258,7 +256,7 @@ namespace bubbleActions {
 		// note same scale fractions are handled separatedly
 
 		// NEW CONTAINING BUBBLE CASE
-		if ((unitA && unitB) || (fractionA && fractionB) || (unitA && fractionB) || (unitB && fractionA) || (rootA || rootB) || (bubbleA && bubbleB)) {
+		if ((unitA && unitB) || (rootA || rootB) || (bubbleA && bubbleB)) {
 			Vector3 targetPos = middle::getShapePosition(gameState, idA.index);
 			auto regAction = middle::EditorActionRegisterShape(bubble::newBubble(gameState, targetPos));
 			regAction.execute(gameState);
@@ -277,14 +275,6 @@ namespace bubbleActions {
 			auto& unitShape = unitA != nullptr ? shapeA : shapeB;
 			auto& bubbleShape = bubbleA != nullptr ? shapeA : shapeB;
 			auto reparentAction = middle::EditorActionReparent(bubbleShape.id.index, unitShape.id.index);
-			reparentAction.execute(gameState);
-			replacementId = bubbleShape.id;
-		}
-		// BUBBLE & FRACTION CASE
-		else if (fractionA && bubbleB || fractionB && bubbleA) {
-			auto& fractionShape = fractionA != nullptr ? shapeA : shapeB;
-			auto& bubbleShape = bubbleA != nullptr ? shapeA : shapeB;
-			auto reparentAction = middle::EditorActionReparent(bubbleShape.id.index, fractionShape.id.index);
 			reparentAction.execute(gameState);
 			replacementId = bubbleShape.id;
 		}
@@ -1072,6 +1062,7 @@ namespace bubbleActions {
 
 		if (isInverse) {
 			bubble::invert(gameState, compressedBubble.id);
+			bubble::invert(gameState, commonCopyId);
 		}
 
 		middle::Id parentMul = middle::getParent(gameState, commonCopyId);

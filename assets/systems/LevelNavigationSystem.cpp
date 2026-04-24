@@ -7,6 +7,8 @@
 #include "editor_actions.h"
 #include "Position.h"
 #include "Circle.h"
+#include "bubble_constants.h"
+
 
 class LevelNavigationSystem : public middle::MiddleGameplaySystem {
 public:
@@ -30,12 +32,7 @@ public:
 		}
 	}
 
-	void update(middle::GameState* gameState) override {
-
-		auto clickedLevelIt = clickedCache->begin<components::LevelReference>();
-		for (int i = 0; i < clickedCache->getSize(); ++i) {
-			auto levelRef = *clickedLevelIt;
-			std::string name = levelRef->levelName;
+	void queueLevelNavigation(middle::GameState* gameState, const std::string& name) {
 			middle::queueAction(gameState, std::make_shared<middle::CustomAction>(
 				[name,this](middle::GameState* gameState) {
 					saveState(gameState);
@@ -44,6 +41,15 @@ public:
 					gameState->activeSceneName = name;
 					gameState->bubbleAlgebraState.procedureNames.clear();
 				}));
+	}
+
+	void update(middle::GameState* gameState) override {
+
+		auto clickedLevelIt = clickedCache->begin<components::LevelReference>();
+		for (int i = 0; i < clickedCache->getSize(); ++i) {
+			auto levelRef = *clickedLevelIt;
+			std::string name = levelRef->levelName;
+			queueLevelNavigation(gameState, name);
 		}
 
 		auto levelIt = levelCache->begin<components::LevelReference>();
@@ -57,8 +63,18 @@ public:
 			if (gameState->bubbleAlgebraState.justCompletedLevel) {
 				if (levelRef->levelName == gameState->bubbleAlgebraState.completedLevelName) {
 					gameState->bubbleAlgebraState.justCompletedLevel = false;
+					std::string completedLevelName = gameState->bubbleAlgebraState.completedLevelName;
 					gameState->bubbleAlgebraState.completedLevelName = "";
 					levelRef->complete = true;
+
+					for(int i=0; i<bubbleLevels::LEVEL_NAMES.size(); ++i){
+						const std::string& name = bubbleLevels::LEVEL_NAMES[i];
+						if (name == completedLevelName && i <bubbleLevels::LEVEL_NAMES.size() - 2) {
+							queueLevelNavigation(gameState, bubbleLevels::LEVEL_NAMES[i + 1]);
+							break;
+						}
+					}
+
 				}
 			}
 
