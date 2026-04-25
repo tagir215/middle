@@ -1722,6 +1722,8 @@ namespace bubbleActions {
 		auto bubble = middle::getComponent<components::BubbleComponent>(shape);
 		middle::Id replacementShapeId;
 
+		middle::Id parentId = middle::getParent(gameState, shape.id);
+
 		if (bubble) {
 			replacementShapeId = simplifyToOneOrNegativeOne(gameState, shape.id);
 
@@ -1744,6 +1746,12 @@ namespace bubbleActions {
 		actions.push_back(std::move(replaceAction));
 
 		queueSound(gameState, bubbleSounds::CANCEL_SOUND);
+
+		if (parentId.index != middle::UNASSIGNED) {
+			auto pop = std::make_unique<Pop>(replacementShapeId);
+			pop->execute(gameState);
+			actions.push_back(std::move(pop));
+		}
 	}
 
 	void Cancel::undo(middle::GameState* gameState)

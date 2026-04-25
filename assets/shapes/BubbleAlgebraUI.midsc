@@ -39,6 +39,7 @@ q  58_0
 q  63_0
 q  76_0
 q  81_0
+q  99_0
 MouseGrabbable
 Position
 f  0.000000
@@ -59,22 +60,41 @@ Offset
 f  0.000000
 f  -500.000000
 f  0.000000
+__q  99_0
+LoopTag
+LoopSociety
+q  73_0
+p  
+Layer
+i  0
+MouseSelectable
+MouseIntersectable
+TextureComponent
+s  C:\Users\tagir\raylib_projects\middle\assets\textures\Corners.png
+f  300.000000
+MouseGrabbable
+Position
+f  -13.321533
+f  0.594971
+f  -8.733276
+UiComponent
+i  -1
 __q  81_0
 Text
 s  BUBBLE ALGEBRA
-f  0.000000
 f  255.000000
 f  255.000000
 f  255.000000
+f  255.000000
 f  0.000000
 f  0.000000
 f  0.000000
-f  20.000000
+f  10.000000
 b  1
 Position
-f  227.057739
-f  -0.000244
-f  166.986938
+f  307.148682
+f  -0.000122
+f  187.597534
 MouseGrabbable
 MouseSelectable
 MouseIntersectable
@@ -688,9 +708,9 @@ Rectangle
 f  270.000000
 f  450.000000
 Position
-f  340.208008
+f  327.613770
 f  0.000244
-f  -30.395386
+f  -28.180908
 MouseGrabbable
 LoopSociety
 q  73_0
@@ -709,7 +729,7 @@ f  500.000000
 Position
 f  -12.073608
 f  0.000000
-f  393.741638
+f  383.358887
 MouseGrabbable
 LoopSociety
 q  73_0
@@ -727,9 +747,9 @@ f  1000.000000
 f  500.000000
 MouseGrabbable
 Position
-f  -10.821777
-f  -0.000366
-f  -411.024536
+f  -14.228149
+f  -0.000244
+f  -400.474609
 LoopSociety
 q  73_0
 p  
@@ -1092,9 +1112,9 @@ f  270.000000
 f  450.000000
 MouseGrabbable
 Position
-f  -367.311646
+f  -355.060913
 f  0.000244
-f  -11.257935
+f  -11.971558
 LoopSociety
 q  73_0
 p  
@@ -1339,9 +1359,9 @@ f  0.000000
 b  0
 MouseGrabbable
 Position
-f  86.012451
+f  86.119873
 f  0.000122
-f  164.514526
+f  163.749878
 InventoryItem
 i  4
 q  -1_0
