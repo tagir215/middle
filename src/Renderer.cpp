@@ -286,7 +286,7 @@ namespace RendererSystem {
 			drawText(gameState, false);
 
 			int maxLayers = 7;
-			for (int i = 0; i < maxLayers; ++i) {
+			for (int i = -1; i < maxLayers; ++i) {
 				BeginMode3D(camera);
 				rlDisableDepthTest();
 				draw3D(gameState, true, i);

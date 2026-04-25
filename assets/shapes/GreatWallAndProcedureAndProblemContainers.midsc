@@ -7,6 +7,8 @@ q  38_0
 q  24_0
 q  39_0
 q  133_0
+q  132_0
+q  134_0
 MouseSelectable
 MouseIntersectable
 Position
@@ -25,6 +27,45 @@ f  0.000000
 f  0.000000
 f  5.000000
 b  1
+__q  134_0
+LoopTag
+LoopSociety
+q  40_0
+p  
+MouseSelectable
+RuntimeHiddenTag
+MouseIntersectable
+TextureComponent
+s  C:\Users\tagir\raylib_projects\middle\assets\textures\editThis.png
+f  50.000000
+i  0
+MouseGrabbable
+Position
+f  10.201752
+f  -0.000000
+f  -68.962860
+EditThisTag
+__q  132_0
+Sphere
+f  2.000000
+UiComponent
+i  -1
+MouseGrabbable
+Position
+f  -189.721893
+f  0.000046
+f  -17.317028
+MouseSelectable
+TextureComponent
+s  C:\Users\tagir\raylib_projects\middle\assets\textures\arrow.png
+f  200.000000
+i  0
+MouseIntersectable
+LoopSociety
+q  40_0
+p  
+Layer
+i  -1
 __q  133_0
 LoopTag
 LoopSociety
@@ -38,7 +79,7 @@ f  5000.000000
 i  1
 MouseGrabbable
 Position
-f  -97.271606
+f  -97.271896
 f  100.000076
 f  -42.538551
 __q  39_0
@@ -52,18 +93,18 @@ MouseSelectable
 MouseIntersectable
 MouseGrabbable
 Position
-f  -189.801620
+f  -189.801910
 f  -0.000549
-f  -8.120433
+f  -8.120432
 ProcedureImportContainer
 q  1_0
 __q  24_0
+MouseSelectable
 BubbleAlgebraProblemContainer
 LoopTag
-MouseSelectable
 MouseGrabbable
 Position
-f  -1.469940
+f  -1.469971
 f  -0.000122
 f  28.193649
 LoopSociety
@@ -73,20 +114,10 @@ MouseIntersectable
 __q  38_0
 MouseSelectable
 Position
-f  -189.230667
+f  -189.230957
 f  0.000061
-f  -2.058214
+f  -2.058213
 MouseGrabbable
-Cuboid
-f  7.000000
-f  1.000000
-f  10000.000000
-MouseIntersectable
-Sphere
-f  2.000000
-LoopSociety
-q  40_2
-p  
 PhysicsData
 f  10000.000000
 f  0.000000
@@ -101,6 +132,16 @@ f  0.000000
 f  0.000000
 f  0.000000
 b  1
+Cuboid
+f  7.000000
+f  1.000000
+f  10000.000000
+MouseIntersectable
+Sphere
+f  2.000000
+LoopSociety
+q  40_2
+p  
 Rectangle
 f  7.000000
 f  10000.000000

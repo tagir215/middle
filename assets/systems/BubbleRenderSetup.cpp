@@ -26,6 +26,8 @@
 #include "RuntimeHiddenTag.h"
 #include "ActiveCheckBoxTag.h"
 #include "BubbleAlgebraProblem.h"
+#include "HelperBubbleEquation.h"
+#include "EditThisTag.h"
 
 
 class BubbleRenderSetup : public middle::MiddleGameplaySystem {
@@ -46,6 +48,7 @@ public:
 	components::CompCache* exponentCache;
 	components::CompCache* textureCache;
 	components::CompCache* activeCheckBoxCache;
+	components::CompCache* editThisCache;
 
 	void init(middle::GameState* gameState) {
 		bubbleCache = middle::newCompCache(gameState);
@@ -96,7 +99,9 @@ public:
 		activeCheckBoxCache->addType<components::ActiveCheckBoxTag>();
 		activeCheckBoxCache->addType<components::Position>();
 		activeCheckBoxCache->addType<components::Layer>();
-
+		editThisCache = middle::newCompCache(gameState);
+		editThisCache->addType<components::EditThisTag>();
+		editThisCache->addType<components::TextureComponent>();
 	}
 	bool debugRendering = false;
 
@@ -118,7 +123,13 @@ public:
 
 		gameState->editorState.backgroundColor = bubbleColors::BACKGROUND;
 
+
 		// render bubbbles
+		components::TextureComponent* editThisComp = nullptr;
+		if (editThisCache->getSize() == 1) {
+			auto it = editThisCache->begin<components::TextureComponent>();
+			editThisComp = *it;
+		}
 		auto bubbleIt = bubbleCache->begin<components::BubbleComponent>();
 		auto bubbleCircleIt = bubbleCache->begin<components::Circle>();
 		auto bubbleLayerIt = bubbleCache->begin<components::Layer>();
@@ -128,6 +139,11 @@ public:
 			auto layer = *bubbleLayerIt;
 			auto& shape = middle::getShape(gameState, bubbleCache->relevantIdVector[i].index);
 			bool isUiItem = middle::getComponent<components::UiComponent>(shape);
+
+			// check if should add editable indicator
+			auto problem = middle::getComponent<components::BubbleAlgebraProblem>(shape);
+			auto helper = middle::getComponent<components::HelperBubbleEquation>(shape);
+			bool addEditableTag = (problem && problem->editable) || helper;
 
 			auto intersectable = middle::getComponent<components::MouseIntersectable>(shape);
 			bool intersecting = intersectable && intersectable->intersectingTop;
@@ -157,6 +173,20 @@ public:
 				inverseIndicator.center = Vector3{ pos.x + offsetX, pos.y, pos.z + offsetZ };
 				inverseIndicator.disableDepthTest = isUiItem;
 				gameState->renderData.push_back(inverseIndicator);
+			}
+
+			if (addEditableTag) {
+				middle::RenderItem editThisSign;
+				editThisSign.type = middle::RenderItemType::BILLBOARD;
+				editThisSign.color = WHITE;
+				const float editThisZOffset = 20;
+				editThisSign.textureScale = editThisComp->scale;
+				editThisSign.disableDepthTest = isUiItem;
+				editThisSign.transform.translation = { pos.x, pos.y, pos.z + circle->radius + editThisZOffset };
+				editThisSign.texture = &editThisComp->texture;
+				editThisSign.layer = -1;
+				editThisSign.disableDepthTest = true;
+				gameState->renderData.push_back(editThisSign);
 			}
 		}
 
@@ -489,6 +519,7 @@ public:
 			auto pos = *texturePosIt;
 			auto& shape = middle::getShape(gameState, textureCache->relevantIdVector[i].index);
 			bool isUiItem = middle::getComponent<components::UiComponent>(shape);
+			auto layer = middle::getComponent<components::Layer>(shape);
 
 			if (texture->textureType == middleTextureType::BILLBOARD) {
 				middle::RenderItem textureItem;
@@ -498,6 +529,9 @@ public:
 				textureItem.color = WHITE;
 				textureItem.textureScale = texture->scale;
 				textureItem.disableDepthTest = isUiItem;
+				if (layer) {
+					textureItem.layer = layer->layer;
+				}
 				gameState->renderData.push_back(textureItem);
 			}
 
@@ -511,6 +545,9 @@ public:
 				textureItem.disableDepthTest = false;
 				textureItem.width = 10000;
 				textureItem.height = 10000;
+				if (layer) {
+					textureItem.layer = layer->layer;
+				}
 				gameState->renderData.push_back(textureItem);
 			}
 		}
