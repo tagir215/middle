@@ -85,6 +85,7 @@ namespace middle {
 		CYLINDER,
 		CUBOID,
 		BILLBOARD,
+		BACKGROUND,
 	};
 
 	struct RenderItem {

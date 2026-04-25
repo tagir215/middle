@@ -490,14 +490,29 @@ public:
 			auto& shape = middle::getShape(gameState, textureCache->relevantIdVector[i].index);
 			bool isUiItem = middle::getComponent<components::UiComponent>(shape);
 
-			middle::RenderItem textureItem;
-			textureItem.type = middle::RenderItemType::BILLBOARD;
-			textureItem.texture = &texture->texture;
-			textureItem.transform.translation = { pos->posX, pos->posY, pos->posZ };
-			textureItem.color = WHITE;
-			textureItem.textureScale = texture->scale;
-			textureItem.disableDepthTest = isUiItem;
-			gameState->renderData.push_back(textureItem);
+			if (texture->textureType == middleTextureType::BILLBOARD) {
+				middle::RenderItem textureItem;
+				textureItem.type = middle::RenderItemType::BILLBOARD;
+				textureItem.texture = &texture->texture;
+				textureItem.transform.translation = { pos->posX, pos->posY, pos->posZ };
+				textureItem.color = WHITE;
+				textureItem.textureScale = texture->scale;
+				textureItem.disableDepthTest = isUiItem;
+				gameState->renderData.push_back(textureItem);
+			}
+
+			else if (texture->textureType == middleTextureType::BACKGROUND) {
+				middle::RenderItem textureItem;
+				textureItem.type = middle::RenderItemType::BACKGROUND;
+				textureItem.texture = &texture->texture;
+				textureItem.transform.translation = { pos->posX, pos->posY, pos->posZ };
+				textureItem.color = WHITE;
+				textureItem.textureScale = texture->scale;
+				textureItem.disableDepthTest = false;
+				textureItem.width = 10000;
+				textureItem.height = 10000;
+				gameState->renderData.push_back(textureItem);
+			}
 		}
 
 		auto checkBoxPositionIt = activeCheckBoxCache->begin<components::Position>();

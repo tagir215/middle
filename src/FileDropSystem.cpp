@@ -1,6 +1,7 @@
 #pragma once
 #include "game_state.h"
 #include "middle_system_registrar.h"
+#include "rlgl.h"
 
 class FileDropSystem : public middle::MiddleGameplaySystem {
 
@@ -49,6 +50,12 @@ class FileDropSystem : public middle::MiddleGameplaySystem {
 				std::string path = gameState->texturesToLoadQueue.front();
 				gameState->texturesToLoadQueue.pop();
 				Texture2D texture = LoadTexture(path.c_str());
+                GenTextureMipmaps(&texture);
+                SetTextureFilter(texture, TEXTURE_FILTER_TRILINEAR);
+
+                SetTextureWrap(texture, TEXTURE_WRAP_REPEAT);
+                //rlTextureParameters(texture.id, RL_TEXTURE_FILTER_ANISOTROPIC_4X, 16);
+                rlTextureParameters(texture.id, RL_TEXTURE_MIPMAP_BIAS_RATIO, -0.5f);
                 gameState->loadedTextureMap[path] = middle::TextureContainer{ path, texture };
 			}
 		}
