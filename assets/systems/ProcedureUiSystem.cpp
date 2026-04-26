@@ -146,6 +146,7 @@ public:
 							middle::queueComponentDeletion<components::UiComponent>(gameState, id);
 						}
 					}
+					break;
 				}
 
 

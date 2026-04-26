@@ -55,6 +55,7 @@ public:
 		bubbleCache->addType<components::BubbleComponent>();
 		bubbleCache->addType<components::Circle>();
 		bubbleCache->addType<components::Layer>();
+		bubbleCache->addType<components::LoopSociety>();
 		bubbleCache->addType<components::RuntimeHiddenTag>(components::NOTINTERESTED);
 		bubbleCache->addType<components::BubbleVariable>(components::NOTINTERESTED);
 		mulCache = middle::newCompCache(gameState);
@@ -133,17 +134,29 @@ public:
 		auto bubbleIt = bubbleCache->begin<components::BubbleComponent>();
 		auto bubbleCircleIt = bubbleCache->begin<components::Circle>();
 		auto bubbleLayerIt = bubbleCache->begin<components::Layer>();
+		auto loopIt = bubbleCache->begin<components::LoopSociety>();
 		for (int i = 0; i < bubbleCache->getSize(); ++i) {
 			auto bubble = *bubbleIt;
 			auto circle = *bubbleCircleIt;
 			auto layer = *bubbleLayerIt;
+			auto loop = *loopIt;
 			auto& shape = middle::getShape(gameState, bubbleCache->relevantIdVector[i].index);
 			bool isUiItem = middle::getComponent<components::UiComponent>(shape);
+
+			// todo maybe replace with tag
+			bool parentIsEditableEquals = false;
+			if (loop->parentLoopId.index != middle::UNASSIGNED) {
+				auto& parentShape = middle::getShape(gameState, loop->parentLoopId.index);
+				bool equals = middle::getComponent<components::BubbleEqualsComponent>(parentShape) != nullptr;
+				auto problem = middle::getComponent<components::BubbleAlgebraProblem>(parentShape);
+				auto helper = middle::getComponent<components::HelperBubbleEquation>(parentShape);
+				parentIsEditableEquals = equals && (problem && problem->editable) || helper;
+			}
 
 			// check if should add editable indicator
 			auto problem = middle::getComponent<components::BubbleAlgebraProblem>(shape);
 			auto helper = middle::getComponent<components::HelperBubbleEquation>(shape);
-			bool addEditableTag = (problem && problem->editable) || helper;
+			bool addEditableTag = (problem && problem->editable) || helper || parentIsEditableEquals;
 
 			auto intersectable = middle::getComponent<components::MouseIntersectable>(shape);
 			bool intersecting = intersectable && intersectable->intersectingTop;
