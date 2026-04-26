@@ -136,7 +136,7 @@ namespace middle {
 	};
 
 	struct TextureContainer {
-		std::string path = "";
+		std::string filename = "";
 		Texture2D texture;
 	};
 

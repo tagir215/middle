@@ -148,6 +148,9 @@ public:
 		for (int i = 0; i < snapReflessBubbleInventoryItemCache->getSize(); ++i) {
 			auto invItem = *bubbleItemIt;
 			middle::Id parentInventoryId = middle::getParent(gameState, snapReflessBubbleInventoryItemCache->relevantIdVector[i]);
+			if (parentInventoryId.index == middle::UNASSIGNED) {
+				continue;
+			}
 			std::vector<middle::Id>children;
 			middle::getChildren(gameState, parentInventoryId, children);
 			bool attachedRefs = false;

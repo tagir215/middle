@@ -10,12 +10,6 @@ q  133_0
 q  132_0
 q  134_0
 MouseSelectable
-MouseIntersectable
-Position
-f  0.000000
-f  0.000000
-f  0.000000
-MouseGrabbable
 Text
 s  GreatWallAndProcedureAndProblemContainers
 f  0.000000
@@ -27,22 +21,29 @@ f  0.000000
 f  0.000000
 f  5.000000
 b  1
+MouseIntersectable
+Position
+f  0.000000
+f  0.000000
+f  0.000000
+MouseGrabbable
 __q  134_0
 LoopTag
 LoopSociety
 q  40_0
 p  
-MouseSelectable
-RuntimeHiddenTag
-MouseIntersectable
 TextureComponent
 s  C:\Users\tagir\raylib_projects\middle\assets\textures\editThis.png
 f  50.000000
 i  0
+s  editThis.png
+MouseSelectable
+RuntimeHiddenTag
+MouseIntersectable
 MouseGrabbable
 Position
 f  10.201752
-f  -0.000000
+f  0.000000
 f  -68.962860
 EditThisTag
 __q  132_0
@@ -55,11 +56,12 @@ Position
 f  -189.721893
 f  0.000046
 f  -17.317028
-MouseSelectable
 TextureComponent
 s  C:\Users\tagir\raylib_projects\middle\assets\textures\arrow.png
 f  200.000000
 i  0
+s  arrow.png
+MouseSelectable
 MouseIntersectable
 LoopSociety
 q  40_0
@@ -71,21 +73,22 @@ LoopTag
 LoopSociety
 q  40_0
 p  
-MouseSelectable
-MouseIntersectable
 TextureComponent
 s  C:\Users\tagir\raylib_projects\middle\assets\textures\pattern.png
 f  5000.000000
 i  1
+s  pattern.png
+MouseSelectable
+MouseIntersectable
 MouseGrabbable
 Position
 f  -97.271896
 f  100.000076
 f  -42.538551
 __q  39_0
-LoopTag
 UiComponent
 i  -1
+LoopTag
 LoopSociety
 q  40_2
 p  
@@ -118,6 +121,8 @@ f  -189.230957
 f  0.000061
 f  -2.058213
 MouseGrabbable
+Sphere
+f  2.000000
 PhysicsData
 f  10000.000000
 f  0.000000
@@ -137,8 +142,6 @@ f  7.000000
 f  1.000000
 f  10000.000000
 MouseIntersectable
-Sphere
-f  2.000000
 LoopSociety
 q  40_2
 p  
