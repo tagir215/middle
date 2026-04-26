@@ -28,6 +28,7 @@
 #include "ProcedureComponent.h"
 #include "component_utils.h"
 #include "UiNode.h"
+#include "SnapRef.h"
 
 
 class ProcedureUiSystem : public middle::MiddleGameplaySystem {
@@ -105,7 +106,10 @@ public:
 				// shape the procedure is contained into
 				if (procContainerCache->getSize() > 0) {
 					middle::Id& containerId = procContainerCache->relevantIdVector[0];
-					middle::queueAction(gameState, std::make_shared<middle::EditorActionDeleteSingle>(containerId));
+					auto delAction = std::make_shared<middle::CustomAction>([containerId](middle::GameState* gameState) {
+						middle::deleteShapeRecursive(gameState, containerId.index);
+						});
+					middle::queueAction(gameState, delAction);
 				}
 				else {
 					middle::Id loadedProcReferenceId = middle::loadShape(gameState, folder, shapeName, true, {0,0,0});
@@ -196,7 +200,8 @@ public:
 					rectangle->height = 50;
 					// set to reference proc block in ui
 					if(procUiBlocks.size() > j) {
-						inventoryItem->idRef = procUiBlocks[j];
+						auto snapRef = middle::addComponent<components::SnapRef>(shape);
+						snapRef->snapTargetId = procUiBlocks[j];
 						button->function = bubbleButton::IMPORT_PROCEDURE;
 						middle::Shape& registeredShape = middle::registerAsGhostShape(gameState, shape);
 					}

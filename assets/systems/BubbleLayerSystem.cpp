@@ -8,6 +8,7 @@
 #include "Layer.h"
 #include "bubble_utils.h"
 #include "IdRef.h"
+#include "SnapRef.h"
 
 class BubbleLayerSystem : public middle::MiddleGameplaySystem {
 public:
@@ -33,6 +34,7 @@ public:
 		bubbleLayerCache->addType<components::BubbleComponent>();
 		bubbleLayerCache->addType<components::Layer>();
 		bubbleLayerCache->addType<components::IdRef>(components::NOTINTERESTED);
+		bubbleLayerCache->addType<components::SnapRef>(components::NOTINTERESTED);
 		unitLayerCache = middle::newCompCache(gameState);
 		unitLayerCache->addType<components::BubbleUnit>();
 		unitLayerCache->addType<components::Layer>();

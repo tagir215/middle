@@ -23,6 +23,7 @@
 #include "BubbleEqualsVariable.h"
 #include "HelperBubbleEquation.h"
 #include "bubble_constants.h"
+#include "SnapRef.h"
 
 class BubbleModificationSystem : public middle::MiddleGameplaySystem {
 public:
@@ -118,6 +119,7 @@ public:
 		middle::queueComponentDeletion<components::InventoryItem>(gameState, copyId);
 		middle::queueComponentDeletion<components::IdRef>(gameState, copyId);
 		middle::queueComponentDeletion<components::UiComponent>(gameState, copyId);
+		middle::queueComponentDeletion<components::SnapRef>(gameState, copyId);
 		std::vector<middle::Id>children;
 		middle::getAllChildren(gameState, copyId, children);
 		for (middle::Id& child : children) {

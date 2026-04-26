@@ -143,7 +143,7 @@ public:
 							auto& bubbleShape = middle::registerShape(gameState, bubble);
 							auto inventoryItem = middle::attachComponent<components::InventoryItem>(gameState, bubbleShape.id);
 							inventoryItem->itemType = bubbleInventoryItemType::NEW_ADDITION_TERM;
-							inventoryItem->idRef = inventorySlotCache->relevantIdVector[i];
+							//inventoryItem->idRef = inventorySlotCache->relevantIdVector[i];
 							middle::EditorActionReparent(inventoryShape.id.index, bubbleShape.id.index).execute(gameState);
 						}
 					}

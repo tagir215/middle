@@ -20,6 +20,9 @@
 #include "Button.h"
 #include "ActiveCheckBoxTag.h"
 #include "MouseClickComponent.h"
+#include "InventorySlot.h"
+#include "SnapRef.h"
+#include "Layer.h"
 
 
 class BubbleInventorySystem : public middle::MiddleGameplaySystem {
@@ -29,8 +32,10 @@ public:
 	components::CompCache* inventoryItemCache;
 	components::CompCache* grabbableCache;
 	components::CompCache* uiComponentlessBubbleInventoryItemCache;
+	components::CompCache* snapReflessBubbleInventoryItemCache;
 	components::CompCache* uiButtonsCache;
 	components::CompCache* activeCheckBoxesCache;
+	components::CompCache* inventorySlotCache;
 
 	void init(middle::GameState* gameState) {
 		inventoryCache = middle::newCompCache(gameState);
@@ -45,12 +50,19 @@ public:
 		uiComponentlessBubbleInventoryItemCache->addType<components::InventoryItem>();
 		uiComponentlessBubbleInventoryItemCache->addType<components::BubbleComponent>();
 		uiComponentlessBubbleInventoryItemCache->addType<components::UiComponent>(components::NOTINTERESTED);
+		snapReflessBubbleInventoryItemCache = middle::newCompCache(gameState);
+		snapReflessBubbleInventoryItemCache->addType<components::InventoryItem>();
+		snapReflessBubbleInventoryItemCache->addType<components::BubbleComponent>();
+		snapReflessBubbleInventoryItemCache->addType<components::SnapRef>(components::NOTINTERESTED);
+		snapReflessBubbleInventoryItemCache->addType<components::PlacementComponent>(components::NOTINTERESTED);
 		uiButtonsCache = middle::newCompCache(gameState);
 		uiButtonsCache->addType<components::Button>();
 		uiButtonsCache->addType<components::UiComponent>();
 		uiButtonsCache->addType<components::MouseClickComponent>();
 		activeCheckBoxesCache = middle::newCompCache(gameState);
 		activeCheckBoxesCache->addType<components::ActiveCheckBoxTag>();
+		inventorySlotCache = middle::newCompCache(gameState);
+		inventorySlotCache->addType<components::InventorySlot>();
 	}
 
 	void deactivateCheckboxes(middle::GameState* gameState) {
@@ -89,7 +101,8 @@ public:
 			auto loop = *loopIt;
 
 			std::vector < middle::Id>children = loop->loopMemberIds;
-			for (middle::Id childId : children) {
+			for (int i = 0; i < children.size(); ++i) {
+				middle::Id childId = children[i];
 				auto& child = middle::getShape(gameState, childId.index);
 				auto intersectable = middle::getComponent<components::MouseIntersectable>(child);
 				auto grabbable = middle::getComponent<components::MouseGrabbable>(child);
@@ -109,9 +122,11 @@ public:
 					placement->grabbing = true;
 					ref->idRef = childId;
 					middle::queueComponentDeletion<components::MouseIntersectable>(gameState, copyShape.id);
+					middle::queueComponentDeletion<components::SnapRef>(gameState, copyShape.id);
 				}
 			}
 		}
+
 
 		// attach ui components to bubbles that are in the inventory
 		auto uiComponentlessIt = uiComponentlessBubbleInventoryItemCache->begin<components::BubbleComponent>();
@@ -126,6 +141,30 @@ public:
 				if (!comp) {
 					middle::queueComponentAttachment<components::UiComponent>(gameState, child);
 				}
+			}
+		}
+
+		auto bubbleItemIt = snapReflessBubbleInventoryItemCache->begin<components::InventoryItem>();
+		for (int i = 0; i < snapReflessBubbleInventoryItemCache->getSize(); ++i) {
+			auto invItem = *bubbleItemIt;
+			middle::Id parentInventoryId = middle::getParent(gameState, snapReflessBubbleInventoryItemCache->relevantIdVector[i]);
+			std::vector<middle::Id>children;
+			middle::getChildren(gameState, parentInventoryId, children);
+			bool attachedRefs = false;
+			for (int index = 0; index < children.size(); ++index) {
+				// TODO THIS IS ASSUMES SLOTS MATCH THIS BUBBLE INVENTORYS MEMBERS
+				middle::Id slot = inventorySlotCache->relevantIdVector[index];
+				auto snapRef = middle::attachComponent<components::SnapRef>(gameState, children[index]);
+				snapRef->snapTargetId = slot;
+				//invItem->idRef = inventorySlotCache->relevantIdVector[i];
+				attachedRefs = true;
+				// set layer here, because its seems like good time
+				auto& shape = middle::getShape(gameState, children[index].index);
+				auto layer = middle::getComponent<components::Layer>(shape);
+				layer->layer = 2;
+			}
+			if (attachedRefs) {
+				break;
 			}
 		}
 
@@ -163,6 +202,7 @@ public:
 				}
 			}
 		}
+
 
 		if (gameState->bubbleAlgebraState.grabbedId.index != middle::UNASSIGNED) {
 			auto grabbableIt = grabbableCache->begin<components::MouseGrabbable>();

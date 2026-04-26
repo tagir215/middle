@@ -9,11 +9,13 @@
 #include "Offset.h"
 #include "editor_file_utils.h"
 #include "InventoryItem.h"
+#include "InventorySlot.h"
+#include "SnapRef.h"
 
 class InventorySystem : public middle::MiddleGameplaySystem {
 
 public:
-	components::CompCache* inventoryItemCache;
+	components::CompCache* inventoryItemRefCache;
 	components::CompCache* inventoryRectCache;
 
 	InventorySystem() {
@@ -25,8 +27,9 @@ public:
 		inventoryRectCache->addType<components::Inventory>();
 		inventoryRectCache->addType<components::LoopSociety>();
 		inventoryRectCache->addType<components::Rectangle>();
-		inventoryItemCache = middle::newCompCache(gameState);
-		inventoryItemCache->addType<components::InventoryItem>();
+		inventoryItemRefCache = middle::newCompCache(gameState);
+		inventoryItemRefCache->addType<components::InventoryItem>();
+		inventoryItemRefCache->addType<components::SnapRef>();
 	}
 
 
@@ -34,16 +37,13 @@ public:
 
 	void update(middle::GameState* gameState) override {
 
-		auto inventoryItemIt = inventoryItemCache->begin<components::InventoryItem>();
-		for (int i = 0; i < inventoryItemCache->getSize(); ++i) {
-			auto item = *inventoryItemIt;
-			middle::Id id = inventoryItemCache->relevantIdVector[i];
-
-			if (item->idRef.index != middle::UNASSIGNED) {
-				Vector3 pos = middle::getShapePosition(gameState, item->idRef.index);
-				Vector3 currPos = middle::getShapePosition(gameState, id.index);
-				middle::moveShape(gameState, id.index, pos - currPos);
-			}
+		auto snapRefIt = inventoryItemRefCache->begin<components::SnapRef>();
+		for (int i = 0; i < inventoryItemRefCache->getSize(); ++i) {
+			auto snapRef = *snapRefIt;
+			middle::Id id = inventoryItemRefCache->relevantIdVector[i];
+			Vector3 pos = middle::getShapePosition(gameState, snapRef->snapTargetId.index);
+			Vector3 currPos = middle::getShapePosition(gameState, id.index);
+			middle::moveShape(gameState, id.index, pos - currPos);
 		}
 
 		auto inventoryRectIt = inventoryRectCache->begin<components::Inventory>();
