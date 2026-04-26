@@ -99,12 +99,18 @@ public:
 
 		if (gameState->applicationMode == middle::ApplicationMode::GAME_MODE) {
 			gameState->gameInput.pop = false;
+			gameState->gameInput.mulOne = false;
+			gameState->gameInput.comp = false;
+			gameState->gameInput.proc = false;
+			gameState->gameInput.can = false;
 			gameState->gameInput.zoomIn = false;
 			gameState->gameInput.zoomOut = false;
 			gameState->gameInput.panUp = false;
 			gameState->gameInput.panDown = false;
 			gameState->gameInput.panLeft = false;
 			gameState->gameInput.panRight = false;
+			gameState->gameInput.undo = false;
+			gameState->gameInput.shiftHeld = false;
 
 			if (gameState->inputBlockers.find(middle::InputBlockers::KEYBOARD_BLOCK) == gameState->inputBlockers.end()) {
 				gameState->gameInput.pop = IsKeyPressed(KEY_B);
@@ -114,6 +120,23 @@ public:
 				gameState->gameInput.panDown = IsKeyDown(KEY_S);
 				gameState->gameInput.panLeft = IsKeyDown(KEY_A);
 				gameState->gameInput.panRight = IsKeyDown(KEY_D);
+				gameState->gameInput.pop = IsKeyPressed(KEY_Z);
+				gameState->gameInput.can = IsKeyPressed(KEY_X);
+				gameState->gameInput.comp = IsKeyPressed(KEY_C);
+				gameState->gameInput.mulOne = IsKeyPressed(KEY_V);
+				gameState->gameInput.proc = IsKeyPressed(KEY_E);
+				gameState->gameInput.undo = IsKeyPressed(KEY_SPACE);
+				gameState->gameInput.one = IsKeyPressed(KEY_ONE);
+				gameState->gameInput.two = IsKeyPressed(KEY_TWO);
+				gameState->gameInput.three = IsKeyPressed(KEY_THREE);
+				gameState->gameInput.four = IsKeyPressed(KEY_FOUR);
+				gameState->gameInput.five = IsKeyPressed(KEY_FIVE);
+				gameState->gameInput.six = IsKeyPressed(KEY_SIX);
+				gameState->gameInput.seven = IsKeyPressed(KEY_SEVEN);
+				gameState->gameInput.eight = IsKeyPressed(KEY_EIGHT);
+				gameState->gameInput.nine = IsKeyPressed(KEY_NINE);
+				gameState->gameInput.zero = IsKeyPressed(KEY_ZERO);
+				gameState->gameInput.shiftHeld = IsKeyDown(KEY_LEFT_SHIFT) || IsKeyDown(KEY_RIGHT_SHIFT);
 				gameState->gameInput.mouseWheelMove = GetMouseWheelMove();
 			}
 		}

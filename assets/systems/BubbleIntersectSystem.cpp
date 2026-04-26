@@ -16,6 +16,7 @@
 #include "Rectangle.h"
 #include "PlacementComponent.h"
 #include "InventoryItem.h"
+#include "UiComponent.h"
 
 class BubbleIntersectSystem : public middle::MiddleGameplaySystem {
 public:
@@ -89,6 +90,12 @@ public:
 			auto& shape = middle::getShape(gameState, rectangleCache->relevantIdVector[i].index);
 			auto rectangle = *rectangleIt;
 			auto intersectable = *intersectableIt;
+
+			auto uiComp = middle::getComponent<components::UiComponent>(shape);
+			if (uiComp && uiComp->type == UiElementTypes::UI_BACKGROUND) {
+				continue;
+			}
+
 			Vector3 position = middle::getShapePosition(gameState, shape.id.index);
 			Vector3 scale = middle::getTotalScale(gameState, shape.id);
 			Vector3 uiPlaneIntersectPoint = middle::RayCastLinePlane(position, { 0,-1,0 },
@@ -100,6 +107,7 @@ public:
 			intersectable->intersecting =
 				mouseXZ.x > position.x - axisX && mouseXZ.x < position.x + axisX &&
 				mouseXZ.z > position.z - axisZ && mouseXZ.z < position.z + axisZ;
+
 
 			if (intersectable->intersecting) {
 				uiIntersected = true;

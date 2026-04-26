@@ -3,7 +3,7 @@
 #include "editor_file_utils.h"
 #define MIDDLEPROCEDURECONTAINER(X) \
 	X(startBlock) \
-	X(bubbleRef)
+	X(bubbleRef) 
 
 namespace procedureConstants {
 	enum Direction {
@@ -38,6 +38,7 @@ namespace procedureConstants {
 		CanStep,
 		CannotStep,
 		Stationary,
+		StepWithoutFunction,
 	};
 }
 
@@ -48,6 +49,7 @@ namespace components {
 		middle::Id bubbleRef;
 		int mode = procedureConstants::IDLE;
 		int direction = procedureConstants::FORWARD;
+		std::unordered_map<std::string, middle::Id> variableOverrides;
 		// action container, and all actions in history
 		std::vector<procedureConstants::ProcedureTransition> procedureTransitionStack;
 		bool exitingLoop = false;
@@ -57,6 +59,7 @@ namespace components {
 		bool updateInputs = false;
 		// number of top level blocks
 		int size = 0;
+		bool editMode = true;
 
 		void serialize(std::ostream& ostream) override;
 		void deserialize(const std::vector<std::string>& buffer, int indexOffset) override;

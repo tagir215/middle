@@ -7,7 +7,7 @@
 class FollowCameraSystem : public middle::MiddleGameplaySystem {
 public:
 	FollowCameraSystem(){
-		systemUpdateType = middle::SystemUpdateType::GAMEPLAY_POSTFRAME;
+		systemUpdateType = middle::SystemUpdateType::GAMEPLAY_MIDFRAME;
 	}
 
 	components::CompCache* uiCache;

@@ -4,13 +4,15 @@
 #define MIDDLEINVENTORY(X) \
 	X(horizontal) \
 	X(rows) \
-	X(freeLayout)
+	X(freeLayout) \
+	X(slotIndex)
 
 namespace components {
 	struct Inventory : public middle::Serializable{
 		bool horizontal = false;
 		int rows = 1;
 		bool freeLayout = false;
+		int slotIndex = middle::UNASSIGNED;
 
 		void serialize(std::ostream& ostream) override;
 		void deserialize(const std::vector<std::string>& buffer, int indexOffset) override;

@@ -1,36 +1,13 @@
 #pragma once
 #include "registrars.h"
 #include "editor_file_utils.h"
-#define MIDDLEBUBBLECOMPONENT(X) 
+#define MIDDLEBUBBLECOMPONENT(X) \
+	X(inverse) 
 
 
 namespace components {
 	struct BubbleComponent : public middle::Serializable{
-		float centerX;
-		float centerY;
-		float centerZ;
-		float axisX;
-		float axisY;
-		float axisZ;
-		float length;
-		float width;
-		float distBetweenNodes;
-		float endRadius;
-
-		float aX;
-		float aY;
-		float aZ;
-		float bX;
-		float bY;
-		float bZ;
-
-		bool hidden = false;
-
-		int searchIndex = 0;
-
-		bool infiniteMass = false;
-
-		int nodeCountTarget = 0;
+		bool inverse = false;
 
 		void serialize(std::ostream& ostream) override;
 		void deserialize(const std::vector<std::string>& buffer, int indexOffset) override;

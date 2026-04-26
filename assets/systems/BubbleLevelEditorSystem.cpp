@@ -10,6 +10,12 @@
 #include "component_utils.h"
 #include "BubbleAlgebraProblem.h"
 #include "ExponentComponent.h"
+#include "BubbleAlgebraLevelConfigs.h"
+#include "JointEntity.h"
+#include "Inventory.h"
+#include "InventorySlot.h"
+#include "InventoryItem.h"
+#include "BubbleVariable.h"
 
 
 class BubbleLevelEditorSystem : public middle::MiddleGameplaySystem {
@@ -20,11 +26,14 @@ public:
 	}
 
 	components::CompCache* selectableCache = nullptr;
+	components::CompCache* inventorySlotCache = nullptr;
 
 	void init(middle::GameState* gameState) override {
 		selectableCache = middle::newCompCache(gameState);
 		selectableCache->addType<components::MouseSelectable>();
 		selectableCache->addType<components::UiComponent>(components::NOTINTERESTED);
+		inventorySlotCache = middle::newCompCache(gameState);
+		inventorySlotCache->addType <components::InventorySlot>();
 	}
 
 	middle::Id getSelected() {
@@ -99,6 +108,45 @@ public:
 						Vector3 cameraPos = { 0,-1000,0 };
 						middle::loadShape(gameState, folder, "BubbleCamera", true, cameraPos);
 					}
+
+					if (ImGui::Button("Create Configs")) {
+						int freeIndex = middle::findFreeIndex(gameState);
+						entities::initJoint(gameState, freeIndex, { 200,0,0 });
+						auto& shape = middle::getShape(gameState, freeIndex);
+						middle::attachComponent<components::BubbleAlgebraLevelConfigs>(gameState, shape.id);
+						auto sphere = middle::getComponent<components::Sphere>(shape);
+						sphere->radius = 10;
+					}
+
+					if (ImGui::Button("Create Inventory")) {
+						middle::Shape inventoryProto;
+						middle::addComponent<components::LoopTag>(inventoryProto);
+						middle::addComponent<components::LoopSociety>(inventoryProto);
+						auto position = middle::addComponent<components::Position>(inventoryProto);
+						middle::addComponent<components::Inventory>(inventoryProto);
+						auto selectable = middle::addComponent<components::MouseSelectable>(inventoryProto);
+						middle::addComponent<components::MouseGrabbable>(inventoryProto);
+						middle::addComponent<components::MouseIntersectable>(inventoryProto);
+						Vector3 initPos = { 0,0,-50 };
+						position->posX = initPos.x;
+						position->posY = initPos.y;
+						position->posZ = initPos.z;
+						selectable->selected = true;
+						middle::Shape& inventoryShape = middle::registerShape(gameState, inventoryProto);
+
+						// setup placeholder inventory items
+						int inventorySize = inventorySlotCache->getSize();
+						const float zOffset = -20;
+						const float xDist = 100;
+						for (int i = 0; i < inventorySize; ++i) {
+							auto bubble = bubble::newBubble(gameState, initPos + Vector3{xDist* i + 1, 0, 0});
+							auto& bubbleShape = middle::registerShape(gameState, bubble);
+							auto inventoryItem = middle::attachComponent<components::InventoryItem>(gameState, bubbleShape.id);
+							inventoryItem->itemType = bubbleInventoryItemType::NEW_ADDITION_TERM;
+							//inventoryItem->idRef = inventorySlotCache->relevantIdVector[i];
+							middle::EditorActionReparent(inventoryShape.id.index, bubbleShape.id.index).execute(gameState);
+						}
+					}
 				}
 
 
@@ -115,17 +163,6 @@ public:
 					if (ImGui::Button("New Unit")) {
 						Vector3 containerPos = middle::getShapePosition(gameState, selectedId.index);
 						auto unitProto = bubble::newUnit(gameState, containerPos + randomOffset());
-						auto& unit = middle::registerShape(gameState, unitProto);
-						middle::Id newId = unit.id;
-						middle::EditorActionReparent(selectedId.index, newId.index).execute(gameState);
-					}
-					ImGui::Separator();
-					static char label[20] = "x";
-					ImGui::InputText("variable lable", label, IM_ARRAYSIZE(label));
-					if (ImGui::Button("New Variable")) {
-						Vector3 containerPos = middle::getShapePosition(gameState, selectedId.index);
-						std::string string(label);
-						auto unitProto = bubble::newVariable(gameState, string, containerPos + randomOffset());
 						auto& unit = middle::registerShape(gameState, unitProto);
 						middle::Id newId = unit.id;
 						middle::EditorActionReparent(selectedId.index, newId.index).execute(gameState);
@@ -152,25 +189,29 @@ public:
 						linkAction.execute(gameState);
 					}
 					ImGui::Separator();
+					static char label[20] = "x";
+					ImGui::InputText("variable lable", label, IM_ARRAYSIZE(label));
+					if (ImGui::Button("Bubble To Variable")) {
+						std::string string(label);
+						auto var = middle::attachComponent<components::BubbleVariable>(gameState, selectedId);
+						var->label = string;
+					}
+					ImGui::Separator();
 					static int dividend = 2;
-					ImGui::SliderInt("dividend", &dividend, 2, 10);
-					if (ImGui::Button("To Fraciton")) {
-						Vector3 containerPos = middle::getShapePosition(gameState, selectedId.index);
-						middle::Id fraction = bubble::shapeToFraction(gameState, selectedId, containerPos, dividend);
-						bubbleActions::Replace(selectedId, fraction).execute(gameState);
+					if (ImGui::Button("Bubble To Inverse")) {
+						middle::Shape& selectedShape = middle::getShape(gameState, selectedId.index);
+						auto bubble = middle::getComponent<components::BubbleComponent>(selectedShape);
+						bubble->inverse = true;
 					}
 					ImGui::Separator();
 					static bool isInverse = false;
 					static int power = 1;
-					ImGui::SliderInt("power", &power, -4, 4);
+					ImGui::SliderInt("exponent", &power, -4, 4);
 					ImGui::Checkbox("isInverse", &isInverse);
-					if (ImGui::Button("New Power")) {
-						Vector3 containerPos = middle::getShapePosition(gameState, selectedId.index);
-						middle::Shape& powerShape = middle::registerShape(gameState, bubble::newExponent(gameState, containerPos + randomOffset()));
-						auto powerComp = middle::getComponent<components::ExponentComponent>(powerShape);
-						powerComp->power = power;
-						powerComp->isInverse = isInverse;
-						middle::EditorActionReparent(selectedId.index, powerShape.id.index).execute(gameState);
+					if (ImGui::Button("Bubble To Exponent")) {
+						auto expComp = middle::attachComponent<components::ExponentComponent>(gameState, selectedId);
+						expComp->power = power;
+						expComp->isInverse = isInverse;
 					}
 				}
 

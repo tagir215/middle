@@ -51,6 +51,7 @@ namespace middle {
 		virtual ~EditorActionContainer() = default;
 		virtual void execute(GameState* gameState) = 0;
 		virtual void undo(GameState* gameState) = 0;
+		bool cancelled = false;
 	};
 
 
@@ -84,6 +85,7 @@ namespace middle {
 		CYLINDER,
 		CUBOID,
 		BILLBOARD,
+		BACKGROUND,
 	};
 
 	struct RenderItem {
@@ -105,7 +107,7 @@ namespace middle {
 		float width;
 		float height;
 		float textureScale = 10;
-		int fontSize;
+		int fontSize = 10;
 		bool disableDepthTest = false;
 		std::string text = "";
 		Model* model;
@@ -125,6 +127,7 @@ namespace middle {
 		std::vector<std::shared_ptr<middle::EditorActionContainer>>bubbleActions;
 		bool justCompletedLevel = false;
 		std::string completedLevelName;
+		std::vector<std::string>procedureNames;
 	};
 
 	struct ModelContainer {
@@ -174,6 +177,7 @@ namespace middle {
 		std::vector<std::string>shapeNames;
 		std::vector<std::string>systemNames;
 		std::vector<std::string>componentNames;
+		std::unordered_map<std::string, Sound>soundMap;
 		EditorInput input;
 		GameInput gameInput;
 		std::set<InputBlockers> inputBlockers;
@@ -184,6 +188,8 @@ namespace middle {
 		bool reset = false;
 		bool loaded = false;
 		bool quit = false;
+		int fontUnitFactor = 1024;
+		Font globalFont;
 
 		const char* workingDir;
 		std::vector<RenderItem>renderData;
@@ -199,6 +205,7 @@ namespace middle {
 		std::unordered_map<std::string, TextureContainer>loadedTextureMap;
 		std::queue<std::string>modelsToLoadQueue;
 		std::queue<std::string>texturesToLoadQueue;
+		std::queue<Sound>soundQueue;
 	};
 
 }

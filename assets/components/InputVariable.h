@@ -6,12 +6,16 @@
 	X(unitRef) \
 	X(label) \
 	X(structureId) \
-	X(structureDepth) 
+	X(structureDepth) \
+	X(bubbleRefIds) \
+	X(structureIds) 
 
 namespace components {
 	struct InputVariable : public middle::Serializable{
 		middle::Id unitRef;
+		std::vector<middle::Id>bubbleRefIds;
 		middle::Id structureId;
+		std::vector<middle::Id>structureIds;
 		std::string label = "";
 		int structureDepth = 0;
 

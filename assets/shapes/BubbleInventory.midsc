@@ -1,0 +1,105 @@
+__q  42_0
+Inventory
+b  1
+i  1
+b  1
+i  -1
+Position
+f  0.000000
+f  0.000000
+f  0.000000
+MouseGrabbable
+LoopTag
+LoopSociety
+q  -1_0
+p  
+q  43_0
+MouseSelectable
+Layer
+i  2
+MouseIntersectable
+Text
+s  BubbleInventory
+f  255.000000
+f  255.000000
+f  255.000000
+f  255.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  10.000000
+b  1
+__q  43_0
+BubbleComponent
+b  0
+InventoryItem
+i  1
+q  -1_0
+Position
+f  -73.345978
+f  0.000977
+f  -6.295776
+MouseGrabbable
+LoopSociety
+q  42_0
+p  
+q  49_0
+MouseIntersectable
+MouseSelectable
+LoopTag
+BubbleRef
+Circle
+f  12.131904
+PhysicsData
+f  462.389313
+f  0.002163
+f  1.000000
+f  -0.000005
+f  0.000000
+f  0.000003
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+b  0
+Layer
+i  2
+UiComponent
+i  -1
+__q  49_0
+UiComponent
+i  -1
+BubbleUnit
+i  1
+LoopSociety
+q  43_0
+p  
+Sphere
+f  2.000000
+MouseSelectable
+PhysicsData
+f  12.566371
+f  0.079577
+f  1.000000
+f  0.000171
+f  0.000000
+f  -0.000113
+f  0.800000
+f  0.800000
+f  0.800000
+f  0.000000
+f  0.000000
+f  0.000000
+b  0
+Position
+f  -73.456146
+f  0.000977
+f  -6.223145
+MouseGrabbable
+MouseIntersectable
+Circle
+f  2.000000
+Layer
+i  3

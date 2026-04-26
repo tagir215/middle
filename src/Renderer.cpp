@@ -217,10 +217,52 @@ namespace RendererSystem {
 				rlPopMatrix();
 			}
 
+			if (item.type == middle::BACKGROUND) {
+				// billboard default angle is toward y,  
+				item.transform.rotation = QuaternionFromVector3ToVector3({ 0,-1,0 }, { 0, 0, -1 });
+				Matrix M = transformMatrix(item.transform, item.layer);
+				rlPushMatrix();
+				rlLoadIdentity();
+				rlMultMatrixf(MatrixToFloatV(M).v);
+				Vector3 pos = item.center;
+				Rectangle backgroundRect = { 0,0, item.width, item.height };
+				Vector3 up = { 0,1,0 };
+				Vector2 scale = { item.textureScale, item.textureScale };
+				Vector2 origin = { scale.x * 0.5f, scale.y * 0.5f };
+				float rotation = 0;
+				if (item.texture == nullptr) {
+					DrawCube(pos, 4, 4, 4, BLACK);
+				}
+				else {
+					DrawBillboardPro(gameState->activeCamera, *item.texture, backgroundRect, pos, up, scale, origin, rotation, item.color);
+				}
+				rlPopMatrix();
+			}
+
 		}
 
 
 		EndMode3D();
+	}
+
+	void drawText(middle::GameState* gameState, bool uiText) {
+		for (int i = 0; i < gameState->renderData.size(); ++i) {
+			middle::RenderItem item = gameState->renderData[i];
+			if (item.disableDepthTest != uiText) {
+				continue;
+			}
+			if (item.type == middle::RenderItemType::TEXT) {
+				Vector2 pos = GetWorldToScreen(item.center, gameState->activeCamera);
+				const int spacing = 1;
+				float distFactor = 1.0f / Vector3Distance(gameState->activeCamera.position, item.center);
+				float fontSize = item.fontSize * gameState->fontUnitFactor * distFactor;
+				Vector2 size = MeasureTextEx(gameState->globalFont, item.text.c_str(), fontSize, spacing);
+				float offsetX = -size.x * 0.5f;
+				float offsetY = -size.y * 0.5f;
+				pos += {offsetX, offsetY};
+				DrawTextEx(gameState->globalFont, item.text.c_str(), pos, fontSize, spacing, item.color);
+			}
+		}
 	}
 
 	class RendererSystem : public middle::MiddleGameplaySystem {
@@ -241,8 +283,10 @@ namespace RendererSystem {
 			draw3D(gameState, false);
 			EndMode3D();
 
+			drawText(gameState, false);
+
 			int maxLayers = 7;
-			for (int i = 0; i < maxLayers; ++i) {
+			for (int i = -1; i < maxLayers; ++i) {
 				BeginMode3D(camera);
 				rlDisableDepthTest();
 				draw3D(gameState, true, i);
@@ -250,14 +294,7 @@ namespace RendererSystem {
 				EndMode3D();
 			}
 
-
-			for (int i = 0; i < gameState->renderData.size(); ++i) {
-				middle::RenderItem item = gameState->renderData[i];
-				if (item.type == middle::RenderItemType::TEXT) {
-					Vector2 pos = GetWorldToScreen(item.center, camera);
-					DrawText(item.text.c_str(), pos.x, pos.y, item.fontSize, item.color);
-				}
-			}
+			drawText(gameState, true);
 
 			Vector3 center = { 0,0,0 };
 			Vector2 center2d = GetWorldToScreen(center, camera);

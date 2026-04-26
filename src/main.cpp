@@ -36,6 +36,7 @@
 #include "middle_gameplay_script_map.h"
 #include "middle_math.h"
 #include "game.h"
+#include "sound_helper.h"
 
 #if defined(_DEBUG)
 static const char* DLL_PATH = "Debug/game.dll";
@@ -62,6 +63,7 @@ int main(void)
 {
 	// Initialization
 	//--------------------------------------------------------------------------------------
+	// todo 
 	const int screenWidth = 1400;
 	const int screenHeight = 800;
 
@@ -91,6 +93,8 @@ int main(void)
 		CAMERA_PERSPECTIVE
 	};
 
+
+
 	auto& systemMap = getSystemMap();
 
 	// these are called in middle project
@@ -101,6 +105,15 @@ int main(void)
 	gameState->workingDir = GetWorkingDirectory();
 
 	gameState->startGame = true;
+
+	// TODO move somewhere
+	gameState->globalFont = LoadFontEx("../assets/fonts/Libertinus_Math/LibertinusMath-Regular.ttf", gameState->fontUnitFactor, NULL, 0);
+	GenTextureMipmaps(&gameState->globalFont.texture);
+	SetTextureFilter(gameState->globalFont.texture, TEXTURE_FILTER_TRILINEAR);
+
+	InitAudioDevice();
+	loadSoundEffects(gameState);
+
 
 	// Main game loop
 	while (!WindowShouldClose())    // Detect window close button or ESC key
@@ -128,6 +141,8 @@ int main(void)
 
 		renderSystem->update(gameState);
 
+		playSoundEffects(gameState);
+
 		if (gameState->closeGame) {
 			break;
 		}
@@ -137,6 +152,7 @@ int main(void)
 	gameState->closeGame = true;
 	UpdateGame(gameState);
 
+	CloseAudioDevice();
 	// De-Initialization
 	//--------------------------------------------------------------------------------------
 	CloseWindow();        // Close window and OpenGL context

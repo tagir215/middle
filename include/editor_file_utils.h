@@ -26,4 +26,5 @@ namespace middle {
 	void resetGenerations(GameState* gameState);
 	void incrementGenerations(GameState* gameState);
 	void resetScene(GameState* gameState);
+	void queueSound(GameState* gameState, const std::string& soundName);
 }

@@ -15,12 +15,24 @@
 #include "bubble_utils.h"
 #include "ExponentComponent.h"
 #include "UiComponent.h"
+#include "BubbleAlgebraLevelConfigs.h"
+#include "RuntimeHiddenTag.h"
+#include "BubbleAlgebraProblem.h"
+#include "Layer.h"
+#include "ProcedureContainer.h"
+#include "BubbleEqualsVariable.h"
+#include "HelperBubbleEquation.h"
+#include "bubble_constants.h"
+#include "SnapRef.h"
 
 class BubbleModificationSystem : public middle::MiddleGameplaySystem {
 public:
 	components::CompCache* deletionCache;
 	components::CompCache* intersectableCache;
 	components::CompCache* placementCache;
+	components::CompCache* levelConfigsCache;
+	components::CompCache* uiCompCache;
+	components::CompCache* procContainerCache;
 
 	void init(middle::GameState* gameState) {
 		deletionCache = middle::newCompCache(gameState);
@@ -34,6 +46,15 @@ public:
 		placementCache->addType<components::BubbleComponent>();
 		placementCache->addType<components::PlacementComponent>();
 		placementCache->addType<components::IdRef>();
+
+		levelConfigsCache = middle::newCompCache(gameState);
+		levelConfigsCache->addType<components::BubbleAlgebraLevelConfigs>();
+
+		uiCompCache = middle::newCompCache(gameState);
+		uiCompCache->addType<components::UiComponent>();
+
+		procContainerCache = middle::newCompCache(gameState);
+		procContainerCache->addType<components::ProcedureContainer>();
 	}
 
 	bool isMultiplicationConnection(middle::GameState* gameState, middle::Shape& parentShape) {
@@ -44,36 +65,29 @@ public:
 		return false;
 	}
 
-	void insert(middle::GameState* gameState, middle::Shape& variableShape, middle::Shape& shapeToInsert) {
-		auto copy = std::make_shared <middle::EditorActionCopySingle>(shapeToInsert.id);
-		auto replace = std::make_shared<bubbleActions::Replace>(variableShape.id, middle::Id());
-		auto insert = std::make_shared<middle::CustomActionWithUndo>(
-			[copy, replace](middle::GameState* gameState) {
-				// copy shape to insert
-				copy->execute(gameState);
-				middle::Id copyId = copy->resultId;
-				// negate if variable where inserting to is negative
-				middle::Id variableId = replace->shapeToReplaceId;
-				auto& varShape = middle::getShape(gameState, variableId.index);
-				auto varUnit = middle::getComponent<components::BubbleUnit>(varShape);
-				if (varUnit->value == -1) {
-					bubble::negate(gameState, copyId);
-				}
-				// replace, update variable first
-				replace->replacingShapeId = copyId;
-				replace->execute(gameState);
-			},
-			[copy, replace](middle::GameState* gameState) {
-				replace->undo(gameState);
-				copy->undo(gameState);
-			});
-		middle::queueAction(gameState, insert);
-		gameState->bubbleAlgebraState.bubbleActions.push_back(insert);
+	void insert(middle::GameState* gameState, middle::Shape& intersectedShape, middle::Shape& deletionRefShape, middle::Shape& shapeForDeletion) {
+		// check that grabbed bubble equals a variable and that variable where is being inserted has the same label
+		auto bubbleEqualsVar = middle::getComponent<components::BubbleEqualsVariable>(shapeForDeletion);
+		auto varComp = middle::getComponent<components::BubbleVariable>(intersectedShape);
+
+		// Insert bubble to variable
+		if (bubbleEqualsVar && bubbleEqualsVar->wantsToReplaceVariable && varComp && bubbleEqualsVar->variableLabel == varComp->label) {
+			auto insertAction = std::make_shared<bubbleActions::Insert>(intersectedShape.id, deletionRefShape.id);
+			middle::queueAction(gameState, insertAction);
+			gameState->bubbleAlgebraState.bubbleActions.push_back(insertAction);
+		}
+
+		// Replace bubble with variable
+		else if (bubbleEqualsVar && bubbleEqualsVar->wantsToReplaceBubble && bubble::matchingBubbles(gameState, bubbleEqualsVar->matchingIdRef, intersectedShape.id)) {
+			auto insertAction = std::make_shared<bubbleActions::Insert>(intersectedShape.id, deletionRefShape.id);
+			middle::queueAction(gameState, insertAction);
+			gameState->bubbleAlgebraState.bubbleActions.push_back(insertAction);
+		}
 	}
 
 	void tryPower(middle::GameState* gameState, middle::Shape& shape) {
 		auto rootComp = middle::getComponent<components::ExponentComponent>(shape);
-		if(!rootComp){
+		if (!rootComp) {
 			return;
 		}
 
@@ -105,6 +119,7 @@ public:
 		middle::queueComponentDeletion<components::InventoryItem>(gameState, copyId);
 		middle::queueComponentDeletion<components::IdRef>(gameState, copyId);
 		middle::queueComponentDeletion<components::UiComponent>(gameState, copyId);
+		middle::queueComponentDeletion<components::SnapRef>(gameState, copyId);
 		std::vector<middle::Id>children;
 		middle::getAllChildren(gameState, copyId, children);
 		for (middle::Id& child : children) {
@@ -145,10 +160,39 @@ public:
 					registerAction->undo(gameState);
 				});
 		}
+		else if (actionType == bubbleInventoryItemType::INSERT_X_OVER_X) {
+			middle::Id copyId = copyOfInventoryItem(gameState, refId);
+			auto registerAction = std::make_shared<middle::EditorActionRegisterId>(copyId);
+			auto insertAction = std::make_shared<bubbleActions::InsertAsXOverX>(intersectedShape.id, copyId, gameState->input.mouseXZ_PlanePos);
+			action = std::make_shared < middle::CustomActionWithUndo>(
+				[registerAction, insertAction](middle::GameState* gameState) {
+					registerAction->execute(gameState);
+					insertAction->execute(gameState);
+				},
+				[registerAction, insertAction](middle::GameState* gameState) {
+					insertAction->undo(gameState);
+					registerAction->undo(gameState);
+				});
+		}
+		else if (actionType == bubbleInventoryItemType::INSERT_X_MINUS_X) {
+			middle::Id copyId = copyOfInventoryItem(gameState, refId);
+			auto registerAction = std::make_shared<middle::EditorActionRegisterId>(copyId);
+			auto insertAction = std::make_shared<bubbleActions::InsertAsXMinusX>(intersectedShape.id, copyId, gameState->input.mouseXZ_PlanePos);
+			action = std::make_shared < middle::CustomActionWithUndo>(
+				[registerAction, insertAction](middle::GameState* gameState) {
+					registerAction->execute(gameState);
+					insertAction->execute(gameState);
+				},
+				[registerAction, insertAction](middle::GameState* gameState) {
+					insertAction->undo(gameState);
+					registerAction->undo(gameState);
+				});
+		}
 		// pop as long as not multiplication
 		else if (actionType == bubbleInventoryItemType::POP) {
 			middle::Id& parentId = middle::getParent(gameState, intersectedShape.id);
 			if (parentId.index == middle::UNASSIGNED) {
+				queueSound(gameState, bubbleSounds::ERROR_SOUND);
 				return;
 			}
 			auto& parentShape = middle::getShape(gameState, parentId.index);
@@ -156,11 +200,23 @@ public:
 				action = std::make_shared<bubbleActions::Pop>(intersectedShape.id);
 			}
 		}
-		else if (actionType == bubbleInventoryItemType::TIMES_ONE) {
+		else if (actionType == bubbleInventoryItemType::PROCEDURE) {
+			if (procContainerCache->getSize() == 1) {
+				middle::Id procContainerId = procContainerCache->relevantIdVector[0];
+				action = std::make_shared<bubbleActions::StartProcedure>(procContainerId, intersectedShape.id);
+			}
+		}
+		else if (actionType == bubbleInventoryItemType::MUL_ONE) {
 			action = std::make_shared<bubbleActions::MulOne>(intersectedShape.id);
 		}
-		else if (actionType == bubbleInventoryItemType::COMPRESS) {
-			action = std::make_shared<bubbleActions::Compress>(intersectedShape.id);
+		else if (actionType == bubbleInventoryItemType::MUL_NEGATIVE_ONE) {
+			action = std::make_shared<bubbleActions::MulNegativeOne>(intersectedShape.id);
+		}
+		else if (actionType == bubbleInventoryItemType::COMPRESS_MULTIPLICATION) {
+			action = std::make_shared<bubbleActions::Compress>(intersectedShape.id, false);
+		}
+		else if (actionType == bubbleInventoryItemType::COMPRESS_EXPONENT) {
+			action = std::make_shared<bubbleActions::Compress>(intersectedShape.id, true);
 		}
 		else if (actionType == bubbleInventoryItemType::BREAK_2) {
 			action = std::make_shared<bubbleActions::Break>(intersectedShape.id, 2);
@@ -195,13 +251,173 @@ public:
 		else if (actionType == bubbleInventoryItemType::SIMPLIFY) {
 			action = std::make_shared<bubbleActions::Simplify>(intersectedShape.id);
 		}
+		else if (actionType == bubbleInventoryItemType::CANCEL) {
+			action = std::make_shared<bubbleActions::Cancel>(intersectedShape.id);
+		}
 		if (action) {
 			middle::queueAction(gameState, action);
 			gameState->bubbleAlgebraState.bubbleActions.push_back(action);
 		}
+		else {
+			queueSound(gameState, bubbleSounds::ERROR_SOUND);
+		}
+	}
+
+	// TODO moves these
+	void updateUi(middle::GameState* gameState, int movesLeft) {
+		auto uiCompIt = uiCompCache->begin<components::UiComponent>();
+		for (int i = 0; i < uiCompCache->getSize(); ++i) {
+			auto uiComp = *uiCompIt;
+			auto& shape = middle::getShape(gameState, uiCompCache->relevantIdVector[i].index);
+			if (uiComp->type == UiElementTypes::OUT_OF_STEPS) {
+				bool isHidden = middle::getComponent<components::RuntimeHiddenTag>(shape) != nullptr;
+				if (movesLeft <= 0 && isHidden) {
+					middle::queueComponentDeletion<components::RuntimeHiddenTag>(gameState, shape.id);
+				}
+
+				if (movesLeft > 0 && !isHidden) {
+					middle::queueComponentAttachment<components::RuntimeHiddenTag>(gameState, shape.id);
+				}
+			}
+			if (uiComp->type == UiElementTypes::STEPS_LEFT_TEXT) {
+				auto text = middle::getComponent<components::Text>(shape);
+				std::string updatedString = std::to_string(movesLeft);
+				text->text = updatedString;
+			}
+		}
+	}
+
+
+	bool canEdit(middle::GameState* gameState, middle::Shape& intersectableShape) {
+		middle::Id algebraProblemId = bubble::findCompFromParents<components::BubbleAlgebraProblem>(gameState, intersectableShape.id);
+		if (algebraProblemId.index != middle::UNASSIGNED) {
+			auto& algebraProblemShape = middle::getShape(gameState, algebraProblemId.index);
+			auto algebraProblem = middle::getComponent < components::BubbleAlgebraProblem>(algebraProblemShape);
+			if (!algebraProblem->editable) {
+				return false;
+			}
+		}
+		middle::Id helperId = bubble::findCompFromParents<components::HelperBubbleEquation>(gameState, intersectableShape.id);
+		if (algebraProblemId.index == middle::UNASSIGNED && helperId.index == middle::UNASSIGNED) {
+			return false;
+		}
+		return true;
 	}
 
 	void update(middle::GameState* gameState) override {
+
+
+		if (levelConfigsCache->getSize() > 0) {
+			auto configsIt = levelConfigsCache->begin<components::BubbleAlgebraLevelConfigs>();
+			auto configs = *configsIt;
+
+			if (gameState->bubbleAlgebraState.bubbleActions.size() > 0) {
+				if (gameState->bubbleAlgebraState.bubbleActions.back()->cancelled) {
+					++configs->allowedMoves;
+					queueSound(gameState, bubbleSounds::ERROR_SOUND);
+					middle::queueAction(gameState, std::make_shared<middle::CustomAction>([](middle::GameState* gameState) {
+						gameState->bubbleAlgebraState.bubbleActions.back()->undo(gameState);
+						gameState->bubbleAlgebraState.bubbleActions.pop_back();
+						}));
+					return;
+				}
+			}
+
+			updateUi(gameState, configs->allowedMoves);
+			if (configs->allowedMoves <= 0) {
+				return;
+			}
+
+		}
+
+		int actionCountPreFrame = gameState->bubbleAlgebraState.bubbleActions.size();
+
+
+		auto& inp = gameState->gameInput;
+		bool hotKeyPressed = inp.pop || inp.comp || inp.mulOne || inp.proc || inp.can
+			|| inp.two
+			|| inp.three
+			|| inp.four
+			|| inp.five
+			|| inp.six
+			|| inp.seven
+			|| inp.eight
+			|| inp.nine;
+
+		if (hotKeyPressed) {
+			auto intersectingIt = intersectableCache->begin<components::MouseIntersectable>();
+			for (int i = 0; i < intersectableCache->getSize(); ++i) {
+				auto intersectable = *intersectingIt;
+				if (intersectable->intersectingTop) {
+					middle::Shape& intersectingShape = middle::getShape(gameState, intersectableCache->relevantIdVector[i].index);
+
+					if (!canEdit(gameState, intersectingShape)) {
+						continue;
+					}
+
+					if (gameState->gameInput.pop) {
+						if (!gameState->gameInput.shiftHeld) {
+							inventoryAction(gameState, bubbleInventoryItemType::POP, middle::Id(), intersectingShape);
+						}
+						else {
+							inventoryAction(gameState, bubbleInventoryItemType::BUBBLIFY, middle::Id(), intersectingShape);
+						}
+					}
+					if (gameState->gameInput.comp) {
+						if (!gameState->gameInput.shiftHeld) {
+							inventoryAction(gameState, bubbleInventoryItemType::COMPRESS_MULTIPLICATION, middle::Id(), intersectingShape);
+						}
+						else {
+							inventoryAction(gameState, bubbleInventoryItemType::COMPRESS_EXPONENT, middle::Id(), intersectingShape);
+						}
+					}
+					if (gameState->gameInput.mulOne) {
+						if (!gameState->gameInput.shiftHeld) {
+							inventoryAction(gameState, bubbleInventoryItemType::MUL_ONE, middle::Id(), intersectingShape);
+						}
+						else {
+							inventoryAction(gameState, bubbleInventoryItemType::MUL_NEGATIVE_ONE, middle::Id(), intersectingShape);
+						}
+					}
+					if (gameState->gameInput.can) {
+						if (!gameState->gameInput.shiftHeld) {
+							inventoryAction(gameState, bubbleInventoryItemType::CANCEL, middle::Id(), intersectingShape);
+						}
+						else {
+							inventoryAction(gameState, bubbleInventoryItemType::SIMPLIFY, middle::Id(), intersectingShape);
+						}
+					}
+					if (gameState->gameInput.proc) {
+						inventoryAction(gameState, bubbleInventoryItemType::PROCEDURE, middle::Id(), intersectingShape);
+					}
+					if (gameState->gameInput.two) {
+						inventoryAction(gameState, bubbleInventoryItemType::BREAK_2, middle::Id(), intersectingShape);
+					}
+					if (gameState->gameInput.three) {
+						inventoryAction(gameState, bubbleInventoryItemType::BREAK_3, middle::Id(), intersectingShape);
+					}
+					if (gameState->gameInput.four) {
+						inventoryAction(gameState, bubbleInventoryItemType::BREAK_4, middle::Id(), intersectingShape);
+					}
+					if (gameState->gameInput.five) {
+						inventoryAction(gameState, bubbleInventoryItemType::BREAK_5, middle::Id(), intersectingShape);
+					}
+					if (gameState->gameInput.six) {
+						inventoryAction(gameState, bubbleInventoryItemType::BREAK_6, middle::Id(), intersectingShape);
+					}
+					if (gameState->gameInput.seven) {
+						inventoryAction(gameState, bubbleInventoryItemType::BREAK_7, middle::Id(), intersectingShape);
+					}
+					if (gameState->gameInput.eight) {
+						inventoryAction(gameState, bubbleInventoryItemType::BREAK_8, middle::Id(), intersectingShape);
+					}
+					if (gameState->gameInput.nine) {
+						inventoryAction(gameState, bubbleInventoryItemType::BREAK_9, middle::Id(), intersectingShape);
+					}
+				}
+			}
+		}
+
 
 		for (int i = 0; i < deletionCache->getSize(); ++i) {
 
@@ -215,17 +431,21 @@ public:
 				shapeIdForDeletion = deletionCache->relevantIdVector[0];
 			}
 
+
 			if (shapeIdForDeletion.index == middle::UNASSIGNED) {
 				return;
 			}
 
+
 			auto& shapeForDeletion = middle::getShape(gameState, shapeIdForDeletion.index);
-			if (!middle::isShapeAlive(gameState, ref->idRef.index)) {
+			if (!middle::isShapeAlive(gameState, ref->idRef.index) && !hotKeyPressed) {
 				return;
 			}
-			auto& refShape = middle::getShape(gameState, ref->idRef.index);
-			middle::Id refParentId = middle::getParent(gameState, refShape.id);
-			assert(refShape.id.index != middle::UNASSIGNED);
+			auto& deletionsRefShape = middle::getShape(gameState, ref->idRef.index);
+			middle::Id refParentId = middle::getParent(gameState, deletionsRefShape.id);
+			assert(deletionsRefShape.id.index != middle::UNASSIGNED);
+			auto deletionsRefShapeLayer = middle::getComponent<components::Layer>(deletionsRefShape);
+			bool shapeForDeletionIsInventoryItem = middle::getComponent<components::InventoryItem>(shapeForDeletion);
 
 
 			auto intersectableIt = intersectableCache->begin<components::MouseIntersectable>();
@@ -234,6 +454,12 @@ public:
 
 				auto& intersectableShape = middle::getShape(gameState, intersectableCache->relevantIdVector[i].index);
 				middle::Id parentId = middle::getParent(gameState, intersectableShape.id);
+
+
+				if (!canEdit(gameState, intersectableShape)) {
+					continue;
+				}
+
 
 				// check if there's parent, the parent is not a fraction
 				if (parentId.index != middle::UNASSIGNED) {
@@ -244,40 +470,67 @@ public:
 					}
 				}
 
-				if (!bubble::isIntersecting(gameState, intersectableShape)) {
+				if (intersectable->intersectingTop) {
+					auto inventoryItem = middle::getComponent<components::InventoryItem>(deletionsRefShape);
+					if (inventoryItem) {
+						inventoryAction(gameState, inventoryItem->itemType, ref->idRef, intersectableShape);
+						break;
+					}
+				}
+
+				if (!intersectable->intersecting) {
+					continue;
+				}
+
+				// variables can be non same layer, so check before layer filter, but it needs to intersect at top
+				if (intersectable->intersectingTop) {
+					auto topDogComp = middle::getComponent<components::TopDogBubbleTag>(deletionsRefShape);
+					if (topDogComp) {
+						insert(gameState, intersectableShape, deletionsRefShape, shapeForDeletion);
+					}
+				}
+
+				// all other actions need to be in the same layer 
+				auto intersectingLayer = middle::getComponent<components::Layer>(intersectableShape);
+				if (intersectingLayer->layer != deletionsRefShapeLayer->layer && !shapeForDeletionIsInventoryItem) {
 					continue;
 				}
 
 				// if referencing itself, it can only be power
-				if (refShape.id == intersectableShape.id) {
-					tryPower(gameState, refShape);
+				if (deletionsRefShape.id == intersectableShape.id) {
+					tryPower(gameState, deletionsRefShape);
 					continue;
 				}
 
 				// skip shapefordeletion (the copy being dragged) and ref shape (shape its copy is pointing to)
-				if (shapeForDeletion.id == intersectableShape.id || intersectableShape.id == refShape.id) {
+				if (shapeForDeletion.id == intersectableShape.id || intersectableShape.id == deletionsRefShape.id) {
 					continue;
 				}
 
 				if (parentId.index != middle::UNASSIGNED && parentId == refParentId) {
 					auto& refParent = middle::getShape(gameState, refParentId.index);
-					tryCombine(gameState, refParent, refShape, intersectableShape);
+					tryCombine(gameState, refParent, deletionsRefShape, intersectableShape);
 					continue;
 				}
 
-				auto variableComp = middle::getComponent<components::BubbleVariable>(intersectableShape);
-				auto topDogComp = middle::getComponent<components::TopDogBubbleTag>(refShape);
-				if (variableComp && topDogComp) {
-					insert(gameState, intersectableShape, refShape);
-				}
 
-				auto inventoryItem = middle::getComponent<components::InventoryItem>(refShape);
-				if (inventoryItem) {
-					inventoryAction(gameState, inventoryItem->itemType, ref->idRef, intersectableShape);
-					break;
-				}
 			}
+		}
 
+
+		int actionCountPostFrame = gameState->bubbleAlgebraState.bubbleActions.size();
+
+		if (actionCountPostFrame > actionCountPreFrame) {
+			auto configsIt = levelConfigsCache->begin<components::BubbleAlgebraLevelConfigs>();
+			auto configs = *configsIt;
+			middle::queueAction(gameState, std::make_unique<middle::CustomAction>(
+				[configs](middle::GameState* gameState)
+				{
+					--configs->allowedMoves;
+					if (configs->allowedMoves < 0) {
+						configs->allowedMoves = 0;
+					}
+				}));
 		}
 	}
 };

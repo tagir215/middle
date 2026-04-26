@@ -303,6 +303,8 @@ namespace middle {
 		}
 	}
 
+
+
 	bool isEmptyOrWhitespace(const std::string& s) {
 		return s.empty() ||
 			std::all_of(s.begin(), s.end(),
@@ -523,7 +525,7 @@ namespace middle {
 
 		std::ifstream inputFile(path);
 		if (!inputFile.is_open()) {
-			throw std::runtime_error("Failed to open file to open");
+		throw std::runtime_error("Failed to open file to open");
 		}
 		std::string line;
 
@@ -784,6 +786,11 @@ namespace middle {
 
 		generateFileFromTemplate(filenameHeader, templateFilenameHeader, componentName, placeholder);
 		generateFileFromTemplate(filenameSource, templateFilenameSource, componentName, placeholder);
+	}
+
+
+	void queueSound(GameState* gameState, const std::string& soundName) {
+		gameState->soundQueue.push(gameState->soundMap[soundName]);
 	}
 }
 

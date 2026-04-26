@@ -7,7 +7,9 @@
 	X(value) \
 	X(power) \
 	X(isInverse) \
-	X(isNegative)
+	X(isNegative) \
+	X(isNegativePower) \
+	X(isInversePower)
 
 
 namespace components {
@@ -18,6 +20,8 @@ namespace components {
 		int power = 1;
 		bool isInverse = false;
 		bool isNegative = false;
+		bool isNegativePower = false;
+		bool isInversePower = false;
 
 		void serialize(std::ostream& ostream) override;
 		void deserialize(const std::vector<std::string>& buffer, int indexOffset) override;
@@ -37,7 +41,7 @@ namespace components {
 		UNIT,
 		FRACTION,
 		MULTIPLICATION,
-		ROOT,
+		EQUALS,
 	};
 }
 

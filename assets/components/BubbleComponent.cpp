@@ -2,13 +2,13 @@
 
 namespace components {
 	void BubbleComponent::serialize(std::ostream& ostream) {
-		//middle::Serializer serializer{ ostream };
-		//reflect(serializer);
+		middle::Serializer serializer{ ostream };
+		reflect(serializer);
 	}
 
 	void BubbleComponent::deserialize(const std::vector<std::string>& buffer, int indexOffset) {
-		//middle::Deserializer deserializer{ buffer, indexOffset, 0 };
-		//reflect(deserializer);
+		middle::Deserializer deserializer{ buffer, indexOffset, 0 };
+		reflect(deserializer);
 	}
 
 	void BubbleComponent::getFields(std::vector<middle::FieldInfo>& fields, int* size)

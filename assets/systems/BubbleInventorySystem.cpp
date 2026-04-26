@@ -17,29 +17,81 @@
 #include "CodeBlock.h"
 #include "CodeFunction.h"
 #include "UiComponent.h"
+#include "Button.h"
+#include "ActiveCheckBoxTag.h"
+#include "MouseClickComponent.h"
+#include "InventorySlot.h"
+#include "SnapRef.h"
+#include "Layer.h"
 
 
 class BubbleInventorySystem : public middle::MiddleGameplaySystem {
 public:
 
 	components::CompCache* inventoryCache;
+	components::CompCache* inventoryItemCache;
 	components::CompCache* grabbableCache;
 	components::CompCache* uiComponentlessBubbleInventoryItemCache;
+	components::CompCache* snapReflessBubbleInventoryItemCache;
+	components::CompCache* uiButtonsCache;
+	components::CompCache* activeCheckBoxesCache;
+	components::CompCache* inventorySlotCache;
 
 	void init(middle::GameState* gameState) {
 		inventoryCache = middle::newCompCache(gameState);
 		inventoryCache->addType<components::Inventory>();
 		inventoryCache->addType<components::LoopSociety>();
-
+		inventoryItemCache = middle::newCompCache(gameState);
+		inventoryItemCache->addType<components::InventoryItem>();
 		grabbableCache = middle::newCompCache(gameState);
 		grabbableCache->addType<components::InventoryItem>();
 		grabbableCache->addType<components::MouseGrabbable>();
-
 		uiComponentlessBubbleInventoryItemCache = middle::newCompCache(gameState);
 		uiComponentlessBubbleInventoryItemCache->addType<components::InventoryItem>();
 		uiComponentlessBubbleInventoryItemCache->addType<components::BubbleComponent>();
 		uiComponentlessBubbleInventoryItemCache->addType<components::UiComponent>(components::NOTINTERESTED);
+		snapReflessBubbleInventoryItemCache = middle::newCompCache(gameState);
+		snapReflessBubbleInventoryItemCache->addType<components::InventoryItem>();
+		snapReflessBubbleInventoryItemCache->addType<components::BubbleComponent>();
+		snapReflessBubbleInventoryItemCache->addType<components::SnapRef>(components::NOTINTERESTED);
+		snapReflessBubbleInventoryItemCache->addType<components::PlacementComponent>(components::NOTINTERESTED);
+		uiButtonsCache = middle::newCompCache(gameState);
+		uiButtonsCache->addType<components::Button>();
+		uiButtonsCache->addType<components::UiComponent>();
+		uiButtonsCache->addType<components::MouseClickComponent>();
+		activeCheckBoxesCache = middle::newCompCache(gameState);
+		activeCheckBoxesCache->addType<components::ActiveCheckBoxTag>();
+		inventorySlotCache = middle::newCompCache(gameState);
+		inventorySlotCache->addType<components::InventorySlot>();
 	}
+
+	void deactivateCheckboxes(middle::GameState* gameState) {
+		auto activeIt = activeCheckBoxesCache->begin<components::ActiveCheckBoxTag>();
+		for (int i = 0; i < activeCheckBoxesCache->getSize(); ++i) {
+			middle::queueComponentDeletion<components::ActiveCheckBoxTag>(gameState, activeCheckBoxesCache->relevantIdVector[i]);
+		}
+	}
+
+	void changeTermAdditionTypes(middle::GameState* gameState, int newType) {
+		auto termIt = inventoryItemCache->begin<components::InventoryItem>();
+		for (int i = 0; i < inventoryItemCache->getSize(); ++i) {
+			auto* term = *termIt;
+			if (term->itemType == bubbleInventoryItemType::NEW_ADDITION_TERM) {
+				term->itemType = newType;
+			}
+			if (term->itemType == bubbleInventoryItemType::NEW_MULTIPLICATION_TERM) {
+				term->itemType = newType;
+			}
+			if (term->itemType == bubbleInventoryItemType::INSERT_X_OVER_X) {
+				term->itemType = newType;
+			}
+			if (term->itemType == bubbleInventoryItemType::INSERT_X_MINUS_X) {
+				term->itemType = newType;
+			}
+		}
+	}
+
+
 	void update(middle::GameState* gameState) override {
 
 		auto inventoryIt = inventoryCache->begin<components::Inventory>();
@@ -49,7 +101,8 @@ public:
 			auto loop = *loopIt;
 
 			std::vector < middle::Id>children = loop->loopMemberIds;
-			for (middle::Id childId : children) {
+			for (int i = 0; i < children.size(); ++i) {
+				middle::Id childId = children[i];
 				auto& child = middle::getShape(gameState, childId.index);
 				auto intersectable = middle::getComponent<components::MouseIntersectable>(child);
 				auto grabbable = middle::getComponent<components::MouseGrabbable>(child);
@@ -69,9 +122,11 @@ public:
 					placement->grabbing = true;
 					ref->idRef = childId;
 					middle::queueComponentDeletion<components::MouseIntersectable>(gameState, copyShape.id);
+					middle::queueComponentDeletion<components::SnapRef>(gameState, copyShape.id);
 				}
 			}
 		}
+
 
 		// attach ui components to bubbles that are in the inventory
 		auto uiComponentlessIt = uiComponentlessBubbleInventoryItemCache->begin<components::BubbleComponent>();
@@ -88,6 +143,66 @@ public:
 				}
 			}
 		}
+
+		auto bubbleItemIt = snapReflessBubbleInventoryItemCache->begin<components::InventoryItem>();
+		for (int i = 0; i < snapReflessBubbleInventoryItemCache->getSize(); ++i) {
+			auto invItem = *bubbleItemIt;
+			middle::Id parentInventoryId = middle::getParent(gameState, snapReflessBubbleInventoryItemCache->relevantIdVector[i]);
+			std::vector<middle::Id>children;
+			middle::getChildren(gameState, parentInventoryId, children);
+			bool attachedRefs = false;
+			for (int index = 0; index < children.size(); ++index) {
+				// TODO THIS IS ASSUMES SLOTS MATCH THIS BUBBLE INVENTORYS MEMBERS
+				middle::Id slot = inventorySlotCache->relevantIdVector[index];
+				auto snapRef = middle::attachComponent<components::SnapRef>(gameState, children[index]);
+				snapRef->snapTargetId = slot;
+				//invItem->idRef = inventorySlotCache->relevantIdVector[i];
+				attachedRefs = true;
+				// set layer here, because its seems like good time
+				auto& shape = middle::getShape(gameState, children[index].index);
+				auto layer = middle::getComponent<components::Layer>(shape);
+				layer->layer = 2;
+			}
+			if (attachedRefs) {
+				break;
+			}
+		}
+
+		auto buttonIt = uiButtonsCache->begin<components::Button>();
+		for (int i = 0; i < uiButtonsCache->getSize(); ++i) {
+			middle::Id buttonId = uiButtonsCache->relevantIdVector[i];
+			auto& shape = middle::getShape(gameState, buttonId.index);
+			auto button = *buttonIt;
+			if (button->function == bubbleButton::SELECT_PLUS) {
+				if (!middle::getComponent<components::ActiveCheckBoxTag>(shape)) {
+					deactivateCheckboxes(gameState);
+					middle::queueComponentAttachment<components::ActiveCheckBoxTag>(gameState, buttonId);
+					changeTermAdditionTypes(gameState, bubbleInventoryItemType::NEW_ADDITION_TERM);
+				}
+			}
+			if (button->function == bubbleButton::SELECT_MULTIPLY) {
+				if (!middle::getComponent<components::ActiveCheckBoxTag>(shape)) {
+					deactivateCheckboxes(gameState);
+					middle::queueComponentAttachment<components::ActiveCheckBoxTag>(gameState, buttonId);
+					changeTermAdditionTypes(gameState, bubbleInventoryItemType::NEW_MULTIPLICATION_TERM);
+				}
+			}
+			if (button->function == bubbleButton::SELECT_INSERT_X_OVER_X) {
+				if (!middle::getComponent<components::ActiveCheckBoxTag>(shape)) {
+					deactivateCheckboxes(gameState);
+					middle::queueComponentAttachment<components::ActiveCheckBoxTag>(gameState, buttonId);
+					changeTermAdditionTypes(gameState, bubbleInventoryItemType::INSERT_X_OVER_X);
+				}
+			}
+			if (button->function == bubbleButton::SELECT_INSERT_X_MINUS_X) {
+				if (!middle::getComponent<components::ActiveCheckBoxTag>(shape)) {
+					deactivateCheckboxes(gameState);
+					middle::queueComponentAttachment<components::ActiveCheckBoxTag>(gameState, buttonId);
+					changeTermAdditionTypes(gameState, bubbleInventoryItemType::INSERT_X_MINUS_X);
+				}
+			}
+		}
+
 
 		if (gameState->bubbleAlgebraState.grabbedId.index != middle::UNASSIGNED) {
 			auto grabbableIt = grabbableCache->begin<components::MouseGrabbable>();

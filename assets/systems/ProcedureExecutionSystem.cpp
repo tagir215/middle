@@ -19,6 +19,7 @@
 #include "component_utils.h"
 #include "MouseClickComponent.h"
 #include "PlacementComponent.h"
+#include "ExponentComponent.h"
 
 class ProcedureExecutionSystem : public middle::MiddleGameplaySystem {
 public:
@@ -55,7 +56,7 @@ public:
 			if (inputVariable.unitRef.index == middle::UNASSIGNED) {
 				return false;
 			}
-			if (inputVariable.structureId.index == middle::UNASSIGNED) {
+			if (inputVariable.structureIds.size() == 0) {
 				return false;
 			}
 
@@ -86,7 +87,7 @@ public:
 				if (varA.unitRef.index == middle::UNASSIGNED || varB.unitRef.index == middle::UNASSIGNED) {
 					return false;
 				}
-				if (varA.structureId.index == middle::UNASSIGNED || varB.structureId.index == middle::UNASSIGNED) {
+				if (varA.structureIds.size() == 0 || varB.structureIds.size() == 0) {
 					return false;
 				}
 				return true;
@@ -142,18 +143,18 @@ public:
 		middle::getChildren(gameState, bubbleId, children);
 		int size = children.size();
 		int index = 0;
-		while (index < size) {
-			if (bubbleComp->searchIndex >= size) {
-				bubbleComp->searchIndex = 0;
-			}
-			middle::Id id = children[bubbleComp->searchIndex];
-			++bubbleComp->searchIndex;
-			auto& shape = middle::getShape(gameState, id.index);
-			if (shape.componentMap.find(typeId) != shape.componentMap.end()) {
-				return id;
-			}
-			++index;
-		}
+		//while (index < size) {
+		//	if (bubbleComp->searchIndex >= size) {
+		//		bubbleComp->searchIndex = 0;
+		//	}
+		//	middle::Id id = children[bubbleComp->searchIndex];
+		//	++bubbleComp->searchIndex;
+		//	auto& shape = middle::getShape(gameState, id.index);
+		//	if (shape.componentMap.find(typeId) != shape.componentMap.end()) {
+		//		return id;
+		//	}
+		//	++index;
+		//}
 		return middle::Id();
 	}
 
@@ -203,25 +204,33 @@ public:
 		if (function->type == functionTypes::COMBINE) {
 			components::InputVariable varA;
 			components::InputVariable varB;
-			if (!getTwoInputs(gameState, funcShape, varA, varB)) {
-				return;
-			}
-			assert(varA.unitRef.index != middle::UNASSIGNED);
-			assert(varB.unitRef.index != middle::UNASSIGNED);
-			assert(varA.unitRef.index != varB.unitRef.index);
-			middle::Id& parentId = middle::getParent(gameState, varA.unitRef);
-			auto& parentShape = middle::getShape(gameState, parentId.index);
-			auto bubbleMultiplication = middle::getComponent<components::BubbleMultiplyComponent>(parentShape);
+			if (getTwoInputs(gameState, funcShape, varA, varB)) {
+				assert(varA.unitRef.index != middle::UNASSIGNED);
+				assert(varB.unitRef.index != middle::UNASSIGNED);
+				assert(varA.unitRef.index != varB.unitRef.index);
+				middle::Id& parentId = middle::getParent(gameState, varA.unitRef);
+				auto& parentShape = middle::getShape(gameState, parentId.index);
+				auto bubbleMultiplication = middle::getComponent<components::BubbleMultiplyComponent>(parentShape);
 
-			if (bubbleMultiplication) {
-				auto multiply = std::make_shared<bubbleActions::ExecuteMultiplication>(varA.unitRef, varB.unitRef);
-				middle::queueAction(gameState, multiply);
-				container->procedureTransitionStack.back().action = multiply;
+				if (bubbleMultiplication) {
+					auto multiply = std::make_shared<bubbleActions::ExecuteMultiplication>(varA.unitRef, varB.unitRef);
+					middle::queueAction(gameState, multiply);
+					container->procedureTransitionStack.back().action = multiply;
+				}
+				else {
+					auto combine = std::make_shared<bubbleActions::ExecuteAddition>(varA.unitRef, varB.unitRef);
+					middle::queueAction(gameState, combine);
+					container->procedureTransitionStack.back().action = combine;
+				}
 			}
-			else {
-				auto combine = std::make_shared<bubbleActions::ExecuteAddition>(varA.unitRef, varB.unitRef);
-				middle::queueAction(gameState, combine);
-				container->procedureTransitionStack.back().action = combine;
+			if (getOneInput(gameState, funcShape, varA)) {
+				assert(varA.unitRef.index != middle::UNASSIGNED);
+				auto& shape = middle::getShape(gameState, varA.unitRef.index);
+				if (middle::getComponent<components::ExponentComponent>(shape)) {
+					auto power = std::make_shared<bubbleActions::ExecutePower>(varA.unitRef);
+					middle::queueAction(gameState, power);
+					container->procedureTransitionStack.back().action = power;
+				}
 			}
 
 		}
@@ -244,7 +253,7 @@ public:
 				[copyAction, update](middle::GameState* gameState) {
 					copyAction->execute(gameState);
 					// move away from view
-					middle::moveShape(gameState, copyAction->resultId.index, {400,0,100});
+					middle::moveShape(gameState, copyAction->resultId.index, { 400,0,100 });
 					update->execute(gameState);
 				},
 				[copyAction, update](middle::GameState* gameState) {
@@ -273,7 +282,7 @@ public:
 			auto reparent = std::make_shared<middle::EditorActionReparent>(topBubbleId.index, copyId.index);
 			middle::queueAction(gameState, reparent);
 			container->procedureTransitionStack.back().action = reparent;
-			
+
 		}
 
 		else if (function->type == functionTypes::NEW_MULTERM) {
@@ -312,6 +321,17 @@ public:
 			container->procedureTransitionStack.back().action = mulOneAction;
 		}
 
+		else if (function->type == functionTypes::MUL_NEGATIVE_ONE) {
+			components::InputVariable input;
+			if (!getOneInput(gameState, funcShape, input)) {
+				return;
+			}
+			assert(input.unitRef.index != middle::UNASSIGNED);
+			auto mulOneAction = std::make_shared<bubbleActions::MulNegativeOne>(input.unitRef);
+			middle::queueAction(gameState, mulOneAction);
+			container->procedureTransitionStack.back().action = mulOneAction;
+		}
+
 		else if (function->type == functionTypes::BREAK) {
 			components::InputVariable inputA;
 			components::InputVariable inputB;
@@ -328,38 +348,55 @@ public:
 
 		}
 
-		else if (function->type == functionTypes::COMPRESS) {
+		else if (function->type == functionTypes::COMPRESS_MULTIPLICATION) {
 			components::InputVariable input;
 			if (!getOneInput(gameState, funcShape, input)) {
 				return;
 			}
 			assert(input.unitRef.index != middle::UNASSIGNED);
-			auto compressAction = std::make_shared<bubbleActions::Compress>(input.unitRef);
+			auto compressAction = std::make_shared<bubbleActions::Compress>(input.unitRef, false);
+			middle::queueAction(gameState, compressAction);
+			container->procedureTransitionStack.back().action = compressAction;
+		}
+		else if (function->type == functionTypes::COMPRESS_EXPONENT) {
+			components::InputVariable input;
+			if (!getOneInput(gameState, funcShape, input)) {
+				return;
+			}
+			assert(input.unitRef.index != middle::UNASSIGNED);
+			auto compressAction = std::make_shared<bubbleActions::Compress>(input.unitRef, true);
 			middle::queueAction(gameState, compressAction);
 			container->procedureTransitionStack.back().action = compressAction;
 		}
 
 		else if (function->type == functionTypes::BUBBLIFY) {
-			components::InputVariable inputA;
-			components::InputVariable inputB;
-			if (!getTwoInputs(gameState, funcShape, inputA, inputB)) {
+			components::InputVariable input;
+			if (!getOneInput(gameState, funcShape, input)) {
 				return;
 			}
-			assert(inputA.unitRef.index != middle::UNASSIGNED);
-			assert(inputB.unitRef.index != middle::UNASSIGNED);
-			auto bubblifyAction = std::make_shared<bubbleActions::Bubblify>(inputA.unitRef);
+			auto bubblifyAction = std::make_shared<bubbleActions::Bubblify>(input.unitRef);
 			middle::queueAction(gameState, bubblifyAction);
 			container->procedureTransitionStack.back().action = bubblifyAction;
 		}
-		else if (function->type == functionTypes::POWER) {
+		else if (function->type == functionTypes::CANCEL) {
 			components::InputVariable input;
 			if (!getOneInput(gameState, funcShape, input)) {
 				return;
 			}
 			assert(input.unitRef.index != middle::UNASSIGNED);
-			auto powerAction = std::make_shared<bubbleActions::ExecutePower>(input.unitRef);
-			middle::queueAction(gameState, powerAction);
-			container->procedureTransitionStack.back().action = powerAction;
+			auto cancelAction = std::make_shared<bubbleActions::Cancel>(input.unitRef);
+			middle::queueAction(gameState, cancelAction);
+			container->procedureTransitionStack.back().action = cancelAction;
+		}
+		else if (function->type == functionTypes::SIMPLIFY) {
+			components::InputVariable input;
+			if (!getOneInput(gameState, funcShape, input)) {
+				return;
+			}
+			assert(input.unitRef.index != middle::UNASSIGNED);
+			auto simplifyAction = std::make_shared<bubbleActions::Simplify>(input.unitRef);
+			middle::queueAction(gameState, simplifyAction);
+			container->procedureTransitionStack.back().action = simplifyAction;
 		}
 	}
 
@@ -601,7 +638,10 @@ public:
 			}
 			else {
 				auto status = stepForward(gameState, procedure);
-				return status;
+				if (status == procedureConstants::StepStatus::CannotStep) {
+					return status;
+				}
+				return procedureConstants::StepStatus::StepWithoutFunction;
 			}
 		}
 
@@ -633,10 +673,11 @@ public:
 	}
 
 
-	void updateInputVariableReferences(middle::GameState* gameState, middle::Id codeBlockId, middle::Id topDogContainerId) {
+	void updateInputVariableReferences(middle::GameState* gameState, middle::Id codeBlockId, middle::Id topDogContainerId, std::unordered_map<std::string, middle::Id>& overrideMap) {
 		if (codeBlockId.index == middle::UNASSIGNED) {
 			return;
 		}
+		assert(topDogContainerId.index != middle::UNASSIGNED);
 		middle::Id funcId = getCodeBlockFunc(gameState, codeBlockId);
 		if (funcId.index == middle::UNASSIGNED) {
 			return;
@@ -651,12 +692,21 @@ public:
 		if (inputChildren.size() == 1) {
 			auto& inputChild = middle::getShape(gameState, inputChildren[0].index);
 			auto input = middle::getComponent<components::InputVariable>(inputChild);
-			if (input->structureId.index == middle::UNASSIGNED) {
-				return;
+			if (input->structureIds.size() == 1) {
+				middle::Id& structureId = input->structureIds[0];
+				middle::Id result = bubble::findMatchingBubbleWithVariables(gameState, topDogContainerId,
+					structureId, input->structureDepth, overrideMap);
+				input->unitRef = result;
 			}
-			middle::Id result = bubble::findMatchingStructureWithVariables(gameState, topDogContainerId,
-				input->structureId, input->structureDepth);
-			input->unitRef = result;
+			else if (input->structureIds.size() >= 2) {
+				middle::Id& structureIdA = input->structureIds[0];
+				middle::Id& structureIdB = input->structureIds[1];
+				middle::Id idA, idB;
+				bubble::findMatchingStructurePairWithVariables(gameState, topDogContainerId,
+					structureIdA, structureIdB, input->structureDepth, overrideMap, idA, idB);
+				input->unitRef = idA;
+			}
+
 		}
 		// update two input case
 		if (inputChildren.size() == 2) {
@@ -664,33 +714,36 @@ public:
 			auto& inputChildB = middle::getShape(gameState, inputChildren[1].index);
 			auto inputA = middle::getComponent<components::InputVariable>(inputChildA);
 			auto inputB = middle::getComponent<components::InputVariable>(inputChildB);
+			middle::Id structureIdA = inputA->structureIds.size() > 0 ? inputA->structureIds[0] : middle::Id();
+			middle::Id structureIdB = inputB->structureIds.size() > 0 ? inputB->structureIds[0] : middle::Id();
 
-			bool bothValid = inputA->structureId.index != middle::UNASSIGNED && inputB->structureId.index != middle::UNASSIGNED;
+			bool bothValid = structureIdA.index != middle::UNASSIGNED && structureIdB.index != middle::UNASSIGNED;
 			if (bothValid) {
 				middle::Id idA, idB;
 				bubble::findMatchingStructurePairWithVariables(gameState, topDogContainerId,
-					inputA->structureId, inputB->structureId, inputA->structureDepth, idA, idB);
+					structureIdA, structureIdB, inputA->structureDepth, overrideMap, idA, idB);
 				inputA->unitRef = idA;
 				inputB->unitRef = idB;
 			}
 			// if one is valid update it for visual indicators
-			else if (inputA->structureId.index != middle::UNASSIGNED) {
-				middle::Id result = bubble::findMatchingStructureWithVariables(gameState, topDogContainerId,
-					inputA->structureId, inputA->structureDepth);
+			else if (structureIdA.index != middle::UNASSIGNED) {
+				auto& inputShape = middle::getShape(gameState, structureIdA.index);
+				auto comp = middle::getComponent<components::AlgebraNode>(inputShape);
+				middle::Id result = bubble::findMatchingBubbleWithVariables(gameState, topDogContainerId,
+					structureIdA, inputA->structureDepth, overrideMap);
 				inputA->unitRef = result;
 			}
-			else if (inputB->structureId.index != middle::UNASSIGNED) {
-				middle::Id result = bubble::findMatchingStructureWithVariables(gameState, topDogContainerId,
-					inputB->structureId, inputB->structureDepth);
+			else if (structureIdB.index != middle::UNASSIGNED) {
+				middle::Id result = bubble::findMatchingBubbleWithVariables(gameState, topDogContainerId,
+					structureIdB, inputB->structureDepth, overrideMap);
 				inputB->unitRef = result;
 			}
 
 		}
 	}
 
+
 	void update(middle::GameState* gameState) override {
-
-
 
 		auto buttonIt = buttonCache->begin<components::Button>();
 		for (int i = 0; i < buttonCache->getSize(); ++i) {
@@ -700,20 +753,33 @@ public:
 			// start
 			if (button->function == bubbleButton::START_PROCEDURE_BUTTON) {
 				// navigate to procedure scope... 
-				middle::Id parentId = middle::getParent(gameState, shape.id);
-				auto& parentShape = middle::getShape(gameState, parentId.index);
-				auto procedureContainer = middle::getComponent<components::ProcedureContainer>(parentShape);
+				middle::Id procContainerId = procedureCache->relevantIdVector[0];
+				auto procedureShape = middle::getShape(gameState, procContainerId.index);
+				auto procedureContainer = middle::getComponent<components::ProcedureContainer>(procedureShape);
 				procedureContainer->mode = procedureConstants::EXECUTING;
 				procedureContainer->direction = procedureConstants::FORWARD;
 				procedureContainer->procedureTransitionStack.clear();
+
+				std::unordered_map<std::string, std::vector<middle::Id>> variableMap;
+				std::vector<middle::Id>children;
+				middle::getChildren(gameState, procedureShape.id, children);
+				for (middle::Id& childId : children) {
+					auto& childShape = middle::getShape(gameState, childId.index);
+					auto input = middle::getComponent<components::InputVariable>(childShape);
+					if (input) {
+						bubble::getVariableStructuresMap(gameState, childId, variableMap);
+						break;
+					}
+				}
+
 			}
 
 			// step
 			if (button->function == bubbleButton::STEP_FORWARD) {
 				// navigate to procedure scope... 
-				middle::Id parentId = middle::getParent(gameState, shape.id);
-				auto& parentShape = middle::getShape(gameState, parentId.index);
-				auto procedureContainer = middle::getComponent<components::ProcedureContainer>(parentShape);
+				middle::Id procedureId = procedureCache->relevantIdVector[0];
+				auto& procedureShape = middle::getShape(gameState, procedureId.index);
+				auto procedureContainer = middle::getComponent<components::ProcedureContainer>(procedureShape);
 				procedureContainer->mode = procedureConstants::STEPPING;
 				procedureContainer->direction = procedureConstants::FORWARD;
 				if (procedureContainer->procedureTransitionStack.size() == 0) {
@@ -723,9 +789,9 @@ public:
 			// step back
 			if (button->function == bubbleButton::STEP_BACKWARD) {
 				// navigate to procedure scope... 
-				middle::Id parentId = middle::getParent(gameState, shape.id);
-				auto& parentShape = middle::getShape(gameState, parentId.index);
-				auto procedureContainer = middle::getComponent<components::ProcedureContainer>(parentShape);
+				middle::Id procedureId = procedureCache->relevantIdVector[0];
+				auto& procedureShape = middle::getShape(gameState, procedureId.index);
+				auto procedureContainer = middle::getComponent<components::ProcedureContainer>(procedureShape);
 				procedureContainer->mode = procedureConstants::STEPPING;
 				procedureContainer->direction = procedureConstants::BACKWARD;
 			}
@@ -735,10 +801,10 @@ public:
 		auto procedureIt = procedureCache->begin<components::ProcedureContainer>();
 		for (int i = 0; i < procedureCache->getSize(); ++i) {
 			auto procedure = *procedureIt;
-			auto& shape = middle::getShape(gameState, procedureCache->relevantIdVector[i].index);
+			auto& procedureShape = middle::getShape(gameState, procedureCache->relevantIdVector[i].index);
 
 			if (procedure->procedureTransitionStack.size() > 0 && procedure->updateInputs) {
-				updateInputVariableReferences(gameState, procedure->procedureTransitionStack.back().destinationId, procedure->bubbleRef);
+				updateInputVariableReferences(gameState, procedure->procedureTransitionStack.back().destinationId, procedure->bubbleRef, procedure->variableOverrides);
 			}
 
 			if ((procedure->mode == procedureConstants::EXECUTING
@@ -761,23 +827,28 @@ public:
 				}
 			}
 
+			bool skipPause = false;
+
 			// move 
 			while (procedure->procedureTransitionStack.size() < procedure->targetActionStackSize) {
 
 				if (procedure->procedureTransitionStack.size() > 0) {
-					updateInputVariableReferences(gameState, procedure->procedureTransitionStack.back().destinationId, procedure->bubbleRef);
+					updateInputVariableReferences(gameState, procedure->procedureTransitionStack.back().destinationId, procedure->bubbleRef, procedure->variableOverrides);
 				}
 
 				auto status = procedureStepForward(gameState, procedure);
 				if (status == procedureConstants::CannotStep) {
 					break;
 				}
+				if (status == procedureConstants::StepWithoutFunction) {
+					skipPause = true;
+				}
 			}
 
 			while (procedure->procedureTransitionStack.size() > procedure->targetActionStackSize) {
 
 				if (procedure->procedureTransitionStack.size() > 0) {
-					updateInputVariableReferences(gameState, procedure->procedureTransitionStack.back().destinationId, procedure->bubbleRef);
+					updateInputVariableReferences(gameState, procedure->procedureTransitionStack.back().destinationId, procedure->bubbleRef, procedure->variableOverrides);
 				}
 
 				auto status = procedureStepBackward(gameState, procedure);
@@ -786,14 +857,33 @@ public:
 				}
 			}
 
-
-			if (procedure->mode == procedureConstants::EXECUTING) {
-				auto timer = middle::attachComponent<components::TimerComponent>(gameState, shape.id);
+			if (procedure->mode == procedureConstants::EXECUTING && !skipPause) {
+				auto timer = middle::attachComponent<components::TimerComponent>(gameState, procedureShape.id);
 				timer->timeLeft = 0.1f;
 			}
 
 			if (procedure->mode == procedureConstants::STEPPING) {
 				procedure->mode = procedureConstants::IDLE;
+			}
+
+			if (procedure->procedureTransitionStack.size() > 0) {
+				if (procedure->procedureTransitionStack.back().type == procedureConstants::End) {
+					procedure->mode = procedureConstants::IDLE;
+
+					// add unod actions to last actions, which is assumed to be start procedure, in action solve mode
+					// also delete procedure after execution
+					if (gameState->bubbleAlgebraState.bubbleActions.size() > 0) {
+						auto lastAction = gameState->bubbleAlgebraState.bubbleActions.back();
+						auto startProcedure = static_cast<bubbleActions::StartProcedure*>(lastAction.get());
+						for (auto& transition : procedure->procedureTransitionStack) {
+							if (transition.action) {
+								startProcedure->actions.push_back(transition.action);
+							}
+						}
+						auto deleteShape = std::make_shared<middle::EditorActionDeleteSingle>(procedureShape.id);
+						middle::queueAction(gameState, deleteShape);
+					}
+				}
 			}
 		}
 	}

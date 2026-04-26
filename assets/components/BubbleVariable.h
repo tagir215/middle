@@ -2,12 +2,14 @@
 #include "registrars.h"
 #include "editor_file_utils.h"
 #define MIDDLEBUBBLEVARIABLE(X) \
-	X(label)
+	X(label) \
+	X(isNegative)
 
 
 namespace components {
 	struct BubbleVariable : public middle::Serializable{
 		std::string label;
+		bool isNegative = false;
 
 		void serialize(std::ostream& ostream) override;
 		void deserialize(const std::vector<std::string>& buffer, int indexOffset) override;
