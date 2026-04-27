@@ -97,11 +97,13 @@ public:
 				backgroundColor = bubbleColors::UI_BACKGROUND;
 			}
 			if (uiComp->type == UiElementTypes::PROCEDURE_RECT) {
-				color = bubbleColors::PROCEDURE_RECT;
-				backgroundColor = bubbleColors::PROCEDURE_RECT;
+				//color = bubbleColors::PROCEDURE_RECT;
+				//backgroundColor = bubbleColors::PROCEDURE_RECT;
+				continue;
 			}
 			if (uiComp->type == UiElementTypes::PROCEDURE_BACKGROUND) {
-				backgroundColor = bubbleColors::PROCEDURE_BACKGROUND;
+				//backgroundColor = bubbleColors::PROCEDURE_BACKGROUND;
+				continue;
 			}
 			if (uiComp->type == UiElementTypes::PROCEDURE_SCOPE) {
 				//backgroundColor = bubbleColors::PROCEDURE_SCOPE;

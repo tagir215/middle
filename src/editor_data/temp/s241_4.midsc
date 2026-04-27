@@ -1,0 +1,124 @@
+__q  241_4
+MouseGrabbable
+Position
+f  314.189575
+f  0.000000
+f  -197.170349
+CodeFunction
+i  25
+MouseIntersectable
+MouseSelectable
+Rectangle
+f  20.000000
+f  15.000000
+Sphere
+f  2.000000
+LoopSociety
+q  -1_0
+p  
+q  242_4
+q  243_2
+Offset
+f  0.000000
+f  0.000000
+f  0.000000
+UiComponent
+i  8
+Layer
+i  3
+TextureComponent
+s  
+f  30.000000
+i  0
+s  procedureFunction1.png
+PlacementComponent
+__q  243_2
+LoopSociety
+q  241_4
+p  
+Sphere
+f  2.000000
+UiComponent
+i  9
+Position
+f  316.522522
+f  0.000122
+f  -197.369873
+MouseGrabbable
+MouseIntersectable
+MouseSelectable
+Layer
+i  3
+TextureComponent
+s  
+f  20.000000
+i  0
+s  comporessPower.png
+__q  242_4
+Sphere
+f  2.000000
+InputVariable
+q  177_2
+s  
+q  -1_0
+i  2
+p  
+p  
+q  245_2
+q  246_2
+MouseIntersectable
+Text
+s  
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  3.000000
+b  1
+Position
+f  294.189575
+f  0.000000
+f  -197.170349
+MouseGrabbable
+MouseSelectable
+LoopSociety
+q  241_4
+p  
+q  245_2
+q  246_2
+Circle
+f  4.000000
+UiComponent
+i  9
+Layer
+i  3
+Highlight
+__q  246_2
+AlgebraNode
+i  1
+s  a
+f  1.000000
+i  1
+b  0
+b  0
+b  0
+b  0
+LoopSociety
+q  242_4
+p  
+__q  245_2
+AlgebraNode
+i  1
+s  a
+f  1.000000
+i  1
+b  0
+b  0
+b  0
+b  0
+LoopSociety
+q  242_4
+p  

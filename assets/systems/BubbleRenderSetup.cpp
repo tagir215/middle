@@ -565,6 +565,8 @@ public:
 			}
 		}
 
+
+
 		auto checkBoxPositionIt = activeCheckBoxCache->begin<components::Position>();
 		auto checkBoxLayerIt = activeCheckBoxCache->begin<components::Layer>();
 		for (int i = 0; i < activeCheckBoxCache->getSize(); ++i) {

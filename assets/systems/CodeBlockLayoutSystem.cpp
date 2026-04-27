@@ -228,11 +228,10 @@ public:
 			for (middle::Id& childId : loop->loopMemberIds) {
 				auto& childShape = middle::getShape(gameState, childId.index);
 				auto childRect = middle::getComponent<components::Rectangle>(childShape);
-				auto pos = middle::getComponent<components::Position>(childShape);
 				auto offset = middle::getComponent<components::Offset>(childShape);
-				pos->posX = targetX + childRect->width * 0.5f;
-				pos->posY = codeBlockPos.y;
-				pos->posZ = targetZ;
+				Vector3 currentPos = middle::getShapePosition(gameState, childId.index);
+				Vector3 targetPos = { targetX + childRect->width * 0.5f, codeBlockPos.y, targetZ };
+				middle::moveShape(gameState, childId.index, targetPos - currentPos);
 			}
 		}
 

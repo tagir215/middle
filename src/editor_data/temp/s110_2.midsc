@@ -1,0 +1,206 @@
+__q  110_2
+Rectangle
+f  20.000000
+f  15.000000
+Sphere
+f  2.000000
+CodeFunction
+i  0
+Position
+f  -422.392639
+f  -0.000061
+f  117.079819
+MouseGrabbable
+MouseIntersectable
+MouseSelectable
+LoopSociety
+q  -1_0
+p  
+q  113_2
+q  114_2
+Text
+s  EXPAND
+f  255.000000
+f  255.000000
+f  0.000000
+f  255.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  4.000000
+b  1
+Offset
+f  0.000000
+f  0.000000
+f  0.000000
+UiComponent
+i  8
+Layer
+i  3
+TextureComponent
+s  
+f  30.000000
+i  0
+s  procedureFunction2.png
+PlacementComponent
+__q  114_2
+LoopSociety
+q  110_2
+p  
+Sphere
+f  2.000000
+InputVariable
+q  -1_0
+s  
+q  -1_0
+i  0
+p  
+p  
+Position
+f  -442.392639
+f  -0.000061
+f  112.079819
+MouseGrabbable
+Text
+s  
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  3.000000
+b  1
+MouseIntersectable
+MouseSelectable
+UiComponent
+i  9
+Circle
+f  4.000000
+Layer
+i  3
+__q  113_2
+LoopSociety
+q  110_2
+p  
+q  117_4
+q  120_4
+Sphere
+f  2.000000
+InputVariable
+q  -1_0
+s  
+q  -1_0
+i  2
+p  
+p  
+q  117_4
+q  120_4
+Position
+f  -442.392639
+f  -0.000061
+f  122.079819
+MouseGrabbable
+Text
+s  
+f  255.000000
+f  255.000000
+f  255.000000
+f  255.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  3.000000
+b  1
+MouseIntersectable
+MouseSelectable
+UiComponent
+i  9
+Circle
+f  4.000000
+Layer
+i  3
+Highlight
+__q  120_4
+AlgebraNode
+i  0
+s  
+f  0.000000
+i  1
+b  0
+b  0
+b  0
+b  0
+LoopSociety
+q  113_2
+p  
+q  121_4
+q  122_2
+__q  122_2
+AlgebraNode
+i  1
+s  a
+f  1.000000
+i  1
+b  0
+b  0
+b  0
+b  0
+LoopSociety
+q  120_4
+p  
+__q  121_4
+AlgebraNode
+i  1
+s  b
+f  1.000000
+i  1
+b  0
+b  0
+b  0
+b  0
+LoopSociety
+q  120_4
+p  
+__q  117_4
+AlgebraNode
+i  0
+s  
+f  0.000000
+i  1
+b  0
+b  0
+b  0
+b  0
+LoopSociety
+q  113_2
+p  
+q  118_4
+q  119_4
+__q  119_4
+AlgebraNode
+i  1
+s  a
+f  1.000000
+i  1
+b  0
+b  0
+b  0
+b  0
+LoopSociety
+q  117_4
+p  
+__q  118_4
+AlgebraNode
+i  1
+s  b
+f  1.000000
+i  1
+b  0
+b  0
+b  0
+b  0
+LoopSociety
+q  117_4
+p  

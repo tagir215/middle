@@ -16,6 +16,7 @@ public:
 
 	components::CompCache* selectableCache;
 	components::CompCache* textureCache;
+	components::CompCache* extraTextureCache;
 
 	void init(middle::GameState* gameState) override {
 		selectableCache = middle::newCompCache(gameState);
@@ -23,6 +24,8 @@ public:
 
 		textureCache = middle::newCompCache(gameState);
 		textureCache->addType<components::TextureComponent>();
+		extraTextureCache = middle::newCompCache(gameState);
+		extraTextureCache->addType<components::TextureComponent>();
 	}
 
 
