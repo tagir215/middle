@@ -171,14 +171,13 @@ public:
 
 		auto unitIt = unitCache->begin<components::BubbleUnit>();
 		auto unitGrabbableIt = unitCache->begin<components::MouseGrabbable>();
-		auto loopIt = unitCache->begin<components::LoopSociety>();
 		for (int i = 0; i < unitCache->getSize(); ++i) {
 			auto& shape = middle::getShape(gameState, unitCache->relevantIdVector[i].index);
 			auto unit = *unitIt;
-			auto loop = *loopIt;
 			auto grabbable = *unitGrabbableIt;
-			if (loop->parentLoopId.index != middle::UNASSIGNED) {
-				auto& parentShape = middle::getShape(gameState, loop->parentLoopId.index);
+			middle::Id parentId = middle::getParent(gameState, shape.id);
+			if (parentId.index != middle::UNASSIGNED) {
+				auto& parentShape = middle::getShape(gameState, parentId.index);
 				auto parentFraction = middle::getComponent<components::FractionalComponent>(parentShape);
 				if (parentFraction) {
 					continue;

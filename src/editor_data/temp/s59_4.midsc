@@ -1,85 +1,100 @@
 __q  59_4
-Position
-f  23.330999
+PhysicsData
+f  1256.637085
+f  0.000796
+f  1.000000
+f  -2.085562
 f  0.000000
-f  -14.456223
-MouseGrabbable
-BubbleMultiplyComponent
-LoopTag
-MouseIntersectable
+f  1.364298
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+b  0
+BubbleComponent
+b  0
 MouseSelectable
+Layer
+i  2
+MouseGrabbable
+MouseIntersectable
+LoopTag
 LoopSociety
 q  -1_0
 p  
 q  60_4
-q  61_3
-__q  61_3
-PhysicsData
-f  1256.637085
-f  0.000796
-f  1.000000
-f  523.545166
-f  0.000000
-f  164.888931
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-b  0
-Layer
-i  4
-MouseSelectable
-BubbleComponent
-b  0
-MouseGrabbable
-MouseIntersectable
-LoopTag
-LoopSociety
-q  59_4
-p  
+q  61_4
 Circle
 f  20.000000
 Position
-f  166.825455
+f  -32.851635
 f  0.000000
-f  33.955402
-BubbleVariable
-s  b
+f  23.552975
+__q  61_4
+LoopSociety
+q  59_4
+p  
+MouseSelectable
+Layer
+i  3
+BubbleUnit
+i  1
+MouseIntersectable
+PhysicsData
+f  12.566371
+f  0.079577
+f  1.000000
+f  -2.212938
+f  0.000000
+f  0.709845
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
 b  0
+Circle
+f  2.000000
+MouseGrabbable
+Sphere
+f  2.000000
+Position
+f  -22.786417
+f  0.000000
+f  25.437149
 __q  60_4
-PhysicsData
-f  1256.637085
-f  0.000796
-f  1.000000
-f  522.122314
-f  0.000000
-f  149.742020
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-b  0
-Layer
-i  4
-MouseSelectable
-BubbleComponent
-b  0
-MouseGrabbable
-MouseIntersectable
-LoopTag
 LoopSociety
 q  59_4
 p  
-Circle
-f  20.000000
-Position
-f  136.159393
+MouseSelectable
+Layer
+i  3
+BubbleUnit
+i  1
+MouseIntersectable
+PhysicsData
+f  12.566371
+f  0.079577
+f  1.000000
+f  -2.017905
 f  0.000000
-f  1.071047
-BubbleVariable
-s  a
+f  0.478009
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
 b  0
+Circle
+f  2.000000
+MouseGrabbable
+Sphere
+f  2.000000
+Position
+f  -41.905334
+f  0.000000
+f  19.772705

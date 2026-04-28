@@ -232,13 +232,14 @@ public:
 	}
 
 	void collectMoleculeConstraints(middle::GameState* gameState, components::CompCache* cache, std::vector<MoleculeConstraint>& constraints, float targetSeparation) {
-		auto mulLoopIt = cache->begin<components::LoopSociety>();
 		for (int i = 0; i < cache->getSize(); ++i) {
-			auto loop = *mulLoopIt;
+			std::vector<middle::Id>children;
+			middle::getChildren(gameState, cache->relevantIdVector[i], children);
+
 			MoleculeConstraint moleculeConstraint;
 			Body prevBody;
-			for (int j = 0; j < loop->loopMemberIds.size(); ++j) {
-				auto& childShape = middle::getShape(gameState, loop->loopMemberIds[j].index);
+			for (int j = 0; j < children.size(); ++j) {
+				auto& childShape = middle::getShape(gameState, children[j].index);
 				auto position = middle::getComponent<components::Position>(childShape);
 				auto physics = middle::getComponent<components::PhysicsData>(childShape);
 				auto childCircle = middle::getComponent<components::Circle>(childShape);

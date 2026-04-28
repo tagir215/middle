@@ -95,12 +95,11 @@ public:
 	void update(middle::GameState* gameState) override {
 
 		auto inventoryIt = inventoryCache->begin<components::Inventory>();
-		auto loopIt = inventoryCache->begin<components::LoopSociety>();
 		for (int i = 0; i < inventoryCache->getSize(); ++i) {
 			auto inventory = *inventoryIt;
-			auto loop = *loopIt;
 
-			std::vector < middle::Id>children = loop->loopMemberIds;
+			std::vector < middle::Id>children;
+			middle::getChildren(gameState, inventoryCache->relevantIdVector[i], children);
 			for (int i = 0; i < children.size(); ++i) {
 				middle::Id childId = children[i];
 				auto& child = middle::getShape(gameState, childId.index);

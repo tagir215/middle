@@ -1,18 +1,18 @@
 __q  37_1
-Rectangle
-f  20.000000
-f  15.000000
-Sphere
-f  2.000000
 UiComponent
 i  8
 CodeFunction
 i  21
-Position
-f  247.726334
-f  -0.000061
-f  311.695709
+Sphere
+f  2.000000
+Rectangle
+f  20.000000
+f  15.000000
 MouseGrabbable
+Position
+f  545.959351
+f  0.000000
+f  209.177856
 MouseIntersectable
 MouseSelectable
 LoopSociety
@@ -36,19 +36,19 @@ __q  39_1
 LoopSociety
 q  37_1
 p  
-UiComponent
-i  9
 Sphere
 f  2.000000
-MouseGrabbable
+UiComponent
+i  9
 Position
-f  248.290176
-f  -0.000061
-f  312.485382
+f  546.523193
+f  0.000000
+f  209.967529
+MouseGrabbable
 MouseIntersectable
+MouseSelectable
 Layer
 i  3
-MouseSelectable
 TextureComponent
 s  
 f  18.000000
@@ -67,11 +67,12 @@ q  -1_0
 i  0
 p  
 p  
-Position
-f  227.726334
-f  -0.000061
-f  311.695709
 MouseGrabbable
+Position
+f  525.959351
+f  0.000000
+f  209.177856
+MouseSelectable
 Text
 s  
 f  255.000000
@@ -83,7 +84,6 @@ f  0.000000
 f  0.000000
 f  3.000000
 b  1
-MouseSelectable
 MouseIntersectable
 UiComponent
 i  9

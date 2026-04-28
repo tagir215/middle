@@ -33,14 +33,14 @@ namespace bubble {
 		auto bubbleComponent = middle::getComponent<components::BubbleComponent>(bubbleShape);
 		assert(bubbleComponent);
 		auto ref = middle::getComponent<components::BubbleRef>(bubbleShape);
-		if (!ref || ref->idRef.index == middle::UNASSIGNED) {
+		if (!ref || !middle::isValidId(gameState, ref->idRef)) {
 			return false;
 		}
 		Vector3 center = middle::getShapePosition(gameState, bubbleShape.id.index);
 
 		auto& bubbleContainer = middle::getShape(gameState, ref->idRef.index);
-		components::LoopSociety* loop = middle::getComponent<components::LoopSociety>(bubbleContainer);
-		std::vector<middle::Id> outlineConstraints = getConstraints(gameState, loop);
+
+		std::vector<middle::Id> outlineConstraints = getConstraints(gameState, bubbleContainer.id);
 
 		for (int i = 0; i < outlineConstraints.size(); ++i) {
 			auto& constraintShape = middle::getShape(gameState, outlineConstraints[i].index);
@@ -198,9 +198,11 @@ namespace bubble {
 	}
 
 
-	std::vector<middle::Id>getNodes(middle::GameState* gameState, components::LoopSociety* loop) {
+	std::vector<middle::Id>getNodes(middle::GameState* gameState, middle::Id id) {
 		std::vector<middle::Id>ids;
-		for (middle::Id& id : loop->loopMemberIds) {
+		std::vector<middle::Id>children;
+		middle::getChildren(gameState, id, children);
+		for (middle::Id& id : children) {
 			auto& childShape = middle::getShape(gameState, id.index);
 			if (middle::getComponent<components::Sphere>(childShape)) {
 				ids.push_back(id);
@@ -209,9 +211,11 @@ namespace bubble {
 		return ids;
 	}
 
-	std::vector<middle::Id>getConstraints(middle::GameState* gameState, components::LoopSociety* loop) {
+	std::vector<middle::Id>getConstraints(middle::GameState* gameState, middle::Id id) {
 		std::vector<middle::Id>ids;
-		for (middle::Id& id : loop->loopMemberIds) {
+		std::vector<middle::Id>children;
+		middle::getChildren(gameState, id, children);
+		for (middle::Id& id : children) {
 			auto& childShape = middle::getShape(gameState, id.index);
 			if (middle::getComponent<components::Constraint>(childShape)) {
 				ids.push_back(id);
@@ -263,22 +267,7 @@ namespace bubble {
 
 
 	bool isIntersecting(middle::GameState* gameState, middle::Shape& shape) {
-		auto fraction = middle::getComponent<components::FractionalComponent>(shape);
 		auto intersectable = middle::getComponent<components::MouseIntersectable>(shape);
-
-		if (fraction) {
-			auto loop = middle::getComponent<components::LoopSociety>(shape);
-			for (middle::Id id : loop->loopMemberIds) {
-				middle::Shape& shape = middle::getShape(gameState, id.index);
-				if (isIntersecting(gameState, shape)) {
-					return true;
-				}
-			}
-			return false;
-		}
-		else if (!intersectable) {
-			return false;
-		}
 
 		return intersectable->intersectingTop;
 	}

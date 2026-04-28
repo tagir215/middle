@@ -42,9 +42,9 @@ public:
 	}
 
 	bool getOneInput(middle::GameState* gameState, middle::Shape& funcShape,  components::InputVariable& inputVariable) {
-		auto variablesLoop = middle::getComponent<components::LoopSociety>(funcShape);
-		assert(variablesLoop);
-		for (middle::Id& childId : variablesLoop->loopMemberIds) {
+		std::vector<middle::Id>children;
+		middle::getChildren(gameState, funcShape.id, children);
+		for (middle::Id& childId : children) {
 			auto& childShape = middle::getShape(gameState, childId.index);
 			auto inputVar = middle::getComponent<components::InputVariable>(childShape);
 			if (!inputVar) {
@@ -67,10 +67,10 @@ public:
 	}
 
 	bool getTwoInputs(middle::GameState* gameState, middle::Shape& funcShape, components::InputVariable& varA, components::InputVariable& varB) {
-		auto variablesLoop = middle::getComponent<components::LoopSociety>(funcShape);
-		assert(variablesLoop);
+		std::vector<middle::Id>children;
+		middle::getChildren(gameState, funcShape.id, children);
 		bool varAFound = false;
-		for (middle::Id& childId : variablesLoop->loopMemberIds) {
+		for (middle::Id& childId : children) {
 			auto& childShape = middle::getShape(gameState, childId.index);
 			auto inputVar = middle::getComponent<components::InputVariable>(childShape);
 			if (!inputVar) {
@@ -97,44 +97,6 @@ public:
 		return false;
 	}
 
-	void getOneOutput(middle::GameState* gameState, middle::Shape& funcShape, components::OutputVariable& var) {
-		std::vector<middle::Id>children;
-		middle::getChildren(gameState, funcShape.id, children);
-		for (middle::Id& id : children) {
-			auto& childShape = middle::getShape(gameState, id.index);
-			auto outputVariable = middle::getComponent<components::OutputVariable>(childShape);
-			if (outputVariable) {
-				var = *outputVariable;
-				return;
-			}
-		}
-		assert(false);
-	}
-
-	void getTwoOutputs(middle::GameState* gameState, middle::Shape& funcShape, components::OutputVariable& varA, components::OutputVariable& varB) {
-		auto variablesLoop = middle::getComponent<components::LoopSociety>(funcShape);
-		assert(variablesLoop);
-		bool varAFound = false;
-		for (middle::Id& childId : variablesLoop->loopMemberIds) {
-			auto& childShape = middle::getShape(gameState, childId.index);
-			auto inputVar = middle::getComponent<components::OutputVariable>(childShape);
-			if (!inputVar) {
-				continue;
-			}
-
-			if (!varAFound) {
-				varAFound = true;
-				varA = *inputVar;
-			}
-			else {
-				varB = *inputVar;
-				return;
-			}
-		}
-		assert(false);
-	}
-
-
 	// search type of thing from a bubble
 	middle::Id searchFromBubble(middle::GameState* gameState, middle::Id& bubbleId, int typeId) {
 		auto& bubbleShape = middle::getShape(gameState, bubbleId.index);
@@ -158,47 +120,10 @@ public:
 		return middle::Id();
 	}
 
-	// returns scope 
-	bool checkIfConditionTrue(middle::GameState* gameState, middle::Shape& funcShape) {
-		auto function = middle::getComponent<components::CodeFunction>(funcShape);
-
-		int findTypeId = -1;
-		if (function->type == functionTypes::FIND_BUBBLE) {
-			findTypeId = middle::getTypeId<components::BubbleComponent>();
-		}
-		if (function->type == functionTypes::FIND_FRACTION) {
-			findTypeId = middle::getTypeId<components::FractionalComponent>();
-		}
-		if (function->type == functionTypes::FIND_UNIT) {
-			findTypeId = middle::getTypeId<components::BubbleUnit>();
-		}
-
-		// find bubbles: store found bubble to output, execute upper scope if found, execute lower scope if didn't find
-		if (findTypeId >= 0) {
-			components::InputVariable input;
-			components::OutputVariable output;
-			if (!getOneInput(gameState, funcShape, input)) {
-				return false;
-			}
-			getOneOutput(gameState, funcShape, output);
-			middle::Id foundId = searchFromBubble(gameState, input.unitRef, findTypeId);
-			bubbleActions::UpdateVariable(output.label, [foundId]() {return foundId;}).execute(gameState);
-			bool isConditionTrue = foundId.index != middle::UNASSIGNED;
-			return isConditionTrue;
-		}
-
-		assert(false);
-	}
-
 
 	void executeFunctions(middle::GameState* gameState, middle::Shape& funcShape, components::ProcedureContainer* container) {
 
 		auto function = middle::getComponent<components::CodeFunction>(funcShape);
-
-		auto ifComp = middle::getComponent<components::CodeFunction>(funcShape);
-		if (ifComp) {
-			potentialConditionalStep(gameState, container);
-		}
 
 		// combine functions are either multiplciations or additions
 		if (function->type == functionTypes::COMBINE) {
@@ -241,28 +166,6 @@ public:
 		}
 
 		else if (function->type == functionTypes::COPY) {
-			components::InputVariable input;
-			components::OutputVariable output;
-			if (!getOneInput(gameState, funcShape, input)) {
-				return;
-			}
-			getOneOutput(gameState, funcShape, output);
-			auto copyAction = std::make_shared<middle::EditorActionCopySingle>(input.unitRef);
-			auto update = std::make_shared<bubbleActions::UpdateVariable>(output.label, [copyAction] {return copyAction->resultId;});
-			auto customCopy = std::make_shared<middle::CustomActionWithUndo>(
-				[copyAction, update](middle::GameState* gameState) {
-					copyAction->execute(gameState);
-					// move away from view
-					middle::moveShape(gameState, copyAction->resultId.index, { 400,0,100 });
-					update->execute(gameState);
-				},
-				[copyAction, update](middle::GameState* gameState) {
-					update->undo(gameState);
-					copyAction->undo(gameState);
-				});
-			middle::queueAction(gameState, customCopy);
-			container->procedureTransitionStack.back().action = customCopy;
-
 		}
 
 
@@ -595,25 +498,6 @@ public:
 		}
 		return procedureConstants::CannotStep;
 
-	}
-
-	procedureConstants::StepStatus potentialConditionalStep(middle::GameState* gameState, components::ProcedureContainer* container) {
-		middle::Id& previousId = container->procedureTransitionStack.back().destinationId;
-		if (previousId.index == middle::UNASSIGNED) {
-			return procedureConstants::CannotStep;
-		}
-
-		middle::Id id = getCodeBlockFunc(gameState, container->activeBlock);
-		if (id.index == middle::UNASSIGNED) {
-			return procedureConstants::CannotStep;
-		}
-		auto& funcShape = middle::getShape(gameState, id.index);
-		auto ifComp = middle::getComponent<components::IfComponent>(funcShape);
-		if (ifComp) {
-			bool condResult = checkIfConditionTrue(gameState, funcShape);
-			auto status = stepEast(gameState, container, condResult);
-			return status;
-		}
 	}
 
 

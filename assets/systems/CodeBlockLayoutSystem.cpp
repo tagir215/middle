@@ -134,8 +134,9 @@ public:
 			referencePos.x -= procRect->width * 0.5f + variableSpacingX;
 			referencePos.z += procRect->height * 0.5f - variableSpacingZ;
 
-			auto loop = middle::getComponent<components::LoopSociety>(shape);
-			for (middle::Id& childId : loop->loopMemberIds) {
+			std::vector<middle::Id>children;
+			middle::getChildren(gameState, shape.id, children);
+			for (middle::Id& childId : children) {
 				auto& childShape = middle::getShape(gameState, childId.index);
 				auto inputVariable = middle::getComponent<components::InputVariable>(childShape);
 				if (!inputVariable)
@@ -151,11 +152,11 @@ public:
 
 		// scope layout
 		auto scopeIt = scopeCache->begin<components::ScopeComponent>();
-		auto scopeLoopIt = scopeCache->begin<components::LoopSociety>();
 		for (int i = 0; i < scopeCache->getSize(); ++i) {
 			auto scope = *scopeIt;
-			auto scopeLoop = *scopeLoopIt;
 			auto& shape = middle::getShape(gameState, scopeCache->relevantIdVector[i].index);
+			std::vector<middle::Id>children;
+			middle::getChildren(gameState, scopeCache->relevantIdVector[i], children);
 
 			updateRectSizeRecursive(gameState, shape);
 
@@ -164,7 +165,7 @@ public:
 
 			float totalHeight = scopeRect->height;
 			float totalWidth = scopeRect->width;
-			int size = scopeLoop->loopMemberIds.size();
+			int size = children.size();
 
 			Vector3 scopePos = { scopePosition->posX, scopePosition->posY, scopePosition->posZ };
 			Vector3 referencePos = scopePos;
@@ -172,7 +173,7 @@ public:
 
 			// move code block inside procedure container
 			for (int index = 0; index < size; ++index) {
-				middle::Id childId = scopeLoop->loopMemberIds[index];
+				middle::Id childId = children[index];
 				auto& childShape = middle::getShape(gameState, childId.index);
 				auto childRect = middle::getComponent<components::Rectangle>(childShape);
 				auto codeBlock = middle::getComponent<components::CodeBlock>(childShape);
@@ -196,8 +197,8 @@ public:
 			}
 			// move scope container
 			if (size > 0) {
-				auto& child0Shape = middle::getShape(gameState, scopeLoop->loopMemberIds[0].index);
-				Vector3 child0Pos = middle::getShapePosition(gameState, scopeLoop->loopMemberIds[0].index);
+				auto& child0Shape = middle::getShape(gameState, children[0].index);
+				Vector3 child0Pos = middle::getShapePosition(gameState, children[0].index);
 				auto child0Rect = middle::getComponent<components::Rectangle>(child0Shape);
 
 				float left, right, bottom, top;
@@ -293,13 +294,15 @@ public:
 				auto scopeRect = middle::getComponent<components::Rectangle>(childShape);
 				auto scopeScale = middle::getComponent<components::Scale>(childShape);
 				auto scopePos = middle::getComponent<components::Position>(childShape);
-				auto scopeLoop = middle::getComponent<components::LoopSociety>(childShape);
+				std::vector<middle::Id>children;
+				middle::getChildren(gameState, childShape.id, children);
+
 				scopeScale->scale = targetScale;
 
 				// if no children use the scopes height, otherwise use the first childs height
 				float scopeOffsetZ = scopeRect->height * 0.5f;
-				if (scopeLoop->loopMemberIds.size() > 0) {
-					auto& scopeChildShape = middle::getShape(gameState, scopeLoop->loopMemberIds[0].index);
+				if (children.size() > 0) {
+					auto& scopeChildShape = middle::getShape(gameState, children[0].index);
 					auto scopeChildRect = middle::getComponent<components::Rectangle>(scopeChildShape);
 					scopeOffsetZ = scopeChildRect->height * 0.5f;
 				}

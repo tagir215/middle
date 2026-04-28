@@ -1,22 +1,66 @@
 __q  85_2
-Layer
-i  0
+PhysicsData
+f  1849.557251
+f  0.000541
+f  1.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+b  0
 MouseSelectable
+Layer
+i  2
 BubbleComponent
 b  0
 MouseGrabbable
-MouseIntersectable
 LoopTag
 LoopSociety
 q  -1_0
 p  
+q  86_2
+q  87_2
+q  88_2
+q  89_2
+TopDogBubbleTag
+Circle
+f  24.263807
+Position
+f  60.994400
+f  -0.000061
+f  -8.284272
+InventoryItem
+i  1
+UiComponent
+i  -1
+IdRef
+q  67_0
+PlacementComponent
+DeleteComponent
+__q  89_2
+LoopSociety
+q  85_2
+p  
+MouseIntersectable
+BubbleUnit
+i  1
+MouseSelectable
+Layer
+i  1
+Circle
+f  2.000000
 PhysicsData
+f  12.566371
+f  0.079577
 f  1.000000
-f  1.000000
-f  1.000000
+f  -0.000017
 f  0.000000
-f  0.000000
-f  0.000000
+f  -0.000010
 f  0.000000
 f  0.000000
 f  0.000000
@@ -24,9 +68,117 @@ f  0.000000
 f  0.000000
 f  0.000000
 b  0
-Circle
-f  10.000000
+MouseGrabbable
+Sphere
+f  2.000000
 Position
-f  9.869131
-f  -0.000031
-f  51.419926
+f  46.462852
+f  -0.000061
+f  -6.818173
+UiComponent
+i  -1
+__q  88_2
+LoopSociety
+q  85_2
+p  
+MouseIntersectable
+BubbleUnit
+i  1
+MouseSelectable
+Layer
+i  1
+Circle
+f  2.000000
+PhysicsData
+f  12.566371
+f  0.079577
+f  1.000000
+f  -0.000015
+f  0.000000
+f  -0.000022
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+b  0
+MouseGrabbable
+Sphere
+f  2.000000
+Position
+f  75.526215
+f  -0.000061
+f  -9.750211
+UiComponent
+i  -1
+__q  87_2
+LoopSociety
+q  85_2
+p  
+MouseIntersectable
+BubbleUnit
+i  1
+MouseSelectable
+Layer
+i  1
+Circle
+f  2.000000
+PhysicsData
+f  12.566371
+f  0.079577
+f  1.000000
+f  -0.000009
+f  0.000000
+f  -0.000015
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+b  0
+MouseGrabbable
+Sphere
+f  2.000000
+Position
+f  59.528484
+f  -0.000061
+f  -22.815838
+UiComponent
+i  -1
+__q  86_2
+LoopSociety
+q  85_2
+p  
+MouseIntersectable
+BubbleUnit
+i  1
+MouseSelectable
+Layer
+i  1
+Circle
+f  2.000000
+PhysicsData
+f  12.566371
+f  0.079577
+f  1.000000
+f  -0.000020
+f  0.000000
+f  -0.000003
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+b  0
+MouseGrabbable
+Sphere
+f  2.000000
+Position
+f  62.460526
+f  -0.000061
+f  6.247522
+UiComponent
+i  -1

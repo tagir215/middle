@@ -7,19 +7,19 @@ f  2.000000
 UiComponent
 i  8
 CodeFunction
-i  21
-Position
-f  684.721313
-f  0.000000
-f  105.624466
+i  25
 MouseGrabbable
+Position
+f  592.925232
+f  -0.000061
+f  165.386444
 MouseIntersectable
 MouseSelectable
 LoopSociety
 q  -1_0
 p  
-q  42_1
-q  43_1
+q  41_2
+q  42_2
 Offset
 f  0.000000
 f  0.000000
@@ -32,34 +32,29 @@ f  30.000000
 i  0
 s  procedureFunction1.png
 PlacementComponent
-__q  43_1
+__q  42_2
 LoopSociety
 q  40_2
 p  
+Sphere
+f  2.000000
 UiComponent
 i  9
-Sphere
-f  2.000000
-MouseGrabbable
 Position
-f  685.285156
-f  0.000000
-f  106.414139
+f  595.258179
+f  0.000061
+f  165.186859
+MouseGrabbable
 MouseIntersectable
+MouseSelectable
 Layer
 i  3
-MouseSelectable
 TextureComponent
 s  
-f  18.000000
+f  20.000000
 i  0
-s  bubblifyIcon.png
-__q  42_1
-LoopSociety
-q  40_2
-p  
-Sphere
-f  2.000000
+s  comporessPower.png
+__q  41_2
 InputVariable
 q  -1_0
 s  
@@ -67,24 +62,29 @@ q  -1_0
 i  0
 p  
 p  
-Position
-f  664.721313
-f  0.000000
-f  105.624466
-MouseGrabbable
+Sphere
+f  2.000000
+MouseSelectable
 Text
 s  
-f  255.000000
-f  255.000000
-f  255.000000
-f  255.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
 f  0.000000
 f  0.000000
 f  0.000000
 f  3.000000
 b  1
-MouseSelectable
 MouseIntersectable
+Position
+f  572.925232
+f  -0.000061
+f  165.386444
+MouseGrabbable
+LoopSociety
+q  40_2
+p  
 UiComponent
 i  9
 Circle

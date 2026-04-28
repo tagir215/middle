@@ -73,27 +73,6 @@ namespace bubbleActions {
 		return true;
 	}
 
-	void validateFraction(middle::GameState* gameState, middle::Id& id) {
-		middle::Shape& shape = middle::getShape(gameState, id.index);
-		auto loop = middle::getComponent<components::LoopSociety>(shape);
-		auto fraction = middle::getComponent<components::FractionalComponent>(shape);
-		assert(fraction);
-		int nonZeroCount = 0;
-		for (middle::Id& childId : loop->loopMemberIds) {
-			auto& childShape = middle::getShape(gameState, childId.index);
-			auto childFraction = middle::getComponent<components::FractionalComponent>(childShape);
-			auto mulComp = middle::getComponent<components::BubbleMultiplyComponent>(childShape);
-			assert(!childFraction);
-			assert(!mulComp);
-			auto unit = middle::getComponent<components::BubbleUnit>(childShape);
-			if (!unit || unit->value != 0) {
-				++nonZeroCount;
-			}
-		}
-		assert(nonZeroCount == 1);
-	}
-
-
 
 	CreateMulitiplicationReplacementShape::CreateMulitiplicationReplacementShape(middle::Id shapeToReplace, middle::Id replacingShape)
 	{
@@ -414,58 +393,12 @@ namespace bubbleActions {
 
 		middle::Shape& copyShapeA = middle::getShape(gameState, idA.index);
 		middle::Shape& copyShapeB = middle::getShape(gameState, idB.index);
-		auto fractionA = middle::getComponent<components::FractionalComponent>(copyShapeA);
-		auto fractionB = middle::getComponent<components::FractionalComponent>(copyShapeB);
-		auto loopA = middle::getComponent<components::LoopSociety>(copyShapeA);
-		auto loopB = middle::getComponent<components::LoopSociety>(copyShapeB);
-		// can't add fractions of different fractions 
-		int sizeA = loopA->loopMemberIds.size();
-		int sizeB = loopB->loopMemberIds.size();
 
-		// FRACTION CASE
-		if (fractionA && fractionB && sizeA == sizeB) {
-			// find non zero indexes
-			int indexA, indexB;
-			for (int i = 0; i < sizeA; ++i) {
-				auto& childShapeA = middle::getShape(gameState, loopA->loopMemberIds[i].index);
-				auto& childShapeB = middle::getShape(gameState, loopB->loopMemberIds[i].index);
-				auto unitA = middle::getComponent<components::BubbleUnit>(childShapeA);
-				auto unitB = middle::getComponent<components::BubbleUnit>(childShapeB);
-				auto bubbleA = middle::getComponent<components::BubbleComponent>(childShapeA);
-				auto bubbleB = middle::getComponent<components::BubbleComponent>(childShapeB);
-				if (unitA && unitA->value != 0 || bubbleA) {
-					indexA = i;
-				}
-				if (unitB && unitB->value != 0 || bubbleB) {
-					indexB = i;
-				}
-			}
-			middle::Id childIdA = loopA->loopMemberIds[indexA];
-			middle::Id childIdB = loopB->loopMemberIds[indexB];
-
-			auto additionReplacement = std::make_unique<CreateAdditionReplacementShape>(childIdA, childIdB);
-			additionReplacement->execute(gameState);
-			middle::Id replacementId = additionReplacement->resultId;
-			actions.push_back(std::move(additionReplacement));
-
-			// reparent
-			auto reparentAction = std::make_unique<middle::EditorActionReparent>(copyShapeA.id.index, replacementId.index);
-			reparentAction->execute(gameState);
-			resultShapeId = copyShapeA.id;
-			actions.push_back(std::move(reparentAction));
-
-			auto deleteAction = std::make_unique<middle::EditorActionDeleteSingle>(copyShapeB.id);
-			deleteAction->execute(gameState);
-			actions.push_back(std::move(deleteAction));
-
-		}
 		// NORMAL AVERAGE BASIC CASE
-		else {
-			auto additionAction = std::make_unique<CreateAdditionReplacementShape>(idA, idB);
-			additionAction->execute(gameState);
-			resultShapeId = additionAction->resultId;
-			actions.push_back(std::move(additionAction));
-		}
+		auto additionAction = std::make_unique<CreateAdditionReplacementShape>(idA, idB);
+		additionAction->execute(gameState);
+		resultShapeId = additionAction->resultId;
+		actions.push_back(std::move(additionAction));
 
 		auto deleteAction = std::make_unique<middle::EditorActionDeleteSingle>(shapeToAddId);
 		deleteAction->execute(gameState);
@@ -796,7 +729,7 @@ namespace bubbleActions {
 	}
 
 
-	
+
 	Break::Break(middle::Id containerShape, int dividend)
 	{
 		this->unitShapeId = containerShape;
@@ -824,7 +757,7 @@ namespace bubbleActions {
 
 			// create and register inverse bubble
 			Vector3 targetPos = middle::getShapePosition(gameState, unitShape.id.index);
-			middle::Shape containerBubbleProto = bubble::newBubble(gameState, targetPos + Vector3{1.0f * i, 0,0});
+			middle::Shape containerBubbleProto = bubble::newBubble(gameState, targetPos + Vector3{ 1.0f * i, 0,0 });
 			middle::Shape& containerBubble = middle::registerShape(gameState, containerBubbleProto);
 			auto bubble = middle::getComponent<components::BubbleComponent>(containerBubble);
 			bubble->inverse = true;
@@ -862,15 +795,15 @@ namespace bubbleActions {
 	middle::Id compressToPower(middle::GameState* gameState, middle::Id compressTargetId, middle::Id commonFactorId) {
 		auto& multiplicationShape = middle::getShape(gameState, compressTargetId.index);
 		assert(middle::getComponent<components::BubbleMultiplyComponent>(multiplicationShape));
-		auto loop = middle::getComponent<components::LoopSociety>(multiplicationShape);
-		assert(loop);
+		std::vector<middle::Id>children;
+		middle::getChildren(gameState, multiplicationShape.id, children);
 		bool compressableIsOne = bubble::isBubbleWithValueOne(gameState, commonFactorId) || bubble::isBubbleWithValueOneNegative(gameState, commonFactorId);
 
 		int compressableCount = 0;
 		int negativeCount = 0;
 		bool compressToNegative = false;
-		for (int i = 0; i < loop->loopMemberIds.size(); ++i) {
-			middle::Id memberId = loop->loopMemberIds[i];
+		for (int i = 0; i < children.size(); ++i) {
+			middle::Id memberId = children[i];
 			if (bubble::isBubbleWithValueOneNegative(gameState, memberId)) {
 				++negativeCount;
 			}
@@ -880,8 +813,8 @@ namespace bubbleActions {
 		}
 
 		// check that all equal
-		for (int i = 0; i < loop->loopMemberIds.size(); ++i) {
-			middle::Id memberId = loop->loopMemberIds[i];
+		for (int i = 0; i < children.size(); ++i) {
+			middle::Id memberId = children[i];
 			// ones are ignored, don't affect multiplication value
 			if (bubble::isBubbleWithValueOne(gameState, memberId)) {
 				if (compressableIsOne) {

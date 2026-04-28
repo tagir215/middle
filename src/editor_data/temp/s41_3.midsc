@@ -1,32 +1,38 @@
 __q  41_3
-Layer
-i  1
 MouseSelectable
-BubbleComponent
-b  0
+Text
+s  
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  3.000000
+b  1
+Position
+f  55.116180
+f  -0.000061
+f  -37.279217
 MouseGrabbable
-MouseIntersectable
-LoopTag
+Sphere
+f  2.000000
+UiComponent
+i  9
+Circle
+f  4.000000
 LoopSociety
 q  -1_0
 p  
-PhysicsData
-f  4408.785156
-f  0.000227
-f  1.000000
-f  -15.612816
-f  0.000000
-f  -71.706932
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-b  0
-Circle
-f  37.461445
-Position
-f  -90.298309
-f  0.000000
-f  86.671783
+InputVariable
+q  -1_0
+s  
+q  -1_0
+i  0
+p  
+p  
+Layer
+i  3
+IdRef
+q  40_2

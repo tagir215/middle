@@ -19,8 +19,8 @@ namespace bubble {
 	void loopRectBoundingBoxInternal(GameState* gameState, const Id& shapeId, float* leftX, float* rightX, float* bottomZ, float* topZ);
 	void bubbleRectBoundingBox(GameState* gameState, const Id& shapeId, float* leftX, float* rightX, float* bottomZ, float* topZ);
 	bool buttonClicked(middle::GameState* gameState, middle::Shape& shape, int function);
-	std::vector<middle::Id>getNodes(middle::GameState* gameState, components::LoopSociety* loop);
-	std::vector<middle::Id>getConstraints(middle::GameState* gameState, components::LoopSociety* loop);
+	std::vector<middle::Id>getNodes(middle::GameState* gameState, middle::Id id);
+	std::vector<middle::Id>getConstraints(middle::GameState* gameState, middle::Id id);
 	middle::Id findBubbleWithPatern(middle::GameState* gameState, middle::Id containerBubble);
 	middle::Id shapeToFraction(middle::GameState* gameState, middle::Id shapeId, const Vector3& targetPos, int dividend);
 	struct UnitValue {

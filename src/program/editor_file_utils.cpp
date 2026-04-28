@@ -419,11 +419,10 @@ namespace middle {
 			outFile << "__" << idString;
 			saveComponent(shape, outFile);
 
-			auto loop = getComponent<components::LoopSociety>(shape);
-			if (loop) {
-				for (Id& id : loop->loopMemberIds) {
-					idStack.push(id);
-				}
+			std::vector<middle::Id> children;
+			middle::getChildren(gameState, shape.id, children);
+			for (Id& id : children) {
+				idStack.push(id);
 			}
 		}
 
@@ -525,7 +524,7 @@ namespace middle {
 
 		std::ifstream inputFile(path);
 		if (!inputFile.is_open()) {
-		throw std::runtime_error("Failed to open file to open");
+			throw std::runtime_error("Failed to open file to open");
 		}
 		std::string line;
 

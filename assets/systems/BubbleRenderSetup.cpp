@@ -146,19 +146,18 @@ public:
 		auto bubbleIt = bubbleCache->begin<components::BubbleComponent>();
 		auto bubbleCircleIt = bubbleCache->begin<components::Circle>();
 		auto bubbleLayerIt = bubbleCache->begin<components::Layer>();
-		auto loopIt = bubbleCache->begin<components::LoopSociety>();
 		for (int i = 0; i < bubbleCache->getSize(); ++i) {
 			auto bubble = *bubbleIt;
 			auto circle = *bubbleCircleIt;
 			auto layer = *bubbleLayerIt;
-			auto loop = *loopIt;
 			auto& shape = middle::getShape(gameState, bubbleCache->relevantIdVector[i].index);
 			bool isUiItem = middle::getComponent<components::UiComponent>(shape);
 
 			// todo maybe replace with tag
 			bool parentIsEditableEquals = false;
-			if (loop->parentLoopId.index != middle::UNASSIGNED) {
-				auto& parentShape = middle::getShape(gameState, loop->parentLoopId.index);
+			middle::Id parentId = middle::getParent(gameState, shape.id);
+			if (parentId.index != middle::UNASSIGNED) {
+				auto& parentShape = middle::getShape(gameState, parentId.index);
 				bool equals = middle::getComponent<components::BubbleEqualsComponent>(parentShape) != nullptr;
 				auto problem = middle::getComponent<components::BubbleAlgebraProblem>(parentShape);
 				auto helper = middle::getComponent<components::HelperBubbleEquation>(parentShape);
@@ -335,13 +334,13 @@ public:
 
 		// render muls
 		auto mulIt = mulCache->begin<components::BubbleMultiplyComponent>();
-		auto mulLoopIt = mulCache->begin<components::LoopSociety>();
 		for (int i = 0; i < mulCache->getSize(); ++i) {
 			auto multiplyComponent = *mulIt;
-			auto loop = *mulLoopIt;
-			for (int x = 1; x < loop->loopMemberIds.size(); ++x) {
-				auto& shapeA = middle::getShape(gameState, loop->loopMemberIds[x - 1].index);
-				auto& shapeB = middle::getShape(gameState, loop->loopMemberIds[x].index);
+			std::vector<middle::Id>children;
+			middle::getChildren(gameState, mulCache->relevantIdVector[i], children);
+			for (int x = 1; x < children.size(); ++x) {
+				auto& shapeA = middle::getShape(gameState, children[x - 1].index);
+				auto& shapeB = middle::getShape(gameState, children[x].index);
 				auto positionA = middle::getComponent<components::Position>(shapeA);
 				auto positionB = middle::getComponent<components::Position>(shapeB);
 				auto circleA = middle::getComponent<components::Circle>(shapeA);

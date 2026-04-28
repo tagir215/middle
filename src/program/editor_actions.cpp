@@ -371,9 +371,9 @@ namespace middle {
 	void checkCircularReferences(GameState* gameState, middle::Id& parentId, middle::Id& id) {
 		auto& parent = getShape(gameState, parentId.index);
 		assert(parentId != id);
-		auto loop = getComponent<components::LoopSociety>(parent);
-		if (loop->parentLoopId.index != UNASSIGNED) {
-			checkCircularReferences(gameState, loop->parentLoopId, id);
+		middle::Id parentParentId = middle::getParent(gameState, parent.id);
+		if (parentParentId.index != UNASSIGNED) {
+			checkCircularReferences(gameState, parentParentId, id);
 		}
 	}
 
@@ -458,11 +458,7 @@ namespace middle {
 			auto& ogShape = getShape(gameState, shapeIndex);
 
 			// store parent id
-			middle::Id parentId;
-			auto loop = getComponent<components::LoopSociety>(ogShape);
-			if (loop) {
-				parentId = loop->parentLoopId;
-			}
+			middle::Id parentId = middle::getParent(gameState, ogShape.id);
 
 			Id& newId = deepCopyShape(gameState, shapeIndex, parentId.index);
 			auto& copyShape = getShape(gameState, newId.index);
