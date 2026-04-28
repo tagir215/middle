@@ -1,131 +1,33 @@
 __q  208_1
-MouseIntersectable
-UiComponent
-i  8
-CodeFunction
-i  0
-Sphere
-f  2.000000
-Rectangle
-f  20.000000
-f  15.000000
-Position
-f  196.619629
-f  0.000000
-f  -200.532669
-MouseGrabbable
-MouseSelectable
 LoopSociety
 q  -1_0
 p  
-q  209_1
-q  210_1
-q  211_1
-Offset
-f  0.000000
-f  0.000000
-f  0.000000
-Layer
-i  3
-TextureComponent
-s  
-f  30.000000
-i  0
-s  procedureFunction2.png
-PlacementComponent
-__q  211_1
-MouseSelectable
-Text
-s  
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-f  3.000000
-b  1
 MouseIntersectable
-Position
-f  180.019623
-f  0.000000
-f  -206.532669
-MouseGrabbable
-Sphere
-f  2.000000
-UiComponent
-i  9
+BubbleUnit
+i  1
 Circle
-f  5.000000
-LoopSociety
-q  208_1
-p  
-InputVariable
-q  -1_0
-s  
-q  -1_0
-i  0
-p  
-p  
-Layer
-i  3
-__q  210_1
-LoopSociety
-q  208_1
-p  
-UiComponent
-i  9
-Sphere
 f  2.000000
 MouseGrabbable
-Position
-f  198.910645
-f  0.000000
-f  -200.953201
-MouseIntersectable
+MouseSelectable
 Layer
 i  3
-MouseSelectable
-TextureComponent
-s  
-f  20.000000
-i  0
-s  expand.png
-__q  209_1
-MouseSelectable
-Text
-s  
+PhysicsData
+f  12.566371
+f  0.079577
+f  1.000000
+f  -7.105258
+f  0.000000
+f  0.627412
 f  0.000000
 f  0.000000
 f  0.000000
 f  0.000000
 f  0.000000
 f  0.000000
-f  0.000000
-f  3.000000
-b  1
-MouseIntersectable
-MouseGrabbable
-Position
-f  180.019623
-f  0.000000
-f  -194.532669
-UiComponent
-i  9
+b  0
 Sphere
 f  2.000000
-Circle
-f  5.000000
-LoopSociety
-q  208_1
-p  
-InputVariable
-q  -1_0
-s  
-q  -1_0
-i  0
-p  
-p  
-Layer
-i  3
+Position
+f  -23.270035
+f  0.000000
+f  4.543674

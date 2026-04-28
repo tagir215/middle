@@ -1,38 +1,32 @@
 __q  130_1
+PhysicsData
+f  7698.607910
+f  0.000130
+f  1.000000
+f  -105.551620
+f  0.000000
+f  -268.990692
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+b  0
+BubbleComponent
+b  0
+Layer
+i  1
 MouseSelectable
-Text
-s  
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-f  3.000000
-b  1
-Position
-f  -39.382233
-f  0.000000
-f  55.918827
 MouseGrabbable
-Sphere
-f  2.000000
-UiComponent
-i  9
-Circle
-f  5.000000
+MouseIntersectable
+LoopTag
 LoopSociety
 q  -1_0
 p  
-InputVariable
-q  -1_0
-s  
-q  -1_0
-i  0
-p  
-p  
-Layer
-i  3
-IdRef
-q  128_1
+Circle
+f  49.502960
+Position
+f  4.924078
+f  0.000000
+f  -16.734003

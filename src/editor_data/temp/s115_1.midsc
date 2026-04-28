@@ -1,79 +1,4 @@
 __q  115_1
-MouseIntersectable
-UiComponent
-i  8
-CodeFunction
-i  3
-Sphere
-f  2.000000
-Rectangle
-f  20.000000
-f  15.000000
-Position
-f  571.272217
-f  0.000000
-f  -196.451462
-MouseGrabbable
-MouseSelectable
-LoopSociety
-q  -1_0
-p  
-q  116_1
-q  117_1
-Offset
-f  0.000000
-f  0.000000
-f  0.000000
-Layer
-i  3
-TextureComponent
-s  
-f  30.000000
-i  0
-s  procedureFunction1.png
-PlacementComponent
-__q  117_1
-LoopSociety
-q  115_1
-p  
-Sphere
-f  2.000000
-UiComponent
-i  9
-Position
-f  572.083374
-f  0.000000
-f  -196.724075
-MouseGrabbable
-MouseIntersectable
-MouseSelectable
-Layer
-i  3
-TextureComponent
-s  
-f  17.000000
-i  0
-s  popIcon.png
-__q  116_1
-LoopSociety
-q  115_1
-p  
-q  119_1
-Sphere
-f  2.000000
-InputVariable
-q  103_1
-s  
-q  -1_0
-i  2
-p  
-p  
-q  119_1
-Position
-f  554.672241
-f  0.000000
-f  -196.451462
-MouseGrabbable
 Text
 s  
 f  0.000000
@@ -86,66 +11,28 @@ f  0.000000
 f  3.000000
 b  1
 MouseSelectable
-MouseIntersectable
+Position
+f  -57.383270
+f  0.000000
+f  29.572073
+MouseGrabbable
+Sphere
+f  2.000000
 UiComponent
 i  9
 Circle
 f  5.000000
+LoopSociety
+q  -1_0
+p  
+InputVariable
+q  -1_0
+s  
+q  -1_0
+i  0
+p  
+p  
 Layer
 i  3
-Highlight
-__q  119_1
-AlgebraNode
-i  0
-s  
-f  0.000000
-i  1
-b  0
-b  0
-b  0
-b  0
-LoopSociety
-q  116_1
-p  
-q  120_1
-__q  120_1
-AlgebraNode
-i  4
-s  
-f  0.000000
-i  1
-b  0
-b  0
-b  0
-b  0
-LoopSociety
-q  119_1
-p  
-q  121_1
-q  122_1
-__q  122_1
-AlgebraNode
-i  1
-s  a
-f  1.000000
-i  1
-b  0
-b  0
-b  0
-b  0
-LoopSociety
-q  120_1
-p  
-__q  121_1
-AlgebraNode
-i  1
-s  b
-f  1.000000
-i  1
-b  0
-b  0
-b  0
-b  0
-LoopSociety
-q  120_1
-p  
+IdRef
+q  112_1

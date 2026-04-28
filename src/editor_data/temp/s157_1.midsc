@@ -1,104 +1,124 @@
 __q  157_1
+MouseIntersectable
+UiComponent
+i  8
+CodeFunction
+i  19
+Sphere
+f  2.000000
+Rectangle
+f  20.000000
+f  15.000000
+MouseGrabbable
+Position
+f  529.053162
+f  0.000000
+f  -298.007202
+MouseSelectable
 LoopSociety
 q  -1_0
 p  
 q  158_1
 q  159_1
-MouseSelectable
+Offset
+f  0.000000
+f  0.000000
+f  0.000000
 Layer
-i  2
-BubbleComponent
-b  0
-PhysicsData
-f  1256.637085
-f  0.000796
-f  1.000000
-f  -0.064744
-f  0.000000
-f  -0.016236
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-b  0
-MouseGrabbable
-MouseIntersectable
-LoopTag
-TopDogBubbleTag
-Circle
-f  20.000000
-Position
-f  24.035849
-f  -0.000000
-f  87.369469
-IdRef
-q  65_0
-DeleteComponent
+i  3
+TextureComponent
+s  
+f  30.000000
+i  0
+s  procedureFunction1.png
+PlacementComponent
 __q  159_1
-BubbleUnit
-i  -1
-MouseIntersectable
 LoopSociety
 q  157_1
 p  
-MouseGrabbable
-Circle
-f  2.000000
-Layer
-i  1
-MouseSelectable
-PhysicsData
-f  12.566371
-f  0.079577
-f  1.000000
-f  -3.278521
-f  0.000000
-f  -7.376165
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-b  0
 Sphere
 f  2.000000
+UiComponent
+i  9
 Position
-f  15.482679
-f  -0.000000
-f  93.336937
+f  531.234070
+f  0.000000
+f  -297.721313
+MouseGrabbable
+MouseIntersectable
+MouseSelectable
+Layer
+i  3
+TextureComponent
+s  
+f  17.000000
+i  0
+s  compress.png
 __q  158_1
-BubbleUnit
-i  -1
+InputVariable
+q  108_1
+s  
+q  -1_0
+i  3
+p  
+p  
+q  161_1
+q  162_1
+Sphere
+f  2.000000
+Position
+f  512.453186
+f  0.000000
+f  -298.007202
+MouseGrabbable
+Text
+s  
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  3.000000
+b  1
+MouseSelectable
 MouseIntersectable
 LoopSociety
 q  157_1
 p  
-MouseGrabbable
+q  161_1
+q  162_1
+UiComponent
+i  9
 Circle
-f  2.000000
+f  5.000000
 Layer
+i  3
+Highlight
+__q  162_1
+AlgebraNode
 i  1
-MouseSelectable
-PhysicsData
-f  12.566371
-f  0.079577
+s  b
 f  1.000000
-f  -0.760490
-f  0.000000
-f  -8.236883
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
+i  1
 b  0
-Sphere
-f  2.000000
-Position
-f  34.362171
-f  -0.000000
-f  89.778397
+b  0
+b  0
+b  0
+LoopSociety
+q  158_1
+p  
+__q  161_1
+AlgebraNode
+i  1
+s  b
+f  1.000000
+i  1
+b  0
+b  0
+b  0
+b  0
+LoopSociety
+q  158_1
+p  

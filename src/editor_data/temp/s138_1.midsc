@@ -2,32 +2,37 @@ __q  138_1
 LoopSociety
 q  -1_0
 p  
-MouseSelectable
-Layer
-i  3
-BubbleUnit
-i  1
-MouseIntersectable
-PhysicsData
-f  12.566371
-f  0.079577
-f  1.000000
-f  0.005805
-f  0.000000
-f  0.003300
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-b  0
-Circle
-f  2.000000
-MouseGrabbable
 Sphere
 f  2.000000
+InputVariable
+q  -1_0
+s  
+q  -1_0
+i  0
+p  
+p  
+MouseGrabbable
 Position
-f  50.809135
+f  67.462433
+f  -0.000122
+f  19.263554
+MouseSelectable
+Text
+s  
 f  0.000000
-f  30.968370
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  3.000000
+b  1
+UiComponent
+i  9
+Circle
+f  5.000000
+Layer
+i  3
+IdRef
+q  136_1

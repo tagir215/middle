@@ -26,6 +26,7 @@ public:
 
 	components::CompCache* buttonCache;
 	components::CompCache* procedureCache;
+	components::CompCache* executingProcedureCache;
 	components::CompCache* inputCache;
 
 	void init(middle::GameState* gameState) {
@@ -753,7 +754,7 @@ public:
 
 			if (procedure->mode == procedureConstants::EXECUTING && !skipPause) {
 				auto timer = middle::attachComponent<components::TimerComponent>(gameState, procedureShape.id);
-				timer->timeLeft = 0.1f;
+				timer->timeLeft = 0.3f;
 			}
 
 			if (procedure->mode == procedureConstants::STEPPING) {
@@ -779,6 +780,7 @@ public:
 					}
 				}
 			}
+
 		}
 	}
 };

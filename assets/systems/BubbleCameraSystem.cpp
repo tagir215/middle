@@ -38,7 +38,7 @@ public:
 				}
 			}
 			float mouseWheelMove = gameState->gameInput.mouseWheelMove;
-			const float wheelMouseMultiplier = 30;
+			const float wheelMouseMultiplier = 70;
 			camera->speedY += mouseWheelMove * wheelMouseMultiplier;
 			camera->speedX = 0;
 			camera->speedZ = 0;

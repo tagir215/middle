@@ -24,6 +24,7 @@
 #include "HelperBubbleEquation.h"
 #include "bubble_constants.h"
 #include "SnapRef.h"
+#include "TimerComponent.h"
 
 class BubbleModificationSystem : public middle::MiddleGameplaySystem {
 public:
@@ -305,7 +306,6 @@ public:
 	}
 
 	void update(middle::GameState* gameState) override {
-
 
 		if (levelConfigsCache->getSize() > 0) {
 			auto configsIt = levelConfigsCache->begin<components::BubbleAlgebraLevelConfigs>();

@@ -1565,41 +1565,6 @@ namespace bubbleActions {
 			return copyShape.id;
 		}
 
-		// remove mul ones
-		middle::Id copyId = middle::deepCopyShape(gameState, bubbleId.index);
-		bool unlinkdedSomething = false;
-		std::vector<middle::Id> copyChildren;
-		middle::getChildren(gameState, copyId, copyChildren);
-
-		for (middle::Id& id : copyChildren) {
-			auto& childShape = middle::getShape(gameState, id.index);
-			auto mul = middle::getComponent<components::BubbleMultiplyComponent>(childShape);
-			if (!mul) {
-				continue;
-			}
-			std::vector<middle::Id> mulChildren;
-			middle::getChildren(gameState, id, mulChildren);
-			for (int i = mulChildren.size() - 1; i >= 0; --i) {
-				auto& mulChildId = mulChildren[i];
-				if (bubble::isBubbleWithValueOne(gameState, mulChildId)) {
-					auto unlinkAction = UnlinkMultiplicationTerm(childShape.id, mulChildId);
-					unlinkAction.execute(gameState);
-					middle::deleteShapeRecursive(gameState, mulChildId.index);
-					unlinkdedSomething = true;
-					if (unlinkAction.resultShapeId != childShape.id) {
-						break;
-					}
-				}
-			}
-		}
-
-		if (unlinkdedSomething) {
-			return copyId;
-		}
-		else {
-			middle::deleteShapeRecursive(gameState, copyId.index);
-		}
-
 		return middle::Id();
 	}
 
@@ -1615,19 +1580,38 @@ namespace bubbleActions {
 			return;
 		}
 
-		middle::Id replacementShapeId = simplifyToSame(gameState, shape.id);
-		if (replacementShapeId.index == middle::UNASSIGNED) {
-			cancelled = true;
-			return;
+		if (bubble::isBubbleWithValueOne(gameState, id)) {
+			middle::Id parentId = middle::getParent(gameState, id);
+			auto& parentShape = middle::getShape(gameState, parentId.index);
+			if (middle::getComponent<components::BubbleMultiplyComponent>(parentShape)) {
+				auto unlink = std::make_unique<UnlinkMultiplicationTerm>(parentId, id);
+				unlink->execute(gameState);
+				actions.push_back(std::move(unlink));
+
+				auto deleteAction = std::make_unique<middle::EditorActionDeleteSingle>(id);
+				deleteAction->execute(gameState);
+				actions.push_back(std::move(deleteAction));
+			}
+			else {
+				cancelled = true;
+				return;
+			}
 		}
+		else {
+			middle::Id replacementShapeId = simplifyToSame(gameState, shape.id);
+			if (replacementShapeId.index == middle::UNASSIGNED) {
+				cancelled = true;
+				return;
+			}
 
-		auto registerAction = std::make_unique<middle::EditorActionRegisterId>(replacementShapeId);
-		registerAction->execute(gameState);
-		actions.push_back(std::move(registerAction));
+			auto registerAction = std::make_unique<middle::EditorActionRegisterId>(replacementShapeId);
+			registerAction->execute(gameState);
+			actions.push_back(std::move(registerAction));
 
-		auto replaceAction = std::make_unique<ReplaceBubbleAndTransferTags>(shape.id, replacementShapeId);
-		replaceAction->execute(gameState);
-		actions.push_back(std::move(replaceAction));
+			auto replaceAction = std::make_unique<ReplaceBubbleAndTransferTags>(shape.id, replacementShapeId);
+			replaceAction->execute(gameState);
+			actions.push_back(std::move(replaceAction));
+		}
 
 		queueSound(gameState, bubbleSounds::SIMPLIFY_SOUND);
 	}
