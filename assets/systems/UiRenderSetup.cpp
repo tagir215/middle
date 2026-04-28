@@ -20,6 +20,7 @@
 #include "Button.h"
 #include "TextureComponent.h"
 #include "Inventory.h"
+#include "Highlight.h"
 
 class UiRenderSetup : public middle::MiddleGameplaySystem {
 public:
@@ -34,6 +35,9 @@ public:
 	components::CompCache* nonUiRectangleCache;
 	components::CompCache* nonUiCircleCache;
 	components::CompCache* nonUiTextCache;
+	components::CompCache* procedureContainerCache;
+	components::CompCache* circleHighlightCache;
+	components::CompCache* rectHighlightCache;
 
 	void init(middle::GameState* gameState) {
 		rectangleCache = middle::newCompCache(gameState);
@@ -74,6 +78,14 @@ public:
 		nonUiTextCache->addType<components::Button>();
 		nonUiTextCache->addType<components::RuntimeHiddenTag>(components::NOTINTERESTED);
 		nonUiTextCache->addType<components::UiComponent>(components::NOTINTERESTED);
+		procedureContainerCache = middle::newCompCache(gameState);
+		procedureContainerCache->addType<components::ProcedureContainer>();
+		circleHighlightCache = middle::newCompCache(gameState);
+		circleHighlightCache->addType<components::Highlight>();
+		circleHighlightCache->addType<components::Circle>();
+		rectHighlightCache = middle::newCompCache(gameState);
+		rectHighlightCache->addType<components::Highlight>();
+		rectHighlightCache->addType<components::Rectangle>();
 	}
 
 
@@ -234,6 +246,67 @@ public:
 			circleItem.center = middle::getShapePosition(gameState, shape.id.index);
 			gameState->renderData.push_back(circleItem);
 		}
+
+
+
+		// PROCEDURE STUFF
+
+
+		if (procedureContainerCache->getSize() > 0) {
+			// execution iterator rendering
+			auto procIt = procedureContainerCache->begin<components::ProcedureContainer>();
+			auto procContainer = *procIt;
+
+			bool procedureInAction = procContainer && procContainer->procedureTransitionStack.size() > 0;
+			if (procContainer && procContainer->activeBlock.index != middle::UNASSIGNED && procedureInAction) {
+				auto& activeBlockShape = middle::getShape(gameState, procContainer->activeBlock.index);
+				Vector3 position = middle::getShapePosition(gameState, activeBlockShape.id.index);
+				auto rect = middle::getComponent<components::Rectangle>(activeBlockShape);
+				middle::RenderItem activeBlockItem;
+				activeBlockItem.type = middle::RenderItemType::RECTANGLE;
+				activeBlockItem.backgroundColor = bubbleColors::HIGHLIGHT_COLOR;
+				activeBlockItem.width = rect->width;
+				activeBlockItem.height = rect->height;
+				activeBlockItem.length = 0.2f;
+				activeBlockItem.center = position;
+				activeBlockItem.layer = 5;
+				activeBlockItem.disableDepthTest = true;
+				gameState->renderData.push_back(activeBlockItem);
+			}
+		}
+
+
+		auto circleHightlightIt = circleHighlightCache->begin<components::Circle>();
+		for (int i = 0; i < circleHighlightCache->getSize(); ++i) {
+			auto circle = *circleHightlightIt;
+			middle::RenderItem highlight;
+			Vector3 pos = middle::getShapePosition(gameState, circleHighlightCache->relevantIdVector[i].index);
+			highlight.type = middle::RenderItemType::CYLINDER;
+			highlight.center = pos;
+			highlight.color = bubbleColors::HIGHLIGHT_COLOR;
+			highlight.radius = circle->radius;
+			highlight.ringRadius = circle->radius;
+			highlight.length = 0.1f;
+			highlight.layer = 5;
+			highlight.disableDepthTest = true;
+			gameState->renderData.push_back(highlight);
+		}
+
+		auto rectHighlightIt = rectHighlightCache->begin<components::Rectangle>();
+		for (int i = 0; i < rectHighlightCache->getSize(); ++i) {
+			auto rect = *rectHighlightIt;
+			middle::RenderItem highlight;
+			Vector3 pos = middle::getShapePosition(gameState, rectHighlightCache->relevantIdVector[i].index);
+			highlight.type = middle::RenderItemType::RECTANGLE;
+			highlight.transform.translation = pos;
+			highlight.color = bubbleColors::HIGHLIGHT_COLOR;
+			highlight.width = rect->width;
+			highlight.height = rect->height;
+			highlight.disableDepthTest = true;
+			highlight.layer = 5;
+			gameState->renderData.push_back(highlight);
+		}
+
 
 	}
 };

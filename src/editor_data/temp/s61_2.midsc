@@ -1,180 +1,85 @@
 __q  61_2
-MouseSelectable
-MouseIntersectable
-CodeFunction
-i  17
 Position
-f  355.021118
-f  0.000122
-f  -149.176682
+f  23.330999
+f  0.000000
+f  -14.456223
 MouseGrabbable
-Sphere
-f  2.000000
-Rectangle
-f  20.000000
-f  15.000000
+BubbleMultiplyComponent
+LoopTag
+MouseIntersectable
+MouseSelectable
 LoopSociety
 q  -1_0
 p  
 q  62_2
 q  63_2
-Offset
-f  0.000000
-f  0.000000
-f  0.000000
-UiComponent
-i  8
-Layer
-i  3
-TextureComponent
-s  
-f  30.000000
-i  0
-s  procedureFunction1.png
-PlacementComponent
 __q  63_2
+PhysicsData
+f  1256.637085
+f  0.000796
+f  1.000000
+f  -0.000024
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+b  0
+BubbleComponent
+b  0
+MouseSelectable
+Layer
+i  4
+MouseGrabbable
+MouseIntersectable
+LoopTag
 LoopSociety
 q  61_2
 p  
-Sphere
-f  2.000000
-UiComponent
-i  9
-Position
-f  357.076660
-f  0.000122
-f  -147.946945
-MouseGrabbable
-MouseIntersectable
-MouseSelectable
-Layer
-i  3
-TextureComponent
-s  
-f  15.000000
-i  0
-s  mulPositiveOneIcon.png
-__q  62_2
-Position
-f  335.021118
-f  0.000122
-f  -149.176682
-MouseGrabbable
-Text
-s  
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-f  3.000000
-b  1
-MouseIntersectable
-UiComponent
-i  9
 Circle
-f  4.000000
-Sphere
-f  2.000000
+f  20.000000
+Position
+f  45.022636
+f  0.000000
+f  -0.209203
+BubbleVariable
+s  b
+b  0
+__q  62_2
+PhysicsData
+f  1256.637085
+f  0.000796
+f  1.000000
+f  0.000018
+f  0.000000
+f  0.000044
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+b  0
+BubbleComponent
+b  0
 MouseSelectable
+Layer
+i  4
+MouseGrabbable
+MouseIntersectable
+LoopTag
 LoopSociety
 q  61_2
 p  
-q  65_2
-q  68_2
-InputVariable
-q  19_0
-s  
-q  -1_0
-i  2
-p  
-p  
-q  65_2
-q  68_2
-Layer
-i  3
-Highlight
-__q  68_2
-AlgebraNode
-i  0
-s  
+Circle
+f  20.000000
+Position
+f  15.462821
 f  0.000000
-i  1
-b  0
-b  0
-b  0
-b  0
-LoopSociety
-q  62_2
-p  
-q  69_2
-q  70_2
-__q  70_2
-AlgebraNode
-i  1
+f  -38.244221
+BubbleVariable
 s  a
-f  1.000000
-i  1
 b  0
-b  0
-b  0
-b  0
-LoopSociety
-q  68_2
-p  
-__q  69_2
-AlgebraNode
-i  1
-s  b
-f  1.000000
-i  1
-b  0
-b  0
-b  0
-b  0
-LoopSociety
-q  68_2
-p  
-__q  65_2
-AlgebraNode
-i  0
-s  
-f  0.000000
-i  1
-b  0
-b  0
-b  0
-b  0
-LoopSociety
-q  62_2
-p  
-q  66_2
-q  67_2
-__q  67_2
-AlgebraNode
-i  1
-s  a
-f  1.000000
-i  1
-b  0
-b  0
-b  0
-b  0
-LoopSociety
-q  65_2
-p  
-__q  66_2
-AlgebraNode
-i  1
-s  b
-f  1.000000
-i  1
-b  0
-b  0
-b  0
-b  0
-LoopSociety
-q  65_2
-p  

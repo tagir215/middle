@@ -1,39 +1,38 @@
 __q  47_2
-MouseSelectable
-Text
-s  BubbleRef
-f  0.000000
-f  0.000000
-f  0.000000
-f  255.000000
-f  0.000000
-f  0.000000
-f  0.000000
-f  5.000000
-b  1
-Offset
-f  0.000000
-f  0.000000
-f  0.000000
 LoopSociety
 q  -1_0
 p  
 Sphere
 f  2.000000
-MouseGrabbable
-Position
-f  70.283676
-f  0.000000
-f  10.672764
-Circle
-f  10.000000
 InputVariable
 q  -1_0
-s  BubbleRef
+s  
 q  -1_0
-i  0
+i  1
 p  
 p  
-ProcedureInputVariable
+MouseGrabbable
+Position
+f  -34.974792
+f  0.000061
+f  6.213203
+MouseSelectable
+Text
+s  
+f  255.000000
+f  255.000000
+f  255.000000
+f  255.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  3.000000
+b  1
+UiComponent
+i  9
+Circle
+f  4.000000
+Layer
+i  3
 IdRef
-q  716_0
+q  38_2

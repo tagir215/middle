@@ -28,6 +28,11 @@
 #include "BubbleAlgebraProblem.h"
 #include "HelperBubbleEquation.h"
 #include "EditThisTag.h"
+#include  "InputVariable.h"
+#include "ProcedureInputVariable.h"
+#include "ProcedureContainer.h"
+#include "CodeBlock.h"
+#include "IdRef.h"
 
 
 class BubbleRenderSetup : public middle::MiddleGameplaySystem {
@@ -49,6 +54,8 @@ public:
 	components::CompCache* textureCache;
 	components::CompCache* activeCheckBoxCache;
 	components::CompCache* editThisCache;
+	components::CompCache* inputCache;
+	components::CompCache* procContainerCache;
 
 	void init(middle::GameState* gameState) {
 		bubbleCache = middle::newCompCache(gameState);
@@ -103,6 +110,11 @@ public:
 		editThisCache = middle::newCompCache(gameState);
 		editThisCache->addType<components::EditThisTag>();
 		editThisCache->addType<components::TextureComponent>();
+		inputCache = middle::newCompCache(gameState);
+		inputCache->addType<components::InputVariable>();
+		inputCache->addType<components::ProcedureInputVariable>(components::NOTINTERESTED);
+		procContainerCache = middle::newCompCache(gameState);
+		procContainerCache->addType<components::ProcedureContainer>();
 	}
 	bool debugRendering = false;
 
@@ -373,12 +385,13 @@ public:
 			gameState->renderData.push_back(cuboidItem);
 		}
 
-		auto equalsIt = equalsCache->begin<components::LoopSociety>();
 		for (int i = 0; i < equalsCache->getSize(); ++i) {
-			auto equalsLoop = *equalsIt;
-			assert(equalsLoop->loopMemberIds.size() == 2);
-			middle::Id& idA = equalsLoop->loopMemberIds[0];
-			middle::Id& idB = equalsLoop->loopMemberIds[1];
+			std::vector<middle::Id>children;
+			middle::getChildren(gameState, equalsCache->relevantIdVector[i], children);
+
+			assert(children.size() == 2);
+			middle::Id& idA = children[0];
+			middle::Id& idB = children[1];
 			middle::Shape& shapeA = middle::getShape(gameState, idA.index);
 			middle::Shape& shapeB = middle::getShape(gameState, idB.index);
 			Vector3 posA = middle::getShapePosition(gameState, idA.index);
@@ -566,7 +579,6 @@ public:
 		}
 
 
-
 		auto checkBoxPositionIt = activeCheckBoxCache->begin<components::Position>();
 		auto checkBoxLayerIt = activeCheckBoxCache->begin<components::Layer>();
 		for (int i = 0; i < activeCheckBoxCache->getSize(); ++i) {
@@ -584,6 +596,57 @@ public:
 			powerCircle.disableDepthTest = true;
 			gameState->renderData.push_back(powerCircle);
 		}
+
+
+		if (procContainerCache->getSize() > 0) {
+			auto procContainerIt = procContainerCache->begin<components::ProcedureContainer>();
+			auto procContainer = *procContainerIt;
+
+			auto inputIt = inputCache->begin<components::InputVariable>();
+			for (int i = 0; i < inputCache->getSize(); ++i) {
+				auto input = *inputIt;
+
+				Vector3 p1, p2;
+				bool renderLine = false;
+
+				// todo generation checks should be always...
+				if (input->unitRef.index != middle::UNASSIGNED
+					&& input->unitRef.generation == gameState->ids[input->unitRef.index].generation
+					&& middle::isShapeAlive(gameState, input->unitRef.index)) {
+					p1 = middle::getShapePosition(gameState, inputCache->relevantIdVector[i].index);
+					p2 = middle::getShapePosition(gameState, input->unitRef.index);
+					renderLine = true;
+				}
+
+				middle::Id grabbedId = gameState->bubbleAlgebraState.grabbedId;
+				if (!renderLine && grabbedId.index != middle::UNASSIGNED) {
+					auto& shape = middle::getShape(gameState, grabbedId.index);
+					auto idRef = middle::getComponent<components::IdRef>(shape);
+					if (!idRef) {
+						continue;
+					}
+					auto& ogShape = middle::getShape(gameState, idRef->idRef.index);
+					if (ogShape.id == inputCache->relevantIdVector[i]) {
+						renderLine = true;
+						p1 = middle::getShapePosition(gameState, ogShape.id.index);
+						p2 = gameState->input.mouseXZ_PlanePos;
+					}
+				}
+
+
+				if (renderLine) {
+					middle::RenderItem line;
+					line.type = middle::RenderItemType::LINE;
+					line.linePointA = p1;
+					line.linePointB = p2;
+					line.color = bubbleColors::HIGHLIGHT_COLOR;
+					line.disableDepthTest = true;
+					line.layer = 6;
+					gameState->renderData.push_back(line);
+				}
+			}
+		}
+
 	}
 
 

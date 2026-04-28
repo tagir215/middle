@@ -397,7 +397,6 @@ namespace bubbleActions {
 	void ExecuteAddition::execute(middle::GameState* gameState) {
 		auto& shapeToAdd = middle::getShape(gameState, shapeToAddId.index);
 		auto& shapeToAddInto = middle::getShape(gameState, shapeToAddIntoId.index);
-		auto addLoop = middle::getComponent<components::LoopSociety>(shapeToAdd);
 
 		if (!validateAdditionInitialState(gameState, this)) {
 			cancelled = true;
@@ -415,7 +414,6 @@ namespace bubbleActions {
 
 		middle::Shape& copyShapeA = middle::getShape(gameState, idA.index);
 		middle::Shape& copyShapeB = middle::getShape(gameState, idB.index);
-		auto copyAddLoop = middle::getComponent<components::LoopSociety>(copyShapeA);
 		auto fractionA = middle::getComponent<components::FractionalComponent>(copyShapeA);
 		auto fractionB = middle::getComponent<components::FractionalComponent>(copyShapeB);
 		auto loopA = middle::getComponent<components::LoopSociety>(copyShapeA);

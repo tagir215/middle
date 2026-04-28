@@ -1,4 +1,65 @@
 __q  30_2
+Rectangle
+f  20.000000
+f  15.000000
+Sphere
+f  2.000000
+UiComponent
+i  8
+CodeFunction
+i  21
+Position
+f  112.284225
+f  0.000000
+f  267.167755
+MouseGrabbable
+MouseIntersectable
+MouseSelectable
+LoopSociety
+q  -1_0
+p  
+q  41_1
+q  42_1
+Offset
+f  0.000000
+f  0.000000
+f  0.000000
+Layer
+i  3
+TextureComponent
+s  
+f  30.000000
+i  0
+s  procedureFunction1.png
+PlacementComponent
+__q  42_1
+LoopSociety
+q  30_2
+p  
+UiComponent
+i  9
+Sphere
+f  2.000000
+MouseGrabbable
+Position
+f  112.848068
+f  0.000000
+f  267.957489
+MouseIntersectable
+Layer
+i  3
+MouseSelectable
+TextureComponent
+s  
+f  18.000000
+i  0
+s  bubblifyIcon.png
+__q  41_1
+LoopSociety
+q  30_2
+p  
+Sphere
+f  2.000000
 InputVariable
 q  -1_0
 s  
@@ -6,33 +67,27 @@ q  -1_0
 i  0
 p  
 p  
-Sphere
-f  2.000000
+Position
+f  92.284225
+f  0.000000
+f  267.167755
+MouseGrabbable
 Text
 s  
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
+f  255.000000
+f  255.000000
+f  255.000000
+f  255.000000
 f  0.000000
 f  0.000000
 f  0.000000
 f  3.000000
 b  1
-MouseGrabbable
-Position
-f  879.602783
-f  0.000000
-f  240.673279
 MouseSelectable
-LoopSociety
-q  -1_0
-p  
+MouseIntersectable
 UiComponent
 i  9
 Circle
 f  4.000000
 Layer
 i  3
-IdRef
-q  1211_0

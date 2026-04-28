@@ -81,12 +81,13 @@ namespace bubble {
 	void loopChildrenOnlyRectBoundingBox(GameState* gameState, const Id& shapeId, float* leftX, float* rightX, float* bottomZ, float* topZ)
 	{
 		auto& shape = middle::getShape(gameState, shapeId.index);
-		auto loop = middle::getComponent<components::LoopSociety>(shape);
 		*leftX = 100000;
 		*rightX = -100000;
 		*bottomZ = *leftX;
 		*topZ = *rightX;
-		for (const middle::Id& childId : loop->loopMemberIds) {
+		std::vector<middle::Id>children;
+		middle::getChildren(gameState, shape.id, children);
+		for (const middle::Id& childId : children) {
 			loopRectBoundingBoxInternal(gameState, childId, leftX, rightX, bottomZ, topZ);
 		}
 	}
@@ -107,7 +108,6 @@ namespace bubble {
 	void loopRectBoundingBoxInternal(GameState* gameState, const Id& shapeId, float* leftX, float* rightX, float* bottomZ, float* topZ)
 	{
 		auto& shape = middle::getShape(gameState, shapeId.index);
-		auto loop = middle::getComponent<components::LoopSociety>(shape);
 		Vector3 pos = middle::getShapePosition(gameState, shapeId.index);
 		auto rect = middle::getComponent<components::Rectangle>(shape);
 		if (shouldSkipRectBound(shape)) {
@@ -132,7 +132,9 @@ namespace bubble {
 			*rightX = right;
 		}
 
-		for (const middle::Id& childId : loop->loopMemberIds) {
+		std::vector < middle::Id>children;
+		middle::getChildren(gameState, shape.id, children);
+		for (const middle::Id& childId : children) {
 			loopRectBoundingBoxInternal(gameState, childId, leftX, rightX, bottomZ, topZ);
 		}
 

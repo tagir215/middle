@@ -1,43 +1,38 @@
 __q  66_2
-BubbleComponent
-b  0
+Text
+s  
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  3.000000
+b  1
+MouseSelectable
+Position
+f  12.710434
+f  -0.000061
+f  39.834991
+MouseGrabbable
+Sphere
+f  2.000000
+UiComponent
+i  9
+Circle
+f  4.000000
 LoopSociety
 q  -1_0
 p  
-MouseGrabbable
-MouseSelectable
+InputVariable
+q  -1_0
+s  
+q  -1_0
+i  0
+p  
+p  
 Layer
-i  2
-LoopTag
-PhysicsData
-f  1256.637085
-f  0.000796
-f  1.000000
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-b  0
-Circle
-f  20.000000
-UiComponent
-i  -1
-Position
-f  -168.024994
-f  0.000000
-f  -70.845757
-InventoryItem
-i  1
-BubbleVariable
-s  x
-b  1
+i  3
 IdRef
-q  40_0
-PlacementComponent
-TopDogBubbleTag
-DeleteComponent
+q  63_6

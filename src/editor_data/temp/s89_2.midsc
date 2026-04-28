@@ -1,35 +1,168 @@
 __q  89_2
-PhysicsData
-f  1256.637085
-f  0.000796
-f  1.000000
-f  -0.504966
-f  0.000000
-f  -0.304969
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-b  0
+MouseGrabbable
 BubbleComponent
 b  0
-MouseGrabbable
-MouseSelectable
-Layer
-i  3
+Circle
+f  24.263807
+PhysicsData
+f  1849.557251
+f  0.000541
+f  1.000000
+f  0.590136
+f  0.000000
+f  -0.829259
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+b  0
 MouseIntersectable
+MouseSelectable
 LoopTag
 LoopSociety
 q  -1_0
 p  
-Circle
-f  20.000000
+q  90_2
+q  91_2
+q  92_2
+q  93_2
 Position
-f  -21.233641
+f  68.695503
+f  0.000061
+f  -38.336494
+Layer
+i  2
+__q  93_2
+PhysicsData
+f  12.566371
+f  0.079577
+f  1.000000
+f  8.772135
 f  0.000000
-f  81.878197
-BubbleVariable
-s  b
+f  -12.429110
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
 b  0
+Sphere
+f  2.000000
+BubbleUnit
+i  1
+MouseSelectable
+MouseGrabbable
+Position
+f  72.792030
+f  0.000061
+f  -46.390732
+MouseIntersectable
+LoopSociety
+q  89_2
+p  
+Circle
+f  2.000000
+Layer
+i  3
+__q  92_2
+PhysicsData
+f  12.566371
+f  0.079577
+f  1.000000
+f  3.509686
+f  0.000000
+f  -4.495760
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+b  0
+Sphere
+f  2.000000
+BubbleUnit
+i  1
+MouseSelectable
+MouseGrabbable
+Position
+f  60.352737
+f  0.000061
+f  -24.679493
+MouseIntersectable
+LoopSociety
+q  89_2
+p  
+Circle
+f  2.000000
+Layer
+i  3
+__q  91_2
+PhysicsData
+f  12.566371
+f  0.079577
+f  1.000000
+f  5.573060
+f  0.000000
+f  -8.142629
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+b  0
+Sphere
+f  2.000000
+BubbleUnit
+i  1
+MouseSelectable
+MouseGrabbable
+Position
+f  53.144070
+f  0.000061
+f  -42.209724
+MouseIntersectable
+LoopSociety
+q  89_2
+p  
+Circle
+f  2.000000
+Layer
+i  3
+__q  90_2
+PhysicsData
+f  12.566371
+f  0.079577
+f  1.000000
+f  5.809829
+f  0.000000
+f  -8.529158
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+b  0
+Sphere
+f  2.000000
+BubbleUnit
+i  1
+MouseSelectable
+MouseGrabbable
+Position
+f  79.304901
+f  0.000030
+f  -26.776176
+MouseIntersectable
+LoopSociety
+q  89_2
+p  
+Circle
+f  2.000000
+Layer
+i  3

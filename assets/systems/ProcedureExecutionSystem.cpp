@@ -717,7 +717,8 @@ public:
 			middle::Id structureIdA = inputA->structureIds.size() > 0 ? inputA->structureIds[0] : middle::Id();
 			middle::Id structureIdB = inputB->structureIds.size() > 0 ? inputB->structureIds[0] : middle::Id();
 
-			bool bothValid = structureIdA.index != middle::UNASSIGNED && structureIdB.index != middle::UNASSIGNED;
+
+			bool bothValid = isValidId(gameState, structureIdA) && isValidId(gameState, structureIdB);
 			if (bothValid) {
 				middle::Id idA, idB;
 				bubble::findMatchingStructurePairWithVariables(gameState, topDogContainerId,
@@ -726,14 +727,14 @@ public:
 				inputB->unitRef = idB;
 			}
 			// if one is valid update it for visual indicators
-			else if (structureIdA.index != middle::UNASSIGNED) {
+			else if (isValidId(gameState, structureIdA)) {
 				auto& inputShape = middle::getShape(gameState, structureIdA.index);
 				auto comp = middle::getComponent<components::AlgebraNode>(inputShape);
 				middle::Id result = bubble::findMatchingBubbleWithVariables(gameState, topDogContainerId,
 					structureIdA, inputA->structureDepth, overrideMap);
 				inputA->unitRef = result;
 			}
-			else if (structureIdB.index != middle::UNASSIGNED) {
+			else if (isValidId(gameState, structureIdB)) {
 				middle::Id result = bubble::findMatchingBubbleWithVariables(gameState, topDogContainerId,
 					structureIdB, inputB->structureDepth, overrideMap);
 				inputB->unitRef = result;

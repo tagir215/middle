@@ -1,60 +1,4 @@
 __q  44_2
-MouseSelectable
-CodeFunction
-i  22
-MouseGrabbable
-Position
-f  634.553650
-f  0.000000
-f  170.772705
-MouseIntersectable
-Sphere
-f  2.000000
-Rectangle
-f  20.000000
-f  15.000000
-LoopSociety
-q  -1_0
-p  
-q  45_2
-q  46_2
-Offset
-f  0.000000
-f  0.000000
-f  0.000000
-UiComponent
-i  8
-Layer
-i  3
-TextureComponent
-s  
-f  30.000000
-i  0
-s  procedureFunction1.png
-PlacementComponent
-__q  46_2
-LoopSociety
-q  44_2
-p  
-UiComponent
-i  9
-Sphere
-f  2.000000
-MouseGrabbable
-Position
-f  637.887268
-f  0.000000
-f  170.789917
-MouseIntersectable
-Layer
-i  3
-MouseSelectable
-TextureComponent
-s  
-f  15.000000
-i  0
-s  simplifyIcon.png
-__q  45_2
 Text
 s  
 f  0.000000
@@ -66,21 +10,20 @@ f  0.000000
 f  0.000000
 f  3.000000
 b  1
-MouseIntersectable
-MouseGrabbable
+MouseSelectable
 Position
-f  614.553650
+f  24.262375
 f  0.000000
-f  170.772705
+f  38.314751
+MouseGrabbable
+Sphere
+f  2.000000
 UiComponent
 i  9
 Circle
 f  4.000000
-Sphere
-f  2.000000
-MouseSelectable
 LoopSociety
-q  44_2
+q  -1_0
 p  
 InputVariable
 q  -1_0
@@ -91,3 +34,5 @@ p
 p  
 Layer
 i  3
+IdRef
+q  41_2

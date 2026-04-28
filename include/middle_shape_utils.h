@@ -31,6 +31,8 @@ namespace middle {
 	bool isMouseIntersectingShape(GameState* gameState, int index);
 	// is shape slot taken and there should be instance
 	bool isShapeAlive(GameState* gameState, int index);
+	// is id generation correct?
+	bool isValidId(GameState* gameState, middle::Id id);
 	// get pos quickly
 	Vector3 getShapePosition(GameState* gameState, int index);
 	// get shape instance

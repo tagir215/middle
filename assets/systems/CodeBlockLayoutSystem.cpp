@@ -89,7 +89,6 @@ public:
 		auto codeBlock = middle::getComponent<components::CodeBlock>(shape);
 		auto function = middle::getComponent<components::CodeFunction>(shape);
 		auto ifBlock = middle::getComponent<components::IfComponent>(shape);
-		auto loop = middle::getComponent<components::LoopSociety>(shape);
 
 		float marginX = 0;
 		float marginZ = 0;
@@ -109,7 +108,9 @@ public:
 		}
 		updateRectSize(gameState, shape, marginX, marginZ, blockMarginX * 2, blockMarginZ * 2);
 
-		for (middle::Id& id : loop->loopMemberIds) {
+		std::vector<middle::Id>children;
+		middle::getChildren(gameState, shape.id, children);
+		for (middle::Id& id : children) {
 			auto& child = middle::getShape(gameState, id.index);
 			updateRectSizeRecursive(gameState, child);
 		}
@@ -211,12 +212,10 @@ public:
 
 		// code block layouts
 		auto codeBlockIt = codeBlockCache->begin<components::CodeBlock>();
-		auto codeBlockLoopIt = codeBlockCache->begin<components::LoopSociety>();
 		for (int i = 0; i < codeBlockCache->getSize(); ++i) {
 			auto codeBlock = *codeBlockIt;
 			auto& shape = middle::getShape(gameState, codeBlockCache->relevantIdVector[i].index);
 
-			auto loop = *codeBlockLoopIt;
 			float left, right, bottom, top;
 
 			auto codeBlockRect = middle::getComponent < components::Rectangle>(shape);
@@ -225,7 +224,12 @@ public:
 			float targetX = leftAlignmentX + blockMarginX;
 			float targetZ = codeBlockPos.z;
 
-			for (middle::Id& childId : loop->loopMemberIds) {
+			std::vector<middle::Id>children;
+			middle::getChildren(gameState, shape.id, children);
+			for (middle::Id& childId : children) {
+				if (childId.generation != gameState->ids[childId.index].generation) {
+					continue;
+				}
 				auto& childShape = middle::getShape(gameState, childId.index);
 				auto childRect = middle::getComponent<components::Rectangle>(childShape);
 				auto offset = middle::getComponent<components::Offset>(childShape);
@@ -312,15 +316,15 @@ public:
 
 		// function layout
 		auto functionIt = functionCache->begin<components::CodeFunction>();
-		auto functionLoopIt = functionCache->begin<components::LoopSociety>();
 		for (int i = 0; i < functionCache->getSize(); ++i) {
 			auto function = *functionIt;
-			auto loop = *functionLoopIt;
 			auto& shape = middle::getShape(gameState, functionCache->relevantIdVector[i].index);
+			std::vector<middle::Id>children;
+			middle::getChildren(gameState, functionCache->relevantIdVector[i], children);
 
 			int inputChildCount = 0;
 			int outputChildCount = 0;
-			for (middle::Id& childId : loop->loopMemberIds) {
+			for (middle::Id& childId : children) {
 				auto& childShape = middle::getShape(gameState, childId.index);
 				auto input = middle::getComponent<components::InputVariable>(childShape);
 				if (input) {
@@ -332,7 +336,7 @@ public:
 				}
 			}
 
-			if (loop->loopMemberIds.size() > 0) {
+			if (children.size() > 0) {
 				auto funcRect = middle::getComponent<components::Rectangle>(shape);
 				Vector3 funcPosition = middle::getShapePosition(gameState, shape.id.index);
 
@@ -346,7 +350,7 @@ public:
 				referencePosLeft.x -= funcRect->width * 0.5f + variableSpacingX;
 				referencePosLeft.z += totalHeightLeft * 0.5f;
 
-				for (middle::Id& childId : loop->loopMemberIds) {
+				for (middle::Id& childId : children) {
 					auto& childShape = middle::getShape(gameState, childId.index);
 					auto input = middle::getComponent<components::InputVariable>(childShape);
 					auto output = middle::getComponent<components::OutputVariable>(childShape);

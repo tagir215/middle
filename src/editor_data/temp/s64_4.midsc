@@ -3,9 +3,9 @@ PhysicsData
 f  8160.997559
 f  0.000123
 f  1.000000
-f  -0.003768
+f  -0.174842
 f  0.000000
-f  0.000984
+f  0.023501
 f  0.000000
 f  0.000000
 f  0.000000
@@ -15,10 +15,10 @@ f  0.000000
 b  0
 BubbleComponent
 b  0
-MouseGrabbable
 Layer
 i  2
 MouseSelectable
+MouseGrabbable
 MouseIntersectable
 LoopTag
 LoopSociety
@@ -26,22 +26,29 @@ q  -1_0
 p  
 q  65_4
 q  69_4
+TopDogBubbleTag
 Circle
 f  50.967892
 Position
-f  -129.825638
-f  0.000000
-f  -48.516712
+f  -125.300148
+f  -0.000000
+f  -56.141075
+IdRef
+q  20_0
+DeleteComponent
 __q  69_4
 BubbleComponent
 b  0
+MouseSelectable
+Layer
+i  1
 PhysicsData
 f  1256.637085
 f  0.000796
 f  1.000000
-f  -0.006042
+f  0.598871
 f  0.000000
-f  0.002603
+f  -0.090825
 f  0.000000
 f  0.000000
 f  0.000000
@@ -50,9 +57,6 @@ f  0.000000
 f  0.000000
 b  0
 MouseGrabbable
-MouseSelectable
-Layer
-i  3
 MouseIntersectable
 LoopTag
 LoopSociety
@@ -63,28 +67,29 @@ q  71_4
 Circle
 f  20.000000
 Position
-f  -146.013016
-f  0.000000
-f  -69.573837
+f  -127.983810
+f  -0.000000
+f  -82.548836
 __q  71_4
 BubbleUnit
 i  1
-MouseSelectable
-Layer
-i  4
+MouseIntersectable
 LoopSociety
 q  69_4
 p  
 MouseGrabbable
 Circle
 f  2.000000
+MouseSelectable
+Layer
+i  2
 PhysicsData
 f  12.566371
 f  0.079577
 f  1.000000
-f  -0.009827
+f  0.714735
 f  0.000000
-f  0.003242
+f  -0.146558
 f  0.000000
 f  0.000000
 f  0.000000
@@ -92,32 +97,32 @@ f  0.000000
 f  0.000000
 f  0.000000
 b  0
-MouseIntersectable
 Sphere
 f  2.000000
 Position
-f  -147.335175
-f  0.000000
-f  -79.479340
+f  -128.158005
+f  -0.000000
+f  -72.529999
 __q  70_4
 BubbleUnit
 i  1
-MouseSelectable
-Layer
-i  4
+MouseIntersectable
 LoopSociety
 q  69_4
 p  
 MouseGrabbable
 Circle
 f  2.000000
+MouseSelectable
+Layer
+i  2
 PhysicsData
 f  12.566371
 f  0.079577
 f  1.000000
-f  -0.009829
+f  0.704597
 f  0.000000
-f  0.003213
+f  -0.148983
 f  0.000000
 f  0.000000
 f  0.000000
@@ -125,21 +130,20 @@ f  0.000000
 f  0.000000
 f  0.000000
 b  0
-MouseIntersectable
 Sphere
 f  2.000000
 Position
-f  -144.676041
-f  0.000000
-f  -59.670567
+f  -128.907974
+f  -0.000000
+f  -92.490013
 __q  65_4
 PhysicsData
 f  1387.167847
 f  0.000721
 f  1.000000
-f  -0.005851
+f  0.569533
 f  0.000000
-f  0.002412
+f  -0.077427
 f  0.000000
 f  0.000000
 f  0.000000
@@ -149,10 +153,10 @@ f  0.000000
 b  0
 BubbleComponent
 b  0
-MouseGrabbable
 Layer
-i  3
+i  1
 MouseSelectable
+MouseGrabbable
 MouseIntersectable
 LoopTag
 LoopSociety
@@ -164,27 +168,29 @@ q  68_4
 Circle
 f  21.013073
 Position
-f  -114.531761
-f  0.000000
-f  -28.638624
+f  -123.615501
+f  -0.000000
+f  -31.096369
 __q  68_4
 LoopSociety
 q  65_4
 p  
 BubbleUnit
 i  1
-Layer
-i  4
-MouseSelectable
+MouseIntersectable
 Circle
 f  2.000000
+MouseGrabbable
+Layer
+i  2
+MouseSelectable
 PhysicsData
 f  12.566371
 f  0.079577
 f  1.000000
-f  -0.006584
+f  0.773843
 f  0.000000
-f  0.002943
+f  -0.242189
 f  0.000000
 f  0.000000
 f  0.000000
@@ -192,32 +198,32 @@ f  0.000000
 f  0.000000
 f  0.000000
 b  0
-MouseGrabbable
-MouseIntersectable
 Sphere
 f  2.000000
 Position
-f  -102.659370
-f  0.000000
-f  -29.508480
+f  -131.300842
+f  -0.000000
+f  -40.267326
 __q  67_4
 LoopSociety
 q  65_4
 p  
 BubbleUnit
 i  1
-Layer
-i  4
-MouseSelectable
+MouseIntersectable
 Circle
 f  2.000000
+MouseGrabbable
+Layer
+i  2
+MouseSelectable
 PhysicsData
 f  12.566371
 f  0.079577
 f  1.000000
-f  -0.007202
+f  0.675777
 f  0.000000
-f  0.003113
+f  -0.252103
 f  0.000000
 f  0.000000
 f  0.000000
@@ -225,32 +231,32 @@ f  0.000000
 f  0.000000
 f  0.000000
 b  0
-MouseGrabbable
-MouseIntersectable
 Sphere
 f  2.000000
 Position
-f  -121.204941
-f  0.000000
-f  -38.497448
+f  -111.991554
+f  -0.000000
+f  -32.833641
 __q  66_4
 LoopSociety
 q  65_4
 p  
 BubbleUnit
 i  1
-Layer
-i  4
-MouseSelectable
+MouseIntersectable
 Circle
 f  2.000000
+MouseGrabbable
+Layer
+i  2
+MouseSelectable
 PhysicsData
 f  12.566371
 f  0.079577
 f  1.000000
-f  -0.007046
+f  0.713293
 f  0.000000
-f  0.002500
+f  -0.160244
 f  0.000000
 f  0.000000
 f  0.000000
@@ -258,11 +264,9 @@ f  0.000000
 f  0.000000
 f  0.000000
 b  0
-MouseGrabbable
-MouseIntersectable
 Sphere
 f  2.000000
 Position
-f  -119.714691
-f  0.000000
-f  -17.919264
+f  -128.202454
+f  -0.000000
+f  -20.006857

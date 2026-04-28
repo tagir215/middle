@@ -1,13 +1,11 @@
 __q  35_0
-Sphere
-f  2.000000
 PhysicsData
 f  12.566371
 f  0.079577
 f  1.000000
+f  0.000003
 f  0.000000
-f  0.000000
-f  -0.000028
+f  -0.000037
 f  0.000000
 f  0.000000
 f  0.000000
@@ -15,7 +13,7 @@ f  0.000000
 f  0.000000
 f  0.000000
 b  0
-MouseSelectable
+MouseIntersectable
 BubbleUnit
 i  1
 Position
@@ -23,10 +21,12 @@ f  2.941321
 f  0.000000
 f  23.640896
 MouseGrabbable
-MouseIntersectable
+MouseSelectable
 LoopSociety
 q  -1_0
 p  
+Sphere
+f  2.000000
 Circle
 f  2.000000
 Layer

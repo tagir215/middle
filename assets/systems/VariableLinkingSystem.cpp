@@ -16,6 +16,9 @@
 #include "bubble_utils.h"
 #include "ProcedureContainer.h"
 #include "ProcedureInputVariable.h"
+#include "ProcedureTargetTag.h"
+#include "InitializedTag.h"
+#include "bubble_colors.h"
 
 class VariableLinkingSystem : public middle::MiddleGameplaySystem {
 public:
@@ -25,6 +28,8 @@ public:
 	components::CompCache* bubbleCache;
 	components::CompCache* procCache;
 	components::CompCache* algebraCache;
+	components::CompCache* procedureTargetCache;
+	components::CompCache* procedureInputCache;
 
 	void init(middle::GameState* gameState) {
 		inputCache = middle::newCompCache(gameState);
@@ -40,7 +45,11 @@ public:
 		procCache->addType<components::ProcedureContainer>();
 		algebraCache = middle::newCompCache(gameState);
 		algebraCache->addType<components::AlgebraNode>();
-
+		procedureTargetCache = middle::newCompCache(gameState);
+		procedureTargetCache->addType<components::ProcedureTargetTag>();
+		procedureTargetCache->addType<components::InitializedTag>(components::NOTINTERESTED);
+		procedureInputCache = middle::newCompCache(gameState);
+		procedureInputCache->addType<components::ProcedureInputVariable>();
 	}
 
 	void copy(middle::GameState* gameState, middle::Id toCopyId) {
@@ -62,7 +71,6 @@ public:
 
 		auto& grabbedShape = middle::getShape(gameState, grabbedId.index);
 		auto grabbedInput = middle::getComponent<components::InputVariable>(grabbedShape);
-		auto grabbedProcedureInput = middle::getComponent<components::ProcedureInputVariable>(grabbedShape);
 
 		auto bubbleIt = bubbleCache->begin<components::BubbleComponent>();
 		auto bubbleIntersectableIt = bubbleCache->begin<components::MouseIntersectable>();
@@ -117,20 +125,6 @@ public:
 				highlighted = true;
 			}
 
-			// if its procedre input update unit ref here, and set proc container to point to the ref
-			if (grabbedProcedureInput) {
-				ogInput->unitRef = intersectingShape.id;
-				procContainer->bubbleRef = intersectingShape.id;
-
-				if (!procContainer->editMode) {
-					procContainer->variableOverrides = bubble::generateVariableOverrides(gameState, intersectingShape.id, ogInput->structureIds[0]);
-				}
-
-				if (!highlighted) {
-					middle::queueComponentAttachment<components::Highlight>(gameState, ogShape.id);
-				}
-			}
-
 		}
 
 	}
@@ -147,6 +141,19 @@ public:
 		}
 		else {
 			return;
+		}
+
+		if (procedureTargetCache->getSize() > 0) {
+			middle::Id procTargetId = procedureTargetCache->relevantIdVector[0];
+			assert(procedureInputCache->getSize() > 0);
+			middle::Id procInputId = procedureInputCache->relevantIdVector[0];
+			auto& procInputShape = middle::getShape(gameState, procInputId.index);
+			auto procInput = middle::getComponent<components::InputVariable>(procInputShape);
+			assert(procInput);
+
+			procInput->unitRef = procTargetId;
+			procContainer->bubbleRef = procTargetId;
+			middle::attachComponent<components::InitializedTag>(gameState, procTargetId);
 		}
 
 		if (!gameState->input.mouseHeld) {
@@ -216,6 +223,8 @@ public:
 				middle::Id toCopyId = shape.id;
 				copy(gameState, toCopyId);
 			}
+
+
 		}
 
 	}

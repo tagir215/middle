@@ -338,7 +338,8 @@ namespace middle {
 		Shape& childShape = getShape(gameState, childIndex);
 		auto childLoop = getComponent<components::LoopSociety>(childShape);
 		assert(childLoop);
-		if (childLoop->parentLoopId.index == UNASSIGNED) {
+		middle::Id parentId = middle::getParent(gameState, childShape.id);
+		if (parentId.index == UNASSIGNED) {
 			return;
 		}
 

@@ -221,8 +221,8 @@ public:
 						continue;
 
 					// check that parent is not an if block, cause then can't grab it
-					auto childLoop = middle::getComponent<components::LoopSociety>(childShape);
-					auto parentShape = middle::getShape(gameState, childLoop->parentLoopId.index);
+					middle::Id parentId = middle::getParent(gameState, childShape.id);
+					auto parentShape = middle::getShape(gameState, parentId.index);
 					auto ifBlock = middle::getComponent<components::IfComponent>(parentShape);
 					if (ifBlock) {
 						continue;

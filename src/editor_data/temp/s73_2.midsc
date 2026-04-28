@@ -3,9 +3,9 @@ PhysicsData
 f  1387.167847
 f  0.000721
 f  1.000000
-f  -0.122370
+f  -0.009414
 f  0.000000
-f  0.051470
+f  0.003873
 f  0.000000
 f  0.000000
 f  0.000000
@@ -15,10 +15,10 @@ f  0.000000
 b  0
 BubbleComponent
 b  0
-MouseGrabbable
 Layer
 i  3
 MouseSelectable
+MouseGrabbable
 MouseIntersectable
 LoopTag
 LoopSociety
@@ -30,27 +30,29 @@ q  76_2
 Circle
 f  21.013073
 Position
-f  -114.303978
+f  -114.524773
 f  0.000000
-f  -28.733093
+f  -28.641504
 __q  76_2
 LoopSociety
 q  73_2
 p  
 BubbleUnit
 i  1
+MouseIntersectable
+Circle
+f  2.000000
+MouseGrabbable
 Layer
 i  4
 MouseSelectable
-Circle
-f  2.000000
 PhysicsData
 f  12.566371
 f  0.079577
 f  1.000000
-f  -0.137942
+f  -0.010567
 f  0.000000
-f  0.064397
+f  0.004723
 f  0.000000
 f  0.000000
 f  0.000000
@@ -58,32 +60,32 @@ f  0.000000
 f  0.000000
 f  0.000000
 b  0
-MouseGrabbable
-MouseIntersectable
 Sphere
 f  2.000000
 Position
-f  -102.403542
+f  -102.651535
 f  0.000000
-f  -29.624510
+f  -29.511988
 __q  75_2
 LoopSociety
 q  73_2
 p  
 BubbleUnit
 i  1
+MouseIntersectable
+Circle
+f  2.000000
+MouseGrabbable
 Layer
 i  4
 MouseSelectable
-Circle
-f  2.000000
 PhysicsData
 f  12.566371
 f  0.079577
 f  1.000000
-f  -0.152056
+f  -0.011549
 f  0.000000
-f  0.067879
+f  0.005001
 f  0.000000
 f  0.000000
 f  0.000000
@@ -91,32 +93,32 @@ f  0.000000
 f  0.000000
 f  0.000000
 b  0
-MouseGrabbable
-MouseIntersectable
 Sphere
 f  2.000000
 Position
-f  -120.924576
+f  -121.196373
 f  0.000000
-f  -38.620186
+f  -38.501167
 __q  74_2
 LoopSociety
 q  73_2
 p  
 BubbleUnit
 i  1
+MouseIntersectable
+Circle
+f  2.000000
+MouseGrabbable
 Layer
 i  4
 MouseSelectable
-Circle
-f  2.000000
 PhysicsData
 f  12.566371
 f  0.079577
 f  1.000000
-f  -0.148077
+f  -0.011305
 f  0.000000
-f  0.053987
+f  0.004017
 f  0.000000
 f  0.000000
 f  0.000000
@@ -124,11 +126,9 @@ f  0.000000
 f  0.000000
 f  0.000000
 b  0
-MouseGrabbable
-MouseIntersectable
 Sphere
 f  2.000000
 Position
-f  -119.440681
+f  -119.706306
 f  0.000000
-f  -18.017422
+f  -17.922245

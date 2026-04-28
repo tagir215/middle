@@ -286,7 +286,6 @@ public:
 	void updateTopDogs(middle::GameState* gameState) {
 
 		// delete top dog components from non top dogs
-		auto topDogIt = topDogBubbleCache->begin<components::LoopSociety>();
 		for (int i = 0; i < topDogBubbleCache->getSize(); ++i) {
 			middle::Id id = topDogBubbleCache->relevantIdVector[i];
 			if (!isTopDog(gameState, id)){
@@ -294,9 +293,7 @@ public:
 			}
 		}
 
-		auto bubbleIt = bubbleCache->begin<components::LoopSociety>();
 		for (int i = 0; i < bubbleCache->getSize(); ++i) {
-			auto bubbleLoop = *bubbleIt;
 			middle::Id id = bubbleCache->relevantIdVector[i];
 			if (isTopDog(gameState, id)) {
 				middle::attachComponent<components::TopDogBubbleTag>(gameState, id);
@@ -336,17 +333,17 @@ public:
 		auto bubblePosIt = bubbleCache->begin<components::Position>();
 		auto circleIt = bubbleCache->begin<components::Circle>();
 		auto physicsIt = bubbleCache->begin<components::PhysicsData>();
-		auto bubbleLoopIt = bubbleCache->begin<components::LoopSociety>();
 		for (int i = 0; i < bubbleCache->getSize(); ++i) {
 			auto bubble = *bubbleIt;
 			auto bubblePos = *bubblePosIt;
 			auto circle = *circleIt;
 			auto bubblePhysics = *physicsIt;
-			auto loop = *bubbleLoopIt;
 			auto& bubbleShape = middle::getShape(gameState, bubbleCache->relevantIdVector[i].index);
 
 			std::vector<middle::Id> interactingChildren;
-			for (middle::Id& id : loop->loopMemberIds) {
+			std::vector<middle::Id> children;
+			middle::getChildren(gameState, bubbleCache->relevantIdVector[i], children);
+			for (middle::Id& id : children) {
 				auto& childShape = middle::getShape(gameState, id.index);
 				if (middle::getComponent<components::BubbleMultiplyComponent>(childShape) 
 					|| middle::getComponent<components::FractionalComponent>(childShape)) {

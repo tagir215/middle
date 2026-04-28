@@ -57,8 +57,6 @@ public:
 		procedureUseCache = middle::newCompCache(gameState);
 		procedureUseCache->addType<components::ProcedureUseUiTag>();
 		procedureUseCache->addType<components::LoopSociety>();
-		procContainerCache = middle::newCompCache(gameState);
-		procContainerCache->addType<components::ProcedureContainer>();
 		inputCache = middle::newCompCache(gameState);
 		inputCache->addType<components::InputVariable>();
 		inputCache->addType<components::Highlight>();
@@ -154,23 +152,6 @@ public:
 
 		}
 
-		if (procedureContainerCache->getSize() > 0) {
-			// execution iterator rendering
-			bool procedureInAction = procContainer && procContainer->procedureTransitionStack.size() > 0;
-			if (procContainer && procContainer->activeBlock.index != middle::UNASSIGNED && procedureInAction) {
-				auto& activeBlockShape = middle::getShape(gameState, procContainer->activeBlock.index);
-				Vector3 position = middle::getShapePosition(gameState, activeBlockShape.id.index);
-				auto rect = middle::getComponent<components::Rectangle>(activeBlockShape);
-				middle::RenderItem activeBlockItem;
-				activeBlockItem.type = middle::RenderItemType::RECTANGLE;
-				activeBlockItem.backgroundColor = highlightColor;
-				activeBlockItem.width = rect->width;
-				activeBlockItem.height = rect->height;
-				activeBlockItem.length = 0.2f;
-				activeBlockItem.center = position;
-				gameState->renderData.push_back(activeBlockItem);
-			}
-		}
 
 		for (int i = 0; i < procedureUseCache->getSize(); ++i) {
 			middle::Id procUiId = procedureUseCache->relevantIdVector[i];
@@ -210,60 +191,24 @@ public:
 			}
 		}
 
-
-		// render highlighted inputs
-		auto inputPosIt = inputCache->begin<components::Position>();
-		auto inputIt = inputCache->begin<components::InputVariable>();
-		for (int i = 0; i < inputCache->getSize(); ++i) {
-			auto position = *inputPosIt;
-			auto input = *inputIt;
-			auto& shape = middle::getShape(gameState, inputCache->relevantIdVector[i].index);
-			middle::RenderItem item;
-			item.type = middle::RenderItemType::CYLINDER;
-			item.center = { position->posX, position->posY, position->posZ };
-			item.radius = 4;
-			item.ringRadius = 4;
-			item.length = 0.1f;
-			item.color = highlightColor;
-			gameState->renderData.push_back(item);
-
-			// highlight reference bubble if it exists at the moment
-			if (input->unitRef.index != middle::UNASSIGNED) {
-				if (!middle::isShapeAlive(gameState, input->unitRef.index)) {
-					continue;
-				}
-				// todo refactor to always check generation
-				middle::Id id = gameState->ids[input->unitRef.index];
-				if (id != input->unitRef) {
-					continue;
-				}
-				middle::Shape& refShape = middle::getShape(gameState, input->unitRef.index);
-				if (refShape.componentMap.size() == 0) {
-					continue;
-				}
-				Vector3 pos = middle::getShapePosition(gameState, input->unitRef.index);
-				auto circle = middle::getComponent<components::Circle>(refShape);
-
-
-				Color color = highlightColor;
-
-				// highlight procedure refs with different color
-				auto procInput = middle::getComponent<components::ProcedureInputVariable>(shape);
-				if (procInput) {
-					color = highlightColor2;
-				}
-
-				middle::RenderItem inputHighlight;
-				inputHighlight.type = middle::RenderItemType::CYLINDER;
-				inputHighlight.center = pos;
-				inputHighlight.color = color;
-				inputHighlight.radius = circle->radius;
-				inputHighlight.ringRadius = circle->radius;
-				inputHighlight.length = 0.1f;
-				gameState->renderData.push_back(inputHighlight);
+		if (procedureContainerCache->getSize() > 0) {
+			// execution iterator rendering
+			bool procedureInAction = procContainer && procContainer->procedureTransitionStack.size() > 0;
+			if (procContainer && procContainer->activeBlock.index != middle::UNASSIGNED && procedureInAction) {
+				auto& activeBlockShape = middle::getShape(gameState, procContainer->activeBlock.index);
+				Vector3 position = middle::getShapePosition(gameState, activeBlockShape.id.index);
+				auto rect = middle::getComponent<components::Rectangle>(activeBlockShape);
+				middle::RenderItem activeBlockItem;
+				activeBlockItem.type = middle::RenderItemType::RECTANGLE;
+				activeBlockItem.backgroundColor = highlightColor;
+				activeBlockItem.width = rect->width;
+				activeBlockItem.height = rect->height;
+				activeBlockItem.length = 0.2f;
+				activeBlockItem.center = position;
+				gameState->renderData.push_back(activeBlockItem);
 			}
-
 		}
+
 	}
 };
 

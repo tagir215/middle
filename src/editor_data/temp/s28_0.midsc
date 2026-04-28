@@ -1,51 +1,33 @@
 __q  28_0
-InventoryItem
-i  14
 Position
-f  9.695664
-f  -1100.595703
-f  -1105.709717
+f  -4.401676
+f  0.000046
+f  -21.260517
 MouseGrabbable
+BubbleRef
 MouseIntersectable
-MouseSelectable
 LoopSociety
 q  -1_0
 p  
-Sphere
-f  2.000000
+BubbleComponent
+b  0
+MouseSelectable
+LoopTag
 PhysicsData
+f  1256.637085
+f  0.000796
 f  1.000000
-f  1.000000
-f  1.000000
+f  1.997900
+f  0.000000
+f  6.562948
 f  0.000000
 f  0.000000
 f  0.000000
-f  0.800000
-f  0.800000
-f  0.800000
 f  0.000000
 f  0.000000
 f  0.000000
 b  0
-Text
-s  COMP M
-f  255.000000
-f  255.000000
-f  255.000000
-f  255.000000
-f  0.000000
-f  0.000000
-f  0.000000
-f  7.000000
-b  1
 Circle
-f  10.000000
-UiComponent
-i  -1
+f  20.000000
 Layer
-i  2
-TextureComponent
-s  C:\Users\tagir\raylib_projects\middle\assets\textures\activeRect.png
-f  30.000000
-i  0
-s  activeRect.png
+i  1
