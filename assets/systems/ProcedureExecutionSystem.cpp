@@ -640,7 +640,6 @@ public:
 
 			// start
 			if (button->function == bubbleButton::START_PROCEDURE_BUTTON) {
-				// navigate to procedure scope... 
 				middle::Id procContainerId = procedureCache->relevantIdVector[0];
 				auto procedureShape = middle::getShape(gameState, procContainerId.index);
 				auto procedureContainer = middle::getComponent<components::ProcedureContainer>(procedureShape);
@@ -682,6 +681,13 @@ public:
 				auto procedureContainer = middle::getComponent<components::ProcedureContainer>(procedureShape);
 				procedureContainer->mode = procedureConstants::STEPPING;
 				procedureContainer->direction = procedureConstants::BACKWARD;
+			}
+
+			if (button->function == bubbleButton::REVERSE_PROCEDURE) {
+				middle::Id procedureId = procedureCache->relevantIdVector[0];
+				auto& procedureShape = middle::getShape(gameState, procedureId.index);
+				auto procedureContainer = middle::getComponent<components::ProcedureContainer>(procedureShape);
+				procedureContainer->targetActionStackSize = 0;
 			}
 		}
 

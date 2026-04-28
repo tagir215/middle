@@ -27,5 +27,7 @@ namespace bubbleColors {
 	inline Color PROCEDURE_RECT = {0,0,50,255};
 	inline Color PROCEDURE_BACKGROUND = {50,50,50,255};
 	inline Color PROCEDURE_SCOPE = {100,100,100,255};
-	inline Color HIGHLIGHT_COLOR = { 0,100,0,100 };
+	inline Color HIGHLIGHT_COLOR = { 0,100,0,200 };
+	inline Color HIGHLIGHT_COLOR_2 = { 0,100,0,100 };
+	inline Color INPUT_HOVER_COLOR = WHITE;
 }

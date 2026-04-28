@@ -124,6 +124,7 @@ public:
 
 				middle::queueComponentAttachment<components::Highlight>(gameState, ogShape.id);
 				highlighted = true;
+				++procContainer->targetActionStackSize;
 			}
 
 		}
@@ -154,6 +155,15 @@ public:
 
 			procInput->unitRef = procTargetId;
 			procContainer->bubbleRef = procTargetId;
+
+			// reparent algebra node to input, for automatic deletion and serialization
+			middle::Id structureId = bubble::bubbleToStructure(gameState, procTargetId);
+			procInput->structureIds.push_back(structureId);
+			middle::queueAction(gameState, std::make_shared<middle::EditorActionReparent>(procInputId.index, structureId.index));
+
+			std::unordered_map<std::string, std::vector<middle::Id>>map;
+			bubble::getVariableStructuresMap(gameState, procInput->structureIds[0], map);
+
 			middle::attachComponent<components::InitializedTag>(gameState, procTargetId);
 		}
 

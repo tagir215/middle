@@ -14,6 +14,8 @@
 #include "Position.h"
 #include "ProcedureContainer.h"
 #include "bubble_constants.h"
+#include "ProcedureInputVariable.h"
+#include "editor_file_utils.h"
 
 
 class AlgebraProblemSystem : public middle::MiddleGameplaySystem {
@@ -100,6 +102,7 @@ public:
 						auto levelConfigsIt = levelCache->begin<components::BubbleAlgebraLevelConfigs>();
 						auto configsComp = *levelConfigsIt;
 						assert(configsComp);
+
 						middle::saveShape(gameState, procContainerId, "../bubbleData/procedures/", configsComp->levelName);
 					}
 					queueSound(gameState, bubbleSounds::VICTORY_SOUND);

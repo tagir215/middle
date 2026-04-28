@@ -2,21 +2,19 @@ __q  107_1
 LoopSociety
 q  -1_0
 p  
-MouseIntersectable
-BubbleUnit
-i  1
 MouseSelectable
 Layer
 i  3
-Circle
-f  2.000000
+BubbleUnit
+i  1
+MouseIntersectable
 PhysicsData
 f  12.566371
 f  0.079577
 f  1.000000
-f  0.001284
+f  0.503067
 f  0.000000
-f  -0.006927
+f  0.154371
 f  0.000000
 f  0.000000
 f  0.000000
@@ -24,10 +22,12 @@ f  0.000000
 f  0.000000
 f  0.000000
 b  0
+Circle
+f  2.000000
 MouseGrabbable
 Sphere
 f  2.000000
 Position
-f  -4.478187
+f  14.128983
 f  0.000000
-f  60.461571
+f  4.182151

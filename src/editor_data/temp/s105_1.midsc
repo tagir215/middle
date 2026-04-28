@@ -1,22 +1,22 @@
 __q  105_1
-PhysicsData
-f  1387.167847
-f  0.000721
-f  1.000000
-f  -0.057382
-f  0.000000
-f  -0.125132
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-b  0
-MouseSelectable
 Layer
 i  3
+MouseSelectable
 BubbleComponent
+b  0
+PhysicsData
+f  1256.637085
+f  0.000796
+f  1.000000
+f  60.981091
+f  0.000000
+f  -10.954896
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
 b  0
 MouseGrabbable
 MouseIntersectable
@@ -26,70 +26,32 @@ q  -1_0
 p  
 q  106_1
 q  107_1
-q  108_1
-TopDogBubbleTag
 Circle
-f  21.013073
+f  20.000000
 Position
-f  -74.468246
-f  -0.000061
-f  21.834064
-IdRef
-q  88_1
-DeleteComponent
-__q  108_1
-LoopSociety
-q  105_1
-p  
-MouseIntersectable
-BubbleUnit
-i  1
-Circle
-f  2.000000
-MouseGrabbable
-MouseSelectable
-Layer
-i  1
-PhysicsData
-f  12.566371
-f  0.079577
-f  1.000000
-f  1.320904
+f  -98.265877
 f  0.000000
-f  -9.270082
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-b  0
-Sphere
-f  2.000000
-Position
-f  -62.958874
-f  -0.000061
-f  23.374971
+f  31.252102
 __q  107_1
-LoopSociety
-q  105_1
-p  
 MouseIntersectable
 BubbleUnit
 i  1
+LoopSociety
+q  105_1
+p  
+MouseGrabbable
 Circle
 f  2.000000
-MouseGrabbable
-MouseSelectable
 Layer
-i  1
+i  4
+MouseSelectable
 PhysicsData
 f  12.566371
 f  0.079577
 f  1.000000
-f  3.621157
+f  3.345220
 f  0.000000
-f  -7.642835
+f  -10.517792
 f  0.000000
 f  0.000000
 f  0.000000
@@ -100,29 +62,29 @@ b  0
 Sphere
 f  2.000000
 Position
-f  -83.379616
-f  -0.000061
-f  14.895560
+f  -102.564606
+f  0.000000
+f  42.654522
 __q  106_1
-LoopSociety
-q  105_1
-p  
 MouseIntersectable
 BubbleUnit
 i  1
+LoopSociety
+q  105_1
+p  
+MouseGrabbable
 Circle
 f  2.000000
-MouseGrabbable
-MouseSelectable
 Layer
-i  1
+i  4
+MouseSelectable
 PhysicsData
 f  12.566371
 f  0.079577
 f  1.000000
-f  0.536740
+f  2.215712
 f  0.000000
-f  -4.392962
+f  -3.058918
 f  0.000000
 f  0.000000
 f  0.000000
@@ -133,6 +95,6 @@ b  0
 Sphere
 f  2.000000
 Position
-f  -79.194969
-f  -0.000061
-f  34.167633
+f  -103.373566
+f  0.000000
+f  22.988029

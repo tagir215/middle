@@ -1,35 +1,33 @@
 __q  473_1
-PhysicsData
-f  1256.637085
-f  0.000796
-f  1.000000
-f  -7.061951
-f  0.000000
-f  -162.203262
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-b  0
-Layer
-i  3
-MouseSelectable
-BubbleComponent
-b  0
-MouseGrabbable
-MouseIntersectable
-LoopTag
 LoopSociety
 q  -1_0
 p  
-Circle
-f  20.000000
-Position
-f  5.842104
+Layer
+i  4
+MouseSelectable
+MouseIntersectable
+BubbleUnit
+i  1
+PhysicsData
+f  12.566371
+f  0.079577
+f  1.000000
+f  0.000041
 f  0.000000
-f  71.132843
-BubbleVariable
-s  b
+f  -0.000042
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
 b  0
+Circle
+f  2.000000
+MouseGrabbable
+Sphere
+f  2.000000
+Position
+f  -31.916721
+f  0.000000
+f  -21.142574

@@ -1,92 +1,57 @@
 __q  54_0
-BubbleComponent
-b  0
-MouseSelectable
-Layer
-i  1
-PhysicsData
-f  8817.571289
-f  0.000113
-f  1.000000
-f  -0.009731
-f  0.000000
-f  0.080964
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-b  0
-MouseGrabbable
-MouseIntersectable
-LoopTag
 LoopSociety
 q  -1_0
 p  
 q  57_0
 q  58_0
+MouseSelectable
+Layer
+i  3
+BubbleComponent
+b  1
+PhysicsData
+f  1256.637085
+f  0.000796
+f  1.000000
+f  0.000001
+f  0.000000
+f  0.000008
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+b  0
+MouseGrabbable
+MouseIntersectable
+LoopTag
 Circle
-f  52.978485
+f  20.000000
 Position
-f  100.333954
-f  -0.000031
-f  -8.313842
+f  -116.982521
+f  0.000000
+f  7.627226
 __q  58_0
-BubbleComponent
-b  1
-MouseSelectable
-Layer
-i  2
-PhysicsData
-f  1387.167847
-f  0.000721
-f  1.000000
-f  -0.033771
-f  0.000000
-f  0.089653
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-b  0
-MouseGrabbable
 MouseIntersectable
-LoopTag
+BubbleUnit
+i  1
 LoopSociety
 q  54_0
 p  
-q  62_0
-q  63_0
-q  64_0
-Circle
-f  21.013073
-Position
-f  119.578606
-f  -0.000031
-f  10.298218
-__q  64_0
-BubbleUnit
-i  1
-MouseIntersectable
-LoopSociety
-q  58_0
-p  
 MouseGrabbable
 Circle
 f  2.000000
 MouseSelectable
 Layer
-i  3
+i  4
 PhysicsData
 f  12.566371
 f  0.079577
 f  1.000000
-f  -0.251880
+f  0.000170
 f  0.000000
-f  -0.187223
+f  0.000014
 f  0.000000
 f  0.000000
 f  0.000000
@@ -97,130 +62,29 @@ b  0
 Sphere
 f  2.000000
 Position
-f  127.768394
-f  -0.000031
-f  1.655561
-__q  63_0
-BubbleUnit
-i  1
-MouseIntersectable
-LoopSociety
-q  58_0
-p  
-MouseGrabbable
-Circle
-f  2.000000
-MouseSelectable
-Layer
-i  3
-PhysicsData
-f  12.566371
-f  0.079577
-f  1.000000
-f  -0.122857
+f  -122.449829
 f  0.000000
-f  -0.035343
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-b  0
-Sphere
-f  2.000000
-Position
-f  123.107208
-f  -0.000031
-f  21.694237
-__q  62_0
-BubbleUnit
-i  1
-MouseIntersectable
-LoopSociety
-q  58_0
-p  
-MouseGrabbable
-Circle
-f  2.000000
-MouseSelectable
-Layer
-i  3
-PhysicsData
-f  12.566371
-f  0.079577
-f  1.000000
-f  -0.057661
-f  0.000000
-f  -0.222604
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-b  0
-Sphere
-f  2.000000
-Position
-f  107.995483
-f  -0.000031
-f  7.660516
+f  15.992046
 __q  57_0
-BubbleComponent
-b  1
-MouseSelectable
-Layer
-i  2
-PhysicsData
-f  1387.167847
-f  0.000721
-f  1.000000
-f  -0.032467
-f  0.000000
-f  0.088769
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-b  0
-MouseGrabbable
+BubbleUnit
+i  1
 MouseIntersectable
-LoopTag
 LoopSociety
 q  54_0
 p  
-q  59_0
-q  60_0
-q  61_0
-Circle
-f  21.013073
-Position
-f  81.191162
-f  -0.000031
-f  -27.063683
-__q  61_0
-BubbleUnit
-i  1
-MouseIntersectable
-LoopSociety
-q  57_0
-p  
 MouseGrabbable
 Circle
 f  2.000000
-MouseSelectable
 Layer
-i  3
+i  4
+MouseSelectable
 PhysicsData
 f  12.566371
 f  0.079577
 f  1.000000
-f  -0.200041
+f  0.000179
 f  0.000000
-f  0.002745
+f  0.000001
 f  0.000000
 f  0.000000
 f  0.000000
@@ -231,72 +95,6 @@ b  0
 Sphere
 f  2.000000
 Position
-f  80.094749
-f  -0.000031
-f  -38.906086
-__q  60_0
-BubbleUnit
-i  1
-MouseIntersectable
-LoopSociety
-q  57_0
-p  
-MouseGrabbable
-Circle
-f  2.000000
-MouseSelectable
-Layer
-i  3
-PhysicsData
-f  12.566371
-f  0.079577
-f  1.000000
-f  -0.070923
+f  -111.515251
 f  0.000000
-f  -0.083280
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-b  0
-Sphere
-f  2.000000
-Position
-f  92.063232
-f  -0.000031
-f  -22.144869
-__q  59_0
-BubbleUnit
-i  1
-MouseIntersectable
-LoopSociety
-q  57_0
-p  
-MouseGrabbable
-Circle
-f  2.000000
-MouseSelectable
-Layer
-i  3
-PhysicsData
-f  12.566371
-f  0.079577
-f  1.000000
-f  -0.210583
-f  0.000000
-f  -0.150863
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-b  0
-Sphere
-f  2.000000
-Position
-f  71.559242
-f  -0.000031
-f  -20.092634
+f  -0.737964

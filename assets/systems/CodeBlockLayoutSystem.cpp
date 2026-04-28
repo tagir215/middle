@@ -57,8 +57,8 @@ public:
 	const float blockMarginX = 20;
 	const float blockMarginZ = 0;
 	const float ifoffset = 90;
-	const float variableSpacingZ = 10;
-	const float variableSpacingX = 10;
+	const float variableSpacingZ = 12;
+	const float variableSpacingX = 6.6f;
 
 	void updateRectSize(middle::GameState* gameState, middle::Shape& shape, float minW, float minH, float marginX, float marginY) {
 		components::Rectangle* rect = middle::getComponent<components::Rectangle>(shape);

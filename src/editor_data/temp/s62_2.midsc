@@ -1,67 +1,49 @@
 __q  62_2
-LoopSociety
-q  -1_0
-p  
-q  65_1
-q  89_1
-q  90_1
-q  91_1
-q  92_1
-q  93_1
-q  94_1
-q  95_1
+MouseGrabbable
 MouseSelectable
-Layer
-i  1
 BubbleComponent
 b  0
-PhysicsData
-f  3699.115479
-f  0.000270
-f  1.000000
-f  -0.348758
-f  0.000000
-f  -0.358777
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-b  0
-MouseGrabbable
-MouseIntersectable
 LoopTag
 TopDogBubbleTag
 Circle
-f  34.314209
+f  20.000000
+MouseIntersectable
+LoopSociety
+q  -1_0
+p  
+q  63_2
+q  64_2
+PhysicsData
+f  1256.637085
+f  0.000796
+f  1.000000
+f  -0.001129
+f  0.000000
+f  -0.000688
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+b  0
 Position
-f  -61.867661
-f  -0.000061
-f  76.522163
+f  -23.138958
+f  -0.000000
+f  53.988724
+Layer
+i  2
 IdRef
-q  32_0
+q  17_0
 DeleteComponent
-__q  95_1
-LoopSociety
-q  62_2
-p  
-MouseIntersectable
-BubbleUnit
-i  1
-Circle
-f  2.000000
-MouseGrabbable
-Layer
-i  1
-MouseSelectable
+__q  64_2
 PhysicsData
 f  12.566371
 f  0.079577
 f  1.000000
-f  -1.988365
+f  0.056442
 f  0.000000
-f  -2.060011
+f  0.034402
 f  0.000000
 f  0.000000
 f  0.000000
@@ -69,32 +51,32 @@ f  0.000000
 f  0.000000
 f  0.000000
 b  0
-Sphere
-f  2.000000
-Position
-f  -61.192734
-f  -0.000061
-f  77.226768
-__q  94_1
 MouseIntersectable
 BubbleUnit
 i  1
+Position
+f  -31.683001
+f  -0.000000
+f  48.785770
+MouseGrabbable
+MouseSelectable
 LoopSociety
 q  62_2
 p  
-MouseGrabbable
+Sphere
+f  2.000000
 Circle
 f  2.000000
-MouseSelectable
 Layer
 i  1
+__q  63_2
 PhysicsData
 f  12.566371
 f  0.079577
 f  1.000000
-f  -1.416560
+f  0.056437
 f  0.000000
-f  -1.474909
+f  0.034400
 f  0.000000
 f  0.000000
 f  0.000000
@@ -102,207 +84,21 @@ f  0.000000
 f  0.000000
 f  0.000000
 b  0
-Sphere
-f  2.000000
-Position
-f  -61.109901
-f  -0.000061
-f  53.166485
-__q  93_1
-MouseIntersectable
 BubbleUnit
 i  1
+MouseIntersectable
+MouseGrabbable
+Position
+f  -14.612565
+f  -0.000000
+f  59.180897
+MouseSelectable
 LoopSociety
 q  62_2
 p  
-MouseGrabbable
-Circle
-f  2.000000
-MouseSelectable
-Layer
-i  1
-PhysicsData
-f  12.566371
-f  0.079577
-f  1.000000
-f  -1.438320
-f  0.000000
-f  -1.520757
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-b  0
 Sphere
 f  2.000000
-Position
-f  -50.604256
-f  -0.000061
-f  98.234421
-__q  92_1
-MouseIntersectable
-BubbleUnit
-i  1
-LoopSociety
-q  62_2
-p  
-MouseGrabbable
 Circle
 f  2.000000
-MouseSelectable
 Layer
 i  1
-PhysicsData
-f  12.566371
-f  0.079577
-f  1.000000
-f  -1.456789
-f  0.000000
-f  -1.494138
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-b  0
-Sphere
-f  2.000000
-Position
-f  -80.322540
-f  -0.000061
-f  62.432560
-__q  91_1
-MouseIntersectable
-BubbleUnit
-i  1
-LoopSociety
-q  62_2
-p  
-MouseGrabbable
-Circle
-f  2.000000
-MouseSelectable
-Layer
-i  1
-PhysicsData
-f  12.566371
-f  0.079577
-f  1.000000
-f  -1.444011
-f  0.000000
-f  -1.433674
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-b  0
-Sphere
-f  2.000000
-Position
-f  -84.371178
-f  -0.000061
-f  83.269257
-__q  90_1
-MouseIntersectable
-BubbleUnit
-i  1
-LoopSociety
-q  62_2
-p  
-MouseGrabbable
-Circle
-f  2.000000
-MouseSelectable
-Layer
-i  1
-PhysicsData
-f  12.566371
-f  0.079577
-f  1.000000
-f  -1.482135
-f  0.000000
-f  -1.444703
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-b  0
-Sphere
-f  2.000000
-Position
-f  -38.211987
-f  -0.000061
-f  82.438644
-__q  89_1
-MouseIntersectable
-BubbleUnit
-i  1
-LoopSociety
-q  62_2
-p  
-MouseGrabbable
-Circle
-f  2.000000
-MouseSelectable
-Layer
-i  1
-PhysicsData
-f  12.566371
-f  0.079577
-f  1.000000
-f  -1.376942
-f  0.000000
-f  -1.443755
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-b  0
-Sphere
-f  2.000000
-Position
-f  -70.801086
-f  -0.000061
-f  98.883598
-__q  65_1
-MouseIntersectable
-BubbleUnit
-i  1
-LoopSociety
-q  62_2
-p  
-MouseGrabbable
-Circle
-f  2.000000
-MouseSelectable
-Layer
-i  1
-PhysicsData
-f  12.566371
-f  0.079577
-f  1.000000
-f  -1.402715
-f  0.000000
-f  -1.426022
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-b  0
-Sphere
-f  2.000000
-Position
-f  -42.461887
-f  -0.000061
-f  62.573578

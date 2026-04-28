@@ -112,6 +112,7 @@ public:
 		editThisCache->addType<components::TextureComponent>();
 		inputCache = middle::newCompCache(gameState);
 		inputCache->addType<components::InputVariable>();
+		inputCache->addType<components::MouseIntersectable>();
 		inputCache->addType<components::ProcedureInputVariable>(components::NOTINTERESTED);
 		procContainerCache = middle::newCompCache(gameState);
 		procContainerCache->addType<components::ProcedureContainer>();
@@ -602,9 +603,26 @@ public:
 			auto procContainer = *procContainerIt;
 
 			auto inputIt = inputCache->begin<components::InputVariable>();
+			auto intersectabeInputIt = inputCache->begin<components::MouseIntersectable>();
 			for (int i = 0; i < inputCache->getSize(); ++i) {
 				auto input = *inputIt;
+				auto intersectable = *intersectabeInputIt;
+				
+				// render hover effect
+				if (intersectable->intersectingTop) {
+					middle::RenderItem hovering;
+					hovering.type = middle::RenderItemType::CIRCLE;
+					hovering.color = bubbleColors::INPUT_HOVER_COLOR;
+					const float hoveringInputIndicatorRadius = 3;
+					hovering.radius = hoveringInputIndicatorRadius;
+					hovering.center = middle::getShapePosition(gameState, inputCache->relevantIdVector[i].index);
+					hovering.disableDepthTest = true;
+					hovering.layer = 3;
+					gameState->renderData.push_back(hovering);
+				}
 
+
+				// render line from input to bubble
 				Vector3 p1, p2;
 				bool renderLine = false;
 
@@ -632,7 +650,6 @@ public:
 					}
 				}
 
-
 				if (renderLine) {
 					middle::RenderItem line;
 					line.type = middle::RenderItemType::LINE;
@@ -640,7 +657,7 @@ public:
 					line.linePointB = p2;
 					line.color = bubbleColors::HIGHLIGHT_COLOR;
 					line.disableDepthTest = true;
-					line.layer = 6;
+					line.layer = 4;
 					gameState->renderData.push_back(line);
 				}
 			}

@@ -1,249 +1,32 @@
 __q  311_1
-MouseIntersectable
-Rectangle
-f  20.000000
-f  15.000000
-Sphere
-f  2.000000
-UiComponent
-i  8
-CodeFunction
-i  0
-MouseGrabbable
-Position
-f  629.013916
-f  0.000061
-f  74.558441
+PhysicsData
+f  5654.866699
+f  0.000177
+f  1.000000
+f  1.887313
+f  0.000000
+f  7.684888
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+b  0
+BubbleComponent
+b  0
 MouseSelectable
+Layer
+i  2
+MouseGrabbable
+MouseIntersectable
+LoopTag
 LoopSociety
 q  -1_0
 p  
-q  312_1
-q  313_1
-q  314_1
-Offset
-f  0.000000
-f  0.000000
-f  0.000000
-Layer
-i  3
-TextureComponent
-s  
-f  30.000000
-i  0
-s  procedureFunction2.png
-PlacementComponent
-__q  314_1
-Text
-s  
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-f  3.000000
-b  1
-MouseSelectable
-MouseIntersectable
-MouseGrabbable
-Position
-f  609.013916
-f  0.000061
-f  69.558441
-UiComponent
-i  9
-Sphere
-f  2.000000
 Circle
-f  4.000000
-LoopSociety
-q  311_1
-p  
-q  321_1
-q  324_1
-InputVariable
-q  844_3
-s  
-q  -1_0
-i  3
-p  
-p  
-q  321_1
-q  324_1
-Layer
-i  3
-Highlight
-__q  324_1
-AlgebraNode
-i  1
-s  a
-f  1.000000
-i  1
-b  0
-b  0
-b  0
-b  0
-LoopSociety
-q  314_1
-p  
-__q  321_1
-AlgebraNode
-i  0
-s  
-f  0.000000
-i  1
-b  0
-b  0
-b  0
-b  0
-LoopSociety
-q  314_1
-p  
-q  322_1
-q  323_1
-__q  323_1
-AlgebraNode
-i  1
-s  a
-f  1.000000
-i  1
-b  0
-b  0
-b  0
-b  0
-LoopSociety
-q  321_1
-p  
-__q  322_1
-AlgebraNode
-i  1
-s  b
-f  1.000000
-i  1
-b  0
-b  0
-b  0
-b  0
-LoopSociety
-q  321_1
-p  
-__q  313_1
-LoopSociety
-q  311_1
-p  
-Sphere
-f  2.000000
-UiComponent
-i  9
+f  42.426407
 Position
-f  631.304932
-f  0.000061
-f  74.137909
-MouseGrabbable
-MouseIntersectable
-MouseSelectable
-Layer
-i  3
-TextureComponent
-s  
-f  20.000000
-i  0
-s  expand.png
-__q  312_1
-Text
-s  
+f  -47.400162
 f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-f  3.000000
-b  1
-MouseSelectable
-MouseIntersectable
-Position
-f  609.013916
-f  0.000061
-f  79.558441
-MouseGrabbable
-Sphere
-f  2.000000
-UiComponent
-i  9
-Circle
-f  4.000000
-LoopSociety
-q  311_1
-p  
-q  316_1
-q  317_1
-InputVariable
-q  847_3
-s  
-q  -1_0
-i  3
-p  
-p  
-q  316_1
-q  317_1
-Layer
-i  3
-Highlight
-__q  317_1
-AlgebraNode
-i  0
-s  
-f  0.000000
-i  1
-b  0
-b  0
-b  0
-b  0
-LoopSociety
-q  312_1
-p  
-q  318_1
-q  319_1
-__q  319_1
-AlgebraNode
-i  1
-s  a
-f  1.000000
-i  1
-b  0
-b  0
-b  0
-b  0
-LoopSociety
-q  317_1
-p  
-__q  318_1
-AlgebraNode
-i  1
-s  b
-f  1.000000
-i  1
-b  0
-b  0
-b  0
-b  0
-LoopSociety
-q  317_1
-p  
-__q  316_1
-AlgebraNode
-i  1
-s  a
-f  1.000000
-i  1
-b  0
-b  0
-b  0
-b  0
-LoopSociety
-q  312_1
-p  
+f  59.106930

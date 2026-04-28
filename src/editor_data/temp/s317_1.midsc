@@ -1,0 +1,193 @@
+__q  317_1
+MouseIntersectable
+UiComponent
+i  8
+CodeFunction
+i  3
+Sphere
+f  2.000000
+Rectangle
+f  20.000000
+f  15.000000
+Position
+f  560.573486
+f  0.000000
+f  197.222260
+MouseGrabbable
+MouseSelectable
+LoopSociety
+q  -1_0
+p  
+q  318_1
+q  319_1
+Offset
+f  0.000000
+f  0.000000
+f  0.000000
+Layer
+i  3
+TextureComponent
+s  
+f  30.000000
+i  0
+s  procedureFunction1.png
+PlacementComponent
+__q  319_1
+LoopSociety
+q  317_1
+p  
+Sphere
+f  2.000000
+UiComponent
+i  9
+Position
+f  561.384644
+f  0.000000
+f  196.949646
+MouseGrabbable
+MouseIntersectable
+MouseSelectable
+Layer
+i  3
+TextureComponent
+s  
+f  17.000000
+i  0
+s  popIcon.png
+__q  318_1
+LoopSociety
+q  317_1
+p  
+q  321_1
+Sphere
+f  2.000000
+InputVariable
+q  291_1
+s  
+q  -1_0
+i  2
+p  
+p  
+q  321_1
+Position
+f  543.973511
+f  0.000000
+f  197.222260
+MouseGrabbable
+Text
+s  
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  3.000000
+b  1
+MouseSelectable
+MouseIntersectable
+UiComponent
+i  9
+Circle
+f  5.000000
+Layer
+i  3
+Highlight
+__q  321_1
+AlgebraNode
+i  0
+s  
+f  0.000000
+i  1
+b  0
+b  0
+b  0
+b  0
+LoopSociety
+q  318_1
+p  
+q  322_1
+__q  322_1
+AlgebraNode
+i  4
+s  
+f  0.000000
+i  1
+b  0
+b  0
+b  0
+b  0
+LoopSociety
+q  321_1
+p  
+q  323_1
+q  326_1
+q  327_1
+__q  327_1
+AlgebraNode
+i  1
+s  a
+f  1.000000
+i  1
+b  0
+b  0
+b  0
+b  0
+LoopSociety
+q  322_1
+p  
+__q  326_1
+AlgebraNode
+i  1
+s  b
+f  1.000000
+i  1
+b  0
+b  0
+b  0
+b  0
+LoopSociety
+q  322_1
+p  
+__q  323_1
+AlgebraNode
+i  0
+s  
+f  0.000000
+i  1
+b  0
+b  0
+b  0
+b  0
+LoopSociety
+q  322_1
+p  
+q  324_1
+q  325_1
+__q  325_1
+AlgebraNode
+i  2
+s  
+f  1.000000
+i  1
+b  0
+b  0
+b  0
+b  0
+LoopSociety
+q  323_1
+p  
+__q  324_1
+AlgebraNode
+i  2
+s  
+f  1.000000
+i  1
+b  0
+b  0
+b  0
+b  0
+LoopSociety
+q  323_1
+p  

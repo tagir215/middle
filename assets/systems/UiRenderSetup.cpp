@@ -83,9 +83,11 @@ public:
 		circleHighlightCache = middle::newCompCache(gameState);
 		circleHighlightCache->addType<components::Highlight>();
 		circleHighlightCache->addType<components::Circle>();
+		circleHighlightCache->addType<components::Layer>();
 		rectHighlightCache = middle::newCompCache(gameState);
 		rectHighlightCache->addType<components::Highlight>();
 		rectHighlightCache->addType<components::Rectangle>();
+		rectHighlightCache->addType<components::Layer>();
 	}
 
 
@@ -264,12 +266,12 @@ public:
 				auto rect = middle::getComponent<components::Rectangle>(activeBlockShape);
 				middle::RenderItem activeBlockItem;
 				activeBlockItem.type = middle::RenderItemType::RECTANGLE;
-				activeBlockItem.backgroundColor = bubbleColors::HIGHLIGHT_COLOR;
+				activeBlockItem.backgroundColor = bubbleColors::HIGHLIGHT_COLOR_2;
 				activeBlockItem.width = rect->width;
 				activeBlockItem.height = rect->height;
 				activeBlockItem.length = 0.2f;
 				activeBlockItem.center = position;
-				activeBlockItem.layer = 5;
+				activeBlockItem.layer = 3;
 				activeBlockItem.disableDepthTest = true;
 				gameState->renderData.push_back(activeBlockItem);
 			}
@@ -277,8 +279,10 @@ public:
 
 
 		auto circleHightlightIt = circleHighlightCache->begin<components::Circle>();
+		auto circleHightlightLayerIt = circleHighlightCache->begin<components::Layer>();
 		for (int i = 0; i < circleHighlightCache->getSize(); ++i) {
 			auto circle = *circleHightlightIt;
+			auto layer = *circleHightlightLayerIt;
 			middle::RenderItem highlight;
 			Vector3 pos = middle::getShapePosition(gameState, circleHighlightCache->relevantIdVector[i].index);
 			highlight.type = middle::RenderItemType::CYLINDER;
@@ -287,14 +291,16 @@ public:
 			highlight.radius = circle->radius;
 			highlight.ringRadius = circle->radius;
 			highlight.length = 0.1f;
-			highlight.layer = 5;
+			highlight.layer = layer->layer;
 			highlight.disableDepthTest = true;
 			gameState->renderData.push_back(highlight);
 		}
 
 		auto rectHighlightIt = rectHighlightCache->begin<components::Rectangle>();
+		auto rectHighlightLayerIt = rectHighlightCache->begin<components::Layer>();
 		for (int i = 0; i < rectHighlightCache->getSize(); ++i) {
 			auto rect = *rectHighlightIt;
+			auto layer = *rectHighlightLayerIt;
 			middle::RenderItem highlight;
 			Vector3 pos = middle::getShapePosition(gameState, rectHighlightCache->relevantIdVector[i].index);
 			highlight.type = middle::RenderItemType::RECTANGLE;
@@ -303,7 +309,7 @@ public:
 			highlight.width = rect->width;
 			highlight.height = rect->height;
 			highlight.disableDepthTest = true;
-			highlight.layer = 5;
+			highlight.layer = layer->layer;
 			gameState->renderData.push_back(highlight);
 		}
 
