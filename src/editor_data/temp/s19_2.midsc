@@ -1,38 +1,172 @@
 __q  19_2
-Text
-s  
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-f  3.000000
-b  1
+Layer
+i  1
 MouseSelectable
-MouseGrabbable
-Position
-f  52.222580
+BubbleComponent
+b  1
+PhysicsData
+f  1849.557251
+f  0.000541
+f  1.000000
+f  0.010904
 f  0.000000
-f  73.522903
-UiComponent
-i  9
-Sphere
-f  2.000000
-Circle
-f  4.000000
+f  0.022321
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+b  0
+MouseGrabbable
+MouseIntersectable
+LoopTag
 LoopSociety
 q  -1_0
 p  
-InputVariable
-q  -1_0
-s  
-q  -1_0
-i  0
-p  
-p  
-Layer
-i  3
+q  24_3
+q  25_1
+q  29_2
+q  30_2
+TopDogBubbleTag
+Circle
+f  24.263807
+Position
+f  -29.157461
+f  0.000091
+f  12.973650
 IdRef
-q  47_1
+q  36_0
+DeleteComponent
+__q  30_2
+MouseIntersectable
+BubbleUnit
+i  1
+LoopSociety
+q  19_2
+p  
+MouseGrabbable
+Circle
+f  2.000000
+Layer
+i  1
+MouseSelectable
+PhysicsData
+f  12.566371
+f  0.079577
+f  1.000000
+f  -3.832220
+f  0.000000
+f  -4.045001
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+b  0
+Sphere
+f  2.000000
+Position
+f  -35.546417
+f  0.000091
+f  26.831099
+__q  29_2
+MouseIntersectable
+BubbleUnit
+i  1
+LoopSociety
+q  19_2
+p  
+MouseGrabbable
+Circle
+f  2.000000
+Layer
+i  1
+MouseSelectable
+PhysicsData
+f  12.566371
+f  0.079577
+f  1.000000
+f  -4.663925
+f  0.000000
+f  -5.742398
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+b  0
+Sphere
+f  2.000000
+Position
+f  -19.708256
+f  0.000091
+f  2.517205
+__q  25_1
+MouseIntersectable
+BubbleUnit
+i  1
+LoopSociety
+q  19_2
+p  
+MouseGrabbable
+Circle
+f  2.000000
+Layer
+i  1
+MouseSelectable
+PhysicsData
+f  12.566371
+f  0.079577
+f  1.000000
+f  -0.663267
+f  0.000000
+f  -5.734179
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+b  0
+Sphere
+f  2.000000
+Position
+f  -41.472500
+f  0.000091
+f  7.090009
+__q  24_3
+MouseIntersectable
+BubbleUnit
+i  1
+LoopSociety
+q  19_2
+p  
+MouseGrabbable
+Circle
+f  2.000000
+Layer
+i  1
+MouseSelectable
+PhysicsData
+f  12.566371
+f  0.079577
+f  1.000000
+f  -0.587536
+f  0.000000
+f  -3.856735
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+b  0
+Sphere
+f  2.000000
+Position
+f  -16.722887
+f  0.000091
+f  22.274071

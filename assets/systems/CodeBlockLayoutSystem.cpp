@@ -242,14 +242,16 @@ public:
 
 		// if block layout
 		auto ifBlockIt = ifBlockCache->begin<components::IfComponent>();
-		auto ifBlockLoopIt = ifBlockCache->begin<components::LoopSociety>();
 		for (int i = 0; i < ifBlockCache->getSize(); ++i) {
 			auto ifBlock = *ifBlockIt;
-			auto loop = *ifBlockLoopIt;
 			auto& shape = middle::getShape(gameState, ifBlockCache->relevantIdVector[i].index);
 
 			std::vector<middle::Id>scopeChildren;
-			for (middle::Id& childId : loop->loopMemberIds) {
+			std::vector<middle::Id>children;
+			middle::getChildren(gameState, ifBlockCache->relevantIdVector[i], children);
+			middle::Id parentId = middle::getParent(gameState, ifBlockCache->relevantIdVector[i]);
+
+			for (middle::Id& childId : children) {
 				middle::Shape& childShape = middle::getShape(gameState, childId.index);
 				auto scope = middle::getComponent<components::ScopeComponent>(childShape);
 				if (scope) {
@@ -262,8 +264,8 @@ public:
 			Vector3 ifPosition = middle::getShapePosition(gameState, shape.id.index);
 
 			Vector3 targetScale = { 1,1,1 };
-			if (loop->parentLoopId.index != middle::UNASSIGNED) {
-				auto& parentShape = middle::getShape(gameState, loop->parentLoopId.index);
+			if (parentId.index != middle::UNASSIGNED) {
+				auto& parentShape = middle::getShape(gameState, parentId.index);
 				auto parentCodeBlock = middle::getComponent<components::CodeBlock>(parentShape);
 				if (!parentCodeBlock) {
 					targetScale = { 0.1f,0.1f,0.1f };
@@ -273,7 +275,7 @@ public:
 			float spacingZ = ifspacing * targetScale.z;
 
 			float totalHeight = 0;
-			for (middle::Id& childId : loop->loopMemberIds) {
+			for (middle::Id& childId : children) {
 				auto& childShape = middle::getShape(gameState, childId.index);
 				auto rect = middle::getComponent<components::Rectangle>(childShape);
 				if (rect) {

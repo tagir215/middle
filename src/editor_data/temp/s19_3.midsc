@@ -1,22 +1,22 @@
 __q  19_3
-PhysicsData
-f  1256.637085
-f  0.000796
-f  1.000000
-f  -0.659297
-f  0.000000
-f  -0.382350
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-b  0
 Layer
-i  3
+i  1
 MouseSelectable
 BubbleComponent
+b  1
+PhysicsData
+f  1849.557251
+f  0.000541
+f  1.000000
+f  -0.143016
+f  0.000000
+f  0.007137
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
 b  0
 MouseGrabbable
 MouseIntersectable
@@ -24,12 +24,149 @@ LoopTag
 LoopSociety
 q  -1_0
 p  
+q  24_4
+q  25_2
+q  29_3
+q  30_3
+TopDogBubbleTag
 Circle
-f  20.000000
+f  24.263807
 Position
-f  -20.142694
+f  -39.588829
+f  -0.000031
+f  -79.404114
+IdRef
+q  37_0
+DeleteComponent
+__q  30_3
+MouseIntersectable
+BubbleUnit
+i  1
+LoopSociety
+q  19_3
+p  
+MouseGrabbable
+Circle
+f  2.000000
+Layer
+i  1
+MouseSelectable
+PhysicsData
+f  12.566371
+f  0.079577
+f  1.000000
+f  8.425968
 f  0.000000
-f  82.523949
-BubbleVariable
-s  b
+f  -0.893643
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
 b  0
+Sphere
+f  2.000000
+Position
+f  -45.193871
+f  -0.000031
+f  -64.312195
+__q  29_3
+MouseIntersectable
+BubbleUnit
+i  1
+LoopSociety
+q  19_3
+p  
+MouseGrabbable
+Circle
+f  2.000000
+Layer
+i  1
+MouseSelectable
+PhysicsData
+f  12.566371
+f  0.079577
+f  1.000000
+f  9.814445
+f  0.000000
+f  -0.185765
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+b  0
+Sphere
+f  2.000000
+Position
+f  -41.750553
+f  -0.000031
+f  -94.293152
+__q  25_2
+MouseIntersectable
+BubbleUnit
+i  1
+LoopSociety
+q  19_3
+p  
+MouseGrabbable
+Circle
+f  2.000000
+Layer
+i  1
+MouseSelectable
+PhysicsData
+f  12.566371
+f  0.079577
+f  1.000000
+f  14.445311
+f  0.000000
+f  -1.436132
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+b  0
+Sphere
+f  2.000000
+Position
+f  -29.416317
+f  -0.000031
+f  -76.665802
+__q  24_4
+MouseIntersectable
+BubbleUnit
+i  1
+LoopSociety
+q  19_3
+p  
+MouseGrabbable
+Circle
+f  2.000000
+Layer
+i  1
+MouseSelectable
+PhysicsData
+f  12.566371
+f  0.079577
+f  1.000000
+f  3.750594
+f  0.000000
+f  -1.640666
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+b  0
+Sphere
+f  2.000000
+Position
+f  -55.233738
+f  -0.000031
+f  -80.440369

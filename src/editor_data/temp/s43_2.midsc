@@ -1,194 +1,134 @@
 __q  43_2
-Rectangle
-f  20.000000
-f  15.000000
-Sphere
-f  2.000000
-UiComponent
-i  8
-CodeFunction
-i  21
-Position
-f  577.024719
-f  -0.000061
-f  102.517853
-MouseGrabbable
-MouseIntersectable
-MouseSelectable
-LoopSociety
-q  -1_0
-p  
-q  44_2
-q  45_2
-Offset
-f  0.000000
-f  0.000000
-f  0.000000
-Layer
-i  3
-TextureComponent
-s  
-f  30.000000
-i  0
-s  procedureFunction1.png
-PlacementComponent
-__q  45_2
-LoopSociety
-q  43_2
-p  
-UiComponent
-i  9
-Sphere
-f  2.000000
-MouseGrabbable
-Position
-f  577.588562
-f  -0.000061
-f  103.307526
-MouseIntersectable
-Layer
-i  3
-MouseSelectable
-TextureComponent
-s  
-f  18.000000
-i  0
-s  bubblifyIcon.png
-__q  44_2
-LoopSociety
-q  43_2
-p  
-q  47_2
-q  51_2
-Sphere
-f  2.000000
-InputVariable
-q  30_0
-s  
-q  -1_0
-i  2
-p  
-p  
-q  47_2
-q  51_2
-Position
-f  557.024719
-f  -0.000061
-f  102.517853
-MouseGrabbable
-Text
-s  
-f  255.000000
-f  255.000000
-f  255.000000
-f  255.000000
-f  0.000000
-f  0.000000
-f  0.000000
-f  3.000000
-b  1
-MouseSelectable
-MouseIntersectable
-UiComponent
-i  9
-Circle
-f  4.000000
-Layer
-i  3
-Highlight
-__q  51_2
-AlgebraNode
-i  0
-s  
-f  0.000000
-i  1
-b  0
-b  0
-b  0
-b  0
-LoopSociety
-q  44_2
-p  
-q  52_2
-q  53_2
-__q  53_2
-AlgebraNode
-i  2
-s  
+PhysicsData
+f  1387.167847
+f  0.000721
 f  1.000000
-i  1
-b  0
-b  0
-b  0
-b  0
-LoopSociety
-q  51_2
-p  
-__q  52_2
-AlgebraNode
-i  2
-s  
-f  1.000000
-i  1
-b  0
-b  0
-b  0
-b  0
-LoopSociety
-q  51_2
-p  
-__q  47_2
-AlgebraNode
-i  0
-s  
+f  7.412591
 f  0.000000
-i  1
+f  97.650146
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
 b  0
-b  0
-b  0
-b  0
-LoopSociety
-q  44_2
-p  
-q  48_2
-__q  48_2
-AlgebraNode
+MouseSelectable
+Layer
 i  4
-s  
+BubbleComponent
+b  0
+MouseGrabbable
+MouseIntersectable
+LoopTag
+LoopSociety
+q  -1_0
+p  
+q  69_2
+q  70_2
+q  71_2
+Circle
+f  21.013073
+Position
+f  -107.664818
 f  0.000000
-i  1
-b  0
-b  0
-b  0
-b  0
+f  -14.476782
+__q  71_2
 LoopSociety
-q  47_2
+q  43_2
 p  
-q  49_2
-q  50_2
-__q  50_2
-AlgebraNode
+MouseIntersectable
+BubbleUnit
 i  1
-s  a
+Circle
+f  2.000000
+MouseGrabbable
+MouseSelectable
+Layer
+i  5
+PhysicsData
+f  12.566371
+f  0.079577
 f  1.000000
-i  1
+f  3.091680
+f  0.000000
+f  28.437298
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
 b  0
-b  0
-b  0
-b  0
+Sphere
+f  2.000000
+Position
+f  -100.545761
+f  0.000000
+f  -27.386215
+__q  70_2
 LoopSociety
-q  48_2
+q  43_2
 p  
-__q  49_2
-AlgebraNode
+MouseIntersectable
+BubbleUnit
 i  1
-s  b
+Circle
+f  2.000000
+MouseGrabbable
+MouseSelectable
+Layer
+i  5
+PhysicsData
+f  12.566371
+f  0.079577
 f  1.000000
-i  1
+f  22.628124
+f  0.000000
+f  35.347286
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
 b  0
-b  0
-b  0
-b  0
+Sphere
+f  2.000000
+Position
+f  -117.231064
+f  0.000000
+f  -33.077049
+__q  69_2
 LoopSociety
-q  48_2
+q  43_2
 p  
+MouseIntersectable
+BubbleUnit
+i  1
+Circle
+f  2.000000
+MouseGrabbable
+MouseSelectable
+Layer
+i  5
+PhysicsData
+f  12.566371
+f  0.079577
+f  1.000000
+f  5.162298
+f  0.000000
+f  17.891012
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+b  0
+Sphere
+f  2.000000
+Position
+f  -118.780426
+f  0.000000
+f  -15.465626

@@ -228,14 +228,15 @@ public:
 		}
 
 		if (gameState->editorState.creationMode == middle::CreationMode::LOOP_MODE) {
-			auto hierarchyLoopIt = hierarchyCache->begin<components::LoopSociety>();
 			auto hierarchyIntersectableIt = hierarchyCache->begin<components::MouseIntersectable>();
 			for (int i = 0; i < hierarchyCache->getSize(); ++i) {
-				auto loop = *hierarchyLoopIt;
 				auto intersectable = *hierarchyIntersectableIt;
+				std::vector<middle::Id>children;
+				middle::getChildren(gameState, hierarchyCache->relevantIdVector[i], children);
+				middle::Id parentId = middle::getParent(gameState, hierarchyCache->relevantIdVector[i]);
 
 				if (intersectable->intersecting) {
-					for (middle::Id& id : loop->loopMemberIds) {
+					for (middle::Id& id : children) {
 						Vector3 childPos = middle::getShapePosition(gameState, id.index);
 						middle::RenderItem childItem;
 						childItem.type = middle::RenderItemType::TEXT;
@@ -245,8 +246,7 @@ public:
 						gameState->renderData.push_back(childItem);
 
 					}
-					if (loop->parentLoopId.index != middle::UNASSIGNED) {
-						middle::Id& parentId = loop->parentLoopId;
+					if (parentId.index != middle::UNASSIGNED) {
 						Vector3 parentPos = middle::getShapePosition(gameState, parentId.index);
 						middle::RenderItem parentItem;
 						parentItem.type = middle::RenderItemType::TEXT;

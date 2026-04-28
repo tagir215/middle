@@ -47,20 +47,20 @@ public:
 		}
 
 		auto inventoryRectIt = inventoryRectCache->begin<components::Inventory>();
-		auto inventoryRectLoopIt = inventoryRectCache->begin<components::LoopSociety>();
 		auto rectangleIt = inventoryRectCache->begin<components::Rectangle>();
 
 		for (int i = 0; i < inventoryRectCache->getSize(); ++i) {
 			auto& shape = middle::getShape(gameState, inventoryRectCache->relevantIdVector[i].index);
 			auto inventory = *inventoryRectIt;
-			auto loop = *inventoryRectLoopIt;
 			auto inventoryRect = *rectangleIt;
+
 
 			if (inventory->freeLayout) {
 				continue;
 			}
 
-			std::vector<middle::Id>items = loop->loopMemberIds;
+			std::vector<middle::Id>items;
+			middle::getChildren(gameState, shape.id, items);
 
 			Vector3 inventoryPosition = middle::getShapePosition(gameState, shape.id.index);
 

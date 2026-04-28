@@ -1,194 +1,32 @@
 __q  42_2
-Rectangle
-f  20.000000
-f  15.000000
-Sphere
-f  2.000000
-UiComponent
-i  8
-CodeFunction
-i  21
-Position
-f  583.238098
-f  -0.000061
-f  94.233582
-MouseGrabbable
-MouseIntersectable
+PhysicsData
+f  16978.568359
+f  0.000059
+f  1.000000
+f  -3.591267
+f  0.000000
+f  40.891659
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+b  0
 MouseSelectable
-LoopSociety
-q  -1_0
-p  
-q  43_2
-q  44_1
-Offset
-f  0.000000
-f  0.000000
-f  0.000000
 Layer
-i  3
-TextureComponent
-s  
-f  30.000000
-i  0
-s  procedureFunction1.png
-PlacementComponent
-__q  44_1
-LoopSociety
-q  42_2
-p  
-UiComponent
-i  9
-Sphere
-f  2.000000
-MouseGrabbable
-Position
-f  583.801941
-f  -0.000061
-f  95.023254
-MouseIntersectable
-Layer
-i  3
-MouseSelectable
-TextureComponent
-s  
-f  18.000000
-i  0
-s  bubblifyIcon.png
-__q  43_2
-LoopSociety
-q  42_2
-p  
-q  46_1
-q  50_1
-Sphere
-f  2.000000
-InputVariable
-q  30_0
-s  
-q  -1_0
 i  2
-p  
-p  
-q  46_1
-q  50_1
-Position
-f  563.238098
-f  -0.000061
-f  94.233582
+BubbleComponent
+b  0
 MouseGrabbable
-Text
-s  
-f  255.000000
-f  255.000000
-f  255.000000
-f  255.000000
-f  0.000000
-f  0.000000
-f  0.000000
-f  3.000000
-b  1
-MouseSelectable
 MouseIntersectable
-UiComponent
-i  9
+LoopTag
+LoopSociety
+q  -1_0
+p  
 Circle
-f  4.000000
-Layer
-i  3
-Highlight
-__q  50_1
-AlgebraNode
-i  0
-s  
+f  73.514938
+Position
+f  -122.654877
 f  0.000000
-i  1
-b  0
-b  0
-b  0
-b  0
-LoopSociety
-q  43_2
-p  
-q  51_1
-q  52_1
-__q  52_1
-AlgebraNode
-i  2
-s  
-f  1.000000
-i  1
-b  0
-b  0
-b  0
-b  0
-LoopSociety
-q  50_1
-p  
-__q  51_1
-AlgebraNode
-i  2
-s  
-f  1.000000
-i  1
-b  0
-b  0
-b  0
-b  0
-LoopSociety
-q  50_1
-p  
-__q  46_1
-AlgebraNode
-i  0
-s  
-f  0.000000
-i  1
-b  0
-b  0
-b  0
-b  0
-LoopSociety
-q  43_2
-p  
-q  47_1
-__q  47_1
-AlgebraNode
-i  4
-s  
-f  0.000000
-i  1
-b  0
-b  0
-b  0
-b  0
-LoopSociety
-q  46_1
-p  
-q  48_1
-q  49_1
-__q  49_1
-AlgebraNode
-i  1
-s  a
-f  1.000000
-i  1
-b  0
-b  0
-b  0
-b  0
-LoopSociety
-q  47_1
-p  
-__q  48_1
-AlgebraNode
-i  1
-s  b
-f  1.000000
-i  1
-b  0
-b  0
-b  0
-b  0
-LoopSociety
-q  47_1
-p  
+f  60.643059

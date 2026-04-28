@@ -37,7 +37,6 @@ public:
 	components::CompCache* buttonCache;
 	components::CompCache* procedureContainerCache;
 	components::CompCache* procedureUseCache;
-	components::CompCache* procContainerCache;
 	components::CompCache* inputCache;
 	components::CompCache* procedureCodeCache;
 	components::CompCache* procedureImportCache;
@@ -102,8 +101,8 @@ public:
 				std::string shapeName = text->text;
 
 				// shape the procedure is contained into
-				if (procContainerCache->getSize() > 0) {
-					middle::Id& containerId = procContainerCache->relevantIdVector[0];
+				if (procedureContainerCache->getSize() > 0) {
+					middle::Id& containerId = procedureContainerCache->relevantIdVector[0];
 					auto delAction = std::make_shared<middle::CustomAction>([containerId](middle::GameState* gameState) {
 						middle::deleteShapeRecursive(gameState, containerId.index);
 						});
@@ -114,11 +113,12 @@ public:
 
 					auto& loadedProcReferenceShape = middle::getShape(gameState, loadedProcReferenceId.index);
 					auto loadedPosition = middle::getComponent<components::Position>(loadedProcReferenceShape);
-					auto loadedReferenceLoop = middle::getComponent<components::LoopSociety>(loadedProcReferenceShape);
 					Vector3 loadedPos = { loadedPosition->posX, loadedPosition->posY, loadedPosition->posZ };
 
 					// child of reference is the actual object
-					middle::Id loadedProcId = loadedReferenceLoop->loopMemberIds[0];
+					std::vector<middle::Id>children;
+					middle::getChildren(gameState, loadedProcReferenceShape.id, children);
+					middle::Id loadedProcId = children[0];
 
 					// set bubble ref to the ref import container is pointing to
 					auto& procContainerShape = middle::getShape(gameState, loadedProcId.index);
