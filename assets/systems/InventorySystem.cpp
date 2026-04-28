@@ -41,6 +41,7 @@ public:
 		for (int i = 0; i < inventoryItemRefCache->getSize(); ++i) {
 			auto snapRef = *snapRefIt;
 			middle::Id id = inventoryItemRefCache->relevantIdVector[i];
+			assert(middle::isValidId(gameState, snapRef->snapTargetId));
 			Vector3 pos = middle::getShapePosition(gameState, snapRef->snapTargetId.index);
 			Vector3 currPos = middle::getShapePosition(gameState, id.index);
 			middle::moveShape(gameState, id.index, pos - currPos);

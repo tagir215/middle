@@ -612,6 +612,9 @@ public:
 			}
 			// if one is valid update it for visual indicators
 			else if (isValidId(gameState, structureIdA)) {
+				if (structureIdA.index == 30) {
+					int a = 0;
+				}
 				auto& inputShape = middle::getShape(gameState, structureIdA.index);
 				auto comp = middle::getComponent<components::AlgebraNode>(inputShape);
 				middle::Id result = bubble::findMatchingBubbleWithVariables(gameState, topDogContainerId,

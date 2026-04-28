@@ -266,7 +266,7 @@ namespace middle {
 	void resetGenerations(GameState* gameState)
 	{
 		for (int i = 0; i < gameState->ids.size(); ++i) {
-			if (!isShapeAlive(gameState, i)) {
+			if (!isValidId(gameState, gameState->ids[i])) {
 				continue;
 			}
 			gameState->ids[i].generation = 0;
@@ -277,7 +277,7 @@ namespace middle {
 	void incrementGenerations(GameState* gameState)
 	{
 		for (int i = 0; i < gameState->ids.size(); ++i) {
-			if (!isShapeAlive(gameState, i)) {
+			if (!isValidId(gameState, gameState->ids[i])) {
 				continue;
 			}
 			static int incrementAmount = 1;
@@ -290,7 +290,7 @@ namespace middle {
 	void resetScene(GameState* gameState)
 	{
 		for (int i = 0; i < gameState->shapes.size(); ++i) {
-			if (isShapeAlive(gameState, i)) {
+			if (isValidId(gameState, gameState->ids[i])) {
 				deleteShape(gameState, i);
 			}
 		}
@@ -381,7 +381,7 @@ namespace middle {
 		int saveSpam = GHOST_INDEX_OFFSET;
 		for (int i = 0; i < saveSpam; ++i) {
 			// skip empty parts if over max used index
-			if (!isShapeAlive(gameState, i))
+			if (!isValidId(gameState, gameState->ids[i]))
 				continue;
 
 			auto& shape = gameState->shapes[i];
@@ -649,7 +649,7 @@ namespace middle {
 			}
 
 			// if reference doesn't exist yet, when importing from editor, create new reference
-			if (!isShapeAlive(gameState, sceneReferenceIndex)) {
+			if (!isValidId(gameState, gameState->ids[sceneReferenceIndex])) {
 				entities::initReference(gameState, sceneReferenceIndex, members, folder, sceneName);
 			}
 			// if reference already exists, when deserializing, just update the container loop, since its refence objects are not stored to the file

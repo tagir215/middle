@@ -37,7 +37,7 @@ namespace middle {
 	int constraintExistsAt(GameState* gameState, Id idA, Id idB) {
 		for (int i = 0; i < gameState->shapes.size(); ++i) {
 			Shape& shape = gameState->shapes[i];
-			if (!isShapeAlive(gameState, i))
+			if (!isValidId(gameState, shape.id))
 				continue;
 			auto constraint = getComponent<components::Constraint>(shape);
 			if (constraint == nullptr)
@@ -56,7 +56,10 @@ namespace middle {
 	int findFreeIndex(GameState* gameState)
 	{
 		for (int i = 0; i < gameState->shapes.size(); ++i) {
-			if (!isShapeAlive(gameState, i)) {
+			middle::Id id = gameState->ids[i];
+			if ((id.index == middle::UNASSIGNED
+				|| id != gameState->shapes[id.index].id
+				|| id.generation < 0)) {
 				return i;
 			}
 		}
@@ -75,7 +78,7 @@ namespace middle {
 
 	int findHighestLevelContainer(GameState* gameState, int index)
 	{
-		if(!isShapeAlive(gameState, index))
+		if (!isValidId(gameState, gameState->ids[index]))
 			return UNASSIGNED;
 		Shape& shape = gameState->shapes[index];
 		middle::Id parentId = middle::getParent(gameState, shape.id);
@@ -89,7 +92,7 @@ namespace middle {
 	{
 		int highestI = 0;
 		for (int i = 0; i < gameState->shapes.size(); ++i) {
-			if (isShapeAlive(gameState, i)) {
+			if (isValidId(gameState, gameState->ids[i])) {
 				highestI = i;
 			}
 		}
@@ -208,7 +211,11 @@ namespace middle {
 
 	bool isValidId(GameState* gameState, middle::Id id)
 	{
-		return id.index != middle::UNASSIGNED && gameState->ids[id.index] == id && id == gameState->shapes[id.index].id;
+		return id.index != middle::UNASSIGNED
+			&& gameState->ids[id.index] == id
+			&& id == gameState->shapes[id.index].id
+			&& gameState->shapes[id.index].componentMap.size() > 0
+			&& id.generation >= 0;
 	}
 
 
@@ -216,7 +223,9 @@ namespace middle {
 	{
 		auto& shape = getShape(gameState, index);
 		auto position = getComponent<components::Position>(shape);
-		assert(position);
+		if (!position) {
+			assert(false);
+		}
 		Vector3 result = { position->posX, position->posY, position->posZ };
 		auto offset = getComponent<components::Offset>(shape);
 		if (offset) {

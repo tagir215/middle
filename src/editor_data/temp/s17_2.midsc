@@ -1,27 +1,19 @@
 __q  17_2
-MouseGrabbable
+Layer
+i  1
 MouseSelectable
 BubbleComponent
 b  0
-LoopTag
-TopDogBubbleTag
-Circle
-f  24.263807
-MouseIntersectable
 LoopSociety
 q  -1_0
 p  
-q  18_2
-q  19_2
-q  23_2
-q  24_2
 PhysicsData
-f  1849.557251
-f  0.000541
+f  1256.637085
+f  0.000796
 f  1.000000
-f  -0.000143
+f  -0.000954
 f  0.000000
-f  0.002943
+f  -0.002304
 f  0.000000
 f  0.000000
 f  0.000000
@@ -29,144 +21,19 @@ f  0.000000
 f  0.000000
 f  0.000000
 b  0
+MouseGrabbable
+MouseIntersectable
+LoopTag
+TopDogBubbleTag
+Circle
+f  20.000000
 Position
-f  9.273782
-f  0.000061
-f  -60.148598
-Layer
-i  2
+f  38.749710
+f  -0.000061
+f  24.034399
+BubbleVariable
+s  y
+b  0
 IdRef
 q  21_0
 DeleteComponent
-__q  24_2
-PhysicsData
-f  12.566371
-f  0.079577
-f  1.000000
-f  0.017305
-f  0.000000
-f  -0.085297
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-b  0
-MouseIntersectable
-BubbleUnit
-i  1
-Position
-f  15.126014
-f  0.000061
-f  -73.499550
-MouseGrabbable
-MouseSelectable
-LoopSociety
-q  17_2
-p  
-Sphere
-f  2.000000
-Circle
-f  2.000000
-Layer
-i  1
-__q  23_2
-PhysicsData
-f  12.566371
-f  0.079577
-f  1.000000
-f  0.012774
-f  0.000000
-f  -0.077248
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-b  0
-MouseIntersectable
-BubbleUnit
-i  1
-Position
-f  3.421546
-f  0.000061
-f  -46.738167
-MouseGrabbable
-MouseSelectable
-LoopSociety
-q  17_2
-p  
-Sphere
-f  2.000000
-Circle
-f  2.000000
-Layer
-i  1
-__q  19_2
-PhysicsData
-f  12.566371
-f  0.079577
-f  1.000000
-f  0.034612
-f  0.000000
-f  -0.198438
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-b  0
-MouseIntersectable
-BubbleUnit
-i  1
-Position
-f  -4.125218
-f  0.000061
-f  -65.937111
-MouseGrabbable
-MouseSelectable
-LoopSociety
-q  17_2
-p  
-Sphere
-f  2.000000
-Circle
-f  2.000000
-Layer
-i  1
-__q  18_2
-PhysicsData
-f  12.566371
-f  0.079577
-f  1.000000
-f  0.027995
-f  0.000000
-f  -0.202472
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-b  0
-MouseIntersectable
-BubbleUnit
-i  1
-Position
-f  22.639296
-f  0.000030
-f  -54.231049
-MouseGrabbable
-MouseSelectable
-LoopSociety
-q  17_2
-p  
-Sphere
-f  2.000000
-Circle
-f  2.000000
-Layer
-i  1

@@ -50,7 +50,7 @@ public:
 			auto cameraIt = cameraCache->begin<components::CameraComponent>();
 			for (int i = 0; i < cameraCache->getSize(); ++i) {
 				auto cameraComponent = *cameraIt;
-				if (!middle::isShapeAlive(gameState, cameraCache->relevantIdVector[i].index)) {
+				if (!middle::isValidId(gameState, cameraCache->relevantIdVector[i])) {
 					continue;
 				}
 				auto& shape = middle::getShape(gameState, cameraCache->relevantIdVector[i].index);

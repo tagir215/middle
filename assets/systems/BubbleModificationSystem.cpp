@@ -438,7 +438,7 @@ public:
 
 
 			auto& shapeForDeletion = middle::getShape(gameState, shapeIdForDeletion.index);
-			if (!middle::isShapeAlive(gameState, ref->idRef.index) && !hotKeyPressed) {
+			if (!isValidId(gameState, ref->idRef) && !hotKeyPressed) {
 				return;
 			}
 			auto& deletionsRefShape = middle::getShape(gameState, ref->idRef.index);

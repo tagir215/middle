@@ -71,7 +71,7 @@ namespace middle {
 
 		for (int i = 0; i < selectedIndexes.size(); ++i) {
 			int shapeIndex = selectedIndexes[i];
-			if (middle::isShapeAlive(gameState, shapeIndex)) {
+			if (middle::isValidId(gameState, gameState->ids[shapeIndex])) {
 				auto delAction = std::make_unique<middle::EditorActionDeleteSingle>(getShape(gameState, shapeIndex).id);
 				delAction->execute(gameState);
 				actions.push_back(std::move(delAction));

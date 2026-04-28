@@ -96,6 +96,7 @@ public:
 
 			// set bubble reference
 			auto ref = middle::getComponent<components::IdRef>(grabbedShape);
+			assert(isValidId(gameState, ref->idRef));
 			auto& ogShape = middle::getShape(gameState, ref->idRef.index);
 			auto ogInput = middle::getComponent<components::InputVariable>(ogShape);
 

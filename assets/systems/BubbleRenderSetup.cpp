@@ -611,7 +611,7 @@ public:
 				// todo generation checks should be always...
 				if (input->unitRef.index != middle::UNASSIGNED
 					&& input->unitRef.generation == gameState->ids[input->unitRef.index].generation
-					&& middle::isShapeAlive(gameState, input->unitRef.index)) {
+					&& middle::isValidId(gameState, input->unitRef)) {
 					p1 = middle::getShapePosition(gameState, inputCache->relevantIdVector[i].index);
 					p2 = middle::getShapePosition(gameState, input->unitRef.index);
 					renderLine = true;
