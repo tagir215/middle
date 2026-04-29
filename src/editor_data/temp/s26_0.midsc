@@ -1,56 +1,57 @@
 __q  26_0
-LoopSociety
-q  -1_0
-p  
-q  38_0
-q  39_0
-q  40_0
 BubbleComponent
-b  0
-Layer
-i  2
+b  1
 MouseSelectable
+Layer
+i  1
+PhysicsData
+f  1256.637085
+f  0.000796
+f  1.000000
+f  -1.375466
+f  0.000000
+f  0.533171
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+b  0
 MouseGrabbable
 MouseIntersectable
 LoopTag
-PhysicsData
-f  1387.167847
-f  0.000721
-f  1.000000
-f  -0.000058
-f  0.000000
-f  0.000054
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-b  0
+LoopSociety
+q  -1_0
+p  
+q  27_0
+q  28_0
 Circle
-f  21.013073
+f  20.000000
 Position
-f  -72.050316
-f  0.000000
-f  127.823479
-__q  40_0
-MouseIntersectable
+f  -10.072125
+f  -0.000031
+f  -30.267630
+__q  28_0
 BubbleUnit
 i  1
-MouseGrabbable
-MouseSelectable
-Layer
-i  3
+MouseIntersectable
 LoopSociety
 q  26_0
 p  
+MouseGrabbable
+Circle
+f  2.000000
+MouseSelectable
+Layer
+i  2
 PhysicsData
 f  12.566371
 f  0.079577
 f  1.000000
-f  -0.000157
+f  -4.027842
 f  0.000000
-f  0.000204
+f  -4.188529
 f  0.000000
 f  0.000000
 f  0.000000
@@ -58,65 +59,32 @@ f  0.000000
 f  0.000000
 f  0.000000
 b  0
-Circle
-f  2.000000
 Sphere
 f  2.000000
 Position
-f  -83.333000
-f  0.000000
-f  131.769577
-__q  39_0
-MouseIntersectable
+f  0.123716
+f  -0.000031
+f  -32.979160
+__q  27_0
 BubbleUnit
 i  1
-MouseGrabbable
-MouseSelectable
-Layer
-i  3
+MouseIntersectable
 LoopSociety
 q  26_0
 p  
+MouseGrabbable
+Circle
+f  2.000000
+MouseSelectable
+Layer
+i  2
 PhysicsData
 f  12.566371
 f  0.079577
 f  1.000000
-f  -0.000048
+f  -4.503390
 f  0.000000
-f  0.000253
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-b  0
-Circle
-f  2.000000
-Sphere
-f  2.000000
-Position
-f  -63.070560
-f  0.000000
-f  135.634674
-__q  38_0
-BubbleUnit
-i  1
-MouseIntersectable
-MouseGrabbable
-Layer
-i  3
-MouseSelectable
-LoopSociety
-q  26_0
-p  
-PhysicsData
-f  12.566371
-f  0.079577
-f  1.000000
-f  -0.000109
-f  0.000000
-f  0.000133
+f  -2.697370
 f  0.000000
 f  0.000000
 f  0.000000
@@ -124,11 +92,9 @@ f  0.000000
 f  0.000000
 f  0.000000
 b  0
-Circle
-f  2.000000
 Sphere
 f  2.000000
 Position
-f  -69.846954
-f  0.000000
-f  116.168594
+f  -16.559904
+f  -0.000031
+f  -22.714809

@@ -49,6 +49,16 @@ public:
 	}
 
 	void undo(middle::GameState* gameState) {
+
+		// return if procedure executing
+		if (procContainerCache->getSize() > 0) {
+			auto containerIt = procContainerCache->begin<components::ProcedureContainer>();
+			auto container = *containerIt;
+			if (container->targetActionStackSize > 0) {
+				return;
+			}
+		}
+
 		if (gameState->bubbleAlgebraState.bubbleActions.size() > 0) {
 			middle::queueAction(gameState, std::make_shared<middle::CustomAction>([](middle::GameState* gameState) {
 				gameState->bubbleAlgebraState.bubbleActions.back()->undo(gameState);

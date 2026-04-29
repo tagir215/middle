@@ -1,6 +1,21 @@
 __q  800_1
 DeleteComponent
 AlgebraNode
+i  4
+s  
+f  0.000000
+i  2
+b  0
+b  0
+b  0
+b  0
+LoopSociety
+q  -1_0
+p  
+q  801_1
+q  804_1
+__q  804_1
+AlgebraNode
 i  0
 s  
 f  0.000000
@@ -10,17 +25,41 @@ b  0
 b  0
 b  0
 LoopSociety
-q  -1_0
+q  800_1
 p  
-q  801_1
-q  802_1
-q  803_1
-q  804_1
 q  805_1
+__q  805_1
+AlgebraNode
+i  4
+s  
+f  0.000000
+i  1
+b  0
+b  0
+b  0
+b  0
+LoopSociety
+q  804_1
+p  
 q  806_1
-q  807_1
 q  808_1
 __q  808_1
+AlgebraNode
+i  0
+s  
+f  0.000000
+i  1
+b  0
+b  0
+b  0
+b  0
+LoopSociety
+q  805_1
+p  
+q  809_1
+q  813_1
+q  814_1
+__q  814_1
 AlgebraNode
 i  2
 s  
@@ -31,8 +70,48 @@ b  0
 b  0
 b  0
 LoopSociety
-q  800_1
+q  808_1
 p  
+__q  813_1
+AlgebraNode
+i  2
+s  
+f  1.000000
+i  1
+b  0
+b  0
+b  0
+b  0
+LoopSociety
+q  808_1
+p  
+__q  809_1
+AlgebraNode
+i  2
+s  
+f  1.000000
+i  1
+b  0
+b  0
+b  0
+b  0
+LoopSociety
+q  808_1
+p  
+__q  806_1
+AlgebraNode
+i  0
+s  
+f  0.000000
+i  1
+b  0
+b  0
+b  0
+b  0
+LoopSociety
+q  805_1
+p  
+q  807_1
 __q  807_1
 AlgebraNode
 i  2
@@ -44,13 +123,13 @@ b  0
 b  0
 b  0
 LoopSociety
-q  800_1
+q  806_1
 p  
-__q  806_1
+__q  801_1
 AlgebraNode
-i  2
+i  0
 s  
-f  1.000000
+f  0.000000
 i  1
 b  0
 b  0
@@ -59,32 +138,8 @@ b  0
 LoopSociety
 q  800_1
 p  
-__q  805_1
-AlgebraNode
-i  2
-s  
-f  1.000000
-i  1
-b  0
-b  0
-b  0
-b  0
-LoopSociety
-q  800_1
-p  
-__q  804_1
-AlgebraNode
-i  2
-s  
-f  1.000000
-i  1
-b  0
-b  0
-b  0
-b  0
-LoopSociety
-q  800_1
-p  
+q  802_1
+q  803_1
 __q  803_1
 AlgebraNode
 i  2
@@ -96,7 +151,7 @@ b  0
 b  0
 b  0
 LoopSociety
-q  800_1
+q  801_1
 p  
 __q  802_1
 AlgebraNode
@@ -109,18 +164,5 @@ b  0
 b  0
 b  0
 LoopSociety
-q  800_1
-p  
-__q  801_1
-AlgebraNode
-i  2
-s  
-f  1.000000
-i  1
-b  0
-b  0
-b  0
-b  0
-LoopSociety
-q  800_1
+q  801_1
 p  
