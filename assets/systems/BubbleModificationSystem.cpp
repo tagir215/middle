@@ -307,6 +307,16 @@ public:
 
 	void update(middle::GameState* gameState) override {
 
+
+		// return if procedure is executing
+		if (procContainerCache->getSize() > 0) {
+			auto containerIt = procContainerCache->begin<components::ProcedureContainer>();
+			auto container = *containerIt;
+			if (container->targetActionStackSize > 0) {
+				return;
+			}
+		}
+
 		if (levelConfigsCache->getSize() > 0) {
 			auto configsIt = levelConfigsCache->begin<components::BubbleAlgebraLevelConfigs>();
 			auto configs = *configsIt;

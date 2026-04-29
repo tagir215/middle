@@ -1,0 +1,575 @@
+__q  1941_1
+MouseIntersectable
+CodeFunction
+i  0
+UiComponent
+i  8
+Sphere
+f  2.000000
+Rectangle
+f  20.000000
+f  15.000000
+Position
+f  626.560608
+f  0.000000
+f  159.672607
+MouseGrabbable
+MouseSelectable
+LoopSociety
+q  -1_0
+p  
+q  1942_1
+q  1943_1
+q  1944_1
+Offset
+f  0.000000
+f  0.000000
+f  0.000000
+Layer
+i  3
+TextureComponent
+s  
+f  30.000000
+i  0
+s  procedureFunction2.png
+PlacementComponent
+__q  1944_1
+MouseSelectable
+Text
+s  
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  3.000000
+b  1
+MouseIntersectable
+Position
+f  609.960632
+f  0.000000
+f  153.672607
+MouseGrabbable
+Sphere
+f  2.000000
+UiComponent
+i  9
+Circle
+f  5.000000
+LoopSociety
+q  1941_1
+p  
+q  1968_1
+InputVariable
+q  1940_3
+q  1968_1
+q  1970_1
+Layer
+i  3
+Highlight
+__q  1968_1
+AlgebraNode
+i  0
+s  
+f  0.000000
+i  1
+b  0
+b  0
+b  0
+b  0
+LoopSociety
+q  1944_1
+p  
+q  1969_1
+__q  1969_1
+AlgebraNode
+i  0
+s  
+f  0.000000
+i  1
+b  0
+b  0
+b  0
+b  0
+LoopSociety
+q  1968_1
+p  
+q  1970_1
+q  1974_1
+q  1978_1
+q  2070_1
+__q  2070_1
+AlgebraNode
+i  4
+s  
+f  0.000000
+i  1
+b  0
+b  0
+b  0
+b  0
+LoopSociety
+q  1969_1
+p  
+q  2071_1
+q  2075_1
+__q  2075_1
+AlgebraNode
+i  1
+s  a
+f  1.000000
+i  1
+b  0
+b  0
+b  0
+b  0
+LoopSociety
+q  2070_1
+p  
+__q  2071_1
+AlgebraNode
+i  1
+s  a
+f  1.000000
+i  1
+b  0
+b  0
+b  0
+b  0
+LoopSociety
+q  2070_1
+p  
+__q  1978_1
+AlgebraNode
+i  4
+s  
+f  0.000000
+i  1
+b  0
+b  0
+b  0
+b  0
+LoopSociety
+q  1969_1
+p  
+q  1980_1
+q  1981_1
+__q  1981_1
+AlgebraNode
+i  1
+s  a
+f  1.000000
+i  1
+b  0
+b  0
+b  0
+b  0
+LoopSociety
+q  1978_1
+p  
+__q  1980_1
+AlgebraNode
+i  1
+s  b
+f  1.000000
+i  1
+b  0
+b  0
+b  0
+b  0
+LoopSociety
+q  1978_1
+p  
+__q  1974_1
+AlgebraNode
+i  0
+s  
+f  0.000000
+i  1
+b  0
+b  0
+b  0
+b  0
+LoopSociety
+q  1969_1
+p  
+q  1975_1
+__q  1975_1
+AlgebraNode
+i  4
+s  
+f  0.000000
+i  1
+b  0
+b  0
+b  0
+b  0
+LoopSociety
+q  1974_1
+p  
+q  1976_1
+q  1977_1
+__q  1977_1
+AlgebraNode
+i  1
+s  b
+f  -1.000000
+i  1
+b  0
+b  1
+b  0
+b  0
+LoopSociety
+q  1975_1
+p  
+__q  1976_1
+AlgebraNode
+i  1
+s  a
+f  1.000000
+i  1
+b  0
+b  0
+b  0
+b  0
+LoopSociety
+q  1975_1
+p  
+__q  1970_1
+AlgebraNode
+i  0
+s  
+f  0.000000
+i  1
+b  0
+b  0
+b  0
+b  0
+LoopSociety
+q  1969_1
+p  
+q  1971_1
+__q  1971_1
+AlgebraNode
+i  4
+s  
+f  0.000000
+i  1
+b  0
+b  0
+b  0
+b  0
+LoopSociety
+q  1970_1
+p  
+q  1972_1
+q  1973_1
+__q  1973_1
+AlgebraNode
+i  1
+s  b
+f  -1.000000
+i  1
+b  0
+b  1
+b  0
+b  0
+LoopSociety
+q  1971_1
+p  
+__q  1972_1
+AlgebraNode
+i  1
+s  b
+f  1.000000
+i  1
+b  0
+b  0
+b  0
+b  0
+LoopSociety
+q  1971_1
+p  
+__q  1943_1
+LoopSociety
+q  1941_1
+p  
+UiComponent
+i  9
+Sphere
+f  2.000000
+MouseGrabbable
+Position
+f  628.851624
+f  0.000000
+f  159.252075
+MouseIntersectable
+Layer
+i  3
+MouseSelectable
+TextureComponent
+s  
+f  20.000000
+i  0
+s  expand.png
+__q  1942_1
+MouseSelectable
+Text
+s  
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  3.000000
+b  1
+MouseIntersectable
+MouseGrabbable
+Position
+f  609.960632
+f  0.000000
+f  165.672607
+UiComponent
+i  9
+Sphere
+f  2.000000
+Circle
+f  5.000000
+LoopSociety
+q  1941_1
+p  
+q  1946_1
+InputVariable
+q  1911_1
+q  1946_1
+q  1955_1
+Layer
+i  3
+Highlight
+__q  1946_1
+AlgebraNode
+i  0
+s  
+f  0.000000
+i  1
+b  0
+b  0
+b  0
+b  0
+LoopSociety
+q  1942_1
+p  
+q  1947_1
+__q  1947_1
+AlgebraNode
+i  0
+s  
+f  0.000000
+i  1
+b  0
+b  0
+b  0
+b  0
+LoopSociety
+q  1946_1
+p  
+q  1948_1
+q  1955_1
+q  1959_1
+q  1962_1
+__q  1962_1
+AlgebraNode
+i  4
+s  
+f  0.000000
+i  1
+b  0
+b  0
+b  0
+b  0
+LoopSociety
+q  1947_1
+p  
+q  1963_1
+q  1966_1
+__q  1966_1
+AlgebraNode
+i  1
+s  a
+f  1.000000
+i  1
+b  0
+b  0
+b  0
+b  0
+LoopSociety
+q  1962_1
+p  
+__q  1963_1
+AlgebraNode
+i  1
+s  a
+f  1.000000
+i  1
+b  0
+b  0
+b  0
+b  0
+LoopSociety
+q  1962_1
+p  
+__q  1959_1
+AlgebraNode
+i  4
+s  
+f  0.000000
+i  1
+b  0
+b  0
+b  0
+b  0
+LoopSociety
+q  1947_1
+p  
+q  1960_1
+q  1961_1
+__q  1961_1
+AlgebraNode
+i  1
+s  a
+f  1.000000
+i  1
+b  0
+b  0
+b  0
+b  0
+LoopSociety
+q  1959_1
+p  
+__q  1960_1
+AlgebraNode
+i  1
+s  b
+f  1.000000
+i  1
+b  0
+b  0
+b  0
+b  0
+LoopSociety
+q  1959_1
+p  
+__q  1955_1
+AlgebraNode
+i  0
+s  
+f  0.000000
+i  1
+b  0
+b  0
+b  0
+b  0
+LoopSociety
+q  1947_1
+p  
+q  1956_1
+__q  1956_1
+AlgebraNode
+i  4
+s  
+f  0.000000
+i  1
+b  0
+b  0
+b  0
+b  0
+LoopSociety
+q  1955_1
+p  
+q  1957_1
+q  1958_1
+__q  1958_1
+AlgebraNode
+i  1
+s  b
+f  -1.000000
+i  1
+b  0
+b  1
+b  0
+b  0
+LoopSociety
+q  1956_1
+p  
+__q  1957_1
+AlgebraNode
+i  1
+s  a
+f  1.000000
+i  1
+b  0
+b  0
+b  0
+b  0
+LoopSociety
+q  1956_1
+p  
+__q  1948_1
+AlgebraNode
+i  0
+s  
+f  0.000000
+i  1
+b  0
+b  0
+b  0
+b  0
+LoopSociety
+q  1947_1
+p  
+q  1949_1
+__q  1949_1
+AlgebraNode
+i  4
+s  
+f  0.000000
+i  1
+b  0
+b  0
+b  0
+b  0
+LoopSociety
+q  1948_1
+p  
+q  1953_1
+q  1954_1
+__q  1954_1
+AlgebraNode
+i  1
+s  b
+f  -1.000000
+i  1
+b  0
+b  1
+b  0
+b  0
+LoopSociety
+q  1949_1
+p  
+__q  1953_1
+AlgebraNode
+i  1
+s  b
+f  1.000000
+i  1
+b  0
+b  0
+b  0
+b  0
+LoopSociety
+q  1949_1
+p  

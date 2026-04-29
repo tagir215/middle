@@ -1,104 +1,222 @@
 __q  517_3
-PhysicsData
-f  5654.866699
-f  0.000177
-f  1.000000
-f  -5.014650
-f  0.000000
-f  13.674810
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-b  0
-BubbleComponent
-b  0
-MouseSelectable
-Layer
-i  3
+InputVariable
+q  -1_0
+s  
+q  -1_0
+i  0
+p  
+p  
+q  -1_0
+q  -1_0
+Sphere
+f  2.000000
 MouseGrabbable
-MouseIntersectable
-LoopTag
+Position
+f  736.497314
+f  -0.000061
+f  -215.391068
+MouseSelectable
+Text
+s  
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  3.000000
+b  1
 LoopSociety
 q  -1_0
 p  
 q  518_3
-q  519_3
+UiComponent
+i  9
 Circle
-f  42.426407
-Position
-f  -0.320264
-f  0.000000
-f  -37.542500
-__q  519_3
-PhysicsData
-f  1256.637085
-f  0.000796
-f  1.000000
-f  2.205289
-f  0.000000
-f  3.108132
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-b  0
+f  5.000000
 Layer
-i  4
-MouseSelectable
-BubbleComponent
-b  0
-MouseGrabbable
-MouseIntersectable
-LoopTag
-LoopSociety
-q  517_3
-p  
-Circle
-f  20.000000
-Position
-f  18.478752
-f  0.000000
-f  -27.440222
-BubbleVariable
-s  b
-b  0
+i  3
+IdRef
+q  501_1
 __q  518_3
-PhysicsData
-f  1256.637085
-f  0.000796
-f  1.000000
-f  2.422692
+AlgebraNode
+i  0
+s  
 f  0.000000
-f  3.545375
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
+i  1
 b  0
-BubbleComponent
 b  0
-MouseSelectable
-Layer
-i  4
-MouseGrabbable
-MouseIntersectable
-LoopTag
+b  0
+b  0
 LoopSociety
 q  517_3
 p  
-Circle
-f  20.000000
-Position
-f  -18.508469
+q  519_3
+q  528_1
+__q  528_1
+AlgebraNode
+i  4
+s  
 f  0.000000
-f  -51.343426
-BubbleVariable
-s  a
+i  1
 b  0
+b  0
+b  0
+b  0
+LoopSociety
+q  518_3
+p  
+q  529_1
+q  532_1
+__q  532_1
+AlgebraNode
+i  1
+s  b
+f  1.000000
+i  1
+b  0
+b  0
+b  0
+b  0
+LoopSociety
+q  528_1
+p  
+__q  529_1
+AlgebraNode
+i  0
+s  
+f  0.000000
+i  1
+b  0
+b  0
+b  0
+b  0
+LoopSociety
+q  528_1
+p  
+q  530_1
+q  531_1
+__q  531_1
+AlgebraNode
+i  1
+s  a
+f  1.000000
+i  1
+b  0
+b  0
+b  0
+b  0
+LoopSociety
+q  529_1
+p  
+__q  530_1
+AlgebraNode
+i  1
+s  b
+f  1.000000
+i  1
+b  0
+b  0
+b  0
+b  0
+LoopSociety
+q  529_1
+p  
+__q  519_3
+AlgebraNode
+i  0
+s  
+f  0.000000
+i  1
+b  0
+b  0
+b  0
+b  0
+LoopSociety
+q  518_3
+p  
+q  522_3
+q  525_1
+__q  525_1
+AlgebraNode
+i  4
+s  
+f  0.000000
+i  1
+b  0
+b  0
+b  0
+b  0
+LoopSociety
+q  519_3
+p  
+q  526_1
+q  527_1
+__q  527_1
+AlgebraNode
+i  1
+s  a
+f  1.000000
+i  1
+b  0
+b  0
+b  0
+b  0
+LoopSociety
+q  525_1
+p  
+__q  526_1
+AlgebraNode
+i  1
+s  b
+f  1.000000
+i  1
+b  0
+b  0
+b  0
+b  0
+LoopSociety
+q  525_1
+p  
+__q  522_3
+AlgebraNode
+i  4
+s  
+f  0.000000
+i  1
+b  0
+b  0
+b  0
+b  0
+LoopSociety
+q  519_3
+p  
+q  523_3
+q  524_3
+__q  524_3
+AlgebraNode
+i  1
+s  a
+f  1.000000
+i  1
+b  0
+b  0
+b  0
+b  0
+LoopSociety
+q  522_3
+p  
+__q  523_3
+AlgebraNode
+i  1
+s  a
+f  1.000000
+i  1
+b  0
+b  0
+b  0
+b  0
+LoopSociety
+q  522_3
+p  

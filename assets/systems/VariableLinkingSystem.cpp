@@ -104,23 +104,11 @@ public:
 
 			// update structure, unless inputting it during normal level
 			if (procContainer->editMode) {
-				middle::Id structureId = bubble::bubbleToStructure(gameState, intersectingShape.id);
-				ogInput->structureIds.clear();
-				ogInput->structureIds.push_back(structureId);
-				ogInput->structureDepth = bubble::findDepth(gameState, intersectingShape.id);
-				// reparent algebra node to input, for automatic deletion and serialization
-				middle::queueAction(gameState, std::make_shared<middle::EditorActionReparent>(ogShape.id.index, structureId.index));
-
-				// add also constrainting siblings,
-				for (middle::Id id : children) {
-					if (id == intersectingShape.id) {
-						continue;
-					}
-					// reparent algebra node to input, for automatic deletion and serialization
-					middle::Id childStructureId = bubble::bubbleToStructure(gameState, id);
-					middle::queueAction(gameState, std::make_shared<middle::EditorActionReparent>(ogShape.id.index, childStructureId.index));
-					ogInput->structureIds.push_back(childStructureId);
-				}
+				middle::Id nodeRoot, startPointNode;
+				bubble::bubbleToStructureBranch(gameState, intersectingShape.id, procContainer->bubbleRef, startPointNode, nodeRoot);
+				ogInput->rootNodeId = nodeRoot;
+				ogInput->startPointNodeId = startPointNode;
+				middle::queueAction(gameState, std::make_shared<middle::EditorActionReparent>(ogShape.id.index, nodeRoot.index));
 
 				middle::queueComponentAttachment<components::Highlight>(gameState, ogShape.id);
 				highlighted = true;
@@ -156,13 +144,12 @@ public:
 			procInput->unitRef = procTargetId;
 			procContainer->bubbleRef = procTargetId;
 
+			middle::Id startPointNodeId, rootNodeId;
+			bubble::bubbleToStructureBranch(gameState, procTargetId, procTargetId, startPointNodeId, rootNodeId);
+			procInput->startPointNodeId = startPointNodeId;
+			procInput->rootNodeId = rootNodeId;
 			// reparent algebra node to input, for automatic deletion and serialization
-			middle::Id structureId = bubble::bubbleToStructure(gameState, procTargetId);
-			procInput->structureIds.push_back(structureId);
-			middle::queueAction(gameState, std::make_shared<middle::EditorActionReparent>(procInputId.index, structureId.index));
-
-			std::unordered_map<std::string, std::vector<middle::Id>>map;
-			bubble::getVariableStructuresMap(gameState, procInput->structureIds[0], map);
+			middle::queueAction(gameState, std::make_shared<middle::EditorActionReparent>(procInputId.index, rootNodeId.index));
 
 			middle::attachComponent<components::InitializedTag>(gameState, procTargetId);
 		}
@@ -216,12 +203,6 @@ public:
 
 				//reset input, if not procedureInput,  procedureInput can be edited if in edit mode
 				if (!procedureInput || procContainer->editMode) {
-					if (input->structureIds.size() > 0) {
-						for (middle::Id id : input->structureIds) {
-							middle::deleteShapeRecursive(gameState, id.index);
-						}
-					}
-					input->structureIds.clear();
 					input->unitRef = middle::Id();
 				}
 

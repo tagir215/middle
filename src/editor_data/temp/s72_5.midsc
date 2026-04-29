@@ -1,35 +1,100 @@
 __q  72_5
+LoopSociety
+q  -1_0
+p  
+q  73_5
+q  74_5
+MouseSelectable
+Layer
+i  3
+BubbleComponent
+b  0
 PhysicsData
 f  1256.637085
 f  0.000796
 f  1.000000
-f  -0.000010
+f  2.349587
 f  0.000000
-f  -0.000096
-f  0.000000
-f  0.000000
+f  1.532608
 f  0.000000
 f  0.000000
 f  0.000000
 f  0.000000
-b  0
-Layer
-i  3
-MouseSelectable
-BubbleComponent
+f  0.000000
+f  0.000000
 b  0
 MouseGrabbable
 MouseIntersectable
 LoopTag
-LoopSociety
-q  -1_0
-p  
 Circle
 f  20.000000
 Position
-f  5.957380
+f  -74.632622
 f  0.000000
-f  68.437035
-BubbleVariable
-s  b
+f  -61.335274
+__q  74_5
+MouseIntersectable
+BubbleUnit
+i  -1
+LoopSociety
+q  72_5
+p  
+MouseGrabbable
+Circle
+f  2.000000
+MouseSelectable
+Layer
+i  4
+PhysicsData
+f  12.566371
+f  0.079577
+f  1.000000
+f  3.020245
+f  0.000000
+f  2.230120
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
 b  0
+Sphere
+f  2.000000
+Position
+f  -66.114243
+f  0.000000
+f  -66.204712
+__q  73_5
+MouseIntersectable
+BubbleUnit
+i  -1
+LoopSociety
+q  72_5
+p  
+MouseGrabbable
+Circle
+f  2.000000
+MouseSelectable
+Layer
+i  4
+PhysicsData
+f  12.566371
+f  0.079577
+f  1.000000
+f  3.018974
+f  0.000000
+f  3.096287
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+b  0
+Sphere
+f  2.000000
+Position
+f  -85.115486
+f  0.000000
+f  -60.796818

@@ -4,20 +4,14 @@
 #include "bubble_actions.h"
 #define MIDDLEINPUTVARIABLE(X) \
 	X(unitRef) \
-	X(label) \
-	X(structureId) \
-	X(structureDepth) \
-	X(bubbleRefIds) \
-	X(structureIds) 
+	X(rootNodeId) \
+	X(startPointNodeId)
 
 namespace components {
 	struct InputVariable : public middle::Serializable{
 		middle::Id unitRef;
-		std::vector<middle::Id>bubbleRefIds;
-		middle::Id structureId;
-		std::vector<middle::Id>structureIds;
-		std::string label = "";
-		int structureDepth = 0;
+		middle::Id rootNodeId;
+		middle::Id startPointNodeId;
 
 		void serialize(std::ostream& ostream) override;
 		void deserialize(const std::vector<std::string>& buffer, int indexOffset) override;

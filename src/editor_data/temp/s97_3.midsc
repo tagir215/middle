@@ -1,22 +1,22 @@
 __q  97_3
-BubbleComponent
+PhysicsData
+f  1387.167847
+f  0.000721
+f  1.000000
+f  -0.006621
+f  0.000000
+f  0.001308
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
 b  0
 MouseSelectable
 Layer
 i  3
-PhysicsData
-f  1256.637085
-f  0.000796
-f  1.000000
-f  60.980995
-f  0.000000
-f  -10.955254
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
+BubbleComponent
 b  0
 MouseGrabbable
 MouseIntersectable
@@ -25,23 +25,24 @@ LoopSociety
 q  -1_0
 p  
 q  98_3
-q  99_2
+q  99_3
+q  100_3
 Circle
-f  20.000000
+f  21.013073
 Position
-f  -98.264946
+f  -98.668419
 f  0.000000
-f  31.251833
-__q  99_2
-BubbleUnit
-i  1
-MouseIntersectable
+f  85.011040
+__q  100_3
 LoopSociety
 q  97_3
 p  
-MouseGrabbable
+MouseIntersectable
+BubbleUnit
+i  1
 Circle
 f  2.000000
+MouseGrabbable
 MouseSelectable
 Layer
 i  4
@@ -49,9 +50,9 @@ PhysicsData
 f  12.566371
 f  0.079577
 f  1.000000
-f  3.344057
+f  -0.007964
 f  0.000000
-f  -10.517665
+f  0.001945
 f  0.000000
 f  0.000000
 f  0.000000
@@ -62,19 +63,52 @@ b  0
 Sphere
 f  2.000000
 Position
-f  -102.563278
+f  -106.101944
 f  0.000000
-f  42.654327
+f  75.715866
+__q  99_3
+LoopSociety
+q  97_3
+p  
+MouseIntersectable
+BubbleUnit
+i  1
+Circle
+f  2.000000
+MouseGrabbable
+MouseSelectable
+Layer
+i  4
+PhysicsData
+f  12.566371
+f  0.079577
+f  1.000000
+f  -0.007427
+f  0.000000
+f  0.001529
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+b  0
+Sphere
+f  2.000000
+Position
+f  -86.899872
+f  0.000000
+f  83.201126
 __q  98_3
-BubbleUnit
-i  1
-MouseIntersectable
 LoopSociety
 q  97_3
 p  
-MouseGrabbable
+MouseIntersectable
+BubbleUnit
+i  1
 Circle
 f  2.000000
+MouseGrabbable
 MouseSelectable
 Layer
 i  4
@@ -82,9 +116,9 @@ PhysicsData
 f  12.566371
 f  0.079577
 f  1.000000
-f  2.214818
+f  -0.008051
 f  0.000000
-f  -3.059866
+f  0.001239
 f  0.000000
 f  0.000000
 f  0.000000
@@ -95,6 +129,6 @@ b  0
 Sphere
 f  2.000000
 Position
-f  -103.372185
+f  -102.998169
 f  0.000000
-f  22.987749
+f  96.102783

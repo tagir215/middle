@@ -1,93 +1,304 @@
 __q  286_1
-MouseIntersectable
-UiComponent
-i  8
-CodeFunction
-i  3
-Sphere
-f  2.000000
-Rectangle
-f  20.000000
-f  15.000000
-Position
-f  321.737640
+PhysicsData
+f  3699.115479
+f  0.000270
+f  1.000000
+f  -0.204002
 f  0.000000
-f  -209.812851
-MouseGrabbable
-MouseSelectable
+f  0.723693
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+b  0
 LoopSociety
 q  -1_0
 p  
 q  287_1
 q  288_1
-Offset
-f  0.000000
-f  0.000000
-f  0.000000
+q  289_1
+q  290_1
+q  291_1
+q  292_1
+q  293_1
+q  294_1
+BubbleComponent
+b  0
+MouseSelectable
 Layer
 i  3
-TextureComponent
-s  
-f  30.000000
-i  0
-s  procedureFunction1.png
-PlacementComponent
+MouseGrabbable
+MouseIntersectable
+LoopTag
+Circle
+f  34.314209
+Position
+f  -74.008408
+f  0.000000
+f  -37.867470
+__q  294_1
+LoopSociety
+q  286_1
+p  
+BubbleUnit
+i  1
+MouseIntersectable
+Circle
+f  2.000000
+MouseGrabbable
+MouseSelectable
+Layer
+i  4
+PhysicsData
+f  12.566371
+f  0.079577
+f  1.000000
+f  -0.329199
+f  0.000000
+f  0.913505
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+b  0
+Sphere
+f  2.000000
+Position
+f  -73.863953
+f  0.000000
+f  -38.243149
+__q  293_1
+LoopSociety
+q  286_1
+p  
+BubbleUnit
+i  1
+MouseIntersectable
+Circle
+f  2.000000
+MouseGrabbable
+MouseSelectable
+Layer
+i  4
+PhysicsData
+f  12.566371
+f  0.079577
+f  1.000000
+f  -0.447025
+f  0.000000
+f  1.144442
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+b  0
+Sphere
+f  2.000000
+Position
+f  -95.057732
+f  0.000000
+f  -49.094700
+__q  292_1
+LoopSociety
+q  286_1
+p  
+BubbleUnit
+i  1
+MouseIntersectable
+Circle
+f  2.000000
+MouseGrabbable
+MouseSelectable
+Layer
+i  4
+PhysicsData
+f  12.566371
+f  0.079577
+f  1.000000
+f  -0.244680
+f  0.000000
+f  1.009403
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+b  0
+Sphere
+f  2.000000
+Position
+f  -95.556854
+f  0.000000
+f  -28.254389
+__q  291_1
+LoopSociety
+q  286_1
+p  
+BubbleUnit
+i  1
+MouseIntersectable
+Circle
+f  2.000000
+MouseGrabbable
+MouseSelectable
+Layer
+i  4
+PhysicsData
+f  12.566371
+f  0.079577
+f  1.000000
+f  -0.297880
+f  0.000000
+f  1.113150
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+b  0
+Sphere
+f  2.000000
+Position
+f  -50.076180
+f  0.000000
+f  -38.498047
+__q  290_1
+LoopSociety
+q  286_1
+p  
+BubbleUnit
+i  1
+MouseIntersectable
+Circle
+f  2.000000
+MouseGrabbable
+MouseSelectable
+Layer
+i  4
+PhysicsData
+f  12.566371
+f  0.079577
+f  1.000000
+f  -0.432832
+f  0.000000
+f  0.845981
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+b  0
+Sphere
+f  2.000000
+Position
+f  -79.217728
+f  0.000000
+f  -14.944542
+__q  289_1
+LoopSociety
+q  286_1
+p  
+BubbleUnit
+i  1
+MouseIntersectable
+Circle
+f  2.000000
+MouseGrabbable
+MouseSelectable
+Layer
+i  4
+PhysicsData
+f  12.566371
+f  0.079577
+f  1.000000
+f  -0.298651
+f  0.000000
+f  0.872742
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+b  0
+Sphere
+f  2.000000
+Position
+f  -59.051117
+f  0.000000
+f  -56.790939
 __q  288_1
 LoopSociety
 q  286_1
 p  
-Sphere
-f  2.000000
-UiComponent
-i  9
-Position
-f  322.548676
-f  0.000000
-f  -210.085495
-MouseGrabbable
+BubbleUnit
+i  1
 MouseIntersectable
+Circle
+f  2.000000
+MouseGrabbable
 MouseSelectable
 Layer
-i  3
-TextureComponent
-s  
-f  17.000000
-i  0
-s  popIcon.png
+i  4
+PhysicsData
+f  12.566371
+f  0.079577
+f  1.000000
+f  -0.534653
+f  0.000000
+f  0.918113
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+b  0
+Sphere
+f  2.000000
+Position
+f  -78.753334
+f  0.000000
+f  -61.480453
 __q  287_1
 LoopSociety
 q  286_1
 p  
+BubbleUnit
+i  1
+MouseIntersectable
+Circle
+f  2.000000
+MouseGrabbable
+MouseSelectable
+Layer
+i  4
+PhysicsData
+f  12.566371
+f  0.079577
+f  1.000000
+f  -0.538945
+f  0.000000
+f  1.068683
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+b  0
 Sphere
 f  2.000000
-InputVariable
-q  -1_0
-s  
-q  -1_0
-i  0
-p  
-p  
 Position
-f  305.137634
+f  -58.786423
 f  0.000000
-f  -209.812851
-MouseGrabbable
-Text
-s  
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-f  3.000000
-b  1
-MouseSelectable
-MouseIntersectable
-UiComponent
-i  9
-Circle
-f  5.000000
-Layer
-i  3
+f  -19.746420

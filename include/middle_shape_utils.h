@@ -42,6 +42,8 @@ namespace middle {
 	// add shape and updates generations
 	Shape& registerShape(GameState* gameState, middle::Shape shape);
 	// add shape and updates generations
+	Shape& registerShapeAtIndex(GameState* gameState, middle::Shape shape, int index);
+	// add shape and updates generations
 	Shape& registerAsGhostShape(GameState* gameState, middle::Shape shape);
 	// add shape, doesn't update generations
 	Shape& insertShape(GameState* gameState, middle::Id& id);

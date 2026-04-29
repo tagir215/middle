@@ -1,104 +1,202 @@
 __q  61_1
-MouseGrabbable
-MouseSelectable
-BubbleComponent
-b  0
-LoopTag
-TopDogBubbleTag
-Circle
+UiComponent
+i  8
+CodeFunction
+i  21
+Sphere
+f  2.000000
+Rectangle
 f  20.000000
+f  15.000000
+MouseGrabbable
+Position
+f  753.406616
+f  0.000122
+f  152.781982
 MouseIntersectable
+MouseSelectable
 LoopSociety
 q  -1_0
 p  
 q  62_1
-q  63_2
-PhysicsData
-f  1256.637085
-f  0.000796
-f  1.000000
-f  -0.001969
-f  0.000000
-f  -0.001201
+q  63_1
+Offset
 f  0.000000
 f  0.000000
 f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-b  0
-Position
-f  -9.677535
-f  0.000061
-f  24.993872
 Layer
-i  2
-IdRef
-q  17_0
-DeleteComponent
-__q  63_2
-PhysicsData
-f  12.566371
-f  0.079577
-f  1.000000
-f  0.098439
-f  0.000000
-f  0.060031
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-b  0
-MouseIntersectable
-BubbleUnit
-i  1
-Position
-f  -18.229204
-f  0.000061
-f  19.786253
-MouseGrabbable
-MouseSelectable
+i  3
+TextureComponent
+s  
+f  30.000000
+i  0
+s  procedureFunction1.png
+PlacementComponent
+__q  63_1
 LoopSociety
 q  61_1
 p  
 Sphere
 f  2.000000
-Circle
-f  2.000000
+UiComponent
+i  9
+Position
+f  753.970337
+f  0.000122
+f  153.571716
+MouseGrabbable
+MouseIntersectable
+MouseSelectable
 Layer
-i  1
+i  3
+TextureComponent
+s  
+f  18.000000
+i  0
+s  bubblifyIcon.png
 __q  62_1
-PhysicsData
-f  12.566371
-f  0.079577
-f  1.000000
-f  0.098427
-f  0.000000
-f  0.060023
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-b  0
-MouseIntersectable
-BubbleUnit
-i  1
-Position
-f  -1.158751
-f  0.000061
-f  30.181355
-MouseGrabbable
-MouseSelectable
 LoopSociety
 q  61_1
 p  
+q  65_1
 Sphere
 f  2.000000
+InputVariable
+q  19_0
+q  65_1
+q  67_1
+MouseGrabbable
+Position
+f  736.806641
+f  0.000122
+f  152.781982
+MouseSelectable
+Text
+s  
+f  255.000000
+f  255.000000
+f  255.000000
+f  255.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  3.000000
+b  1
+MouseIntersectable
+UiComponent
+i  9
 Circle
-f  2.000000
+f  5.000000
 Layer
+i  3
+__q  65_1
+AlgebraNode
+i  0
+s  
+f  0.000000
 i  1
+b  0
+b  0
+b  0
+b  0
+LoopSociety
+q  62_1
+p  
+q  66_1
+__q  66_1
+AlgebraNode
+i  4
+s  
+f  0.000000
+i  1
+b  0
+b  0
+b  0
+b  0
+LoopSociety
+q  65_1
+p  
+q  67_1
+q  70_1
+__q  70_1
+AlgebraNode
+i  0
+s  
+f  0.000000
+i  1
+b  0
+b  0
+b  0
+b  0
+LoopSociety
+q  66_1
+p  
+q  71_1
+q  72_1
+__q  72_1
+AlgebraNode
+i  1
+s  a
+f  1.000000
+i  1
+b  0
+b  0
+b  0
+b  0
+LoopSociety
+q  70_1
+p  
+__q  71_1
+AlgebraNode
+i  1
+s  b
+f  1.000000
+i  1
+b  0
+b  0
+b  0
+b  0
+LoopSociety
+q  70_1
+p  
+__q  67_1
+AlgebraNode
+i  0
+s  
+f  0.000000
+i  1
+b  0
+b  0
+b  0
+b  0
+LoopSociety
+q  66_1
+p  
+q  68_1
+q  69_1
+__q  69_1
+AlgebraNode
+i  1
+s  a
+f  1.000000
+i  1
+b  0
+b  0
+b  0
+b  0
+LoopSociety
+q  67_1
+p  
+__q  68_1
+AlgebraNode
+i  1
+s  b
+f  1.000000
+i  1
+b  0
+b  0
+b  0
+b  0
+LoopSociety
+q  67_1
+p  

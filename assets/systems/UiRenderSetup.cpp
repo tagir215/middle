@@ -172,9 +172,6 @@ public:
 			auto& shape = middle::getShape(gameState, textCache->relevantIdVector[i].index);
 			auto inputVariable = middle::getComponent<components::InputVariable>(shape);
 			auto outputVariable = middle::getComponent<components::OutputVariable>(shape);
-			if (inputVariable) {
-				text->text = inputVariable->label;
-			}
 			if (outputVariable) {
 				text->text = outputVariable->label;
 			}

@@ -12,9 +12,9 @@ PhysicsData
 f  3752.212646
 f  0.000267
 f  1.000000
-f  0.048434
+f  0.875296
 f  0.000000
-f  0.054918
+f  0.655210
 f  0.000000
 f  0.000000
 f  0.000000
@@ -28,9 +28,9 @@ LoopTag
 Circle
 f  34.559605
 Position
-f  -69.468803
+f  -74.596886
 f  0.000000
-f  -57.976059
+f  -63.865330
 ExponentComponent
 i  2
 b  0
@@ -41,18 +41,18 @@ q  53_0
 p  
 q  63_0
 q  64_0
-BubbleComponent
-b  0
+MouseSelectable
 Layer
 i  4
-MouseSelectable
+BubbleComponent
+b  0
 PhysicsData
 f  1256.637085
 f  0.000796
 f  1.000000
-f  0.054389
+f  0.925513
 f  0.000000
-f  0.061236
+f  0.805645
 f  0.000000
 f  0.000000
 f  0.000000
@@ -66,9 +66,9 @@ LoopTag
 Circle
 f  20.000000
 Position
-f  -72.491165
+f  -78.219543
 f  0.000000
-f  -61.412968
+f  -67.040878
 ExponentComponent
 i  2
 b  1
@@ -90,9 +90,9 @@ PhysicsData
 f  12.566371
 f  0.079577
 f  1.000000
-f  0.059593
+f  1.128058
 f  0.000000
-f  0.097865
+f  1.342870
 f  0.000000
 f  0.000000
 f  0.000000
@@ -103,29 +103,29 @@ b  0
 Sphere
 f  2.000000
 Position
-f  -62.509216
+f  -68.830734
 f  0.000000
-f  -61.626499
+f  -70.209267
 __q  63_0
+MouseIntersectable
 BubbleUnit
 i  -1
-MouseIntersectable
 LoopSociety
 q  62_0
 p  
 MouseGrabbable
 Circle
 f  2.000000
+MouseSelectable
 Layer
 i  5
-MouseSelectable
 PhysicsData
 f  12.566371
 f  0.079577
 f  1.000000
-f  0.059355
+f  1.097156
 f  0.000000
-f  0.098575
+f  1.509458
 f  0.000000
 f  0.000000
 f  0.000000
@@ -136,6 +136,6 @@ b  0
 Sphere
 f  2.000000
 Position
-f  -82.493462
+f  -88.334419
 f  0.000000
-f  -61.345230
+f  -66.118523

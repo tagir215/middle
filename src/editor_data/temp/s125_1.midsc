@@ -1,35 +1,168 @@
 __q  125_1
-PhysicsData
-f  1256.637085
-f  0.000796
-f  1.000000
-f  -0.035772
-f  0.000000
-f  0.036455
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-b  0
-Layer
-i  3
+LoopSociety
+q  -1_0
+p  
+q  126_1
+q  127_1
+q  128_1
+q  129_1
 MouseSelectable
+Layer
+i  4
 BubbleComponent
+b  0
+PhysicsData
+f  1849.557251
+f  0.000541
+f  1.000000
+f  -0.651137
+f  0.000000
+f  -1.001256
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
 b  0
 MouseGrabbable
 MouseIntersectable
 LoopTag
-LoopSociety
-q  -1_0
-p  
 Circle
-f  20.000000
+f  24.263807
 Position
-f  -65.395180
+f  14.714682
 f  0.000000
-f  27.256611
-BubbleVariable
-s  a
+f  51.518528
+__q  129_1
+MouseIntersectable
+BubbleUnit
+i  1
+LoopSociety
+q  125_1
+p  
+MouseGrabbable
+Circle
+f  2.000000
+MouseSelectable
+Layer
+i  5
+PhysicsData
+f  12.566371
+f  0.079577
+f  1.000000
+f  -0.704422
+f  0.000000
+f  -1.263932
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
 b  0
+Sphere
+f  2.000000
+Position
+f  29.504362
+f  0.000000
+f  51.145245
+__q  128_1
+MouseIntersectable
+BubbleUnit
+i  1
+LoopSociety
+q  125_1
+p  
+MouseGrabbable
+Circle
+f  2.000000
+MouseSelectable
+Layer
+i  5
+PhysicsData
+f  12.566371
+f  0.079577
+f  1.000000
+f  -0.716364
+f  0.000000
+f  -1.270973
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+b  0
+Sphere
+f  2.000000
+Position
+f  0.367196
+f  0.000000
+f  53.053932
+__q  127_1
+MouseIntersectable
+BubbleUnit
+i  1
+LoopSociety
+q  125_1
+p  
+MouseGrabbable
+Circle
+f  2.000000
+MouseSelectable
+Layer
+i  5
+PhysicsData
+f  12.566371
+f  0.079577
+f  1.000000
+f  -0.747796
+f  0.000000
+f  -1.143829
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+b  0
+Sphere
+f  2.000000
+Position
+f  14.102167
+f  0.000000
+f  37.268948
+__q  126_1
+MouseIntersectable
+BubbleUnit
+i  1
+LoopSociety
+q  125_1
+p  
+MouseGrabbable
+Circle
+f  2.000000
+MouseSelectable
+Layer
+i  5
+PhysicsData
+f  12.566371
+f  0.079577
+f  1.000000
+f  -0.738888
+f  0.000000
+f  -1.144924
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+b  0
+Sphere
+f  2.000000
+Position
+f  15.989743
+f  0.000000
+f  66.418221

@@ -1,167 +1,35 @@
 __q  411_1
-MouseIntersectable
-UiComponent
-i  8
-CodeFunction
-i  19
-Sphere
-f  2.000000
-Rectangle
-f  20.000000
-f  15.000000
-MouseGrabbable
-Position
-f  727.273315
-f  -0.000122
-f  -51.653435
-MouseSelectable
+PhysicsData
+f  1256.637085
+f  0.000796
+f  1.000000
+f  -49.448376
+f  0.000000
+f  22.968884
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+b  0
 LoopSociety
 q  -1_0
 p  
-q  412_1
-q  413_1
-Offset
-f  0.000000
-f  0.000000
-f  0.000000
-Layer
-i  3
-TextureComponent
-s  
-f  30.000000
-i  0
-s  procedureFunction1.png
-PlacementComponent
-__q  413_1
-LoopSociety
-q  411_1
-p  
-Sphere
-f  2.000000
-UiComponent
-i  9
-Position
-f  729.454224
-f  -0.000122
-f  -51.367546
-MouseGrabbable
-MouseIntersectable
+BubbleComponent
+b  0
 MouseSelectable
 Layer
 i  3
-TextureComponent
-s  
-f  17.000000
-i  0
-s  compress.png
-__q  412_1
-InputVariable
-q  385_1
-s  
-q  -1_0
-i  3
-p  
-p  
-q  415_1
-q  416_1
-q  417_1
-Sphere
-f  2.000000
-Position
-f  710.673340
-f  -0.000122
-f  -51.653435
 MouseGrabbable
-Text
-s  
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-f  3.000000
-b  1
-MouseSelectable
 MouseIntersectable
-LoopSociety
-q  411_1
-p  
-q  415_1
-q  416_1
-q  417_1
-UiComponent
-i  9
+LoopTag
 Circle
-f  5.000000
-Layer
-i  3
-Highlight
-__q  417_1
-AlgebraNode
-i  0
-s  
+f  20.000000
+Position
+f  1.342033
 f  0.000000
-i  1
+f  37.292614
+BubbleVariable
+s  x
 b  0
-b  0
-b  0
-b  0
-LoopSociety
-q  412_1
-p  
-q  418_1
-q  419_1
-__q  419_1
-AlgebraNode
-i  2
-s  
-f  1.000000
-i  1
-b  0
-b  0
-b  0
-b  0
-LoopSociety
-q  417_1
-p  
-__q  418_1
-AlgebraNode
-i  2
-s  
-f  1.000000
-i  1
-b  0
-b  0
-b  0
-b  0
-LoopSociety
-q  417_1
-p  
-__q  416_1
-AlgebraNode
-i  1
-s  a
-f  1.000000
-i  1
-b  0
-b  0
-b  0
-b  0
-LoopSociety
-q  412_1
-p  
-__q  415_1
-AlgebraNode
-i  1
-s  b
-f  1.000000
-i  1
-b  0
-b  0
-b  0
-b  0
-LoopSociety
-q  412_1
-p  

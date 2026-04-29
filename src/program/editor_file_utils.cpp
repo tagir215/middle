@@ -436,12 +436,7 @@ namespace middle {
 
 	middle::Id loadShape(GameState* gameState, const std::string& folder, const std::string& sceneName, bool import, const Vector3& pos) {
 		int freeIndex = findFreeIndex(gameState);
-		loadScene(gameState, folder, sceneName, import, pos, freeIndex);
-		if (import) {
-			auto& shape = getShape(gameState, freeIndex);
-			return shape.id;
-		}
-		return middle::Id();
+		return loadScene(gameState, folder, sceneName, import, pos, freeIndex);
 	}
 
 
@@ -519,7 +514,7 @@ namespace middle {
 			|| typeC == static_cast<char>(FieldType::Color);
 	}
 
-	void loadScene(GameState* gameState, const std::string& folder, const std::string& sceneName, bool import, const Vector3& pos, int sceneReferenceIndex) {
+	middle::Id loadScene(GameState* gameState, const std::string& folder, const std::string& sceneName, bool import, const Vector3& pos, int sceneReferenceIndex) {
 
 		std::string path = folder + sceneName + ".midsc";
 
@@ -663,7 +658,11 @@ namespace middle {
 
 			// move imported scene where it wants to be
 			moveShape(gameState, sceneReferenceIndex, pos);
+
+			return gameState->ids[sceneReferenceIndex];
 		}
+
+		return middle::Id();
 	}
 
 	std::vector<std::string> loadFileNamesInFolder(const std::string& folderPath)

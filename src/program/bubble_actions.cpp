@@ -1219,10 +1219,6 @@ namespace bubbleActions {
 
 		middle::loopInstances(gameState, [gameState, &label, &newUnitRef, &oldUnitRef](int i, middle::Shape& shape) {
 			auto inputVariable = middle::getComponent<components::InputVariable>(shape);
-			if (inputVariable && inputVariable->label == label) {
-				oldUnitRef = inputVariable->unitRef;
-				inputVariable->unitRef = newUnitRef;
-			}
 			auto outputVariable = middle::getComponent<components::OutputVariable>(shape);
 			if (outputVariable && outputVariable->label == label) {
 				oldUnitRef = outputVariable->unitRef;
@@ -1689,12 +1685,11 @@ namespace bubbleActions {
 		middle::Id inputId = middle::getFirstChildWithComponent(gameState, procContainerShape.id, middle::getTypeId<components::InputVariable>());
 		auto& inputShape = middle::getShape(gameState, inputId.index);
 		auto inputComp = middle::getComponent<components::InputVariable>(inputShape);
-		procContainerComp->variableOverrides = bubble::generateVariableOverrides(gameState, input, inputComp->structureIds[0]);
+		procContainerComp->variableOverrides = bubble::generateVariableOverrides(gameState, input, inputComp->rootNodeId);
 		if (procContainerComp->variableOverrides.size() == 0) {
 			cancelled = true;
 			return;
 		}
-
 		inputComp->unitRef = input;
 		procContainerComp->bubbleRef = input;
 		procContainerComp->mode = procedureConstants::EXECUTING;

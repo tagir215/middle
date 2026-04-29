@@ -1,13 +1,35 @@
 __q  86_1
+MouseSelectable
+Text
+s  
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  3.000000
+b  1
 MouseGrabbable
 Position
-f  5.957380
-f  0.000000
-f  68.437035
-LoopTag
-BubbleMultiplyComponent
-MouseIntersectable
-MouseSelectable
+f  17.730255
+f  0.000122
+f  26.570776
+UiComponent
+i  9
+Sphere
+f  2.000000
+Circle
+f  5.000000
 LoopSociety
 q  -1_0
 p  
+InputVariable
+q  -1_0
+q  -1_0
+q  -1_0
+Layer
+i  3
+IdRef
+q  83_1

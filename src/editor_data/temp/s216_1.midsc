@@ -1,38 +1,56 @@
 __q  216_1
-InputVariable
-q  -1_0
-s  
-q  -1_0
+DeleteComponent
+AlgebraNode
 i  0
-p  
-p  
-Sphere
-f  2.000000
-MouseGrabbable
-Position
-f  6.926498
-f  0.000061
-f  81.297043
-MouseSelectable
-Text
 s  
 f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-f  3.000000
-b  1
+i  2
+b  0
+b  0
+b  0
+b  0
 LoopSociety
 q  -1_0
 p  
-UiComponent
-i  9
-Circle
-f  5.000000
-Layer
-i  3
-IdRef
-q  214_1
+q  217_1
+q  218_1
+q  219_1
+__q  219_1
+AlgebraNode
+i  2
+s  
+f  1.000000
+i  1
+b  0
+b  0
+b  0
+b  0
+LoopSociety
+q  216_1
+p  
+__q  218_1
+AlgebraNode
+i  2
+s  
+f  1.000000
+i  1
+b  0
+b  0
+b  0
+b  0
+LoopSociety
+q  216_1
+p  
+__q  217_1
+AlgebraNode
+i  2
+s  
+f  1.000000
+i  1
+b  0
+b  0
+b  0
+b  0
+LoopSociety
+q  216_1
+p  

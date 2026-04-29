@@ -1,77 +1,5 @@
 __q  124_1
-MouseIntersectable
-UiComponent
-i  8
-CodeFunction
-i  3
-Sphere
-f  2.000000
-Rectangle
-f  20.000000
-f  15.000000
-Position
-f  391.400848
-f  0.000061
-f  -140.832611
-MouseGrabbable
 MouseSelectable
-LoopSociety
-q  -1_0
-p  
-q  125_1
-q  126_1
-Offset
-f  0.000000
-f  0.000000
-f  0.000000
-Layer
-i  3
-TextureComponent
-s  
-f  30.000000
-i  0
-s  procedureFunction1.png
-PlacementComponent
-__q  126_1
-LoopSociety
-q  124_1
-p  
-Sphere
-f  2.000000
-UiComponent
-i  9
-Position
-f  392.212006
-f  0.000061
-f  -141.105225
-MouseGrabbable
-MouseIntersectable
-MouseSelectable
-Layer
-i  3
-TextureComponent
-s  
-f  17.000000
-i  0
-s  popIcon.png
-__q  125_1
-LoopSociety
-q  124_1
-p  
-Sphere
-f  2.000000
-InputVariable
-q  -1_0
-s  
-q  -1_0
-i  0
-p  
-p  
-Position
-f  374.800842
-f  0.000061
-f  -140.832611
-MouseGrabbable
 Text
 s  
 f  0.000000
@@ -83,11 +11,25 @@ f  0.000000
 f  0.000000
 f  3.000000
 b  1
-MouseSelectable
-MouseIntersectable
+MouseGrabbable
+Position
+f  -10.503601
+f  0.000000
+f  81.372993
 UiComponent
 i  9
+Sphere
+f  2.000000
 Circle
 f  5.000000
+LoopSociety
+q  -1_0
+p  
+InputVariable
+q  -1_0
+q  -1_0
+q  -1_0
 Layer
 i  3
+IdRef
+q  121_1

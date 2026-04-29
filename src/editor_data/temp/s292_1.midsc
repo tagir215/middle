@@ -1,19 +1,4 @@
 __q  292_1
-InputVariable
-q  -1_0
-s  
-q  -1_0
-i  0
-p  
-p  
-Sphere
-f  2.000000
-MouseGrabbable
-Position
-f  -9.275848
-f  0.000000
-f  -17.388618
-MouseSelectable
 Text
 s  
 f  0.000000
@@ -25,14 +10,31 @@ f  0.000000
 f  0.000000
 f  3.000000
 b  1
-LoopSociety
-q  -1_0
-p  
+MouseSelectable
+Position
+f  -38.081451
+f  0.000000
+f  51.776695
+MouseGrabbable
+Sphere
+f  2.000000
 UiComponent
 i  9
 Circle
 f  5.000000
+LoopSociety
+q  -1_0
+p  
+InputVariable
+q  -1_0
+s  
+q  -1_0
+i  0
+p  
+p  
+q  -1_0
+q  -1_0
 Layer
 i  3
 IdRef
-q  290_1
+q  289_1

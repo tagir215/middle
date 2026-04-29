@@ -3,9 +3,9 @@ PhysicsData
 f  12.566371
 f  0.079577
 f  1.000000
-f  1.132115
+f  0.635838
 f  0.000000
-f  -6.120931
+f  -0.978849
 f  0.000000
 f  0.000000
 f  0.000000
@@ -13,21 +13,24 @@ f  0.000000
 f  0.000000
 f  0.000000
 b  0
-Sphere
-f  2.000000
+MouseIntersectable
 BubbleUnit
 i  1
-MouseSelectable
-MouseGrabbable
 Position
-f  8.323474
-f  0.000061
-f  -60.301266
-MouseIntersectable
+f  6.299626
+f  -0.000000
+f  -65.166679
+MouseGrabbable
+MouseSelectable
 LoopSociety
 q  -1_0
 p  
+Sphere
+f  2.000000
 Circle
 f  2.000000
 Layer
 i  3
+IdRef
+q  35_0
+DeleteComponent

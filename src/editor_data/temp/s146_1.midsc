@@ -1,5 +1,4 @@
 __q  146_1
-MouseSelectable
 Text
 s  
 f  0.000000
@@ -11,20 +10,22 @@ f  0.000000
 f  0.000000
 f  3.000000
 b  1
-Position
-f  -74.212158
-f  0.000000
-f  -67.822525
+MouseSelectable
 MouseGrabbable
-Sphere
-f  2.000000
+Position
+f  48.821930
+f  0.000000
+f  69.278290
 UiComponent
 i  9
+Sphere
+f  2.000000
 Circle
 f  5.000000
 LoopSociety
 q  -1_0
 p  
+q  147_1
 InputVariable
 q  -1_0
 s  
@@ -32,7 +33,176 @@ q  -1_0
 i  0
 p  
 p  
+q  -1_0
+q  -1_0
 Layer
 i  3
 IdRef
-q  142_3
+q  94_1
+__q  147_1
+AlgebraNode
+i  0
+s  
+f  0.000000
+i  1
+b  0
+b  0
+b  0
+b  0
+LoopSociety
+q  146_1
+p  
+q  148_1
+__q  148_1
+AlgebraNode
+i  0
+s  
+f  0.000000
+i  1
+b  0
+b  0
+b  0
+b  0
+LoopSociety
+q  147_1
+p  
+q  149_1
+q  154_1
+__q  154_1
+AlgebraNode
+i  4
+s  
+f  0.000000
+i  1
+b  0
+b  0
+b  0
+b  0
+LoopSociety
+q  148_1
+p  
+q  155_1
+q  156_1
+__q  156_1
+AlgebraNode
+i  0
+s  
+f  0.000000
+i  1
+b  0
+b  0
+b  0
+b  0
+LoopSociety
+q  154_1
+p  
+q  157_1
+q  158_1
+__q  158_1
+AlgebraNode
+i  1
+s  a
+f  1.000000
+i  1
+b  0
+b  0
+b  0
+b  0
+LoopSociety
+q  156_1
+p  
+__q  157_1
+AlgebraNode
+i  1
+s  b
+f  1.000000
+i  1
+b  0
+b  0
+b  0
+b  0
+LoopSociety
+q  156_1
+p  
+__q  155_1
+AlgebraNode
+i  1
+s  a
+f  1.000000
+i  1
+b  0
+b  0
+b  0
+b  0
+LoopSociety
+q  154_1
+p  
+__q  149_1
+AlgebraNode
+i  4
+s  
+f  0.000000
+i  1
+b  0
+b  0
+b  0
+b  0
+LoopSociety
+q  148_1
+p  
+q  150_1
+q  151_1
+__q  151_1
+AlgebraNode
+i  0
+s  
+f  0.000000
+i  1
+b  0
+b  0
+b  0
+b  0
+LoopSociety
+q  149_1
+p  
+q  152_1
+q  153_1
+__q  153_1
+AlgebraNode
+i  1
+s  a
+f  1.000000
+i  1
+b  0
+b  0
+b  0
+b  0
+LoopSociety
+q  151_1
+p  
+__q  152_1
+AlgebraNode
+i  1
+s  b
+f  1.000000
+i  1
+b  0
+b  0
+b  0
+b  0
+LoopSociety
+q  151_1
+p  
+__q  150_1
+AlgebraNode
+i  1
+s  b
+f  1.000000
+i  1
+b  0
+b  0
+b  0
+b  0
+LoopSociety
+q  149_1
+p  

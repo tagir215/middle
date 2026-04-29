@@ -57,7 +57,11 @@ public:
 			if (inputVariable.unitRef.index == middle::UNASSIGNED) {
 				return false;
 			}
-			if (inputVariable.structureIds.size() == 0) {
+			// OLD
+			//if (inputVariable.structureIds.size() == 0) {
+			//	return false;
+			//}
+			if (inputVariable.startPointNodeId.index == middle::UNASSIGNED) {
 				return false;
 			}
 
@@ -88,7 +92,11 @@ public:
 				if (varA.unitRef.index == middle::UNASSIGNED || varB.unitRef.index == middle::UNASSIGNED) {
 					return false;
 				}
-				if (varA.structureIds.size() == 0 || varB.structureIds.size() == 0) {
+				// OLD
+				//if (varA.structureIds.size() == 0 || varB.structureIds.size() == 0) {
+				//	return false;
+				//}
+				if (varA.startPointNodeId.index == middle::UNASSIGNED || varB.startPointNodeId.index == middle::UNASSIGNED) {
 					return false;
 				}
 				return true;
@@ -558,11 +566,11 @@ public:
 	}
 
 
-	void updateInputVariableReferences(middle::GameState* gameState, middle::Id codeBlockId, middle::Id topDogContainerId, std::unordered_map<std::string, middle::Id>& overrideMap) {
+	void updateInputVariableReferences(middle::GameState* gameState, middle::Id codeBlockId, middle::Id rootBubbleId, std::unordered_map<std::string, middle::Id>& overrideMap) {
 		if (codeBlockId.index == middle::UNASSIGNED) {
 			return;
 		}
-		assert(topDogContainerId.index != middle::UNASSIGNED);
+		assert(rootBubbleId.index != middle::UNASSIGNED);
 		middle::Id funcId = getCodeBlockFunc(gameState, codeBlockId);
 		if (funcId.index == middle::UNASSIGNED) {
 			return;
@@ -573,23 +581,15 @@ public:
 		}
 		std::vector<middle::Id>inputChildren;
 		middle::getChildrenWithComp(gameState, funcId, inputChildren, middle::getTypeId<components::InputVariable>());
+
 		// update one input case
 		if (inputChildren.size() == 1) {
 			auto& inputChild = middle::getShape(gameState, inputChildren[0].index);
 			auto input = middle::getComponent<components::InputVariable>(inputChild);
-			if (input->structureIds.size() == 1) {
-				middle::Id& structureId = input->structureIds[0];
-				middle::Id result = bubble::findMatchingBubbleWithVariables(gameState, topDogContainerId,
-					structureId, input->structureDepth, overrideMap);
+
+			if (middle::isValidId(gameState, input->startPointNodeId)) {
+				middle::Id result = bubble::findMatchingBubble(gameState, rootBubbleId, input->startPointNodeId, input->rootNodeId, overrideMap);
 				input->unitRef = result;
-			}
-			else if (input->structureIds.size() >= 2) {
-				middle::Id& structureIdA = input->structureIds[0];
-				middle::Id& structureIdB = input->structureIds[1];
-				middle::Id idA, idB;
-				bubble::findMatchingStructurePairWithVariables(gameState, topDogContainerId,
-					structureIdA, structureIdB, input->structureDepth, overrideMap, idA, idB);
-				input->unitRef = idA;
 			}
 
 		}
@@ -599,32 +599,25 @@ public:
 			auto& inputChildB = middle::getShape(gameState, inputChildren[1].index);
 			auto inputA = middle::getComponent<components::InputVariable>(inputChildA);
 			auto inputB = middle::getComponent<components::InputVariable>(inputChildB);
-			middle::Id structureIdA = inputA->structureIds.size() > 0 ? inputA->structureIds[0] : middle::Id();
-			middle::Id structureIdB = inputB->structureIds.size() > 0 ? inputB->structureIds[0] : middle::Id();
+			middle::Id startPointA = inputA->startPointNodeId;
+			middle::Id startPointB = inputB->startPointNodeId;
 
 
-			bool bothValid = isValidId(gameState, structureIdA) && isValidId(gameState, structureIdB);
+			bool bothValid = isValidId(gameState, startPointA) && isValidId(gameState, startPointB);
 			if (bothValid) {
 				middle::Id idA, idB;
-				bubble::findMatchingStructurePairWithVariables(gameState, topDogContainerId,
-					structureIdA, structureIdB, inputA->structureDepth, overrideMap, idA, idB);
+				bubble::findMatchingPairBubbles(gameState, rootBubbleId,
+					startPointA, startPointB, inputA->rootNodeId, overrideMap, idA, idB);
 				inputA->unitRef = idA;
 				inputB->unitRef = idB;
 			}
 			// if one is valid update it for visual indicators
-			else if (isValidId(gameState, structureIdA)) {
-				if (structureIdA.index == 30) {
-					int a = 0;
-				}
-				auto& inputShape = middle::getShape(gameState, structureIdA.index);
-				auto comp = middle::getComponent<components::AlgebraNode>(inputShape);
-				middle::Id result = bubble::findMatchingBubbleWithVariables(gameState, topDogContainerId,
-					structureIdA, inputA->structureDepth, overrideMap);
+			else if (isValidId(gameState, startPointA)) {
+				middle::Id result = bubble::findMatchingBubble(gameState, rootBubbleId, inputA->startPointNodeId, inputA->rootNodeId, overrideMap);
 				inputA->unitRef = result;
 			}
-			else if (isValidId(gameState, structureIdB)) {
-				middle::Id result = bubble::findMatchingBubbleWithVariables(gameState, topDogContainerId,
-					structureIdB, inputB->structureDepth, overrideMap);
+			else if (isValidId(gameState, startPointB)) {
+				middle::Id result = bubble::findMatchingBubble(gameState, rootBubbleId, inputB->startPointNodeId, inputB->rootNodeId, overrideMap);
 				inputB->unitRef = result;
 			}
 
@@ -754,7 +747,7 @@ public:
 
 			if (procedure->mode == procedureConstants::EXECUTING && !skipPause) {
 				auto timer = middle::attachComponent<components::TimerComponent>(gameState, procedureShape.id);
-				timer->timeLeft = 0.3f;
+				timer->timeLeft = 1.3f;
 			}
 
 			if (procedure->mode == procedureConstants::STEPPING) {
