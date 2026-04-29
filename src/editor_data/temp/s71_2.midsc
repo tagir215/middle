@@ -1,104 +1,311 @@
 __q  71_2
+MouseSelectable
+UiComponent
+i  8
+CodeFunction
+i  25
+Sphere
+f  2.000000
+Rectangle
+f  20.000000
+f  15.000000
+MouseGrabbable
+Position
+f  462.081787
+f  0.000000
+f  182.253967
+MouseIntersectable
 LoopSociety
 q  -1_0
 p  
 q  72_2
 q  73_2
-BubbleComponent
-b  0
-MouseSelectable
 Layer
 i  3
-MouseGrabbable
-MouseIntersectable
-LoopTag
-PhysicsData
-f  5654.866699
-f  0.000177
-f  1.000000
-f  0.135949
-f  0.000000
-f  -0.333503
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-b  0
-Circle
-f  42.426407
-Position
-f  80.620132
-f  0.000000
-f  4.157135
+TextureComponent
+s  
+f  30.000000
+i  0
+s  procedureFunction1.png
+PlacementComponent
 __q  73_2
+Sphere
+f  2.000000
+Position
+f  463.433105
+f  0.004150
+f  183.193359
+MouseGrabbable
+Layer
+i  3
+MouseSelectable
+MouseIntersectable
 LoopSociety
 q  71_2
 p  
-BubbleComponent
-b  0
-MouseSelectable
-Layer
-i  4
-MouseGrabbable
-MouseIntersectable
-LoopTag
-PhysicsData
-f  1256.637085
-f  0.000796
-f  1.000000
-f  0.146404
-f  0.000000
-f  -0.345986
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-b  0
-Circle
+TextureComponent
+s  
 f  20.000000
-Position
-f  94.614212
-f  0.000000
-f  21.214329
-BubbleVariable
-s  b
-b  0
+i  0
+s  comporessPower.png
+UiComponent
+i  -1
 __q  72_2
+Text
+s  
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  3.000000
+b  1
+MouseSelectable
+MouseIntersectable
+MouseGrabbable
+Position
+f  445.481781
+f  0.000000
+f  182.253967
+UiComponent
+i  9
+Sphere
+f  2.000000
+Circle
+f  5.000000
 LoopSociety
 q  71_2
 p  
-BubbleComponent
-b  0
-MouseSelectable
+q  75_2
+InputVariable
+q  66_4
+q  75_2
+q  86_2
 Layer
-i  4
-MouseGrabbable
-MouseIntersectable
-LoopTag
-PhysicsData
-f  1256.637085
-f  0.000796
-f  1.000000
-f  0.145524
+i  3
+Highlight
+__q  75_2
+AlgebraNode
+i  0
+s  
 f  0.000000
-f  -0.345302
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
+i  1
 b  0
-Circle
-f  20.000000
-Position
-f  66.455101
-f  0.000000
-f  -12.660933
-BubbleVariable
+b  0
+b  0
+b  0
+LoopSociety
+q  72_2
+p  
+q  76_2
+q  84_2
+q  90_1
+__q  90_1
+AlgebraNode
+i  1
 s  a
+f  1.000000
+i  2
 b  0
+b  0
+b  0
+b  0
+LoopSociety
+q  75_2
+p  
+__q  84_2
+AlgebraNode
+i  0
+s  
+f  0.000000
+i  1
+b  0
+b  0
+b  0
+b  0
+LoopSociety
+q  75_2
+p  
+q  85_2
+__q  85_2
+AlgebraNode
+i  4
+s  
+f  0.000000
+i  1
+b  0
+b  0
+b  0
+b  0
+LoopSociety
+q  84_2
+p  
+q  86_2
+q  87_2
+q  88_2
+__q  88_2
+AlgebraNode
+i  0
+s  
+f  0.000000
+i  1
+b  0
+b  0
+b  0
+b  0
+LoopSociety
+q  85_2
+p  
+q  89_2
+__q  89_2
+AlgebraNode
+i  2
+s  
+f  1.000000
+i  1
+b  0
+b  0
+b  0
+b  0
+LoopSociety
+q  88_2
+p  
+__q  87_2
+AlgebraNode
+i  1
+s  b
+f  1.000000
+i  1
+b  0
+b  0
+b  0
+b  0
+LoopSociety
+q  85_2
+p  
+__q  86_2
+AlgebraNode
+i  1
+s  b
+f  1.000000
+i  1
+b  0
+b  0
+b  0
+b  0
+LoopSociety
+q  85_2
+p  
+__q  76_2
+AlgebraNode
+i  4
+s  
+f  0.000000
+i  1
+b  0
+b  0
+b  0
+b  0
+LoopSociety
+q  75_2
+p  
+q  77_2
+q  81_2
+__q  81_2
+AlgebraNode
+i  0
+s  
+f  0.000000
+i  1
+b  0
+b  0
+b  0
+b  0
+LoopSociety
+q  76_2
+p  
+q  82_2
+q  83_2
+__q  83_2
+AlgebraNode
+i  2
+s  
+f  1.000000
+i  1
+b  0
+b  0
+b  0
+b  0
+LoopSociety
+q  81_2
+p  
+__q  82_2
+AlgebraNode
+i  2
+s  
+f  1.000000
+i  1
+b  0
+b  0
+b  0
+b  0
+LoopSociety
+q  81_2
+p  
+__q  77_2
+AlgebraNode
+i  0
+s  
+f  0.000000
+i  1
+b  0
+b  0
+b  0
+b  0
+LoopSociety
+q  76_2
+p  
+q  78_2
+__q  78_2
+AlgebraNode
+i  4
+s  
+f  0.000000
+i  1
+b  0
+b  0
+b  0
+b  0
+LoopSociety
+q  77_2
+p  
+q  79_2
+q  80_2
+__q  80_2
+AlgebraNode
+i  1
+s  a
+f  1.000000
+i  1
+b  0
+b  0
+b  0
+b  0
+LoopSociety
+q  78_2
+p  
+__q  79_2
+AlgebraNode
+i  1
+s  b
+f  1.000000
+i  1
+b  0
+b  0
+b  0
+b  0
+LoopSociety
+q  78_2
+p  

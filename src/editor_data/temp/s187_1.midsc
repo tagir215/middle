@@ -1,5 +1,40 @@
 __q  187_1
-DeleteComponent
+MouseSelectable
+Text
+s  
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  3.000000
+b  1
+Position
+f  914.594482
+f  0.000000
+f  -96.130905
+MouseGrabbable
+Sphere
+f  2.000000
+UiComponent
+i  9
+Circle
+f  5.000000
+LoopSociety
+q  -1_0
+p  
+q  188_1
+InputVariable
+q  -1_0
+q  -1_0
+q  -1_0
+Layer
+i  3
+IdRef
+q  171_1
+__q  188_1
 AlgebraNode
 i  0
 s  
@@ -10,20 +45,113 @@ b  0
 b  0
 b  0
 LoopSociety
-q  -1_0
+q  187_1
 p  
-q  188_1
 q  189_1
+__q  189_1
+AlgebraNode
+i  0
+s  
+f  0.000000
+i  1
+b  0
+b  0
+b  0
+b  0
+LoopSociety
+q  188_1
+p  
 q  190_1
-q  191_1
-q  192_1
 q  193_1
+q  196_1
+__q  196_1
+AlgebraNode
+i  4
+s  
+f  0.000000
+i  1
+b  0
+b  0
+b  0
+b  0
+LoopSociety
+q  189_1
+p  
+q  197_1
+q  198_1
+__q  198_1
+AlgebraNode
+i  0
+s  
+f  0.000000
+i  1
+b  0
+b  0
+b  0
+b  0
+LoopSociety
+q  196_1
+p  
+q  199_1
+q  200_1
+__q  200_1
+AlgebraNode
+i  1
+s  a
+f  1.000000
+i  1
+b  0
+b  0
+b  0
+b  0
+LoopSociety
+q  198_1
+p  
+__q  199_1
+AlgebraNode
+i  1
+s  b
+f  1.000000
+i  1
+b  0
+b  0
+b  0
+b  0
+LoopSociety
+q  198_1
+p  
+__q  197_1
+AlgebraNode
+i  1
+s  a
+f  1.000000
+i  1
+b  0
+b  0
+b  0
+b  0
+LoopSociety
+q  196_1
+p  
+__q  193_1
+AlgebraNode
+i  4
+s  
+f  0.000000
+i  1
+b  0
+b  0
+b  0
+b  0
+LoopSociety
+q  189_1
+p  
 q  194_1
 q  195_1
 __q  195_1
 AlgebraNode
-i  2
-s  
+i  1
+s  b
 f  1.000000
 i  1
 b  0
@@ -31,12 +159,12 @@ b  0
 b  0
 b  0
 LoopSociety
-q  187_1
+q  193_1
 p  
 __q  194_1
 AlgebraNode
-i  2
-s  
+i  1
+s  a
 f  1.000000
 i  1
 b  0
@@ -44,64 +172,27 @@ b  0
 b  0
 b  0
 LoopSociety
-q  187_1
-p  
-__q  193_1
-AlgebraNode
-i  2
-s  
-f  1.000000
-i  1
-b  0
-b  0
-b  0
-b  0
-LoopSociety
-q  187_1
-p  
-__q  192_1
-AlgebraNode
-i  2
-s  
-f  1.000000
-i  1
-b  0
-b  0
-b  0
-b  0
-LoopSociety
-q  187_1
-p  
-__q  191_1
-AlgebraNode
-i  2
-s  
-f  1.000000
-i  1
-b  0
-b  0
-b  0
-b  0
-LoopSociety
-q  187_1
+q  193_1
 p  
 __q  190_1
 AlgebraNode
-i  2
+i  4
 s  
-f  1.000000
+f  0.000000
 i  1
 b  0
 b  0
 b  0
 b  0
 LoopSociety
-q  187_1
+q  189_1
 p  
-__q  189_1
+q  191_1
+q  192_2
+__q  192_2
 AlgebraNode
-i  2
-s  
+i  1
+s  b
 f  1.000000
 i  1
 b  0
@@ -109,12 +200,12 @@ b  0
 b  0
 b  0
 LoopSociety
-q  187_1
+q  190_1
 p  
-__q  188_1
+__q  191_1
 AlgebraNode
-i  2
-s  
+i  1
+s  b
 f  1.000000
 i  1
 b  0
@@ -122,5 +213,5 @@ b  0
 b  0
 b  0
 LoopSociety
-q  187_1
+q  190_1
 p  

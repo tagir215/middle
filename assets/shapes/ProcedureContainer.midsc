@@ -52,9 +52,9 @@ Sphere
 f  2.000000
 MouseGrabbable
 Position
-f  362.505310
+f  362.505188
 f  338.032837
-f  44.248329
+f  44.248257
 InputVariable
 q  -1_0
 q  -1_0
@@ -105,9 +105,9 @@ MouseIntersectable
 ProcedureComponent
 MouseGrabbable
 Position
-f  157.637161
+f  157.637085
 f  338.032715
-f  68.107979
+f  68.107903
 Offset
 f  30.000000
 f  0.000000
@@ -121,18 +121,17 @@ v
 UiComponent
 i  10
 __q  63_0
-Sphere
-f  2.000000
 Rectangle
 f  60.000000
 f  30.000000
+Sphere
+f  2.000000
 CodeBlock
 i  0
 Position
-f  157.637161
+f  157.637085
 f  338.032715
-f  -831.892029
-MouseSelectable
+f  -831.892090
 Text
 s  
 f  0.000000
@@ -144,6 +143,7 @@ f  0.000000
 f  0.000000
 f  1.000000
 b  1
+MouseSelectable
 MouseIntersectable
 LoopSociety
 q  16_0
@@ -162,13 +162,12 @@ i  11
 Layer
 i  2
 __q  62_0
-Sphere
-f  2.000000
 Rectangle
 f  60.000000
 f  30.000000
+Sphere
+f  2.000000
 MouseIntersectable
-MouseSelectable
 Text
 s  
 f  0.000000
@@ -180,12 +179,13 @@ f  0.000000
 f  0.000000
 f  1.000000
 b  1
+MouseSelectable
 CodeBlock
 i  0
 Position
-f  157.637161
+f  157.637085
 f  338.032715
-f  -801.892029
+f  -801.892090
 LoopSociety
 q  16_0
 p  
@@ -203,18 +203,17 @@ i  11
 Layer
 i  2
 __q  61_0
-Sphere
-f  2.000000
 Rectangle
 f  60.000000
 f  30.000000
+Sphere
+f  2.000000
 CodeBlock
 i  0
 Position
-f  157.637161
+f  157.637085
 f  338.032715
-f  -771.892029
-MouseSelectable
+f  -771.892090
 Text
 s  
 f  0.000000
@@ -226,6 +225,7 @@ f  0.000000
 f  0.000000
 f  1.000000
 b  1
+MouseSelectable
 MouseIntersectable
 LoopSociety
 q  16_0
@@ -265,9 +265,9 @@ b  1
 CodeBlock
 i  0
 Position
-f  157.637161
+f  157.637085
 f  338.032715
-f  -741.892029
+f  -741.892090
 LoopSociety
 q  16_0
 p  
@@ -293,9 +293,9 @@ f  30.000000
 CodeBlock
 i  0
 Position
-f  157.637161
+f  157.637085
 f  338.032715
-f  -711.892029
+f  -711.892090
 MouseSelectable
 Text
 s  
@@ -347,9 +347,9 @@ b  1
 CodeBlock
 i  0
 Position
-f  157.637161
+f  157.637085
 f  338.032715
-f  -681.892029
+f  -681.892090
 LoopSociety
 q  16_0
 p  
@@ -375,9 +375,9 @@ f  30.000000
 CodeBlock
 i  0
 Position
-f  157.637161
+f  157.637085
 f  338.032715
-f  -651.892029
+f  -651.892090
 MouseSelectable
 Text
 s  
@@ -429,9 +429,9 @@ b  1
 CodeBlock
 i  0
 Position
-f  157.637161
+f  157.637085
 f  338.032715
-f  -621.892029
+f  -621.892090
 LoopSociety
 q  16_0
 p  
@@ -457,9 +457,9 @@ f  30.000000
 CodeBlock
 i  0
 Position
-f  157.637161
+f  157.637085
 f  338.032715
-f  -591.892029
+f  -591.892090
 MouseSelectable
 Text
 s  
@@ -511,9 +511,9 @@ b  1
 CodeBlock
 i  0
 Position
-f  157.637161
+f  157.637085
 f  338.032715
-f  -561.892029
+f  -561.892090
 LoopSociety
 q  16_0
 p  
@@ -539,9 +539,9 @@ f  30.000000
 CodeBlock
 i  0
 Position
-f  157.637161
+f  157.637085
 f  338.032715
-f  -531.892029
+f  -531.892090
 MouseSelectable
 Text
 s  
@@ -593,9 +593,9 @@ b  1
 CodeBlock
 i  0
 Position
-f  157.637161
+f  157.637085
 f  338.032715
-f  -501.891998
+f  -501.892090
 LoopSociety
 q  16_0
 p  
@@ -621,9 +621,9 @@ f  30.000000
 CodeBlock
 i  0
 Position
-f  157.637161
+f  157.637085
 f  338.032715
-f  -471.891998
+f  -471.892090
 MouseSelectable
 Text
 s  
@@ -675,9 +675,9 @@ b  1
 CodeBlock
 i  0
 Position
-f  157.637161
+f  157.637085
 f  338.032715
-f  -441.891998
+f  -441.892090
 LoopSociety
 q  16_0
 p  
@@ -703,9 +703,9 @@ f  30.000000
 CodeBlock
 i  0
 Position
-f  157.637161
+f  157.637085
 f  338.032715
-f  -411.891998
+f  -411.892090
 MouseSelectable
 Text
 s  
@@ -757,9 +757,9 @@ b  1
 CodeBlock
 i  0
 Position
-f  157.637161
+f  157.637085
 f  338.032715
-f  -381.891998
+f  -381.892090
 LoopSociety
 q  16_0
 p  
@@ -785,9 +785,9 @@ f  30.000000
 CodeBlock
 i  0
 Position
-f  157.637161
+f  157.637085
 f  338.032715
-f  -351.892029
+f  -351.892090
 MouseSelectable
 Text
 s  
@@ -839,9 +839,9 @@ b  1
 CodeBlock
 i  0
 Position
-f  157.637161
+f  157.637085
 f  338.032715
-f  -321.892029
+f  -321.892090
 LoopSociety
 q  16_0
 p  
@@ -867,9 +867,9 @@ f  30.000000
 CodeBlock
 i  0
 Position
-f  157.637161
+f  157.637085
 f  338.032715
-f  -291.892029
+f  -291.892090
 MouseSelectable
 Text
 s  
@@ -921,9 +921,9 @@ b  1
 CodeBlock
 i  0
 Position
-f  157.637161
+f  157.637085
 f  338.032715
-f  -261.892029
+f  -261.892090
 LoopSociety
 q  16_0
 p  
@@ -949,9 +949,9 @@ f  30.000000
 CodeBlock
 i  0
 Position
-f  157.637161
+f  157.637085
 f  338.032715
-f  -231.892029
+f  -231.892090
 MouseSelectable
 Text
 s  
@@ -1003,9 +1003,9 @@ b  1
 CodeBlock
 i  0
 Position
-f  157.637161
+f  157.637085
 f  338.032715
-f  -201.892029
+f  -201.892090
 LoopSociety
 q  16_0
 p  
@@ -1031,9 +1031,9 @@ f  30.000000
 CodeBlock
 i  0
 Position
-f  157.637161
+f  157.637085
 f  338.032715
-f  -171.892029
+f  -171.892090
 MouseSelectable
 Text
 s  
@@ -1085,9 +1085,9 @@ b  1
 CodeBlock
 i  0
 Position
-f  157.637161
+f  157.637085
 f  338.032715
-f  -141.892029
+f  -141.892090
 LoopSociety
 q  16_0
 p  
@@ -1113,9 +1113,9 @@ f  30.000000
 CodeBlock
 i  0
 Position
-f  157.637161
+f  157.637085
 f  338.032715
-f  -111.892021
+f  -111.892097
 MouseSelectable
 Text
 s  
@@ -1167,9 +1167,9 @@ b  1
 CodeBlock
 i  0
 Position
-f  157.637161
+f  157.637085
 f  338.032715
-f  -81.892021
+f  -81.892097
 LoopSociety
 q  16_0
 p  
@@ -1195,9 +1195,9 @@ f  30.000000
 CodeBlock
 i  0
 Position
-f  157.637161
+f  157.637085
 f  338.032715
-f  -51.892021
+f  -51.892097
 MouseSelectable
 Text
 s  
@@ -1249,9 +1249,9 @@ b  1
 CodeBlock
 i  0
 Position
-f  157.637161
+f  157.637085
 f  338.032715
-f  -21.892021
+f  -21.892096
 LoopSociety
 q  16_0
 p  
@@ -1277,9 +1277,9 @@ f  30.000000
 CodeBlock
 i  0
 Position
-f  157.637161
+f  157.637085
 f  338.032715
-f  8.107979
+f  8.107904
 MouseSelectable
 Text
 s  
@@ -1331,9 +1331,9 @@ b  1
 CodeBlock
 i  0
 Position
-f  157.637161
+f  157.637085
 f  338.032715
-f  38.107979
+f  38.107903
 LoopSociety
 q  16_0
 p  
@@ -1359,9 +1359,9 @@ f  30.000000
 CodeBlock
 i  0
 Position
-f  157.637161
+f  157.637085
 f  338.032715
-f  68.107979
+f  68.107903
 MouseSelectable
 Text
 s  

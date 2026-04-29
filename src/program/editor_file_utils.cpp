@@ -226,9 +226,6 @@ namespace middle {
 			// Offset by indexOffset. This is used when importing scenes into other scenes, offsetting imported scenes indexes to ghost area
 			std::vector<std::string>idAndGen = split(valueStr, '_');
 			id->index = std::stoi(idAndGen[0]); 
-			if (id->index + indexOffset ==  1179) {
-				int a = 0;
-			}
 			if (id->index != UNASSIGNED) {
 				id->index += indexOffset;
 			}

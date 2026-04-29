@@ -1,104 +1,90 @@
 __q  65_2
+UiComponent
+i  8
+CodeFunction
+i  21
+Sphere
+f  2.000000
+Rectangle
+f  20.000000
+f  15.000000
+MouseGrabbable
+Position
+f  407.237000
+f  -0.000122
+f  214.959366
+MouseIntersectable
+MouseSelectable
 LoopSociety
 q  -1_0
 p  
 q  66_2
-q  67_2
+q  67_1
+Offset
+f  0.000000
+f  0.000000
+f  0.000000
 Layer
-i  2
-MouseSelectable
-BubbleComponent
-b  0
-MouseGrabbable
-MouseIntersectable
-LoopTag
-PhysicsData
-f  5654.866699
-f  0.000177
-f  1.000000
-f  -0.000083
-f  0.000000
-f  0.000052
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-b  0
-Circle
-f  42.426407
-Position
-f  34.090820
-f  0.000000
-f  36.511375
-__q  67_2
+i  3
+TextureComponent
+s  
+f  30.000000
+i  0
+s  procedureFunction1.png
+PlacementComponent
+__q  67_1
 LoopSociety
 q  65_2
 p  
-Layer
-i  3
-MouseSelectable
-BubbleComponent
-b  0
+Sphere
+f  2.000000
+UiComponent
+i  9
+Position
+f  407.800842
+f  -0.000122
+f  215.749039
 MouseGrabbable
 MouseIntersectable
-LoopTag
-PhysicsData
-f  1256.637085
-f  0.000796
-f  1.000000
-f  -0.000055
-f  0.000000
-f  -0.000041
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-b  0
-Circle
-f  20.000000
-Position
-f  48.697235
-f  0.000000
-f  52.990810
-BubbleVariable
-s  b
-b  0
+MouseSelectable
+Layer
+i  3
+TextureComponent
+s  
+f  18.000000
+i  0
+s  bubblifyIcon.png
 __q  66_2
 LoopSociety
 q  65_2
 p  
+Sphere
+f  2.000000
+InputVariable
+q  -1_0
+q  -1_0
+q  -1_0
+MouseGrabbable
+Position
+f  390.636993
+f  -0.000122
+f  214.959366
+MouseSelectable
+Text
+s  
+f  255.000000
+f  255.000000
+f  255.000000
+f  255.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  3.000000
+b  1
+MouseIntersectable
+UiComponent
+i  9
+Circle
+f  5.000000
 Layer
 i  3
-MouseSelectable
-BubbleComponent
-b  0
-MouseGrabbable
-MouseIntersectable
-LoopTag
-PhysicsData
-f  1256.637085
-f  0.000796
-f  1.000000
-f  0.000005
-f  0.000000
-f  0.000035
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-b  0
-Circle
-f  20.000000
-Position
-f  19.478369
-f  0.000000
-f  20.025110
-BubbleVariable
-s  a
-b  0

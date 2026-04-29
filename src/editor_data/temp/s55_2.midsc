@@ -1,138 +1,68 @@
 __q  55_2
-Layer
-i  1
-MouseSelectable
-BubbleComponent
-b  1
 PhysicsData
-f  1387.167847
-f  0.000721
 f  1.000000
-f  0.001083
-f  0.000000
-f  -0.000337
-f  0.000000
+f  1.000000
+f  1.000000
 f  0.000000
 f  0.000000
+f  0.000000
+f  0.800000
+f  0.800000
+f  0.800000
 f  0.000000
 f  0.000000
 f  0.000000
 b  0
-MouseGrabbable
-MouseIntersectable
-LoopTag
+Sphere
+f  2.000000
 LoopSociety
 q  -1_0
 p  
 q  56_2
-q  66_2
-q  67_2
-TopDogBubbleTag
-Circle
-f  21.013073
 Position
-f  58.614670
-f  -0.000031
-f  18.791660
+f  -117.425797
+f  0.000061
+f  80.450958
+MouseGrabbable
+InventoryItem
+i  3
+MouseSelectable
+Circle
+f  10.000000
+UiComponent
+i  -1
+Layer
+i  2
+TextureComponent
+s  C:\Users\tagir\raylib_projects\middle\assets\textures\activeRect.png
+f  40.000000
+i  0
+s  activeRect.png
 IdRef
-q  24_0
+q  939_0
+PlacementComponent
 DeleteComponent
-__q  67_2
-MouseIntersectable
-BubbleUnit
-i  1
-LoopSociety
-q  55_2
-p  
-MouseGrabbable
-Circle
-f  2.000000
-Layer
-i  1
-MouseSelectable
-PhysicsData
-f  12.566371
-f  0.079577
-f  1.000000
-f  0.207300
-f  0.000000
-f  -1.308691
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-b  0
-Sphere
-f  2.000000
-Position
-f  47.385857
-f  -0.000031
-f  15.040687
-__q  66_2
-MouseIntersectable
-BubbleUnit
-i  1
-LoopSociety
-q  55_2
-p  
-MouseGrabbable
-Circle
-f  2.000000
-Layer
-i  1
-MouseSelectable
-PhysicsData
-f  12.566371
-f  0.079577
-f  1.000000
-f  -0.424304
-f  0.000000
-f  -1.124372
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-b  0
-Sphere
-f  2.000000
-Position
-f  67.911552
-f  -0.000031
-f  11.513706
 __q  56_2
+Position
+f  -117.200760
+f  0.000061
+f  80.493561
+MouseGrabbable
 MouseIntersectable
-BubbleUnit
-i  1
+MouseSelectable
+UiComponent
+i  -1
+Sphere
+f  2.000000
+TextureComponent
+s  
+f  20.000000
+i  0
+s  popIcon.png
+Button
+i  5
 LoopSociety
 q  55_2
 p  
-MouseGrabbable
-Circle
-f  2.000000
 Layer
-i  1
-MouseSelectable
-PhysicsData
-f  12.566371
-f  0.079577
-f  1.000000
-f  0.056989
-f  0.000000
-f  -0.632067
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-b  0
-Sphere
-f  2.000000
-Position
-f  60.592537
-f  -0.000031
-f  30.704201
+i  109

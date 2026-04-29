@@ -1,32 +1,86 @@
 __q  78_1
-PhysicsData
-f  23696.703125
-f  0.000042
-f  1.000000
-f  -0.324883
-f  0.000000
-f  -0.221694
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-b  0
-Layer
-i  1
 MouseSelectable
-BubbleComponent
-b  0
+Rectangle
+f  20.000000
+f  15.000000
+Sphere
+f  2.000000
+UiComponent
+i  8
+CodeFunction
+i  22
+Position
+f  -242.314957
+f  0.000061
+f  -192.609329
 MouseGrabbable
 MouseIntersectable
-LoopTag
 LoopSociety
 q  -1_0
 p  
-Circle
-f  86.849838
+q  79_1
+q  80_1
+Layer
+i  3
+TextureComponent
+s  
+f  30.000000
+i  0
+s  procedureFunction1.png
+PlacementComponent
+__q  80_1
+LoopSociety
+q  78_1
+p  
+Sphere
+f  2.000000
+UiComponent
+i  9
 Position
-f  -11.167969
+f  -238.250565
+f  800.000061
+f  -192.760330
+MouseGrabbable
+MouseIntersectable
+MouseSelectable
+Layer
+i  3
+TextureComponent
+s  
+f  15.000000
+i  0
+s  simplifyIcon.png
+__q  79_1
+MouseSelectable
+Text
+s  
 f  0.000000
-f  11.655124
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  3.000000
+b  1
+MouseIntersectable
+Position
+f  -258.914948
+f  0.000061
+f  -192.609329
+MouseGrabbable
+Sphere
+f  2.000000
+UiComponent
+i  9
+Circle
+f  5.000000
+LoopSociety
+q  78_1
+p  
+InputVariable
+q  -1_0
+q  -1_0
+q  -1_0
+Layer
+i  3

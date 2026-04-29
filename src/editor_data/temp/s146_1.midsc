@@ -1,208 +1,100 @@
 __q  146_1
-Text
-s  
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-f  3.000000
-b  1
+Layer
+i  4
 MouseSelectable
-MouseGrabbable
-Position
-f  48.821930
+BubbleComponent
+b  0
+PhysicsData
+f  1256.637085
+f  0.000796
+f  1.000000
+f  7.675630
 f  0.000000
-f  69.278290
-UiComponent
-i  9
-Sphere
-f  2.000000
-Circle
-f  5.000000
+f  -1.625724
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+b  0
+MouseGrabbable
+MouseIntersectable
+LoopTag
 LoopSociety
 q  -1_0
 p  
 q  147_1
-InputVariable
-q  -1_0
-s  
-q  -1_0
-i  0
-p  
-p  
-q  -1_0
-q  -1_0
-Layer
-i  3
-IdRef
-q  94_1
-__q  147_1
-AlgebraNode
-i  0
-s  
+q  148_1
+Circle
+f  20.000000
+Position
+f  -145.657516
 f  0.000000
+f  -69.410469
+__q  148_1
+MouseIntersectable
+BubbleUnit
 i  1
-b  0
-b  0
-b  0
-b  0
 LoopSociety
 q  146_1
 p  
-q  148_1
-__q  148_1
-AlgebraNode
-i  0
-s  
+MouseGrabbable
+Circle
+f  2.000000
+Layer
+i  5
+MouseSelectable
+PhysicsData
+f  12.566371
+f  0.079577
+f  1.000000
+f  -0.464899
 f  0.000000
-i  1
-b  0
-b  0
-b  0
-b  0
-LoopSociety
-q  147_1
-p  
-q  149_1
-q  154_1
-__q  154_1
-AlgebraNode
-i  4
-s  
+f  -3.188670
 f  0.000000
-i  1
-b  0
-b  0
-b  0
-b  0
-LoopSociety
-q  148_1
-p  
-q  155_1
-q  156_1
-__q  156_1
-AlgebraNode
-i  0
-s  
 f  0.000000
-i  1
-b  0
-b  0
-b  0
-b  0
-LoopSociety
-q  154_1
-p  
-q  157_1
-q  158_1
-__q  158_1
-AlgebraNode
-i  1
-s  a
-f  1.000000
-i  1
-b  0
-b  0
-b  0
-b  0
-LoopSociety
-q  156_1
-p  
-__q  157_1
-AlgebraNode
-i  1
-s  b
-f  1.000000
-i  1
-b  0
-b  0
-b  0
-b  0
-LoopSociety
-q  156_1
-p  
-__q  155_1
-AlgebraNode
-i  1
-s  a
-f  1.000000
-i  1
-b  0
-b  0
-b  0
-b  0
-LoopSociety
-q  154_1
-p  
-__q  149_1
-AlgebraNode
-i  4
-s  
 f  0.000000
-i  1
-b  0
-b  0
-b  0
-b  0
-LoopSociety
-q  148_1
-p  
-q  150_1
-q  151_1
-__q  151_1
-AlgebraNode
-i  0
-s  
 f  0.000000
+f  0.000000
+f  0.000000
+b  0
+Sphere
+f  2.000000
+Position
+f  -147.114197
+f  0.000000
+f  -78.819756
+__q  147_1
+MouseIntersectable
+BubbleUnit
 i  1
-b  0
-b  0
-b  0
-b  0
 LoopSociety
-q  149_1
+q  146_1
 p  
-q  152_1
-q  153_1
-__q  153_1
-AlgebraNode
-i  1
-s  a
+MouseGrabbable
+Circle
+f  2.000000
+Layer
+i  5
+MouseSelectable
+PhysicsData
+f  12.566371
+f  0.079577
 f  1.000000
-i  1
+f  -0.521673
+f  0.000000
+f  -3.178321
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
 b  0
-b  0
-b  0
-b  0
-LoopSociety
-q  151_1
-p  
-__q  152_1
-AlgebraNode
-i  1
-s  b
-f  1.000000
-i  1
-b  0
-b  0
-b  0
-b  0
-LoopSociety
-q  151_1
-p  
-__q  150_1
-AlgebraNode
-i  1
-s  b
-f  1.000000
-i  1
-b  0
-b  0
-b  0
-b  0
-LoopSociety
-q  149_1
-p  
+Sphere
+f  2.000000
+Position
+f  -144.485489
+f  0.000000
+f  -59.007362

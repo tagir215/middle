@@ -1,23 +1,23 @@
 __q  77_2
-PhysicsData
-f  5654.866699
-f  0.000177
-f  1.000000
-f  -0.043570
-f  0.000000
-f  0.033400
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-b  0
-BubbleComponent
-b  0
-MouseSelectable
 Layer
 i  3
+MouseSelectable
+BubbleComponent
+b  0
+PhysicsData
+f  1256.637085
+f  0.000796
+f  1.000000
+f  -0.000508
+f  0.000000
+f  0.000084
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+b  0
 MouseGrabbable
 MouseIntersectable
 LoopTag
@@ -27,78 +27,74 @@ p
 q  78_2
 q  79_2
 Circle
-f  42.426407
+f  20.000000
 Position
-f  -40.704510
+f  -103.075104
 f  0.000000
-f  -42.924835
+f  33.560123
 __q  79_2
-PhysicsData
-f  1256.637085
-f  0.000796
-f  1.000000
-f  -0.047093
-f  0.000000
-f  0.037249
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-b  0
-BubbleComponent
-b  0
-MouseSelectable
-Layer
-i  4
-MouseGrabbable
 MouseIntersectable
-LoopTag
+BubbleUnit
+i  1
 LoopSociety
 q  77_2
 p  
+MouseGrabbable
 Circle
-f  20.000000
-Position
-f  -22.655279
+f  2.000000
+Layer
+i  4
+MouseSelectable
+PhysicsData
+f  12.566371
+f  0.079577
+f  1.000000
+f  -0.000506
 f  0.000000
-f  -30.333160
-BubbleVariable
-s  b
+f  0.000088
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
 b  0
+Sphere
+f  2.000000
+Position
+f  -102.708710
+f  0.000000
+f  43.546455
 __q  78_2
-PhysicsData
-f  1256.637085
-f  0.000796
-f  1.000000
-f  -0.047010
-f  0.000000
-f  0.037145
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-b  0
-BubbleComponent
-b  0
-MouseSelectable
-Layer
-i  4
-MouseGrabbable
 MouseIntersectable
-LoopTag
+BubbleUnit
+i  1
 LoopSociety
 q  77_2
 p  
+MouseGrabbable
 Circle
-f  20.000000
-Position
-f  -58.755566
+f  2.000000
+Layer
+i  4
+MouseSelectable
+PhysicsData
+f  12.566371
+f  0.079577
+f  1.000000
+f  -0.000506
 f  0.000000
-f  -55.576958
-BubbleVariable
-s  a
+f  0.000090
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
 b  0
+Sphere
+f  2.000000
+Position
+f  -103.440720
+f  0.000000
+f  23.573412

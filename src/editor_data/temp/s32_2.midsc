@@ -1,35 +1,73 @@
 __q  32_2
-Text
-s  
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-f  3.000000
-b  1
+Layer
+i  0
 MouseSelectable
-Position
-f  52.778137
-f  0.000000
-f  7.788907
-MouseGrabbable
-Sphere
-f  2.000000
-UiComponent
-i  9
-Circle
-f  5.000000
+BubbleComponent
+b  0
 LoopSociety
 q  -1_0
 p  
-InputVariable
-q  -1_0
-q  -1_0
-q  -1_0
-Layer
-i  3
+q  33_2
+MouseGrabbable
+MouseIntersectable
+LoopTag
+PhysicsData
+f  2827.433105
+f  0.000354
+f  1.000000
+f  0.000039
+f  0.000000
+f  -0.000059
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+b  0
+TopDogBubbleTag
+Circle
+f  29.999998
+Position
+f  -106.547493
+f  0.000244
+f  -89.241516
 IdRef
-q  28_2
+q  73_0
+BubbleEqualsVariable
+DeleteComponent
+__q  33_2
+BubbleComponent
+b  0
+MouseSelectable
+Layer
+i  1
+LoopSociety
+q  32_2
+p  
+MouseGrabbable
+MouseIntersectable
+LoopTag
+PhysicsData
+f  1256.637085
+f  0.000796
+f  1.000000
+f  -0.000088
+f  0.000000
+f  0.000132
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+b  0
+Circle
+f  20.000000
+Position
+f  -106.547462
+f  0.000244
+f  -89.241562
+BubbleVariable
+s  z
+b  0

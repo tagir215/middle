@@ -82,8 +82,9 @@ namespace middle {
 			return UNASSIGNED;
 		Shape& shape = gameState->shapes[index];
 		middle::Id parentId = middle::getParent(gameState, shape.id);
-		if (parentId.index == UNASSIGNED)
+		if (parentId.index == UNASSIGNED) {
 			return index;
+		}
 
 		return findHighestLevelContainer(gameState, parentId.index);
 	}
@@ -140,6 +141,9 @@ namespace middle {
 			Id memberId = children[i];
 			assert(index != memberId.index);
 			moveShape(gameState, memberId.index, displacement);
+		}
+		if (index == 1219) {
+			int a = 0;
 		}
 
 		auto pos = getComponent<components::Position>(shape);

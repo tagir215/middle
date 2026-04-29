@@ -1,32 +1,42 @@
 __q  540_1
-PhysicsData
-f  11309.732422
-f  0.000088
-f  1.000000
-f  5.813958
+DeleteComponent
+AlgebraNode
+i  0
+s  
 f  0.000000
-f  203.322723
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-b  0
-Layer
 i  2
-MouseSelectable
-BubbleComponent
 b  0
-MouseGrabbable
-MouseIntersectable
-LoopTag
+b  0
+b  0
+b  0
 LoopSociety
 q  -1_0
 p  
-Circle
-f  59.999996
-Position
-f  0.031341
-f  0.000000
-f  -29.267658
+q  541_1
+q  542_1
+__q  542_1
+AlgebraNode
+i  2
+s  
+f  1.000000
+i  1
+b  0
+b  0
+b  0
+b  0
+LoopSociety
+q  540_1
+p  
+__q  541_1
+AlgebraNode
+i  2
+s  
+f  1.000000
+i  1
+b  0
+b  0
+b  0
+b  0
+LoopSociety
+q  540_1
+p  

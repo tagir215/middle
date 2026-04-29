@@ -1,58 +1,24 @@
 __q  145_1
-PhysicsData
-f  1387.167847
-f  0.000721
-f  1.000000
-f  -6.393935
-f  0.000000
-f  -4.816643
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-b  0
-MouseSelectable
-Layer
-i  4
-BubbleComponent
-b  0
-MouseGrabbable
-MouseIntersectable
-LoopTag
 LoopSociety
 q  -1_0
 p  
 q  146_1
 q  147_1
-q  148_1
-Circle
-f  21.013073
-Position
-f  -202.013779
-f  0.000000
-f  3.472177
-__q  148_1
-LoopSociety
-q  145_1
-p  
-MouseIntersectable
-BubbleUnit
-i  1
-Circle
-f  2.000000
-MouseGrabbable
 MouseSelectable
 Layer
-i  5
+i  3
+BubbleComponent
+b  0
+MouseGrabbable
+MouseIntersectable
+LoopTag
 PhysicsData
-f  12.566371
-f  0.079577
+f  1256.637085
+f  0.000796
 f  1.000000
-f  -14.612973
+f  -0.000242
 f  0.000000
-f  -6.087551
+f  -0.000018
 f  0.000000
 f  0.000000
 f  0.000000
@@ -60,32 +26,30 @@ f  0.000000
 f  0.000000
 f  0.000000
 b  0
-Sphere
-f  2.000000
+Circle
+f  20.000000
 Position
-f  -211.139420
+f  146.487808
 f  0.000000
-f  2.082333
+f  -8.161540
 __q  147_1
-LoopSociety
-q  145_1
-p  
 MouseIntersectable
 BubbleUnit
 i  1
-Circle
-f  2.000000
 MouseGrabbable
 MouseSelectable
 Layer
-i  5
+i  4
+LoopSociety
+q  145_1
+p  
 PhysicsData
 f  12.566371
 f  0.079577
 f  1.000000
-f  -11.774066
+f  0.000197
 f  0.000000
-f  -6.948798
+f  -0.000004
 f  0.000000
 f  0.000000
 f  0.000000
@@ -93,32 +57,32 @@ f  0.000000
 f  0.000000
 f  0.000000
 b  0
+Circle
+f  2.000000
 Sphere
 f  2.000000
 Position
-f  -189.962540
+f  155.142700
 f  0.000000
-f  -1.724261
+f  -3.166257
 __q  146_1
-LoopSociety
-q  145_1
-p  
 MouseIntersectable
 BubbleUnit
 i  1
-Circle
-f  2.000000
 MouseGrabbable
 MouseSelectable
 Layer
-i  5
+i  4
+LoopSociety
+q  145_1
+p  
 PhysicsData
 f  12.566371
 f  0.079577
 f  1.000000
-f  -11.917499
+f  0.000178
 f  0.000000
-f  -5.889956
+f  -0.000014
 f  0.000000
 f  0.000000
 f  0.000000
@@ -126,9 +90,11 @@ f  0.000000
 f  0.000000
 f  0.000000
 b  0
+Circle
+f  2.000000
 Sphere
 f  2.000000
 Position
-f  -196.182419
+f  137.832443
 f  0.000000
-f  16.188936
+f  -13.156914

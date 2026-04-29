@@ -1,23 +1,23 @@
 __q  169_3
-Layer
-i  4
-MouseSelectable
+PhysicsData
+f  1387.167847
+f  0.000721
+f  1.000000
+f  34.326653
+f  0.000000
+f  74.310623
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+b  0
 BubbleComponent
 b  0
-PhysicsData
-f  1256.637085
-f  0.000796
-f  1.000000
-f  0.119836
-f  0.000000
-f  0.073908
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-b  0
+Layer
+i  3
+MouseSelectable
 MouseGrabbable
 MouseIntersectable
 LoopTag
@@ -26,32 +26,66 @@ q  -1_0
 p  
 q  170_3
 q  171_3
+q  172_3
 Circle
-f  20.000000
+f  21.013073
 Position
-f  -176.521301
+f  -89.032394
 f  0.000000
-f  73.748436
+f  125.346382
+__q  172_3
+LoopSociety
+q  169_3
+p  
+BubbleUnit
+i  1
+MouseIntersectable
+Circle
+f  2.000000
+MouseGrabbable
+Layer
+i  4
+MouseSelectable
+PhysicsData
+f  12.566371
+f  0.079577
+f  1.000000
+f  21.445747
+f  0.000000
+f  102.152725
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+b  0
+Sphere
+f  2.000000
+Position
+f  -104.654549
+f  0.000000
+f  98.321968
 __q  171_3
-MouseIntersectable
-BubbleUnit
-i  1
 LoopSociety
 q  169_3
 p  
-MouseGrabbable
+BubbleUnit
+i  1
+MouseIntersectable
 Circle
 f  2.000000
+MouseGrabbable
 Layer
-i  5
+i  4
 MouseSelectable
 PhysicsData
 f  12.566371
 f  0.079577
 f  1.000000
-f  0.123382
+f  28.741211
 f  0.000000
-f  0.074251
+f  98.828384
 f  0.000000
 f  0.000000
 f  0.000000
@@ -62,29 +96,29 @@ b  0
 Sphere
 f  2.000000
 Position
-f  -184.263077
+f  -88.776405
 f  0.000000
-f  67.394844
+f  97.266602
 __q  170_3
-MouseIntersectable
-BubbleUnit
-i  1
 LoopSociety
 q  169_3
 p  
-MouseGrabbable
+BubbleUnit
+i  1
+MouseIntersectable
 Circle
 f  2.000000
+MouseGrabbable
 Layer
-i  5
+i  4
 MouseSelectable
 PhysicsData
 f  12.566371
 f  0.079577
 f  1.000000
-f  0.123120
+f  22.171223
 f  0.000000
-f  0.074515
+f  98.474594
 f  0.000000
 f  0.000000
 f  0.000000
@@ -95,6 +129,6 @@ b  0
 Sphere
 f  2.000000
 Position
-f  -168.833801
+f  -97.609100
 f  0.000000
-f  80.099014
+f  110.428566

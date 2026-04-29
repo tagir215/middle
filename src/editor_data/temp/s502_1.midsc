@@ -1,85 +1,42 @@
 __q  502_1
-MouseGrabbable
-Position
-f  132.202911
-f  -0.000061
-f  -43.575527
-LoopTag
-BubbleMultiplyComponent
-MouseIntersectable
-MouseSelectable
+DeleteComponent
+AlgebraNode
+i  0
+s  
+f  0.000000
+i  2
+b  0
+b  0
+b  0
+b  0
 LoopSociety
 q  -1_0
 p  
-q  500_1
-q  501_1
-__q  501_1
-LoopSociety
-q  502_1
-p  
-BubbleComponent
-b  0
-Layer
-i  3
-MouseSelectable
-PhysicsData
-f  1256.637085
-f  0.000796
+q  503_1
+q  504_1
+__q  504_1
+AlgebraNode
+i  2
+s  
 f  1.000000
-f  -8.098284
-f  0.000000
-f  11.050282
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
+i  1
 b  0
-MouseGrabbable
-MouseIntersectable
-LoopTag
-Circle
-f  20.000000
-Position
-f  82.291885
-f  -0.000061
-f  29.216665
-BubbleVariable
-s  x
 b  0
-__q  500_1
-PhysicsData
-f  1256.637085
-f  0.000796
-f  1.000000
-f  -15.208654
-f  0.000000
-f  7.525178
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
+b  0
 b  0
 LoopSociety
 q  502_1
 p  
-BubbleComponent
+__q  503_1
+AlgebraNode
+i  2
+s  
+f  1.000000
+i  1
 b  0
-MouseSelectable
-Layer
-i  3
-MouseGrabbable
-MouseIntersectable
-LoopTag
-Circle
-f  20.000000
-Position
-f  51.740959
-f  0.000061
-f  71.103188
-BubbleVariable
-s  x
 b  0
+b  0
+b  0
+LoopSociety
+q  502_1
+p  

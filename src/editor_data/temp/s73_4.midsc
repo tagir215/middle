@@ -1,134 +1,147 @@
 __q  73_4
-PhysicsData
-f  1387.167847
-f  0.000721
-f  1.000000
-f  -0.000272
-f  0.000000
-f  0.000162
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-b  0
-MouseSelectable
-Layer
-i  3
-BubbleComponent
-b  0
-MouseGrabbable
-MouseIntersectable
-LoopTag
 LoopSociety
 q  -1_0
 p  
-q  74_4
-q  75_4
-q  76_4
-Circle
-f  21.013073
+q  74_2
+Sphere
+f  2.000000
+InputVariable
+q  -1_0
+q  -1_0
+q  -1_0
+MouseGrabbable
 Position
-f  -98.432274
+f  787.452026
 f  0.000000
-f  85.973579
-__q  76_4
+f  202.964630
+MouseSelectable
+Text
+s  
+f  255.000000
+f  255.000000
+f  255.000000
+f  255.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  3.000000
+b  1
+UiComponent
+i  9
+Circle
+f  5.000000
+Layer
+i  3
+IdRef
+q  62_2
+__q  74_2
+AlgebraNode
+i  0
+s  
+f  0.000000
+i  1
+b  0
+b  0
+b  0
+b  0
 LoopSociety
 q  73_4
 p  
-MouseIntersectable
-BubbleUnit
-i  1
-Circle
-f  2.000000
-MouseGrabbable
-MouseSelectable
-Layer
+q  75_2
+__q  75_2
+AlgebraNode
 i  4
-PhysicsData
-f  12.566371
-f  0.079577
-f  1.000000
-f  -0.000263
+s  
 f  0.000000
-f  0.000164
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
+i  1
 b  0
-Sphere
-f  2.000000
-Position
-f  -105.868668
-f  0.000000
-f  76.679764
-__q  75_4
+b  0
+b  0
+b  0
 LoopSociety
-q  73_4
+q  74_2
 p  
-MouseIntersectable
-BubbleUnit
+q  76_2
+q  79_2
+__q  79_2
+AlgebraNode
+i  0
+s  
+f  0.000000
 i  1
-Circle
-f  2.000000
-MouseGrabbable
-MouseSelectable
-Layer
-i  4
-PhysicsData
-f  12.566371
-f  0.079577
-f  1.000000
-f  -0.000190
-f  0.000000
-f  0.000175
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
 b  0
-Sphere
-f  2.000000
-Position
-f  -86.665352
-f  0.000000
-f  84.163658
-__q  74_4
+b  0
+b  0
+b  0
 LoopSociety
-q  73_4
+q  75_2
 p  
-MouseIntersectable
-BubbleUnit
+q  80_1
+q  81_1
+__q  81_1
+AlgebraNode
 i  1
-Circle
-f  2.000000
-MouseGrabbable
-MouseSelectable
-Layer
-i  4
-PhysicsData
-f  12.566371
-f  0.079577
+s  a
 f  1.000000
-f  -0.000245
-f  0.000000
-f  0.000174
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
+i  1
 b  0
-Sphere
-f  2.000000
-Position
-f  -102.764435
+b  0
+b  0
+b  0
+LoopSociety
+q  79_2
+p  
+__q  80_1
+AlgebraNode
+i  1
+s  b
+f  1.000000
+i  1
+b  0
+b  0
+b  0
+b  0
+LoopSociety
+q  79_2
+p  
+__q  76_2
+AlgebraNode
+i  0
+s  
 f  0.000000
-f  97.065300
+i  1
+b  0
+b  0
+b  0
+b  0
+LoopSociety
+q  75_2
+p  
+q  77_2
+q  78_1
+__q  78_1
+AlgebraNode
+i  1
+s  a
+f  1.000000
+i  1
+b  0
+b  0
+b  0
+b  0
+LoopSociety
+q  76_2
+p  
+__q  77_2
+AlgebraNode
+i  1
+s  b
+f  1.000000
+i  1
+b  0
+b  0
+b  0
+b  0
+LoopSociety
+q  76_2
+p  

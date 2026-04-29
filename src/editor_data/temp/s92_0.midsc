@@ -1,14 +1,47 @@
 __q  92_0
+Layer
+i  1
+MouseSelectable
+BubbleComponent
+b  0
 LoopSociety
 q  -1_0
 p  
-q  97_0
-q  98_0
-q  99_0
+q  17_0
+MouseGrabbable
+MouseIntersectable
+LoopTag
+PhysicsData
+f  4408.785156
+f  0.000227
+f  1.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+b  0
+Circle
+f  37.461445
+Position
+f  -54.734001
+f  -0.000061
+f  -68.232063
+__q  17_0
+LoopSociety
+q  92_0
+p  
+q  20_0
+q  25_0
+q  26_0
 BubbleComponent
 b  0
 Layer
-i  4
+i  2
 MouseSelectable
 MouseGrabbable
 MouseIntersectable
@@ -17,9 +50,9 @@ PhysicsData
 f  1387.167847
 f  0.000721
 f  1.000000
-f  -0.043922
+f  -0.000001
 f  0.000000
-f  -0.059765
+f  0.000003
 f  0.000000
 f  0.000000
 f  0.000000
@@ -30,27 +63,31 @@ b  0
 Circle
 f  21.013073
 Position
-f  36.159107
-f  0.000000
-f  -13.653065
-__q  99_0
+f  -52.322197
+f  -0.000061
+f  -71.947800
+ExponentComponent
+i  -2
+b  0
+b  0
+__q  26_0
 BubbleUnit
 i  1
 MouseIntersectable
 MouseGrabbable
 Layer
-i  5
+i  3
 MouseSelectable
 LoopSociety
-q  92_0
+q  17_0
 p  
 PhysicsData
 f  12.566371
 f  0.079577
 f  1.000000
-f  -0.054557
+f  0.000069
 f  0.000000
-f  -0.025191
+f  -0.000114
 f  0.000000
 f  0.000000
 f  0.000000
@@ -63,27 +100,27 @@ f  2.000000
 Sphere
 f  2.000000
 Position
-f  24.356091
-f  0.000000
-f  -12.747149
-__q  98_0
+f  -41.541492
+f  -0.000061
+f  -66.902847
+__q  25_0
 BubbleUnit
 i  1
 MouseIntersectable
 MouseGrabbable
 Layer
-i  5
+i  3
 MouseSelectable
 LoopSociety
-q  92_0
+q  17_0
 p  
 PhysicsData
 f  12.566371
 f  0.079577
 f  1.000000
-f  -0.054929
+f  0.000040
 f  0.000000
-f  -0.024901
+f  -0.000148
 f  0.000000
 f  0.000000
 f  0.000000
@@ -96,27 +133,27 @@ f  2.000000
 Sphere
 f  2.000000
 Position
-f  42.901173
-f  0.000000
-f  -3.734826
-__q  97_0
+f  -53.327488
+f  -0.000061
+f  -83.810501
+__q  20_0
 BubbleUnit
 i  1
 MouseIntersectable
 MouseGrabbable
 Layer
-i  5
+i  3
 MouseSelectable
 LoopSociety
-q  92_0
+q  17_0
 p  
 PhysicsData
 f  12.566371
 f  0.079577
 f  1.000000
-f  -0.055292
+f  0.000024
 f  0.000000
-f  -0.025519
+f  -0.000113
 f  0.000000
 f  0.000000
 f  0.000000
@@ -129,6 +166,6 @@ f  2.000000
 Sphere
 f  2.000000
 Position
-f  41.396145
-f  0.000000
-f  -24.322823
+f  -62.085686
+f  -0.000061
+f  -65.130913

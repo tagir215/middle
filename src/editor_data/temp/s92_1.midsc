@@ -1,13 +1,90 @@
 __q  92_1
-MouseGrabbable
+Rectangle
+f  20.000000
+f  15.000000
+Sphere
+f  2.000000
+UiComponent
+i  8
+CodeFunction
+i  21
 Position
-f  -98.677773
-f  0.000000
-f  85.012848
-LoopTag
-BubbleMultiplyComponent
+f  -634.553467
+f  -0.000122
+f  112.439209
+MouseGrabbable
 MouseIntersectable
 MouseSelectable
 LoopSociety
 q  -1_0
 p  
+q  95_1
+q  97_1
+Offset
+f  0.000000
+f  0.000000
+f  0.000000
+Layer
+i  3
+TextureComponent
+s  
+f  30.000000
+i  0
+s  procedureFunction1.png
+PlacementComponent
+__q  97_1
+LoopSociety
+q  92_1
+p  
+UiComponent
+i  9
+Sphere
+f  2.000000
+MouseGrabbable
+Position
+f  -635.420349
+f  -0.000244
+f  89.860413
+MouseIntersectable
+Layer
+i  3
+MouseSelectable
+TextureComponent
+s  
+f  18.000000
+i  0
+s  bubblifyIcon.png
+__q  95_1
+LoopSociety
+q  92_1
+p  
+Sphere
+f  2.000000
+InputVariable
+q  -1_0
+q  -1_0
+q  -1_0
+Position
+f  -651.153442
+f  -0.000122
+f  112.439209
+MouseGrabbable
+Text
+s  
+f  255.000000
+f  255.000000
+f  255.000000
+f  255.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  3.000000
+b  1
+MouseSelectable
+MouseIntersectable
+UiComponent
+i  9
+Circle
+f  5.000000
+Layer
+i  3

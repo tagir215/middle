@@ -1,16 +1,50 @@
 __q  20_0
+PhysicsData
+f  8160.997559
+f  0.000123
+f  1.000000
+f  -0.000187
+f  0.000000
+f  0.000070
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+b  0
+BubbleComponent
+b  0
+Layer
+i  2
+MouseSelectable
+MouseGrabbable
+MouseIntersectable
+LoopTag
+LoopSociety
+q  -1_0
+p  
+q  30_0
+q  22_0
+Circle
+f  50.967892
+Position
+f  -100.817604
+f  0.000000
+f  59.998989
+__q  22_0
 BubbleComponent
 b  0
 MouseSelectable
 Layer
-i  1
+i  3
 PhysicsData
-f  13698.813477
-f  0.000073
+f  1256.637085
+f  0.000796
 f  1.000000
-f  -0.000039
+f  -0.000508
 f  0.000000
-f  0.000040
+f  0.000084
 f  0.000000
 f  0.000000
 f  0.000000
@@ -22,11 +56,213 @@ MouseGrabbable
 MouseIntersectable
 LoopTag
 LoopSociety
-q  -1_0
+q  20_0
 p  
+q  28_0
+q  39_0
 Circle
-f  66.033836
+f  20.000000
 Position
-f  -19.170933
-f  -0.000031
-f  74.237099
+f  -103.075104
+f  0.000000
+f  33.560123
+__q  39_0
+BubbleUnit
+i  1
+MouseIntersectable
+LoopSociety
+q  22_0
+p  
+MouseGrabbable
+Circle
+f  2.000000
+MouseSelectable
+Layer
+i  4
+PhysicsData
+f  12.566371
+f  0.079577
+f  1.000000
+f  -0.000506
+f  0.000000
+f  0.000088
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+b  0
+Sphere
+f  2.000000
+Position
+f  -102.708710
+f  0.000000
+f  43.546455
+__q  28_0
+BubbleUnit
+i  1
+MouseIntersectable
+LoopSociety
+q  22_0
+p  
+MouseGrabbable
+Circle
+f  2.000000
+MouseSelectable
+Layer
+i  4
+PhysicsData
+f  12.566371
+f  0.079577
+f  1.000000
+f  -0.000506
+f  0.000000
+f  0.000090
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+b  0
+Sphere
+f  2.000000
+Position
+f  -103.440720
+f  0.000000
+f  23.573412
+__q  30_0
+PhysicsData
+f  1387.167847
+f  0.000721
+f  1.000000
+f  -0.000474
+f  0.000000
+f  0.000177
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+b  0
+BubbleComponent
+b  0
+Layer
+i  3
+MouseSelectable
+MouseGrabbable
+MouseIntersectable
+LoopTag
+LoopSociety
+q  20_0
+p  
+q  41_0
+q  42_0
+q  43_0
+Circle
+f  21.013073
+Position
+f  -98.680870
+f  0.000000
+f  85.013496
+__q  43_0
+LoopSociety
+q  30_0
+p  
+BubbleUnit
+i  1
+MouseIntersectable
+Circle
+f  2.000000
+MouseGrabbable
+Layer
+i  4
+MouseSelectable
+PhysicsData
+f  12.566371
+f  0.079577
+f  1.000000
+f  -0.000474
+f  0.000000
+f  0.000152
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+b  0
+Sphere
+f  2.000000
+Position
+f  -106.116905
+f  0.000000
+f  75.719437
+__q  42_0
+LoopSociety
+q  30_0
+p  
+BubbleUnit
+i  1
+MouseIntersectable
+Circle
+f  2.000000
+MouseGrabbable
+Layer
+i  4
+MouseSelectable
+PhysicsData
+f  12.566371
+f  0.079577
+f  1.000000
+f  -0.000528
+f  0.000000
+f  0.000169
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+b  0
+Sphere
+f  2.000000
+Position
+f  -86.913818
+f  0.000000
+f  83.203941
+__q  41_0
+LoopSociety
+q  30_0
+p  
+BubbleUnit
+i  1
+MouseIntersectable
+Circle
+f  2.000000
+MouseGrabbable
+Layer
+i  4
+MouseSelectable
+PhysicsData
+f  12.566371
+f  0.079577
+f  1.000000
+f  -0.000475
+f  0.000000
+f  0.000179
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+b  0
+Sphere
+f  2.000000
+Position
+f  -103.013275
+f  0.000000
+f  96.105095

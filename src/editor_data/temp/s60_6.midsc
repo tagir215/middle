@@ -1,0 +1,68 @@
+__q  60_6
+Sphere
+f  2.000000
+PhysicsData
+f  1.000000
+f  1.000000
+f  1.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.800000
+f  0.800000
+f  0.800000
+f  0.000000
+f  0.000000
+f  0.000000
+b  0
+LoopSociety
+q  -1_0
+p  
+q  61_4
+InventoryItem
+i  3
+MouseGrabbable
+Position
+f  -96.529358
+f  0.000000
+f  40.747887
+MouseSelectable
+UiComponent
+i  -1
+Circle
+f  10.000000
+Layer
+i  2
+TextureComponent
+s  C:\Users\tagir\raylib_projects\middle\assets\textures\activeRect.png
+f  40.000000
+i  0
+s  activeRect.png
+IdRef
+q  930_0
+PlacementComponent
+DeleteComponent
+__q  61_4
+MouseGrabbable
+Position
+f  -95.879578
+f  0.000000
+f  40.911217
+MouseIntersectable
+MouseSelectable
+Sphere
+f  2.000000
+UiComponent
+i  -1
+LoopSociety
+q  60_6
+p  
+Button
+i  5
+TextureComponent
+s  
+f  20.000000
+i  0
+s  bubblifyIcon.png
+Layer
+i  179

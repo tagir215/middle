@@ -1,13 +1,268 @@
 __q  201_1
-Position
-f  -34.784042
-f  -0.000015
-f  -31.620750
-MouseGrabbable
-BubbleMultiplyComponent
-LoopTag
-MouseIntersectable
 MouseSelectable
+UiComponent
+i  8
+CodeFunction
+i  17
+Sphere
+f  2.000000
+Rectangle
+f  20.000000
+f  15.000000
+MouseGrabbable
+Position
+f  212.305939
+f  0.000122
+f  -136.185440
+MouseIntersectable
 LoopSociety
 q  -1_0
+p  
+q  202_1
+q  203_1
+Layer
+i  3
+TextureComponent
+s  
+f  30.000000
+i  0
+s  procedureFunction1.png
+PlacementComponent
+__q  203_1
+Sphere
+f  2.000000
+Position
+f  215.140289
+f  0.004272
+f  -134.905594
+MouseGrabbable
+MouseSelectable
+Layer
+i  3
+MouseIntersectable
+LoopSociety
+q  201_1
+p  
+TextureComponent
+s  
+f  15.000000
+i  0
+s  mulNegativeOneIcon.png
+UiComponent
+i  -1
+__q  202_1
+Text
+s  
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  3.000000
+b  1
+MouseSelectable
+MouseIntersectable
+MouseGrabbable
+Position
+f  195.705933
+f  0.000122
+f  -136.185440
+UiComponent
+i  9
+Sphere
+f  2.000000
+Circle
+f  5.000000
+LoopSociety
+q  201_1
+p  
+q  205_1
+InputVariable
+q  152_1
+q  205_1
+q  209_1
+Layer
+i  3
+__q  205_1
+AlgebraNode
+i  0
+s  
+f  0.000000
+i  1
+b  0
+b  0
+b  0
+b  0
+LoopSociety
+q  202_1
+p  
+q  206_1
+__q  206_1
+AlgebraNode
+i  0
+s  
+f  0.000000
+i  1
+b  0
+b  0
+b  0
+b  0
+LoopSociety
+q  205_1
+p  
+q  207_1
+q  210_1
+q  213_1
+__q  213_1
+AlgebraNode
+i  4
+s  
+f  0.000000
+i  1
+b  0
+b  0
+b  0
+b  0
+LoopSociety
+q  206_1
+p  
+q  214_1
+q  215_1
+__q  215_1
+AlgebraNode
+i  0
+s  
+f  0.000000
+i  1
+b  0
+b  0
+b  0
+b  0
+LoopSociety
+q  213_1
+p  
+q  216_1
+q  217_1
+__q  217_1
+AlgebraNode
+i  1
+s  a
+f  1.000000
+i  1
+b  0
+b  0
+b  0
+b  0
+LoopSociety
+q  215_1
+p  
+__q  216_1
+AlgebraNode
+i  1
+s  b
+f  1.000000
+i  1
+b  0
+b  0
+b  0
+b  0
+LoopSociety
+q  215_1
+p  
+__q  214_1
+AlgebraNode
+i  1
+s  a
+f  1.000000
+i  1
+b  0
+b  0
+b  0
+b  0
+LoopSociety
+q  213_1
+p  
+__q  210_1
+AlgebraNode
+i  4
+s  
+f  0.000000
+i  1
+b  0
+b  0
+b  0
+b  0
+LoopSociety
+q  206_1
+p  
+q  211_1
+q  212_1
+__q  212_1
+AlgebraNode
+i  1
+s  b
+f  1.000000
+i  1
+b  0
+b  0
+b  0
+b  0
+LoopSociety
+q  210_1
+p  
+__q  211_1
+AlgebraNode
+i  1
+s  a
+f  1.000000
+i  1
+b  0
+b  0
+b  0
+b  0
+LoopSociety
+q  210_1
+p  
+__q  207_1
+AlgebraNode
+i  4
+s  
+f  0.000000
+i  1
+b  0
+b  0
+b  0
+b  0
+LoopSociety
+q  206_1
+p  
+q  208_1
+q  209_1
+__q  209_1
+AlgebraNode
+i  1
+s  b
+f  1.000000
+i  1
+b  0
+b  0
+b  0
+b  0
+LoopSociety
+q  207_1
+p  
+__q  208_1
+AlgebraNode
+i  1
+s  b
+f  1.000000
+i  1
+b  0
+b  0
+b  0
+b  0
+LoopSociety
+q  207_1
 p  

@@ -1,77 +1,4 @@
 __q  82_1
-MouseIntersectable
-UiComponent
-i  8
-CodeFunction
-i  3
-Sphere
-f  2.000000
-Rectangle
-f  20.000000
-f  15.000000
-Position
-f  365.536682
-f  0.000000
-f  -54.198025
-MouseGrabbable
-MouseSelectable
-LoopSociety
-q  -1_0
-p  
-q  83_1
-q  84_1
-Offset
-f  0.000000
-f  0.000000
-f  0.000000
-Layer
-i  3
-TextureComponent
-s  
-f  30.000000
-i  0
-s  procedureFunction1.png
-PlacementComponent
-__q  84_1
-LoopSociety
-q  82_1
-p  
-Sphere
-f  2.000000
-UiComponent
-i  9
-Position
-f  366.347839
-f  0.000000
-f  -54.470638
-MouseGrabbable
-MouseIntersectable
-MouseSelectable
-Layer
-i  3
-TextureComponent
-s  
-f  17.000000
-i  0
-s  popIcon.png
-__q  83_1
-LoopSociety
-q  82_1
-p  
-Sphere
-f  2.000000
-InputVariable
-q  -1_0
-s  
-q  -1_0
-i  0
-p  
-p  
-Position
-f  348.936676
-f  0.000000
-f  -54.198025
-MouseGrabbable
 Text
 s  
 f  0.000000
@@ -84,10 +11,137 @@ f  0.000000
 f  3.000000
 b  1
 MouseSelectable
-MouseIntersectable
+MouseGrabbable
+Position
+f  875.984009
+f  -0.000061
+f  199.858002
 UiComponent
 i  9
+Sphere
+f  2.000000
 Circle
 f  5.000000
+LoopSociety
+q  -1_0
+p  
+q  83_1
+InputVariable
+q  -1_0
+q  -1_0
+q  -1_0
 Layer
 i  3
+IdRef
+q  71_1
+__q  83_1
+AlgebraNode
+i  0
+s  
+f  0.000000
+i  1
+b  0
+b  0
+b  0
+b  0
+LoopSociety
+q  82_1
+p  
+q  84_1
+__q  84_1
+AlgebraNode
+i  4
+s  
+f  0.000000
+i  1
+b  0
+b  0
+b  0
+b  0
+LoopSociety
+q  83_1
+p  
+q  85_1
+q  88_1
+__q  88_1
+AlgebraNode
+i  0
+s  
+f  0.000000
+i  1
+b  0
+b  0
+b  0
+b  0
+LoopSociety
+q  84_1
+p  
+q  89_1
+q  90_1
+__q  90_1
+AlgebraNode
+i  1
+s  a
+f  1.000000
+i  1
+b  0
+b  0
+b  0
+b  0
+LoopSociety
+q  88_1
+p  
+__q  89_1
+AlgebraNode
+i  1
+s  b
+f  1.000000
+i  1
+b  0
+b  0
+b  0
+b  0
+LoopSociety
+q  88_1
+p  
+__q  85_1
+AlgebraNode
+i  0
+s  
+f  0.000000
+i  1
+b  0
+b  0
+b  0
+b  0
+LoopSociety
+q  84_1
+p  
+q  86_1
+q  87_1
+__q  87_1
+AlgebraNode
+i  1
+s  a
+f  1.000000
+i  1
+b  0
+b  0
+b  0
+b  0
+LoopSociety
+q  85_1
+p  
+__q  86_1
+AlgebraNode
+i  1
+s  b
+f  1.000000
+i  1
+b  0
+b  0
+b  0
+b  0
+LoopSociety
+q  85_1
+p  
