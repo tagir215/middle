@@ -1039,6 +1039,10 @@ namespace bubble {
 			var->isNegative = !var->isNegative;
 			return;
 		}
+		auto loop = middle::getComponent<components::LoopSociety>(shape);
+		for (middle::Id childId : loop->loopMemberIds) {
+			negate(gameState, childId);
+		}
 	}
 
 	void invert(middle::GameState* gameState, middle::Id id)
