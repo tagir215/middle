@@ -976,6 +976,7 @@ namespace bubbleActions {
 				targetPos.x += 1;
 				middle::Shape unitProto = bubble::newUnit(gameState, targetPos);
 				auto& newUnit = middle::registerShape(gameState, unitProto);
+				auto unit = middle::getComponent<components::BubbleUnit>(newUnit);
 				middle::EditorActionReparent(compressedBubble.id.index, newUnit.id.index).execute(gameState);
 			}
 			//assume is multiplication, it will be replaced with unlinked version of itself
@@ -1001,6 +1002,7 @@ namespace bubbleActions {
 		if (commonVar) {
 			if (commonVar->isNegative) {
 				bubble::negate(gameState, compressedBubble.id);
+				bubble::negate(gameState, commonCopyId);
 			}
 		}
 
@@ -1180,19 +1182,56 @@ namespace bubbleActions {
 		}
 	}
 
+	middle::Id createNegatedReplacementShape(middle::GameState* gameState, middle::Id id) {
+		middle::Id copyId = middle::deepCopyShape(gameState, id.index);
+
+		std::vector<middle::Id>children;
+		middle::getChildren(gameState, copyId, children);
+		for (middle::Id id : children) {
+			middle::Id targetId = id;
+			auto childShape = middle::getShape(gameState, id.index);
+			// link -1 to bubbles;
+			auto mul = middle::getComponent<components::BubbleMultiplyComponent>(childShape);
+			if (mul) {
+				targetId = middle::getFirstChildWithComponent(gameState, id, middle::getTypeId<components::BubbleComponent>());
+			}
+			auto& targetShape = middle::getShape(gameState, targetId.index);
+			auto bubble = middle::getComponent<components::BubbleComponent>(targetShape);
+			if (bubble) {
+				auto mulOneAction = MulOne(targetId);
+				mulOneAction.execute(gameState);
+				middle::Id one = mulOneAction.resultShapeId;
+				bubble::negate(gameState, one);
+			}
+			// directly negate units
+			else {
+				bubble::negate(gameState, targetId);
+			}
+		}
+		return copyId;
+	}
+
 
 	void MulNegativeOne::execute(middle::GameState* gameState)
 	{
-		bubble::negate(gameState, recieverShapeId);
 		auto mulOne = std::make_unique<MulOne>(recieverShapeId);
 		mulOne->execute(gameState);
 		middle::Id one = mulOne->resultShapeId;
+		bubble::negate(gameState, one);
 		if (mulOne->cancelled) {
 			cancelled = true;
 			return;
 		}
 		actions.push_back(std::move(mulOne));
-		bubble::negate(gameState, one);
+
+		middle::Id negativeReplacementId = createNegatedReplacementShape(gameState, recieverShapeId);
+		auto registerIdAction = std::make_unique<middle::EditorActionRegisterId>(negativeReplacementId);
+		registerIdAction->execute(gameState);
+		actions.push_back(std::move(registerIdAction));
+
+		auto replaceAction = std::make_unique<Replace>(recieverShapeId, negativeReplacementId);
+		replaceAction->execute(gameState);
+		actions.push_back(std::move(replaceAction));
 	}
 
 	void MulNegativeOne::undo(middle::GameState* gameState)
@@ -1201,7 +1240,6 @@ namespace bubbleActions {
 			actions.back()->undo(gameState);
 			actions.pop_back();
 		}
-		bubble::negate(gameState, recieverShapeId);
 	}
 
 
