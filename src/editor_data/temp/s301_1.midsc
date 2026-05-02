@@ -1,42 +1,39 @@
 __q  301_1
-DeleteComponent
-AlgebraNode
-i  0
-s  
-f  0.000000
+Layer
 i  2
-b  0
-b  0
-b  0
+MouseSelectable
+BubbleComponent
 b  0
 LoopSociety
 q  -1_0
 p  
-q  302_1
-q  303_1
-__q  303_1
-AlgebraNode
-i  2
-s  
+MouseGrabbable
+MouseIntersectable
+LoopTag
+PhysicsData
+f  1256.637085
+f  0.000796
 f  1.000000
-i  1
+f  0.092930
+f  0.000000
+f  0.030400
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
 b  0
+TopDogBubbleTag
+Circle
+f  20.000000
+Position
+f  -25.860640
+f  0.000122
+f  -25.056496
+BubbleVariable
+s  c
 b  0
-b  0
-b  0
-LoopSociety
-q  301_1
-p  
-__q  302_1
-AlgebraNode
-i  2
-s  
-f  1.000000
-i  1
-b  0
-b  0
-b  0
-b  0
-LoopSociety
-q  301_1
-p  
+IdRef
+q  103_4
+DeleteComponent

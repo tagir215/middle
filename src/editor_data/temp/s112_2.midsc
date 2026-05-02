@@ -1,131 +1,68 @@
 __q  112_2
-MouseIntersectable
-Rectangle
-f  20.000000
-f  15.000000
-Sphere
-f  2.000000
-UiComponent
-i  8
-CodeFunction
-i  0
-MouseGrabbable
-Position
-f  830.028442
-f  0.000000
-f  72.745445
+BubbleComponent
+b  0
 MouseSelectable
+Layer
+i  2
+MouseGrabbable
+MouseIntersectable
+LoopTag
 LoopSociety
 q  -1_0
 p  
-q  113_1
-q  114_1
-q  115_1
-Offset
+q  114_2
+PhysicsData
+f  2827.433105
+f  0.000354
+f  1.000000
+f  -0.444044
 f  0.000000
-f  0.000000
-f  0.000000
-Layer
-i  3
-TextureComponent
-s  
-f  30.000000
-i  0
-s  procedureFunction2.png
-PlacementComponent
-__q  115_1
-Text
-s  
+f  3.371346
 f  0.000000
 f  0.000000
 f  0.000000
 f  0.000000
 f  0.000000
 f  0.000000
-f  0.000000
-f  3.000000
-b  1
-MouseSelectable
-MouseIntersectable
-MouseGrabbable
-Position
-f  813.428467
-f  0.000000
-f  66.745445
-UiComponent
-i  9
-Sphere
-f  2.000000
+b  0
 Circle
-f  5.000000
-LoopSociety
-q  112_2
-p  
-InputVariable
-q  -1_0
-s  
-q  -1_0
-i  0
-p  
-p  
-Layer
-i  3
-__q  114_1
-LoopSociety
-q  112_2
-p  
-Sphere
-f  2.000000
-UiComponent
-i  9
+f  29.999998
 Position
-f  832.319458
+f  50.424480
 f  0.000000
-f  72.324913
-MouseGrabbable
-MouseIntersectable
+f  40.382694
+__q  114_2
+BubbleComponent
+b  0
 MouseSelectable
 Layer
 i  3
-TextureComponent
-s  
-f  20.000000
-i  0
-s  expand.png
-__q  113_1
-Text
-s  
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-f  3.000000
-b  1
-MouseSelectable
-MouseIntersectable
-Position
-f  813.428467
-f  0.000000
-f  78.745445
+LoopSociety
+q  112_2
+p  
 MouseGrabbable
-Sphere
-f  2.000000
-UiComponent
-i  9
+MouseIntersectable
+LoopTag
+PhysicsData
+f  1256.637085
+f  0.000796
+f  1.000000
+f  -0.566015
+f  0.000000
+f  4.870136
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+b  0
 Circle
-f  5.000000
-LoopSociety
-q  112_2
-p  
-InputVariable
-q  -1_0
-s  
-q  -1_0
-i  1
-p  
-p  
-Layer
-i  3
+f  20.000000
+Position
+f  50.574844
+f  0.000000
+f  39.332684
+BubbleVariable
+s  a
+b  0

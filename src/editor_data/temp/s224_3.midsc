@@ -1,20 +1,22 @@
 __q  224_3
-LoopSociety
-q  -1_0
-p  
+BubbleComponent
+b  0
 MouseSelectable
 Layer
 i  3
-BubbleUnit
-i  1
+MouseGrabbable
 MouseIntersectable
+LoopTag
+LoopSociety
+q  -1_0
+p  
 PhysicsData
-f  12.566371
-f  0.079577
+f  1256.637085
+f  0.000796
 f  1.000000
-f  0.000127
+f  -0.000145
 f  0.000000
-f  0.000064
+f  0.000279
 f  0.000000
 f  0.000000
 f  0.000000
@@ -22,12 +24,16 @@ f  0.000000
 f  0.000000
 f  0.000000
 b  0
+TopDogBubbleTag
 Circle
-f  2.000000
-MouseGrabbable
-Sphere
-f  2.000000
+f  20.000000
 Position
-f  55.242981
-f  0.000000
-f  13.423580
+f  26.242373
+f  -0.000122
+f  -37.420357
+BubbleVariable
+s  a
+b  0
+IdRef
+q  222_3
+DeleteComponent

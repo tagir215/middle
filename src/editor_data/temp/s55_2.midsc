@@ -1,68 +1,138 @@
 __q  55_2
+Layer
+i  1
+MouseSelectable
+BubbleComponent
+b  1
 PhysicsData
+f  1387.167847
+f  0.000721
 f  1.000000
-f  1.000000
-f  1.000000
+f  0.001411
+f  0.000000
+f  -0.012167
 f  0.000000
 f  0.000000
 f  0.000000
-f  0.800000
-f  0.800000
-f  0.800000
+f  0.000000
+f  0.000000
+f  0.000000
+b  0
+MouseGrabbable
+MouseIntersectable
+LoopTag
+LoopSociety
+q  -1_0
+p  
+q  56_2
+q  66_2
+q  67_2
+TopDogBubbleTag
+Circle
+f  21.013073
+Position
+f  70.038734
+f  -0.000092
+f  32.604225
+IdRef
+q  24_0
+DeleteComponent
+__q  67_2
+MouseIntersectable
+BubbleUnit
+i  1
+LoopSociety
+q  55_2
+p  
+MouseGrabbable
+Circle
+f  2.000000
+Layer
+i  1
+MouseSelectable
+PhysicsData
+f  12.566371
+f  0.079577
+f  1.000000
+f  0.203449
+f  0.000000
+f  -1.142048
+f  0.000000
+f  0.000000
+f  0.000000
 f  0.000000
 f  0.000000
 f  0.000000
 b  0
 Sphere
 f  2.000000
-LoopSociety
-q  -1_0
-p  
-q  56_2
 Position
-f  -117.425797
-f  0.000061
-f  80.450958
-MouseGrabbable
-InventoryItem
-i  3
-MouseSelectable
-Circle
-f  10.000000
-UiComponent
-i  -1
-Layer
-i  2
-TextureComponent
-s  C:\Users\tagir\raylib_projects\middle\assets\textures\activeRect.png
-f  40.000000
-i  0
-s  activeRect.png
-IdRef
-q  939_0
-PlacementComponent
-DeleteComponent
-__q  56_2
-Position
-f  -117.200760
-f  0.000061
-f  80.493561
-MouseGrabbable
+f  58.811329
+f  -0.000092
+f  28.805046
+__q  66_2
 MouseIntersectable
-MouseSelectable
-UiComponent
-i  -1
-Sphere
-f  2.000000
-TextureComponent
-s  
-f  20.000000
-i  0
-s  popIcon.png
-Button
-i  5
+BubbleUnit
+i  1
 LoopSociety
 q  55_2
 p  
+MouseGrabbable
+Circle
+f  2.000000
 Layer
-i  109
+i  1
+MouseSelectable
+PhysicsData
+f  12.566371
+f  0.079577
+f  1.000000
+f  -0.306220
+f  0.000000
+f  -0.962944
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+b  0
+Sphere
+f  2.000000
+Position
+f  79.305527
+f  -0.000092
+f  25.281828
+__q  56_2
+MouseIntersectable
+BubbleUnit
+i  1
+LoopSociety
+q  55_2
+p  
+MouseGrabbable
+Circle
+f  2.000000
+Layer
+i  1
+MouseSelectable
+PhysicsData
+f  12.566371
+f  0.079577
+f  1.000000
+f  0.107896
+f  0.000000
+f  -0.583871
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+b  0
+Sphere
+f  2.000000
+Position
+f  71.997398
+f  -0.000092
+f  44.500462

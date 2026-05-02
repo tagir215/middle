@@ -1,42 +1,35 @@
 __q  294_1
-DeleteComponent
-AlgebraNode
-i  0
-s  
+PhysicsData
+f  1256.637085
+f  0.000796
+f  1.000000
+f  -0.059462
 f  0.000000
-i  2
+f  0.046821
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
 b  0
+Layer
+i  4
+MouseSelectable
+BubbleComponent
 b  0
-b  0
-b  0
+MouseGrabbable
+MouseIntersectable
+LoopTag
 LoopSociety
 q  -1_0
 p  
-q  295_1
-q  296_1
-__q  296_1
-AlgebraNode
-i  2
-s  
-f  1.000000
-i  1
+Circle
+f  20.000000
+Position
+f  -58.660614
+f  0.000000
+f  -55.645592
+BubbleVariable
+s  a
 b  0
-b  0
-b  0
-b  0
-LoopSociety
-q  294_1
-p  
-__q  295_1
-AlgebraNode
-i  2
-s  
-f  1.000000
-i  1
-b  0
-b  0
-b  0
-b  0
-LoopSociety
-q  294_1
-p  

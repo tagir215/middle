@@ -1,93 +1,42 @@
 __q  373_1
-MouseIntersectable
-UiComponent
-i  8
-CodeFunction
-i  19
-Sphere
-f  2.000000
-Rectangle
-f  20.000000
-f  15.000000
-MouseGrabbable
-Position
-f  625.140991
+DeleteComponent
+AlgebraNode
+i  0
+s  
 f  0.000000
-f  213.657440
-MouseSelectable
+i  2
+b  0
+b  0
+b  0
+b  0
 LoopSociety
 q  -1_0
 p  
 q  374_1
 q  375_1
-Offset
-f  0.000000
-f  0.000000
-f  0.000000
-Layer
-i  3
-TextureComponent
-s  
-f  30.000000
-i  0
-s  procedureFunction1.png
-PlacementComponent
 __q  375_1
+AlgebraNode
+i  2
+s  
+f  1.000000
+i  1
+b  0
+b  0
+b  0
+b  0
 LoopSociety
 q  373_1
 p  
-Sphere
-f  2.000000
-UiComponent
-i  9
-Position
-f  627.321899
-f  0.000000
-f  213.943329
-MouseGrabbable
-MouseIntersectable
-MouseSelectable
-Layer
-i  3
-TextureComponent
-s  
-f  17.000000
-i  0
-s  compress.png
 __q  374_1
-InputVariable
-q  -1_0
+AlgebraNode
+i  2
 s  
-q  -1_0
-i  0
-p  
-p  
-Sphere
-f  2.000000
-Position
-f  608.541016
-f  0.000000
-f  213.657440
-MouseGrabbable
-Text
-s  
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-f  3.000000
-b  1
-MouseSelectable
-MouseIntersectable
+f  1.000000
+i  1
+b  0
+b  0
+b  0
+b  0
 LoopSociety
 q  373_1
 p  
-UiComponent
-i  9
-Circle
-f  5.000000
-Layer
-i  3

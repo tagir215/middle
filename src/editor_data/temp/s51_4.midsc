@@ -1,23 +1,24 @@
 __q  51_4
-BubbleComponent
-b  0
-MouseGrabbable
-Layer
-i  2
-MouseSelectable
-MouseIntersectable
-LoopTag
 LoopSociety
 q  -1_0
 p  
-q  55_2
+q  52_4
+q  56_4
+q  57_4
+MouseSelectable
+Layer
+i  2
+BubbleComponent
+b  0
+MouseGrabbable
+LoopTag
 PhysicsData
-f  5654.866699
-f  0.000177
+f  1387.167847
+f  0.000721
 f  1.000000
-f  0.120052
+f  0.000002
 f  0.000000
-f  -0.799457
+f  -0.000000
 f  0.000000
 f  0.000000
 f  0.000000
@@ -25,46 +26,39 @@ f  0.000000
 f  0.000000
 f  0.000000
 b  0
+TopDogBubbleTag
 Circle
-f  42.426407
+f  21.013073
 Position
-f  -49.241486
-f  0.000000
-f  -1.974283
-__q  55_2
-Position
-f  -54.098850
-f  0.000000
-f  21.150188
-MouseGrabbable
-BubbleMultiplyComponent
+f  -64.877243
+f  -0.000122
+f  21.565250
+InventoryItem
+i  1
+UiComponent
+i  -1
+IdRef
+q  33_0
+PlacementComponent
+DeleteComponent
+__q  57_4
 MouseIntersectable
+BubbleUnit
+i  -1
+MouseGrabbable
 MouseSelectable
-LoopTag
+Layer
+i  1
 LoopSociety
 q  51_4
 p  
-q  53_2
-q  54_2
-__q  54_2
-BubbleComponent
-b  0
-LoopSociety
-q  55_2
-p  
-MouseGrabbable
-Layer
-i  4
-MouseSelectable
-MouseIntersectable
-LoopTag
 PhysicsData
-f  1256.637085
-f  0.000796
+f  12.566371
+f  0.079577
 f  1.000000
-f  0.090162
+f  -0.000075
 f  0.000000
-f  -0.859870
+f  0.000021
 f  0.000000
 f  0.000000
 f  0.000000
@@ -73,33 +67,33 @@ f  0.000000
 f  0.000000
 b  0
 Circle
-f  20.000000
+f  2.000000
+Sphere
+f  2.000000
 Position
-f  -60.690601
-f  0.000000
-f  19.392630
-BubbleVariable
-s  d
-b  0
-__q  53_2
-BubbleComponent
-b  0
-LoopSociety
-q  55_2
-p  
-MouseGrabbable
-Layer
-i  4
-MouseSelectable
+f  -52.974689
+f  -0.000122
+f  21.495468
+UiComponent
+i  -1
+__q  56_4
 MouseIntersectable
-LoopTag
+BubbleUnit
+i  -1
+MouseGrabbable
+MouseSelectable
+Layer
+i  1
+LoopSociety
+q  51_4
+p  
 PhysicsData
-f  1256.637085
-f  0.000796
+f  12.566371
+f  0.079577
 f  1.000000
-f  0.093832
+f  -0.000078
 f  0.000000
-f  -0.857886
+f  0.000000
 f  0.000000
 f  0.000000
 f  0.000000
@@ -108,11 +102,47 @@ f  0.000000
 f  0.000000
 b  0
 Circle
-f  20.000000
+f  2.000000
+Sphere
+f  2.000000
 Position
-f  -37.724888
+f  -70.755081
+f  -0.000122
+f  31.918316
+UiComponent
+i  -1
+__q  52_4
+MouseIntersectable
+BubbleUnit
+i  -1
+MouseGrabbable
+MouseSelectable
+Layer
+i  1
+LoopSociety
+q  51_4
+p  
+PhysicsData
+f  12.566371
+f  0.079577
+f  1.000000
+f  -0.000089
 f  0.000000
-f  -22.951466
-BubbleVariable
-s  z
+f  0.000023
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
 b  0
+Circle
+f  2.000000
+Sphere
+f  2.000000
+Position
+f  -70.891418
+f  -0.000122
+f  11.287874
+UiComponent
+i  -1

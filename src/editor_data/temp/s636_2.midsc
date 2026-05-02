@@ -1,16 +1,64 @@
 __q  636_2
-BubbleComponent
-b  1
-MouseSelectable
 Layer
 i  1
+MouseSelectable
+BubbleComponent
+b  0
+MouseGrabbable
+MouseIntersectable
+LoopTag
+LoopSociety
+q  -1_0
+p  
+q  52_0
+PhysicsData
+f  5654.866699
+f  0.000177
+f  1.000000
+f  -0.134981
+f  0.000000
+f  -2.418468
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+b  0
+Circle
+f  42.426407
+Position
+f  0.443954
+f  0.000000
+f  50.006096
+__q  52_0
+MouseGrabbable
+Position
+f  -9.118228
+f  0.000000
+f  9.723893
+LoopTag
+BubbleMultiplyComponent
+MouseIntersectable
+MouseSelectable
+LoopSociety
+q  636_2
+p  
+q  49_0
+q  51_0
+__q  51_0
+Layer
+i  3
+MouseSelectable
+BubbleComponent
+b  0
 PhysicsData
 f  1256.637085
 f  0.000796
 f  1.000000
-f  -0.089182
+f  -0.097728
 f  0.000000
-f  -0.056429
+f  -3.389858
 f  0.000000
 f  0.000000
 f  0.000000
@@ -22,40 +70,30 @@ MouseGrabbable
 MouseIntersectable
 LoopTag
 LoopSociety
-q  -1_0
+q  52_0
 p  
-q  638_1
-q  640_1
-TopDogBubbleTag
 Circle
 f  20.000000
 Position
-f  -4.852459
-f  -0.000092
-f  -44.677959
-IdRef
-q  39_0
-DeleteComponent
-__q  640_1
-MouseIntersectable
-BubbleUnit
-i  1
-LoopSociety
-q  636_2
-p  
-MouseGrabbable
-Circle
-f  2.000000
-Layer
-i  1
-MouseSelectable
-PhysicsData
-f  12.566371
-f  0.079577
-f  1.000000
-f  -0.702839
+f  22.670765
 f  0.000000
-f  5.953559
+f  41.342403
+BubbleVariable
+s  x
+b  0
+__q  49_0
+Layer
+i  3
+MouseSelectable
+BubbleComponent
+b  0
+PhysicsData
+f  1256.637085
+f  0.000796
+f  1.000000
+f  -0.124986
+f  0.000000
+f  -3.433417
 f  0.000000
 f  0.000000
 f  0.000000
@@ -63,42 +101,18 @@ f  0.000000
 f  0.000000
 f  0.000000
 b  0
-Sphere
-f  2.000000
-Position
-f  5.411590
-f  -0.000092
-f  -46.118282
-__q  638_1
-MouseIntersectable
-BubbleUnit
-i  1
-LoopSociety
-q  636_2
-p  
 MouseGrabbable
+MouseIntersectable
+LoopTag
+LoopSociety
+q  52_0
+p  
 Circle
-f  2.000000
-Layer
-i  1
-MouseSelectable
-PhysicsData
-f  12.566371
-f  0.079577
-f  1.000000
-f  -2.155846
-f  0.000000
-f  5.426796
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-b  0
-Sphere
-f  2.000000
+f  20.000000
 Position
-f  -13.752496
-f  -0.000092
-f  -49.764351
+f  -21.310785
+f  0.000000
+f  60.982597
+BubbleVariable
+s  y
+b  0

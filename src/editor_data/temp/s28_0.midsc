@@ -3,9 +3,9 @@ PhysicsData
 f  1256.637085
 f  0.000796
 f  1.000000
+f  -0.750077
 f  0.000000
-f  0.000000
-f  0.000013
+f  -0.107936
 f  0.000000
 f  0.000000
 f  0.000000
@@ -13,11 +13,11 @@ f  0.000000
 f  0.000000
 f  0.000000
 b  0
-Layer
-i  1
-MouseSelectable
 BubbleComponent
 b  0
+Layer
+i  2
+MouseSelectable
 MouseGrabbable
 MouseIntersectable
 LoopTag
@@ -27,13 +27,6 @@ p
 Circle
 f  20.000000
 Position
-f  13.336659
+f  -132.666733
 f  0.000000
-f  58.989952
-BubbleVariable
-s  b
-b  0
-ExponentComponent
-i  2
-b  0
-b  0
+f  7.952120

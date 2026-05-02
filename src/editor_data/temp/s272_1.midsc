@@ -1,56 +1,104 @@
 __q  272_1
-DeleteComponent
-AlgebraNode
-i  0
-s  
-f  0.000000
+Layer
 i  2
+MouseSelectable
+BubbleComponent
 b  0
-b  0
-b  0
-b  0
+MouseGrabbable
+MouseIntersectable
+LoopTag
 LoopSociety
 q  -1_0
 p  
 q  273_1
 q  274_1
-q  275_1
-__q  275_1
-AlgebraNode
-i  2
-s  
+PhysicsData
+f  1256.637085
+f  0.000796
 f  1.000000
-i  1
+f  -0.000131
+f  0.000000
+f  0.002125
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
 b  0
-b  0
-b  0
-b  0
-LoopSociety
-q  272_1
-p  
+TopDogBubbleTag
+Circle
+f  20.000000
+Position
+f  -163.938400
+f  -0.000275
+f  -5.736449
+IdRef
+q  19_0
+DeleteComponent
 __q  274_1
-AlgebraNode
-i  2
-s  
-f  1.000000
+BubbleUnit
 i  1
-b  0
-b  0
-b  0
-b  0
+MouseIntersectable
+MouseGrabbable
+MouseSelectable
+Layer
+i  1
 LoopSociety
 q  272_1
 p  
+PhysicsData
+f  12.566371
+f  0.079577
+f  1.000000
+f  0.010816
+f  0.000000
+f  -0.089876
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+b  0
+Circle
+f  2.000000
+Sphere
+f  2.000000
+Position
+f  -164.176163
+f  -0.000275
+f  4.268451
 __q  273_1
-AlgebraNode
-i  2
-s  
-f  1.000000
+MouseIntersectable
+BubbleUnit
 i  1
-b  0
-b  0
-b  0
-b  0
+MouseGrabbable
+Layer
+i  1
+MouseSelectable
 LoopSociety
 q  272_1
 p  
+PhysicsData
+f  12.566371
+f  0.079577
+f  1.000000
+f  0.010740
+f  0.000000
+f  -0.089914
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+b  0
+Circle
+f  2.000000
+Sphere
+f  2.000000
+Position
+f  -163.712860
+f  -0.000275
+f  -15.712628

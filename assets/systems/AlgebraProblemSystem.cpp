@@ -151,16 +151,16 @@ public:
 
 						//float deltaZ = pos->posZ;
 						float deltaZ = 0;
-						middle::moveShape(gameState, problemCache->relevantIdVector[i].index, { 0,0, -deltaZ });
+						//middle::moveShape(gameState, problemCache->relevantIdVector[i].index, { 0,0, -deltaZ });
 					}
 				}
 
 
-				problemCenterX /= 2.0f;
-				auto cameraPosIt = cameraCache->begin<components::Position>();
-				auto camPos = *cameraPosIt;
-				camPos->posX = problemCenterX;
-				camPos->posZ = 0;
+				//problemCenterX /= 2.0f;
+				//auto cameraPosIt = cameraCache->begin<components::Position>();
+				//auto camPos = *cameraPosIt;
+				//camPos->posX = problemCenterX;
+				//camPos->posZ = 0;
 				configs->initialized = true;
 			}
 		}

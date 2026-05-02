@@ -1,24 +1,45 @@
 __q  241_1
+PhysicsData
+f  5654.866699
+f  0.000177
+f  1.000000
+f  -21.521212
+f  0.000000
+f  -15.285944
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+b  0
+BubbleComponent
+b  0
+MouseSelectable
+Layer
+i  3
+MouseGrabbable
+MouseIntersectable
+LoopTag
 LoopSociety
 q  -1_0
 p  
 q  242_1
 q  243_1
-MouseSelectable
-Layer
-i  4
-BubbleComponent
-b  0
-MouseGrabbable
-MouseIntersectable
-LoopTag
+Circle
+f  42.426407
+Position
+f  -47.491196
+f  0.000000
+f  -41.750343
+__q  243_1
 PhysicsData
 f  1256.637085
 f  0.000796
 f  1.000000
-f  -22.257605
+f  -2.991073
 f  0.000000
-f  -4.319345
+f  -1.284166
 f  0.000000
 f  0.000000
 f  0.000000
@@ -26,63 +47,34 @@ f  0.000000
 f  0.000000
 f  0.000000
 b  0
+BubbleComponent
+b  0
+MouseSelectable
+Layer
+i  4
+MouseGrabbable
+MouseIntersectable
+LoopTag
+LoopSociety
+q  241_1
+p  
 Circle
 f  20.000000
 Position
-f  -134.118088
+f  -27.834068
 f  0.000000
-f  0.690934
-__q  243_1
-MouseIntersectable
-BubbleUnit
-i  1
-MouseGrabbable
-MouseSelectable
-Layer
-i  5
-LoopSociety
-q  241_1
-p  
-PhysicsData
-f  12.566371
-f  0.079577
-f  1.000000
-f  -13.332820
-f  0.000000
-f  -1.953008
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
+f  -30.168036
+BubbleVariable
+s  b
 b  0
-Circle
-f  2.000000
-Sphere
-f  2.000000
-Position
-f  -141.252197
-f  0.000000
-f  -0.251271
 __q  242_1
-MouseIntersectable
-BubbleUnit
-i  1
-MouseGrabbable
-MouseSelectable
-Layer
-i  5
-LoopSociety
-q  241_1
-p  
 PhysicsData
-f  12.566371
-f  0.079577
+f  1256.637085
+f  0.000796
 f  1.000000
-f  -16.252081
+f  -2.978969
 f  0.000000
-f  -2.525831
+f  -1.327716
 f  0.000000
 f  0.000000
 f  0.000000
@@ -90,11 +82,23 @@ f  0.000000
 f  0.000000
 f  0.000000
 b  0
+BubbleComponent
+b  0
+MouseSelectable
+Layer
+i  4
+MouseGrabbable
+MouseIntersectable
+LoopTag
+LoopSociety
+q  241_1
+p  
 Circle
-f  2.000000
-Sphere
-f  2.000000
+f  20.000000
 Position
-f  -121.615067
+f  -65.694473
 f  0.000000
-f  2.629140
+f  -52.686523
+BubbleVariable
+s  a
+b  0

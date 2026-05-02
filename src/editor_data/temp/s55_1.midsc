@@ -1,16 +1,11 @@
 __q  55_1
-Layer
-i  2
-MouseSelectable
-BubbleComponent
-b  1
 PhysicsData
-f  1849.557251
-f  0.000541
+f  12.566371
+f  0.079577
 f  1.000000
-f  -0.000001
+f  -0.000042
 f  0.000000
-f  -0.000005
+f  0.000038
 f  0.000000
 f  0.000000
 f  0.000000
@@ -18,155 +13,24 @@ f  0.000000
 f  0.000000
 f  0.000000
 b  0
-MouseGrabbable
+BubbleUnit
+i  1
 MouseIntersectable
-LoopTag
+MouseGrabbable
+Position
+f  -32.131584
+f  0.000015
+f  -39.110958
+MouseSelectable
 LoopSociety
 q  -1_0
 p  
-q  56_1
-q  65_1
-q  66_1
-q  67_1
-TopDogBubbleTag
+Sphere
+f  2.000000
 Circle
-f  24.263807
-Position
-f  14.986558
-f  0.000030
-f  58.025406
+f  2.000000
+Layer
+i  1
 IdRef
-q  25_0
+q  30_0
 DeleteComponent
-__q  67_1
-MouseIntersectable
-BubbleUnit
-i  1
-LoopSociety
-q  55_1
-p  
-MouseGrabbable
-Circle
-f  2.000000
-Layer
-i  1
-MouseSelectable
-PhysicsData
-f  12.566371
-f  0.079577
-f  1.000000
-f  -0.000062
-f  0.000000
-f  0.000163
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-b  0
-Sphere
-f  2.000000
-Position
-f  0.967526
-f  0.000030
-f  53.928799
-__q  66_1
-MouseIntersectable
-BubbleUnit
-i  1
-LoopSociety
-q  55_1
-p  
-MouseGrabbable
-Circle
-f  2.000000
-Layer
-i  1
-MouseSelectable
-PhysicsData
-f  12.566371
-f  0.079577
-f  1.000000
-f  -0.000025
-f  0.000000
-f  0.000172
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-b  0
-Sphere
-f  2.000000
-Position
-f  29.005909
-f  0.000030
-f  62.121773
-__q  65_1
-MouseIntersectable
-BubbleUnit
-i  1
-LoopSociety
-q  55_1
-p  
-MouseGrabbable
-Circle
-f  2.000000
-Layer
-i  1
-MouseSelectable
-PhysicsData
-f  12.566371
-f  0.079577
-f  1.000000
-f  -0.000053
-f  0.000000
-f  0.000126
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-b  0
-Sphere
-f  2.000000
-Position
-f  10.890201
-f  0.000030
-f  72.044464
-__q  56_1
-MouseIntersectable
-BubbleUnit
-i  1
-LoopSociety
-q  55_1
-p  
-MouseGrabbable
-Circle
-f  2.000000
-Layer
-i  1
-MouseSelectable
-PhysicsData
-f  12.566371
-f  0.079577
-f  1.000000
-f  -0.000036
-f  0.000000
-f  0.000077
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-b  0
-Sphere
-f  2.000000
-Position
-f  19.083176
-f  0.000030
-f  44.006088

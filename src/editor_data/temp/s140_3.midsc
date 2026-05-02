@@ -1,22 +1,22 @@
 __q  140_3
+PhysicsData
+f  1387.167847
+f  0.000721
+f  1.000000
+f  3.773738
+f  0.000000
+f  -3.399235
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+b  0
+MouseSelectable
 Layer
 i  4
-MouseSelectable
 BubbleComponent
-b  0
-PhysicsData
-f  1256.637085
-f  0.000796
-f  1.000000
-f  0.156982
-f  0.000000
-f  0.036318
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
 b  0
 MouseGrabbable
 MouseIntersectable
@@ -26,32 +26,66 @@ q  -1_0
 p  
 q  141_3
 q  142_3
+q  144_3
 Circle
-f  20.000000
+f  21.013073
 Position
-f  -107.696503
+f  -114.656830
 f  0.000000
-f  -66.441803
+f  -29.865799
+__q  144_3
+LoopSociety
+q  140_3
+p  
+MouseIntersectable
+BubbleUnit
+i  1
+Circle
+f  2.000000
+MouseGrabbable
+MouseSelectable
+Layer
+i  5
+PhysicsData
+f  12.566371
+f  0.079577
+f  1.000000
+f  -0.274539
+f  0.000000
+f  -1.884792
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+b  0
+Sphere
+f  2.000000
+Position
+f  -102.733810
+f  0.000000
+f  -29.563023
 __q  142_3
-MouseIntersectable
-BubbleUnit
-i  1
 LoopSociety
 q  140_3
 p  
-MouseGrabbable
+MouseIntersectable
+BubbleUnit
+i  1
 Circle
 f  2.000000
+MouseGrabbable
+MouseSelectable
 Layer
 i  5
-MouseSelectable
 PhysicsData
 f  12.566371
 f  0.079577
 f  1.000000
-f  0.181962
+f  -1.568274
 f  0.000000
-f  0.037629
+f  -3.359263
 f  0.000000
 f  0.000000
 f  0.000000
@@ -62,29 +96,29 @@ b  0
 Sphere
 f  2.000000
 Position
-f  -107.531067
+f  -121.417824
 f  0.000000
-f  -76.439056
+f  -38.863579
 __q  141_3
-MouseIntersectable
-BubbleUnit
-i  1
 LoopSociety
 q  140_3
 p  
-MouseGrabbable
+MouseIntersectable
+BubbleUnit
+i  1
 Circle
 f  2.000000
+MouseGrabbable
+MouseSelectable
 Layer
 i  5
-MouseSelectable
 PhysicsData
 f  12.566371
 f  0.079577
 f  1.000000
-f  0.181216
+f  0.316233
 f  0.000000
-f  0.037899
+f  -3.941011
 f  0.000000
 f  0.000000
 f  0.000000
@@ -95,6 +129,6 @@ b  0
 Sphere
 f  2.000000
 Position
-f  -108.140457
+f  -119.584061
 f  0.000000
-f  -56.462692
+f  -18.271967

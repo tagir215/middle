@@ -1,64 +1,80 @@
 __q  94_1
-Layer
-i  1
-MouseSelectable
+PhysicsData
+f  5654.866699
+f  0.000177
+f  1.000000
+f  -0.211714
+f  0.000000
+f  0.132927
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+b  0
 BubbleComponent
 b  0
+MouseSelectable
+Layer
+i  3
 MouseGrabbable
 MouseIntersectable
 LoopTag
 LoopSociety
 q  -1_0
 p  
-q  92_1
-PhysicsData
-f  5654.866699
-f  0.000177
-f  1.000000
-f  -3.835384
-f  0.000000
-f  5.104369
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-b  0
+q  95_1
+q  96_1
 Circle
 f  42.426407
 Position
-f  10.666119
-f  0.000122
-f  -64.505608
-__q  92_1
-MouseGrabbable
-Position
-f  -20.772446
-f  0.000122
-f  -51.903160
-LoopTag
-BubbleMultiplyComponent
-MouseIntersectable
+f  30.879389
+f  0.000000
+f  31.226610
+__q  96_1
+PhysicsData
+f  1256.637085
+f  0.000796
+f  1.000000
+f  -0.542069
+f  0.000000
+f  -0.794620
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+b  0
+BubbleComponent
+b  0
 MouseSelectable
+Layer
+i  4
+MouseGrabbable
+MouseIntersectable
+LoopTag
 LoopSociety
 q  94_1
 p  
-q  91_1
-q  93_1
-__q  93_1
-Layer
-i  3
-MouseSelectable
-BubbleComponent
+Circle
+f  20.000000
+Position
+f  52.711044
+f  0.000000
+f  27.745483
+BubbleVariable
+s  b
 b  0
+__q  95_1
 PhysicsData
 f  1256.637085
 f  0.000796
 f  1.000000
-f  -2.365983
+f  -0.545527
 f  0.000000
-f  -1.508653
+f  -0.788010
 f  0.000000
 f  0.000000
 f  0.000000
@@ -66,53 +82,23 @@ f  0.000000
 f  0.000000
 f  0.000000
 b  0
-MouseGrabbable
-MouseIntersectable
-LoopTag
-LoopSociety
-q  92_1
-p  
-Circle
-f  20.000000
-Position
-f  35.004829
-f  0.000122
-f  -61.284657
-BubbleVariable
-s  y
-b  0
-__q  91_1
-Layer
-i  3
-MouseSelectable
 BubbleComponent
 b  0
-PhysicsData
-f  1256.637085
-f  0.000796
-f  1.000000
-f  -2.194160
-f  0.000000
-f  -1.420042
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-b  0
+MouseSelectable
+Layer
+i  4
 MouseGrabbable
 MouseIntersectable
 LoopTag
 LoopSociety
-q  92_1
+q  94_1
 p  
 Circle
 f  20.000000
 Position
-f  -12.527201
-f  0.000122
-f  -69.097496
+f  9.289242
+f  0.000000
+f  35.162121
 BubbleVariable
-s  y
+s  a
 b  0

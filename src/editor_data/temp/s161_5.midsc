@@ -1,13 +1,36 @@
 __q  161_5
-Position
-f  -86.912384
-f  0.000000
-f  -14.049551
-MouseGrabbable
-BubbleMultiplyComponent
-LoopTag
-MouseIntersectable
+BubbleComponent
+b  0
 MouseSelectable
+Layer
+i  2
+MouseGrabbable
+MouseIntersectable
+LoopTag
 LoopSociety
 q  -1_0
 p  
+PhysicsData
+f  1256.637085
+f  0.000796
+f  1.000000
+f  -0.010192
+f  0.000000
+f  0.002497
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+b  0
+TopDogBubbleTag
+Circle
+f  20.000000
+Position
+f  -70.859756
+f  -0.000031
+f  -96.150703
+IdRef
+q  33_0
+DeleteComponent

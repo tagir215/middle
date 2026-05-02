@@ -1,297 +1,35 @@
 __q  270_1
-MouseSelectable
-UiComponent
-i  8
-CodeFunction
-i  19
-Sphere
-f  2.000000
-Rectangle
-f  20.000000
-f  15.000000
-MouseGrabbable
-Position
-f  351.159058
+PhysicsData
+f  1256.637085
+f  0.000796
+f  1.000000
+f  -2.991073
 f  0.000000
-f  -220.299957
+f  -1.284166
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+b  0
+Layer
+i  4
+MouseSelectable
+BubbleComponent
+b  0
+MouseGrabbable
 MouseIntersectable
+LoopTag
 LoopSociety
 q  -1_0
 p  
-q  271_1
-q  272_1
-Layer
-i  3
-TextureComponent
-s  
-f  30.000000
-i  0
-s  procedureFunction1.png
-PlacementComponent
-__q  272_1
-Sphere
-f  2.000000
-Position
-f  352.510376
-f  0.004150
-f  -219.360565
-MouseGrabbable
-Layer
-i  3
-MouseSelectable
-MouseIntersectable
-LoopSociety
-q  270_1
-p  
-TextureComponent
-s  
-f  20.000000
-i  0
-s  comporessPower.png
-UiComponent
-i  -1
-__q  271_1
-Text
-s  
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-f  3.000000
-b  1
-MouseSelectable
-MouseIntersectable
-MouseGrabbable
-Position
-f  334.559052
-f  0.000000
-f  -220.299957
-UiComponent
-i  9
-Sphere
-f  2.000000
 Circle
-f  5.000000
-LoopSociety
-q  270_1
-p  
-q  274_1
-InputVariable
-q  152_1
-q  274_1
-q  279_1
-Layer
-i  3
-Highlight
-__q  274_1
-AlgebraNode
-i  0
-s  
+f  20.000000
+Position
+f  -27.834068
 f  0.000000
-i  1
-b  0
-b  0
-b  0
-b  0
-LoopSociety
-q  271_1
-p  
-q  275_1
-__q  275_1
-AlgebraNode
-i  0
-s  
-f  0.000000
-i  1
-b  0
-b  0
-b  0
-b  0
-LoopSociety
-q  274_1
-p  
-q  276_1
-q  281_1
-q  284_1
-__q  284_1
-AlgebraNode
-i  4
-s  
-f  0.000000
-i  1
-b  0
-b  0
-b  0
-b  0
-LoopSociety
-q  275_1
-p  
-q  285_1
-q  286_1
-__q  286_1
-AlgebraNode
-i  0
-s  
-f  0.000000
-i  1
-b  0
-b  0
-b  0
-b  0
-LoopSociety
-q  284_1
-p  
-q  287_1
-q  288_1
-__q  288_1
-AlgebraNode
-i  1
-s  a
-f  1.000000
-i  1
-b  0
-b  0
-b  0
-b  0
-LoopSociety
-q  286_1
-p  
-__q  287_1
-AlgebraNode
-i  1
+f  -30.168036
+BubbleVariable
 s  b
-f  1.000000
-i  1
 b  0
-b  0
-b  0
-b  0
-LoopSociety
-q  286_1
-p  
-__q  285_1
-AlgebraNode
-i  1
-s  a
-f  1.000000
-i  1
-b  0
-b  0
-b  0
-b  0
-LoopSociety
-q  284_1
-p  
-__q  281_1
-AlgebraNode
-i  4
-s  
-f  0.000000
-i  1
-b  0
-b  0
-b  0
-b  0
-LoopSociety
-q  275_1
-p  
-q  282_1
-q  283_1
-__q  283_1
-AlgebraNode
-i  1
-s  b
-f  1.000000
-i  1
-b  0
-b  0
-b  0
-b  0
-LoopSociety
-q  281_1
-p  
-__q  282_1
-AlgebraNode
-i  1
-s  a
-f  1.000000
-i  1
-b  0
-b  0
-b  0
-b  0
-LoopSociety
-q  281_1
-p  
-__q  276_1
-AlgebraNode
-i  4
-s  
-f  0.000000
-i  1
-b  0
-b  0
-b  0
-b  0
-LoopSociety
-q  275_1
-p  
-q  277_1
-q  279_1
-q  280_1
-__q  280_1
-AlgebraNode
-i  1
-s  b
-f  1.000000
-i  1
-b  0
-b  0
-b  0
-b  0
-LoopSociety
-q  276_1
-p  
-__q  279_1
-AlgebraNode
-i  1
-s  b
-f  1.000000
-i  1
-b  0
-b  0
-b  0
-b  0
-LoopSociety
-q  276_1
-p  
-__q  277_1
-AlgebraNode
-i  0
-s  
-f  0.000000
-i  1
-b  0
-b  0
-b  0
-b  0
-LoopSociety
-q  276_1
-p  
-q  278_1
-__q  278_1
-AlgebraNode
-i  2
-s  
-f  1.000000
-i  1
-b  0
-b  0
-b  0
-b  0
-LoopSociety
-q  277_1
-p  
