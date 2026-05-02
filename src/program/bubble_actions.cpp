@@ -73,6 +73,45 @@ namespace bubbleActions {
 		return true;
 	}
 
+	middle::Id createNegatedReplacementShape(middle::GameState* gameState, middle::Id id) {
+		middle::Id copyId = middle::deepCopyShape(gameState, id.index);
+
+		std::vector<middle::Id>children;
+		middle::getChildren(gameState, copyId, children);
+		for (middle::Id id : children) {
+			middle::Id targetId = id;
+			auto childShape = middle::getShape(gameState, id.index);
+			// link -1 to bubbles;
+			auto mul = middle::getComponent<components::BubbleMultiplyComponent>(childShape);
+			if (mul) {
+				targetId = middle::getFirstChildWithComponent(gameState, id, middle::getTypeId<components::BubbleComponent>());
+			}
+			auto& targetShape = middle::getShape(gameState, targetId.index);
+			auto bubble = middle::getComponent<components::BubbleComponent>(targetShape);
+			if (bubble) {
+				auto mulOneAction = MulOne(targetId);
+				mulOneAction.execute(gameState);
+				middle::Id one = mulOneAction.resultShapeId;
+				bubble::negate(gameState, one);
+			}
+			// directly negate units
+			else {
+				bubble::negate(gameState, targetId);
+			}
+		}
+
+		if (children.size() == 0) {
+			auto& copyShape = middle::getShape(gameState, copyId.index);
+			auto var = middle::getComponent<components::BubbleVariable>(copyShape);
+			if (var) {
+				var->isNegative = !var->isNegative;
+			}
+		}
+
+		return copyId;
+	}
+
+
 
 	CreateMulitiplicationReplacementShape::CreateMulitiplicationReplacementShape(middle::Id shapeToReplace, middle::Id replacingShape)
 	{
@@ -89,7 +128,6 @@ namespace bubbleActions {
 
 		auto bubbleComp = middle::getComponent<components::BubbleComponent>(shapeToReplace);
 		auto mulComp = middle::getComponent<components::BubbleMultiplyComponent>(shapeToReplace);
-		auto fraction = middle::getComponent<components::FractionalComponent>(shapeToReplace);
 		auto unit = middle::getComponent<components::BubbleUnit>(shapeToReplace);
 		auto variable = middle::getComponent<components::BubbleVariable>(shapeToReplace);
 		auto exp = middle::getComponent<components::ExponentComponent>(shapeToReplace);
@@ -146,39 +184,6 @@ namespace bubbleActions {
 			return;
 		}
 
-		if (fraction) {
-			middle::Id& copyFractionId = middle::deepCopyShape(gameState, shapeToReplace.id.index);
-			auto& copyFractionShape = middle::getShape(gameState, copyFractionId.index);
-
-			// compute displacmenet from replacing shape to shapeToReplace position
-			Vector3 replacingShapePos = middle::getShapePosition(gameState, copyFractionShape.id.index);
-			Vector3 displacement = targetPos - replacingShapePos;
-			middle::moveShape(gameState, copyFractionShape.id.index, displacement);
-
-			middle::Id quotientId = bubble::fractionQuotient(gameState, copyFractionId);
-
-			auto createReplacement = CreateMulitiplicationReplacementShape(quotientId, replacingShapeId);
-			createReplacement.execute(gameState);
-
-			middle::Id resultId = createReplacement.resultShapeId;
-			auto& resultShape = middle::getShape(gameState, resultId.index);
-
-			// if result is not a bubble we need to contain it into a bubble
-			auto bubble = middle::getComponent<components::BubbleComponent>(resultShape);
-			if (!bubble) {
-				middle::Shape newContainerProto = bubble::newBubble(gameState, targetPos);
-				middle::Shape& newContainer = middle::registerShape(gameState, newContainerProto);
-				middle::EditorActionReparent(newContainer.id.index, resultId.index).execute(gameState);
-				resultId = newContainer.id;
-			}
-
-			auto replace = ReplaceBubbleAndTransferTags(quotientId, resultId);
-			replace.execute(gameState);
-
-			resultShapeId = copyFractionId;
-			return;
-		}
-
 		// if shape to replace is a unit
 		else if (unit)
 		{
@@ -192,7 +197,9 @@ namespace bubbleActions {
 			unit = middle::getComponent<components::BubbleUnit>(shapeToReplace);
 
 			if (unit->value == -1) {
-				bubble::negate(gameState, copyId);
+				middle::Id negativeCopyId = createNegatedReplacementShape(gameState, copyId);
+				Replace(copyId, negativeCopyId).execute(gameState);
+				copyId = negativeCopyId;
 			}
 
 			// compute displacmenet from replacing shape to shapeToReplace position
@@ -997,14 +1004,6 @@ namespace bubbleActions {
 			bubble::invert(gameState, compressedBubble.id);
 			bubble::invert(gameState, commonCopyId);
 		}
-		// if common is variable, and its negative, since variable bubbles can be negative, negate the compressed then
-		auto commonVar = middle::getComponent<components::BubbleVariable>(commonShape);
-		if (commonVar) {
-			if (commonVar->isNegative) {
-				bubble::negate(gameState, compressedBubble.id);
-				bubble::negate(gameState, commonCopyId);
-			}
-		}
 
 		middle::Id parentMul = middle::getParent(gameState, commonCopyId);
 		return parentMul;
@@ -1182,56 +1181,28 @@ namespace bubbleActions {
 		}
 	}
 
-	middle::Id createNegatedReplacementShape(middle::GameState* gameState, middle::Id id) {
-		middle::Id copyId = middle::deepCopyShape(gameState, id.index);
-
-		std::vector<middle::Id>children;
-		middle::getChildren(gameState, copyId, children);
-		for (middle::Id id : children) {
-			middle::Id targetId = id;
-			auto childShape = middle::getShape(gameState, id.index);
-			// link -1 to bubbles;
-			auto mul = middle::getComponent<components::BubbleMultiplyComponent>(childShape);
-			if (mul) {
-				targetId = middle::getFirstChildWithComponent(gameState, id, middle::getTypeId<components::BubbleComponent>());
-			}
-			auto& targetShape = middle::getShape(gameState, targetId.index);
-			auto bubble = middle::getComponent<components::BubbleComponent>(targetShape);
-			if (bubble) {
-				auto mulOneAction = MulOne(targetId);
-				mulOneAction.execute(gameState);
-				middle::Id one = mulOneAction.resultShapeId;
-				bubble::negate(gameState, one);
-			}
-			// directly negate units
-			else {
-				bubble::negate(gameState, targetId);
-			}
-		}
-		return copyId;
-	}
-
 
 	void MulNegativeOne::execute(middle::GameState* gameState)
 	{
 		auto mulOne = std::make_unique<MulOne>(recieverShapeId);
 		mulOne->execute(gameState);
-		middle::Id one = mulOne->resultShapeId;
-		bubble::negate(gameState, one);
 		if (mulOne->cancelled) {
 			cancelled = true;
 			return;
 		}
+		middle::Id one = mulOne->resultShapeId;
+		bubble::negate(gameState, one);
 		actions.push_back(std::move(mulOne));
 
-		middle::Id negativeReplacementId = createNegatedReplacementShape(gameState, recieverShapeId);
-		auto registerIdAction = std::make_unique<middle::EditorActionRegisterId>(negativeReplacementId);
-		registerIdAction->execute(gameState);
-		actions.push_back(std::move(registerIdAction));
-
-		auto replaceAction = std::make_unique<Replace>(recieverShapeId, negativeReplacementId);
-		replaceAction->execute(gameState);
-		actions.push_back(std::move(replaceAction));
+		auto mulOne2 = std::make_unique<MulOne>(recieverShapeId);
+		mulOne2->execute(gameState);
+		if (mulOne2->cancelled) {
+			cancelled = true;
+			return;
+		}
+		middle::Id one2 = mulOne2->resultShapeId;
+		bubble::negate(gameState, one2);
+		actions.push_back(std::move(mulOne2));
 	}
 
 	void MulNegativeOne::undo(middle::GameState* gameState)
@@ -1851,9 +1822,8 @@ namespace bubbleActions {
 
 		Vector3 currppos = middle::getShapePosition(gameState, newTermId.index);
 		middle::moveShape(gameState, newTermId.index, targetPos - currppos);
-		middle::Id inverseFriend = deepCopyShape(gameState, newTermId.index);
+		middle::Id inverseFriend = createNegatedReplacementShape(gameState, newTermId);
 		middle::moveShape(gameState, inverseFriend.index, { 1,0,0 });
-		bubble::negate(gameState, inverseFriend);
 
 		// container Bubble
 		middle::Shape bubbleProto = bubble::newBubble(gameState, targetPos);
