@@ -354,7 +354,7 @@ PhysicsData
 f  5654.866699
 f  0.000177
 f  1.000000
-f  0.000078
+f  0.000058
 f  0.000000
 f  0.000009
 f  0.000000
@@ -390,7 +390,7 @@ PhysicsData
 f  28579.250000
 f  0.000035
 f  1.000000
-f  0.000037
+f  0.000034
 f  0.000000
 f  0.000001
 f  0.000000
@@ -410,7 +410,6 @@ f  -11.109949
 BubbleAlgebraProblem
 b  0
 ProcedureTargetTag
-InitializedTag
 __q  19_0
 AlgebraNode
 i  0
@@ -436,7 +435,7 @@ b  0
 b  0
 b  0
 LoopSociety
-q  19_2
+q  19_0
 p  
 q  21_0
 q  24_0
@@ -451,7 +450,7 @@ b  0
 b  0
 b  0
 LoopSociety
-q  20_2
+q  20_0
 p  
 q  22_0
 q  23_0
@@ -466,7 +465,7 @@ b  0
 b  0
 b  0
 LoopSociety
-q  21_2
+q  21_0
 p  
 __q  23_0
 AlgebraNode
@@ -479,7 +478,7 @@ b  0
 b  0
 b  0
 LoopSociety
-q  21_2
+q  21_0
 p  
 __q  24_0
 AlgebraNode
@@ -492,7 +491,7 @@ b  0
 b  0
 b  0
 LoopSociety
-q  20_2
+q  20_0
 p  
 q  25_0
 q  26_0
@@ -507,7 +506,7 @@ b  0
 b  0
 b  0
 LoopSociety
-q  24_2
+q  24_0
 p  
 __q  26_0
 AlgebraNode
@@ -520,7 +519,64 @@ b  1
 b  0
 b  0
 LoopSociety
-q  24_2
+q  24_0
+p  
+__q  27_0
+AlgebraNode
+i  0
+s  
+f  0.000000
+i  1
+b  0
+b  0
+b  0
+b  0
+LoopSociety
+q  716_0
+p  
+q  28_0
+__q  28_0
+AlgebraNode
+i  4
+s  
+f  0.000000
+i  1
+b  0
+b  0
+b  0
+b  0
+LoopSociety
+q  27_2
+p  
+q  29_0
+q  33_0
+__q  29_0
+AlgebraNode
+i  0
+s  
+f  0.000000
+i  1
+b  0
+b  0
+b  0
+b  0
+LoopSociety
+q  28_2
+p  
+q  30_0
+q  32_0
+__q  30_0
+AlgebraNode
+i  1
+s  b
+f  1.000000
+i  1
+b  0
+b  0
+b  0
+b  0
+LoopSociety
+q  29_2
 p  
 __q  31_0
 Sphere
@@ -552,6 +608,60 @@ MouseIntersectable
 LoopSociety
 q  -1_0
 p  
+__q  32_0
+AlgebraNode
+i  1
+s  a
+f  1.000000
+i  1
+b  0
+b  0
+b  0
+b  0
+LoopSociety
+q  29_2
+p  
+__q  33_0
+AlgebraNode
+i  0
+s  
+f  0.000000
+i  1
+b  0
+b  0
+b  0
+b  0
+LoopSociety
+q  28_2
+p  
+q  34_0
+q  35_0
+__q  34_0
+AlgebraNode
+i  1
+s  a
+f  1.000000
+i  1
+b  0
+b  0
+b  0
+b  0
+LoopSociety
+q  33_2
+p  
+__q  35_0
+AlgebraNode
+i  1
+s  b
+f  -1.000000
+i  1
+b  0
+b  1
+b  0
+b  0
+LoopSociety
+q  33_2
+p  
 __q  36_0
 LoopSociety
 q  17_0
@@ -568,9 +678,9 @@ PhysicsData
 f  1256.637085
 f  0.000796
 f  1.000000
-f  -0.000127
+f  -0.000087
 f  0.000000
-f  0.000003
+f  0.000002
 f  0.000000
 f  0.000000
 f  0.000000
@@ -581,9 +691,9 @@ b  0
 Circle
 f  20.000000
 Position
-f  454.054688
+f  454.054626
 f  -0.000183
-f  3.044558
+f  3.044650
 BubbleVariable
 s  a
 b  0
@@ -607,9 +717,9 @@ PhysicsData
 f  1256.637085
 f  0.000796
 f  1.000000
-f  -0.000224
+f  -0.000176
 f  0.000000
-f  -0.000044
+f  -0.000041
 f  0.000000
 f  0.000000
 f  0.000000
@@ -620,9 +730,9 @@ b  0
 Circle
 f  20.000000
 Position
-f  493.239105
+f  493.239136
 f  -0.000183
-f  23.170687
+f  23.170599
 BubbleVariable
 s  b
 b  0
@@ -648,9 +758,9 @@ PhysicsData
 f  5654.866699
 f  0.000177
 f  1.000000
-f  -0.000087
+f  -0.000082
 f  0.000000
-f  -0.000066
+f  -0.000063
 f  0.000000
 f  0.000000
 f  0.000000
@@ -661,7 +771,7 @@ b  0
 Circle
 f  42.426407
 Position
-f  34.553116
+f  34.553097
 f  0.000000
 f  -58.744381
 __q  39_0
@@ -682,7 +792,7 @@ PhysicsData
 f  5654.866699
 f  0.000177
 f  1.000000
-f  -0.000083
+f  -0.000086
 f  0.000000
 f  0.000052
 f  0.000000
@@ -695,7 +805,7 @@ b  0
 Circle
 f  42.426407
 Position
-f  34.090820
+f  34.090816
 f  0.000000
 f  36.511375
 __q  40_0
@@ -729,9 +839,9 @@ PhysicsData
 f  1256.637085
 f  0.000796
 f  1.000000
-f  0.000005
+f  0.000023
 f  0.000000
-f  0.000035
+f  0.000031
 f  0.000000
 f  0.000000
 f  0.000000
@@ -742,9 +852,9 @@ b  0
 Circle
 f  20.000000
 Position
-f  19.478369
+f  19.478355
 f  0.000000
-f  20.025110
+f  20.025116
 BubbleVariable
 s  a
 b  0
@@ -764,9 +874,9 @@ PhysicsData
 f  1256.637085
 f  0.000796
 f  1.000000
-f  -0.000055
+f  -0.000031
 f  0.000000
-f  -0.000041
+f  -0.000037
 f  0.000000
 f  0.000000
 f  0.000000
@@ -777,9 +887,9 @@ b  0
 Circle
 f  20.000000
 Position
-f  48.697235
+f  48.697227
 f  0.000000
-f  52.990810
+f  52.990807
 BubbleVariable
 s  b
 b  0
@@ -801,7 +911,7 @@ f  0.000796
 f  1.000000
 f  -0.000057
 f  0.000000
-f  -0.000005
+f  -0.000016
 f  0.000000
 f  0.000000
 f  0.000000
@@ -812,9 +922,9 @@ b  0
 Circle
 f  20.000000
 Position
-f  52.822582
+f  52.822540
 f  0.000000
-f  -46.429279
+f  -46.429241
 BubbleVariable
 s  b
 b  1
@@ -834,9 +944,9 @@ PhysicsData
 f  1256.637085
 f  0.000796
 f  1.000000
-f  0.000033
+f  0.000035
 f  0.000000
-f  0.000061
+f  0.000052
 f  0.000000
 f  0.000000
 f  0.000000
@@ -847,9 +957,9 @@ b  0
 Circle
 f  20.000000
 Position
-f  16.295528
+f  16.295532
 f  0.000000
-f  -71.051506
+f  -71.051537
 BubbleVariable
 s  a
 b  0
