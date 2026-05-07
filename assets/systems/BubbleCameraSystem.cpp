@@ -57,10 +57,11 @@ public:
 
 			const float centerOffsetX = 200;
 			const float centerOffsetZ = 0;
-			const float minX = -400 + centerOffsetX;
-			const float maxX = 400 + centerOffsetX;
-			const float minZ = -400 + centerOffsetZ;
-			const float maxZ = 400 + centerOffsetZ;
+			const float xzCamAxis = 400;
+			const float minX = -xzCamAxis + centerOffsetX;
+			const float maxX = xzCamAxis + centerOffsetX;
+			const float minZ = -xzCamAxis + centerOffsetZ;
+			const float maxZ = xzCamAxis + centerOffsetZ;
 
 			if (gameState->gameInput.panLeft && oldPos.x > minX) {
 				camera->speedX = -panSpeed;
