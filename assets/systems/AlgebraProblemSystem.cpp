@@ -103,7 +103,6 @@ public:
 				if (matching) {
 					middle::loadShape(gameState, "../assets/shapes/", "ScoreScreen", true);
 					gameState->bubbleAlgebraState.justCompletedLevel = true;
-					gameState->bubbleAlgebraState.completedLevelName = gameState->activeSceneName;
 
 					if (button->function == bubbleButton::SAVE_PROCEDURE_BUTTON) {
 						auto& procShape = middle::getShape(gameState, procContainerId.index);

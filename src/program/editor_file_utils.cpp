@@ -353,6 +353,12 @@ namespace middle {
 
 		for (auto& pair : shape.componentMap) {
 			std::string componentName = componentNameMap[pair.first];
+
+			const std::string initializedThing = "InitializedTag";
+			if (componentName == initializedThing) {
+				continue;
+			}
+
 			outFile << componentName << "\n";
 			int componentTypeId = pair.first;
 			Component component = pair.second;

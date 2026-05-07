@@ -27,28 +27,29 @@ LoopSociety
 q  -1_0
 p  
 __q  1_0
+MouseSelectable
+Text
+s  MouseIntersectDetectionSystem
+f  255.000000
+f  255.000000
+f  255.000000
+f  255.000000
+f  2.000000
+f  0.000000
+f  10.000000
+f  10.000000
+b  1
+MouseGrabbable
+SystemReference
+s  MouseIntersectDetectionSystem
+Position
+f  165.094376
+f  200.000000
+f  112.888649
+MouseIntersectable
 LoopSociety
 q  -1_0
 p  
-CameraComponent
-f  54441.953125
-f  8902.613281
-f  -11109.563477
-f  0.000000
-f  0.000000
-f  1.000000
-f  45.000000
-i  0
-b  1
-Sphere
-f  2.000000
-MouseGrabbable
-Position
-f  54441.953125
-f  -1097.386353
-f  -11109.563477
-MouseSelectable
-MouseIntersectable
 __q  2_0
 MouseSelectable
 Text
@@ -483,11 +484,12 @@ f  20.000000
 LoopSociety
 q  -1_0
 p  
+MouseGrabbable
 Position
 f  378.000000
 f  0.000000
 f  -18.000000
-MouseGrabbable
+MouseSelectable
 Text
 s  PROBLEM 8
 f  0.000000
@@ -499,7 +501,6 @@ f  0.000000
 f  0.000000
 f  5.000000
 b  1
-MouseSelectable
 MouseIntersectable
 Button
 i  -1
@@ -519,7 +520,6 @@ p
 Sphere
 f  2.000000
 MouseIntersectable
-MouseSelectable
 Text
 s  PROCEDURE 1
 f  0.000000
@@ -531,11 +531,12 @@ f  0.000000
 f  0.000000
 f  5.000000
 b  1
+MouseSelectable
+MouseGrabbable
 Position
 f  18.000000
 f  0.000000
 f  -18.000000
-MouseGrabbable
 LevelReference
 s  PROCEDURE1
 b  0
@@ -552,11 +553,12 @@ f  20.000000
 LoopSociety
 q  -1_0
 p  
+MouseGrabbable
 Position
 f  90.000000
 f  0.000000
 f  -18.000000
-MouseGrabbable
+MouseSelectable
 Text
 s  PROBLEM 9
 f  0.000000
@@ -568,7 +570,6 @@ f  0.000000
 f  0.000000
 f  5.000000
 b  1
-MouseSelectable
 MouseIntersectable
 Button
 i  -1
@@ -588,7 +589,6 @@ f  2.000000
 Circle
 f  20.000000
 MouseIntersectable
-MouseSelectable
 Text
 s  PROBLEM 10
 f  0.000000
@@ -600,11 +600,12 @@ f  0.000000
 f  0.000000
 f  5.000000
 b  1
+MouseSelectable
+MouseGrabbable
 Position
 f  468.000000
 f  0.000000
 f  -18.000000
-MouseGrabbable
 Button
 i  -1
 LevelReference
@@ -622,12 +623,11 @@ f  20.000000
 LoopSociety
 q  -1_0
 p  
-MouseGrabbable
 Position
 f  306.000000
 f  0.000000
 f  54.000000
-MouseSelectable
+MouseGrabbable
 Text
 s  PROBLEM 11
 f  0.000000
@@ -639,6 +639,7 @@ f  0.000000
 f  0.000000
 f  5.000000
 b  1
+MouseSelectable
 MouseIntersectable
 Button
 i  -1
@@ -658,7 +659,6 @@ f  2.000000
 Circle
 f  20.000000
 MouseIntersectable
-MouseSelectable
 Text
 s  PROBLEM 12
 f  0.000000
@@ -670,11 +670,12 @@ f  0.000000
 f  0.000000
 f  5.000000
 b  1
+MouseSelectable
+MouseGrabbable
 Position
 f  684.000000
 f  0.000000
 f  54.000000
-MouseGrabbable
 Button
 i  -1
 LevelReference
@@ -710,6 +711,7 @@ f  2.000000
 Circle
 f  20.000000
 MouseIntersectable
+MouseSelectable
 Text
 s  PROBLEM 13
 f  0.000000
@@ -721,12 +723,11 @@ f  0.000000
 f  0.000000
 f  5.000000
 b  1
-MouseSelectable
-MouseGrabbable
 Position
 f  -54.000000
 f  0.000000
 f  -90.000000
+MouseGrabbable
 Button
 i  -1
 LevelReference
@@ -814,11 +815,12 @@ f  20.000000
 LoopSociety
 q  -1_0
 p  
+MouseGrabbable
 Position
 f  162.000000
 f  0.000000
 f  -90.000000
-MouseGrabbable
+MouseSelectable
 Text
 s  PROBLEM 16
 f  0.000000
@@ -830,7 +832,6 @@ f  0.000000
 f  0.000000
 f  5.000000
 b  1
-MouseSelectable
 MouseIntersectable
 Button
 i  -1
@@ -884,11 +885,12 @@ f  20.000000
 LoopSociety
 q  -1_0
 p  
+MouseGrabbable
 Position
 f  306.000000
 f  0.000000
 f  -90.000000
-MouseGrabbable
+MouseSelectable
 Text
 s  PROBLEM 18
 f  0.000000
@@ -900,7 +902,6 @@ f  0.000000
 f  0.000000
 f  5.000000
 b  1
-MouseSelectable
 MouseIntersectable
 Button
 i  -1
@@ -920,7 +921,6 @@ f  2.000000
 Circle
 f  20.000000
 MouseIntersectable
-MouseSelectable
 Text
 s  PROBLEM 19
 f  0.000000
@@ -932,11 +932,12 @@ f  0.000000
 f  0.000000
 f  5.000000
 b  1
+MouseSelectable
+MouseGrabbable
 Position
 f  378.000000
 f  0.000000
 f  -90.000000
-MouseGrabbable
 Button
 i  -1
 LevelReference
@@ -1093,6 +1094,7 @@ f  2.000000
 Circle
 f  20.000000
 MouseIntersectable
+MouseSelectable
 Text
 s  PROBLEM 22
 f  0.000000
@@ -1104,12 +1106,11 @@ f  0.000000
 f  0.000000
 f  5.000000
 b  1
-MouseSelectable
-MouseGrabbable
 Position
 f  540.000000
 f  0.000000
 f  -90.000000
+MouseGrabbable
 Button
 i  -1
 LevelReference
@@ -1127,12 +1128,11 @@ f  20.000000
 LoopSociety
 q  -1_0
 p  
-MouseGrabbable
 Position
 f  -54.000000
 f  0.000000
 f  -18.000000
-MouseSelectable
+MouseGrabbable
 Text
 s  PROBLEM 23
 f  0.000000
@@ -1144,6 +1144,7 @@ f  0.000000
 f  0.000000
 f  5.000000
 b  1
+MouseSelectable
 MouseIntersectable
 Button
 i  -1
@@ -1319,11 +1320,12 @@ f  20.000000
 LoopSociety
 q  -1_0
 p  
+MouseGrabbable
 Position
 f  234.000000
 f  0.000000
 f  54.000000
-MouseGrabbable
+MouseSelectable
 Text
 s  PROBLEM 30
 f  0.000000
@@ -1335,7 +1337,6 @@ f  0.000000
 f  0.000000
 f  5.000000
 b  1
-MouseSelectable
 MouseIntersectable
 Button
 i  -1
@@ -1347,14 +1348,14 @@ Node
 IdRef
 q  21_0
 __q  43_0
+Position
+f  101.091301
+f  -1000.000000
+f  -5.661225
+MouseGrabbable
 Reference
 s  BubbleCamera
 s  ../assets/shapes/
-MouseGrabbable
-Position
-f  0.000000
-f  -1000.000000
-f  0.000000
 MouseSelectable
 MouseIntersectable
 LoopSociety
@@ -1366,12 +1367,11 @@ f  20.000000
 LoopSociety
 q  -1_0
 p  
-MouseGrabbable
 Position
 f  378.000000
 f  0.000000
 f  54.000000
-MouseSelectable
+MouseGrabbable
 Text
 s  PROBLEM 31
 f  0.000000
@@ -1383,6 +1383,7 @@ f  0.000000
 f  0.000000
 f  5.000000
 b  1
+MouseSelectable
 MouseIntersectable
 Button
 i  -1
@@ -1401,11 +1402,12 @@ f  20.000000
 LoopSociety
 q  -1_0
 p  
+MouseGrabbable
 Position
 f  468.000000
 f  0.000000
 f  54.000000
-MouseGrabbable
+MouseSelectable
 Text
 s  PROBLEM 32
 f  0.000000
@@ -1417,7 +1419,6 @@ f  0.000000
 f  0.000000
 f  5.000000
 b  1
-MouseSelectable
 MouseIntersectable
 Button
 i  -1
@@ -1436,12 +1437,11 @@ f  20.000000
 LoopSociety
 q  -1_0
 p  
-MouseGrabbable
 Position
 f  540.000000
 f  0.000000
 f  54.000000
-MouseSelectable
+MouseGrabbable
 Text
 s  PROBLEM 33
 f  0.000000
@@ -1453,6 +1453,7 @@ f  0.000000
 f  0.000000
 f  5.000000
 b  1
+MouseSelectable
 MouseIntersectable
 Button
 i  -1
@@ -1471,11 +1472,12 @@ f  20.000000
 LoopSociety
 q  -1_0
 p  
+MouseGrabbable
 Position
 f  612.000000
 f  0.000000
 f  54.000000
-MouseGrabbable
+MouseSelectable
 Text
 s  PROBLEM 34
 f  0.000000
@@ -1487,7 +1489,6 @@ f  0.000000
 f  0.000000
 f  5.000000
 b  1
-MouseSelectable
 MouseIntersectable
 Button
 i  -1
@@ -1507,6 +1508,7 @@ f  2.000000
 Circle
 f  20.000000
 MouseIntersectable
+MouseSelectable
 Text
 s  PROBLEM 35
 f  0.000000
@@ -1518,12 +1520,11 @@ f  0.000000
 f  0.000000
 f  5.000000
 b  1
-MouseSelectable
-MouseGrabbable
 Position
 f  234.000000
 f  0.000000
 f  -18.000000
+MouseGrabbable
 Button
 i  -1
 LevelReference
@@ -1541,11 +1542,12 @@ f  20.000000
 LoopSociety
 q  -1_0
 p  
+MouseGrabbable
 Position
 f  162.000000
 f  0.000000
 f  -18.000000
-MouseGrabbable
+MouseSelectable
 Text
 s  PROBLEM 36
 f  0.000000
@@ -1557,7 +1559,6 @@ f  0.000000
 f  0.000000
 f  5.000000
 b  1
-MouseSelectable
 MouseIntersectable
 Button
 i  -1
@@ -1576,11 +1577,12 @@ f  20.000000
 LoopSociety
 q  -1_0
 p  
+MouseGrabbable
 Position
 f  90.000000
 f  0.000000
 f  54.000000
-MouseGrabbable
+MouseSelectable
 Text
 s  PROBLEM 28
 f  0.000000
@@ -1592,13 +1594,12 @@ f  0.000000
 f  0.000000
 f  5.000000
 b  1
-MouseSelectable
 MouseIntersectable
 Button
 i  -1
 LevelReference
 s  Problem28
-b  1
+b  0
 GridElement
 Node
 IdRef
@@ -1611,12 +1612,11 @@ f  20.000000
 LoopSociety
 q  -1_0
 p  
-MouseGrabbable
 Position
 f  162.000000
 f  0.000000
 f  54.000000
-MouseSelectable
+MouseGrabbable
 Text
 s  PROBLEM 29
 f  0.000000
@@ -1628,12 +1628,13 @@ f  0.000000
 f  0.000000
 f  5.000000
 b  1
+MouseSelectable
 MouseIntersectable
 Button
 i  -1
 LevelReference
 s  Problem29
-b  1
+b  0
 GridElement
 Node
 IdRef

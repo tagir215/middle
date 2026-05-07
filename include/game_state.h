@@ -126,7 +126,7 @@ namespace middle {
 		bool intersectingUI = false;
 		std::vector<std::shared_ptr<middle::EditorActionContainer>>bubbleActions;
 		bool justCompletedLevel = false;
-		std::string completedLevelName;
+		std::string previousLevelName;
 		std::vector<std::string>procedureNames;
 	};
 
