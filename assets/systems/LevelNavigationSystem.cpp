@@ -8,6 +8,8 @@
 #include "Position.h"
 #include "Circle.h"
 #include "bubble_constants.h"
+#include "IdRef.h"
+#include "component_utils.h"
 
 
 class LevelNavigationSystem : public middle::MiddleGameplaySystem {
@@ -60,23 +62,6 @@ public:
 			auto pos = *levelPosIt;
 			auto circle = *circleIt;
 
-			if (gameState->bubbleAlgebraState.justCompletedLevel) {
-				if (levelRef->levelName == gameState->bubbleAlgebraState.completedLevelName) {
-					gameState->bubbleAlgebraState.justCompletedLevel = false;
-					std::string completedLevelName = gameState->bubbleAlgebraState.completedLevelName;
-					gameState->bubbleAlgebraState.completedLevelName = "";
-					levelRef->complete = true;
-
-					for(int i=0; i<bubbleLevels::LEVEL_NAMES.size(); ++i){
-						const std::string& name = bubbleLevels::LEVEL_NAMES[i];
-						if (name == completedLevelName && i <bubbleLevels::LEVEL_NAMES.size() - 2) {
-							queueLevelNavigation(gameState, bubbleLevels::LEVEL_NAMES[i + 1]);
-							break;
-						}
-					}
-
-				}
-			}
 
 			if (levelRef->complete) {
 				middle::RenderItem completeInd;
@@ -90,6 +75,26 @@ public:
 				completeInd.length = 0.1f;
 				completeInd.center = { 0,0,0 };
 				gameState->renderData.push_back(completeInd);
+			}
+
+			if (gameState->bubbleAlgebraState.justCompletedLevel) {
+				if (levelRef->levelName == gameState->bubbleAlgebraState.completedLevelName) {
+					gameState->bubbleAlgebraState.justCompletedLevel = false;
+					std::string completedLevelName = gameState->bubbleAlgebraState.completedLevelName;
+					gameState->bubbleAlgebraState.completedLevelName = "";
+					levelRef->complete = true;
+
+					auto& shape = middle::getShape(gameState, levelCache->relevantIdVector[i].index);
+					auto idRef = middle::getComponent<components::IdRef>(shape);
+					if (idRef && middle::isValidId(gameState, idRef->idRef)) {
+						auto& nextShape = middle::getShape(gameState, idRef->idRef.index);
+						auto nextLevelRef = middle::getComponent<components::LevelReference>(nextShape);
+						queueLevelNavigation(gameState, nextLevelRef->levelName);
+						break;
+					}
+
+				}
+
 			}
 		}
 	}

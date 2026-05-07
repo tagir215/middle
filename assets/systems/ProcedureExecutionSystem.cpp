@@ -747,7 +747,7 @@ public:
 
 			if (procedure->mode == procedureConstants::EXECUTING && !skipPause) {
 				auto timer = middle::attachComponent<components::TimerComponent>(gameState, procedureShape.id);
-				timer->timeLeft = 0.25f;
+				timer->timeLeft = 0.10f;
 			}
 
 			if (procedure->mode == procedureConstants::STEPPING) {
