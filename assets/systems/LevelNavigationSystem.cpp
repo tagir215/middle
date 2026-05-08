@@ -12,6 +12,7 @@
 #include "component_utils.h"
 #include "CameraComponent.h"
 #include "InitializedTag.h"
+#include "Button.h"
 
 
 class LevelNavigationSystem : public middle::MiddleGameplaySystem {
@@ -20,6 +21,7 @@ public:
 	components::CompCache* levelCache;
 	components::CompCache* unInitializedLevelCache;
 	components::CompCache* cameraCache;
+	components::CompCache* buttonCache;
 
 	void init(middle::GameState* gameState) {
 		clickedCache = middle::newCompCache(gameState);
@@ -34,6 +36,9 @@ public:
 		unInitializedLevelCache->addType<components::InitializedTag>(components::NOTINTERESTED);
 		cameraCache = middle::newCompCache(gameState);
 		cameraCache->addType<components::CameraComponent>();
+		buttonCache = middle::newCompCache(gameState);
+		buttonCache->addType<components::Button>();
+		buttonCache->addType<components::MouseClickComponent>();
 	}
 
 	void saveState(middle::GameState* gameState) {
@@ -67,6 +72,15 @@ public:
 			queueLevelNavigation(gameState, name);
 		}
 
+		bool reset = false;
+		auto buttonIt = buttonCache->begin<components::Button>();
+		for (int i = 0; i < buttonCache->relevantIdVector.size() > 0; ++i) {
+			auto button = *buttonIt;
+			if (button->function == bubbleButton::RESET_PROGRESS) {
+				reset = true;
+			}
+		}
+
 		auto levelIt = levelCache->begin<components::LevelReference>();
 		auto levelPosIt = levelCache->begin<components::Position>();
 		auto circleIt = levelCache->begin<components::Circle>();
@@ -74,6 +88,9 @@ public:
 			auto levelRef = *levelIt;
 			auto pos = *levelPosIt;
 			auto circle = *circleIt;
+			if (reset) {
+				levelRef->complete = false;
+			}
 
 
 			if (levelRef->complete) {
@@ -90,6 +107,10 @@ public:
 				gameState->renderData.push_back(completeInd);
 			}
 
+		}
+
+		if (reset) {
+			saveState(gameState);
 		}
 
 		auto unLevelIt = unInitializedLevelCache->begin<components::LevelReference>();
@@ -109,14 +130,15 @@ public:
 					auto idRef = middle::getComponent<components::IdRef>(shape);
 					if (idRef && middle::isValidId(gameState, idRef->idRef)) {
 						gameState->bubbleAlgebraState.justCompletedLevel = false;
-						std::string completedLevelName = gameState->bubbleAlgebraState.previousLevelName;
-						gameState->bubbleAlgebraState.previousLevelName = "";
+						//std::string completedLevelName = gameState->bubbleAlgebraState.previousLevelName;
+						//gameState->bubbleAlgebraState.previousLevelName = "";
 						levelRef->complete = true;
+						saveState(gameState);
 
-						auto& nextShape = middle::getShape(gameState, idRef->idRef.index);
-						auto nextLevelRef = middle::getComponent<components::LevelReference>(nextShape);
-						queueLevelNavigation(gameState, nextLevelRef->levelName);
-						break;
+						//auto& nextShape = middle::getShape(gameState, idRef->idRef.index);
+						//auto nextLevelRef = middle::getComponent<components::LevelReference>(nextShape);
+						//queueLevelNavigation(gameState, nextLevelRef->levelName);
+						//break;
 					}
 				}
 
@@ -132,7 +154,7 @@ public:
 				auto camIt = cameraCache->begin<components::CameraComponent>();
 				middle::Id cameraId = cameraCache->relevantIdVector[0];
 				Vector3 currPos = middle::getShapePosition(gameState, cameraId.index);
-				const Vector3 offset = Vector3{ 0, -200, 0 };
+				const Vector3 offset = Vector3{ 0, -350, 0 };
 				Vector3 targetPos = middle::getShapePosition(gameState, shape.id.index) + offset;
 				middle::moveShape(gameState, cameraId.index, targetPos - currPos);
 

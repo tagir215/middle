@@ -47,5 +47,6 @@ namespace bubbleButton{
 	inline int SELECT_INSERT_X_OVER_X = 20;
 	inline int SELECT_INSERT_X_MINUS_X = 21;
 	inline int REVERSE_PROCEDURE = 22;
+	inline int RESET_PROGRESS = 23;
 }
 
