@@ -150,6 +150,7 @@ namespace middle {
 		const double nearPlaneDistance = 10;
 		const double farPlaneDistance = 4000;
 		bool systemsRegistered = false;
+		bool releaseBuild = false;
 		ApplicationMode applicationMode = ApplicationMode::EDITOR_MODE;
 		EditorState editorState;
 		Camera activeCamera;

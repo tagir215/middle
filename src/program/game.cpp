@@ -131,6 +131,12 @@ extern "C" {
 			return;
 		}
 
+		// TODO HARDCODED
+		if (gameState->activeSceneName == "") {
+			gameState->activeSceneName = "LevelSelect";
+			loadScene(gameState, "../assets/scenes/", gameState->activeSceneName, false);
+		}
+
 		if (!gameState->systemsRegistered) {
 			registerSystems(gameState);
 		}

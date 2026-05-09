@@ -521,6 +521,7 @@ namespace middle {
 
 		std::string path = folder + sceneName + ".midsc";
 
+
 		int indexOffset = 0;
 
 		std::ifstream inputFile(path);

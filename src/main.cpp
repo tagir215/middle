@@ -41,9 +41,11 @@
 #if defined(_DEBUG)
 static const char* DLL_PATH = "Debug/game.dll";
 static const char* TEMP_PATH = "Debug/game.load.dll";
+bool gameMode = false;
 #else
 static const char* DLL_PATH = "Release/game.dll";
 static const char* TEMP_PATH = "Release/game.load.dll";
+bool gameMode = true;
 #endif
 
 void UpdateGame(GameState* gameState);
@@ -84,6 +86,10 @@ int main(void)
 	const float fixedTimeStep = 1.0f / 60.0f;
 	gameState->frameTime = fixedTimeStep;
 
+	if (gameMode) {
+		gameState->applicationMode = middle::ApplicationMode::GAME_MODE;
+		gameState->releaseBuild = true;
+	}
 
 	gameState->editorState.camera = {
 		{0,-100,0},
@@ -93,6 +99,7 @@ int main(void)
 		CAMERA_PERSPECTIVE
 	};
 
+	ShowCursor();
 
 
 	auto& systemMap = getSystemMap();

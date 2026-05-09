@@ -302,14 +302,19 @@ namespace RendererSystem {
 				DrawText(gameState->activeSceneName.c_str(), center2d.x, center2d.y, 1, WHITE);
 			}
 
-			rlImGuiBegin();
+			if (!gameState->releaseBuild) {
+				rlImGuiBegin();
 
-			while (gameState->uiSetups.size() > 0) {
-				gameState->uiSetups.back()();
-				gameState->uiSetups.pop_back();
+				while (gameState->uiSetups.size() > 0) {
+					gameState->uiSetups.back()();
+					gameState->uiSetups.pop_back();
+				}
+
+				rlImGuiEnd();
 			}
-
-			rlImGuiEnd();
+			else {
+				gameState->uiSetups.clear();
+			}
 
 			EndDrawing();
 

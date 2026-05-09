@@ -1,7 +1,6 @@
 #scene
 s  LevelSelect
 __q  0_0
-MouseSelectable
 Text
 s  UiRenderSetup
 f  255.000000
@@ -13,14 +12,15 @@ f  0.000000
 f  10.000000
 f  10.000000
 b  1
+MouseSelectable
 MouseIntersectable
+SystemReference
+s  UiRenderSetup
+MouseGrabbable
 Position
 f  -160.000000
 f  0.000000
 f  -100.000000
-MouseGrabbable
-SystemReference
-s  UiRenderSetup
 Sphere
 f  0.000000
 LoopSociety
@@ -449,7 +449,6 @@ f  2.000000
 Circle
 f  20.000000
 MouseIntersectable
-MouseSelectable
 Text
 s  7
 f  255.000000
@@ -461,11 +460,12 @@ f  0.000000
 f  0.000000
 f  40.000000
 b  1
+MouseSelectable
+MouseGrabbable
 Position
 f  457.479584
 f  -0.000000
 f  -306.685242
-MouseGrabbable
 Button
 i  -1
 LevelReference
@@ -848,6 +848,7 @@ f  2.000000
 Circle
 f  20.000000
 MouseIntersectable
+MouseSelectable
 Text
 s  30
 f  255.000000
@@ -859,12 +860,11 @@ f  0.000000
 f  0.000000
 f  40.000000
 b  1
-MouseSelectable
-MouseGrabbable
 Position
 f  377.653564
 f  -0.000061
 f  35.453667
+MouseGrabbable
 Button
 i  -1
 LevelReference
@@ -952,12 +952,11 @@ Button
 i  -1
 Sphere
 f  2.000000
-MouseGrabbable
 Position
 f  257.471039
 f  0.000061
 f  165.689941
-MouseSelectable
+MouseGrabbable
 Text
 s  P3
 f  255.000000
@@ -969,6 +968,7 @@ f  0.000000
 f  0.000000
 f  40.000000
 b  1
+MouseSelectable
 MouseIntersectable
 LevelReference
 s  Procedure3
