@@ -132,6 +132,19 @@ public:
 		intersectOffsetX = std::sqrt(rb * rb - smallZ * smallZ);
 	}
 
+	Color getBubbleColor(middle::GameState* gameState, middle::Id id, components::BubbleComponent* bubble) {
+		Color color;
+		int depth = bubble::findBubbleDepth(gameState, id);
+		bool isEven = depth % 2 == 0;
+
+		if (bubble->inverse) {
+			color = isEven ? bubbleColors::BUBBLE_BACKGROUND_INVERSE_EVEN : bubbleColors::BUBBLE_BACKGROUND_INVERSE_UNEVEN;
+		}
+		else {
+			color = isEven ? bubbleColors::BUBBLE_BACKGROUND_EVEN : bubbleColors::BUBBLE_BACKGROUND_UNEVEN;
+		}
+		return color;
+	}
 
 	void update(middle::GameState* gameState) override {
 
@@ -172,12 +185,15 @@ public:
 
 			auto intersectable = middle::getComponent<components::MouseIntersectable>(shape);
 			bool intersecting = intersectable && intersectable->intersectingTop;
-			Color color = intersecting ? bubbleColors::HOVERED_ITEM : bubbleColors::BUBBLE_OUTLINE;
+
+
 			float radius = intersecting ? circle->radius * 1.05f : circle->radius;
-			Color backgroundColor = bubble->inverse ? bubbleColors::BUBBLE_BACKGROUND_INVERSE : bubbleColors::BUBBLE_BACKGROUND;
+
+			Color backgroundColor = getBubbleColor(gameState, shape.id, bubble);
+			//Color backgroundColor = bubble->inverse ? bubbleColors::BUBBLE_BACKGROUND_INVERSE : bubbleColors::BUBBLE_BACKGROUND;
 			middle::RenderItem circleItem;
 			circleItem.type = middle::RenderItemType::CIRCLE;
-			circleItem.color = color;
+			circleItem.color = bubbleColors::BUBBLE_OUTLINE;
 			circleItem.layer = layer->layer;
 			circleItem.backgroundColor = backgroundColor;
 			circleItem.radius = radius;
@@ -277,7 +293,6 @@ public:
 				circle->radius = bubble::variableRadius;
 			}
 
-
 			auto pos = middle::getComponent<components::Position>(shape);
 			auto intersectable = middle::getComponent<components::MouseIntersectable>(shape);
 
@@ -287,15 +302,13 @@ public:
 				fontSize *= 1.2f;
 				radius *= 1.2f;
 			}
+
 			Color color;
 			color = bubbleColors::POSITIVE_UNIT;
 			if (variable->isNegative) {
 				color = bubbleColors::NEGATIVE_UNIT;
 			}
-			Color backgroundColor = bubbleColors::BUBBLE_BACKGROUND;
-			if ((bubble->inverse)) {
-				backgroundColor = bubbleColors::BUBBLE_BACKGROUND_INVERSE;
-			}
+			Color backgroundColor = getBubbleColor(gameState, shape.id, bubble);
 
 			middle::RenderItem variableText;
 			variableText.type = middle::RenderItemType::TEXT;

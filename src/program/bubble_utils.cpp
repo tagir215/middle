@@ -1102,7 +1102,36 @@ namespace bubble {
 
 			++depth;
 
+			parents.push(parentId);
+		}
+		assert(false && "top dog not found");
+	}
 
+	int findBubbleDepth(middle::GameState* gameState, middle::Id id)
+	{
+		std::stack < middle::Id> parents;
+		parents.push(id);
+		int depth = 0;
+		while (parents.size() > 0) {
+			middle::Id currentId = parents.top();
+			parents.pop();
+
+			auto& parentShape = middle::getShape(gameState, currentId.index);
+			if (middle::getComponent<components::InputVariable>(parentShape)) {
+				return depth - 1;
+			}
+			if (middle::getComponent<components::TopDogBubbleTag>(parentShape)) {
+				return depth;
+			}
+			middle::Id parentId = middle::getParent(gameState, currentId);
+			if (parentId.index == middle::UNASSIGNED) {
+				return depth;
+			}
+
+			auto type = getStructureType(gameState, id);
+			if (middle::getComponent<components::BubbleComponent>(parentShape) || middle::getComponent<components::BubbleUnit>(parentShape)) {
+				++depth;
+			}
 
 			parents.push(parentId);
 		}

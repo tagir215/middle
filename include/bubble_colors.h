@@ -6,10 +6,12 @@ namespace bubbleColors {
 	inline Color POSITIVE_UNIT = WHITE;
 	inline Color ZERO_UNIT = { 255,255,255,60 };
 	inline Color NEGATIVE_UNIT = { 0,0,255,255 };
-	inline Color BUBBLE_OUTLINE = {255,255,255,100};
-	inline Color BUBBLE_BACKGROUND = {0, 0, 0, 10};
-	inline Color BUBBLE_BACKGROUND_INVERSE = {0, 255, 0, 20};
-	inline Color VARIABLE_OUTLINE = {100, 20,20 , 100};
+	inline Color BUBBLE_OUTLINE = {0,0,0,0};
+	inline Color BUBBLE_BACKGROUND_EVEN = {33, 33, 33, 255};
+	inline Color BUBBLE_BACKGROUND_UNEVEN = {66, 66, 66, 255};
+	inline Color BUBBLE_BACKGROUND_INVERSE_EVEN = {0, 50, 0, 255};
+	inline Color BUBBLE_BACKGROUND_INVERSE_UNEVEN = {0, 80, 0, 255};
+	inline Color VARIABLE_OUTLINE = {0, 0,0 , 0};
 	inline Color VARIABLE_TEXT = WHITE;
 	inline Color HOVERED_ITEM = {255,255,255,60};
 	inline Color MULTIPLICATION_CONNECTION = RED;

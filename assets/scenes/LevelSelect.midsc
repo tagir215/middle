@@ -1,6 +1,7 @@
 #scene
 s  LevelSelect
 __q  0_0
+MouseSelectable
 Text
 s  UiRenderSetup
 f  255.000000
@@ -12,15 +13,14 @@ f  0.000000
 f  10.000000
 f  10.000000
 b  1
-MouseSelectable
 MouseIntersectable
-SystemReference
-s  UiRenderSetup
-MouseGrabbable
 Position
 f  -160.000000
 f  0.000000
 f  -100.000000
+MouseGrabbable
+SystemReference
+s  UiRenderSetup
 Sphere
 f  0.000000
 LoopSociety
@@ -104,7 +104,7 @@ Button
 i  -1
 LevelReference
 s  Problem1
-b  0
+b  1
 GridElement
 Node
 IdRef
@@ -201,7 +201,7 @@ Button
 i  -1
 LevelReference
 s  Problem2
-b  0
+b  1
 GridElement
 Node
 IdRef
@@ -236,7 +236,7 @@ Button
 i  -1
 LevelReference
 s  Problem3
-b  0
+b  1
 GridElement
 Node
 IdRef
@@ -271,7 +271,7 @@ Button
 i  -1
 LevelReference
 s  Problem4
-b  0
+b  1
 GridElement
 Node
 IdRef
@@ -306,7 +306,7 @@ Button
 i  -1
 LevelReference
 s  Problem5
-b  0
+b  1
 GridElement
 IdRef
 q  15_0
@@ -436,7 +436,7 @@ Button
 i  -1
 LevelReference
 s  Problem6
-b  0
+b  1
 GridElement
 IdRef
 q  16_0
@@ -470,7 +470,7 @@ Button
 i  -1
 LevelReference
 s  Problem7
-b  0
+b  1
 GridElement
 IdRef
 q  40_0
@@ -482,12 +482,11 @@ f  20.000000
 LoopSociety
 q  50_0
 p  
-MouseGrabbable
 Position
 f  -66.669823
 f  -0.000061
 f  21.814465
-MouseSelectable
+MouseGrabbable
 Text
 s  24
 f  255.000000
@@ -499,6 +498,7 @@ f  0.000000
 f  0.000000
 f  40.000000
 b  1
+MouseSelectable
 MouseIntersectable
 Button
 i  -1
@@ -550,12 +550,11 @@ f  20.000000
 LoopSociety
 q  50_0
 p  
-MouseGrabbable
 Position
 f  -162.507202
 f  -0.000000
 f  -120.432045
-MouseSelectable
+MouseGrabbable
 Text
 s  20
 f  255.000000
@@ -567,12 +566,13 @@ f  0.000000
 f  0.000000
 f  40.000000
 b  1
+MouseSelectable
 MouseIntersectable
 Button
 i  -1
 LevelReference
 s  Problem9
-b  0
+b  1
 GridElement
 Node
 IdRef
@@ -642,7 +642,7 @@ Button
 i  -1
 LevelReference
 s  Problem11
-b  0
+b  1
 GridElement
 Node
 IdRef
@@ -677,7 +677,7 @@ Button
 i  -1
 LevelReference
 s  Problem12
-b  0
+b  1
 GridElement
 Node
 IdRef
@@ -689,11 +689,11 @@ q  -1_0
 p  
 MouseSelectable
 MouseIntersectable
-MouseGrabbable
 Position
 f  -192.928696
 f  0.000031
 f  -320.281372
+MouseGrabbable
 TextureComponent
 s  
 f  50.000000
@@ -708,7 +708,6 @@ f  2.000000
 Circle
 f  20.000000
 MouseIntersectable
-MouseSelectable
 Text
 s  26
 f  255.000000
@@ -720,11 +719,12 @@ f  0.000000
 f  0.000000
 f  40.000000
 b  1
+MouseSelectable
+MouseGrabbable
 Position
 f  123.522484
 f  -0.000000
 f  -21.154751
-MouseGrabbable
 Button
 i  -1
 LevelReference
@@ -742,11 +742,12 @@ f  20.000000
 LoopSociety
 q  50_0
 p  
+MouseGrabbable
 Position
 f  190.441513
 f  -0.000061
 f  -20.448940
-MouseGrabbable
+MouseSelectable
 Text
 s  27
 f  255.000000
@@ -758,7 +759,6 @@ f  0.000000
 f  0.000000
 f  40.000000
 b  1
-MouseSelectable
 MouseIntersectable
 Button
 i  -1
@@ -952,11 +952,12 @@ Button
 i  -1
 Sphere
 f  2.000000
+MouseGrabbable
 Position
 f  257.471039
 f  0.000061
 f  165.689941
-MouseGrabbable
+MouseSelectable
 Text
 s  P3
 f  255.000000
@@ -968,7 +969,6 @@ f  0.000000
 f  0.000000
 f  40.000000
 b  1
-MouseSelectable
 MouseIntersectable
 LevelReference
 s  Procedure3
@@ -986,7 +986,6 @@ f  2.000000
 Circle
 f  20.000000
 MouseIntersectable
-MouseSelectable
 Text
 s  34
 f  255.000000
@@ -998,11 +997,12 @@ f  0.000000
 f  0.000000
 f  40.000000
 b  1
+MouseSelectable
+MouseGrabbable
 Position
 f  191.911545
 f  -0.000061
 f  170.511597
-MouseGrabbable
 Button
 i  -1
 LevelReference
@@ -1053,12 +1053,11 @@ f  20.000000
 LoopSociety
 q  50_0
 p  
-MouseGrabbable
 Position
 f  133.653641
 f  -0.000000
 f  195.364105
-MouseSelectable
+MouseGrabbable
 Text
 s  35
 f  255.000000
@@ -1070,6 +1069,7 @@ f  0.000000
 f  0.000000
 f  40.000000
 b  1
+MouseSelectable
 MouseIntersectable
 Button
 i  -1
@@ -1089,7 +1089,6 @@ f  2.000000
 Circle
 f  20.000000
 MouseIntersectable
-MouseSelectable
 Text
 s  33
 f  255.000000
@@ -1101,11 +1100,12 @@ f  0.000000
 f  0.000000
 f  40.000000
 b  1
+MouseSelectable
+MouseGrabbable
 Position
 f  320.659546
 f  -0.000000
 f  170.778564
-MouseGrabbable
 Button
 i  -1
 LevelReference
@@ -1123,12 +1123,11 @@ f  20.000000
 LoopSociety
 q  50_0
 p  
-MouseGrabbable
 Position
 f  -36.372276
 f  -0.000061
 f  -144.231506
-MouseSelectable
+MouseGrabbable
 Text
 s  19
 f  255.000000
@@ -1140,12 +1139,13 @@ f  0.000000
 f  0.000000
 f  40.000000
 b  1
+MouseSelectable
 MouseIntersectable
 Button
 i  -1
 LevelReference
 s  Problem23
-b  0
+b  1
 GridElement
 Node
 IdRef
@@ -1193,12 +1193,11 @@ f  20.000000
 LoopSociety
 q  50_0
 p  
-MouseGrabbable
 Position
 f  94.160133
 f  -0.000061
 f  243.169495
-MouseSelectable
+MouseGrabbable
 Text
 s  36
 f  255.000000
@@ -1210,6 +1209,7 @@ f  0.000000
 f  0.000000
 f  40.000000
 b  1
+MouseSelectable
 MouseIntersectable
 Button
 i  -1
@@ -1227,11 +1227,11 @@ q  -1_0
 p  
 MouseSelectable
 MouseIntersectable
+MouseGrabbable
 Position
 f  -118.726631
 f  0.000092
 f  -320.292084
-MouseGrabbable
 TextureComponent
 s  
 f  50.000000
@@ -1267,7 +1267,7 @@ Button
 i  -1
 LevelReference
 s  Problem26
-b  0
+b  1
 GridElement
 Node
 IdRef
@@ -1302,7 +1302,7 @@ Button
 i  -1
 LevelReference
 s  Problem27
-b  0
+b  1
 GridElement
 Node
 IdRef
@@ -1315,12 +1315,11 @@ f  20.000000
 LoopSociety
 q  50_0
 p  
-MouseGrabbable
 Position
 f  417.241852
 f  -0.000000
 f  -126.971886
-MouseSelectable
+MouseGrabbable
 Text
 s  12
 f  255.000000
@@ -1332,25 +1331,26 @@ f  0.000000
 f  0.000000
 f  40.000000
 b  1
+MouseSelectable
 MouseIntersectable
 Button
 i  -1
 LevelReference
 s  Problem30
-b  0
+b  1
 GridElement
 Node
 IdRef
 q  21_0
 __q  43_0
+Reference
+s  BubbleCamera
+s  ../assets/shapes/
+MouseGrabbable
 Position
 f  -153.942993
 f  -147.953995
 f  -319.200012
-MouseGrabbable
-Reference
-s  BubbleCamera
-s  ../assets/shapes/
 MouseSelectable
 MouseIntersectable
 LoopSociety
@@ -1362,12 +1362,11 @@ f  20.000000
 LoopSociety
 q  50_0
 p  
-MouseGrabbable
 Position
 f  288.253906
 f  -0.000000
 f  -125.346336
-MouseSelectable
+MouseGrabbable
 Text
 s  14
 f  255.000000
@@ -1379,12 +1378,13 @@ f  0.000000
 f  0.000000
 f  40.000000
 b  1
+MouseSelectable
 MouseIntersectable
 Button
 i  -1
 LevelReference
 s  Problem31
-b  0
+b  1
 GridElement
 Node
 IdRef
@@ -1397,11 +1397,12 @@ f  20.000000
 LoopSociety
 q  50_0
 p  
+MouseGrabbable
 Position
 f  223.224945
 f  -0.000000
 f  -113.459267
-MouseGrabbable
+MouseSelectable
 Text
 s  15
 f  255.000000
@@ -1413,13 +1414,12 @@ f  0.000000
 f  0.000000
 f  40.000000
 b  1
-MouseSelectable
 MouseIntersectable
 Button
 i  -1
 LevelReference
 s  Problem32
-b  0
+b  1
 GridElement
 Node
 IdRef
@@ -1432,12 +1432,11 @@ f  20.000000
 LoopSociety
 q  50_0
 p  
-MouseGrabbable
 Position
 f  157.375320
 f  -0.000031
 f  -120.773811
-MouseSelectable
+MouseGrabbable
 Text
 s  16
 f  255.000000
@@ -1449,12 +1448,13 @@ f  0.000000
 f  0.000000
 f  40.000000
 b  1
+MouseSelectable
 MouseIntersectable
 Button
 i  -1
 LevelReference
 s  Problem33
-b  0
+b  1
 GridElement
 Node
 IdRef
@@ -1467,12 +1467,11 @@ f  20.000000
 LoopSociety
 q  50_0
 p  
-MouseGrabbable
 Position
 f  93.063087
 f  -0.000000
 f  -135.925232
-MouseSelectable
+MouseGrabbable
 Text
 s  17
 f  255.000000
@@ -1484,12 +1483,13 @@ f  0.000000
 f  0.000000
 f  40.000000
 b  1
+MouseSelectable
 MouseIntersectable
 Button
 i  -1
 LevelReference
 s  Problem34
-b  0
+b  1
 GridElement
 Node
 IdRef
@@ -1537,11 +1537,12 @@ f  20.000000
 LoopSociety
 q  50_0
 p  
+MouseGrabbable
 Position
 f  -197.411575
 f  -0.000000
 f  -73.627892
-MouseGrabbable
+MouseSelectable
 Text
 s  21
 f  255.000000
@@ -1553,13 +1554,12 @@ f  0.000000
 f  0.000000
 f  40.000000
 b  1
-MouseSelectable
 MouseIntersectable
 Button
 i  -1
 LevelReference
 s  Problem36
-b  0
+b  1
 GridElement
 Node
 IdRef
@@ -1610,11 +1610,11 @@ q  34_0
 q  38_0
 MouseSelectable
 MouseIntersectable
+MouseGrabbable
 Position
 f  177.525482
 f  1.000000
 f  -52.118088
-MouseGrabbable
 TextureComponent
 s  
 f  745.000000
@@ -1693,7 +1693,7 @@ Button
 i  -1
 LevelReference
 s  Problem28
-b  0
+b  1
 GridElement
 Node
 IdRef
@@ -1728,7 +1728,7 @@ Button
 i  -1
 LevelReference
 s  Problem29
-b  0
+b  1
 GridElement
 Node
 IdRef

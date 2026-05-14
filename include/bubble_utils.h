@@ -70,6 +70,7 @@ namespace bubble {
 	void bubbleToStructureBranch(middle::GameState* gameState, middle::Id startPointBubbleId, middle::Id bubbleRootId, middle::Id& startPointNodeId, middle::Id& rootNodeId);
 	components::AlgebraNodeType getStructureType(middle::GameState* gameState, middle::Id id);
 	int findDepth(middle::GameState* gameState, middle::Id id);
+	int findBubbleDepth(middle::GameState* gameState, middle::Id id);
 	bool isBubbleWithValueOne(middle::GameState* gameState, middle::Id id);
 	bool isBubbleWithValueOneNegative(middle::GameState* gameState, middle::Id id);
 
