@@ -1009,12 +1009,12 @@ namespace bubbleActions {
 			bubble::invert(gameState, commonCopyId);
 		}
 		if (isExp) {
-			exp = middle::getComponent<components::ExponentComponent>(commonShape);
 			middle::Id newContainerId = bubble::containerize(gameState, commonShape.id);
 			middle::EditorActionReparent(parentMul.index, newContainerId.index).execute(gameState);
 			auto newExp = middle::attachComponent<components::ExponentComponent>(gameState, newContainerId);
+			exp = middle::getComponent<components::ExponentComponent>(shapeToCompress);
 			newExp->power = exp->power;
-			newExp->isInverse = !exp->isInverse;
+			newExp->isInverse = exp->isInverse;
 		}
 
 		return parentMul;
