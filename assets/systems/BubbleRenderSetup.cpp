@@ -64,7 +64,6 @@ public:
 		bubbleCache->addType<components::Layer>();
 		bubbleCache->addType<components::LoopSociety>();
 		bubbleCache->addType<components::RuntimeHiddenTag>(components::NOTINTERESTED);
-		bubbleCache->addType<components::BubbleVariable>(components::NOTINTERESTED);
 		mulCache = middle::newCompCache(gameState);
 		mulCache->addType<components::BubbleMultiplyComponent>();
 		mulCache->addType<components::LoopSociety>();
@@ -319,31 +318,6 @@ public:
 			variableText.fontSize = fontSize;
 			variableText.disableDepthTest = isUiItem;
 			gameState->renderData.push_back(variableText);
-
-			middle::RenderItem variableCircle;
-			variableCircle.type = middle::RenderItemType::CIRCLE;
-			variableCircle.center = variableText.center;
-			variableCircle.radius = radius;
-			variableCircle.backgroundColor = backgroundColor;
-			variableCircle.color = bubbleColors::VARIABLE_OUTLINE;
-			variableCircle.disableDepthTest = isUiItem;
-			variableCircle.layer = layer->layer + 1;
-			gameState->renderData.push_back(variableCircle);
-
-			if (bubble->inverse) {
-				float offsetX, offsetZ, bz, rb;
-				calculateExponentVisualFactors(circle->radius, 1, -0.33f, offsetX, offsetZ, bz, rb);
-				middle::RenderItem inverseIndicator;
-				inverseIndicator.type = middle::RenderItemType::CIRCLE;
-				inverseIndicator.color = bubbleColors::POSITIVE_UNIT;
-				inverseIndicator.backgroundColor = bubbleColors::POSITIVE_UNIT;
-				inverseIndicator.layer = layer->layer + 2;
-				inverseIndicator.radius = bubble::unitRadius;
-				Vector3 pos = variableText.center;
-				inverseIndicator.center = Vector3{ pos.x + offsetX, pos.y, pos.z + offsetZ };
-				inverseIndicator.disableDepthTest = isUiItem;
-				gameState->renderData.push_back(inverseIndicator);
-			}
 		}
 
 

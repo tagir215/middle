@@ -77,21 +77,16 @@ public:
 		middle::Id grabbedRefId = ref->idRef;
 
 		// GRABBED VARIABLE CASE
-		std::vector<middle::Id> grabbedChildren;
-		middle::getChildren(gameState, grabbedShape.id, grabbedChildren);
-		if (grabbedChildren.size() == 1) {
-			auto& childShape = middle::getShape(gameState, grabbedChildren[0].index);
-			auto var = middle::getComponent<components::BubbleVariable>(childShape);
-			if (var) {
-				auto bubbleEqualsVar = middle::attachComponent<components::BubbleEqualsVariable>(gameState, grabbedCopyId);
-				for (middle::Id& siblingId : siblings) {
-					if (siblingId != grabbedRefId) {
-						bubbleEqualsVar->matchingIdRef = siblingId;
-					}
+		auto grabbedVar = middle::getComponent<components::BubbleVariable>(grabbedShape);
+		if (grabbedVar) {
+			auto bubbleEqualsVar = middle::attachComponent<components::BubbleEqualsVariable>(gameState, grabbedCopyId);
+			for (middle::Id& siblingId : siblings) {
+				if (siblingId != grabbedRefId) {
+					bubbleEqualsVar->matchingIdRef = siblingId;
 				}
-				bubbleEqualsVar->wantsToReplaceBubble = true;
-				return;
 			}
+			bubbleEqualsVar->wantsToReplaceBubble = true;
+			return;
 		}
 
 		// GRABBED BUBBLE CASE
@@ -99,14 +94,8 @@ public:
 			if (id == grabbedRefId) {
 				continue;
 			}
-			// other children should be 1 and a variable, for this to work
-			std::vector<middle::Id>otherChildren;
-			middle::getChildren(gameState, id, otherChildren);
-			if (otherChildren.size() != 1) {
-				return;
-			}
-
-			auto& childOfOther = middle::getShape(gameState, otherChildren[0].index);
+			// other children should be variable, for this to work
+			auto& childOfOther = middle::getShape(gameState, id.index);
 			auto expComp = middle::getComponent<components::ExponentComponent>(childOfOther);
 			// can't be in exponent for this to work
 			if (expComp) {

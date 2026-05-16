@@ -17,6 +17,8 @@
 #include "BubbleAlgebraProblem.h"
 #include "ProcedureContainer.h"
 #include "bubble_constants.h"
+#include "HelperBubbleEquation.h"
+#include "EditThisTag.h"
 
 namespace bubbleActions {
 
@@ -581,7 +583,7 @@ namespace bubbleActions {
 			registerAction->execute(gameState);
 			actions.push_back(std::move(registerAction));
 
-			auto replace = std::make_unique<Replace>(parentId, varPopReplacementId);
+			auto replace = std::make_unique<ReplaceBubbleAndTransferTags>(parentId, varPopReplacementId);
 			replace->execute(gameState);
 			actions.push_back(std::move(replace));
 		}
@@ -658,6 +660,8 @@ namespace bubbleActions {
 		auto& shapeToReplace = middle::getShape(gameState, shapeToReplaceId.index);
 		bool isTopDog = middle::getComponent<components::TopDogBubbleTag>(shapeToReplace) != nullptr;
 		auto algProb = middle::getComponent<components::BubbleAlgebraProblem>(shapeToReplace);
+		auto helper = middle::getComponent<components::HelperBubbleEquation>(shapeToReplace);
+		auto editThisTag = middle::getComponent<components::EditThisTag>(shapeToReplace);
 		bool isEditable = false;
 		if (algProb) {
 			isEditable = algProb->editable;
@@ -673,6 +677,12 @@ namespace bubbleActions {
 		if (algProb) {
 			auto newComp = middle::attachComponent<components::BubbleAlgebraProblem>(gameState, replacingShapeId);
 			newComp->editable = isEditable;
+		}
+		if (helper) {
+			middle::attachComponent<components::HelperBubbleEquation>(gameState, replacingShapeId);
+		}
+		if (editThisTag) {
+			middle::attachComponent<components::EditThisTag>(gameState, replacingShapeId);
 		}
 	}
 
