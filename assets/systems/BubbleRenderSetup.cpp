@@ -247,6 +247,7 @@ public:
 			auto& shape = middle::getShape(gameState, unitCache->relevantIdVector[i].index);
 			bool isUiItem = middle::getComponent<components::UiComponent>(shape);
 
+			circle->radius = bubble::unitRadius;
 			float radius = circle->radius;
 			if (intersectable->intersectingTop) {
 				radius *= 1.5f;

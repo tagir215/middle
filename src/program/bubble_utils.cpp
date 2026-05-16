@@ -24,7 +24,7 @@
 #include "DeleteComponent.h"
 
 namespace bubble {
-	float unitRadius = 2;
+	float unitRadius = 4;
 	float variableRadius = 20;
 	float bubbleMinRadius = 10;
 	float variableTextFontSize = 25;
