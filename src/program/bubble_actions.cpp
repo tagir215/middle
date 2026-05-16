@@ -130,22 +130,6 @@ namespace bubbleActions {
 		auto mulComp = middle::getComponent<components::BubbleMultiplyComponent>(shapeToReplace);
 		auto unit = middle::getComponent<components::BubbleUnit>(shapeToReplace);
 		auto variable = middle::getComponent<components::BubbleVariable>(shapeToReplace);
-		auto exp = middle::getComponent<components::ExponentComponent>(shapeToReplace);
-
-		// contain shape to replace in a new bubble and link to the new container
-		if (exp) {
-			middle::Shape newContainerBubbleProto = bubble::newBubble(gameState, targetPos);
-			middle::Shape& newContainerBubble = middle::registerShape(gameState, newContainerBubbleProto);
-			middle::Id copyId = middle::deepCopyShape(gameState, shapeToReplaceId.index);
-			middle::EditorActionReparent(newContainerBubble.id.index, copyId.index).execute(gameState);
-			middle::Id replacingCopyId = middle::deepCopyShape(gameState, replacingShapeId.index);
-
-			auto newMul = NewMultiplication(replacingCopyId, newContainerBubble.id);
-			newMul.execute(gameState);
-
-			resultShapeId = newMul.resultShapeId;
-			return;
-		}
 		// containe copies in a new multiplication
 		if (bubbleComp) {
 			// deep copy to replace and replacing
@@ -289,25 +273,35 @@ namespace bubbleActions {
 			return;
 		}
 
-		auto copyA = std::make_unique<middle::EditorActionCopySingle>(shapeToCopyId);
-		copyA->execute(gameState);
-		middle::Id idA = copyA->resultId;
-		actions.push_back(std::move(copyA));
-		auto copyB = std::make_unique<middle::EditorActionCopySingle>(shapeToCopyIntoId);
-		copyB->execute(gameState);
-		middle::Id idB = copyB->resultId;
-		actions.push_back(std::move(copyB));
+		middle::Id idA = middle::deepCopyShape(gameState, shapeToCopyId.index);
+		middle::Id idB = middle::deepCopyShape(gameState, shapeToCopyIntoId.index);
+
+		auto registerResult = std::make_unique<middle::EditorActionRegisterId>(idB);
+		registerResult->execute(gameState);
+		actions.push_back(std::move(registerResult));
 
 		// if shape to add into is inverse, invert the input 
 		auto bub = middle::getComponent<components::BubbleComponent>(shapeToAddInto);
 		if (bub->inverse) {
 			bubble::invert(gameState, idA);
 		}
+		// if shape to add into is exponent the inputs exponent inverts and has same sign
+		auto exp = middle::getComponent<components::ExponentComponent>(shapeToAddInto);
+		if (exp) {
+			int power = exp->power;
+			bool isInverse = exp->isInverse;
+			bool isNegative = exp->isNegative;
+			idA = bubble::containerize(gameState, idA);
+			auto newExp = middle::attachComponent<components::ExponentComponent>(gameState, idA);
+			newExp->power = power;
+			newExp->isInverse = !isInverse;
+			newExp->isNegative = isNegative;
+		}
 
 		std::vector<middle::Id>children;
 		middle::getChildren(gameState, idB, children);
 
-		// create replacements to the positions of the old units
+		// create replacements to the positions of the old children
 		for (int i = 0; i < children.size(); ++i) {
 			middle::Id& childId = children[i];
 
@@ -322,14 +316,14 @@ namespace bubbleActions {
 			actions.push_back(std::move(replaceAction));
 		}
 
-		auto deleteAction1 = std::make_unique<middle::EditorActionDeleteSingle>(idA);
-		deleteAction1->execute(gameState);
-		actions.push_back(std::move(deleteAction1));
+		middle::deleteShapeRecursive(gameState, idA.index);
+
 		auto deleteAction2 = std::make_unique<middle::EditorActionDeleteSingle>(shapeToCopyId);
 		deleteAction2->execute(gameState);
 		actions.push_back(std::move(deleteAction2));
 
 		resultShapeId = idB;
+
 		auto replace = std::make_unique<bubbleActions::ReplaceBubbleAndTransferTags>(shapeToCopyIntoId, resultShapeId);
 		replace->execute(gameState);
 		actions.push_back(std::move(replace));
