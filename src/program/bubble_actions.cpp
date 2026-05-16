@@ -972,6 +972,10 @@ namespace bubbleActions {
 
 		middle::Id shapeToCompressShallowCopy = middle::copyShape(gameState, shapeToCompress.id.index);
 		middle::Shape& compressedBubble = getShape(gameState, shapeToCompressShallowCopy.index);
+		// clear loop
+		auto loop = middle::getComponent<components::LoopSociety>(compressedBubble);
+		loop->loopMemberIds.clear();
+		loop->parentLoopId = middle::Id();
 
 		LinkMultiplicationTerm(commonCopyId, compressedBubble.id).execute(gameState);
 
@@ -1022,7 +1026,7 @@ namespace bubbleActions {
 		middle::Id replacementShapeId;
 
 		middle::Id compressTargetId = middle::getParent(gameState, commonFactorId);
-		if (compressTargetId.index == middle::UNASSIGNED) {
+		if (compressTargetId.index == middle::UNASSIGNED || !middle::getComponent<components::BubbleComponent>(shape)) {
 			cancelled = true;
 			return;
 		}
