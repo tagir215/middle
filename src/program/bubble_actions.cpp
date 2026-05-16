@@ -834,13 +834,14 @@ namespace bubbleActions {
 		}
 
 		middle::Id exponentId = middle::deepCopyShape(gameState, commonFactorId.index);
-		auto exponent = middle::attachComponent<components::ExponentComponent>(gameState, exponentId);
-		exponent->power = compressableCount;
-		exponent->isNegative = compressToNegative;
 
 		Vector3 targetPos = middle::getShapePosition(gameState, exponentId.index);
 		middle::Shape newBubbleProto = bubble::newBubble(gameState, targetPos);
 		middle::Shape& newBubble = middle::registerShape(gameState, newBubbleProto);
+
+		auto exponent = middle::attachComponent<components::ExponentComponent>(gameState, newBubble.id);
+		exponent->power = compressableCount;
+		exponent->isNegative = compressToNegative;
 
 		middle::EditorActionReparent(newBubble.id.index, exponentId.index).execute(gameState);
 
@@ -955,6 +956,8 @@ namespace bubbleActions {
 		auto& shapeToCompress = middle::getShape(gameState, compressTargetId.index);
 		auto bubble1 = middle::getComponent<components::BubbleComponent>(shapeToCompress);
 		bool isInverse = bubble1->inverse;
+		auto exp = middle::getComponent<components::ExponentComponent>(shapeToCompress);
+		bool isExp = exp != nullptr;
 
 		Vector3 targetPos = middle::getShapePosition(gameState, compressTargetId.index);
 
@@ -967,8 +970,9 @@ namespace bubbleActions {
 			commonCopyId = newBubbleShape.id;
 		}
 
-		middle::Shape compressedProto = bubble::newBubble(gameState, targetPos);
-		middle::Shape& compressedBubble = middle::registerShape(gameState, compressedProto);
+		middle::Id shapeToCompressShallowCopy = middle::copyShape(gameState, shapeToCompress.id.index);
+		middle::Shape& compressedBubble = getShape(gameState, shapeToCompressShallowCopy.index);
+
 		LinkMultiplicationTerm(commonCopyId, compressedBubble.id).execute(gameState);
 
 		for (RepresentativeGroup& group : commonVariableResult.groups) {
@@ -993,13 +997,22 @@ namespace bubbleActions {
 			}
 		}
 
+		middle::Id parentMul = middle::getParent(gameState, commonCopyId);
+
 		// if inverse, invert the things
 		if (isInverse) {
 			bubble::invert(gameState, compressedBubble.id);
 			bubble::invert(gameState, commonCopyId);
 		}
+		if (isExp) {
+			exp = middle::getComponent<components::ExponentComponent>(commonShape);
+			middle::Id newContainerId = bubble::containerize(gameState, commonShape.id);
+			middle::EditorActionReparent(parentMul.index, newContainerId.index).execute(gameState);
+			auto newExp = middle::attachComponent<components::ExponentComponent>(gameState, newContainerId);
+			newExp->power = exp->power;
+			newExp->isInverse = !exp->isInverse;
+		}
 
-		middle::Id parentMul = middle::getParent(gameState, commonCopyId);
 		return parentMul;
 	}
 
@@ -1099,7 +1112,6 @@ namespace bubbleActions {
 			auto registerAction = std::make_unique<middle::EditorActionRegisterId>(replacementShapeId);
 			registerAction->execute(gameState);
 			actions.push_back(std::move(registerAction));
-
 
 			auto replace = std::make_unique<ReplaceBubbleAndTransferTags>(compressTargetId, replacementShapeId);
 			replace->execute(gameState);
