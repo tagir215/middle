@@ -1373,9 +1373,30 @@ namespace bubbleActions {
 			}
 		}
 
+
 		assert(shapesToAddIntoIds.size() == shapesToAddIds.size());
 		for (int i = 0; i < shapesToAddIntoIds.size(); ++i) {
 			middle::Id& intoId = shapesToAddIntoIds[i];
+
+			// if its a single variable, or exponent we need to containerize first
+			auto& shapeToAddInto = middle::getShape(gameState, intoId.index);
+			auto var = middle::getComponent<components::BubbleVariable>(shapeToAddInto);
+			auto exp = middle::getComponent<components::ExponentComponent>(shapeToAddInto);
+			if (var || exp) {
+				middle::Id copyId = middle::deepCopyShape(gameState, shapeToAddIntoId.index);
+				middle::Id replacingId = bubble::containerize(gameState, copyId);
+
+				auto registerAction = std::make_unique<middle::EditorActionRegisterId>(replacingId);
+				registerAction->execute(gameState);
+				actions.push_back(std::move(registerAction));
+
+				auto replaceAction = std::make_unique<ReplaceBubbleAndTransferTags>(intoId, replacingId);
+				replaceAction->execute(gameState);
+				actions.push_back(std::move(replaceAction));
+
+				intoId = replacingId;
+			}
+
 			middle::Id& toAddId = shapesToAddIds[i];
 			auto reparentAction = std::make_unique<middle::EditorActionReparent>(intoId.index, toAddId.index);
 			reparentAction->execute(gameState);
@@ -1430,6 +1451,27 @@ namespace bubbleActions {
 		for (int i = 0; i < shapesToAddIntoIds.size(); ++i) {
 			middle::Id containerId = shapesToAddIntoIds[i];
 			middle::Id toAddId = shapesToAddIds[i];
+
+			// if its a single variable, or exponent we need to containerize first
+			auto& shapeToAddInto = middle::getShape(gameState, containerId.index);
+			auto var = middle::getComponent<components::BubbleVariable>(shapeToAddInto);
+			auto exp = middle::getComponent<components::ExponentComponent>(shapeToAddInto);
+			if (var || exp) {
+				middle::Id copyId = middle::deepCopyShape(gameState, shapeToAddIntoId.index);
+				middle::Id replacingId = bubble::containerize(gameState, copyId);
+
+				auto registerAction = std::make_unique<middle::EditorActionRegisterId>(replacingId);
+				registerAction->execute(gameState);
+				actions.push_back(std::move(registerAction));
+
+				auto replaceAction = std::make_unique<ReplaceBubbleAndTransferTags>(containerId, replacingId);
+				replaceAction->execute(gameState);
+				actions.push_back(std::move(replaceAction));
+
+				containerId = replacingId;
+			}
+
+
 			std::vector<middle::Id>children;
 			middle::getChildren(gameState, containerId, children);
 			if (children.size() == 0) {
@@ -1828,24 +1870,20 @@ namespace bubbleActions {
 		auto& shapeToAddInto = middle::getShape(gameState, shapeToAddIntoId.index);
 		auto topDog = middle::getComponent<components::TopDogBubbleTag>(shapeToAddInto);
 		if (topDog) {
-			// container Bubble
-			Vector3 containerPos = middle::getShapePosition(gameState, shapeToAddIntoId.index);
-			middle::Shape containerProto = bubble::newBubble(gameState, containerPos);
-			auto registerContainer = std::make_unique<middle::EditorActionRegisterShape>(containerProto);
+			auto newContainerProto = bubble::newBubble(gameState, middle::getShapePosition(gameState, shapeToAddInto.id.index));
+			auto& newContainerShape = middle::registerShape(gameState, newContainerProto);
+			middle::Id addIntoCopy = middle::deepCopyShape(gameState, shapeToAddInto.id.index);
+			middle::EditorActionReparent(newContainerShape.id.index, addIntoCopy.index).execute(gameState);
+
+			auto registerContainer = std::make_unique<middle::EditorActionRegisterId>(newContainerShape.id);
 			registerContainer->execute(gameState);
-			middle::Id containerId = registerContainer->newShapeId;
 			actions.push_back(std::move(registerContainer));
-			std::vector<middle::Id> children;
-			middle::getChildren(gameState, shapeToAddIntoId, children);
-			for (middle::Id& id : children) {
-				auto reparentToContainer = std::make_unique<middle::EditorActionReparent>(containerId.index, id.index);
-				reparentToContainer->execute(gameState);
-				actions.push_back(std::move(reparentToContainer));
-			}
-			auto reparent3 = std::make_unique<middle::EditorActionReparent>(shapeToAddIntoId.index, containerId.index);
-			reparent3->execute(gameState);
-			actions.push_back(std::move(reparent3));
-			targetLinkReciever = containerId;
+
+			auto replace = std::make_unique<ReplaceBubbleAndTransferTags>(targetLinkReciever, newContainerShape.id);
+			replace->execute(gameState);
+			actions.push_back(std::move(replace));
+
+			targetLinkReciever = addIntoCopy;
 		}
 
 		auto linkToReciever = std::make_unique<LinkMultiplicationTerm>(targetLinkReciever, bubbleShape.id);
