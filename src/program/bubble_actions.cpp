@@ -514,21 +514,31 @@ namespace bubbleActions {
 		this->id = id;
 	}
 
+	middle::Id popReplacement(middle::GameState* gameState, middle::Id containerId, middle::Id toPopId) {
+		auto& toPopShape = middle::getShape(gameState, toPopId.index);
+		middle::Id containerCopy = middle::copyShape(gameState, containerId.index);
+		auto& newContainerShape = middle::getShape(gameState, containerCopy.index);
+		auto var = middle::getComponent<components::BubbleVariable>(toPopShape);
+		if (var) {
+			auto newVar = middle::attachComponent<components::BubbleVariable>(gameState, newContainerShape.id);
+			newVar->isNegative = var->isNegative;
+			newVar->label = var->label;
+		}
+		auto loop = middle::getComponent<components::LoopSociety>(newContainerShape);
+		loop->parentLoopId = middle::Id();
+		loop->loopMemberIds.clear();
+
+		return newContainerShape.id;
+	}
 
 	void Pop::execute(middle::GameState* gameState) {
-		middle::Shape& shape = middle::getShape(gameState, id.index);
+		middle::Shape& shapeToPop = middle::getShape(gameState, id.index);
 		// check that there is a parent
-		auto bubble = middle::getComponent<components::BubbleComponent>(shape);
-		auto fraction = middle::getComponent<components::FractionalComponent>(shape);
-		auto root = middle::getComponent<components::ExponentComponent>(shape);
-		auto variable = middle::getComponent<components::BubbleVariable>(shape);
-		middle::Id parentId = middle::getParent(gameState, shape.id);
+		auto bubble = middle::getComponent<components::BubbleComponent>(shapeToPop);
+		auto exp = middle::getComponent<components::ExponentComponent>(shapeToPop);
+		auto variable = middle::getComponent<components::BubbleVariable>(shapeToPop);
+		middle::Id parentId = middle::getParent(gameState, shapeToPop.id);
 		if (parentId.index == middle::UNASSIGNED) {
-			cancelled = true;
-			return;
-		}
-
-		if (root) {
 			cancelled = true;
 			return;
 		}
@@ -536,9 +546,20 @@ namespace bubbleActions {
 			cancelled = true;
 			return;
 		}
-		if (variable) {
+		if (exp) {
 			cancelled = true;
 			return;
+		}
+
+		std::vector<middle::Id>children;
+		middle::getChildren(gameState, parentId, children);
+		int siblingCount = children.size() - 1;
+
+		if (siblingCount != 0) {
+			if (variable) {
+				cancelled = true;
+				return;
+			}
 		}
 
 		auto& parentShape = middle::getShape(gameState, parentId.index);
@@ -552,7 +573,19 @@ namespace bubbleActions {
 			return;
 		}
 
-		if (bubble) {
+		if (variable) {
+			Vector3 targetPos = middle::getShapePosition(gameState, parentId.index);
+
+			middle::Id varPopReplacementId = popReplacement(gameState, parentId, shapeToPop.id);
+			auto registerAction = std::make_unique <middle::EditorActionRegisterId>(varPopReplacementId);
+			registerAction->execute(gameState);
+			actions.push_back(std::move(registerAction));
+
+			auto replace = std::make_unique<Replace>(parentId, varPopReplacementId);
+			replace->execute(gameState);
+			actions.push_back(std::move(replace));
+		}
+		else if (bubble) {
 			std::vector<middle::Id>children;
 			middle::getChildren(gameState, id, children);
 			for (middle::Id& id : children) {
@@ -560,11 +593,11 @@ namespace bubbleActions {
 				reparentAction->execute(gameState);
 				actions.push_back(std::move(reparentAction));
 			}
+			auto deleteAction = std::make_unique<middle::EditorActionDeleteSingle>(shapeToPop.id);
+			deleteAction->execute(gameState);
+			actions.push_back(std::move(deleteAction));
 		}
 
-		auto deleteAction = std::make_unique<middle::EditorActionDeleteSingle>(shape.id);
-		deleteAction->execute(gameState);
-		actions.push_back(std::move(deleteAction));
 
 		queueSound(gameState, bubbleSounds::POP_SOUND);
 	}
@@ -1005,7 +1038,6 @@ namespace bubbleActions {
 
 		// if inverse, invert the things
 		if (isInverse) {
-			bubble::invert(gameState, compressedBubble.id);
 			bubble::invert(gameState, commonCopyId);
 		}
 		if (isExp) {
