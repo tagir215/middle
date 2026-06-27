@@ -4,6 +4,12 @@
 #define MIDDLEBUBBLEMULTIPLYCOMPONENT(X) 
 
 namespace components {
+	enum class LinkType {
+		MULTIPLICATION,
+		EXPONENT,
+		LOGARITHM,
+	};
+
 	struct BubbleMultiplyComponent : public middle::Serializable{
 
 		void serialize(std::ostream& ostream) override;
@@ -17,4 +23,5 @@ namespace components {
 #undef X
 		}
 	};
+
 }
