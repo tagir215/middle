@@ -367,7 +367,6 @@ public:
 		}
 
 
-
 		auto cuboidIt = cuboidCache->begin<components::Cuboid>();
 		auto cuboidPosIt = cuboidCache->begin<components::Position>();
 		for (int i = 0; i < cuboidCache->getSize(); ++i) {

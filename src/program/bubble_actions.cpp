@@ -273,6 +273,9 @@ namespace bubbleActions {
 		}
 		auto& shape = middle::getShape(gameState, children[0].index);
 		auto mulComp = middle::getComponent<components::BubbleMultiplyComponent>(shape);
+		if (!mulComp) {
+			return false;
+		}
 		return mulComp->operationType == static_cast<int>(components::OperationType::POWER);
 	}
 
@@ -448,8 +451,6 @@ namespace bubbleActions {
 		middle::Id exponentId = children[1];
 		middle::Id baseId = children[0];
 		middle::getChildren(gameState, exponentId, exponentChildren);
-		middle::Shape bubbleProto = bubble::newBubble(gameState, middle::getShapePosition(gameState, exponentId.index));
-		middle::Shape& newBubble = middle::registerShape(gameState, bubbleProto);
 		Vector3 basePos = middle::getShapePosition(gameState, baseId.index);
 
 		middle::Id prevId;
@@ -457,21 +458,19 @@ namespace bubbleActions {
 			if (bubble::getStructureType(gameState, id) == components::AlgebraNodeType::UNIT) {
 				middle::Id copyId = middle::deepCopyShape(gameState, baseId.index);
 				middle::moveShape(gameState, copyId.index, middle::getShapePosition(gameState, id.index) - basePos);
-				if (prevId.index == middle::UNASSIGNED) {
-					EditorActionReparent(newBubble.id.index, copyId.index).execute(gameState);
-				}
-				else {
+				if (prevId.index != middle::UNASSIGNED) {
 					LinkMultiplicationTerm(prevId, copyId).execute(gameState);
 				}
 				prevId = copyId;
 			}
 		}
+		middle::Id operationId = middle::getParent(gameState, prevId);
 
-		auto registerId = std::make_unique<middle::EditorActionRegisterId>(newBubble.id);
+		auto registerId = std::make_unique<middle::EditorActionRegisterId>(operationId);
 		registerId->execute(gameState);
 		actions.push_back(std::move(registerId));
 
-		auto replace = std::make_unique<ReplaceBubbleAndTransferTags>(powerShapeId, newBubble.id);
+		auto replace = std::make_unique<ReplaceBubbleAndTransferTags>(powerShapeId, operationId);
 		replace->execute(gameState);
 		actions.push_back(std::move(replace));
 	}
@@ -521,6 +520,10 @@ namespace bubbleActions {
 			return;
 		}
 		if (exp) {
+			cancelled = true;
+			return;
+		}
+		if (isPowerBubble(gameState, shapeToPop.id)) {
 			cancelled = true;
 			return;
 		}

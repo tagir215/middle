@@ -188,7 +188,6 @@ public:
 					ImGui::Separator();
 					if (ImGui::Button("New Multiplication")) {
 						Vector3 containerPos = middle::getShapePosition(gameState, selectedId.index);
-						float xOffset = 20;
 						auto bubbleAProto = bubble::newBubble(gameState, containerPos + randomOffset());
 						auto bubbleBProto = bubble::newBubble(gameState, containerPos + randomOffset());
 						auto& bubbleA = middle::registerShape(gameState, bubbleAProto);
@@ -207,6 +206,24 @@ public:
 						linkAction.execute(gameState);
 					}
 					ImGui::Separator();
+					if (ImGui::Button("New Power")) {
+						Vector3 containerPos = middle::getShapePosition(gameState, selectedId.index);
+						auto containerProto = bubble::newBubble(gameState, containerPos);
+						auto bubbleAProto = bubble::newBubble(gameState, containerPos + randomOffset());
+						auto bubbleBProto = bubble::newBubble(gameState, containerPos + randomOffset());
+						auto& container = middle::registerShape(gameState, containerProto);
+						auto& bubbleA = middle::registerShape(gameState, bubbleAProto);
+						auto& bubbleB = middle::registerShape(gameState, bubbleBProto);
+						auto mulAction = bubbleActions::NewMultiplication(bubbleA.id, bubbleB.id);
+						mulAction.execute(gameState);
+						middle::Id newId = mulAction.resultShapeId;
+						auto& newShape = middle::getShape(gameState, newId.index);
+						auto mul = middle::getComponent<components::BubbleMultiplyComponent>(newShape);
+						mul->operationType = static_cast<int>(components::OperationType::POWER);
+						middle::EditorActionReparent(container.id.index, newId.index).execute(gameState);
+						middle::EditorActionReparent(selectedId.index, container.id.index).execute(gameState);
+					}
+					ImGui::Separator();
 					static char label[20] = "x";
 					ImGui::InputText("variable lable", label, IM_ARRAYSIZE(label));
 					if (ImGui::Button("Bubble To Variable")) {
@@ -222,15 +239,6 @@ public:
 						bubble->inverse = true;
 					}
 					ImGui::Separator();
-					static bool isInverse = false;
-					static int power = 1;
-					ImGui::SliderInt("exponent", &power, -4, 4);
-					ImGui::Checkbox("isInverse", &isInverse);
-					if (ImGui::Button("Bubble To Exponent")) {
-						auto expComp = middle::attachComponent<components::ExponentComponent>(gameState, selectedId);
-						expComp->power = power;
-						expComp->isInverse = isInverse;
-					}
 				}
 
 				ImGui::End();
