@@ -301,18 +301,6 @@ namespace bubbleActions {
 		if (bub->inverse) {
 			bubble::invert(gameState, idA);
 		}
-		// if shape to add into is exponent the inputs exponent inverts and has same sign
-		auto exp = middle::getComponent<components::ExponentComponent>(shapeToAddInto);
-		if (exp) {
-			int power = exp->power;
-			bool isInverse = exp->isInverse;
-			bool isNegative = exp->isNegative;
-			idA = bubble::containerize(gameState, idA);
-			auto newExp = middle::attachComponent<components::ExponentComponent>(gameState, idA);
-			newExp->power = power;
-			newExp->isInverse = !isInverse;
-			newExp->isNegative = isNegative;
-		}
 
 		std::vector<middle::Id>children;
 		middle::getChildren(gameState, idB, children);
@@ -970,8 +958,6 @@ namespace bubbleActions {
 		auto& shapeToCompress = middle::getShape(gameState, compressTargetId.index);
 		auto bubble1 = middle::getComponent<components::BubbleComponent>(shapeToCompress);
 		bool isInverse = bubble1->inverse;
-		auto exp = middle::getComponent<components::ExponentComponent>(shapeToCompress);
-		bool isExp = exp != nullptr;
 
 		Vector3 targetPos = middle::getShapePosition(gameState, compressTargetId.index);
 
@@ -1020,14 +1006,6 @@ namespace bubbleActions {
 		// if inverse, invert the things
 		if (isInverse) {
 			bubble::invert(gameState, commonCopyId);
-		}
-		if (isExp) {
-			middle::Id newContainerId = bubble::containerize(gameState, commonShape.id);
-			middle::EditorActionReparent(parentMul.index, newContainerId.index).execute(gameState);
-			auto newExp = middle::attachComponent<components::ExponentComponent>(gameState, newContainerId);
-			exp = middle::getComponent<components::ExponentComponent>(shapeToCompress);
-			newExp->power = exp->power;
-			newExp->isInverse = exp->isInverse;
 		}
 
 		return parentMul;
@@ -1609,32 +1587,8 @@ namespace bubbleActions {
 
 	middle::Id simplifyToSame(middle::GameState* gameState, middle::Id bubbleId) {
 		auto& shape = middle::getShape(gameState, bubbleId.index);
-		auto expComp = middle::getComponent<components::ExponentComponent>(shape);
 
-		// simplify exp
-		if (expComp) {
-			std::vector<middle::Id>children;
-			middle::getChildren(gameState, shape.id, children);
-			if (children.size() != 1) {
-				return middle::Id();
-			}
-
-			auto& childShape = middle::getShape(gameState, children[0].index);
-			auto childExp = middle::getComponent<components::ExponentComponent>(childShape);
-			float powerA = expComp->isInverse ? 1.0f / expComp->power : expComp->power;
-			float powerB = childExp->isInverse ? 1.0f / childExp->power : childExp->power;
-
-			// check that same
-			const float tolerance = 1e-8f;
-			if (std::abs(powerA * powerB - 1) > tolerance) {
-				return middle::Id();
-			}
-			middle::Id copyId = middle::deepCopyShape(gameState, childShape.id.index);
-			middle::Shape& copyShape = middle::getShape(gameState, copyId.index);
-			middle::queueComponentDeletion<components::ExponentComponent>(gameState, copyShape.id);
-			return copyShape.id;
-		}
-
+		//
 		return middle::Id();
 	}
 

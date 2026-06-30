@@ -344,8 +344,6 @@ namespace bubble {
 		auto& shapeB = middle::getShape(gameState, idB.index);
 		auto bubbleA = middle::getComponent<components::BubbleComponent>(shapeA);
 		auto bubbleB = middle::getComponent<components::BubbleComponent>(shapeB);
-		auto expA = middle::getComponent<components::ExponentComponent>(shapeA);
-		auto expB = middle::getComponent<components::ExponentComponent>(shapeB);
 		auto nodeA = middle::getComponent<components::AlgebraNode>(shapeA);
 		auto nodeB = middle::getComponent<components::AlgebraNode>(shapeB);
 		auto varA = middle::getComponent<components::BubbleVariable>(shapeA);
@@ -362,16 +360,6 @@ namespace bubble {
 			if (bubbleA->inverse != bubbleB->inverse) {
 				return false;
 			}
-			if (expA || expB) {
-				if (!expA || !expB) {
-					return false;
-				}
-				if (expA->isInverse != expB->isInverse
-					|| expA->isNegative != expB->isNegative
-					|| expA->power != expB->power) {
-					return false;
-				}
-			}
 			return true;
 		}
 		if (bubbleA && nodeB) {
@@ -382,13 +370,6 @@ namespace bubble {
 			}
 			if (bubbleA->inverse != nodeB->isInverse) {
 				return false;
-			}
-			if (expA) {
-				if (expA->isInverse != nodeB->isInversePower
-					|| expA->isNegative != nodeB->isNegativePower
-					|| expA->power != nodeB->power) {
-					return false;
-				}
 			}
 			return true;
 		}
@@ -402,8 +383,6 @@ namespace bubble {
 		auto bubbleB = middle::getComponent<components::BubbleComponent>(shapeB);
 		auto unitA = middle::getComponent<components::BubbleUnit>(shapeA);
 		auto unitB = middle::getComponent<components::BubbleUnit>(shapeB);
-		auto rootA = middle::getComponent<components::ExponentComponent>(shapeA);
-		auto rootB = middle::getComponent<components::ExponentComponent>(shapeB);
 		auto nodeA = middle::getComponent<components::AlgebraNode>(shapeA);
 		auto nodeB = middle::getComponent<components::AlgebraNode>(shapeB);
 		// idB is allowed to be AlgebraNode, but not idA
@@ -807,17 +786,9 @@ namespace bubble {
 
 		auto& shape = middle::getShape(gameState, bubbleId.index);
 		auto bubble = middle::getComponent<components::BubbleComponent>(shape);
-		auto exp = middle::getComponent<components::ExponentComponent>(shape);
 		if (bubble->inverse) {
 			if (result.scale != 0) {
 				result.scale = 1.0f / result.scale;
-			}
-		}
-		if (exp) {
-			float power = exp->isInverse ? 1.0f / exp->power : exp->power;
-			result.scale = std::powf(result.scale, power);
-			if (exp->isNegative) {
-				result.scale = -result.scale;
 			}
 		}
 
@@ -1024,11 +995,6 @@ namespace bubble {
 
 	void negate(middle::GameState* gameState, middle::Id id) {
 		auto& shape = middle::getShape(gameState, id.index);
-		auto exp = middle::getComponent<components::ExponentComponent>(shape);
-		if (exp) {
-			exp->isNegative = !exp->isNegative;
-			return;
-		}
 		auto unit = middle::getComponent<components::BubbleUnit>(shape);
 		if (unit) {
 			unit->value = -unit->value;
@@ -1222,13 +1188,6 @@ namespace bubble {
 				node->value = value.scale;
 			}
 
-			auto exp = middle::getComponent<components::ExponentComponent>(realBubbleShape);
-			if (exp) {
-				node->power = exp->power;
-				node->isInversePower = exp->isInverse;
-				node->isNegativePower = exp->isNegative;
-			}
-
 			nodeLoop = middle::getComponent<components::LoopSociety>(nodeShape);
 
 			// reparent
@@ -1294,13 +1253,6 @@ namespace bubble {
 			if (node->type == static_cast<int>(components::AlgebraNodeType::UNIT)) {
 				UnitValue value = unitValue(gameState, realBubbleStackTopId);
 				node->value = value.scale;
-			}
-
-			auto exp = middle::getComponent<components::ExponentComponent>(realBubbleShape);
-			if (exp) {
-				node->power = exp->power;
-				node->isInversePower = exp->isInverse;
-				node->isNegativePower = exp->isNegative;
 			}
 
 			nodeLoop = middle::getComponent<components::LoopSociety>(newNodeShape);

@@ -427,20 +427,8 @@ public:
 
 			float positionRatioToPower = 0.333f;
 
-			bool isInverse = root->isInverse;
-			if (isInverse) {
-				positionRatioToPower *= -1;
-			}
 
-			int powerIterations = root->power;
-			bool isPowerNegative = root->power < 0;
-			if (isPowerNegative) {
-				powerIterations = -root->power;
-			}
-
-			Color exponentColor = isPowerNegative ? bubbleColors::NEGATIVE_POWER : bubbleColors::POSITIVE_POWER;
-
-			for (int power = 0; power < powerIterations; ++power) {
+			for (int power = 0; power < 2; ++power) {
 
 				float intersectOffsetX, intersectOffsetZ, bz, rb;
 				calculateExponentVisualFactors(bubbleCircle->radius, power, positionRatioToPower, intersectOffsetX, intersectOffsetZ, bz, rb);
@@ -456,21 +444,15 @@ public:
 				Vector3 toEndPoint = Vector3Subtract(endPoint, powerPos);
 
 				if (power == 0) {
-					Color unitColor = root->isNegative ? bubbleColors::NEGATIVE_UNIT : bubbleColors::POSITIVE_UNIT;
 					middle::RenderItem unitIndicator;
 					unitIndicator.type = middle::RenderItemType::CIRCLE;
-					Vector3 pos = root->isInverse || isPowerNegative ? intersectPos : endPoint;
+					Vector3 pos = endPoint;
 					unitIndicator.center = pos;
-					unitIndicator.backgroundColor = unitColor;
-					unitIndicator.color = unitColor;
+					unitIndicator.backgroundColor = RED;
+					unitIndicator.color = RED;
 					unitIndicator.radius = bubble::unitRadius * 1.5f;
 					unitIndicator.layer = layer->layer + 2;
 					gameState->renderData.push_back(unitIndicator);
-				}
-
-				if (isInverse) {
-					toStartPoint.x *= -1;
-					toEndPoint.x *= -1;
 				}
 
 				float startingAngle = Vector3Angle(refAngle, toStartPoint);
@@ -491,7 +473,7 @@ public:
 				powerCircle.radius = rb;
 				powerCircle.startAngle = startingAngle;
 				powerCircle.endAngle = endAngle;
-				powerCircle.color = exponentColor;
+				powerCircle.color = RED;
 				powerCircle.ringRadius = 0.2f;
 				powerCircle.segments = 20;
 				powerCircle.layer = layer->layer + 1;
@@ -504,16 +486,9 @@ public:
 				Vector3 toNextSegment;
 				Vector3 coneDir;
 
-				if (!isPowerNegative) {
-					conePos = powerPos + toStartPoint;
-					toNextSegment = Vector3RotateByAxisAngle(toStartPoint, { 0,-1,0 }, helperAngleOffset);
-					coneDir = Vector3Normalize(Vector3Subtract(conePos, powerPos + toNextSegment));
-				}
-				else {
-					conePos = powerPos + toEndPoint;
-					toNextSegment = Vector3RotateByAxisAngle(toEndPoint, { 0,-1,0 }, -helperAngleOffset);
-					coneDir = Vector3Normalize(Vector3Subtract(conePos, powerPos + toNextSegment));
-				}
+				conePos = powerPos + toEndPoint;
+				toNextSegment = Vector3RotateByAxisAngle(toEndPoint, { 0,-1,0 }, -helperAngleOffset);
+				coneDir = Vector3Normalize(Vector3Subtract(conePos, powerPos + toNextSegment));
 
 				middle::RenderItem cone;
 				cone.type = middle::RenderItemType::CYLINDER;
@@ -529,7 +504,7 @@ public:
 				cone.transform.translation = conePos;
 				cone.transform.scale = coneScale;
 				cone.center = { 0,0,0 };
-				cone.color = exponentColor;
+				cone.color = RED;
 				cone.layer = layer->layer + 1;
 				cone.disableDepthTest = isUiItem;
 				gameState->renderData.push_back(cone);
