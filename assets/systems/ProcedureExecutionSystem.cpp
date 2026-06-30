@@ -146,10 +146,15 @@ public:
 				auto& parentShape = middle::getShape(gameState, parentId.index);
 				auto bubbleMultiplication = middle::getComponent<components::BubbleMultiplyComponent>(parentShape);
 
-				if (bubbleMultiplication) {
+				if (bubbleMultiplication && bubbleMultiplication->operationType == static_cast<int>(components::OperationType::MULTIPLICATION)) {
 					auto multiply = std::make_shared<bubbleActions::ExecuteMultiplication>(varA.unitRef, varB.unitRef);
 					middle::queueAction(gameState, multiply);
 					container->procedureTransitionStack.back().action = multiply;
+				}
+				else if (bubbleMultiplication && bubbleMultiplication->operationType == static_cast<int>(components::OperationType::POWER)) {
+					auto doPower = std::make_shared<bubbleActions::ExecutePowerNew>(parentShape.id);
+					middle::queueAction(gameState, doPower);
+					container->procedureTransitionStack.back().action = doPower;
 				}
 				else {
 					auto combine = std::make_shared<bubbleActions::ExecuteAddition>(varA.unitRef, varB.unitRef);
@@ -157,16 +162,6 @@ public:
 					container->procedureTransitionStack.back().action = combine;
 				}
 			}
-			if (getOneInput(gameState, funcShape, varA)) {
-				assert(varA.unitRef.index != middle::UNASSIGNED);
-				auto& shape = middle::getShape(gameState, varA.unitRef.index);
-				if (middle::getComponent<components::ExponentComponent>(shape)) {
-					auto power = std::make_shared<bubbleActions::ExecutePower>(varA.unitRef);
-					middle::queueAction(gameState, power);
-					container->procedureTransitionStack.back().action = power;
-				}
-			}
-
 		}
 
 		// exit loops

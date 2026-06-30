@@ -86,17 +86,6 @@ public:
 		}
 	}
 
-	void tryPower(middle::GameState* gameState, middle::Shape& shape) {
-		auto rootComp = middle::getComponent<components::ExponentComponent>(shape);
-		if (!rootComp) {
-			return;
-		}
-
-		auto power = std::make_shared<bubbleActions::ExecutePower>(shape.id);
-		middle::queueAction(gameState, power);
-		gameState->bubbleAlgebraState.bubbleActions.push_back(power);
-	}
-
 	void tryCombine(middle::GameState* gameState, middle::Shape& refParent, middle::Shape& refShape, middle::Shape& intersectedShape) {
 
 		// is multiplication connection
@@ -510,12 +499,6 @@ public:
 				// all other actions need to be in the same layer 
 				auto intersectingLayer = middle::getComponent<components::Layer>(intersectableShape);
 				if (intersectingLayer->layer != deletionsRefShapeLayer->layer && !shapeForDeletionIsInventoryItem) {
-					continue;
-				}
-
-				// if referencing itself, it can only be power
-				if (deletionsRefShape.id == intersectableShape.id) {
-					tryPower(gameState, deletionsRefShape);
 					continue;
 				}
 

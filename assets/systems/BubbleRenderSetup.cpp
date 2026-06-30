@@ -350,7 +350,14 @@ public:
 					line.color = bubbleColors::MULTIPLICATION_CONNECTION;
 				}
 				else {
-					line.color = BLUE;
+					line.color = ORANGE;
+					middle::RenderItem expCircle;
+					expCircle.type = middle::RenderItemType::CIRCLE;
+					expCircle.color = ORANGE;
+					expCircle.center = Vector3{ positionB->posX, positionB->posY, positionB->posZ };
+					expCircle.radius = circleB->radius + 1.5f;
+					expCircle.layer = layer->layer;
+					gameState->renderData.push_back(expCircle);
 				}
 				line.layer = layer->layer;
 				line.disableDepthTest = isUiItem;
