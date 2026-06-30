@@ -27,7 +27,6 @@ LoopSociety
 q  -1_0
 p  
 __q  1_0
-MouseSelectable
 Text
 s  MouseIntersectDetectionSystem
 f  255.000000
@@ -39,19 +38,19 @@ f  0.000000
 f  10.000000
 f  10.000000
 b  1
-MouseGrabbable
-SystemReference
-s  MouseIntersectDetectionSystem
+MouseSelectable
 Position
 f  165.094376
 f  200.000000
 f  112.888649
+SystemReference
+s  MouseIntersectDetectionSystem
+MouseGrabbable
 MouseIntersectable
 LoopSociety
 q  -1_0
 p  
 __q  2_0
-MouseSelectable
 Text
 s  MouseGrabbingSystem
 f  255.000000
@@ -63,13 +62,14 @@ f  0.000000
 f  10.000000
 f  10.000000
 b  1
-MouseGrabbable
-SystemReference
-s  MouseGrabbingSystem
+MouseSelectable
 Position
 f  126.602486
 f  200.000000
 f  154.828339
+SystemReference
+s  MouseGrabbingSystem
+MouseGrabbable
 MouseIntersectable
 LoopSociety
 q  -1_0
@@ -83,6 +83,7 @@ f  2.000000
 Circle
 f  20.000000
 MouseIntersectable
+MouseSelectable
 Text
 s  1
 f  255.000000
@@ -94,12 +95,11 @@ f  0.000000
 f  0.000000
 f  40.000000
 b  1
-MouseSelectable
-MouseGrabbable
 Position
 f  126.402977
 f  -0.000000
 f  -356.130066
+MouseGrabbable
 Button
 i  -1
 LevelReference
@@ -110,6 +110,7 @@ Node
 IdRef
 q  7_0
 __q  4_0
+MouseSelectable
 Text
 s  BubbleIntersectSystem
 f  255.000000
@@ -121,19 +122,19 @@ f  0.000000
 f  10.000000
 f  10.000000
 b  1
-MouseSelectable
-SystemReference
-s  BubbleIntersectSystem
+MouseGrabbable
 Position
 f  31.692390
 f  -0.000000
 f  -129.107346
-MouseGrabbable
+SystemReference
+s  BubbleIntersectSystem
 MouseIntersectable
 LoopSociety
 q  -1_0
 p  
 __q  5_0
+MouseSelectable
 Text
 s  EditorHotKeySystem
 f  255.000000
@@ -145,30 +146,29 @@ f  0.000000
 f  10.000000
 f  10.000000
 b  1
-MouseSelectable
-SystemReference
-s  EditorHotKeySystem
-MouseGrabbable
 Position
 f  -34.104458
 f  200.000000
 f  197.070770
+MouseGrabbable
+SystemReference
+s  EditorHotKeySystem
 MouseIntersectable
 LoopSociety
 q  -1_0
 p  
 __q  6_0
-ConfigComponent
 EditorConfigs
 i  18
 i  8
+ConfigComponent
 Sphere
 f  4.000000
-MouseGrabbable
 Position
 f  38.744041
 f  -0.000275
 f  -57.098633
+MouseGrabbable
 MouseIntersectable
 MouseSelectable
 __q  7_0
@@ -180,6 +180,7 @@ f  2.000000
 Circle
 f  20.000000
 MouseIntersectable
+MouseSelectable
 Text
 s  2
 f  255.000000
@@ -191,12 +192,11 @@ f  0.000000
 f  0.000000
 f  40.000000
 b  1
-MouseSelectable
-MouseGrabbable
 Position
 f  167.732025
 f  -0.000000
 f  -306.869446
+MouseGrabbable
 Button
 i  -1
 LevelReference
@@ -215,6 +215,7 @@ f  2.000000
 Circle
 f  20.000000
 MouseIntersectable
+MouseSelectable
 Text
 s  3
 f  255.000000
@@ -226,12 +227,11 @@ f  0.000000
 f  0.000000
 f  40.000000
 b  1
-MouseSelectable
-MouseGrabbable
 Position
 f  220.433807
 f  0.000031
 f  -269.093658
+MouseGrabbable
 Button
 i  -1
 LevelReference
@@ -250,6 +250,7 @@ f  2.000000
 Circle
 f  20.000000
 MouseIntersectable
+MouseSelectable
 Text
 s  4
 f  255.000000
@@ -261,12 +262,11 @@ f  0.000000
 f  0.000000
 f  40.000000
 b  1
-MouseSelectable
-MouseGrabbable
 Position
 f  278.011658
 f  -0.000031
 f  -244.401123
+MouseGrabbable
 Button
 i  -1
 LevelReference
@@ -285,6 +285,7 @@ f  2.000000
 Circle
 f  20.000000
 MouseIntersectable
+MouseSelectable
 Text
 s  5
 f  255.000000
@@ -296,12 +297,11 @@ f  0.000000
 f  0.000000
 f  40.000000
 b  1
-MouseSelectable
-MouseGrabbable
 Position
 f  343.244171
 f  -0.000000
 f  -248.823669
+MouseGrabbable
 Button
 i  -1
 LevelReference
@@ -311,7 +311,6 @@ GridElement
 IdRef
 q  15_0
 __q  11_0
-MouseSelectable
 Text
 s  MouseClickSystem
 f  255.000000
@@ -323,19 +322,19 @@ f  0.000000
 f  10.000000
 f  10.000000
 b  1
+MouseSelectable
+SystemReference
+s  MouseClickSystem
+MouseGrabbable
 Position
 f  31.304356
 f  -0.000000
 f  -160.462723
-MouseGrabbable
-SystemReference
-s  MouseClickSystem
 MouseIntersectable
 LoopSociety
 q  -1_0
 p  
 __q  12_0
-MouseSelectable
 Text
 s  LevelNavigationSystem
 f  255.000000
@@ -347,18 +346,20 @@ f  0.000000
 f  10.000000
 f  10.000000
 b  1
+MouseSelectable
+SystemReference
+s  LevelNavigationSystem
+MouseGrabbable
 Position
 f  -31.333454
 f  -0.000061
 f  -199.516510
-MouseGrabbable
-SystemReference
-s  LevelNavigationSystem
 MouseIntersectable
 LoopSociety
 q  -1_0
 p  
 __q  13_0
+MouseSelectable
 Text
 s  InventorySystem
 f  255.000000
@@ -370,19 +371,19 @@ f  0.000000
 f  10.000000
 f  10.000000
 b  1
-MouseSelectable
-SystemReference
-s  InventorySystem
-MouseGrabbable
 Position
 f  80.270020
 f  0.000061
 f  -204.441315
+MouseGrabbable
+SystemReference
+s  InventorySystem
 MouseIntersectable
 LoopSociety
 q  -1_0
 p  
 __q  14_0
+MouseSelectable
 Text
 s  BubbleCameraSystem
 f  255.000000
@@ -394,14 +395,13 @@ f  0.000000
 f  10.000000
 f  10.000000
 b  1
-MouseSelectable
-SystemReference
-s  BubbleCameraSystem
-MouseGrabbable
 Position
 f  -14.607902
 f  -0.000061
 f  -123.516075
+MouseGrabbable
+SystemReference
+s  BubbleCameraSystem
 MouseIntersectable
 LoopSociety
 q  -1_0
@@ -415,7 +415,6 @@ LoopSociety
 q  50_0
 p  
 MouseIntersectable
-MouseSelectable
 Text
 s  6
 f  255.000000
@@ -427,11 +426,12 @@ f  0.000000
 f  0.000000
 f  40.000000
 b  1
-MouseGrabbable
+MouseSelectable
 Position
 f  392.615631
 f  -0.000000
 f  -285.309662
+MouseGrabbable
 Button
 i  -1
 LevelReference
@@ -518,7 +518,6 @@ p
 Sphere
 f  2.000000
 MouseIntersectable
-MouseSelectable
 Text
 s  P1
 f  255.000000
@@ -530,11 +529,12 @@ f  0.000000
 f  0.000000
 f  40.000000
 b  1
+MouseSelectable
+MouseGrabbable
 Position
 f  -97.456062
 f  -0.000000
 f  -139.471619
-MouseGrabbable
 LevelReference
 s  PROCEDURE1
 b  0
@@ -550,11 +550,12 @@ f  20.000000
 LoopSociety
 q  50_0
 p  
+MouseGrabbable
 Position
 f  -162.507202
 f  -0.000000
 f  -120.432045
-MouseGrabbable
+MouseSelectable
 Text
 s  20
 f  255.000000
@@ -566,7 +567,6 @@ f  0.000000
 f  0.000000
 f  40.000000
 b  1
-MouseSelectable
 MouseIntersectable
 Button
 i  -1
@@ -620,11 +620,12 @@ f  20.000000
 LoopSociety
 q  50_0
 p  
+MouseGrabbable
 Position
 f  352.465240
 f  0.000031
 f  -131.442261
-MouseGrabbable
+MouseSelectable
 Text
 s  13
 f  255.000000
@@ -636,7 +637,6 @@ f  0.000000
 f  0.000000
 f  40.000000
 b  1
-MouseSelectable
 MouseIntersectable
 Button
 i  -1
@@ -689,11 +689,11 @@ q  -1_0
 p  
 MouseSelectable
 MouseIntersectable
+MouseGrabbable
 Position
 f  -192.928696
 f  0.000031
 f  -320.281372
-MouseGrabbable
 TextureComponent
 s  
 f  50.000000
@@ -812,12 +812,11 @@ f  20.000000
 LoopSociety
 q  50_0
 p  
-MouseGrabbable
 Position
 f  319.347168
 f  -0.000000
 f  4.501595
-MouseSelectable
+MouseGrabbable
 Text
 s  29
 f  255.000000
@@ -829,6 +828,7 @@ f  0.000000
 f  0.000000
 f  40.000000
 b  1
+MouseSelectable
 MouseIntersectable
 Button
 i  -1
@@ -869,7 +869,7 @@ Button
 i  -1
 LevelReference
 s  Problem17
-b  0
+b  1
 GridElement
 Node
 IdRef
@@ -918,7 +918,6 @@ f  2.000000
 Circle
 f  20.000000
 MouseIntersectable
-MouseSelectable
 Text
 s  32
 f  255.000000
@@ -930,11 +929,12 @@ f  0.000000
 f  0.000000
 f  40.000000
 b  1
+MouseSelectable
+MouseGrabbable
 Position
 f  386.882690
 f  -0.000000
 f  156.383362
-MouseGrabbable
 Button
 i  -1
 LevelReference
@@ -952,11 +952,12 @@ Button
 i  -1
 Sphere
 f  2.000000
+MouseGrabbable
 Position
 f  257.471039
 f  0.000061
 f  165.689941
-MouseGrabbable
+MouseSelectable
 Text
 s  P3
 f  255.000000
@@ -968,7 +969,6 @@ f  0.000000
 f  0.000000
 f  40.000000
 b  1
-MouseSelectable
 MouseIntersectable
 LevelReference
 s  Procedure3
@@ -1021,7 +1021,6 @@ p
 Sphere
 f  2.000000
 MouseIntersectable
-MouseSelectable
 Text
 s  P2
 f  255.000000
@@ -1033,11 +1032,12 @@ f  0.000000
 f  0.000000
 f  40.000000
 b  1
-MouseGrabbable
+MouseSelectable
 Position
 f  58.274208
 f  -0.000000
 f  -14.111202
+MouseGrabbable
 LevelReference
 s  PROCEDURE2
 b  0
@@ -1053,12 +1053,11 @@ f  20.000000
 LoopSociety
 q  50_0
 p  
-MouseGrabbable
 Position
 f  133.653641
 f  -0.000000
 f  195.364105
-MouseSelectable
+MouseGrabbable
 Text
 s  35
 f  255.000000
@@ -1070,6 +1069,7 @@ f  0.000000
 f  0.000000
 f  40.000000
 b  1
+MouseSelectable
 MouseIntersectable
 Button
 i  -1
@@ -1145,7 +1145,7 @@ Button
 i  -1
 LevelReference
 s  Problem23
-b  0
+b  1
 GridElement
 Node
 IdRef
@@ -1227,11 +1227,11 @@ q  -1_0
 p  
 MouseSelectable
 MouseIntersectable
+MouseGrabbable
 Position
 f  -118.726631
 f  0.000092
 f  -320.292084
-MouseGrabbable
 TextureComponent
 s  
 f  50.000000
@@ -1280,11 +1280,12 @@ f  20.000000
 LoopSociety
 q  50_0
 p  
+MouseGrabbable
 Position
 f  559.520203
 f  -0.000000
 f  -232.636688
-MouseGrabbable
+MouseSelectable
 Text
 s  9
 f  255.000000
@@ -1296,7 +1297,6 @@ f  0.000000
 f  0.000000
 f  49.000000
 b  1
-MouseSelectable
 MouseIntersectable
 Button
 i  -1
@@ -1315,11 +1315,12 @@ f  20.000000
 LoopSociety
 q  50_0
 p  
+MouseGrabbable
 Position
 f  417.241852
 f  -0.000000
 f  -126.971886
-MouseGrabbable
+MouseSelectable
 Text
 s  12
 f  255.000000
@@ -1331,7 +1332,6 @@ f  0.000000
 f  0.000000
 f  40.000000
 b  1
-MouseSelectable
 MouseIntersectable
 Button
 i  -1
@@ -1671,11 +1671,12 @@ f  20.000000
 LoopSociety
 q  50_0
 p  
+MouseGrabbable
 Position
 f  540.419250
 f  -0.000000
 f  -168.018616
-MouseGrabbable
+MouseSelectable
 Text
 s  10
 f  255.000000
@@ -1687,7 +1688,6 @@ f  0.000000
 f  0.000000
 f  40.000000
 b  1
-MouseSelectable
 MouseIntersectable
 Button
 i  -1

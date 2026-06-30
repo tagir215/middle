@@ -775,11 +775,22 @@ namespace bubble {
 					middle::getChildren(gameState, shape.id, mulChildren);
 					BubbleValue mulResult;
 					mulResult.scale = 1;
-					for (int x = 0; x < mulChildren.size(); ++x) {
-						BubbleValue val = calculateBubbleValue(gameState, mulChildren[x], variableValues);
-						mulResult.scale *= val.scale;
+					if (mul->operationType == static_cast<int>(components::OperationType::MULTIPLICATION)) {
+						for (int x = 0; x < mulChildren.size(); ++x) {
+							BubbleValue val = calculateBubbleValue(gameState, mulChildren[x], variableValues);
+							mulResult.scale *= val.scale;
+						}
+						result.scale += mulResult.scale;
 					}
-					result.scale += mulResult.scale;
+					else if (mul->operationType == static_cast<int>(components::OperationType::POWER)) {
+						assert(mulChildren.size() == 2);
+						middle::Id baseId = mulChildren[0];
+						middle::Id exponentId = mulChildren[1];
+						BubbleValue baseVal = calculateBubbleValue(gameState, baseId, variableValues);
+						BubbleValue exponentVal = calculateBubbleValue(gameState, baseId, variableValues);
+						float powResult = std::pow(baseVal.scale, exponentVal.scale);
+						result.scale += powResult;
+					}
 				}
 			}
 		}
