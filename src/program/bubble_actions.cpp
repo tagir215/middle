@@ -443,8 +443,13 @@ namespace bubbleActions {
 
 		middle::Id prevId;
 		for (middle::Id& id : exponentChildren) {
-			if (bubble::getStructureType(gameState, id) == components::AlgebraNodeType::UNIT) {
+			auto& childShape = middle::getShape(gameState, id.index);
+			auto unit = middle::getComponent<components::BubbleUnit>(childShape);
+			if (unit) {
 				middle::Id copyId = middle::deepCopyShape(gameState, baseId.index);
+				if (unit->value == -1) {
+					bubble::invert(gameState, copyId);
+				}
 				middle::moveShape(gameState, copyId.index, middle::getShapePosition(gameState, id.index) - basePos);
 				if (prevId.index != middle::UNASSIGNED) {
 					LinkMultiplicationTerm(prevId, copyId).execute(gameState);
@@ -1039,6 +1044,11 @@ namespace bubbleActions {
 
 		auto& parentShape = middle::getShape(gameState, compressTargetId.index);
 		auto mul = middle::getComponent<components::BubbleMultiplyComponent>(parentShape);
+
+		if (mul && mul->operationType == static_cast<int>(components::OperationType::POWER)) {
+			cancelled = true;
+			return;
+		}
 
 		if (compressToExponent && mul) {
 			replacementShapeId = compressToPower(gameState, compressTargetId, commonFactorId);
