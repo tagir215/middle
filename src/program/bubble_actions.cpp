@@ -265,6 +265,7 @@ namespace bubbleActions {
 		this->shapeToCopyIntoId = shapeToCopyIntoId;
 	}
 
+
 	void ExecuteMultiplication::execute(middle::GameState* gameState) {
 
 		// cancel if trying to expand into variable
@@ -272,6 +273,15 @@ namespace bubbleActions {
 		auto varComp = middle::getComponent<components::BubbleVariable>(shapeToAddInto);
 		if (varComp) {
 			cancelled = true;
+			return;
+		}
+
+		// TEMPORARY
+		auto mulId = middle::getParent(gameState, shapeToCopyId);
+		auto& mulShape = middle::getShape(gameState, mulId.index);
+		auto mulComp = middle::getComponent<components::BubbleMultiplyComponent>(mulShape);
+		if (mulComp->operationType == static_cast<int>(components::OperationType::POWER)) {
+			ExecutePowerNew(mulId).execute(gameState);
 			return;
 		}
 
@@ -352,7 +362,6 @@ namespace bubbleActions {
 			}
 			// delete parent, which is a multiplication with less than 2 values
 			if (children.size() < 2) {
-				mulShapeId = parentId;
 				auto deleteAction = std::make_unique<middle::EditorActionDeleteSingle>(parentId);
 				deleteAction->execute(gameState);
 				actions.push_back(std::move(deleteAction));
@@ -420,6 +429,7 @@ namespace bubbleActions {
 			actions.pop_back();
 		}
 	}
+
 
 	void ExecutePower::execute(middle::GameState* gameState)
 	{
@@ -505,6 +515,58 @@ namespace bubbleActions {
 	}
 
 	void ExecutePower::undo(middle::GameState* gameState)
+	{
+		while (actions.size() > 0) {
+			actions.back()->undo(gameState);
+			actions.pop_back();
+		}
+	}
+
+	void ExecutePowerNew::execute(middle::GameState* gameState)
+	{
+		auto shape = middle::getShape(gameState, powerShapeId.index);
+		auto operationComp = middle::getComponent<components::BubbleMultiplyComponent>(shape);
+		assert(operationComp);
+		assert(operationComp->operationType == static_cast<int>(components::OperationType::POWER));
+		std::vector<middle::Id>children;
+		middle::getChildren(gameState, shape.id, children);
+		assert(children.size() == 2);
+
+		// create replacement shape
+		// create container
+		std::vector<middle::Id>exponentChildren;
+		middle::Id exponentId = children[1];
+		middle::Id baseId = children[0];
+		middle::getChildren(gameState, exponentId, exponentChildren);
+		middle::Shape bubbleProto = bubble::newBubble(gameState, middle::getShapePosition(gameState, exponentId.index));
+		middle::Shape& newBubble = middle::registerShape(gameState, bubbleProto);
+		Vector3 basePos = middle::getShapePosition(gameState, baseId.index);
+
+		middle::Id prevId;
+		for (middle::Id& id : exponentChildren) {
+			if (bubble::getStructureType(gameState, id) == components::AlgebraNodeType::UNIT) {
+				middle::Id copyId = middle::deepCopyShape(gameState, baseId.index);
+				middle::moveShape(gameState, copyId.index, middle::getShapePosition(gameState, id.index) - basePos);
+				if (prevId.index == middle::UNASSIGNED) {
+					EditorActionReparent(newBubble.id.index, copyId.index).execute(gameState);
+				}
+				else {
+					LinkMultiplicationTerm(prevId, copyId).execute(gameState);
+				}
+				prevId = copyId;
+			}
+		}
+
+		auto registerId = std::make_unique<middle::EditorActionRegisterId>(newBubble.id);
+		registerId->execute(gameState);
+		actions.push_back(std::move(registerId));
+
+		auto replace = std::make_unique<Replace>(powerShapeId, newBubble.id);
+		replace->execute(gameState);
+		actions.push_back(std::move(replace));
+	}
+
+	void ExecutePowerNew::undo(middle::GameState* gameState)
 	{
 		while (actions.size() > 0) {
 			actions.back()->undo(gameState);
@@ -1955,5 +2017,6 @@ namespace bubbleActions {
 			actions.pop_back();
 		}
 	}
+
 
 }

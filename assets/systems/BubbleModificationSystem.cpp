@@ -100,10 +100,17 @@ public:
 	void tryCombine(middle::GameState* gameState, middle::Shape& refParent, middle::Shape& refShape, middle::Shape& intersectedShape) {
 
 		// is multiplication connection
-		if (isMultiplicationConnection(gameState, refParent)) {
-			auto multiply = std::make_shared<bubbleActions::ExecuteMultiplication>(refShape.id, intersectedShape.id);
-			middle::queueAction(gameState, multiply);
-			gameState->bubbleAlgebraState.bubbleActions.push_back(multiply);
+		if (auto mul = middle::getComponent<components::BubbleMultiplyComponent>(refParent)) {
+			if (mul->operationType == static_cast<int>(components::OperationType::MULTIPLICATION)) {
+				auto multiply = std::make_shared<bubbleActions::ExecuteMultiplication>(refShape.id, intersectedShape.id);
+				middle::queueAction(gameState, multiply);
+				gameState->bubbleAlgebraState.bubbleActions.push_back(multiply);
+			}
+			if (mul->operationType == static_cast<int>(components::OperationType::POWER)) {
+				auto doPower = std::make_shared<bubbleActions::ExecutePowerNew>(refParent.id);
+				middle::queueAction(gameState, doPower);
+				gameState->bubbleAlgebraState.bubbleActions.push_back(doPower);
+			}
 			return;
 		}
 		// else is addition connection

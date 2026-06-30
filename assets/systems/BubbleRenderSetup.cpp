@@ -346,7 +346,12 @@ public:
 				line.type = middle::RenderItemType::LINE;
 				line.linePointA = posA + Vector3Scale(axis, circleA->radius);
 				line.linePointB = posB + Vector3Scale(axis, -circleB->radius);
-				line.color = bubbleColors::MULTIPLICATION_CONNECTION;
+				if (multiplyComponent->operationType == (int)components::OperationType::MULTIPLICATION) {
+					line.color = bubbleColors::MULTIPLICATION_CONNECTION;
+				}
+				else {
+					line.color = BLUE;
+				}
 				line.layer = layer->layer;
 				line.disableDepthTest = isUiItem;
 

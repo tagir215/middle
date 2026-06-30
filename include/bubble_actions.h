@@ -157,7 +157,6 @@ namespace bubbleActions{
 
 	class ExecuteMultiplication : public middle::EditorActionContainer {
 	public:
-		middle::Id mulShapeId;
 		middle::Id shapeToCopyId;
 		middle::Id shapeToCopyIntoId;
 		middle::Id resultShapeId;
@@ -178,6 +177,19 @@ namespace bubbleActions{
 		void execute(middle::GameState* gameState) override;
 		void undo(middle::GameState* gameState) override;
 	};
+
+	class ExecutePowerNew : public middle::EditorActionContainer {
+	public:
+		middle::Id powerShapeId;
+		middle::Id resultShapeId;
+		std::vector<std::unique_ptr<middle::EditorActionContainer>> actions;
+		ExecutePowerNew(middle::Id powerShapeId) {
+			this->powerShapeId = powerShapeId;
+		}
+		void execute(middle::GameState* gameState) override;
+		void undo(middle::GameState* gameState) override;
+	};
+
 
 	class ExecutePower : public middle::EditorActionContainer {
 	public:

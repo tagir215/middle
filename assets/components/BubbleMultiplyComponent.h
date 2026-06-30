@@ -1,16 +1,18 @@
 #pragma once
 #include "registrars.h"
 #include "editor_file_utils.h"
-#define MIDDLEBUBBLEMULTIPLYCOMPONENT(X) 
+#define MIDDLEBUBBLEMULTIPLYCOMPONENT(X) \
+	X(operationType)
 
 namespace components {
-	enum class LinkType {
+	enum class OperationType {
 		MULTIPLICATION,
-		EXPONENT,
+		POWER,
 		LOGARITHM,
 	};
 
 	struct BubbleMultiplyComponent : public middle::Serializable{
+		int operationType = 0;
 
 		void serialize(std::ostream& ostream) override;
 		void deserialize(const std::vector<std::string>& buffer, int indexOffset) override;
