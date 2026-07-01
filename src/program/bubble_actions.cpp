@@ -428,7 +428,7 @@ namespace bubbleActions {
 		auto shape = middle::getShape(gameState, powerShapeId.index);
 		auto operationComp = middle::getComponent<components::BubbleMultiplyComponent>(shape);
 		assert(operationComp);
-		assert(operationComp->operationType == static_cast<int>(components::OperationType::POWER));
+		assert(operationComp->operationType == components::OperationType::POWER);
 		std::vector<middle::Id>children;
 		middle::getChildren(gameState, shape.id, children);
 		assert(children.size() == 2);
@@ -516,10 +516,6 @@ namespace bubbleActions {
 			cancelled = true;
 			return;
 		}
-		if (isPowerBubble(gameState, shapeToPop.id)) {
-			cancelled = true;
-			return;
-		}
 
 		std::vector<middle::Id>children;
 		middle::getChildren(gameState, parentId, children);
@@ -527,6 +523,10 @@ namespace bubbleActions {
 
 		if (siblingCount != 0) {
 			if (variable) {
+				cancelled = true;
+				return;
+			}
+			if (isPowerBubble(gameState, shapeToPop.id)) {
 				cancelled = true;
 				return;
 			}
@@ -848,11 +848,123 @@ namespace bubbleActions {
 		middle::Id operationId = linkAction.resultShapeId;
 		auto operationShape = middle::getShape(gameState, operationId.index);
 		auto operationComp = middle::getComponent<components::BubbleMultiplyComponent>(operationShape);
-		operationComp->operationType = static_cast<int>(components::OperationType::POWER);
+		operationComp->operationType = components::OperationType::POWER;
 
 		middle::EditorActionReparent(containerBubble.id.index, operationId.index).execute(gameState);
 
 		return containerBubble.id;
+	}
+
+	middle::Id compressPowers(middle::GameState* gameState, middle::Id compressTargetId, middle::Id commonFactorId) {
+		if (compressTargetId.index == middle::UNASSIGNED) {
+			return middle::Id();
+		}
+
+		middle::Shape& compressShape = middle::getShape(gameState, compressTargetId.index);
+		auto mulComp = middle::getComponent<components::BubbleMultiplyComponent>(compressShape);
+		if (!mulComp) {
+			assert(false);
+		}
+
+		bool isPower = mulComp->operationType == components::OperationType::POWER;
+
+		// compress by common power 
+		if (!isPower) {
+			std::vector<middle::Id>bases;
+			std::vector<middle::Id> mulChildren;
+			// check that exponents match
+			middle::getChildren(gameState, compressTargetId, mulChildren);
+			for (middle::Id childBubble : mulChildren) {
+				// find powerId
+				std::vector<middle::Id> bubbleChildren;
+				middle::getChildren(gameState, childBubble, bubbleChildren);
+				if (bubbleChildren.size() != 1) {
+					return middle::Id();
+				}
+				// check that the child is a power
+				middle::Id powerId = bubbleChildren[0];
+				middle::Shape& powerShape = middle::getShape(gameState, powerId.index);
+				auto operationComp = middle::getComponent<components::BubbleMultiplyComponent>(powerShape);
+				if (operationComp->operationType != components::OperationType::POWER) {
+					return middle::Id();
+				}
+				// if its a power find exponentId
+				std::vector<middle::Id>powerChildren;
+				middle::getChildren(gameState, powerId, powerChildren);
+				assert(powerChildren.size() == 2);
+				middle::Id exponentId = powerChildren[components::PowerRole::EXPONENT];
+				if (!bubble::matchingBubbles(gameState, exponentId, commonFactorId)) {
+					return middle::Id();
+				}
+				// store base for later if matching exponent
+				middle::Id baseId = powerChildren[components::PowerRole::BASE];
+				bases.push_back(baseId);
+			}
+
+			// create multiplication between copy bases if size > 1
+			middle::Id containerId;
+			middle::Id prevId;
+			if (bases.size() > 1) {
+				for (middle::Id& baseId : bases) {
+					middle::Id copyBaseId = middle::deepCopyShape(gameState, baseId.index);
+					if (prevId.index != middle::UNASSIGNED) {
+						LinkMultiplicationTerm(prevId, copyBaseId).execute(gameState);
+					}
+					prevId = copyBaseId;
+				}
+				middle::Id newMulId = middle::getParent(gameState, prevId);
+				containerId = bubble::containerize(gameState, newMulId);
+			}
+			else {
+				containerId = bases[0];
+			}
+
+			// create power between common factor and rest of stuff
+			middle::Id commonFactorCopyId = middle::deepCopyShape(gameState, commonFactorId.index);
+			auto linkAction = LinkMultiplicationTerm(containerId, commonFactorCopyId);
+			linkAction.execute(gameState);
+			middle::Shape& resultMul = middle::getShape(gameState, linkAction.resultShapeId.index);
+			auto mul = middle::getComponent<components::BubbleMultiplyComponent>(resultMul);
+			mul->operationType = static_cast<int>(components::OperationType::POWER);
+
+			return resultMul.id;
+		}
+
+		// if compress target is a power we multiply exponents
+		else if (isPower) {
+			// find baseId 
+			middle::Id parentId = middle::getParent(gameState, commonFactorId);
+			std::vector<middle::Id>powerChildren;
+			middle::getChildren(gameState, parentId, powerChildren);
+			assert(powerChildren.size() == 2);
+			middle::Id baseId = powerChildren[components::PowerRole::BASE];
+
+			// find target exponent
+			std::vector<middle::Id> outerPowerChildren;
+			middle::getChildren(gameState, compressTargetId, outerPowerChildren);
+			assert(outerPowerChildren.size() == 2);
+			middle::Id targetExponentId = outerPowerChildren[components::PowerRole::EXPONENT];
+
+			middle::Id copyBaseId = middle::deepCopyShape(gameState, baseId.index);
+			middle::Id copyExponentId = middle::deepCopyShape(gameState, commonFactorId.index);
+			middle::Id copyTargetExponentId = middle::deepCopyShape(gameState, targetExponentId.index);
+
+			auto link1 = LinkMultiplicationTerm(copyExponentId, copyTargetExponentId);
+			link1.execute(gameState);
+			middle::Id newMulId = link1.resultShapeId;
+			middle::Id newExponent = bubble::containerize(gameState, newMulId);
+
+			auto link2 = LinkMultiplicationTerm(copyBaseId, newExponent);
+			link2.execute(gameState);
+			middle::Id newPowerId = link2.resultShapeId;
+			auto& newPowerShape = middle::getShape(gameState, newPowerId.index);
+			auto mul = middle::getComponent<components::BubbleMultiplyComponent>(newPowerShape);
+			mul->operationType = components::POWER;
+
+			return newPowerShape.id;
+		}
+
+		return middle::Id();
 	}
 
 	struct RepresentativeGroup {
@@ -1045,13 +1157,29 @@ namespace bubbleActions {
 		auto& parentShape = middle::getShape(gameState, compressTargetId.index);
 		auto mul = middle::getComponent<components::BubbleMultiplyComponent>(parentShape);
 
-		if (mul && mul->operationType == static_cast<int>(components::OperationType::POWER)) {
+		if (!compressToExponent && mul && mul->operationType == static_cast<int>(components::OperationType::POWER)) {
 			cancelled = true;
 			return;
 		}
 
 		if (compressToExponent && mul) {
-			replacementShapeId = compressToPower(gameState, compressTargetId, commonFactorId);
+			// check if common factor is an exponent
+			bool isExponent = false;
+			if (mul->operationType == static_cast<int>(components::OperationType::POWER)) {
+				std::vector<middle::Id>mulChildren;
+				middle::getChildren(gameState, parentShape.id, mulChildren);
+				assert(mulChildren.size() == 2);
+				middle::Id exponentId = mulChildren[1];
+				isExponent = exponentId == commonFactorId;
+			}
+			if (isExponent) {
+				compressTargetId = bubble::findCompFromParents<components::BubbleMultiplyComponent>(gameState, middle::getParent(gameState, compressTargetId));
+				replacementShapeId = compressPowers(gameState, compressTargetId, commonFactorId);
+			}
+			else {
+				replacementShapeId = compressToPower(gameState, compressTargetId, commonFactorId);
+			}
+
 		}
 		else {
 			if (mul) {
@@ -1069,14 +1197,14 @@ namespace bubbleActions {
 			return;
 		}
 
-		bool isMul = false;
+		components::BubbleMultiplyComponent* mulComp;
 		middle::Id containerOfContainersId = middle::getParent(gameState, compressTargetId);
 		if (containerOfContainersId.index != middle::UNASSIGNED) {
 			auto& containerOfCotnainersShape = middle::getShape(gameState, containerOfContainersId.index);
-			isMul = middle::getComponent<components::BubbleMultiplyComponent>(containerOfCotnainersShape) != nullptr;
+			mulComp = middle::getComponent<components::BubbleMultiplyComponent>(containerOfCotnainersShape);
 		}
 		// if is mul link to the mul..
-		if (isMul) {
+		if (mulComp && mulComp->operationType == components::OperationType::MULTIPLICATION) {
 			std::vector<middle::Id>replacementChildren;
 			middle::getChildren(gameState, replacementShapeId, replacementChildren);
 			auto repShape = middle::getShape(gameState, replacementShapeId.index);
@@ -1109,8 +1237,9 @@ namespace bubbleActions {
 		}
 		else {
 			auto& shape = middle::getShape(gameState, compressTargetId.index);
-			bool isTopDog = middle::getComponent<components::TopDogBubbleTag>(shape);
-			if (isTopDog) {
+			bool parentIsTopDog = middle::getComponent<components::TopDogBubbleTag>(shape);
+			bool parentIsPower = mulComp && mulComp->operationType == components::OperationType::POWER;
+			if (parentIsTopDog || parentIsPower) {
 				replacementShapeId = bubble::containerize(gameState, replacementShapeId);
 			}
 

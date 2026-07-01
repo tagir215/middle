@@ -211,7 +211,6 @@ public:
 						auto containerProto = bubble::newBubble(gameState, containerPos);
 						auto bubbleAProto = bubble::newBubble(gameState, containerPos + randomOffset());
 						auto bubbleBProto = bubble::newBubble(gameState, containerPos + randomOffset());
-						auto& container = middle::registerShape(gameState, containerProto);
 						auto& bubbleA = middle::registerShape(gameState, bubbleAProto);
 						auto& bubbleB = middle::registerShape(gameState, bubbleBProto);
 						auto mulAction = bubbleActions::NewMultiplication(bubbleA.id, bubbleB.id);
@@ -220,8 +219,7 @@ public:
 						auto& newShape = middle::getShape(gameState, newId.index);
 						auto mul = middle::getComponent<components::BubbleMultiplyComponent>(newShape);
 						mul->operationType = static_cast<int>(components::OperationType::POWER);
-						middle::EditorActionReparent(container.id.index, newId.index).execute(gameState);
-						middle::EditorActionReparent(selectedId.index, container.id.index).execute(gameState);
+						middle::EditorActionReparent(selectedId.index, newId.index).execute(gameState);
 					}
 					ImGui::Separator();
 					static char label[20] = "x";

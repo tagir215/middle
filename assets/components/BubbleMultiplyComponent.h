@@ -5,10 +5,15 @@
 	X(operationType)
 
 namespace components {
-	enum class OperationType {
+	enum OperationType {
 		MULTIPLICATION,
 		POWER,
 		LOGARITHM,
+	};
+
+	enum PowerRole {
+		BASE,
+		EXPONENT
 	};
 
 	struct BubbleMultiplyComponent : public middle::Serializable{
