@@ -157,6 +157,20 @@ public:
 					registerAction->undo(gameState);
 				});
 		}
+		else if (actionType == bubbleInventoryItemType::NEW_POWER_TERM) {
+			middle::Id copyId = copyOfInventoryItem(gameState, refId);
+			auto registerAction = std::make_shared<middle::EditorActionRegisterId>(copyId);
+			auto newTermAction = std::make_shared<bubbleActions::NewPowerTerm>(intersectedShape.id, copyId, gameState->input.mouseXZ_PlanePos);
+			action = std::make_shared < middle::CustomActionWithUndo>(
+				[registerAction, newTermAction](middle::GameState* gameState) {
+					registerAction->execute(gameState);
+					newTermAction->execute(gameState);
+				},
+				[registerAction, newTermAction](middle::GameState* gameState) {
+					newTermAction->undo(gameState);
+					registerAction->undo(gameState);
+				});
+		}
 		else if (actionType == bubbleInventoryItemType::INSERT_X_OVER_X) {
 			middle::Id copyId = copyOfInventoryItem(gameState, refId);
 			auto registerAction = std::make_shared<middle::EditorActionRegisterId>(copyId);

@@ -189,6 +189,13 @@ public:
 					changeTermAdditionTypes(gameState, bubbleInventoryItemType::NEW_MULTIPLICATION_TERM);
 				}
 			}
+			if (button->function == bubbleButton::SELECT_POWER) {
+				if (!middle::getComponent<components::ActiveCheckBoxTag>(shape)) {
+					deactivateCheckboxes(gameState);
+					middle::queueComponentAttachment<components::ActiveCheckBoxTag>(gameState, buttonId);
+					changeTermAdditionTypes(gameState, bubbleInventoryItemType::NEW_POWER_TERM);
+				}
+			}
 			if (button->function == bubbleButton::SELECT_INSERT_X_OVER_X) {
 				if (!middle::getComponent<components::ActiveCheckBoxTag>(shape)) {
 					deactivateCheckboxes(gameState);

@@ -275,6 +275,21 @@ namespace bubbleActions{
 		void undo(middle::GameState* gameState) override;
 	};
 
+	class NewPowerTerm : public middle::EditorActionContainer {
+	public:
+		middle::Id shapeToAddIntoId;
+		middle::Id newTermId;
+		Vector3 targetPosition;
+		std::vector<std::unique_ptr<middle::EditorActionContainer>> actions;
+		NewPowerTerm(middle::Id& shapeToAddIntoId, middle::Id& newTermId, const Vector3& targetPosition) {
+			this->shapeToAddIntoId = shapeToAddIntoId;
+			this->newTermId = newTermId;
+			this->targetPosition = targetPosition;
+		}
+		void execute(middle::GameState* gameState) override;
+		void undo(middle::GameState* gameState) override;
+	};
+
 	class InsertAsXOverX : public middle::EditorActionContainer {
 	public:
 		middle::Id shapeToAddIntoId;
@@ -331,5 +346,6 @@ namespace bubbleActions{
 		void execute(middle::GameState* gameState) override;
 		void undo(middle::GameState* gameState) override;
 	};
+
 
 }

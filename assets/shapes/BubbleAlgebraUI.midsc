@@ -56,10 +56,69 @@ q  63_0
 q  76_0
 q  81_0
 q  99_0
+q  181_0
+q  182_0
 Offset
 f  0.000000
 f  -500.000000
 f  0.000000
+__q  182_0
+Position
+f  -282.529846
+f  0.000000
+f  88.476746
+MouseGrabbable
+Text
+s  power the outer
+f  255.000000
+f  255.000000
+f  255.000000
+f  255.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  8.000000
+b  1
+MouseSelectable
+MouseIntersectable
+LoopSociety
+q  73_0
+p  
+Button
+i  5
+UiComponent
+i  -1
+Sphere
+f  2.000000
+Layer
+i  1
+__q  181_0
+MouseGrabbable
+Position
+f  -327.891846
+f  -0.000122
+f  44.708649
+MouseSelectable
+MouseIntersectable
+Sphere
+f  2.000000
+UiComponent
+i  4
+TextureComponent
+s  C:\Users\tagir\raylib_projects\middle\assets\textures\toggleRect.png
+f  15.000000
+i  0
+s  toggleRect.png
+Button
+i  21
+LoopSociety
+q  73_0
+p  
+Layer
+i  1
+Rectangle
+f  20.000000
+f  20.000000
 __q  99_0
 LoopTag
 LoopSociety
@@ -230,7 +289,7 @@ MouseGrabbable
 Position
 f  -281.554596
 f  0.000000
-f  49.022827
+f  45.779877
 MouseSelectable
 Text
 s  insert as x - x
@@ -270,9 +329,9 @@ f  10.000000
 b  1
 MouseIntersectable
 Position
-f  -282.653870
+f  -282.977844
 f  0.000000
-f  71.609375
+f  66.096344
 MouseGrabbable
 LoopSociety
 q  73_0
@@ -287,9 +346,9 @@ Layer
 i  1
 __q  38_0
 Position
-f  -327.321472
+f  -328.747620
 f  -0.000122
-f  47.275879
+f  65.817047
 MouseGrabbable
 MouseSelectable
 MouseIntersectable
@@ -315,9 +374,9 @@ f  20.000000
 __q  35_0
 MouseGrabbable
 Position
-f  -328.155701
+f  -328.726501
 f  -0.000122
-f  71.530762
+f  86.934692
 MouseSelectable
 MouseIntersectable
 Sphere
@@ -330,7 +389,7 @@ f  15.000000
 i  0
 s  toggleRect.png
 Button
-i  20
+i  24
 LoopSociety
 q  73_0
 p  
@@ -783,9 +842,9 @@ Layer
 i  0
 __q  191_0
 Position
-f  -283.010681
+f  -284.956665
 f  -0.000610
-f  119.129883
+f  131.778687
 MouseGrabbable
 MouseSelectable
 Text
@@ -814,9 +873,9 @@ i  1
 __q  190_0
 MouseGrabbable
 Position
-f  -270.529968
+f  -271.826965
 f  0.000000
-f  97.557617
+f  111.503510
 MouseSelectable
 Text
 s  multiply with the outer
@@ -1079,9 +1138,9 @@ RuntimeHiddenTag
 __q  147_0
 MouseGrabbable
 Position
-f  -327.815979
+f  -328.386353
 f  0.000122
-f  118.333374
+f  131.002197
 MouseSelectable
 MouseIntersectable
 LoopSociety
@@ -1106,9 +1165,9 @@ f  20.000000
 ActiveCheckBoxTag
 __q  146_0
 Position
-f  -328.141418
+f  -328.426819
 f  0.000244
-f  95.355591
+f  109.332947
 MouseGrabbable
 MouseSelectable
 MouseIntersectable

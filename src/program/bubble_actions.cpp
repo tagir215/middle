@@ -445,14 +445,8 @@ namespace bubbleActions {
 		}
 		Vector3 basePos = middle::getShapePosition(gameState, baseId.index);
 
-		std::vector<middle::Id> copies;
 		middle::Id prevId;
 		for (middle::Id& id : exponentChildren) {
-			middle::Id copy = middle::deepCopyShape(gameState, id.index);
-			copies.push_back(copy);
-		}
-
-		for (middle::Id& id : copies) {
 			auto& childShape = middle::getShape(gameState, id.index);
 			auto unit = middle::getComponent<components::BubbleUnit>(childShape);
 
@@ -470,6 +464,7 @@ namespace bubbleActions {
 			else{
 				auto mul = middle::getComponent<components::BubbleMultiplyComponent>(childShape);
 				// if multiplication containerize it first in a bubble, else assumed to be a bubble
+				id = middle::deepCopyShape(gameState, id.index);
 				if (mul) {
 					id = bubble::containerize(gameState, id);
 				}
@@ -1651,6 +1646,85 @@ namespace bubbleActions {
 		}
 	}
 
+	void NewPowerTerm::execute(middle::GameState* gameState)
+	{
+		middle::Id topDog = bubble::findCompFromParents<components::TopDogBubbleTag>(gameState, shapeToAddIntoId);
+		shapeToAddIntoId = topDog;
+
+		middle::Id parentId = middle::getParent(gameState, shapeToAddIntoId);
+		std::vector<middle::Id>shapesToAddIntoIds;
+		std::vector<middle::Id>shapesToAddIds;
+		// if no parent, add just the og shapeToAddIntoId
+		if (parentId.index == middle::UNASSIGNED) {
+			shapesToAddIntoIds.push_back(shapeToAddIntoId);
+			shapesToAddIds.push_back(newTermId);
+		}
+		// else we check that the parent has equals component, then we add all the children of it as shapes to add into
+		else {
+			auto& parentShape = middle::getShape(gameState, parentId.index);
+			auto equalsComp = middle::getComponent<components::BubbleEqualsComponent>(parentShape);
+			if (!equalsComp) {
+				cancelled = true;
+				return;
+			}
+			shapesToAddIds.push_back(newTermId);
+			middle::getChildren(gameState, parentShape.id, shapesToAddIntoIds);
+			// copy the new terms to be added to the other containers
+			for (int i = 1; i < shapesToAddIntoIds.size(); ++i) {
+				auto copyAction = std::make_unique<middle::EditorActionCopySingle>(newTermId);
+				copyAction->execute(gameState);
+				shapesToAddIds.push_back(copyAction->resultId);
+				actions.push_back(std::move(copyAction));
+			}
+		}
+
+		for (int i = 0; i < shapesToAddIntoIds.size(); ++i) {
+			middle::Id containerId = shapesToAddIntoIds[i];
+			middle::Id toAddId = shapesToAddIds[i];
+
+			// create new container
+			middle::Shape newBubbleProto = bubble::newBubble(gameState, middle::getShapePosition(gameState, containerId.index));
+			auto registerNewContainer = std::make_unique<EditorActionRegisterShape>(newBubbleProto);
+			registerNewContainer->execute(gameState);
+			middle::Id newBubbleId = registerNewContainer->newShapeId;
+			actions.push_back(std::move(registerNewContainer));
+
+			// reparent children to new container
+			std::vector<middle::Id>containerChildren;
+			middle::getChildren(gameState, containerId, containerChildren);
+			for (middle::Id childId : containerChildren) {
+				auto reparent = std::make_unique<middle::EditorActionReparent>(newBubbleId.index, childId.index);
+				reparent->execute(gameState);
+				actions.push_back(std::move(reparent));
+			}
+
+			// create power link
+			auto linkAction = std::make_unique<LinkMultiplicationTerm>(newBubbleId, toAddId);
+			linkAction->execute(gameState);
+			middle::Id newPowerId = linkAction->resultShapeId;
+			auto& newShape = middle::getShape(gameState, newPowerId.index);
+			auto newPowerComp = middle::getComponent<components::BubbleMultiplyComponent>(newShape);
+			newPowerComp->operationType = components::OperationType::POWER;
+
+			// move added id
+			Vector3 currentPos = middle::getShapePosition(gameState, toAddId.index);
+			middle::moveShape(gameState, toAddId.index, targetPosition - currentPos);
+			
+			// reparent to og container
+			auto reparent = std::make_unique<EditorActionReparent>(containerId.index, newPowerId.index);
+			reparent->execute(gameState);
+			actions.push_back(std::move(reparent));
+		}
+	}
+
+	void NewPowerTerm::undo(middle::GameState* gameState)
+	{
+		while (actions.size() > 0) {
+			actions.back()->undo(gameState);
+			actions.pop_back();
+		}
+	}
+
 	bool parentIsBubble(middle::GameState* gameState, middle::Id id) {
 		middle::Id parentId = middle::getParent(gameState, id);
 		if (parentId.index == middle::UNASSIGNED) {
@@ -2053,6 +2127,7 @@ namespace bubbleActions {
 			actions.pop_back();
 		}
 	}
+
 
 
 }
