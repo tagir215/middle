@@ -436,63 +436,82 @@ namespace bubbleActions {
 		// create replacement shape
 		// create container
 		std::vector<middle::Id>exponentChildren;
-		middle::Id exponentId = children[1];
-		middle::Id baseId = children[0];
+		middle::Id exponentId = children[components::PowerRole::EXPONENT];
+		middle::Id baseId = children[components::PowerRole::BASE];
 		middle::getChildren(gameState, exponentId, exponentChildren);
 		if (exponentChildren.size() == 1) {
 			cancelled = true;
 			return;
 		}
-		Vector3 basePos = middle::getShapePosition(gameState, baseId.index);
 
-		middle::Id prevId;
-		for (middle::Id& id : exponentChildren) {
-			auto& childShape = middle::getShape(gameState, id.index);
-			auto unit = middle::getComponent<components::BubbleUnit>(childShape);
+		middle::Id replacementShapeId;
 
-			middle::Id baseCopyId = middle::deepCopyShape(gameState, baseId.index);
-			middle::moveShape(gameState, baseCopyId.index, middle::getShapePosition(gameState, id.index) - basePos);
+		if (exponentChildren.size() != 0) {
 
-			middle::Id linkingId;
-			// unit case
-			if (unit) {
-				if (unit->value == -1) {
-					bubble::invert(gameState, baseCopyId);
+
+			Vector3 basePos = middle::getShapePosition(gameState, baseId.index);
+
+			middle::Id prevId;
+			for (middle::Id& id : exponentChildren) {
+				auto& childShape = middle::getShape(gameState, id.index);
+				auto unit = middle::getComponent<components::BubbleUnit>(childShape);
+
+				middle::Id baseCopyId = middle::deepCopyShape(gameState, baseId.index);
+				middle::moveShape(gameState, baseCopyId.index, middle::getShapePosition(gameState, id.index) - basePos);
+
+				middle::Id linkingId;
+				// unit case
+				if (unit) {
+					if (unit->value == -1) {
+						bubble::invert(gameState, baseCopyId);
+					}
+					linkingId = baseCopyId;
 				}
-				linkingId = baseCopyId;
-			}
-			else{
-				auto mul = middle::getComponent<components::BubbleMultiplyComponent>(childShape);
-				// if multiplication containerize it first in a bubble, else assumed to be a bubble
-				id = middle::deepCopyShape(gameState, id.index);
-				if (mul) {
-					id = bubble::containerize(gameState, id);
+				else {
+					auto mul = middle::getComponent<components::BubbleMultiplyComponent>(childShape);
+					// if multiplication containerize it first in a bubble, else assumed to be a bubble
+					id = middle::deepCopyShape(gameState, id.index);
+					if (mul) {
+						id = bubble::containerize(gameState, id);
+					}
+					// create a new power for the term
+					auto link1 = LinkMultiplicationTerm(baseCopyId, id);
+					link1.execute(gameState);
+					middle::Id newPowerId = link1.resultShapeId;
+					auto& newPowerShape = middle::getShape(gameState, newPowerId.index);
+					auto newMulComp = middle::getComponent<components::BubbleMultiplyComponent>(newPowerShape);
+					newMulComp->operationType = components::OperationType::POWER;
+					middle::Id newBubbleId = bubble::containerize(gameState, newPowerId);
+					linkingId = newBubbleId;
 				}
-				// create a new power for the term
-				auto link1 = LinkMultiplicationTerm(baseCopyId, id);
-				link1.execute(gameState);
-				middle::Id newPowerId = link1.resultShapeId;
-				auto& newPowerShape = middle::getShape(gameState, newPowerId.index);
-				auto newMulComp = middle::getComponent<components::BubbleMultiplyComponent>(newPowerShape);
-				newMulComp->operationType = components::OperationType::POWER;
-				middle::Id newBubbleId = bubble::containerize(gameState, newPowerId);
-				linkingId = newBubbleId;
+
+				// link as multiplication
+				if (prevId.index != middle::UNASSIGNED) {
+					LinkMultiplicationTerm(prevId, linkingId).execute(gameState);
+				}
+				prevId = linkingId;
+
 			}
 
-			// link as multiplication
-			if (prevId.index != middle::UNASSIGNED) {
-				LinkMultiplicationTerm(prevId, linkingId).execute(gameState);
-			}
-			prevId = linkingId;
+			replacementShapeId = middle::getParent(gameState, prevId);
+		}
+		// replacement shape is bubble with value 1
+		else {
+			Vector3 targetPosition = middle::getShapePosition(gameState, exponentId.index);
+			middle::Shape newBubbleProto = bubble::newBubble(gameState, targetPosition);
+			middle::Shape& newBubble = middle::registerShape(gameState, newBubbleProto);
+			middle::Shape newUnitProto = bubble::newUnit(gameState, targetPosition);
+			middle::Shape& newUnit = middle::registerShape(gameState, newUnitProto);
+			middle::EditorActionReparent(newBubble.id.index, newUnit.id.index).execute(gameState);
+			replacementShapeId = newBubble.id;
 		}
 
-		middle::Id operationId = middle::getParent(gameState, prevId);
 
-		auto registerId = std::make_unique<middle::EditorActionRegisterId>(operationId);
+		auto registerId = std::make_unique<middle::EditorActionRegisterId>(replacementShapeId);
 		registerId->execute(gameState);
 		actions.push_back(std::move(registerId));
 
-		auto replace = std::make_unique<ReplaceBubbleAndTransferTags>(powerShapeId, operationId);
+		auto replace = std::make_unique<ReplaceBubbleAndTransferTags>(powerShapeId, replacementShapeId);
 		replace->execute(gameState);
 		actions.push_back(std::move(replace));
 	}
@@ -1709,7 +1728,7 @@ namespace bubbleActions {
 			// move added id
 			Vector3 currentPos = middle::getShapePosition(gameState, toAddId.index);
 			middle::moveShape(gameState, toAddId.index, targetPosition - currentPos);
-			
+
 			// reparent to og container
 			auto reparent = std::make_unique<EditorActionReparent>(containerId.index, newPowerId.index);
 			reparent->execute(gameState);
