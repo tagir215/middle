@@ -96,7 +96,7 @@ public:
 				gameState->bubbleAlgebraState.bubbleActions.push_back(multiply);
 			}
 			if (mul->operationType == static_cast<int>(components::OperationType::POWER)) {
-				auto doPower = std::make_shared<bubbleActions::ExecutePowerNew>(refParent.id);
+				auto doPower = std::make_shared<bubbleActions::ExecutePower>(refParent.id);
 				middle::queueAction(gameState, doPower);
 				gameState->bubbleAlgebraState.bubbleActions.push_back(doPower);
 			}

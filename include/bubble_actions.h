@@ -178,12 +178,12 @@ namespace bubbleActions{
 		void undo(middle::GameState* gameState) override;
 	};
 
-	class ExecutePowerNew : public middle::EditorActionContainer {
+	class ExecutePower : public middle::EditorActionContainer {
 	public:
 		middle::Id powerShapeId;
 		middle::Id resultShapeId;
 		std::vector<std::unique_ptr<middle::EditorActionContainer>> actions;
-		ExecutePowerNew(middle::Id powerShapeId) {
+		ExecutePower(middle::Id powerShapeId) {
 			this->powerShapeId = powerShapeId;
 		}
 		void execute(middle::GameState* gameState) override;

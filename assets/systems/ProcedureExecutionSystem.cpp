@@ -152,7 +152,7 @@ public:
 					container->procedureTransitionStack.back().action = multiply;
 				}
 				else if (bubbleMultiplication && bubbleMultiplication->operationType == static_cast<int>(components::OperationType::POWER)) {
-					auto doPower = std::make_shared<bubbleActions::ExecutePowerNew>(parentShape.id);
+					auto doPower = std::make_shared<bubbleActions::ExecutePower>(parentShape.id);
 					middle::queueAction(gameState, doPower);
 					container->procedureTransitionStack.back().action = doPower;
 				}

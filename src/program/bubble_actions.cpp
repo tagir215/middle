@@ -423,7 +423,7 @@ namespace bubbleActions {
 	}
 
 
-	void ExecutePowerNew::execute(middle::GameState* gameState)
+	void ExecutePower::execute(middle::GameState* gameState)
 	{
 		auto shape = middle::getShape(gameState, powerShapeId.index);
 		auto operationComp = middle::getComponent<components::BubbleMultiplyComponent>(shape);
@@ -441,7 +441,16 @@ namespace bubbleActions {
 		middle::getChildren(gameState, exponentId, exponentChildren);
 		Vector3 basePos = middle::getShapePosition(gameState, baseId.index);
 
+		// make sure everything is a unit
 		middle::Id prevId;
+		for (middle::Id& id : exponentChildren) {
+			auto& childShape = middle::getShape(gameState, id.index);
+			if (!middle::getComponent<components::BubbleUnit>(childShape)) {
+				cancelled = true;
+				return;
+			}
+		}
+
 		for (middle::Id& id : exponentChildren) {
 			auto& childShape = middle::getShape(gameState, id.index);
 			auto unit = middle::getComponent<components::BubbleUnit>(childShape);
@@ -457,6 +466,7 @@ namespace bubbleActions {
 				prevId = copyId;
 			}
 		}
+
 		middle::Id operationId = middle::getParent(gameState, prevId);
 
 		auto registerId = std::make_unique<middle::EditorActionRegisterId>(operationId);
@@ -468,7 +478,7 @@ namespace bubbleActions {
 		actions.push_back(std::move(replace));
 	}
 
-	void ExecutePowerNew::undo(middle::GameState* gameState)
+	void ExecutePower::undo(middle::GameState* gameState)
 	{
 		while (actions.size() > 0) {
 			actions.back()->undo(gameState);
