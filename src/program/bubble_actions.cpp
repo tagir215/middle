@@ -443,6 +443,19 @@ namespace bubbleActions {
 			cancelled = true;
 			return;
 		}
+		auto& exponentShape = middle::getShape(gameState, exponentId.index);
+		if (middle::getComponent<components::BubbleVariable>(exponentShape)) {
+			cancelled = true;
+			return;
+		}
+		if (auto bub = middle::getComponent<components::BubbleComponent>(exponentShape)) {
+			if (bub->inverse) {
+				cancelled = true;
+				return;
+			}
+		}
+
+
 
 		middle::Id replacementShapeId;
 
