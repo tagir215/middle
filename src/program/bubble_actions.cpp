@@ -1027,6 +1027,13 @@ namespace bubbleActions {
 			assert(powerChildren.size() == 2);
 			middle::Id baseId = powerChildren[components::PowerRole::BASE];
 
+			// check that there is only one child
+			std::vector<middle::Id>baseChildren;
+			middle::getChildren(gameState, baseId, baseChildren);
+			if (baseChildren.size() != 1) {
+				return middle::Id();
+			}
+
 			// find target exponent
 			std::vector<middle::Id> outerPowerChildren;
 			middle::getChildren(gameState, compressTargetId, outerPowerChildren);
