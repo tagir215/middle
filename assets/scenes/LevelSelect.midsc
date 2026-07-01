@@ -1537,12 +1537,11 @@ f  20.000000
 LoopSociety
 q  50_0
 p  
-MouseGrabbable
 Position
 f  -197.411575
 f  -0.000000
 f  -73.627892
-MouseSelectable
+MouseGrabbable
 Text
 s  21
 f  255.000000
@@ -1554,6 +1553,7 @@ f  0.000000
 f  0.000000
 f  40.000000
 b  1
+MouseSelectable
 MouseIntersectable
 Button
 i  -1
@@ -1671,11 +1671,12 @@ f  20.000000
 LoopSociety
 q  50_0
 p  
+MouseGrabbable
 Position
 f  540.419250
 f  -0.000000
 f  -168.018616
-MouseGrabbable
+MouseSelectable
 Text
 s  10
 f  255.000000
@@ -1687,7 +1688,6 @@ f  0.000000
 f  0.000000
 f  40.000000
 b  1
-MouseSelectable
 MouseIntersectable
 Button
 i  -1
@@ -1706,11 +1706,12 @@ f  20.000000
 LoopSociety
 q  50_0
 p  
+MouseGrabbable
 Position
 f  484.996460
 f  0.000031
 f  -127.784523
-MouseGrabbable
+MouseSelectable
 Text
 s  11
 f  255.000000
@@ -1722,7 +1723,6 @@ f  0.000000
 f  0.000000
 f  40.000000
 b  1
-MouseSelectable
 MouseIntersectable
 Button
 i  -1

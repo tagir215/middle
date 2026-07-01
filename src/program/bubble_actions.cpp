@@ -443,6 +443,8 @@ namespace bubbleActions {
 			cancelled = true;
 			return;
 		}
+
+		// don't expand power if its variable or inverse, because I'm confused about inverse exponents
 		auto& exponentShape = middle::getShape(gameState, exponentId.index);
 		if (middle::getComponent<components::BubbleVariable>(exponentShape)) {
 			cancelled = true;
@@ -737,12 +739,37 @@ namespace bubbleActions {
 		if (parentId.index != middle::UNASSIGNED) {
 			auto& parent = middle::getShape(gameState, parentId.index);
 			auto mulComp = middle::getComponent<components::BubbleMultiplyComponent>(parent);
-			if (mulComp) {
+			if (mulComp && mulComp->operationType == components::OperationType::MULTIPLICATION) {
 				auto reparent = std::make_unique<middle::EditorActionReparent>(parent.id.index, linkingShapeId.index);
 				reparent->execute(gameState);
 				actions.push_back(std::move(reparent));
 
 				resultShapeId = parent.id;
+				return;
+			}
+			if (mulComp && mulComp->operationType == components::OperationType::POWER) {
+				// new container
+				middle::Id copyId = middle::deepCopyShape(gameState, parentId.index);
+				middle::Id newParentId = bubble::containerize(gameState, copyId);
+				auto& newParentShape = middle::getShape(gameState, newParentId.index);
+				auto pos = middle::getComponent<components::Position>(newParentShape);
+				Vector3 targetPosition = middle::getShapePosition(gameState, recieverShapeId.index);
+				// move the bubble cause the mul shape is idk where its supposed to be.
+				pos->posY = targetPosition.y;
+
+				auto registerAction = std::make_unique<EditorActionRegisterId>(newParentId);
+				registerAction->execute(gameState);
+				actions.push_back(std::move(registerAction));
+				// replace old parent
+				auto replaceAction = std::make_unique<Replace>(parent.id, newParentId);
+				replaceAction->execute(gameState);
+				actions.push_back(std::move(replaceAction));
+				// link again
+				auto newLink = std::make_unique<LinkMultiplicationTerm>(newParentId, linkingShapeId);
+				newLink->execute(gameState);
+				resultShapeId = newLink->resultShapeId;
+				actions.push_back(std::move(newLink));
+
 				return;
 			}
 		}
@@ -1604,8 +1631,7 @@ namespace bubbleActions {
 			// if its a single variable, or exponent we need to containerize first
 			auto& shapeToAddInto = middle::getShape(gameState, containerId.index);
 			auto var = middle::getComponent<components::BubbleVariable>(shapeToAddInto);
-			auto exp = middle::getComponent<components::ExponentComponent>(shapeToAddInto);
-			if (var || exp) {
+			if (var) {
 				middle::Id copyId = middle::deepCopyShape(gameState, shapeToAddIntoId.index);
 				middle::Id replacingId = bubble::containerize(gameState, copyId);
 
@@ -1627,6 +1653,7 @@ namespace bubbleActions {
 				return;
 			}
 			middle::Id toLinkIntoId;
+
 
 			if (children.size() == 1) {
 				std::vector<middle::Id>multiplicationMembers;
@@ -1662,9 +1689,10 @@ namespace bubbleActions {
 
 			auto linkAction = std::make_unique<bubbleActions::LinkMultiplicationTerm>(toLinkIntoId, toAddId);
 			linkAction->execute(gameState);
+			actions.push_back(std::move(linkAction));
+
 			Vector3 currentPos = middle::getShapePosition(gameState, toAddId.index);
 			middle::moveShape(gameState, toAddId.index, targetPosition - currentPos);
-			actions.push_back(std::move(linkAction));
 
 			queueSound(gameState, bubbleSounds::ADD_TERM_SOUND);
 		}

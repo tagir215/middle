@@ -82,6 +82,9 @@ public:
 			if (term->itemType == bubbleInventoryItemType::NEW_MULTIPLICATION_TERM) {
 				term->itemType = newType;
 			}
+			if (term->itemType == bubbleInventoryItemType::NEW_POWER_TERM) {
+				term->itemType = newType;
+			}
 			if (term->itemType == bubbleInventoryItemType::INSERT_X_OVER_X) {
 				term->itemType = newType;
 			}
