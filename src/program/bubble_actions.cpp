@@ -1014,18 +1014,19 @@ namespace bubbleActions {
 			assert(powerChildren.size() == 2);
 			middle::Id baseId = powerChildren[components::PowerRole::POWER_BASE];
 
-			// check that there is only one child
-			std::vector<middle::Id>baseChildren;
-			middle::getChildren(gameState, baseId, baseChildren);
-			if (baseChildren.size() != 1) {
-				return middle::Id();
-			}
-
 			// find target exponent
 			std::vector<middle::Id> outerPowerChildren;
 			middle::getChildren(gameState, compressTargetId, outerPowerChildren);
 			assert(outerPowerChildren.size() == 2);
 			middle::Id targetExponentId = outerPowerChildren[components::PowerRole::POWER_EXPONENT];
+
+			// check that there is only one child for the outer base
+			std::vector<middle::Id>outerBaseChildren;
+			middle::Id outerBaseId = outerPowerChildren[components::PowerRole::POWER_BASE];
+			middle::getChildren(gameState, outerBaseId, outerBaseChildren);
+			if (outerBaseChildren.size() != 1) {
+				return middle::Id();
+			}
 
 			middle::Id copyBaseId = middle::deepCopyShape(gameState, baseId.index);
 			middle::Id copyExponentId = middle::deepCopyShape(gameState, commonFactorId.index);
