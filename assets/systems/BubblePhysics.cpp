@@ -15,6 +15,7 @@
 #include "TopDogBubbleTag.h"
 #include "BubbleEqualsComponent.h"
 #include "DeleteComponent.h" 
+#include "IdRef.h"
 
 class BubblePhysics : public middle::MiddleGameplaySystem {
 public:
@@ -43,7 +44,7 @@ public:
 		bubbleCache->addType<components::PhysicsData>();
 		bubbleCache->addType<components::Circle>();
 		bubbleCache->addType<components::LoopSociety>();
-		bubbleCache->addType<components::DeleteComponent>();
+		bubbleCache->addType<components::IdRef>(components::NOTINTERESTED);
 
 		mulCache = middle::newCompCache(gameState);
 		mulCache->addType<components::BubbleMultiplyComponent>();
@@ -68,6 +69,7 @@ public:
 		topDogBubbleCache->addType<components::PhysicsData>();
 		topDogBubbleCache->addType<components::Circle>();
 		topDogBubbleCache->addType<components::LoopSociety>();
+		topDogBubbleCache->addType<components::IdRef>(components::NOTINTERESTED);
 
 	}
 
