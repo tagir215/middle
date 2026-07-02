@@ -23,6 +23,7 @@
 #include "InventorySlot.h"
 #include "SnapRef.h"
 #include "Layer.h"
+#include "InsertableBubble.h"
 
 
 class BubbleInventorySystem : public middle::MiddleGameplaySystem {
@@ -36,6 +37,7 @@ public:
 	components::CompCache* uiButtonsCache;
 	components::CompCache* activeCheckBoxesCache;
 	components::CompCache* inventorySlotCache;
+	components::CompCache* insertableCache;
 
 	void init(middle::GameState* gameState) {
 		inventoryCache = middle::newCompCache(gameState);
@@ -63,6 +65,8 @@ public:
 		activeCheckBoxesCache->addType<components::ActiveCheckBoxTag>();
 		inventorySlotCache = middle::newCompCache(gameState);
 		inventorySlotCache->addType<components::InventorySlot>();
+		insertableCache = middle::newCompCache(gameState);
+		insertableCache->addType<components::InsertableBubble>();
 	}
 
 	void deactivateCheckboxes(middle::GameState* gameState) {
@@ -73,24 +77,10 @@ public:
 	}
 
 	void changeTermAdditionTypes(middle::GameState* gameState, int newType) {
-		auto termIt = inventoryItemCache->begin<components::InventoryItem>();
-		for (int i = 0; i < inventoryItemCache->getSize(); ++i) {
+		auto termIt = insertableCache->begin<components::InsertableBubble>();
+		for (int i = 0; i < insertableCache->getSize(); ++i) {
 			auto* term = *termIt;
-			if (term->itemType == bubbleInventoryItemType::NEW_ADDITION_TERM) {
-				term->itemType = newType;
-			}
-			if (term->itemType == bubbleInventoryItemType::NEW_MULTIPLICATION_TERM) {
-				term->itemType = newType;
-			}
-			if (term->itemType == bubbleInventoryItemType::NEW_POWER_TERM) {
-				term->itemType = newType;
-			}
-			if (term->itemType == bubbleInventoryItemType::INSERT_X_OVER_X) {
-				term->itemType = newType;
-			}
-			if (term->itemType == bubbleInventoryItemType::INSERT_X_MINUS_X) {
-				term->itemType = newType;
-			}
+			term->insertableBubbleType = newType;
 		}
 	}
 
@@ -182,35 +172,35 @@ public:
 				if (!middle::getComponent<components::ActiveCheckBoxTag>(shape)) {
 					deactivateCheckboxes(gameState);
 					middle::queueComponentAttachment<components::ActiveCheckBoxTag>(gameState, buttonId);
-					changeTermAdditionTypes(gameState, bubbleInventoryItemType::NEW_ADDITION_TERM);
+					changeTermAdditionTypes(gameState, components::InsertableBubbleType::ADD_OUTER);
 				}
 			}
 			if (button->function == bubbleButton::SELECT_MULTIPLY) {
 				if (!middle::getComponent<components::ActiveCheckBoxTag>(shape)) {
 					deactivateCheckboxes(gameState);
 					middle::queueComponentAttachment<components::ActiveCheckBoxTag>(gameState, buttonId);
-					changeTermAdditionTypes(gameState, bubbleInventoryItemType::NEW_MULTIPLICATION_TERM);
+					changeTermAdditionTypes(gameState, components::MULTIPLY_OUTER);
 				}
 			}
 			if (button->function == bubbleButton::SELECT_POWER) {
 				if (!middle::getComponent<components::ActiveCheckBoxTag>(shape)) {
 					deactivateCheckboxes(gameState);
 					middle::queueComponentAttachment<components::ActiveCheckBoxTag>(gameState, buttonId);
-					changeTermAdditionTypes(gameState, bubbleInventoryItemType::NEW_POWER_TERM);
+					changeTermAdditionTypes(gameState, components::POWER_OUTER);
 				}
 			}
 			if (button->function == bubbleButton::SELECT_INSERT_X_OVER_X) {
 				if (!middle::getComponent<components::ActiveCheckBoxTag>(shape)) {
 					deactivateCheckboxes(gameState);
 					middle::queueComponentAttachment<components::ActiveCheckBoxTag>(gameState, buttonId);
-					changeTermAdditionTypes(gameState, bubbleInventoryItemType::INSERT_X_OVER_X);
+					changeTermAdditionTypes(gameState, components::MULTIPLY_X_OVER_X);
 				}
 			}
 			if (button->function == bubbleButton::SELECT_INSERT_X_MINUS_X) {
 				if (!middle::getComponent<components::ActiveCheckBoxTag>(shape)) {
 					deactivateCheckboxes(gameState);
 					middle::queueComponentAttachment<components::ActiveCheckBoxTag>(gameState, buttonId);
-					changeTermAdditionTypes(gameState, bubbleInventoryItemType::INSERT_X_MINUS_X);
+					changeTermAdditionTypes(gameState, components::ADD_X_MINUS_X);
 				}
 			}
 		}

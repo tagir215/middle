@@ -12,8 +12,8 @@ namespace components {
 	};
 
 	enum PowerRole {
-		BASE,
-		EXPONENT
+		POWER_BASE,
+		POWER_EXPONENT
 	};
 
 	struct BubbleMultiplyComponent : public middle::Serializable{

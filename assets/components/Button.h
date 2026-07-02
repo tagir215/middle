@@ -49,5 +49,7 @@ namespace bubbleButton{
 	inline int REVERSE_PROCEDURE = 22;
 	inline int RESET_PROGRESS = 23;
 	inline int SELECT_POWER = 24;
+	inline int NEGATE_HELPERS = 25;
+	inline int INVERT_HELPERS = 26;
 }
 

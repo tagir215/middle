@@ -113,26 +113,17 @@ public:
 		}
 	}
 
-	middle::Id copyOfInventoryItem(middle::GameState* gameState, middle::Id& inventoryItemId) {
+	middle::Id copyOfInsertItem(middle::GameState* gameState, middle::Id& inventoryItemId) {
 		middle::Id& copyId = middle::deepCopyShape(gameState, inventoryItemId.index);
-		middle::queueComponentDeletion<components::InventoryItem>(gameState, copyId);
-		middle::queueComponentDeletion<components::IdRef>(gameState, copyId);
-		middle::queueComponentDeletion<components::UiComponent>(gameState, copyId);
-		middle::queueComponentDeletion<components::SnapRef>(gameState, copyId);
-		std::vector<middle::Id>children;
-		middle::getAllChildren(gameState, copyId, children);
-		for (middle::Id& child : children) {
-			middle::queueComponentDeletion<components::UiComponent>(gameState, child);
-		}
+		middle::queueComponentDeletion<components::InsertableBubble>(gameState, copyId);
 		return copyId;
 	}
 
-
-	void inventoryAction(middle::GameState* gameState, int actionType, middle::Id& refId, middle::Shape& intersectedShape) {
+	void insertOperation(middle::GameState* gameState, int actionType, middle::Id& refId, middle::Shape& intersectedShape) {
 		std::shared_ptr<middle::EditorActionContainer>action;
 
 		if (actionType == components::InsertableBubbleType::ADD_OUTER) {
-			middle::Id copyId = copyOfInventoryItem(gameState, refId);
+			middle::Id copyId = copyOfInsertItem(gameState, refId);
 			auto registerAction = std::make_shared<middle::EditorActionRegisterId>(copyId);
 			auto newTermAction = std::make_shared<bubbleActions::NewAdditionTerm>(intersectedShape.id, copyId, gameState->input.mouseXZ_PlanePos);
 			action = std::make_shared < middle::CustomActionWithUndo>(
@@ -146,7 +137,7 @@ public:
 				});
 		}
 		else if (actionType == components::InsertableBubbleType::MULTIPLY_OUTER) {
-			middle::Id copyId = copyOfInventoryItem(gameState, refId);
+			middle::Id copyId = copyOfInsertItem(gameState, refId);
 			auto registerAction = std::make_shared<middle::EditorActionRegisterId>(copyId);
 			auto newTermAction = std::make_shared<bubbleActions::NewMultiplicationTerm>(intersectedShape.id, copyId, gameState->input.mouseXZ_PlanePos);
 			action = std::make_shared < middle::CustomActionWithUndo>(
@@ -160,7 +151,7 @@ public:
 				});
 		}
 		else if (actionType == components::InsertableBubbleType::POWER_OUTER) {
-			middle::Id copyId = copyOfInventoryItem(gameState, refId);
+			middle::Id copyId = copyOfInsertItem(gameState, refId);
 			auto registerAction = std::make_shared<middle::EditorActionRegisterId>(copyId);
 			auto newTermAction = std::make_shared<bubbleActions::NewPowerTerm>(intersectedShape.id, copyId, gameState->input.mouseXZ_PlanePos);
 			action = std::make_shared < middle::CustomActionWithUndo>(
@@ -174,7 +165,7 @@ public:
 				});
 		}
 		else if (actionType == components::InsertableBubbleType::MULTIPLY_X_OVER_X) {
-			middle::Id copyId = copyOfInventoryItem(gameState, refId);
+			middle::Id copyId = copyOfInsertItem(gameState, refId);
 			auto registerAction = std::make_shared<middle::EditorActionRegisterId>(copyId);
 			auto insertAction = std::make_shared<bubbleActions::InsertAsXOverX>(intersectedShape.id, copyId, gameState->input.mouseXZ_PlanePos);
 			action = std::make_shared < middle::CustomActionWithUndo>(
@@ -188,7 +179,7 @@ public:
 				});
 		}
 		else if (actionType == components::InsertableBubbleType::ADD_X_MINUS_X) {
-			middle::Id copyId = copyOfInventoryItem(gameState, refId);
+			middle::Id copyId = copyOfInsertItem(gameState, refId);
 			auto registerAction = std::make_shared<middle::EditorActionRegisterId>(copyId);
 			auto insertAction = std::make_shared<bubbleActions::InsertAsXMinusX>(intersectedShape.id, copyId, gameState->input.mouseXZ_PlanePos);
 			action = std::make_shared < middle::CustomActionWithUndo>(
@@ -201,8 +192,21 @@ public:
 					registerAction->undo(gameState);
 				});
 		}
+
+		if (action) {
+			middle::queueAction(gameState, action);
+			gameState->bubbleAlgebraState.bubbleActions.push_back(action);
+		}
+		else {
+			queueSound(gameState, bubbleSounds::ERROR_SOUND);
+		}
+	}
+
+	void microOperation(middle::GameState* gameState, int actionType, middle::Id& refId, middle::Shape& intersectedShape) {
+		std::shared_ptr<middle::EditorActionContainer>action;
+
 		// pop as long as not multiplication
-		else if (actionType == bubbleInventoryItemType::POP) {
+		if (actionType == bubbleInventoryItemType::POP) {
 			middle::Id& parentId = middle::getParent(gameState, intersectedShape.id);
 			if (parentId.index == middle::UNASSIGNED) {
 				queueSound(gameState, bubbleSounds::ERROR_SOUND);
@@ -379,62 +383,38 @@ public:
 
 					if (gameState->gameInput.pop) {
 						if (!gameState->gameInput.shiftHeld) {
-							inventoryAction(gameState, bubbleInventoryItemType::POP, middle::Id(), intersectingShape);
+							microOperation(gameState, bubbleInventoryItemType::POP, middle::Id(), intersectingShape);
 						}
 						else {
-							inventoryAction(gameState, bubbleInventoryItemType::BUBBLIFY, middle::Id(), intersectingShape);
+							microOperation(gameState, bubbleInventoryItemType::BUBBLIFY, middle::Id(), intersectingShape);
 						}
 					}
 					if (gameState->gameInput.comp) {
 						if (!gameState->gameInput.shiftHeld) {
-							inventoryAction(gameState, bubbleInventoryItemType::COMPRESS_MULTIPLICATION, middle::Id(), intersectingShape);
+							microOperation(gameState, bubbleInventoryItemType::COMPRESS_MULTIPLICATION, middle::Id(), intersectingShape);
 						}
 						else {
-							inventoryAction(gameState, bubbleInventoryItemType::COMPRESS_EXPONENT, middle::Id(), intersectingShape);
+							microOperation(gameState, bubbleInventoryItemType::COMPRESS_EXPONENT, middle::Id(), intersectingShape);
 						}
 					}
 					if (gameState->gameInput.mulOne) {
 						if (!gameState->gameInput.shiftHeld) {
-							inventoryAction(gameState, bubbleInventoryItemType::MUL_ONE, middle::Id(), intersectingShape);
+							microOperation(gameState, bubbleInventoryItemType::MUL_ONE, middle::Id(), intersectingShape);
 						}
 						else {
-							inventoryAction(gameState, bubbleInventoryItemType::MUL_NEGATIVE_ONE, middle::Id(), intersectingShape);
+							microOperation(gameState, bubbleInventoryItemType::MUL_NEGATIVE_ONE, middle::Id(), intersectingShape);
 						}
 					}
 					if (gameState->gameInput.can) {
 						if (!gameState->gameInput.shiftHeld) {
-							inventoryAction(gameState, bubbleInventoryItemType::CANCEL, middle::Id(), intersectingShape);
+							microOperation(gameState, bubbleInventoryItemType::CANCEL, middle::Id(), intersectingShape);
 						}
 						else {
-							inventoryAction(gameState, bubbleInventoryItemType::SIMPLIFY, middle::Id(), intersectingShape);
+							microOperation(gameState, bubbleInventoryItemType::SIMPLIFY, middle::Id(), intersectingShape);
 						}
 					}
 					if (gameState->gameInput.proc) {
-						inventoryAction(gameState, bubbleInventoryItemType::PROCEDURE, middle::Id(), intersectingShape);
-					}
-					if (gameState->gameInput.two) {
-						inventoryAction(gameState, bubbleInventoryItemType::BREAK_2, middle::Id(), intersectingShape);
-					}
-					if (gameState->gameInput.three) {
-						inventoryAction(gameState, bubbleInventoryItemType::BREAK_3, middle::Id(), intersectingShape);
-					}
-					if (gameState->gameInput.four) {
-						inventoryAction(gameState, bubbleInventoryItemType::BREAK_4, middle::Id(), intersectingShape);
-					}
-					if (gameState->gameInput.five) {
-						inventoryAction(gameState, bubbleInventoryItemType::BREAK_5, middle::Id(), intersectingShape);
-					}
-					if (gameState->gameInput.six) {
-						inventoryAction(gameState, bubbleInventoryItemType::BREAK_6, middle::Id(), intersectingShape);
-					}
-					if (gameState->gameInput.seven) {
-						inventoryAction(gameState, bubbleInventoryItemType::BREAK_7, middle::Id(), intersectingShape);
-					}
-					if (gameState->gameInput.eight) {
-						inventoryAction(gameState, bubbleInventoryItemType::BREAK_8, middle::Id(), intersectingShape);
-					}
-					if (gameState->gameInput.nine) {
-						inventoryAction(gameState, bubbleInventoryItemType::BREAK_9, middle::Id(), intersectingShape);
+						microOperation(gameState, bubbleInventoryItemType::PROCEDURE, middle::Id(), intersectingShape);
 					}
 				}
 			}
@@ -500,14 +480,14 @@ public:
 				}
 
 				if (intersectable->intersectingTop) {
-					auto inventoryItem = middle::getComponent<components::InventoryItem>(deletionsRefShape);
-					if (inventoryItem) {
-						inventoryAction(gameState, inventoryItem->itemType, ref->idRef, intersectableShape);
-						break;
-					}
+					//auto inventoryItem = middle::getComponent<components::InventoryItem>(deletionsRefShape);
+					//if (inventoryItem) {
+					//	inventoryAction(gameState, inventoryItem->itemType, ref->idRef, intersectableShape);
+					//	break;
+					//}
 					auto insertable = middle::getComponent<components::InsertableBubble>(deletionsRefShape);
 					if (insertable) {
-						inventoryAction(gameState, insertable->insertableBubbleType, ref->idRef, intersectableShape);
+						insertOperation(gameState, insertable->insertableBubbleType, ref->idRef, intersectableShape);
 						break;
 					}
 				}

@@ -423,8 +423,8 @@ namespace bubbleActions {
 		// create replacement shape
 		// create container
 		std::vector<middle::Id>exponentChildren;
-		middle::Id exponentId = children[components::PowerRole::EXPONENT];
-		middle::Id baseId = children[components::PowerRole::BASE];
+		middle::Id exponentId = children[components::PowerRole::POWER_EXPONENT];
+		middle::Id baseId = children[components::PowerRole::POWER_BASE];
 		middle::getChildren(gameState, exponentId, exponentChildren);
 		if (exponentChildren.size() == 1) {
 			cancelled = true;
@@ -967,12 +967,12 @@ namespace bubbleActions {
 				std::vector<middle::Id>powerChildren;
 				middle::getChildren(gameState, powerId, powerChildren);
 				assert(powerChildren.size() == 2);
-				middle::Id exponentId = powerChildren[components::PowerRole::EXPONENT];
+				middle::Id exponentId = powerChildren[components::PowerRole::POWER_EXPONENT];
 				if (!bubble::matchingBubbles(gameState, exponentId, commonFactorId)) {
 					return middle::Id();
 				}
 				// store base for later if matching exponent
-				middle::Id baseId = powerChildren[components::PowerRole::BASE];
+				middle::Id baseId = powerChildren[components::PowerRole::POWER_BASE];
 				bases.push_back(baseId);
 			}
 
@@ -1012,7 +1012,7 @@ namespace bubbleActions {
 			std::vector<middle::Id>powerChildren;
 			middle::getChildren(gameState, parentId, powerChildren);
 			assert(powerChildren.size() == 2);
-			middle::Id baseId = powerChildren[components::PowerRole::BASE];
+			middle::Id baseId = powerChildren[components::PowerRole::POWER_BASE];
 
 			// check that there is only one child
 			std::vector<middle::Id>baseChildren;
@@ -1025,7 +1025,7 @@ namespace bubbleActions {
 			std::vector<middle::Id> outerPowerChildren;
 			middle::getChildren(gameState, compressTargetId, outerPowerChildren);
 			assert(outerPowerChildren.size() == 2);
-			middle::Id targetExponentId = outerPowerChildren[components::PowerRole::EXPONENT];
+			middle::Id targetExponentId = outerPowerChildren[components::PowerRole::POWER_EXPONENT];
 
 			middle::Id copyBaseId = middle::deepCopyShape(gameState, baseId.index);
 			middle::Id copyExponentId = middle::deepCopyShape(gameState, commonFactorId.index);
@@ -2200,5 +2200,6 @@ namespace bubbleActions {
 	{
 		middle::deleteShapeRecursive(gameState, copyShapeId.index);
 	}
+
 
 }

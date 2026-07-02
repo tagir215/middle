@@ -784,10 +784,10 @@ namespace bubble {
 					}
 					else if (mul->operationType == static_cast<int>(components::OperationType::POWER)) {
 						assert(mulChildren.size() == 2);
-						middle::Id baseId = mulChildren[0];
-						middle::Id exponentId = mulChildren[1];
+						middle::Id baseId = mulChildren[components::PowerRole::POWER_BASE];
+						middle::Id exponentId = mulChildren[components::PowerRole::POWER_EXPONENT];
 						BubbleValue baseVal = calculateBubbleValue(gameState, baseId, variableValues);
-						BubbleValue exponentVal = calculateBubbleValue(gameState, baseId, variableValues);
+						BubbleValue exponentVal = calculateBubbleValue(gameState, exponentId, variableValues);
 						float powResult = std::pow(baseVal.scale, exponentVal.scale);
 						result.scale += powResult;
 					}
@@ -1017,6 +1017,14 @@ namespace bubble {
 			return;
 		}
 		auto loop = middle::getComponent<components::LoopSociety>(shape);
+		auto mulComp = middle::getComponent<components::BubbleMultiplyComponent>(shape);
+
+		// negate first only
+		if (mulComp) {
+			negate(gameState, loop->loopMemberIds[0]);
+			return;
+		}
+
 		for (middle::Id childId : loop->loopMemberIds) {
 			negate(gameState, childId);
 		}

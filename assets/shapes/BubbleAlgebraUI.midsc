@@ -58,16 +58,95 @@ q  81_0
 q  99_0
 q  181_0
 q  182_0
+q  183_0
+q  184_0
 Offset
 f  0.000000
 f  -500.000000
 f  0.000000
+__q  184_0
+MouseSelectable
+Text
+s  INVERT
+f  255.000000
+f  255.000000
+f  255.000000
+f  255.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  8.000000
+b  1
+Button
+i  26
+MouseIntersectable
+LoopSociety
+q  73_0
+p  
+TextureComponent
+s  C:\Users\tagir\raylib_projects\middle\assets\textures\navRect.png
+f  30.000000
+i  0
+s  navRect.png
+UiComponent
+i  -1
+Sphere
+f  2.000000
+MouseGrabbable
+Position
+f  -138.564087
+f  0.000366
+f  -182.665955
+Layer
+i  1
+Rectangle
+f  40.000000
+f  30.000000
+__q  183_0
+Text
+s  NEGATE
+f  255.000000
+f  255.000000
+f  255.000000
+f  255.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  8.000000
+b  1
+Button
+i  25
+MouseSelectable
+MouseIntersectable
+LoopSociety
+q  73_0
+p  
+TextureComponent
+s  C:\Users\tagir\raylib_projects\middle\assets\textures\navRect.png
+f  30.000000
+i  0
+s  navRect.png
+Sphere
+f  2.000000
+UiComponent
+i  -1
+MouseGrabbable
+Position
+f  -191.966034
+f  0.000366
+f  -182.665955
+Layer
+i  1
+Rectangle
+f  40.000000
+f  30.000000
 __q  182_0
 Position
 f  -282.529846
 f  0.000000
 f  88.476746
 MouseGrabbable
+MouseSelectable
 Text
 s  power the outer
 f  255.000000
@@ -79,13 +158,12 @@ f  0.000000
 f  0.000000
 f  8.000000
 b  1
-MouseSelectable
+Button
+i  5
 MouseIntersectable
 LoopSociety
 q  73_0
 p  
-Button
-i  5
 UiComponent
 i  -1
 Sphere
@@ -99,6 +177,8 @@ f  -327.891846
 f  -0.000122
 f  44.708649
 MouseSelectable
+Button
+i  21
 MouseIntersectable
 Sphere
 f  2.000000
@@ -109,8 +189,6 @@ s  C:\Users\tagir\raylib_projects\middle\assets\textures\toggleRect.png
 f  15.000000
 i  0
 s  toggleRect.png
-Button
-i  21
 LoopSociety
 q  73_0
 p  
@@ -142,6 +220,8 @@ UiComponent
 i  -1
 __q  81_0
 MouseSelectable
+Button
+i  5
 MouseIntersectable
 MouseGrabbable
 Position
@@ -157,8 +237,6 @@ s
 f  30.000000
 i  0
 s  logo.png
-Button
-i  5
 LoopSociety
 q  73_0
 p  
@@ -170,6 +248,7 @@ Position
 f  123.034363
 f  0.000488
 f  193.230713
+MouseSelectable
 Text
 s  [shift]+v
 f  255.000000
@@ -181,20 +260,20 @@ f  0.000000
 f  0.000000
 f  10.000000
 b  1
-MouseSelectable
+Button
+i  5
 MouseIntersectable
 Sphere
 f  2.000000
 UiComponent
 i  -1
-Button
-i  5
 LoopSociety
 q  73_0
 p  
 Layer
 i  1
 __q  63_0
+MouseSelectable
 Text
 s  [shift]+c
 f  255.000000
@@ -206,7 +285,8 @@ f  0.000000
 f  0.000000
 f  10.000000
 b  1
-MouseSelectable
+Button
+i  5
 MouseIntersectable
 Position
 f  34.372253
@@ -217,8 +297,6 @@ UiComponent
 i  -1
 Sphere
 f  2.000000
-Button
-i  5
 LoopSociety
 q  73_0
 p  
@@ -242,13 +320,13 @@ f  0.000000
 f  0.000000
 f  10.000000
 b  1
+Button
+i  5
 MouseIntersectable
 UiComponent
 i  -1
 Sphere
 f  2.000000
-Button
-i  5
 LoopSociety
 q  73_0
 p  
@@ -267,6 +345,8 @@ f  0.000000
 f  0.000000
 f  10.000000
 b  1
+Button
+i  5
 MouseIntersectable
 MouseGrabbable
 Position
@@ -277,8 +357,6 @@ Sphere
 f  2.000000
 UiComponent
 i  -1
-Button
-i  5
 LoopSociety
 q  73_0
 p  
@@ -302,12 +380,12 @@ f  0.000000
 f  0.000000
 f  10.000000
 b  1
+Button
+i  5
 MouseIntersectable
 LoopSociety
 q  73_0
 p  
-Button
-i  5
 UiComponent
 i  -1
 Sphere
@@ -327,6 +405,8 @@ f  0.000000
 f  0.000000
 f  10.000000
 b  1
+Button
+i  5
 MouseIntersectable
 Position
 f  -282.977844
@@ -336,8 +416,6 @@ MouseGrabbable
 LoopSociety
 q  73_0
 p  
-Button
-i  5
 UiComponent
 i  -1
 Sphere
@@ -351,6 +429,8 @@ f  -0.000122
 f  65.817047
 MouseGrabbable
 MouseSelectable
+Button
+i  21
 MouseIntersectable
 UiComponent
 i  4
@@ -361,8 +441,6 @@ s  C:\Users\tagir\raylib_projects\middle\assets\textures\toggleRect.png
 f  15.000000
 i  0
 s  toggleRect.png
-Button
-i  21
 LoopSociety
 q  73_0
 p  
@@ -378,6 +456,8 @@ f  -328.726501
 f  -0.000122
 f  86.934692
 MouseSelectable
+Button
+i  24
 MouseIntersectable
 Sphere
 f  2.000000
@@ -388,8 +468,6 @@ s  C:\Users\tagir\raylib_projects\middle\assets\textures\toggleRect.png
 f  15.000000
 i  0
 s  toggleRect.png
-Button
-i  24
 LoopSociety
 q  73_0
 p  
@@ -411,6 +489,8 @@ f  0.000000
 f  0.000000
 f  20.000000
 b  1
+Button
+i  5
 MouseIntersectable
 MouseGrabbable
 Position
@@ -421,8 +501,6 @@ Sphere
 f  2.000000
 UiComponent
 i  -1
-Button
-i  5
 LoopSociety
 q  73_0
 p  
@@ -858,13 +936,13 @@ f  0.000000
 f  0.000000
 f  8.000000
 b  1
+Button
+i  5
 MouseIntersectable
 UiComponent
 i  -1
 Sphere
 f  2.000000
-Button
-i  5
 LoopSociety
 q  73_0
 p  
@@ -888,12 +966,12 @@ f  0.000000
 f  0.000000
 f  8.000000
 b  1
+Button
+i  5
 MouseIntersectable
 LoopSociety
 q  73_0
 p  
-Button
-i  5
 UiComponent
 i  -1
 Sphere
@@ -918,13 +996,13 @@ f  0.000000
 f  0.000000
 f  20.000000
 b  1
+Button
+i  5
 MouseIntersectable
 UiComponent
 i  -1
 Sphere
 f  2.000000
-Button
-i  5
 LoopSociety
 q  73_0
 p  
@@ -948,12 +1026,12 @@ f  0.000000
 f  0.000000
 f  15.000000
 b  1
+Button
+i  5
 MouseIntersectable
 LoopSociety
 q  73_0
 p  
-Button
-i  5
 UiComponent
 i  -1
 Sphere
@@ -978,13 +1056,13 @@ f  0.000000
 f  0.000000
 f  20.000000
 b  1
+Button
+i  5
 MouseIntersectable
 UiComponent
 i  -1
 Sphere
 f  2.000000
-Button
-i  5
 LoopSociety
 q  73_0
 p  
@@ -1008,12 +1086,12 @@ f  0.000000
 f  0.000000
 f  20.000000
 b  1
+Button
+i  5
 MouseIntersectable
 LoopSociety
 q  73_0
 p  
-Button
-i  5
 UiComponent
 i  -1
 Sphere
@@ -1038,13 +1116,13 @@ f  0.000000
 f  0.000000
 f  20.000000
 b  1
+Button
+i  5
 MouseIntersectable
 UiComponent
 i  -1
 Sphere
 f  2.000000
-Button
-i  5
 LoopSociety
 q  73_0
 p  
@@ -1142,6 +1220,8 @@ f  -328.386353
 f  0.000122
 f  131.002197
 MouseSelectable
+Button
+i  10
 MouseIntersectable
 LoopSociety
 q  73_0
@@ -1151,8 +1231,6 @@ s  C:\Users\tagir\raylib_projects\middle\assets\textures\toggleRect.png
 f  15.000000
 i  0
 s  toggleRect.png
-Button
-i  10
 UiComponent
 i  4
 Sphere
@@ -1170,6 +1248,8 @@ f  0.000244
 f  109.332947
 MouseGrabbable
 MouseSelectable
+Button
+i  11
 MouseIntersectable
 UiComponent
 i  4
@@ -1180,8 +1260,6 @@ s  C:\Users\tagir\raylib_projects\middle\assets\textures\toggleRect.png
 f  15.000000
 i  0
 s  toggleRect.png
-Button
-i  11
 LoopSociety
 q  73_0
 p  
@@ -1227,6 +1305,8 @@ f  0.000000
 f  0.000000
 f  10.000000
 b  1
+Button
+i  7
 MouseIntersectable
 LoopSociety
 q  73_0
@@ -1236,8 +1316,6 @@ s  C:\Users\tagir\raylib_projects\middle\assets\textures\navRect.png
 f  30.000000
 i  0
 s  navRect.png
-Button
-i  7
 UiComponent
 i  -1
 Sphere
@@ -1276,6 +1354,7 @@ i  -1
 Layer
 i  1
 __q  83_0
+MouseSelectable
 Text
 s  DONE
 f  255.000000
@@ -1287,7 +1366,8 @@ f  0.000000
 f  0.000000
 f  10.000000
 b  1
-MouseSelectable
+Button
+i  6
 MouseIntersectable
 LoopSociety
 q  73_0
@@ -1297,8 +1377,6 @@ s  C:\Users\tagir\raylib_projects\middle\assets\textures\navRect.png
 f  30.000000
 i  0
 s  navRect.png
-Button
-i  6
 UiComponent
 i  -1
 Sphere
@@ -1319,6 +1397,7 @@ f  -269.884460
 f  0.000122
 f  166.974731
 MouseGrabbable
+MouseSelectable
 Text
 s  UNDO
 f  255.000000
@@ -1330,7 +1409,8 @@ f  0.000000
 f  0.000000
 f  10.000000
 b  1
-MouseSelectable
+Button
+i  5
 MouseIntersectable
 LoopSociety
 q  73_0
@@ -1340,8 +1420,6 @@ s  C:\Users\tagir\raylib_projects\middle\assets\textures\navRect.png
 f  30.000000
 i  0
 s  navRect.png
-Button
-i  5
 UiComponent
 i  -1
 Sphere
@@ -1494,6 +1572,8 @@ f  0.000244
 f  161.972900
 MouseIntersectable
 MouseSelectable
+Button
+i  5
 Sphere
 f  2.000000
 UiComponent
@@ -1503,8 +1583,6 @@ s
 f  17.000000
 i  0
 s  mulPositiveOneIcon.png
-Button
-i  5
 LoopSociety
 q  141_0
 p  
@@ -1624,6 +1702,8 @@ f  0.000244
 f  162.503784
 MouseIntersectable
 MouseSelectable
+Button
+i  5
 Sphere
 f  2.000000
 UiComponent
@@ -1633,8 +1713,6 @@ s
 f  20.000000
 i  0
 s  compress.png
-Button
-i  5
 LoopSociety
 q  132_0
 p  
@@ -1754,6 +1832,8 @@ f  0.000244
 f  164.234863
 MouseIntersectable
 MouseSelectable
+Button
+i  5
 Sphere
 f  2.000000
 UiComponent
@@ -1763,8 +1843,6 @@ s
 f  20.000000
 i  0
 s  cancel.png
-Button
-i  5
 LoopSociety
 q  34_0
 p  
@@ -1884,6 +1962,8 @@ f  0.000244
 f  163.701904
 MouseIntersectable
 MouseSelectable
+Button
+i  5
 Sphere
 f  2.000000
 UiComponent
@@ -1893,8 +1973,6 @@ s
 f  20.000000
 i  0
 s  popIcon.png
-Button
-i  5
 LoopSociety
 q  32_0
 p  

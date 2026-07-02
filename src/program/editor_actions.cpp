@@ -632,4 +632,18 @@ namespace middle {
 		this->undoFunc(gameState);
 	}
 
+	void MultiAction::execute(GameState* gameState)
+	{
+		for (auto action : actions) {
+			action->execute(gameState);
+		}
+	}
+
+	void MultiAction::undo(GameState* gameState)
+	{
+		for (int i = actions.size() - 1; i >= 0; --i) {
+			actions[i]->undo(gameState);
+		}
+	}
+
 }

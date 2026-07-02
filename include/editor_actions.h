@@ -374,4 +374,15 @@ namespace middle {
 		void execute(GameState* gameState) override;
 		void undo(GameState* gameState) override;
 	};
+
+	class MultiAction : public EditorActionContainer {
+	public:
+		std::vector<std::shared_ptr<EditorActionContainer>>actions;
+
+		MultiAction(std::vector<std::shared_ptr<EditorActionContainer>>& actions) {
+			this->actions = actions;
+		}
+		void execute(GameState* gameState) override;
+		void undo(GameState* gameState) override;
+	};
 }

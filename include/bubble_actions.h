@@ -18,6 +18,7 @@
 
 namespace bubbleActions{
 
+	middle::Id createNegatedReplacementShape(middle::GameState* gameState, middle::Id id);
 
 	class Cancel : public middle::EditorActionContainer {
 	public:
@@ -361,4 +362,5 @@ namespace bubbleActions{
 		void execute(middle::GameState* gameState) override;
 		void undo(middle::GameState* gameState) override;
 	};
+
 }

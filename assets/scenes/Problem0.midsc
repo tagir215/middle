@@ -1,7 +1,6 @@
 #scene
 s  Problem0
 __q  0_0
-MouseSelectable
 Text
 s  BubbleRenderSetup
 f  255.000000
@@ -13,18 +12,20 @@ f  0.000000
 f  10.000000
 f  10.000000
 b  1
+MouseSelectable
 MouseIntersectable
-SystemReference
-s  BubbleRenderSetup
+MouseGrabbable
 Position
 f  -1112.362305
 f  -0.000305
 f  -533.683899
-MouseGrabbable
+SystemReference
+s  BubbleRenderSetup
 LoopSociety
 q  71_0
 p  
 __q  1_0
+MouseSelectable
 Text
 s  MouseIntersectDetectionSystem
 f  255.000000
@@ -36,19 +37,19 @@ f  0.000000
 f  10.000000
 f  10.000000
 b  1
-MouseSelectable
-SystemReference
-s  MouseIntersectDetectionSystem
+MouseGrabbable
 Position
 f  165.094376
 f  200.000000
 f  112.888649
-MouseGrabbable
+SystemReference
+s  MouseIntersectDetectionSystem
 MouseIntersectable
 LoopSociety
 q  -1_0
 p  
 __q  2_0
+MouseSelectable
 Text
 s  MouseGrabbingSystem
 f  255.000000
@@ -60,19 +61,19 @@ f  0.000000
 f  10.000000
 f  10.000000
 b  1
-MouseSelectable
-SystemReference
-s  MouseGrabbingSystem
+MouseGrabbable
 Position
 f  126.602486
 f  200.000000
 f  154.828339
-MouseGrabbable
+SystemReference
+s  MouseGrabbingSystem
 MouseIntersectable
 LoopSociety
 q  -1_0
 p  
 __q  3_0
+MouseSelectable
 Text
 s  MouseSelectionSystem
 f  255.000000
@@ -84,19 +85,19 @@ f  0.000000
 f  10.000000
 f  10.000000
 b  1
-MouseSelectable
-SystemReference
-s  MouseSelectionSystem
+MouseGrabbable
 Position
 f  77.854004
 f  200.000000
 f  184.224731
-MouseGrabbable
+SystemReference
+s  MouseSelectionSystem
 MouseIntersectable
 LoopSociety
 q  -1_0
 p  
 __q  4_0
+MouseSelectable
 Text
 s  EnviromentalFileNavigationSystem
 f  255.000000
@@ -108,19 +109,19 @@ f  0.000000
 f  10.000000
 f  10.000000
 b  1
-MouseSelectable
-SystemReference
-s  EnviromentalFileNavigationSystem
+MouseGrabbable
 Position
 f  22.798265
 f  200.000000
 f  198.696350
-MouseGrabbable
+SystemReference
+s  EnviromentalFileNavigationSystem
 MouseIntersectable
 LoopSociety
 q  -1_0
 p  
 __q  5_0
+MouseSelectable
 Text
 s  EditorHotKeySystem
 f  255.000000
@@ -132,19 +133,19 @@ f  0.000000
 f  10.000000
 f  10.000000
 b  1
-MouseSelectable
-SystemReference
-s  EditorHotKeySystem
+MouseGrabbable
 Position
 f  -34.104458
 f  200.000000
 f  197.070770
-MouseGrabbable
+SystemReference
+s  EditorHotKeySystem
 MouseIntersectable
 LoopSociety
 q  -1_0
 p  
 __q  6_0
+MouseSelectable
 Text
 s  CameraSystem
 f  255.000000
@@ -156,19 +157,19 @@ f  0.000000
 f  10.000000
 f  10.000000
 b  1
-MouseSelectable
-SystemReference
-s  CameraSystem
+MouseGrabbable
 Position
 f  -88.244225
 f  200.000000
 f  179.479675
-MouseGrabbable
+SystemReference
+s  CameraSystem
 MouseIntersectable
 LoopSociety
 q  -1_0
 p  
 __q  7_0
+MouseSelectable
 Text
 s  MiddlePhysicsSystem
 f  255.000000
@@ -180,19 +181,19 @@ f  0.000000
 f  10.000000
 f  10.000000
 b  1
-MouseSelectable
-SystemReference
-s  MiddlePhysicsSystem
+MouseGrabbable
 Position
 f  -135.235001
 f  200.000000
 f  147.348206
-MouseGrabbable
+SystemReference
+s  MiddlePhysicsSystem
 MouseIntersectable
 LoopSociety
 q  -1_0
 p  
 __q  8_0
+MouseSelectable
 Text
 s  EditorRenderSetupSystem
 f  255.000000
@@ -204,19 +205,19 @@ f  0.000000
 f  10.000000
 f  10.000000
 b  1
-MouseSelectable
-SystemReference
-s  EditorRenderSetupSystem
+MouseGrabbable
 Position
 f  -171.269836
 f  200.000000
 f  103.279449
-MouseGrabbable
+SystemReference
+s  EditorRenderSetupSystem
 MouseIntersectable
 LoopSociety
 q  -1_0
 p  
 __q  9_0
+MouseSelectable
 Text
 s  EditorUiSystem
 f  255.000000
@@ -228,19 +229,19 @@ f  0.000000
 f  10.000000
 f  10.000000
 b  1
-MouseSelectable
-SystemReference
-s  EditorUiSystem
+MouseGrabbable
 Position
 f  -193.429382
 f  200.000000
 f  50.843632
-MouseGrabbable
+SystemReference
+s  EditorUiSystem
 MouseIntersectable
 LoopSociety
 q  -1_0
 p  
 __q  10_0
+MouseSelectable
 Text
 s  ComponentUiSystem
 f  255.000000
@@ -252,19 +253,19 @@ f  0.000000
 f  10.000000
 f  10.000000
 b  1
-MouseSelectable
-SystemReference
-s  ComponentUiSystem
+MouseGrabbable
 Position
 f  -199.918442
 f  200.000000
 f  -5.711226
-MouseGrabbable
+SystemReference
+s  ComponentUiSystem
 MouseIntersectable
 LoopSociety
 q  -1_0
 p  
 __q  11_0
+MouseSelectable
 Text
 s  BubblePhysics
 f  255.000000
@@ -276,20 +277,18 @@ f  0.000000
 f  10.000000
 f  10.000000
 b  1
-MouseSelectable
-SystemReference
-s  BubblePhysics
-MouseGrabbable
 Position
 f  -1459.564087
 f  0.000000
 f  -920.675842
+MouseGrabbable
+SystemReference
+s  BubblePhysics
 MouseIntersectable
 LoopSociety
 q  71_0
 p  
 __q  12_0
-MouseSelectable
 Text
 s  BubbleManipulationSystem
 f  255.000000
@@ -301,21 +300,23 @@ f  0.000000
 f  10.000000
 f  10.000000
 b  1
+MouseSelectable
 MouseIntersectable
-SystemReference
-s  BubbleManipulationSystem
+MouseGrabbable
 Position
 f  -8.605797
 f  0.000153
 f  -746.881470
-MouseGrabbable
+SystemReference
+s  BubbleManipulationSystem
 LoopSociety
 q  29_0
 p  
 __q  13_0
+MouseSelectable
 Layer
 i  2
-MouseSelectable
+MouseIntersectable
 BubbleComponent
 b  0
 LoopSociety
@@ -325,9 +326,9 @@ PhysicsData
 f  1809.557373
 f  0.000553
 f  1.000000
-f  0.000027
+f  0.000015
 f  0.000000
-f  -0.000314
+f  -0.000329
 f  0.000000
 f  0.000000
 f  0.000000
@@ -336,14 +337,13 @@ f  0.000000
 f  0.000000
 b  0
 MouseGrabbable
-MouseIntersectable
 LoopTag
 Circle
 f  24.000000
 Position
 f  50.111954
 f  0.000061
-f  -186.798569
+f  -186.798584
 __q  14_0
 LoopTag
 LoopSociety
@@ -357,21 +357,21 @@ q  45_0
 q  61_0
 MouseSelectable
 MouseIntersectable
-MouseGrabbable
 Position
 f  335.406067
 f  -1099.999634
 f  -545.371521
+MouseGrabbable
 __q  15_0
 LoopTag
 LoopSociety
 q  -1_0
 p  
-MouseGrabbable
 Position
 f  0.000000
 f  0.000000
 f  -50.000000
+MouseGrabbable
 Inventory
 b  0
 i  1
@@ -380,9 +380,10 @@ i  -1
 MouseSelectable
 MouseIntersectable
 __q  16_0
+MouseSelectable
 Layer
 i  0
-MouseSelectable
+MouseIntersectable
 BubbleComponent
 b  0
 LoopSociety
@@ -403,7 +404,6 @@ f  0.000000
 f  0.000000
 b  0
 MouseGrabbable
-MouseIntersectable
 LoopTag
 UiComponent
 i  -1
@@ -417,9 +417,10 @@ f  -50.000000
 InventoryItem
 i  1
 __q  17_0
+MouseSelectable
 Layer
 i  0
-MouseSelectable
+MouseIntersectable
 BubbleComponent
 b  0
 LoopSociety
@@ -440,7 +441,6 @@ f  0.000000
 f  0.000000
 b  0
 MouseGrabbable
-MouseIntersectable
 LoopTag
 UiComponent
 i  -1
@@ -454,7 +454,6 @@ f  -50.000000
 InventoryItem
 i  1
 __q  18_0
-MouseSelectable
 Text
 s  BubbleIntersectSystem
 f  255.000000
@@ -466,21 +465,23 @@ f  0.000000
 f  10.000000
 f  10.000000
 b  1
+MouseSelectable
 MouseIntersectable
-SystemReference
-s  BubbleIntersectSystem
+MouseGrabbable
 Position
 f  -1079.813599
 f  -0.000396
 f  -740.245850
-MouseGrabbable
+SystemReference
+s  BubbleIntersectSystem
 LoopSociety
 q  71_0
 p  
 __q  19_0
+MouseSelectable
 Layer
 i  0
-MouseSelectable
+MouseIntersectable
 BubbleComponent
 b  0
 LoopSociety
@@ -501,7 +502,6 @@ f  0.000000
 f  0.000000
 b  0
 MouseGrabbable
-MouseIntersectable
 LoopTag
 UiComponent
 i  -1
@@ -515,9 +515,10 @@ f  -50.000000
 InventoryItem
 i  1
 __q  20_0
+MouseSelectable
 Layer
 i  0
-MouseSelectable
+MouseIntersectable
 BubbleComponent
 b  0
 LoopSociety
@@ -538,7 +539,6 @@ f  0.000000
 f  0.000000
 b  0
 MouseGrabbable
-MouseIntersectable
 LoopTag
 UiComponent
 i  -1
@@ -552,9 +552,10 @@ f  -50.000000
 InventoryItem
 i  1
 __q  21_0
+MouseSelectable
 Layer
 i  0
-MouseSelectable
+MouseIntersectable
 BubbleComponent
 b  0
 LoopSociety
@@ -575,7 +576,6 @@ f  0.000000
 f  0.000000
 b  0
 MouseGrabbable
-MouseIntersectable
 LoopTag
 UiComponent
 i  -1
@@ -589,9 +589,10 @@ f  -50.000000
 InventoryItem
 i  1
 __q  22_0
+MouseSelectable
 Layer
 i  0
-MouseSelectable
+MouseIntersectable
 BubbleComponent
 b  0
 LoopSociety
@@ -612,7 +613,6 @@ f  0.000000
 f  0.000000
 b  0
 MouseGrabbable
-MouseIntersectable
 LoopTag
 UiComponent
 i  -1
@@ -647,13 +647,13 @@ q  31_0
 p  
 q  28_0
 MouseIntersectable
+InventoryItem
+i  3
+MouseGrabbable
 Position
 f  369.700958
 f  -1100.594849
 f  -367.587952
-MouseGrabbable
-InventoryItem
-i  3
 MouseSelectable
 UiComponent
 i  -1
@@ -667,7 +667,6 @@ f  40.000000
 i  0
 s  activeRect.png
 __q  24_0
-MouseSelectable
 Text
 s  BubbleCamera
 f  0.000000
@@ -679,12 +678,13 @@ f  0.000000
 f  0.000000
 f  1.000000
 b  1
+MouseSelectable
 MouseIntersectable
+MouseGrabbable
 Position
 f  -165.724792
 f  -883.509521
 f  -520.428711
-MouseGrabbable
 LoopSociety
 q  -1_0
 p  
@@ -701,6 +701,7 @@ b  1
 Sphere
 f  2.000000
 __q  25_0
+MouseSelectable
 Text
 s  NewBubbleOutlineSystem
 f  255.000000
@@ -712,20 +713,18 @@ f  0.000000
 f  10.000000
 f  10.000000
 b  1
-MouseSelectable
-SystemReference
-s  NewBubbleOutlineSystem
-MouseGrabbable
 Position
 f  -1500.093506
 f  -0.000244
 f  -895.200806
+MouseGrabbable
+SystemReference
+s  NewBubbleOutlineSystem
 MouseIntersectable
 LoopSociety
 q  71_0
 p  
 __q  26_0
-MouseSelectable
 Text
 s  v
 f  255.000000
@@ -737,25 +736,25 @@ f  0.000000
 f  0.000000
 f  20.000000
 b  1
+Button
+i  5
+MouseSelectable
 MouseIntersectable
-MouseGrabbable
 Position
 f  594.812012
 f  -1100.594849
 f  -335.719910
-Sphere
-f  2.000000
+MouseGrabbable
 UiComponent
 i  -1
-Button
-i  5
+Sphere
+f  2.000000
 LoopSociety
 q  73_0
 p  
 Layer
 i  1
 __q  27_0
-MouseSelectable
 Text
 s  TimerSystem
 f  255.000000
@@ -767,29 +766,30 @@ f  0.000000
 f  10.000000
 f  10.000000
 b  1
+MouseSelectable
 MouseIntersectable
-SystemReference
-s  TimerSystem
+MouseGrabbable
 Position
 f  -1296.098389
 f  -0.000915
 f  -705.954163
-MouseGrabbable
+SystemReference
+s  TimerSystem
 LoopSociety
 q  71_0
 p  
 __q  28_0
+MouseGrabbable
 Position
 f  370.350739
 f  -1100.594727
 f  -367.424622
-MouseGrabbable
 MouseIntersectable
 MouseSelectable
-UiComponent
-i  -1
 Sphere
 f  2.000000
+UiComponent
+i  -1
 LoopSociety
 q  23_0
 p  
@@ -810,6 +810,7 @@ p
 q  12_0
 q  70_0
 q  33_0
+MouseSelectable
 Text
 s  ManipulationSystems
 f  0.000000
@@ -821,15 +822,13 @@ f  0.000000
 f  0.000000
 f  1.000000
 b  1
-MouseSelectable
 MouseIntersectable
-MouseGrabbable
 Position
 f  -48.800743
 f  0.000000
 f  -812.327454
+MouseGrabbable
 __q  30_0
-MouseSelectable
 Text
 s  ProcedureExecutionSystem
 f  255.000000
@@ -841,30 +840,31 @@ f  0.000000
 f  10.000000
 f  10.000000
 b  1
+MouseSelectable
 MouseIntersectable
-SystemReference
-s  ProcedureExecutionSystem
+MouseGrabbable
 Position
 f  -737.577209
 f  -0.000366
 f  -854.570190
-MouseGrabbable
+SystemReference
+s  ProcedureExecutionSystem
 LoopSociety
 q  71_0
 p  
 __q  31_0
-UiComponent
-i  -1
 Inventory
 b  1
 i  1
 b  0
 i  -1
-MouseGrabbable
+UiComponent
+i  -1
 Position
 f  531.121033
 f  -1100.594849
 f  -405.115906
+MouseGrabbable
 LoopTag
 LoopSociety
 q  73_0
@@ -903,13 +903,13 @@ q  31_0
 p  
 q  102_0
 MouseIntersectable
-InventoryItem
-i  3
-MouseGrabbable
 Position
 f  325.018005
 f  -1100.594849
 f  -367.587952
+MouseGrabbable
+InventoryItem
+i  3
 MouseSelectable
 Circle
 f  10.000000
@@ -923,6 +923,7 @@ f  40.000000
 i  0
 s  activeRect.png
 __q  33_0
+MouseSelectable
 Text
 s  BubbleInventorySystem
 f  255.000000
@@ -934,14 +935,13 @@ f  0.000000
 f  10.000000
 f  10.000000
 b  1
-MouseSelectable
-SystemReference
-s  BubbleInventorySystem
+MouseGrabbable
 Position
 f  -20.420715
 f  -0.000000
 f  -659.730286
-MouseGrabbable
+SystemReference
+s  BubbleInventorySystem
 MouseIntersectable
 LoopSociety
 q  29_0
@@ -968,13 +968,13 @@ q  31_0
 p  
 q  36_0
 MouseIntersectable
-InventoryItem
-i  3
-MouseGrabbable
 Position
 f  413.706970
 f  -1100.594849
 f  -367.587952
+MouseGrabbable
+InventoryItem
+i  3
 MouseSelectable
 Circle
 f  10.000000
@@ -988,24 +988,24 @@ f  40.000000
 i  0
 s  activeRect.png
 __q  35_0
-MouseGrabbable
 Position
 f  187.292175
 f  -1100.595093
 f  -444.312561
+MouseGrabbable
+Button
+i  24
 MouseSelectable
 MouseIntersectable
-Sphere
-f  2.000000
 UiComponent
 i  4
+Sphere
+f  2.000000
 TextureComponent
 s  C:\Users\tagir\raylib_projects\middle\assets\textures\toggleRect.png
 f  15.000000
 i  0
 s  toggleRect.png
-Button
-i  24
 LoopSociety
 q  73_0
 p  
@@ -1015,40 +1015,41 @@ Rectangle
 f  20.000000
 f  20.000000
 __q  36_0
-MouseGrabbable
 Position
 f  413.309814
 f  -1100.594727
 f  -367.012390
+MouseGrabbable
 MouseIntersectable
+Button
+i  5
 MouseSelectable
-Sphere
-f  2.000000
 UiComponent
 i  -1
+Sphere
+f  2.000000
 TextureComponent
 s  
 f  20.000000
 i  0
 s  cancel.png
-Button
-i  5
 LoopSociety
 q  34_0
 p  
 Layer
 i  1
 __q  37_0
+SystemReference
+s  BubbleCameraSystem
+MouseGrabbable
 Position
 f  -1135.993652
 f  -0.000061
 f  -427.650024
-MouseGrabbable
-SystemReference
-s  BubbleCameraSystem
 LoopSociety
 q  71_0
 p  
+MouseSelectable
 Text
 s  BubbleCameraSystem
 f  255.000000
@@ -1060,27 +1061,26 @@ f  0.000000
 f  10.000000
 f  10.000000
 b  1
-MouseSelectable
 MouseIntersectable
 __q  38_0
+MouseGrabbable
 Position
 f  187.271057
 f  -1100.595093
 f  -465.430206
-MouseGrabbable
+Button
+i  21
 MouseSelectable
 MouseIntersectable
-UiComponent
-i  4
 Sphere
 f  2.000000
+UiComponent
+i  4
 TextureComponent
 s  C:\Users\tagir\raylib_projects\middle\assets\textures\toggleRect.png
 f  15.000000
 i  0
 s  toggleRect.png
-Button
-i  21
 LoopSociety
 q  73_0
 p  
@@ -1090,7 +1090,6 @@ Rectangle
 f  20.000000
 f  20.000000
 __q  39_0
-MouseSelectable
 Text
 s  insert as x/x
 f  255.000000
@@ -1102,17 +1101,18 @@ f  0.000000
 f  0.000000
 f  10.000000
 b  1
+Button
+i  5
+MouseSelectable
 MouseIntersectable
+MouseGrabbable
 Position
 f  233.040833
 f  -1100.594971
 f  -465.150909
-MouseGrabbable
 LoopSociety
 q  73_0
 p  
-Button
-i  5
 UiComponent
 i  -1
 Sphere
@@ -1120,12 +1120,11 @@ f  2.000000
 Layer
 i  1
 __q  40_0
-MouseGrabbable
 Position
 f  234.464081
 f  -1100.594971
 f  -485.467377
-MouseSelectable
+MouseGrabbable
 Text
 s  insert as x - x
 f  255.000000
@@ -1137,12 +1136,13 @@ f  0.000000
 f  0.000000
 f  10.000000
 b  1
+Button
+i  5
+MouseSelectable
 MouseIntersectable
 LoopSociety
 q  73_0
 p  
-Button
-i  5
 UiComponent
 i  -1
 Sphere
@@ -1171,13 +1171,13 @@ q  31_0
 p  
 q  57_0
 MouseIntersectable
+InventoryItem
+i  3
+MouseGrabbable
 Position
 f  459.067200
 f  -1100.594849
 f  -367.587952
-MouseGrabbable
-InventoryItem
-i  3
 MouseSelectable
 UiComponent
 i  -1
@@ -1196,19 +1196,19 @@ b  1
 i  1
 b  1
 i  -1
-MouseGrabbable
 Position
 f  367.890503
 f  -1100.596191
 f  -663.093689
+MouseGrabbable
 LoopTag
 LoopSociety
 q  -1_0
 p  
 q  43_0
+MouseSelectable
 Layer
 i  2
-MouseSelectable
 MouseIntersectable
 Text
 s  BubbleInventory
@@ -1223,21 +1223,23 @@ f  10.000000
 b  1
 __q  43_0
 MouseSelectable
+MouseIntersectable
 BubbleComponent
 b  0
 LoopSociety
 q  42_0
 p  
 q  49_0
-MouseGrabbable
+InventoryItem
+i  1
 Position
 f  214.563614
 f  -1100.594971
 f  -604.418213
-InventoryItem
-i  1
-MouseIntersectable
+MouseGrabbable
 LoopTag
+SnapRef
+q  44_0
 BubbleRef
 Circle
 f  24.000000
@@ -1259,22 +1261,20 @@ f  0.000000
 b  0
 Layer
 i  1
-SnapRef
-q  44_0
 __q  44_0
-MouseGrabbable
 Position
 f  262.807373
 f  -1100.594971
 f  -589.076111
-MouseSelectable
+MouseGrabbable
 Layer
 i  1
+MouseSelectable
 MouseIntersectable
-UiComponent
-i  -1
 Sphere
 f  2.000000
+UiComponent
+i  -1
 LoopSociety
 q  14_0
 p  
@@ -1290,19 +1290,19 @@ InventorySlot
 i  -1
 i  -1
 __q  45_0
+MouseGrabbable
 Position
 f  263.380981
 f  -1100.595093
 f  -648.844421
-MouseGrabbable
-MouseSelectable
 Layer
 i  1
+MouseSelectable
 MouseIntersectable
-Sphere
-f  2.000000
 UiComponent
 i  -1
+Sphere
+f  2.000000
 LoopSociety
 q  14_0
 p  
@@ -1318,7 +1318,6 @@ InventorySlot
 i  -1
 i  -1
 __q  46_0
-MouseSelectable
 Text
 s  InventorySystem
 f  255.000000
@@ -1330,18 +1329,20 @@ f  0.000000
 f  10.000000
 f  10.000000
 b  1
+MouseSelectable
 MouseIntersectable
-SystemReference
-s  InventorySystem
+MouseGrabbable
 Position
 f  -1087.965820
 f  -0.000732
 f  -956.870544
-MouseGrabbable
+SystemReference
+s  InventorySystem
 LoopSociety
 q  71_0
 p  
 __q  47_0
+MouseSelectable
 Text
 s  ProcedureUiSystem
 f  255.000000
@@ -1353,19 +1354,19 @@ f  0.000000
 f  10.000000
 f  10.000000
 b  1
-MouseSelectable
-SystemReference
-s  ProcedureUiSystem
+MouseGrabbable
 Position
 f  -705.971680
 f  -0.000488
 f  -887.547424
-MouseGrabbable
+SystemReference
+s  ProcedureUiSystem
 MouseIntersectable
 LoopSociety
 q  71_0
 p  
 __q  48_0
+MouseSelectable
 Text
 s  BubbleLayerSystem
 f  255.000000
@@ -1377,25 +1378,27 @@ f  0.000000
 f  10.000000
 f  10.000000
 b  1
-MouseSelectable
-SystemReference
-s  BubbleLayerSystem
+MouseGrabbable
 Position
 f  -1105.676025
 f  0.000244
 f  -799.519470
-MouseGrabbable
+SystemReference
+s  BubbleLayerSystem
 MouseIntersectable
 LoopSociety
 q  71_0
 p  
 __q  49_0
+LoopSociety
+q  43_0
+p  
 Circle
 f  4.000000
-Sphere
-f  2.000000
 UiComponent
 i  -1
+Sphere
+f  2.000000
 PhysicsData
 f  50.265484
 f  0.019894
@@ -1410,13 +1413,10 @@ f  0.000000
 f  0.000000
 f  0.000000
 b  0
+MouseGrabbable
 BubbleUnit
 i  1
 MouseSelectable
-LoopSociety
-q  43_0
-p  
-MouseGrabbable
 Position
 f  214.453445
 f  -1100.594971
@@ -1425,7 +1425,6 @@ MouseIntersectable
 Layer
 i  2
 __q  50_0
-MouseSelectable
 Text
 s  DeletionSystem
 f  255.000000
@@ -1437,21 +1436,23 @@ f  0.000000
 f  10.000000
 f  10.000000
 b  1
+MouseSelectable
 MouseIntersectable
-SystemReference
-s  DeletionSystem
+MouseGrabbable
 Position
 f  -1530.474243
 f  -0.000305
 f  -686.654480
-MouseGrabbable
+SystemReference
+s  DeletionSystem
 LoopSociety
 q  71_0
 p  
 __q  51_0
+MouseSelectable
 Layer
 i  0
-MouseSelectable
+MouseIntersectable
 BubbleComponent
 b  0
 LoopSociety
@@ -1459,15 +1460,14 @@ q  -1_0
 p  
 q  55_0
 MouseGrabbable
-MouseIntersectable
 LoopTag
 PhysicsData
 f  12968.210938
 f  0.000077
 f  1.000000
-f  -0.000208
+f  0.000114
 f  0.000000
-f  -0.000487
+f  -0.000495
 f  0.000000
 f  0.000000
 f  0.000000
@@ -1485,9 +1485,10 @@ f  -706.222473
 BubbleAlgebraProblem
 b  0
 __q  52_0
+MouseSelectable
 Layer
 i  2
-MouseSelectable
+MouseIntersectable
 BubbleComponent
 b  1
 LoopSociety
@@ -1496,15 +1497,14 @@ p
 q  67_0
 q  68_0
 MouseGrabbable
-MouseIntersectable
 LoopTag
 PhysicsData
 f  1809.557373
 f  0.000553
 f  1.000000
-f  0.000991
+f  0.000038
 f  0.000000
-f  0.001403
+f  0.001387
 f  0.000000
 f  0.000000
 f  0.000000
@@ -1515,13 +1515,14 @@ b  0
 Circle
 f  24.000000
 Position
-f  963.646667
+f  963.647156
 f  -0.000183
-f  -717.491638
+f  -717.491089
 __q  53_0
+MouseSelectable
 Layer
 i  2
-MouseSelectable
+MouseIntersectable
 BubbleComponent
 b  0
 LoopSociety
@@ -1531,15 +1532,14 @@ q  64_0
 q  65_0
 q  66_0
 MouseGrabbable
-MouseIntersectable
 LoopTag
 PhysicsData
 f  2541.887451
 f  0.000393
 f  1.000000
-f  0.000249
+f  -0.000728
 f  0.000000
-f  0.001376
+f  0.001417
 f  0.000000
 f  0.000000
 f  0.000000
@@ -1550,9 +1550,9 @@ b  0
 Circle
 f  28.444822
 Position
-f  903.964844
+f  903.965210
 f  -0.000183
-f  -696.757263
+f  -696.757080
 __q  54_0
 ProcedureUseUiTag
 LoopTag
@@ -1567,29 +1567,28 @@ q  157_0
 q  173_0
 MouseSelectable
 MouseIntersectable
+MouseGrabbable
 Position
 f  676.886902
 f  -1099.999756
 f  -543.242371
-MouseGrabbable
 __q  55_0
-MouseGrabbable
 Position
 f  908.273071
 f  -0.000183
 f  -688.714417
+MouseGrabbable
 LoopTag
-BubbleMultiplyComponent
-i  0
-MouseIntersectable
-MouseSelectable
 LoopSociety
 q  51_0
 p  
 q  52_0
 q  53_0
-__q  56_0
+BubbleMultiplyComponent
+i  0
+MouseIntersectable
 MouseSelectable
+__q  56_0
 Text
 s  [shift]+z
 f  255.000000
@@ -1601,35 +1600,36 @@ f  0.000000
 f  0.000000
 f  10.000000
 b  1
+Button
+i  5
+MouseSelectable
 MouseIntersectable
-MouseGrabbable
 Position
 f  369.095001
 f  -1100.594849
 f  -338.136047
-Sphere
-f  2.000000
+MouseGrabbable
 UiComponent
 i  -1
-Button
-i  5
+Sphere
+f  2.000000
 LoopSociety
 q  73_0
 p  
 Layer
 i  1
 __q  57_0
+MouseGrabbable
 Position
 f  459.937347
 f  -1100.594727
 f  -367.217957
-MouseGrabbable
 MouseIntersectable
 MouseSelectable
-UiComponent
-i  -1
 Sphere
 f  2.000000
+UiComponent
+i  -1
 LoopSociety
 q  41_0
 p  
@@ -1643,12 +1643,11 @@ i  5
 Layer
 i  1
 __q  58_0
+MouseGrabbable
 Position
 f  459.812744
 f  -1100.594849
 f  -337.386902
-MouseGrabbable
-MouseSelectable
 Text
 s  [shift]+x
 f  255.000000
@@ -1660,13 +1659,14 @@ f  0.000000
 f  0.000000
 f  10.000000
 b  1
-MouseIntersectable
-UiComponent
-i  -1
-Sphere
-f  2.000000
 Button
 i  5
+MouseSelectable
+MouseIntersectable
+Sphere
+f  2.000000
+UiComponent
+i  -1
 LoopSociety
 q  73_0
 p  
@@ -1674,16 +1674,16 @@ Layer
 i  1
 __q  59_0
 LoopTag
+UiComponent
+i  1
 Rectangle
 f  1000.000000
 f  500.000000
-UiComponent
-i  1
-MouseGrabbable
 Position
 f  505.324554
 f  -1100.595093
 f  -157.539795
+MouseGrabbable
 LoopSociety
 q  73_0
 p  
@@ -1693,16 +1693,16 @@ Layer
 i  0
 __q  60_0
 LoopTag
+UiComponent
+i  1
 Rectangle
 f  270.000000
 f  450.000000
-UiComponent
-i  1
-MouseGrabbable
 Position
 f  850.899292
 f  -1100.594971
 f  -562.654846
+MouseGrabbable
 LoopSociety
 q  73_0
 p  
@@ -1711,19 +1711,19 @@ MouseIntersectable
 Layer
 i  0
 __q  61_0
+MouseGrabbable
 Position
 f  201.593262
 f  -1100.595093
 f  -648.462585
-MouseGrabbable
+MouseSelectable
 Layer
 i  1
-MouseSelectable
 MouseIntersectable
-Sphere
-f  2.000000
 UiComponent
 i  -1
+Sphere
+f  2.000000
 LoopSociety
 q  14_0
 p  
@@ -1739,19 +1739,19 @@ InventorySlot
 i  -1
 i  -1
 __q  62_0
-MouseGrabbable
 Position
 f  262.481567
 f  -1100.595093
 f  -528.161682
+MouseGrabbable
+MouseSelectable
 Layer
 i  1
-MouseSelectable
 MouseIntersectable
-UiComponent
-i  -1
 Sphere
 f  2.000000
+UiComponent
+i  -1
 LoopSociety
 q  14_0
 p  
@@ -1778,19 +1778,19 @@ f  0.000000
 f  0.000000
 f  10.000000
 b  1
+Button
+i  5
 MouseSelectable
 MouseIntersectable
+MouseGrabbable
 Position
 f  550.390930
 f  -1100.594360
 f  -338.016785
-MouseGrabbable
-UiComponent
-i  -1
 Sphere
 f  2.000000
-Button
-i  5
+UiComponent
+i  -1
 LoopSociety
 q  73_0
 p  
@@ -1798,12 +1798,14 @@ Layer
 i  1
 __q  64_0
 MouseIntersectable
+MouseGrabbable
 BubbleUnit
 i  1
+MouseSelectable
 Layer
 i  3
-MouseSelectable
-MouseGrabbable
+Circle
+f  4.000000
 LoopSociety
 q  53_0
 p  
@@ -1811,9 +1813,9 @@ PhysicsData
 f  50.265484
 f  0.019894
 f  1.000000
-f  0.000874
+f  0.000798
 f  0.000000
-f  0.001145
+f  0.001291
 f  0.000000
 f  0.000000
 f  0.000000
@@ -1821,22 +1823,22 @@ f  0.000000
 f  0.000000
 f  0.000000
 b  0
-Circle
-f  4.000000
 Sphere
 f  2.000000
 Position
-f  888.543518
+f  888.543762
 f  -0.000183
 f  -698.272034
 __q  65_0
 MouseIntersectable
+MouseGrabbable
 BubbleUnit
 i  1
+MouseSelectable
 Layer
 i  3
-MouseSelectable
-MouseGrabbable
+Circle
+f  4.000000
 LoopSociety
 q  53_0
 p  
@@ -1844,9 +1846,9 @@ PhysicsData
 f  50.265484
 f  0.019894
 f  1.000000
-f  0.000861
+f  0.001215
 f  0.000000
-f  0.001366
+f  0.001328
 f  0.000000
 f  0.000000
 f  0.000000
@@ -1854,22 +1856,22 @@ f  0.000000
 f  0.000000
 f  0.000000
 b  0
-Circle
-f  4.000000
 Sphere
 f  2.000000
 Position
 f  910.341431
 f  -0.000183
-f  -682.657410
+f  -682.657166
 __q  66_0
 MouseIntersectable
+MouseGrabbable
 BubbleUnit
 i  1
+MouseSelectable
 Layer
 i  3
-MouseSelectable
-MouseGrabbable
+Circle
+f  4.000000
 LoopSociety
 q  53_0
 p  
@@ -1877,9 +1879,9 @@ PhysicsData
 f  50.265484
 f  0.019894
 f  1.000000
-f  0.000771
+f  0.001254
 f  0.000000
-f  0.001118
+f  0.001290
 f  0.000000
 f  0.000000
 f  0.000000
@@ -1887,22 +1889,22 @@ f  0.000000
 f  0.000000
 f  0.000000
 b  0
-Circle
-f  4.000000
 Sphere
 f  2.000000
 Position
-f  912.963623
+f  912.963745
 f  -0.000183
-f  -709.328979
+f  -709.328857
 __q  67_0
 MouseIntersectable
+MouseGrabbable
 BubbleUnit
 i  1
+MouseSelectable
 Layer
 i  3
-MouseSelectable
-MouseGrabbable
+Circle
+f  4.000000
 LoopSociety
 q  52_0
 p  
@@ -1910,9 +1912,9 @@ PhysicsData
 f  50.265484
 f  0.019894
 f  1.000000
-f  0.001377
+f  0.001410
 f  0.000000
-f  0.001101
+f  0.001131
 f  0.000000
 f  0.000000
 f  0.000000
@@ -1920,22 +1922,22 @@ f  0.000000
 f  0.000000
 f  0.000000
 b  0
-Circle
-f  4.000000
 Sphere
 f  2.000000
 Position
-f  964.958923
+f  964.959473
 f  -0.000183
-f  -729.443726
+f  -729.443176
 __q  68_0
 MouseIntersectable
+MouseGrabbable
 BubbleUnit
 i  1
+MouseSelectable
 Layer
 i  3
-MouseSelectable
-MouseGrabbable
+Circle
+f  4.000000
 LoopSociety
 q  52_0
 p  
@@ -1943,9 +1945,9 @@ PhysicsData
 f  50.265484
 f  0.019894
 f  1.000000
-f  0.001397
+f  0.001405
 f  0.000000
-f  0.000953
+f  0.001211
 f  0.000000
 f  0.000000
 f  0.000000
@@ -1953,15 +1955,14 @@ f  0.000000
 f  0.000000
 f  0.000000
 b  0
-Circle
-f  4.000000
 Sphere
 f  2.000000
 Position
-f  962.334473
+f  962.334839
 f  -0.000183
-f  -705.565857
+f  -705.565369
 __q  69_0
+MouseSelectable
 Text
 s  0 Moves Left! Press UNDO to revert steps
 f  255.000000
@@ -1973,25 +1974,23 @@ f  0.000000
 f  0.000000
 f  10.000000
 b  1
-MouseSelectable
 MouseIntersectable
-Sphere
-f  2.000000
 UiComponent
 i  2
+Sphere
+f  2.000000
 LoopSociety
 q  73_0
 p  
+MouseGrabbable
 Position
 f  504.825470
 f  -1100.594971
 f  -436.794861
-MouseGrabbable
 Layer
 i  1
 RuntimeHiddenTag
 __q  70_0
-MouseSelectable
 Text
 s  BubbleModificationSystem
 f  255.000000
@@ -2003,24 +2002,24 @@ f  0.000000
 f  10.000000
 f  10.000000
 b  1
+MouseSelectable
 MouseIntersectable
-SystemReference
-s  BubbleModificationSystem
+MouseGrabbable
 Position
 f  -10.205154
 f  -0.000092
 f  -915.350098
-MouseGrabbable
+SystemReference
+s  BubbleModificationSystem
 LoopSociety
 q  29_0
 p  
 __q  71_0
-MouseGrabbable
 Position
 f  -1123.300049
 f  -0.000376
 f  -672.069397
-MouseSelectable
+MouseGrabbable
 Text
 s  BubbleGameplaySystems
 f  0.000000
@@ -2032,6 +2031,7 @@ f  0.000000
 f  0.000000
 f  1.000000
 b  1
+MouseSelectable
 MouseIntersectable
 LoopTag
 LoopSociety
@@ -2054,8 +2054,8 @@ q  84_0
 q  87_0
 q  88_0
 q  48_0
+q  185_0
 __q  72_0
-MouseSelectable
 Text
 s  VariableLinkingSystem
 f  255.000000
@@ -2067,19 +2067,21 @@ f  0.000000
 f  10.000000
 f  10.000000
 b  1
+MouseSelectable
+SystemReference
+s  VariableLinkingSystem
+MouseGrabbable
 Position
 f  -813.060730
 f  0.000000
 f  -688.451904
-MouseGrabbable
-SystemReference
-s  VariableLinkingSystem
 MouseIntersectable
 LoopSociety
 q  71_0
 p  
 __q  73_0
 MouseIntersectable
+MouseSelectable
 Text
 s  BubbleAlgebraUI
 f  0.000000
@@ -2091,14 +2093,13 @@ f  0.000000
 f  0.000000
 f  10.000000
 b  1
-MouseSelectable
 LoopTag
-UiNode
-MouseGrabbable
 Position
 f  516.018677
 f  -1100.594971
 f  -531.247253
+MouseGrabbable
+UiNode
 LoopSociety
 q  -1_0
 p  
@@ -2138,6 +2139,8 @@ q  81_0
 q  99_0
 q  181_0
 q  182_0
+q  183_0
+q  184_0
 Offset
 f  0.000000
 f  -500.000000
@@ -2146,22 +2149,22 @@ __q  74_0
 MouseIntersectable
 MouseSelectable
 LoopTag
-UiNode
-MouseGrabbable
 Position
 f  1179.617798
 f  -1100.594971
 f  -494.313354
+MouseGrabbable
+UiNode
+Offset
+f  0.000000
+f  -500.000000
+f  0.000000
 LoopSociety
 q  -1_0
 p  
 q  75_0
 q  80_0
 q  82_0
-Offset
-f  0.000000
-f  -500.000000
-f  0.000000
 Text
 s  ScoreScreen
 f  0.000000
@@ -2174,24 +2177,20 @@ f  0.000000
 f  10.000000
 b  1
 __q  75_0
+MouseGrabbable
 Position
 f  1279.069824
 f  -1100.595093
 f  -547.223267
-MouseGrabbable
 Circle
 f  30.000000
-UiComponent
-i  -1
 Sphere
 f  2.000000
+UiComponent
+i  -1
 MouseIntersectable
 Button
 i  8
-MouseSelectable
-LoopSociety
-q  74_0
-p  
 Text
 s  CONTINUE
 f  0.000000
@@ -2203,17 +2202,21 @@ f  0.000000
 f  0.000000
 f  10.000000
 b  1
+MouseSelectable
+LoopSociety
+q  74_0
+p  
 LevelReference
 s  LevelSelect
 b  0
 Layer
 i  1
 __q  76_0
-MouseGrabbable
 Position
 f  639.053040
 f  -1100.594482
 f  -338.016541
+MouseGrabbable
 Text
 s  [shift]+v
 f  255.000000
@@ -2225,25 +2228,25 @@ f  0.000000
 f  0.000000
 f  10.000000
 b  1
-MouseSelectable
-MouseIntersectable
-Sphere
-f  2.000000
-UiComponent
-i  -1
 Button
 i  5
+MouseSelectable
+MouseIntersectable
+UiComponent
+i  -1
+Sphere
+f  2.000000
 LoopSociety
 q  73_0
 p  
 Layer
 i  1
 __q  77_0
+MouseGrabbable
 Position
 f  246.134216
 f  -1100.594849
 f  -364.272522
-MouseGrabbable
 Text
 s  UNDO
 f  255.000000
@@ -2255,6 +2258,8 @@ f  0.000000
 f  0.000000
 f  10.000000
 b  1
+Button
+i  5
 MouseSelectable
 MouseIntersectable
 LoopSociety
@@ -2265,8 +2270,6 @@ s  C:\Users\tagir\raylib_projects\middle\assets\textures\navRect.png
 f  30.000000
 i  0
 s  navRect.png
-Button
-i  5
 UiComponent
 i  -1
 Sphere
@@ -2277,6 +2280,7 @@ Rectangle
 f  40.000000
 f  30.000000
 __q  78_0
+MouseSelectable
 Text
 s  FollowCameraSystem
 f  255.000000
@@ -2288,20 +2292,18 @@ f  0.000000
 f  10.000000
 f  10.000000
 b  1
-MouseSelectable
 MouseIntersectable
-MouseGrabbable
+SystemReference
+s  FollowCameraSystem
 Position
 f  -1180.650146
 f  -0.000061
 f  -359.307373
-SystemReference
-s  FollowCameraSystem
+MouseGrabbable
 LoopSociety
 q  71_0
 p  
 __q  79_0
-MouseSelectable
 Text
 s  OutputVariableSystem
 f  255.000000
@@ -2313,68 +2315,68 @@ f  0.000000
 f  10.000000
 f  10.000000
 b  1
+MouseSelectable
+SystemReference
+s  OutputVariableSystem
+MouseGrabbable
 Position
 f  -692.715393
 f  0.000122
 f  -664.156494
-MouseGrabbable
-SystemReference
-s  OutputVariableSystem
 MouseIntersectable
 LoopSociety
 q  71_0
 p  
 __q  80_0
+MouseGrabbable
 Position
 f  1170.033813
 f  -1100.594849
 f  -485.238495
-MouseGrabbable
 LoopSociety
 q  74_0
 p  
-Sphere
-f  2.000000
-UiComponent
-i  1
 Rectangle
 f  300.000000
 f  200.000000
+UiComponent
+i  1
+Sphere
+f  2.000000
 MouseSelectable
 MouseIntersectable
 Layer
 i  1
 __q  81_0
+Button
+i  5
 MouseSelectable
 MouseIntersectable
-MouseGrabbable
 Position
 f  817.072266
 f  -1100.595337
 f  -350.507263
-Sphere
-f  2.000000
+MouseGrabbable
 UiComponent
 i  -1
+Sphere
+f  2.000000
 TextureComponent
 s  
 f  30.000000
 i  0
 s  logo.png
-Button
-i  5
 LoopSociety
 q  73_0
 p  
 Layer
 i  1
 __q  82_0
-MouseGrabbable
 Position
 f  1173.025269
 f  -1100.594971
 f  -485.094330
-MouseSelectable
+MouseGrabbable
 Text
 s  SOLVED!
 f  0.000000
@@ -2386,6 +2388,7 @@ f  0.000000
 f  0.000000
 f  30.000000
 b  1
+MouseSelectable
 MouseIntersectable
 LoopSociety
 q  74_0
@@ -2422,6 +2425,8 @@ f  0.000000
 f  0.000000
 f  10.000000
 b  1
+Button
+i  6
 MouseSelectable
 MouseIntersectable
 LoopSociety
@@ -2432,12 +2437,10 @@ s  C:\Users\tagir\raylib_projects\middle\assets\textures\navRect.png
 f  30.000000
 i  0
 s  navRect.png
-Button
-i  6
-UiComponent
-i  -1
 Sphere
 f  2.000000
+UiComponent
+i  -1
 MouseGrabbable
 Position
 f  759.703308
@@ -2449,6 +2452,7 @@ Rectangle
 f  40.000000
 f  30.000000
 __q  84_0
+MouseSelectable
 Text
 s  MouseClickSystem
 f  255.000000
@@ -2460,33 +2464,32 @@ f  0.000000
 f  10.000000
 f  10.000000
 b  1
-MouseSelectable
-SystemReference
-s  MouseClickSystem
-MouseGrabbable
 Position
 f  -1591.212280
 f  -0.000122
 f  -634.648804
+MouseGrabbable
+SystemReference
+s  MouseClickSystem
 MouseIntersectable
 LoopSociety
 q  71_0
 p  
 __q  85_0
 LoopTag
+Rectangle
+f  150.000000
+f  350.000000
 Inventory
 b  0
 i  2
 b  0
 i  -1
-Rectangle
-f  150.000000
-f  350.000000
+MouseGrabbable
 Position
 f  768.449585
 f  -1100.594971
 f  -540.945374
-MouseGrabbable
 LoopSociety
 q  73_0
 p  
@@ -2498,12 +2501,11 @@ i  -1
 Layer
 i  1
 __q  86_0
+MouseGrabbable
 Position
 f  197.653625
 f  -1100.595093
 f  -363.972107
-MouseGrabbable
-MouseSelectable
 Text
 s  BACK
 f  255.000000
@@ -2515,6 +2517,9 @@ f  0.000000
 f  0.000000
 f  10.000000
 b  1
+Button
+i  7
+MouseSelectable
 MouseIntersectable
 LoopSociety
 q  73_0
@@ -2524,8 +2529,6 @@ s  C:\Users\tagir\raylib_projects\middle\assets\textures\navRect.png
 f  30.000000
 i  0
 s  navRect.png
-Button
-i  7
 UiComponent
 i  -1
 Sphere
@@ -2539,6 +2542,7 @@ Rectangle
 f  40.000000
 f  30.000000
 __q  87_0
+MouseSelectable
 Text
 s  LevelNavigationSystem
 f  255.000000
@@ -2550,19 +2554,19 @@ f  0.000000
 f  10.000000
 f  10.000000
 b  1
-MouseSelectable
-SystemReference
-s  LevelNavigationSystem
-MouseGrabbable
 Position
 f  -1147.269287
 f  0.000061
 f  -1179.160645
+MouseGrabbable
+SystemReference
+s  LevelNavigationSystem
 MouseIntersectable
 LoopSociety
 q  71_0
 p  
 __q  88_0
+MouseSelectable
 Text
 s  AlgebraProblemSystem
 f  255.000000
@@ -2574,36 +2578,35 @@ f  0.000000
 f  10.000000
 f  10.000000
 b  1
-MouseSelectable
-SystemReference
-s  AlgebraProblemSystem
+MouseGrabbable
 Position
 f  -1151.216431
 f  -0.000061
 f  -1140.217163
-MouseGrabbable
+SystemReference
+s  AlgebraProblemSystem
 MouseIntersectable
 LoopSociety
 q  71_0
 p  
 __q  89_0
+MouseGrabbable
 Position
-f  53.991394
+f  53.991375
 f  -0.000001
 f  -1167.051514
-MouseGrabbable
 BubbleRef
 MouseSelectable
 BubbleComponent
 b  0
+Circle
+f  80.232269
 LoopSociety
 q  129_0
 p  
 q  90_0
 q  98_0
 TopDogBubbleTag
-Circle
-f  80.232269
 LoopTag
 MouseIntersectable
 PhysicsData
@@ -2612,7 +2615,7 @@ f  0.000049
 f  1.000000
 f  0.000020
 f  0.000000
-f  0.000853
+f  0.000771
 f  0.000000
 f  0.000000
 f  0.000000
@@ -2625,27 +2628,28 @@ i  0
 __q  90_0
 MouseSelectable
 LoopTag
-BubbleMultiplyComponent
-i  0
-Position
-f  -11.383446
-f  -0.000052
-f  -1122.051636
-MouseGrabbable
-MouseIntersectable
 LoopSociety
 q  89_0
 p  
 q  91_0
 q  95_0
-__q  91_0
-Position
-f  33.537888
-f  -0.000001
-f  -1133.935913
+BubbleMultiplyComponent
+i  0
 MouseGrabbable
+Position
+f  -11.383446
+f  -0.000052
+f  -1122.051636
+MouseIntersectable
+__q  91_0
+MouseGrabbable
+Position
+f  33.537697
+f  -0.000001
+f  -1133.936157
 BubbleRef
 MouseSelectable
+MouseIntersectable
 BubbleComponent
 b  0
 LoopSociety
@@ -2655,15 +2659,14 @@ q  92_0
 q  93_0
 q  94_0
 q  213_0
-MouseIntersectable
 LoopTag
 PhysicsData
 f  3262.682129
 f  0.000306
 f  1.000000
-f  -0.000075
+f  -0.000070
 f  0.000000
-f  -0.002158
+f  -0.001639
 f  0.000000
 f  0.000000
 f  0.000000
@@ -2680,9 +2683,9 @@ PhysicsData
 f  50.265484
 f  0.019894
 f  1.000000
-f  -0.000033
+f  -0.000034
 f  0.000000
-f  -0.002844
+f  -0.002800
 f  0.800000
 f  0.800000
 f  0.800000
@@ -2696,14 +2699,14 @@ LoopSociety
 q  91_0
 p  
 MouseIntersectable
+MouseGrabbable
+Position
+f  16.321423
+f  -0.000001
+f  -1125.770386
 BubbleUnit
 i  1
 MouseSelectable
-Position
-f  16.321617
-f  -0.000001
-f  -1125.770264
-MouseGrabbable
 Circle
 f  4.000000
 Layer
@@ -2713,9 +2716,9 @@ PhysicsData
 f  50.265484
 f  0.019894
 f  1.000000
-f  -0.000089
+f  -0.000077
 f  0.000000
-f  -0.002796
+f  -0.002769
 f  0.800000
 f  0.800000
 f  0.800000
@@ -2729,14 +2732,14 @@ LoopSociety
 q  91_0
 p  
 MouseIntersectable
+MouseGrabbable
+Position
+f  50.673107
+f  -0.000001
+f  -1142.074097
 BubbleUnit
 i  1
 MouseSelectable
-Position
-f  50.673306
-f  -0.000001
-f  -1142.073975
-MouseGrabbable
 Circle
 f  4.000000
 Layer
@@ -2746,9 +2749,9 @@ PhysicsData
 f  50.265484
 f  0.019894
 f  1.000000
-f  -0.000032
+f  -0.000036
 f  0.000000
-f  -0.001876
+f  -0.002565
 f  0.800000
 f  0.800000
 f  0.800000
@@ -2762,40 +2765,40 @@ LoopSociety
 q  91_0
 p  
 MouseIntersectable
+MouseGrabbable
+Position
+f  25.347610
+f  -0.000001
+f  -1151.100586
 BubbleUnit
 i  1
 MouseSelectable
-Position
-f  25.347870
-f  -0.000001
-f  -1151.100586
-MouseGrabbable
 Circle
 f  4.000000
 Layer
 i  3
 __q  95_0
+MouseGrabbable
 Position
-f  98.850838
+f  98.850739
 f  -0.000001
 f  -1153.052246
-MouseGrabbable
 BubbleRef
 MouseSelectable
+MouseIntersectable
 BubbleComponent
 b  0
 LoopSociety
 q  90_0
 p  
-MouseIntersectable
 LoopTag
 PhysicsData
 f  1809.557373
 f  0.000553
 f  1.000000
-f  -0.000162
+f  -0.000159
 f  0.000000
-f  -0.001893
+f  -0.001457
 f  0.000000
 f  0.000000
 f  0.000000
@@ -2808,9 +2811,10 @@ f  24.000000
 Layer
 i  2
 __q  96_0
-MouseSelectable
 Layer
 i  0
+MouseSelectable
+MouseIntersectable
 BubbleComponent
 b  0
 LoopSociety
@@ -2832,7 +2836,6 @@ f  0.000000
 f  0.000000
 b  0
 MouseGrabbable
-MouseIntersectable
 LoopTag
 TopDogBubbleTag
 Circle
@@ -2850,51 +2853,52 @@ q  -1_0
 p  
 MouseSelectable
 MouseIntersectable
+MouseGrabbable
 Position
 f  1840.759766
 f  -1100.595093
 f  -1089.178833
-MouseGrabbable
 __q  98_0
 MouseSelectable
 LoopTag
-BubbleMultiplyComponent
-i  0
-Position
-f  -10.172920
-f  0.000121
-f  -1243.284180
-MouseGrabbable
-MouseIntersectable
 LoopSociety
 q  89_0
 p  
 q  105_0
+BubbleMultiplyComponent
+i  0
+MouseGrabbable
+Position
+f  -10.172920
+f  0.000121
+f  -1243.284180
+MouseIntersectable
 __q  99_0
 LoopTag
 LoopSociety
 q  73_0
 p  
-MouseSelectable
 Layer
 i  0
+MouseSelectable
 TextureComponent
 s  C:\Users\tagir\raylib_projects\middle\assets\textures\Corners.png
 f  300.000000
 i  0
 s  Corners.png
 MouseIntersectable
+MouseGrabbable
 Position
 f  516.018433
 f  -1100.000000
 f  -542.246887
-MouseGrabbable
 UiComponent
 i  -1
 __q  100_0
-MouseSelectable
 Layer
 i  1
+MouseSelectable
+MouseIntersectable
 BubbleComponent
 b  0
 LoopSociety
@@ -2905,9 +2909,9 @@ PhysicsData
 f  30110.578125
 f  0.000033
 f  1.000000
-f  0.000016
+f  0.000003
 f  0.000000
-f  0.000245
+f  0.000220
 f  0.000000
 f  0.000000
 f  0.000000
@@ -2916,7 +2920,6 @@ f  0.000000
 f  0.000000
 b  0
 MouseGrabbable
-MouseIntersectable
 LoopTag
 Circle
 f  97.900429
@@ -2925,9 +2928,10 @@ f  -24.673861
 f  -0.000214
 f  -355.936157
 __q  101_0
-MouseSelectable
 Layer
 i  3
+MouseSelectable
+MouseIntersectable
 BubbleComponent
 b  0
 LoopSociety
@@ -2938,9 +2942,9 @@ PhysicsData
 f  5924.321289
 f  0.000169
 f  1.000000
-f  -0.000067
+f  -0.000030
 f  0.000000
-f  -0.000619
+f  -0.000557
 f  0.000000
 f  0.000000
 f  0.000000
@@ -2949,42 +2953,42 @@ f  0.000000
 f  0.000000
 b  0
 MouseGrabbable
-MouseIntersectable
 LoopTag
 Circle
 f  43.425453
 Position
-f  -73.104698
+f  -73.104729
 f  -0.000214
-f  -350.755035
+f  -350.755219
 __q  102_0
-MouseGrabbable
 Position
 f  325.243042
 f  -1100.594727
 f  -367.545349
+MouseGrabbable
 MouseIntersectable
+Button
+i  5
 MouseSelectable
-Sphere
-f  2.000000
 UiComponent
 i  -1
+Sphere
+f  2.000000
 TextureComponent
 s  
 f  20.000000
 i  0
 s  popIcon.png
-Button
-i  5
 LoopSociety
 q  32_0
 p  
 Layer
 i  1
 __q  103_0
-MouseSelectable
 Layer
 i  3
+MouseSelectable
+MouseIntersectable
 BubbleComponent
 b  0
 LoopSociety
@@ -2995,9 +2999,9 @@ PhysicsData
 f  5924.321289
 f  0.000169
 f  1.000000
-f  -0.000012
+f  0.000012
 f  0.000000
-f  -0.000626
+f  -0.000562
 f  0.000000
 f  0.000000
 f  0.000000
@@ -3006,26 +3010,25 @@ f  0.000000
 f  0.000000
 b  0
 MouseGrabbable
-MouseIntersectable
 LoopTag
 Circle
 f  43.425453
 Position
-f  23.745495
+f  23.745480
 f  -0.000214
-f  -361.113403
+f  -361.113495
 __q  104_0
 LoopTag
+UiComponent
+i  1
 Rectangle
 f  270.000000
 f  450.000000
-UiComponent
-i  1
+MouseGrabbable
 Position
 f  180.373535
 f  -1100.594727
 f  -547.879089
-MouseGrabbable
 LoopSociety
 q  73_0
 p  
@@ -3034,13 +3037,14 @@ MouseIntersectable
 Layer
 i  0
 __q  105_0
+MouseGrabbable
 Position
-f  55.413704
+f  55.413795
 f  -0.000001
 f  -1209.998535
-MouseGrabbable
 BubbleRef
 MouseSelectable
+MouseIntersectable
 BubbleComponent
 b  0
 LoopSociety
@@ -3049,15 +3053,14 @@ p
 q  106_0
 q  107_0
 q  108_0
-MouseIntersectable
 LoopTag
 PhysicsData
 f  2541.887451
 f  0.000393
 f  1.000000
-f  -0.000030
+f  -0.000042
 f  0.000000
-f  -0.002466
+f  -0.002756
 f  0.000000
 f  0.000000
 f  0.000000
@@ -3074,9 +3077,9 @@ PhysicsData
 f  50.265484
 f  0.019894
 f  1.000000
-f  -0.000068
+f  0.000049
 f  0.000000
-f  0.002088
+f  0.002091
 f  0.800000
 f  0.800000
 f  0.800000
@@ -3090,14 +3093,14 @@ LoopSociety
 q  105_0
 p  
 MouseIntersectable
+MouseGrabbable
+Position
+f  62.218826
+f  -0.000001
+f  -1196.097900
 BubbleUnit
 i  1
 MouseSelectable
-Position
-f  62.218811
-f  -0.000001
-f  -1196.097900
-MouseGrabbable
 Circle
 f  4.000000
 Layer
@@ -3107,9 +3110,9 @@ PhysicsData
 f  50.265484
 f  0.019894
 f  1.000000
-f  -0.000116
+f  0.000137
 f  0.000000
-f  -0.002489
+f  -0.002689
 f  0.800000
 f  0.800000
 f  0.800000
@@ -3123,14 +3126,14 @@ LoopSociety
 q  105_0
 p  
 MouseIntersectable
-BubbleUnit
-i  1
-MouseSelectable
+MouseGrabbable
 Position
 f  64.043526
 f  -0.000001
 f  -1222.845947
-MouseGrabbable
+BubbleUnit
+i  1
+MouseSelectable
 Circle
 f  4.000000
 Layer
@@ -3140,9 +3143,9 @@ PhysicsData
 f  50.265484
 f  0.019894
 f  1.000000
-f  0.000004
+f  0.000017
 f  0.000000
-f  -0.000506
+f  -0.000510
 f  0.800000
 f  0.800000
 f  0.800000
@@ -3156,34 +3159,34 @@ LoopSociety
 q  105_0
 p  
 MouseIntersectable
+MouseGrabbable
+Position
+f  39.973537
+f  -0.000001
+f  -1211.055786
 BubbleUnit
 i  1
 MouseSelectable
-Position
-f  39.973476
-f  -0.000001
-f  -1211.055786
-MouseGrabbable
 Circle
 f  4.000000
 Layer
 i  3
 __q  109_0
-LoopTag
-Circle
-f  97.685272
 TopDogBubbleTag
+LoopTag
 LoopSociety
 q  129_0
 p  
 q  110_0
 q  118_0
+Circle
+f  97.685272
 BubbleRef
-MouseGrabbable
 Position
 f  261.857513
 f  -0.000062
 f  -1162.427979
+MouseGrabbable
 BubbleComponent
 b  0
 MouseSelectable
@@ -3192,7 +3195,7 @@ PhysicsData
 f  29978.373047
 f  0.000033
 f  1.000000
-f  0.000008
+f  0.000007
 f  0.000000
 f  0.000000
 f  0.000000
@@ -3205,31 +3208,31 @@ b  0
 Layer
 i  0
 __q  110_0
-BubbleMultiplyComponent
-i  0
-LoopTag
-MouseSelectable
-MouseGrabbable
-Position
-f  346.177612
-f  -0.000235
-f  -1122.310303
-MouseIntersectable
 LoopSociety
 q  109_0
 p  
 q  111_0
 q  115_0
+BubbleMultiplyComponent
+i  0
+LoopTag
+MouseSelectable
+Position
+f  346.177612
+f  -0.000235
+f  -1122.310303
+MouseGrabbable
+MouseIntersectable
 __q  111_0
 BubbleRef
-MouseGrabbable
 Position
 f  206.448441
 f  -0.000062
 f  -1141.471558
-MouseIntersectable
+MouseGrabbable
 BubbleComponent
 b  0
+MouseIntersectable
 MouseSelectable
 LoopSociety
 q  110_0
@@ -3277,14 +3280,14 @@ LoopSociety
 q  111_0
 p  
 MouseIntersectable
-BubbleUnit
-i  1
-MouseSelectable
-MouseGrabbable
 Position
 f  216.514038
 f  -0.000062
 f  -1129.782104
+MouseGrabbable
+BubbleUnit
+i  1
+MouseSelectable
 Circle
 f  4.000000
 Layer
@@ -3310,14 +3313,14 @@ LoopSociety
 q  111_0
 p  
 MouseIntersectable
-BubbleUnit
-i  1
-MouseSelectable
-MouseGrabbable
 Position
 f  211.509201
 f  -0.000062
 f  -1156.117798
+MouseGrabbable
+BubbleUnit
+i  1
+MouseSelectable
 Circle
 f  4.000000
 Layer
@@ -3343,28 +3346,28 @@ LoopSociety
 q  111_0
 p  
 MouseIntersectable
-BubbleUnit
-i  1
-MouseSelectable
-MouseGrabbable
 Position
 f  191.205734
 f  -0.000062
 f  -1138.609375
+MouseGrabbable
+BubbleUnit
+i  1
+MouseSelectable
 Circle
 f  4.000000
 Layer
 i  3
 __q  115_0
 BubbleRef
-MouseGrabbable
 Position
 f  254.983902
 f  -0.000062
 f  -1099.116089
-MouseIntersectable
+MouseGrabbable
 BubbleComponent
 b  0
+MouseIntersectable
 MouseSelectable
 LoopSociety
 q  110_0
@@ -3391,17 +3394,17 @@ f  24.000000
 Layer
 i  2
 __q  116_0
-MouseGrabbable
+BubbleUnit
+i  1
 Position
 f  255.604248
 f  -0.000062
 f  -1111.063477
+MouseGrabbable
 LoopSociety
 q  115_0
 p  
 MouseIntersectable
-BubbleUnit
-i  1
 MouseSelectable
 Sphere
 f  2.000000
@@ -3424,17 +3427,17 @@ f  4.000000
 Layer
 i  3
 __q  117_0
-MouseGrabbable
+BubbleUnit
+i  1
 Position
 f  254.357834
 f  -0.000062
 f  -1087.074219
+MouseGrabbable
 LoopSociety
 q  115_0
 p  
 MouseIntersectable
-BubbleUnit
-i  1
 MouseSelectable
 Sphere
 f  2.000000
@@ -3457,31 +3460,31 @@ f  4.000000
 Layer
 i  3
 __q  118_0
-BubbleMultiplyComponent
-i  0
-LoopTag
-MouseSelectable
-MouseGrabbable
-Position
-f  353.601654
-f  -0.000184
-f  -1215.148926
-MouseIntersectable
 LoopSociety
 q  109_0
 p  
 q  119_0
 q  125_0
+BubbleMultiplyComponent
+i  0
+LoopTag
+MouseSelectable
+Position
+f  353.601654
+f  -0.000184
+f  -1215.148926
+MouseGrabbable
+MouseIntersectable
 __q  119_0
 BubbleRef
-MouseGrabbable
 Position
 f  293.532928
 f  -0.000062
 f  -1168.691650
-MouseIntersectable
+MouseGrabbable
 BubbleComponent
 b  0
+MouseIntersectable
 MouseSelectable
 LoopSociety
 q  118_0
@@ -3496,7 +3499,7 @@ PhysicsData
 f  3972.168701
 f  0.000252
 f  1.000000
-f  0.000158
+f  0.000157
 f  0.000000
 f  -0.000700
 f  0.000000
@@ -3511,17 +3514,17 @@ f  35.558128
 Layer
 i  2
 __q  120_0
-MouseGrabbable
+BubbleUnit
+i  1
 Position
 f  277.452698
 f  -0.000062
 f  -1152.992188
+MouseGrabbable
 LoopSociety
 q  119_0
 p  
 MouseIntersectable
-BubbleUnit
-i  1
 MouseSelectable
 Sphere
 f  2.000000
@@ -3544,17 +3547,17 @@ f  4.000000
 Layer
 i  3
 __q  121_0
-MouseGrabbable
+BubbleUnit
+i  1
 Position
 f  315.824585
 f  -0.000062
 f  -1171.863892
+MouseGrabbable
 LoopSociety
 q  119_0
 p  
 MouseIntersectable
-BubbleUnit
-i  1
 MouseSelectable
 Sphere
 f  2.000000
@@ -3577,17 +3580,17 @@ f  4.000000
 Layer
 i  3
 __q  122_0
-MouseGrabbable
+BubbleUnit
+i  1
 Position
 f  303.490845
 f  -0.000062
 f  -1148.485840
+MouseGrabbable
 LoopSociety
 q  119_0
 p  
 MouseIntersectable
-BubbleUnit
-i  1
 MouseSelectable
 Sphere
 f  2.000000
@@ -3610,17 +3613,17 @@ f  4.000000
 Layer
 i  3
 __q  123_0
-MouseGrabbable
+BubbleUnit
+i  1
 Position
 f  273.687714
 f  -0.019100
 f  -1179.146729
+MouseGrabbable
 LoopSociety
 q  119_0
 p  
 MouseIntersectable
-BubbleUnit
-i  1
 MouseSelectable
 Sphere
 f  2.000000
@@ -3643,17 +3646,17 @@ f  4.000000
 Layer
 i  3
 __q  124_0
-MouseGrabbable
+BubbleUnit
+i  1
 Position
 f  297.401672
 f  -0.000062
 f  -1190.813599
+MouseGrabbable
 LoopSociety
 q  119_0
 p  
 MouseIntersectable
-BubbleUnit
-i  1
 MouseSelectable
 Sphere
 f  2.000000
@@ -3677,14 +3680,14 @@ Layer
 i  3
 __q  125_0
 BubbleRef
-MouseGrabbable
 Position
 f  232.426666
 f  -0.000062
 f  -1213.840454
-MouseIntersectable
+MouseGrabbable
 BubbleComponent
 b  0
+MouseIntersectable
 MouseSelectable
 LoopSociety
 q  118_0
@@ -3732,14 +3735,14 @@ LoopSociety
 q  125_0
 p  
 MouseIntersectable
-BubbleUnit
-i  1
-MouseSelectable
-MouseGrabbable
 Position
 f  219.763016
 f  -0.000062
 f  -1204.899048
+MouseGrabbable
+BubbleUnit
+i  1
+MouseSelectable
 Circle
 f  4.000000
 Layer
@@ -3765,14 +3768,14 @@ LoopSociety
 q  125_0
 p  
 MouseIntersectable
-BubbleUnit
-i  1
-MouseSelectable
-MouseGrabbable
 Position
 f  246.444183
 f  -0.000062
 f  -1207.459473
+MouseGrabbable
+BubbleUnit
+i  1
+MouseSelectable
 Circle
 f  4.000000
 Layer
@@ -3798,20 +3801,21 @@ LoopSociety
 q  125_0
 p  
 MouseIntersectable
-BubbleUnit
-i  1
-MouseSelectable
-MouseGrabbable
 Position
 f  230.903229
 f  -0.000062
 f  -1229.292969
+MouseGrabbable
+BubbleUnit
+i  1
+MouseSelectable
 Circle
 f  4.000000
 Layer
 i  3
 __q  129_0
 LoopTag
+MouseSelectable
 BubbleEqualsComponent
 LoopSociety
 q  -1_0
@@ -3819,31 +3823,31 @@ p
 q  109_0
 q  89_0
 MouseIntersectable
-MouseGrabbable
 Position
 f  141.963379
 f  0.000366
 f  -1164.753540
-MouseSelectable
+MouseGrabbable
 __q  130_0
+MouseGrabbable
 Position
 f  -31.060425
 f  -0.000214
 f  -371.453613
-MouseGrabbable
-BubbleMultiplyComponent
-i  0
-MouseIntersectable
-MouseSelectable
 LoopSociety
 q  100_0
 p  
 q  101_0
 q  103_0
-__q  131_0
+BubbleMultiplyComponent
+i  0
+MouseIntersectable
 MouseSelectable
+__q  131_0
 Layer
 i  4
+MouseSelectable
+MouseIntersectable
 BubbleComponent
 b  0
 LoopSociety
@@ -3866,7 +3870,6 @@ f  0.000000
 f  0.000000
 b  0
 MouseGrabbable
-MouseIntersectable
 LoopTag
 Circle
 f  24.000000
@@ -3900,13 +3903,13 @@ q  31_0
 p  
 q  133_0
 MouseIntersectable
-InventoryItem
-i  3
-MouseGrabbable
 Position
 f  504.566284
 f  -1100.594849
 f  -368.010071
+MouseGrabbable
+InventoryItem
+i  3
 MouseSelectable
 Circle
 f  10.000000
@@ -3920,24 +3923,24 @@ f  40.000000
 i  0
 s  activeRect.png
 __q  133_0
-MouseGrabbable
 Position
 f  505.156921
 f  -1100.594727
 f  -368.743469
+MouseGrabbable
 MouseIntersectable
+Button
+i  5
 MouseSelectable
-Sphere
-f  2.000000
 UiComponent
 i  -1
+Sphere
+f  2.000000
 TextureComponent
 s  
 f  20.000000
 i  0
 s  compress.png
-Button
-i  5
 LoopSociety
 q  132_0
 p  
@@ -3949,39 +3952,6 @@ f  50.265484
 f  0.019894
 f  1.000000
 f  0.000003
-f  0.000000
-f  -0.000608
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-b  0
-Sphere
-f  2.000000
-LoopSociety
-q  131_0
-p  
-MouseIntersectable
-BubbleUnit
-i  1
-MouseSelectable
-Layer
-i  5
-MouseGrabbable
-Position
-f  3.181881
-f  -0.000214
-f  -358.610474
-Circle
-f  4.000000
-__q  135_0
-PhysicsData
-f  50.265484
-f  0.019894
-f  1.000000
-f  0.000009
 f  0.000000
 f  -0.000607
 f  0.000000
@@ -3997,22 +3967,56 @@ LoopSociety
 q  131_0
 p  
 MouseIntersectable
+MouseGrabbable
 BubbleUnit
 i  1
-MouseSelectable
 Layer
 i  5
-MouseGrabbable
+MouseSelectable
 Position
-f  27.062170
+f  3.181881
+f  -0.000214
+f  -358.610474
+Circle
+f  4.000000
+__q  135_0
+PhysicsData
+f  50.265484
+f  0.019894
+f  1.000000
+f  0.000001
+f  0.000000
+f  -0.000608
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+b  0
+Sphere
+f  2.000000
+LoopSociety
+q  131_0
+p  
+MouseIntersectable
+MouseGrabbable
+BubbleUnit
+i  1
+Layer
+i  5
+MouseSelectable
+Position
+f  27.062172
 f  -0.000214
 f  -356.008362
 Circle
 f  4.000000
 __q  136_0
-MouseSelectable
 Layer
 i  1
+MouseSelectable
+MouseIntersectable
 BubbleComponent
 b  0
 LoopSociety
@@ -4034,7 +4038,6 @@ f  0.000000
 f  0.000000
 b  0
 MouseGrabbable
-MouseIntersectable
 LoopTag
 Circle
 f  43.425453
@@ -4061,9 +4064,10 @@ f  0.000000
 f  0.000000
 f  0.000000
 b  0
-MouseSelectable
 Layer
 i  0
+MouseSelectable
+MouseIntersectable
 BubbleComponent
 b  0
 LoopSociety
@@ -4071,7 +4075,6 @@ q  -1_0
 p  
 q  154_0
 MouseGrabbable
-MouseIntersectable
 LoopTag
 TopDogBubbleTag
 Circle
@@ -4098,11 +4101,11 @@ b  0
 LoopSociety
 q  -1_0
 p  
-MouseGrabbable
 Position
 f  103.405746
 f  -1201.685669
 f  -393.584045
+MouseGrabbable
 MouseSelectable
 MouseIntersectable
 __q  139_0
@@ -4127,13 +4130,13 @@ q  31_0
 p  
 q  140_0
 MouseIntersectable
+InventoryItem
+i  3
+MouseGrabbable
 Position
 f  549.644470
 f  -1100.594604
 f  -368.432190
-MouseGrabbable
-InventoryItem
-i  3
 MouseSelectable
 UiComponent
 i  -1
@@ -4147,17 +4150,17 @@ f  40.000000
 i  0
 s  activeRect.png
 __q  140_0
+MouseGrabbable
 Position
 f  549.254822
 f  -1100.594482
 f  -368.324280
-MouseGrabbable
 MouseIntersectable
 MouseSelectable
-UiComponent
-i  -1
 Sphere
 f  2.000000
+UiComponent
+i  -1
 LoopSociety
 q  139_0
 p  
@@ -4192,13 +4195,13 @@ q  31_0
 p  
 q  142_0
 MouseIntersectable
-InventoryItem
-i  3
-MouseGrabbable
 Position
 f  593.879150
 f  -1100.594727
 f  -368.995789
+MouseGrabbable
+InventoryItem
+i  3
 MouseSelectable
 Circle
 f  10.000000
@@ -4212,24 +4215,24 @@ f  40.000000
 i  0
 s  activeRect.png
 __q  142_0
-MouseGrabbable
 Position
 f  594.522400
 f  -1100.594727
 f  -369.274353
+MouseGrabbable
 MouseIntersectable
+Button
+i  5
 MouseSelectable
-Sphere
-f  2.000000
 UiComponent
 i  -1
+Sphere
+f  2.000000
 TextureComponent
 s  
 f  17.000000
 i  0
 s  mulPositiveOneIcon.png
-Button
-i  5
 LoopSociety
 q  141_0
 p  
@@ -4257,13 +4260,13 @@ q  31_0
 p  
 q  144_0
 MouseIntersectable
+InventoryItem
+i  3
+MouseGrabbable
 Position
 f  639.528442
 f  -1100.594727
 f  -368.431824
-MouseGrabbable
-InventoryItem
-i  3
 MouseSelectable
 UiComponent
 i  -1
@@ -4277,17 +4280,17 @@ f  40.000000
 i  0
 s  activeRect.png
 __q  144_0
+MouseGrabbable
 Position
 f  640.572937
 f  -1100.594727
 f  -367.951965
-MouseGrabbable
 MouseIntersectable
 MouseSelectable
-UiComponent
-i  -1
 Sphere
 f  2.000000
+UiComponent
+i  -1
 LoopSociety
 q  143_0
 p  
@@ -4301,19 +4304,19 @@ i  5
 Layer
 i  1
 __q  145_0
+MouseGrabbable
 Position
 f  201.399170
 f  -1100.594971
 f  -588.696228
-MouseGrabbable
-MouseSelectable
 Layer
 i  1
+MouseSelectable
 MouseIntersectable
-Sphere
-f  2.000000
 UiComponent
 i  -1
+Sphere
+f  2.000000
 LoopSociety
 q  14_0
 p  
@@ -4329,24 +4332,24 @@ InventorySlot
 i  -1
 i  -1
 __q  146_0
+MouseGrabbable
 Position
 f  187.591858
 f  -1100.594727
 f  -421.914307
-MouseGrabbable
+Button
+i  11
 MouseSelectable
 MouseIntersectable
-UiComponent
-i  4
 Sphere
 f  2.000000
+UiComponent
+i  4
 TextureComponent
 s  C:\Users\tagir\raylib_projects\middle\assets\textures\toggleRect.png
 f  15.000000
 i  0
 s  toggleRect.png
-Button
-i  11
 LoopSociety
 q  73_0
 p  
@@ -4356,11 +4359,13 @@ Rectangle
 f  20.000000
 f  20.000000
 __q  147_0
-MouseGrabbable
 Position
 f  187.632324
 f  -1100.594849
 f  -400.245056
+MouseGrabbable
+Button
+i  10
 MouseSelectable
 MouseIntersectable
 LoopSociety
@@ -4371,8 +4376,6 @@ s  C:\Users\tagir\raylib_projects\middle\assets\textures\toggleRect.png
 f  15.000000
 i  0
 s  toggleRect.png
-Button
-i  10
 UiComponent
 i  4
 Sphere
@@ -4384,19 +4387,19 @@ f  20.000000
 f  20.000000
 ActiveCheckBoxTag
 __q  148_0
-MouseGrabbable
 Position
 f  820.926331
 f  -1100.595215
 f  -444.237488
-MouseSelectable
+MouseGrabbable
 Layer
 i  1
+MouseSelectable
 MouseIntersectable
-UiComponent
-i  -1
 Sphere
 f  2.000000
+UiComponent
+i  -1
 LoopSociety
 q  54_0
 p  
@@ -4409,9 +4412,10 @@ Rectangle
 f  40.000000
 f  30.000000
 __q  149_0
-MouseSelectable
 Layer
 i  2
+MouseSelectable
+MouseIntersectable
 BubbleComponent
 b  0
 LoopSociety
@@ -4434,7 +4438,6 @@ f  0.000000
 f  0.000000
 b  0
 MouseGrabbable
-MouseIntersectable
 LoopTag
 Circle
 f  24.000000
@@ -4447,9 +4450,10 @@ i  2
 b  0
 b  0
 __q  150_0
-MouseSelectable
 Layer
 i  0
+MouseSelectable
+MouseIntersectable
 BubbleComponent
 b  0
 LoopSociety
@@ -4471,7 +4475,6 @@ f  0.000000
 f  0.000000
 b  0
 MouseGrabbable
-MouseIntersectable
 LoopTag
 TopDogBubbleTag
 Circle
@@ -4483,19 +4486,19 @@ f  -371.444122
 BubbleAlgebraProblem
 b  0
 __q  151_0
+MouseGrabbable
 Position
 f  820.926331
 f  -1100.595215
 f  -479.760437
-MouseGrabbable
-MouseSelectable
 Layer
 i  1
+MouseSelectable
 MouseIntersectable
-Sphere
-f  2.000000
 UiComponent
 i  -1
+Sphere
+f  2.000000
 LoopSociety
 q  54_0
 p  
@@ -4508,9 +4511,10 @@ Rectangle
 f  40.000000
 f  30.000000
 __q  152_0
-MouseSelectable
 Layer
 i  4
+MouseSelectable
+MouseIntersectable
 BubbleComponent
 b  0
 LoopSociety
@@ -4533,7 +4537,6 @@ f  0.000000
 f  0.000000
 b  0
 MouseGrabbable
-MouseIntersectable
 LoopTag
 Circle
 f  24.000000
@@ -4566,12 +4569,12 @@ LoopSociety
 q  152_0
 p  
 MouseIntersectable
+MouseGrabbable
 BubbleUnit
 i  1
-MouseSelectable
 Layer
 i  5
-MouseGrabbable
+MouseSelectable
 Position
 f  -68.540115
 f  -0.000214
@@ -4583,9 +4586,9 @@ PhysicsData
 f  25403.042969
 f  0.000039
 f  1.000000
-f  -0.000006
+f  -0.000001
 f  0.000000
-f  0.000082
+f  0.000070
 f  0.000000
 f  0.000000
 f  0.000000
@@ -4593,9 +4596,10 @@ f  0.000000
 f  0.000000
 f  0.000000
 b  0
+MouseSelectable
 Layer
 i  1
-MouseSelectable
+MouseIntersectable
 BubbleComponent
 b  0
 LoopSociety
@@ -4606,28 +4610,27 @@ q  159_0
 q  160_0
 q  13_0
 MouseGrabbable
-MouseIntersectable
 LoopTag
 Circle
 f  89.922409
 Position
-f  7.435228
+f  7.435223
 f  0.000061
 f  -150.372513
 __q  155_0
-MouseGrabbable
 Position
 f  820.926331
 f  -1100.595215
 f  -515.742371
-MouseSelectable
+MouseGrabbable
 Layer
 i  1
+MouseSelectable
 MouseIntersectable
-UiComponent
-i  -1
 Sphere
 f  2.000000
+UiComponent
+i  -1
 LoopSociety
 q  54_0
 p  
@@ -4640,19 +4643,19 @@ Rectangle
 f  40.000000
 f  30.000000
 __q  156_0
+MouseGrabbable
 Position
 f  820.472717
 f  -1100.595337
 f  -552.634338
-MouseGrabbable
-MouseSelectable
 Layer
 i  1
+MouseSelectable
 MouseIntersectable
-Sphere
-f  2.000000
 UiComponent
 i  -1
+Sphere
+f  2.000000
 LoopSociety
 q  54_0
 p  
@@ -4665,19 +4668,19 @@ Rectangle
 f  40.000000
 f  30.000000
 __q  157_0
-MouseGrabbable
 Position
 f  820.442688
 f  -1100.595337
 f  -589.920715
-MouseSelectable
+MouseGrabbable
 Layer
 i  1
+MouseSelectable
 MouseIntersectable
-UiComponent
-i  -1
 Sphere
 f  2.000000
+UiComponent
+i  -1
 LoopSociety
 q  54_0
 p  
@@ -4694,9 +4697,9 @@ PhysicsData
 f  2541.887451
 f  0.000393
 f  1.000000
-f  -0.000003
+f  -0.000041
 f  0.000000
-f  -0.000322
+f  -0.000336
 f  0.000000
 f  0.000000
 f  0.000000
@@ -4704,9 +4707,10 @@ f  0.000000
 f  0.000000
 f  0.000000
 b  0
+MouseSelectable
 Layer
 i  2
-MouseSelectable
+MouseIntersectable
 BubbleComponent
 b  0
 LoopSociety
@@ -4716,22 +4720,21 @@ q  170_0
 q  171_0
 q  172_0
 MouseGrabbable
-MouseIntersectable
 LoopTag
 Circle
 f  28.444822
 Position
-f  -21.861849
+f  -21.861828
 f  0.000061
-f  -192.875580
+f  -192.875595
 __q  159_0
 PhysicsData
 f  2541.887451
 f  0.000393
 f  1.000000
-f  0.000066
+f  0.000078
 f  0.000000
-f  -0.000111
+f  -0.000012
 f  0.000000
 f  0.000000
 f  0.000000
@@ -4739,9 +4742,10 @@ f  0.000000
 f  0.000000
 f  0.000000
 b  0
+MouseSelectable
 Layer
 i  2
-MouseSelectable
+MouseIntersectable
 BubbleComponent
 b  1
 LoopSociety
@@ -4751,22 +4755,21 @@ q  164_0
 q  165_0
 q  166_0
 MouseGrabbable
-MouseIntersectable
 LoopTag
 Circle
 f  28.444822
 Position
-f  44.809418
+f  44.809422
 f  0.000061
-f  -114.763649
+f  -114.763687
 __q  160_0
 PhysicsData
 f  2541.887451
 f  0.000393
 f  1.000000
-f  -0.000031
+f  -0.000045
 f  0.000000
-f  -0.000117
+f  -0.000069
 f  0.000000
 f  0.000000
 f  0.000000
@@ -4774,9 +4777,10 @@ f  0.000000
 f  0.000000
 f  0.000000
 b  0
+MouseSelectable
 Layer
 i  2
-MouseSelectable
+MouseIntersectable
 BubbleComponent
 b  0
 LoopSociety
@@ -4786,14 +4790,13 @@ q  167_0
 q  168_0
 q  169_0
 MouseGrabbable
-MouseIntersectable
 LoopTag
 Circle
 f  28.444822
 Position
-f  -31.845390
+f  -31.845392
 f  0.000061
-f  -116.844963
+f  -116.844986
 __q  161_0
 PhysicsData
 f  50.265484
@@ -4815,12 +4818,12 @@ LoopSociety
 q  149_0
 p  
 MouseIntersectable
+MouseGrabbable
 BubbleUnit
 i  1
-MouseSelectable
 Layer
 i  3
-MouseGrabbable
+MouseSelectable
 Position
 f  -227.959335
 f  0.000015
@@ -4848,12 +4851,12 @@ LoopSociety
 q  149_0
 p  
 MouseIntersectable
+MouseGrabbable
 BubbleUnit
 i  1
-MouseSelectable
 Layer
 i  3
-MouseGrabbable
+MouseSelectable
 Position
 f  -237.330368
 f  0.000015
@@ -4881,12 +4884,12 @@ LoopSociety
 q  152_0
 p  
 MouseIntersectable
+MouseGrabbable
 BubbleUnit
 i  1
-MouseSelectable
 Layer
 i  5
-MouseGrabbable
+MouseSelectable
 Position
 f  -59.091351
 f  -0.000214
@@ -4898,20 +4901,21 @@ LoopSociety
 q  159_0
 p  
 MouseIntersectable
+MouseGrabbable
 BubbleUnit
 i  1
+MouseSelectable
 Layer
 i  3
-MouseSelectable
 Sphere
 f  2.000000
 PhysicsData
 f  50.265484
 f  0.019894
 f  1.000000
-f  0.000079
+f  0.000071
 f  0.000000
-f  -0.000165
+f  -0.000164
 f  0.000000
 f  0.000000
 f  0.000000
@@ -4919,11 +4923,10 @@ f  0.000000
 f  0.000000
 f  0.000000
 b  0
-MouseGrabbable
 Position
-f  33.562199
+f  33.562214
 f  0.000061
-f  -104.131088
+f  -104.131111
 Circle
 f  4.000000
 __q  165_0
@@ -4931,20 +4934,21 @@ LoopSociety
 q  159_0
 p  
 MouseIntersectable
+MouseGrabbable
 BubbleUnit
 i  1
+MouseSelectable
 Layer
 i  3
-MouseSelectable
 Sphere
 f  2.000000
 PhysicsData
 f  50.265484
 f  0.019894
 f  1.000000
-f  0.000076
+f  0.000071
 f  0.000000
-f  -0.000174
+f  -0.000169
 f  0.000000
 f  0.000000
 f  0.000000
@@ -4952,11 +4956,10 @@ f  0.000000
 f  0.000000
 f  0.000000
 b  0
-MouseGrabbable
 Position
-f  59.642826
+f  59.642838
 f  0.000061
-f  -110.347244
+f  -110.347290
 Circle
 f  4.000000
 __q  166_0
@@ -4964,20 +4967,21 @@ LoopSociety
 q  159_0
 p  
 MouseIntersectable
+MouseGrabbable
 BubbleUnit
 i  1
+MouseSelectable
 Layer
 i  3
-MouseSelectable
 Sphere
 f  2.000000
 PhysicsData
 f  50.265484
 f  0.019894
 f  1.000000
-f  0.000057
+f  0.000050
 f  0.000000
-f  -0.000291
+f  -0.000277
 f  0.000000
 f  0.000000
 f  0.000000
@@ -4985,11 +4989,10 @@ f  0.000000
 f  0.000000
 f  0.000000
 b  0
-MouseGrabbable
 Position
 f  41.225182
 f  0.000061
-f  -129.819244
+f  -129.819275
 Circle
 f  4.000000
 __q  167_0
@@ -4997,20 +5000,21 @@ LoopSociety
 q  160_0
 p  
 MouseIntersectable
+MouseGrabbable
 BubbleUnit
 i  1
+MouseSelectable
 Layer
 i  3
-MouseSelectable
 Sphere
 f  2.000000
 PhysicsData
 f  50.265484
 f  0.019894
 f  1.000000
-f  0.000042
+f  0.000043
 f  0.000000
-f  -0.000180
+f  -0.000171
 f  0.000000
 f  0.000000
 f  0.000000
@@ -5018,11 +5022,10 @@ f  0.000000
 f  0.000000
 f  0.000000
 b  0
-MouseGrabbable
 Position
-f  -17.424053
+f  -17.424049
 f  0.000061
-f  -111.225830
+f  -111.225861
 Circle
 f  4.000000
 __q  168_0
@@ -5030,20 +5033,21 @@ LoopSociety
 q  160_0
 p  
 MouseIntersectable
+MouseGrabbable
 BubbleUnit
 i  1
+MouseSelectable
 Layer
 i  3
-MouseSelectable
 Sphere
 f  2.000000
 PhysicsData
 f  50.265484
 f  0.019894
 f  1.000000
-f  0.000054
+f  0.000059
 f  0.000000
-f  -0.000128
+f  -0.000158
 f  0.000000
 f  0.000000
 f  0.000000
@@ -5051,9 +5055,8 @@ f  0.000000
 f  0.000000
 f  0.000000
 b  0
-MouseGrabbable
 Position
-f  -43.926952
+f  -43.926945
 f  0.000061
 f  -107.171692
 Circle
@@ -5063,20 +5066,21 @@ LoopSociety
 q  160_0
 p  
 MouseIntersectable
+MouseGrabbable
 BubbleUnit
 i  1
+MouseSelectable
 Layer
 i  3
-MouseSelectable
 Sphere
 f  2.000000
 PhysicsData
 f  50.265484
 f  0.019894
 f  1.000000
-f  0.000065
+f  0.000036
 f  0.000000
-f  -0.000344
+f  -0.000351
 f  0.000000
 f  0.000000
 f  0.000000
@@ -5084,11 +5088,10 @@ f  0.000000
 f  0.000000
 f  0.000000
 b  0
-MouseGrabbable
 Position
 f  -34.189777
 f  0.000061
-f  -132.142715
+f  -132.142731
 Circle
 f  4.000000
 __q  170_0
@@ -5096,11 +5099,12 @@ LoopSociety
 q  158_0
 p  
 MouseIntersectable
+MouseGrabbable
 BubbleUnit
 i  1
+MouseSelectable
 Layer
 i  3
-MouseSelectable
 Sphere
 f  2.000000
 PhysicsData
@@ -5109,7 +5113,7 @@ f  0.019894
 f  1.000000
 f  0.000041
 f  0.000000
-f  -0.000296
+f  -0.000358
 f  0.000000
 f  0.000000
 f  0.000000
@@ -5117,9 +5121,8 @@ f  0.000000
 f  0.000000
 f  0.000000
 b  0
-MouseGrabbable
 Position
-f  -20.391680
+f  -20.391663
 f  0.000061
 f  -177.468094
 Circle
@@ -5129,20 +5132,21 @@ LoopSociety
 q  158_0
 p  
 MouseIntersectable
+MouseGrabbable
 BubbleUnit
 i  1
+MouseSelectable
 Layer
 i  3
-MouseSelectable
 Sphere
 f  2.000000
 PhysicsData
 f  50.265484
 f  0.019894
 f  1.000000
-f  0.000009
+f  0.000004
 f  0.000000
-f  -0.000309
+f  -0.000324
 f  0.000000
 f  0.000000
 f  0.000000
@@ -5150,9 +5154,8 @@ f  0.000000
 f  0.000000
 f  0.000000
 b  0
-MouseGrabbable
 Position
-f  -9.258771
+f  -9.258746
 f  0.000061
 f  -201.858643
 Circle
@@ -5162,20 +5165,21 @@ LoopSociety
 q  158_0
 p  
 MouseIntersectable
+MouseGrabbable
 BubbleUnit
 i  1
+MouseSelectable
 Layer
 i  3
-MouseSelectable
 Sphere
 f  2.000000
 PhysicsData
 f  50.265484
 f  0.019894
 f  1.000000
-f  0.000058
+f  0.000054
 f  0.000000
-f  -0.000320
+f  -0.000344
 f  0.000000
 f  0.000000
 f  0.000000
@@ -5183,27 +5187,26 @@ f  0.000000
 f  0.000000
 f  0.000000
 b  0
-MouseGrabbable
 Position
-f  -35.939342
+f  -35.939327
 f  0.000061
 f  -199.305466
 Circle
 f  4.000000
 __q  173_0
+MouseGrabbable
 Position
 f  820.016418
 f  -1100.595215
 f  -626.334900
-MouseGrabbable
-MouseSelectable
 Layer
 i  1
+MouseSelectable
 MouseIntersectable
-Sphere
-f  2.000000
 UiComponent
 i  -1
+Sphere
+f  2.000000
 LoopSociety
 q  54_0
 p  
@@ -5216,12 +5219,11 @@ Rectangle
 f  40.000000
 f  30.000000
 __q  174_0
-MouseGrabbable
 Position
 f  245.597839
 f  -1100.594727
 f  -337.085022
-MouseSelectable
+MouseGrabbable
 Text
 s  [space]
 f  255.000000
@@ -5233,12 +5235,13 @@ f  0.000000
 f  0.000000
 f  15.000000
 b  1
+Button
+i  5
+MouseSelectable
 MouseIntersectable
 LoopSociety
 q  73_0
 p  
-Button
-i  5
 UiComponent
 i  -1
 Sphere
@@ -5246,12 +5249,11 @@ f  2.000000
 Layer
 i  1
 __q  175_0
+MouseGrabbable
 Position
 f  324.594788
 f  -1100.594849
 f  -336.550476
-MouseGrabbable
-MouseSelectable
 Text
 s  z
 f  255.000000
@@ -5263,25 +5265,25 @@ f  0.000000
 f  0.000000
 f  20.000000
 b  1
-MouseIntersectable
-UiComponent
-i  -1
-Sphere
-f  2.000000
 Button
 i  5
+MouseSelectable
+MouseIntersectable
+Sphere
+f  2.000000
+UiComponent
+i  -1
 LoopSociety
 q  73_0
 p  
 Layer
 i  1
 __q  176_0
-MouseGrabbable
 Position
 f  505.711426
 f  -1100.594727
 f  -335.813416
-MouseSelectable
+MouseGrabbable
 Text
 s  c
 f  255.000000
@@ -5293,12 +5295,13 @@ f  0.000000
 f  0.000000
 f  20.000000
 b  1
+Button
+i  5
+MouseSelectable
 MouseIntersectable
 LoopSociety
 q  73_0
 p  
-Button
-i  5
 UiComponent
 i  -1
 Sphere
@@ -5306,12 +5309,11 @@ f  2.000000
 Layer
 i  1
 __q  177_0
+MouseGrabbable
 Position
 f  413.995026
 f  -1100.594849
 f  -336.585266
-MouseGrabbable
-MouseSelectable
 Text
 s  x
 f  255.000000
@@ -5323,19 +5325,21 @@ f  0.000000
 f  0.000000
 f  20.000000
 b  1
-MouseIntersectable
-UiComponent
-i  -1
-Sphere
-f  2.000000
 Button
 i  5
+MouseSelectable
+MouseIntersectable
+Sphere
+f  2.000000
+UiComponent
+i  -1
 LoopSociety
 q  73_0
 p  
 Layer
 i  1
 __q  178_0
+MouseSelectable
 Text
 s  4
 f  255.000000
@@ -5347,23 +5351,23 @@ f  0.000000
 f  0.000000
 f  25.000000
 b  1
-MouseSelectable
 MouseIntersectable
-Sphere
-f  2.000000
 UiComponent
 i  3
+Sphere
+f  2.000000
 LoopSociety
 q  73_0
 p  
+MouseGrabbable
 Position
 f  756.478333
 f  -1100.594971
 f  -603.242371
-MouseGrabbable
 Layer
 i  1
 __q  179_0
+MouseSelectable
 Text
 s  MOVES LEFT
 f  255.000000
@@ -5375,20 +5379,19 @@ f  0.000000
 f  0.000000
 f  7.000000
 b  1
-MouseSelectable
 MouseIntersectable
 LoopSociety
 q  73_0
 p  
-UiComponent
-i  -1
 Sphere
 f  2.000000
-MouseGrabbable
+UiComponent
+i  -1
 Position
 f  755.831970
 f  -1100.594971
 f  -617.985046
+MouseGrabbable
 Layer
 i  1
 __q  180_0
@@ -5407,32 +5410,32 @@ b  0
 LoopSociety
 q  -1_0
 p  
-MouseGrabbable
 Position
 f  510.950409
 f  -821.858276
 f  -662.070496
+MouseGrabbable
 MouseSelectable
 MouseIntersectable
 __q  181_0
-MouseGrabbable
 Position
 f  188.126831
 f  -1100.595093
 f  -486.538605
+MouseGrabbable
+Button
+i  21
 MouseSelectable
 MouseIntersectable
-Sphere
-f  2.000000
 UiComponent
 i  4
+Sphere
+f  2.000000
 TextureComponent
 s  C:\Users\tagir\raylib_projects\middle\assets\textures\toggleRect.png
 f  15.000000
 i  0
 s  toggleRect.png
-Button
-i  21
 LoopSociety
 q  73_0
 p  
@@ -5442,11 +5445,11 @@ Rectangle
 f  20.000000
 f  20.000000
 __q  182_0
+MouseGrabbable
 Position
 f  233.488831
 f  -1100.594971
 f  -442.770508
-MouseGrabbable
 Text
 s  power the outer
 f  255.000000
@@ -5458,19 +5461,119 @@ f  0.000000
 f  0.000000
 f  8.000000
 b  1
+Button
+i  5
 MouseSelectable
 MouseIntersectable
 LoopSociety
 q  73_0
 p  
-Button
-i  5
 UiComponent
 i  -1
 Sphere
 f  2.000000
 Layer
 i  1
+__q  183_0
+MouseSelectable
+Text
+s  NEGATE
+f  255.000000
+f  255.000000
+f  255.000000
+f  255.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  8.000000
+b  1
+Button
+i  25
+MouseIntersectable
+LoopSociety
+q  73_0
+p  
+TextureComponent
+s  C:\Users\tagir\raylib_projects\middle\assets\textures\navRect.png
+f  30.000000
+i  0
+s  navRect.png
+UiComponent
+i  -1
+Sphere
+f  2.000000
+MouseGrabbable
+Position
+f  324.052643
+f  -1100.594604
+f  -713.913208
+Layer
+i  1
+Rectangle
+f  40.000000
+f  30.000000
+__q  184_0
+Text
+s  INVERT
+f  255.000000
+f  255.000000
+f  255.000000
+f  255.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  8.000000
+b  1
+Button
+i  26
+MouseSelectable
+MouseIntersectable
+LoopSociety
+q  73_0
+p  
+TextureComponent
+s  C:\Users\tagir\raylib_projects\middle\assets\textures\navRect.png
+f  30.000000
+i  0
+s  navRect.png
+Sphere
+f  2.000000
+UiComponent
+i  -1
+MouseGrabbable
+Position
+f  377.454590
+f  -1100.594604
+f  -713.913208
+Layer
+i  1
+Rectangle
+f  40.000000
+f  30.000000
+__q  185_0
+Text
+s  BubbleInsertSystem
+f  255.000000
+f  255.000000
+f  255.000000
+f  255.000000
+f  2.000000
+f  0.000000
+f  10.000000
+f  10.000000
+b  1
+MouseSelectable
+Position
+f  -1094.419922
+f  -0.000305
+f  -876.708069
+SystemReference
+s  BubbleInsertSystem
+MouseGrabbable
+MouseIntersectable
+LoopSociety
+q  71_0
+p  
 __q  186_0
 Sphere
 f  2.000000
@@ -5487,20 +5590,19 @@ b  0
 LoopSociety
 q  -1_0
 p  
-MouseGrabbable
 Position
 f  467.774963
 f  -1600.594971
 f  -546.589355
+MouseGrabbable
 MouseSelectable
 MouseIntersectable
 __q  189_0
+MouseGrabbable
 Position
 f  819.352844
 f  -1100.594727
 f  -403.979919
-MouseGrabbable
-MouseSelectable
 Text
 s  Procedures
 f  255.000000
@@ -5512,25 +5614,25 @@ f  0.000000
 f  0.000000
 f  20.000000
 b  1
-MouseIntersectable
-UiComponent
-i  -1
-Sphere
-f  2.000000
 Button
 i  5
+MouseSelectable
+MouseIntersectable
+Sphere
+f  2.000000
+UiComponent
+i  -1
 LoopSociety
 q  73_0
 p  
 Layer
 i  1
 __q  190_0
-MouseGrabbable
 Position
 f  244.191711
 f  -1100.594971
 f  -419.743744
-MouseSelectable
+MouseGrabbable
 Text
 s  multiply with the outer
 f  255.000000
@@ -5542,12 +5644,13 @@ f  0.000000
 f  0.000000
 f  8.000000
 b  1
+Button
+i  5
+MouseSelectable
 MouseIntersectable
 LoopSociety
 q  73_0
 p  
-Button
-i  5
 UiComponent
 i  -1
 Sphere
@@ -5555,12 +5658,11 @@ f  2.000000
 Layer
 i  1
 __q  191_0
+MouseGrabbable
 Position
 f  231.062012
 f  -1100.595581
 f  -399.468567
-MouseGrabbable
-MouseSelectable
 Text
 s  add to the outer
 f  255.000000
@@ -5572,13 +5674,14 @@ f  0.000000
 f  0.000000
 f  8.000000
 b  1
-MouseIntersectable
-UiComponent
-i  -1
-Sphere
-f  2.000000
 Button
 i  5
+MouseSelectable
+MouseIntersectable
+Sphere
+f  2.000000
+UiComponent
+i  -1
 LoopSociety
 q  73_0
 p  
@@ -5586,16 +5689,16 @@ Layer
 i  1
 __q  192_0
 LoopTag
+UiComponent
+i  1
 Rectangle
 f  1000.000000
 f  500.000000
-UiComponent
-i  1
+MouseGrabbable
 Position
 f  502.546448
 f  -1100.595337
 f  -928.172546
-MouseGrabbable
 LoopSociety
 q  73_0
 p  
@@ -5604,19 +5707,19 @@ MouseIntersectable
 Layer
 i  0
 __q  206_0
-MouseGrabbable
 Position
 f  201.291748
 f  -1100.594971
 f  -528.249939
-MouseSelectable
+MouseGrabbable
 Layer
 i  1
+MouseSelectable
 MouseIntersectable
-UiComponent
-i  -1
 Sphere
 f  2.000000
+UiComponent
+i  -1
 LoopSociety
 q  14_0
 p  
@@ -5636,9 +5739,9 @@ PhysicsData
 f  50.265484
 f  0.019894
 f  1.000000
-f  -0.000066
+f  -0.000074
 f  0.000000
-f  -0.002037
+f  -0.002722
 f  0.800000
 f  0.800000
 f  0.800000
@@ -5652,14 +5755,14 @@ LoopSociety
 q  91_0
 p  
 MouseIntersectable
+Position
+f  41.651371
+f  -0.000123
+f  -1116.748779
+MouseGrabbable
 BubbleUnit
 i  1
 MouseSelectable
-MouseGrabbable
-Position
-f  41.651627
-f  -0.000123
-f  -1116.748779
 Circle
 f  4.000000
 Layer
