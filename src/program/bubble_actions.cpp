@@ -19,6 +19,7 @@
 #include "bubble_constants.h"
 #include "HelperBubbleEquation.h"
 #include "EditThisTag.h"
+#include "InsertableBubble.h"
 
 namespace bubbleActions {
 
@@ -2182,5 +2183,22 @@ namespace bubbleActions {
 	}
 
 
+	void CopyAsHelper::execute(middle::GameState* gameState)
+	{
+		copyShapeId = middle::deepCopyShape(gameState, shapeToCopyId.index);
+		middle::moveShape(gameState, copyShapeId.index, targetPosition - middle::getShapePosition(gameState, copyShapeId.index));
+		middle::attachComponent<components::HelperBubbleEquation>(gameState, copyShapeId);
+		//auto inventoryItem = middle::attachComponent<components::InventoryItem>(gameState, copyShapeId);
+		//inventoryItem->itemType = bubbleInventoryItemType::NEW_ADDITION_TERM;
+		auto insertable = middle::attachComponent<components::InsertableBubble>(gameState, copyShapeId);
+		auto& copyShape = middle::getShape(gameState, copyShapeId.index);
+		auto loop = middle::getComponent<components::LoopSociety>(copyShape);
+		loop->parentLoopId = middle::Id();
+	}
+
+	void CopyAsHelper::undo(middle::GameState* gameState)
+	{
+		middle::deleteShapeRecursive(gameState, copyShapeId.index);
+	}
 
 }

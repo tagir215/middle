@@ -348,4 +348,17 @@ namespace bubbleActions{
 	};
 
 
+	class CopyAsHelper : public middle::EditorActionContainer {
+	public:
+		middle::Id shapeToCopyId;
+		Vector3 targetPosition;
+		middle::Id copyShapeId;
+		CopyAsHelper(middle::Id shapeToCopyId, const Vector3& targetPosition) {
+			this->shapeToCopyId = shapeToCopyId;
+			this->targetPosition = targetPosition;
+		}
+		std::vector<std::unique_ptr<middle::EditorActionContainer>> actions;
+		void execute(middle::GameState* gameState) override;
+		void undo(middle::GameState* gameState) override;
+	};
 }

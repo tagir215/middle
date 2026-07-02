@@ -468,6 +468,8 @@ public:
 			bool shapeForDeletionIsInventoryItem = middle::getComponent<components::InventoryItem>(shapeForDeletion);
 
 
+			int intersectCount = 0;
+
 			auto intersectableIt = intersectableCache->begin<components::MouseIntersectable>();
 			for (int i = 0; i < intersectableCache->getSize(); ++i) {
 				auto intersectable = *intersectableIt;
@@ -475,6 +477,11 @@ public:
 				auto& intersectableShape = middle::getShape(gameState, intersectableCache->relevantIdVector[i].index);
 				middle::Id parentId = middle::getParent(gameState, intersectableShape.id);
 
+				if (!intersectable->intersecting) {
+					continue;
+				}
+
+				++intersectCount;
 
 				if (!canEdit(gameState, intersectableShape)) {
 					continue;
@@ -498,9 +505,6 @@ public:
 					}
 				}
 
-				if (!intersectable->intersecting) {
-					continue;
-				}
 
 				// variables can be non same layer, so check before layer filter, but it needs to intersect at top
 				if (intersectable->intersectingTop) {
@@ -528,6 +532,12 @@ public:
 				}
 
 
+			}
+
+			if (intersectCount == 1) {
+				auto copyAction = std::make_shared<bubbleActions::CopyAsHelper>(ref->idRef, gameState->input.mouseXZ_PlanePos);
+				middle::queueAction(gameState, copyAction);
+				gameState->bubbleAlgebraState.bubbleActions.push_back(copyAction);
 			}
 		}
 

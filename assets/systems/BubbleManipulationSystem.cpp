@@ -117,19 +117,20 @@ public:
 
 		bool intersecting = bubble::isIntersecting(gameState, shape);
 		if (intersecting && gameState->bubbleAlgebraState.grabbedId.index == middle::UNASSIGNED && gameState->input.mouseHeld) {
+
+			// copy as grabbed
+			middle::Id copyId = middle::deepCopyShape(gameState, shape.id.index);
+			auto& copyShape = middle::getShape(gameState, copyId.index);
+			auto copyGrabbable = middle::getComponent<components::MouseGrabbable>(copyShape);
+			copyGrabbable->grabbing = true;
+			gameState->bubbleAlgebraState.grabbedId = copyId;
+			// set og as reference
+			auto ref = middle::attachComponent<components::IdRef>(gameState, copyShape.id);
+			ref->idRef = shape.id;
+			assert(ref->idRef.index != middle::UNASSIGNED);
+
 			middle::Id& parentId = middle::getParent(gameState, shape.id);
 			if (parentId.index != middle::UNASSIGNED) {
-				// copy as grabbed
-				middle::Id copyId = middle::deepCopyShape(gameState, shape.id.index);
-				auto& copyShape = middle::getShape(gameState, copyId.index);
-				auto copyGrabbable = middle::getComponent<components::MouseGrabbable>(copyShape);
-				copyGrabbable->grabbing = true;
-				gameState->bubbleAlgebraState.grabbedId = copyId;
-				// set og as reference
-				auto ref = middle::attachComponent<components::IdRef>(gameState, copyShape.id);
-				ref->idRef = shape.id;
-				assert(ref->idRef.index != middle::UNASSIGNED);
-
 				handleEqualsToVariableCase(gameState, parentId, copyId);
 			}
 		}
