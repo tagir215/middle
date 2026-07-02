@@ -132,43 +132,29 @@ namespace bubbleActions {
 		auto mulComp = middle::getComponent<components::BubbleMultiplyComponent>(shapeToReplace);
 		auto unit = middle::getComponent<components::BubbleUnit>(shapeToReplace);
 		auto variable = middle::getComponent<components::BubbleVariable>(shapeToReplace);
-		// containe copies in a new multiplication
-		if (bubbleComp) {
-			// deep copy to replace and replacing
-			middle::Id copyId = middle::deepCopyShape(gameState, replacingShape.id.index);
+
+		if (bubbleComp || mulComp || variable) {
+			middle::Id replacingCopyId = middle::deepCopyShape(gameState, replacingShapeId.index);
 			middle::Id toReplaceCopyId = middle::deepCopyShape(gameState, shapeToReplaceId.index);
 
-			auto newMulAction = bubbleActions::NewMultiplication(copyId, toReplaceCopyId);
-			newMulAction.execute(gameState);
-
-			auto& newMulShape = middle::getShape(gameState, newMulAction.resultShapeId.index);
-			auto position = middle::getComponent<components::Position>(newMulShape);
-
-			// compute displacmenet from replacing shape to shapeToReplace position
-			Vector3 replacingShapePos = middle::getShapePosition(gameState, newMulShape.id.index);
-			Vector3 displacement = targetPos - replacingShapePos;
-			position = middle::getComponent<components::Position>(newMulShape);
-			position->posX = targetPos.x;
-			position->posY = targetPos.y;
-			position->posZ = targetPos.z;
-			resultShapeId = newMulShape.id;
+			middle::Id recieverId;
+			auto& shapeToReplaceCopy = middle::getShape(gameState, toReplaceCopyId.index);
+			// if mul comp we link to one of the children, since thats what linkMultiplication expects
+			auto mulComp = middle::getComponent<components::BubbleMultiplyComponent>(shapeToReplaceCopy);
+			if (mulComp) {
+				std::vector<middle::Id>children;
+				middle::getChildren(gameState, shapeToReplaceCopy.id, children);
+				recieverId = children[0];
+			}
+			else {
+				recieverId = toReplaceCopyId;;
+			}
+			auto linkAction = LinkMultiplicationTerm(recieverId, replacingCopyId);
+			linkAction.execute(gameState);
+			resultShapeId = linkAction.resultShapeId;
 			return;
 		}
 
-		// if shape to replace is already a multiplicaiton
-		if (mulComp) {
-			middle::Id& copyMulShapeId = middle::deepCopyShape(gameState, shapeToReplace.id.index);
-			auto& copyMulShape = middle::getShape(gameState, copyMulShapeId.index);
-			middle::Id copyId = middle::deepCopyShape(gameState, replacingShape.id.index, copyMulShape.id.index);
-			auto copyMulLoop = middle::getComponent<components::LoopSociety>(copyMulShape);
-			copyMulLoop->loopMemberIds.push_back(copyId);
-			// compute displacmenet from replacing shape to shapeToReplace position
-			Vector3 replacingShapePos = middle::getShapePosition(gameState, copyMulShape.id.index);
-			Vector3 displacement = targetPos - replacingShapePos;
-			middle::moveShape(gameState, copyMulShape.id.index, displacement);
-			resultShapeId = copyMulShape.id;
-			return;
-		}
 
 		// if shape to replace is a unit
 		else if (unit)
