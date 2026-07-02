@@ -25,6 +25,7 @@
 #include "bubble_constants.h"
 #include "SnapRef.h"
 #include "TimerComponent.h"
+#include "InsertableBubble.h"
 
 class BubbleModificationSystem : public middle::MiddleGameplaySystem {
 public:
@@ -42,6 +43,7 @@ public:
 
 		intersectableCache = middle::newCompCache(gameState);
 		intersectableCache->addType<components::MouseIntersectable>();
+		intersectableCache->addType<components::DeleteComponent>(components::NOTINTERESTED);
 
 		placementCache = middle::newCompCache(gameState);
 		placementCache->addType<components::BubbleComponent>();
@@ -129,7 +131,7 @@ public:
 	void inventoryAction(middle::GameState* gameState, int actionType, middle::Id& refId, middle::Shape& intersectedShape) {
 		std::shared_ptr<middle::EditorActionContainer>action;
 
-		if (actionType == bubbleInventoryItemType::NEW_ADDITION_TERM) {
+		if (actionType == components::InsertableBubbleType::ADD_OUTER) {
 			middle::Id copyId = copyOfInventoryItem(gameState, refId);
 			auto registerAction = std::make_shared<middle::EditorActionRegisterId>(copyId);
 			auto newTermAction = std::make_shared<bubbleActions::NewAdditionTerm>(intersectedShape.id, copyId, gameState->input.mouseXZ_PlanePos);
@@ -143,7 +145,7 @@ public:
 					registerAction->undo(gameState);
 				});
 		}
-		else if (actionType == bubbleInventoryItemType::NEW_MULTIPLICATION_TERM) {
+		else if (actionType == components::InsertableBubbleType::MULTIPLY_OUTER) {
 			middle::Id copyId = copyOfInventoryItem(gameState, refId);
 			auto registerAction = std::make_shared<middle::EditorActionRegisterId>(copyId);
 			auto newTermAction = std::make_shared<bubbleActions::NewMultiplicationTerm>(intersectedShape.id, copyId, gameState->input.mouseXZ_PlanePos);
@@ -157,7 +159,7 @@ public:
 					registerAction->undo(gameState);
 				});
 		}
-		else if (actionType == bubbleInventoryItemType::NEW_POWER_TERM) {
+		else if (actionType == components::InsertableBubbleType::POWER_OUTER) {
 			middle::Id copyId = copyOfInventoryItem(gameState, refId);
 			auto registerAction = std::make_shared<middle::EditorActionRegisterId>(copyId);
 			auto newTermAction = std::make_shared<bubbleActions::NewPowerTerm>(intersectedShape.id, copyId, gameState->input.mouseXZ_PlanePos);
@@ -171,7 +173,7 @@ public:
 					registerAction->undo(gameState);
 				});
 		}
-		else if (actionType == bubbleInventoryItemType::INSERT_X_OVER_X) {
+		else if (actionType == components::InsertableBubbleType::MULTIPLY_X_OVER_X) {
 			middle::Id copyId = copyOfInventoryItem(gameState, refId);
 			auto registerAction = std::make_shared<middle::EditorActionRegisterId>(copyId);
 			auto insertAction = std::make_shared<bubbleActions::InsertAsXOverX>(intersectedShape.id, copyId, gameState->input.mouseXZ_PlanePos);
@@ -185,7 +187,7 @@ public:
 					registerAction->undo(gameState);
 				});
 		}
-		else if (actionType == bubbleInventoryItemType::INSERT_X_MINUS_X) {
+		else if (actionType == components::InsertableBubbleType::ADD_X_MINUS_X) {
 			middle::Id copyId = copyOfInventoryItem(gameState, refId);
 			auto registerAction = std::make_shared<middle::EditorActionRegisterId>(copyId);
 			auto insertAction = std::make_shared<bubbleActions::InsertAsXMinusX>(intersectedShape.id, copyId, gameState->input.mouseXZ_PlanePos);
@@ -503,6 +505,11 @@ public:
 						inventoryAction(gameState, inventoryItem->itemType, ref->idRef, intersectableShape);
 						break;
 					}
+					auto insertable = middle::getComponent<components::InsertableBubble>(deletionsRefShape);
+					if (insertable) {
+						inventoryAction(gameState, insertable->insertableBubbleType, ref->idRef, intersectableShape);
+						break;
+					}
 				}
 
 
@@ -534,7 +541,7 @@ public:
 
 			}
 
-			if (intersectCount == 1) {
+			if (intersectCount == 0) {
 				auto copyAction = std::make_shared<bubbleActions::CopyAsHelper>(ref->idRef, gameState->input.mouseXZ_PlanePos);
 				middle::queueAction(gameState, copyAction);
 				gameState->bubbleAlgebraState.bubbleActions.push_back(copyAction);
