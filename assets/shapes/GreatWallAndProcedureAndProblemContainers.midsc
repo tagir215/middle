@@ -3,13 +3,11 @@ LoopTag
 LoopSociety
 q  -1_0
 p  
-q  38_0
 q  24_0
 q  39_0
 q  133_0
 q  132_0
 q  134_0
-MouseSelectable
 Text
 s  GreatWallAndProcedureAndProblemContainers
 f  0.000000
@@ -21,12 +19,13 @@ f  0.000000
 f  0.000000
 f  5.000000
 b  1
+MouseSelectable
 MouseIntersectable
+MouseGrabbable
 Position
 f  0.000000
 f  0.000000
 f  0.000000
-MouseGrabbable
 __q  134_0
 LoopTag
 LoopSociety
@@ -37,25 +36,25 @@ s  C:\Users\tagir\raylib_projects\middle\assets\textures\editThis.png
 f  50.000000
 i  0
 s  editThis.png
-MouseSelectable
 RuntimeHiddenTag
+MouseSelectable
 MouseIntersectable
-MouseGrabbable
 Position
 f  10.201752
 f  0.000000
 f  -68.962860
+MouseGrabbable
 EditThisTag
 __q  132_0
-Sphere
-f  2.000000
 UiComponent
 i  -1
-MouseGrabbable
+Sphere
+f  2.000000
 Position
 f  -189.721893
 f  0.000046
 f  -17.317028
+MouseGrabbable
 TextureComponent
 s  C:\Users\tagir\raylib_projects\middle\assets\textures\arrow.png
 f  200.000000
@@ -80,11 +79,11 @@ i  1
 s  pattern.png
 MouseSelectable
 MouseIntersectable
-MouseGrabbable
 Position
 f  -97.271896
 f  100.000076
 f  -42.538551
+MouseGrabbable
 __q  39_0
 UiComponent
 i  -1
@@ -94,69 +93,23 @@ q  40_0
 p  
 MouseSelectable
 MouseIntersectable
-MouseGrabbable
 Position
 f  -189.801910
 f  -0.000549
 f  -8.120432
+MouseGrabbable
 ProcedureImportContainer
 q  1_0
 __q  24_0
 MouseSelectable
-BubbleAlgebraProblemContainer
-MouseIntersectable
-LoopTag
-MouseGrabbable
 Position
 f  -1.469971
 f  -0.000122
 f  28.193649
-LoopSociety
-q  40_0
-p  
-__q  38_0
-MouseSelectable
-Position
-f  -189.230957
-f  0.000061
-f  -2.058213
 MouseGrabbable
-Sphere
-f  2.000000
-PhysicsData
-f  10000.000000
-f  0.000000
-f  1.000000
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.800000
-f  0.800000
-f  0.800000
-f  0.000000
-f  0.000000
-f  0.000000
-b  1
-Cuboid
-f  7.000000
-f  1.000000
-f  10000.000000
+BubbleAlgebraProblemContainer
 MouseIntersectable
+LoopTag
 LoopSociety
 q  40_0
 p  
-Rectangle
-f  7.000000
-f  10000.000000
-Text
-s  GreatWall
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-f  1.000000
-b  1
-RuntimeHiddenTag

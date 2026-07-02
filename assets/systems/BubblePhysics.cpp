@@ -14,6 +14,7 @@
 #include "Rectangle.h"
 #include "TopDogBubbleTag.h"
 #include "BubbleEqualsComponent.h"
+#include "DeleteComponent.h" 
 
 class BubblePhysics : public middle::MiddleGameplaySystem {
 public:
@@ -42,6 +43,7 @@ public:
 		bubbleCache->addType<components::PhysicsData>();
 		bubbleCache->addType<components::Circle>();
 		bubbleCache->addType<components::LoopSociety>();
+		bubbleCache->addType<components::DeleteComponent>();
 
 		mulCache = middle::newCompCache(gameState);
 		mulCache->addType<components::BubbleMultiplyComponent>();
@@ -374,6 +376,7 @@ public:
 				body.radius = radius;
 				bodies.push_back(body);
 			}
+
 			Body body;
 			body.id = bubbleShape.id;
 			body.pos = bubblePos;
@@ -386,22 +389,22 @@ public:
 		}
 
 		// Collect great rectangles
-		auto rectIt = rectCache->begin<components::Rectangle>();
-		auto rectPosIt = rectCache->begin<components::Position>();
-		auto rectPhysicsIt = rectCache->begin<components::PhysicsData>();
-		std::vector<Body>greatCenterLines;
-		for (int i = 0; i < rectCache->getSize(); ++i) {
-			auto rect = *rectIt;
-			auto rectPos = *rectPosIt;
-			auto rectPhysics = *rectPhysicsIt;
-			Body body;
-			body.id = rectCache->relevantIdVector[i];
-			body.pos = rectPos;
-			body.physicsData = rectPhysics;
-			body.width = rect->width;
-			body.height = rect->height;
-			greatCenterLines.push_back(body);
-		}
+		//auto rectIt = rectCache->begin<components::Rectangle>();
+		//auto rectPosIt = rectCache->begin<components::Position>();
+		//auto rectPhysicsIt = rectCache->begin<components::PhysicsData>();
+		//std::vector<Body>greatCenterLines;
+		//for (int i = 0; i < rectCache->getSize(); ++i) {
+		//	auto rect = *rectIt;
+		//	auto rectPos = *rectPosIt;
+		//	auto rectPhysics = *rectPhysicsIt;
+		//	Body body;
+		//	body.id = rectCache->relevantIdVector[i];
+		//	body.pos = rectPos;
+		//	body.physicsData = rectPhysics;
+		//	body.width = rect->width;
+		//	body.height = rect->height;
+		//	greatCenterLines.push_back(body);
+		//}
 
 		// Collect top bubbles
 		auto topBubbleIt = topDogBubbleCache->begin<components::TopDogBubbleTag>();
@@ -442,14 +445,24 @@ public:
 			pairVectors.push_back(pairs);
 		}
 
+		// top dog pairs
+		std::vector<BodyPair>topDogPairs;
+		for (int x = 0; x < topDogBubbles.size(); ++x) {
+			for (int y = x + 1; y < topDogBubbles.size(); ++y) {
+				topDogPairs.push_back({ topDogBubbles[x], topDogBubbles[y] });
+			}
+		}
+		std::vector<std::vector<BodyPair>>topDogPairVectors = { topDogPairs };
+
 
 		std::vector<Collision>collisions;
 		findSiblingCollisions(pairVectors, collisions);
+		findSiblingCollisions(topDogPairVectors, collisions);
 		findCollisionsWithOutline(bubbles, collisions);
 
-		if (greatCenterLines.size() == 1) {
-			findCollisionsWithGreatCenterLine(topDogBubbles, greatCenterLines[0], collisions);
-		}
+		//if (greatCenterLines.size() == 1) {
+		//	findCollisionsWithGreatCenterLine(topDogBubbles, greatCenterLines[0], collisions);
+		//}
 
 		const float inverseTime = 1.0f / gameState->frameTime;
 		// forces between units
