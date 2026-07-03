@@ -215,7 +215,7 @@ public:
 				gameState->renderData.push_back(inverseIndicator);
 			}
 
-			if (addEditableTag) {
+			if (addEditableTag && editThisComp) {
 				middle::RenderItem editThisSign;
 				editThisSign.type = middle::RenderItemType::BILLBOARD;
 				editThisSign.color = WHITE;

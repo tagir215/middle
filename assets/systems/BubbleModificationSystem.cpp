@@ -116,6 +116,7 @@ public:
 	middle::Id copyOfInsertItem(middle::GameState* gameState, middle::Id& inventoryItemId) {
 		middle::Id& copyId = middle::deepCopyShape(gameState, inventoryItemId.index);
 		middle::queueComponentDeletion<components::InsertableBubble>(gameState, copyId);
+		middle::queueComponentDeletion<components::HelperBubbleEquation>(gameState, copyId);
 		return copyId;
 	}
 
@@ -164,10 +165,10 @@ public:
 					registerAction->undo(gameState);
 				});
 		}
-		else if (actionType == components::InsertableBubbleType::MULTIPLY_X_OVER_X) {
+		else if (actionType == components::InsertableBubbleType::ADD_X_MINUS_X) {
 			middle::Id copyId = copyOfInsertItem(gameState, refId);
 			auto registerAction = std::make_shared<middle::EditorActionRegisterId>(copyId);
-			auto insertAction = std::make_shared<bubbleActions::InsertAsXOverX>(intersectedShape.id, copyId, gameState->input.mouseXZ_PlanePos);
+			auto insertAction = std::make_shared<bubbleActions::InsertAsXMinusX>(intersectedShape.id, copyId, gameState->input.mouseXZ_PlanePos);
 			action = std::make_shared < middle::CustomActionWithUndo>(
 				[registerAction, insertAction](middle::GameState* gameState) {
 					registerAction->execute(gameState);
@@ -178,10 +179,10 @@ public:
 					registerAction->undo(gameState);
 				});
 		}
-		else if (actionType == components::InsertableBubbleType::ADD_X_MINUS_X) {
+		else if (actionType == components::InsertableBubbleType::MULTIPLY_X_OVER_X) {
 			middle::Id copyId = copyOfInsertItem(gameState, refId);
 			auto registerAction = std::make_shared<middle::EditorActionRegisterId>(copyId);
-			auto insertAction = std::make_shared<bubbleActions::InsertAsXMinusX>(intersectedShape.id, copyId, gameState->input.mouseXZ_PlanePos);
+			auto insertAction = std::make_shared<bubbleActions::InsertAsXOverX>(intersectedShape.id, copyId, gameState->input.mouseXZ_PlanePos);
 			action = std::make_shared < middle::CustomActionWithUndo>(
 				[registerAction, insertAction](middle::GameState* gameState) {
 					registerAction->execute(gameState);

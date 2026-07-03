@@ -302,7 +302,7 @@ namespace bubbleActions {
 			middle::Id copyId = createMulAction->resultShapeId;
 			actions.push_back(std::move(createMulAction));
 
-			auto replaceAction = std::make_unique<bubbleActions::ReplaceBubbleAndTransferTags>(childId, copyId);
+			auto replaceAction = std::make_unique<bubbleActions::Replace>(childId, copyId);
 			replaceAction->execute(gameState);
 			actions.push_back(std::move(replaceAction));
 		}
@@ -315,7 +315,7 @@ namespace bubbleActions {
 
 		resultShapeId = idB;
 
-		auto replace = std::make_unique<bubbleActions::ReplaceBubbleAndTransferTags>(shapeToCopyIntoId, resultShapeId);
+		auto replace = std::make_unique<bubbleActions::Replace>(shapeToCopyIntoId, resultShapeId);
 		replace->execute(gameState);
 		actions.push_back(std::move(replace));
 
@@ -513,7 +513,7 @@ namespace bubbleActions {
 		registerId->execute(gameState);
 		actions.push_back(std::move(registerId));
 
-		auto replace = std::make_unique<ReplaceBubbleAndTransferTags>(powerShapeId, replacementShapeId);
+		auto replace = std::make_unique<Replace>(powerShapeId, replacementShapeId);
 		replace->execute(gameState);
 		actions.push_back(std::move(replace));
 	}
@@ -601,7 +601,7 @@ namespace bubbleActions {
 			registerAction->execute(gameState);
 			actions.push_back(std::move(registerAction));
 
-			auto replace = std::make_unique<ReplaceBubbleAndTransferTags>(parentId, varPopReplacementId);
+			auto replace = std::make_unique<Replace>(parentId, varPopReplacementId);
 			replace->execute(gameState);
 			actions.push_back(std::move(replace));
 		}
@@ -665,46 +665,6 @@ namespace bubbleActions {
 	}
 
 	void Replace::undo(middle::GameState* gameState)
-	{
-		while (actions.size() > 0) {
-			actions.back()->undo(gameState);
-			actions.pop_back();
-		}
-	}
-
-
-	void ReplaceBubbleAndTransferTags::execute(middle::GameState* gameState)
-	{
-		auto& shapeToReplace = middle::getShape(gameState, shapeToReplaceId.index);
-		bool isTopDog = middle::getComponent<components::TopDogBubbleTag>(shapeToReplace) != nullptr;
-		auto algProb = middle::getComponent<components::BubbleAlgebraProblem>(shapeToReplace);
-		auto helper = middle::getComponent<components::HelperBubbleEquation>(shapeToReplace);
-		auto editThisTag = middle::getComponent<components::EditThisTag>(shapeToReplace);
-		bool isEditable = false;
-		if (algProb) {
-			isEditable = algProb->editable;
-		}
-
-		auto replaceAction = std::make_unique<Replace>(shapeToReplace.id, replacingShapeId);
-		replaceAction->execute(gameState);
-		actions.push_back(std::move(replaceAction));
-
-		if (isTopDog) {
-			middle::attachComponent<components::TopDogBubbleTag>(gameState, replacingShapeId);
-		}
-		if (algProb) {
-			auto newComp = middle::attachComponent<components::BubbleAlgebraProblem>(gameState, replacingShapeId);
-			newComp->editable = isEditable;
-		}
-		if (helper) {
-			middle::attachComponent<components::HelperBubbleEquation>(gameState, replacingShapeId);
-		}
-		if (editThisTag) {
-			middle::attachComponent<components::EditThisTag>(gameState, replacingShapeId);
-		}
-	}
-
-	void ReplaceBubbleAndTransferTags::undo(middle::GameState* gameState)
 	{
 		while (actions.size() > 0) {
 			actions.back()->undo(gameState);
@@ -858,7 +818,7 @@ namespace bubbleActions {
 			middle::EditorActionReparent(newContainerId.index, containerBubble.id.index).execute(gameState);
 		}
 
-		auto replace = std::make_unique<ReplaceBubbleAndTransferTags>(unitShapeId, newContainerId);
+		auto replace = std::make_unique<Replace>(unitShapeId, newContainerId);
 		replace->execute(gameState);
 		actions.push_back(std::move(replace));
 
@@ -1280,7 +1240,7 @@ namespace bubbleActions {
 			return;
 		}
 
-		components::BubbleMultiplyComponent* mulComp;
+		components::BubbleMultiplyComponent* mulComp = nullptr;
 		middle::Id containerOfContainersId = middle::getParent(gameState, compressTargetId);
 		if (containerOfContainersId.index != middle::UNASSIGNED) {
 			auto& containerOfCotnainersShape = middle::getShape(gameState, containerOfContainersId.index);
@@ -1303,7 +1263,7 @@ namespace bubbleActions {
 				assert(!middle::getComponent<components::BubbleMultiplyComponent>(childShape));
 
 				if (i == 0) {
-					auto replaceAction = std::make_unique<ReplaceBubbleAndTransferTags>(compressTargetId, replacementChildren[0]);
+					auto replaceAction = std::make_unique<Replace>(compressTargetId, replacementChildren[0]);
 					replaceAction->execute(gameState);
 					actions.push_back(std::move(replaceAction));
 					// first one replaced the thign
@@ -1330,7 +1290,7 @@ namespace bubbleActions {
 			registerAction->execute(gameState);
 			actions.push_back(std::move(registerAction));
 
-			auto replace = std::make_unique<ReplaceBubbleAndTransferTags>(compressTargetId, replacementShapeId);
+			auto replace = std::make_unique<Replace>(compressTargetId, replacementShapeId);
 			replace->execute(gameState);
 			actions.push_back(std::move(replace));
 
@@ -1561,7 +1521,7 @@ namespace bubbleActions {
 				registerAction->execute(gameState);
 				actions.push_back(std::move(registerAction));
 
-				auto replaceAction = std::make_unique<ReplaceBubbleAndTransferTags>(intoId, replacingId);
+				auto replaceAction = std::make_unique<Replace>(intoId, replacingId);
 				replaceAction->execute(gameState);
 				actions.push_back(std::move(replaceAction));
 
@@ -1634,7 +1594,7 @@ namespace bubbleActions {
 				registerAction->execute(gameState);
 				actions.push_back(std::move(registerAction));
 
-				auto replaceAction = std::make_unique<ReplaceBubbleAndTransferTags>(containerId, replacingId);
+				auto replaceAction = std::make_unique<Replace>(containerId, replacingId);
 				replaceAction->execute(gameState);
 				actions.push_back(std::move(replaceAction));
 
@@ -1934,7 +1894,7 @@ namespace bubbleActions {
 			registerAction->execute(gameState);
 			actions.push_back(std::move(registerAction));
 
-			auto replaceAction = std::make_unique<ReplaceBubbleAndTransferTags>(shape.id, replacementShapeId);
+			auto replaceAction = std::make_unique<Replace>(shape.id, replacementShapeId);
 			replaceAction->execute(gameState);
 			actions.push_back(std::move(replaceAction));
 		}
@@ -1982,7 +1942,7 @@ namespace bubbleActions {
 		registerAction->execute(gameState);
 		actions.push_back(std::move(registerAction));
 
-		auto replaceAction = std::make_unique<ReplaceBubbleAndTransferTags>(shape.id, replacementShapeId);
+		auto replaceAction = std::make_unique<Replace>(shape.id, replacementShapeId);
 		replaceAction->execute(gameState);
 		actions.push_back(std::move(replaceAction));
 
@@ -2052,7 +2012,7 @@ namespace bubbleActions {
 		Vector3 currentPos = middle::getShapePosition(gameState, copyId.index);
 		middle::moveShape(gameState, copyId.index, targetPos - currentPos);
 
-		auto replace = std::make_unique<bubbleActions::ReplaceBubbleAndTransferTags>(shapeToReplaceId, copyId);
+		auto replace = std::make_unique<bubbleActions::Replace>(shapeToReplaceId, copyId);
 		replace->replacingShapeId = copyId;
 		replace->execute(gameState);
 		actions.push_back(std::move(replace));
@@ -2106,7 +2066,7 @@ namespace bubbleActions {
 			registerContainer->execute(gameState);
 			actions.push_back(std::move(registerContainer));
 
-			auto replace = std::make_unique<ReplaceBubbleAndTransferTags>(targetLinkReciever, newContainerShape.id);
+			auto replace = std::make_unique<Replace>(targetLinkReciever, newContainerShape.id);
 			replace->execute(gameState);
 			actions.push_back(std::move(replace));
 
@@ -2161,7 +2121,7 @@ namespace bubbleActions {
 			registerAction->execute(gameState);
 			actions.push_back(std::move(registerAction));
 
-			auto replaceAction = std::make_unique<ReplaceBubbleAndTransferTags>(containerId, replacingId);
+			auto replaceAction = std::make_unique<Replace>(containerId, replacingId);
 			replaceAction->execute(gameState);
 			actions.push_back(std::move(replaceAction));
 

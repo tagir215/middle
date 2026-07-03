@@ -1,12 +1,12 @@
 #pragma once
 #include "registrars.h"
 #include "editor_file_utils.h"
-#define MIDDLESNAPREF(X) \
-	X(snapTargetId)
+#define MIDDLESNAPREF(X) 
+	//X(snapTargetId)
 
 namespace components {
 	struct SnapRef : public middle::Serializable{
-		middle::Id snapTargetId;
+		//middle::Id snapTargetId;
 
 		void serialize(std::ostream& ostream) override;
 		void deserialize(const std::vector<std::string>& buffer, int indexOffset) override;

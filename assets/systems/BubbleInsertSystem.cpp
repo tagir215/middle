@@ -32,7 +32,7 @@ class BubbleInsertSystem : public middle::MiddleGameplaySystem {
 					middle::Id insertableId = insertableCache->relevantIdVector[j];
 					middle::Id replacementId = bubbleActions::createNegatedReplacementShape(gameState, insertableId);
 					auto registerAction = std::make_shared<middle::EditorActionRegisterId>(replacementId);
-					auto replaceAction = std::make_shared<bubbleActions::ReplaceBubbleAndTransferTags>(insertableId, replacementId);
+					auto replaceAction = std::make_shared<bubbleActions::Replace>(insertableId, replacementId);
 					actions.push_back(registerAction);
 					actions.push_back(replaceAction);
 				}

@@ -201,19 +201,6 @@ namespace bubbleActions{
 		void undo(middle::GameState* gameState) override;
 	};
 
-	class ReplaceBubbleAndTransferTags : public middle::EditorActionContainer {
-	public:
-		middle::Id shapeToReplaceId;
-		middle::Id replacingShapeId;
-		std::vector<std::unique_ptr<middle::EditorActionContainer>> actions;
-		ReplaceBubbleAndTransferTags(middle::Id shapeToReplace, middle::Id replacingShape) {
-			this->shapeToReplaceId = shapeToReplace;
-			this->replacingShapeId = replacingShape;
-		}
-		void execute(middle::GameState* gameState) override;
-		void undo(middle::GameState* gameState) override;
-	};
-
 	class Replace : public middle::EditorActionContainer {
 	public:
 		middle::Id shapeToReplaceId;

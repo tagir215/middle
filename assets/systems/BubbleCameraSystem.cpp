@@ -57,7 +57,7 @@ public:
 
 			const float centerOffsetX = 200;
 			const float centerOffsetZ = 0;
-			const float xzCamAxis = 400;
+			const float xzCamAxis = 1400;
 			const float minX = -xzCamAxis + centerOffsetX;
 			const float maxX = xzCamAxis + centerOffsetX;
 			const float minZ = -xzCamAxis + centerOffsetZ;

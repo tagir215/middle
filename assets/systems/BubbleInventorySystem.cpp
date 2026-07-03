@@ -146,18 +146,18 @@ public:
 			std::vector<middle::Id>children;
 			middle::getChildren(gameState, parentInventoryId, children);
 			bool attachedRefs = false;
-			for (int index = 0; index < children.size(); ++index) {
-				// TODO THIS IS ASSUMES SLOTS MATCH THIS BUBBLE INVENTORYS MEMBERS
-				middle::Id slot = inventorySlotCache->relevantIdVector[index];
-				auto snapRef = middle::attachComponent<components::SnapRef>(gameState, children[index]);
-				snapRef->snapTargetId = slot;
-				//invItem->idRef = inventorySlotCache->relevantIdVector[i];
-				attachedRefs = true;
-				// set layer here, because its seems like good time
-				auto& shape = middle::getShape(gameState, children[index].index);
-				auto layer = middle::getComponent<components::Layer>(shape);
-				layer->layer = 2;
-			}
+			//for (int index = 0; index < children.size(); ++index) {
+			//	// TODO THIS IS ASSUMES SLOTS MATCH THIS BUBBLE INVENTORYS MEMBERS
+			//	middle::Id slot = inventorySlotCache->relevantIdVector[index];
+			//	auto snapRef = middle::attachComponent<components::SnapRef>(gameState, children[index]);
+			//	snapRef->snapTargetId = slot;
+			//	//invItem->idRef = inventorySlotCache->relevantIdVector[i];
+			//	attachedRefs = true;
+			//	// set layer here, because its seems like good time
+			//	auto& shape = middle::getShape(gameState, children[index].index);
+			//	auto layer = middle::getComponent<components::Layer>(shape);
+			//	layer->layer = 2;
+			//}
 			if (attachedRefs) {
 				break;
 			}

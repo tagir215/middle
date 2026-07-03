@@ -278,37 +278,9 @@ public:
 	bool debugField = false;
 	bool inverses = true;
 
-	bool isTopDog(middle::GameState* gameState, middle::Id id) {
-		middle::Id parentId = middle::getParent(gameState, id);
-		if (parentId.index == middle::UNASSIGNED) {
-			return true;
-		}
-		middle::Shape& parentShape = middle::getShape(gameState, parentId.index);
-		bool parentIsEquals = middle::getComponent<components::BubbleEqualsComponent>(parentShape) != nullptr;
-		return parentIsEquals;
-	}
-
-	void updateTopDogs(middle::GameState* gameState) {
-
-		// delete top dog components from non top dogs
-		for (int i = 0; i < topDogBubbleCache->getSize(); ++i) {
-			middle::Id id = topDogBubbleCache->relevantIdVector[i];
-			if (!isTopDog(gameState, id)){
-				middle::queueComponentDeletion<components::TopDogBubbleTag>(gameState, id);
-			}
-		}
-
-		for (int i = 0; i < bubbleCache->getSize(); ++i) {
-			middle::Id id = bubbleCache->relevantIdVector[i];
-			if (isTopDog(gameState, id)) {
-				middle::attachComponent<components::TopDogBubbleTag>(gameState, id);
-			}
-		}
-	}
 
 	void update(middle::GameState* gameState) override {
 
-		updateTopDogs(gameState);
 
 		if (debugField) {
 			for (int i = 0; i < unitCache->getSize(); ++i) {

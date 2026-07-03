@@ -22,6 +22,8 @@
 #include "BubbleAlgebraProblem.h"
 #include "component_utils.h"
 #include "DeleteComponent.h"
+#include "HelperBubbleEquation.h"
+#include "EditThisTag.h"
 
 namespace bubble {
 	float unitRadius = 4;
@@ -226,7 +228,7 @@ namespace bubble {
 		return ids;
 	}
 
-	middle::Id findBubbleWithPatern(middle::GameState* gameState, middle::Id containerBubble)
+	middle::Id findBubbleWithPattern(middle::GameState* gameState, middle::Id containerBubble)
 	{
 		std::queue<middle::Id>ids;
 		ids.push(containerBubble);
@@ -1435,7 +1437,6 @@ namespace bubble {
 		middle::EditorActionReparent(newParent.id.index, id.index).execute(gameState);
 		return newParent.id;
 	}
-
 
 
 	middle::Id shapeToFraction(middle::GameState* gameState, middle::Id shapeId, const Vector3& targetPos, int dividend)
