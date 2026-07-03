@@ -422,14 +422,8 @@ namespace bubbleActions {
 
 		// create replacement shape
 		// create container
-		std::vector<middle::Id>exponentChildren;
 		middle::Id exponentId = children[components::PowerRole::POWER_EXPONENT];
 		middle::Id baseId = children[components::PowerRole::POWER_BASE];
-		middle::getChildren(gameState, exponentId, exponentChildren);
-		if (exponentChildren.size() == 1) {
-			cancelled = true;
-			return;
-		}
 
 		// don't expand power if its variable or inverse, because I'm confused about inverse exponents
 		auto& exponentShape = middle::getShape(gameState, exponentId.index);
@@ -445,8 +439,10 @@ namespace bubbleActions {
 		}
 
 
-
+		// create replacement
 		middle::Id replacementShapeId;
+		std::vector<middle::Id>exponentChildren;
+		middle::getChildren(gameState, exponentId, exponentChildren);
 
 		if (exponentChildren.size() != 0) {
 
@@ -495,7 +491,12 @@ namespace bubbleActions {
 
 			}
 
-			replacementShapeId = middle::getParent(gameState, prevId);
+			if (exponentChildren.size() == 1) {
+				replacementShapeId = prevId;
+			}
+			else {
+				replacementShapeId = middle::getParent(gameState, prevId);
+			}
 		}
 		// replacement shape is bubble with value 1
 		else {
