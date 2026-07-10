@@ -92,11 +92,10 @@ public:
 		}
 
 		// update procedure size
-		components::LoopSociety* procLoop = nullptr;
+		std::vector<middle::Id>procChildren;
 		if (procScopeCache->getSize() > 0) {
-			auto procScopeIt = procScopeCache->begin<components::LoopSociety>();
-			procLoop = *procScopeIt;
-			procContainer->size = procLoop->loopMemberIds.size();
+			middle::getChildren(gameState, procScopeCache->relevantIdVector[0], procChildren);
+			procContainer->size = procChildren.size();
 		}
 
 		// PROCEDURE POINTER POSITION, WARNING WARNING EXTERNAL SYSTEM
@@ -109,7 +108,7 @@ public:
 			middle::Id intersectedId = blockCache->relevantIdVector[i];
 			int targetSize = -1;
 			for (int j = 0; j < procContainer->size; ++j) {
-				middle::Id blockId = procLoop->loopMemberIds[j];
+				middle::Id blockId = procChildren[j];
 				if (blockId == intersectedId) {
 					procContainer->targetActionStackSize = j + 1;
 					procContainer->updateInputs = true;
@@ -121,14 +120,14 @@ public:
 
 		middle::Id grabbedId = gameState->bubbleAlgebraState.grabbedId;
 		auto scopeIt = scopeCache->begin<components::ScopeComponent>();
-		auto scopeLoopIt = scopeCache->begin<components::LoopSociety>();
 		auto scopeIntersectableIt = scopeCache->begin<components::MouseIntersectable>();
 
 
 		if (grabbedId.index != middle::UNASSIGNED) {
 			for (int i = 0; i < scopeCache->getSize(); ++i) {
 				auto scope = *scopeIt;
-				auto scopeLoop = *scopeLoopIt;
+				std::vector<middle::Id>children;
+				middle::getChildren(gameState, scopeCache->relevantIdVector[i], children);
 				auto scopeIntersectable = *scopeIntersectableIt;
 				auto& shape = middle::getShape(gameState, scopeCache->relevantIdVector[i].index);
 
@@ -156,7 +155,7 @@ public:
 
 					// CODEBLOCK
 					// 1 or first is added directly to the scope, others are added as siblings dragging on top of each sibling
-					int childrenSize = scopeLoop->loopMemberIds.size();
+					int childrenSize = children.size();
 					if (grabbedCodeBlock && childrenSize == 0 && scopeIntersectable->intersectingTop) {
 						auto reparent = middle::EditorActionReparent(shape.id.index, gameState->bubbleAlgebraState.grabbedId.index);
 						reparent.execute(gameState);
@@ -164,19 +163,17 @@ public:
 					// blocks (subject) after first one are added by intersecting children
 					if (grabbedCodeBlock && childrenSize > 0) {
 						for (int index = 0; index < childrenSize; ++index) {
-							middle::Id& childId = scopeLoop->loopMemberIds[index];
-							assert(childrenSize == scopeLoop->loopMemberIds.size());
+							middle::Id& childId = children[index];
+							assert(childrenSize == children.size());
 							middle::Shape& childShape = middle::getShape(gameState, childId.index);
 							auto intersectableChild = middle::getComponent<components::MouseIntersectable>(childShape);
 							if (intersectableChild->intersecting) {
 								auto reparent = middle::EditorActionReparent(shape.id.index, grabbedId.index);
 								reparent.execute(gameState);
-								scopeLoop = middle::getComponent<components::LoopSociety>(shape);
-								assert(scopeLoop->loopMemberIds.size() >= childrenSize);
 
 								int newIndex = index + 1;
 								// new index can't go behind anything if its last
-								if (newIndex == scopeLoop->loopMemberIds.size()) {
+								if (newIndex == children.size()) {
 									newIndex = index;
 								}
 								auto moveIndex = middle::EditorActionChangeLoopMemberIndex(shape.id.index, grabbedId.index, newIndex);
@@ -189,11 +186,12 @@ public:
 					// if function is hovered above code block snap to it
 					if (grabbedCodeFunction) {
 						for (int index = 0; index < childrenSize; ++index) {
-							middle::Id& childId = scopeLoop->loopMemberIds[index];
+							middle::Id& childId = children[index];
 							middle::Shape& childShape = middle::getShape(gameState, childId.index);
 							auto intersectableChild = middle::getComponent<components::MouseIntersectable>(childShape);
-							auto loopChild = middle::getComponent<components::LoopSociety>(childShape);
-							if (loopChild->loopMemberIds.size() == 0 && intersectableChild->intersecting) {
+							std::vector<middle::Id>children;
+							middle::getChildren(gameState, childShape.id, children);
+							if (children.size() == 0 && intersectableChild->intersecting) {
 								auto reparent = middle::EditorActionReparent(childId.index, grabbedId.index);
 								reparent.execute(gameState);
 								break;
@@ -221,8 +219,8 @@ public:
 						continue;
 
 					// check that parent is not an if block, cause then can't grab it
-					auto childLoop = middle::getComponent<components::LoopSociety>(childShape);
-					auto parentShape = middle::getShape(gameState, childLoop->parentLoopId.index);
+					middle::Id parentId = middle::getParent(gameState, childShape.id);
+					auto parentShape = middle::getShape(gameState, parentId.index);
 					auto ifBlock = middle::getComponent<components::IfComponent>(parentShape);
 					if (ifBlock) {
 						continue;
@@ -272,7 +270,6 @@ public:
 		// delete shape if havent added to container
 		if (gameState->input.mouseReleased && gameState->bubbleAlgebraState.grabbedId.index != middle::UNASSIGNED) {
 			auto& grabbedShape = middle::getShape(gameState, gameState->bubbleAlgebraState.grabbedId.index);
-			auto loop = middle::getComponent<components::LoopSociety>(grabbedShape);
 
 			auto codeBlock = middle::getComponent<components::CodeBlock>(grabbedShape);
 			auto functionBlock = middle::getComponent<components::CodeFunction>(grabbedShape);
@@ -280,7 +277,8 @@ public:
 			if (!codeBlock && !functionBlock)
 				return;
 
-			if (loop->parentLoopId.index == middle::UNASSIGNED) {
+			middle::Id parentId = middle::getParent(gameState, grabbedShape.id);
+			if (parentId.index == middle::UNASSIGNED) {
 				middle::queueAction(gameState, std::make_shared<middle::EditorActionDeleteSingle>(grabbedShape.id));
 			}
 			else {

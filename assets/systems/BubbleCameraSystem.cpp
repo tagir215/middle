@@ -38,7 +38,7 @@ public:
 				}
 			}
 			float mouseWheelMove = gameState->gameInput.mouseWheelMove;
-			const float wheelMouseMultiplier = 30;
+			const float wheelMouseMultiplier = 70;
 			camera->speedY += mouseWheelMove * wheelMouseMultiplier;
 			camera->speedX = 0;
 			camera->speedZ = 0;
@@ -55,16 +55,24 @@ public:
 				panSpeed = minPanSpeed;
 			}
 
-			if (gameState->gameInput.panLeft) {
+			const float centerOffsetX = 200;
+			const float centerOffsetZ = 0;
+			const float xzCamAxis = 1400;
+			const float minX = -xzCamAxis + centerOffsetX;
+			const float maxX = xzCamAxis + centerOffsetX;
+			const float minZ = -xzCamAxis + centerOffsetZ;
+			const float maxZ = xzCamAxis + centerOffsetZ;
+
+			if (gameState->gameInput.panLeft && oldPos.x > minX) {
 				camera->speedX = -panSpeed;
 			}
-			if (gameState->gameInput.panRight) {
+			if (gameState->gameInput.panRight && oldPos.x < maxX) {
 				camera->speedX = panSpeed;
 			}
-			if (gameState->gameInput.panUp) {
+			if (gameState->gameInput.panUp && oldPos.z < maxZ) {
 				camera->speedZ = panSpeed;
 			}
-			if (gameState->gameInput.panDown) {
+			if (gameState->gameInput.panDown && oldPos.z > minZ) {
 				camera->speedZ = -panSpeed;
 			}
 

@@ -4,7 +4,8 @@
 #define MIDDLETEXTURECOMPONENT(X) \
 	X(path) \
 	X(scale) \
-	X(textureType)
+	X(textureType) \
+	X(filename) 
 
 namespace middleTextureType {
 	inline int BILLBOARD = 0;
@@ -15,6 +16,7 @@ namespace middleTextureType {
 namespace components {
 	struct TextureComponent : public middle::Serializable {
 		std::string path;
+		std::string filename;
 		float scale = 1;
 		int textureType = middleTextureType::BILLBOARD;
 		Texture2D texture;

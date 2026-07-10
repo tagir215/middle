@@ -14,6 +14,8 @@
 #include "Rectangle.h"
 #include "TopDogBubbleTag.h"
 #include "BubbleEqualsComponent.h"
+#include "DeleteComponent.h" 
+#include "IdRef.h"
 
 class BubblePhysics : public middle::MiddleGameplaySystem {
 public:
@@ -42,6 +44,7 @@ public:
 		bubbleCache->addType<components::PhysicsData>();
 		bubbleCache->addType<components::Circle>();
 		bubbleCache->addType<components::LoopSociety>();
+		bubbleCache->addType<components::IdRef>(components::NOTINTERESTED);
 
 		mulCache = middle::newCompCache(gameState);
 		mulCache->addType<components::BubbleMultiplyComponent>();
@@ -66,6 +69,7 @@ public:
 		topDogBubbleCache->addType<components::PhysicsData>();
 		topDogBubbleCache->addType<components::Circle>();
 		topDogBubbleCache->addType<components::LoopSociety>();
+		topDogBubbleCache->addType<components::IdRef>(components::NOTINTERESTED);
 
 	}
 
@@ -232,13 +236,14 @@ public:
 	}
 
 	void collectMoleculeConstraints(middle::GameState* gameState, components::CompCache* cache, std::vector<MoleculeConstraint>& constraints, float targetSeparation) {
-		auto mulLoopIt = cache->begin<components::LoopSociety>();
 		for (int i = 0; i < cache->getSize(); ++i) {
-			auto loop = *mulLoopIt;
+			std::vector<middle::Id>children;
+			middle::getChildren(gameState, cache->relevantIdVector[i], children);
+
 			MoleculeConstraint moleculeConstraint;
 			Body prevBody;
-			for (int j = 0; j < loop->loopMemberIds.size(); ++j) {
-				auto& childShape = middle::getShape(gameState, loop->loopMemberIds[j].index);
+			for (int j = 0; j < children.size(); ++j) {
+				auto& childShape = middle::getShape(gameState, children[j].index);
 				auto position = middle::getComponent<components::Position>(childShape);
 				auto physics = middle::getComponent<components::PhysicsData>(childShape);
 				auto childCircle = middle::getComponent<components::Circle>(childShape);
@@ -273,40 +278,9 @@ public:
 	bool debugField = false;
 	bool inverses = true;
 
-	bool isTopDog(middle::GameState* gameState, middle::Id id) {
-		middle::Id parentId = middle::getParent(gameState, id);
-		if (parentId.index == middle::UNASSIGNED) {
-			return true;
-		}
-		middle::Shape& parentShape = middle::getShape(gameState, parentId.index);
-		bool parentIsEquals = middle::getComponent<components::BubbleEqualsComponent>(parentShape) != nullptr;
-		return parentIsEquals;
-	}
-
-	void updateTopDogs(middle::GameState* gameState) {
-
-		// delete top dog components from non top dogs
-		auto topDogIt = topDogBubbleCache->begin<components::LoopSociety>();
-		for (int i = 0; i < topDogBubbleCache->getSize(); ++i) {
-			middle::Id id = topDogBubbleCache->relevantIdVector[i];
-			if (!isTopDog(gameState, id)){
-				middle::queueComponentDeletion<components::TopDogBubbleTag>(gameState, id);
-			}
-		}
-
-		auto bubbleIt = bubbleCache->begin<components::LoopSociety>();
-		for (int i = 0; i < bubbleCache->getSize(); ++i) {
-			auto bubbleLoop = *bubbleIt;
-			middle::Id id = bubbleCache->relevantIdVector[i];
-			if (isTopDog(gameState, id)) {
-				middle::attachComponent<components::TopDogBubbleTag>(gameState, id);
-			}
-		}
-	}
 
 	void update(middle::GameState* gameState) override {
 
-		updateTopDogs(gameState);
 
 		if (debugField) {
 			for (int i = 0; i < unitCache->getSize(); ++i) {
@@ -336,17 +310,17 @@ public:
 		auto bubblePosIt = bubbleCache->begin<components::Position>();
 		auto circleIt = bubbleCache->begin<components::Circle>();
 		auto physicsIt = bubbleCache->begin<components::PhysicsData>();
-		auto bubbleLoopIt = bubbleCache->begin<components::LoopSociety>();
 		for (int i = 0; i < bubbleCache->getSize(); ++i) {
 			auto bubble = *bubbleIt;
 			auto bubblePos = *bubblePosIt;
 			auto circle = *circleIt;
 			auto bubblePhysics = *physicsIt;
-			auto loop = *bubbleLoopIt;
 			auto& bubbleShape = middle::getShape(gameState, bubbleCache->relevantIdVector[i].index);
 
 			std::vector<middle::Id> interactingChildren;
-			for (middle::Id& id : loop->loopMemberIds) {
+			std::vector<middle::Id> children;
+			middle::getChildren(gameState, bubbleCache->relevantIdVector[i], children);
+			for (middle::Id& id : children) {
 				auto& childShape = middle::getShape(gameState, id.index);
 				if (middle::getComponent<components::BubbleMultiplyComponent>(childShape) 
 					|| middle::getComponent<components::FractionalComponent>(childShape)) {
@@ -376,6 +350,7 @@ public:
 				body.radius = radius;
 				bodies.push_back(body);
 			}
+
 			Body body;
 			body.id = bubbleShape.id;
 			body.pos = bubblePos;
@@ -388,22 +363,22 @@ public:
 		}
 
 		// Collect great rectangles
-		auto rectIt = rectCache->begin<components::Rectangle>();
-		auto rectPosIt = rectCache->begin<components::Position>();
-		auto rectPhysicsIt = rectCache->begin<components::PhysicsData>();
-		std::vector<Body>greatCenterLines;
-		for (int i = 0; i < rectCache->getSize(); ++i) {
-			auto rect = *rectIt;
-			auto rectPos = *rectPosIt;
-			auto rectPhysics = *rectPhysicsIt;
-			Body body;
-			body.id = rectCache->relevantIdVector[i];
-			body.pos = rectPos;
-			body.physicsData = rectPhysics;
-			body.width = rect->width;
-			body.height = rect->height;
-			greatCenterLines.push_back(body);
-		}
+		//auto rectIt = rectCache->begin<components::Rectangle>();
+		//auto rectPosIt = rectCache->begin<components::Position>();
+		//auto rectPhysicsIt = rectCache->begin<components::PhysicsData>();
+		//std::vector<Body>greatCenterLines;
+		//for (int i = 0; i < rectCache->getSize(); ++i) {
+		//	auto rect = *rectIt;
+		//	auto rectPos = *rectPosIt;
+		//	auto rectPhysics = *rectPhysicsIt;
+		//	Body body;
+		//	body.id = rectCache->relevantIdVector[i];
+		//	body.pos = rectPos;
+		//	body.physicsData = rectPhysics;
+		//	body.width = rect->width;
+		//	body.height = rect->height;
+		//	greatCenterLines.push_back(body);
+		//}
 
 		// Collect top bubbles
 		auto topBubbleIt = topDogBubbleCache->begin<components::TopDogBubbleTag>();
@@ -444,14 +419,24 @@ public:
 			pairVectors.push_back(pairs);
 		}
 
+		// top dog pairs
+		std::vector<BodyPair>topDogPairs;
+		for (int x = 0; x < topDogBubbles.size(); ++x) {
+			for (int y = x + 1; y < topDogBubbles.size(); ++y) {
+				topDogPairs.push_back({ topDogBubbles[x], topDogBubbles[y] });
+			}
+		}
+		std::vector<std::vector<BodyPair>>topDogPairVectors = { topDogPairs };
+
 
 		std::vector<Collision>collisions;
 		findSiblingCollisions(pairVectors, collisions);
+		findSiblingCollisions(topDogPairVectors, collisions);
 		findCollisionsWithOutline(bubbles, collisions);
 
-		if (greatCenterLines.size() == 1) {
-			findCollisionsWithGreatCenterLine(topDogBubbles, greatCenterLines[0], collisions);
-		}
+		//if (greatCenterLines.size() == 1) {
+		//	findCollisionsWithGreatCenterLine(topDogBubbles, greatCenterLines[0], collisions);
+		//}
 
 		const float inverseTime = 1.0f / gameState->frameTime;
 		// forces between units

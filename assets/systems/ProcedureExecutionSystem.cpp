@@ -26,6 +26,7 @@ public:
 
 	components::CompCache* buttonCache;
 	components::CompCache* procedureCache;
+	components::CompCache* executingProcedureCache;
 	components::CompCache* inputCache;
 
 	void init(middle::GameState* gameState) {
@@ -42,9 +43,9 @@ public:
 	}
 
 	bool getOneInput(middle::GameState* gameState, middle::Shape& funcShape,  components::InputVariable& inputVariable) {
-		auto variablesLoop = middle::getComponent<components::LoopSociety>(funcShape);
-		assert(variablesLoop);
-		for (middle::Id& childId : variablesLoop->loopMemberIds) {
+		std::vector<middle::Id>children;
+		middle::getChildren(gameState, funcShape.id, children);
+		for (middle::Id& childId : children) {
 			auto& childShape = middle::getShape(gameState, childId.index);
 			auto inputVar = middle::getComponent<components::InputVariable>(childShape);
 			if (!inputVar) {
@@ -56,7 +57,11 @@ public:
 			if (inputVariable.unitRef.index == middle::UNASSIGNED) {
 				return false;
 			}
-			if (inputVariable.structureIds.size() == 0) {
+			// OLD
+			//if (inputVariable.structureIds.size() == 0) {
+			//	return false;
+			//}
+			if (inputVariable.startPointNodeId.index == middle::UNASSIGNED) {
 				return false;
 			}
 
@@ -67,10 +72,10 @@ public:
 	}
 
 	bool getTwoInputs(middle::GameState* gameState, middle::Shape& funcShape, components::InputVariable& varA, components::InputVariable& varB) {
-		auto variablesLoop = middle::getComponent<components::LoopSociety>(funcShape);
-		assert(variablesLoop);
+		std::vector<middle::Id>children;
+		middle::getChildren(gameState, funcShape.id, children);
 		bool varAFound = false;
-		for (middle::Id& childId : variablesLoop->loopMemberIds) {
+		for (middle::Id& childId : children) {
 			auto& childShape = middle::getShape(gameState, childId.index);
 			auto inputVar = middle::getComponent<components::InputVariable>(childShape);
 			if (!inputVar) {
@@ -87,7 +92,11 @@ public:
 				if (varA.unitRef.index == middle::UNASSIGNED || varB.unitRef.index == middle::UNASSIGNED) {
 					return false;
 				}
-				if (varA.structureIds.size() == 0 || varB.structureIds.size() == 0) {
+				// OLD
+				//if (varA.structureIds.size() == 0 || varB.structureIds.size() == 0) {
+				//	return false;
+				//}
+				if (varA.startPointNodeId.index == middle::UNASSIGNED || varB.startPointNodeId.index == middle::UNASSIGNED) {
 					return false;
 				}
 				return true;
@@ -96,44 +105,6 @@ public:
 		assert(false);
 		return false;
 	}
-
-	void getOneOutput(middle::GameState* gameState, middle::Shape& funcShape, components::OutputVariable& var) {
-		std::vector<middle::Id>children;
-		middle::getChildren(gameState, funcShape.id, children);
-		for (middle::Id& id : children) {
-			auto& childShape = middle::getShape(gameState, id.index);
-			auto outputVariable = middle::getComponent<components::OutputVariable>(childShape);
-			if (outputVariable) {
-				var = *outputVariable;
-				return;
-			}
-		}
-		assert(false);
-	}
-
-	void getTwoOutputs(middle::GameState* gameState, middle::Shape& funcShape, components::OutputVariable& varA, components::OutputVariable& varB) {
-		auto variablesLoop = middle::getComponent<components::LoopSociety>(funcShape);
-		assert(variablesLoop);
-		bool varAFound = false;
-		for (middle::Id& childId : variablesLoop->loopMemberIds) {
-			auto& childShape = middle::getShape(gameState, childId.index);
-			auto inputVar = middle::getComponent<components::OutputVariable>(childShape);
-			if (!inputVar) {
-				continue;
-			}
-
-			if (!varAFound) {
-				varAFound = true;
-				varA = *inputVar;
-			}
-			else {
-				varB = *inputVar;
-				return;
-			}
-		}
-		assert(false);
-	}
-
 
 	// search type of thing from a bubble
 	middle::Id searchFromBubble(middle::GameState* gameState, middle::Id& bubbleId, int typeId) {
@@ -158,47 +129,10 @@ public:
 		return middle::Id();
 	}
 
-	// returns scope 
-	bool checkIfConditionTrue(middle::GameState* gameState, middle::Shape& funcShape) {
-		auto function = middle::getComponent<components::CodeFunction>(funcShape);
-
-		int findTypeId = -1;
-		if (function->type == functionTypes::FIND_BUBBLE) {
-			findTypeId = middle::getTypeId<components::BubbleComponent>();
-		}
-		if (function->type == functionTypes::FIND_FRACTION) {
-			findTypeId = middle::getTypeId<components::FractionalComponent>();
-		}
-		if (function->type == functionTypes::FIND_UNIT) {
-			findTypeId = middle::getTypeId<components::BubbleUnit>();
-		}
-
-		// find bubbles: store found bubble to output, execute upper scope if found, execute lower scope if didn't find
-		if (findTypeId >= 0) {
-			components::InputVariable input;
-			components::OutputVariable output;
-			if (!getOneInput(gameState, funcShape, input)) {
-				return false;
-			}
-			getOneOutput(gameState, funcShape, output);
-			middle::Id foundId = searchFromBubble(gameState, input.unitRef, findTypeId);
-			bubbleActions::UpdateVariable(output.label, [foundId]() {return foundId;}).execute(gameState);
-			bool isConditionTrue = foundId.index != middle::UNASSIGNED;
-			return isConditionTrue;
-		}
-
-		assert(false);
-	}
-
 
 	void executeFunctions(middle::GameState* gameState, middle::Shape& funcShape, components::ProcedureContainer* container) {
 
 		auto function = middle::getComponent<components::CodeFunction>(funcShape);
-
-		auto ifComp = middle::getComponent<components::CodeFunction>(funcShape);
-		if (ifComp) {
-			potentialConditionalStep(gameState, container);
-		}
 
 		// combine functions are either multiplciations or additions
 		if (function->type == functionTypes::COMBINE) {
@@ -212,10 +146,15 @@ public:
 				auto& parentShape = middle::getShape(gameState, parentId.index);
 				auto bubbleMultiplication = middle::getComponent<components::BubbleMultiplyComponent>(parentShape);
 
-				if (bubbleMultiplication) {
+				if (bubbleMultiplication && bubbleMultiplication->operationType == static_cast<int>(components::OperationType::MULTIPLICATION)) {
 					auto multiply = std::make_shared<bubbleActions::ExecuteMultiplication>(varA.unitRef, varB.unitRef);
 					middle::queueAction(gameState, multiply);
 					container->procedureTransitionStack.back().action = multiply;
+				}
+				else if (bubbleMultiplication && bubbleMultiplication->operationType == static_cast<int>(components::OperationType::POWER)) {
+					auto doPower = std::make_shared<bubbleActions::ExecutePower>(parentShape.id);
+					middle::queueAction(gameState, doPower);
+					container->procedureTransitionStack.back().action = doPower;
 				}
 				else {
 					auto combine = std::make_shared<bubbleActions::ExecuteAddition>(varA.unitRef, varB.unitRef);
@@ -223,16 +162,6 @@ public:
 					container->procedureTransitionStack.back().action = combine;
 				}
 			}
-			if (getOneInput(gameState, funcShape, varA)) {
-				assert(varA.unitRef.index != middle::UNASSIGNED);
-				auto& shape = middle::getShape(gameState, varA.unitRef.index);
-				if (middle::getComponent<components::ExponentComponent>(shape)) {
-					auto power = std::make_shared<bubbleActions::ExecutePower>(varA.unitRef);
-					middle::queueAction(gameState, power);
-					container->procedureTransitionStack.back().action = power;
-				}
-			}
-
 		}
 
 		// exit loops
@@ -241,28 +170,6 @@ public:
 		}
 
 		else if (function->type == functionTypes::COPY) {
-			components::InputVariable input;
-			components::OutputVariable output;
-			if (!getOneInput(gameState, funcShape, input)) {
-				return;
-			}
-			getOneOutput(gameState, funcShape, output);
-			auto copyAction = std::make_shared<middle::EditorActionCopySingle>(input.unitRef);
-			auto update = std::make_shared<bubbleActions::UpdateVariable>(output.label, [copyAction] {return copyAction->resultId;});
-			auto customCopy = std::make_shared<middle::CustomActionWithUndo>(
-				[copyAction, update](middle::GameState* gameState) {
-					copyAction->execute(gameState);
-					// move away from view
-					middle::moveShape(gameState, copyAction->resultId.index, { 400,0,100 });
-					update->execute(gameState);
-				},
-				[copyAction, update](middle::GameState* gameState) {
-					update->undo(gameState);
-					copyAction->undo(gameState);
-				});
-			middle::queueAction(gameState, customCopy);
-			container->procedureTransitionStack.back().action = customCopy;
-
 		}
 
 
@@ -597,25 +504,6 @@ public:
 
 	}
 
-	procedureConstants::StepStatus potentialConditionalStep(middle::GameState* gameState, components::ProcedureContainer* container) {
-		middle::Id& previousId = container->procedureTransitionStack.back().destinationId;
-		if (previousId.index == middle::UNASSIGNED) {
-			return procedureConstants::CannotStep;
-		}
-
-		middle::Id id = getCodeBlockFunc(gameState, container->activeBlock);
-		if (id.index == middle::UNASSIGNED) {
-			return procedureConstants::CannotStep;
-		}
-		auto& funcShape = middle::getShape(gameState, id.index);
-		auto ifComp = middle::getComponent<components::IfComponent>(funcShape);
-		if (ifComp) {
-			bool condResult = checkIfConditionTrue(gameState, funcShape);
-			auto status = stepEast(gameState, container, condResult);
-			return status;
-		}
-	}
-
 
 	procedureConstants::StepStatus procedureStepForward(middle::GameState* gameState, components::ProcedureContainer* procedure) {
 		if (procedure->procedureTransitionStack.size() == 0) {
@@ -673,11 +561,11 @@ public:
 	}
 
 
-	void updateInputVariableReferences(middle::GameState* gameState, middle::Id codeBlockId, middle::Id topDogContainerId, std::unordered_map<std::string, middle::Id>& overrideMap) {
+	void updateInputVariableReferences(middle::GameState* gameState, middle::Id codeBlockId, middle::Id rootBubbleId, std::unordered_map<std::string, middle::Id>& overrideMap) {
 		if (codeBlockId.index == middle::UNASSIGNED) {
 			return;
 		}
-		assert(topDogContainerId.index != middle::UNASSIGNED);
+		assert(rootBubbleId.index != middle::UNASSIGNED);
 		middle::Id funcId = getCodeBlockFunc(gameState, codeBlockId);
 		if (funcId.index == middle::UNASSIGNED) {
 			return;
@@ -688,23 +576,15 @@ public:
 		}
 		std::vector<middle::Id>inputChildren;
 		middle::getChildrenWithComp(gameState, funcId, inputChildren, middle::getTypeId<components::InputVariable>());
+
 		// update one input case
 		if (inputChildren.size() == 1) {
 			auto& inputChild = middle::getShape(gameState, inputChildren[0].index);
 			auto input = middle::getComponent<components::InputVariable>(inputChild);
-			if (input->structureIds.size() == 1) {
-				middle::Id& structureId = input->structureIds[0];
-				middle::Id result = bubble::findMatchingBubbleWithVariables(gameState, topDogContainerId,
-					structureId, input->structureDepth, overrideMap);
+
+			if (middle::isValidId(gameState, input->startPointNodeId)) {
+				middle::Id result = bubble::findMatchingBubble(gameState, rootBubbleId, input->startPointNodeId, input->rootNodeId, overrideMap);
 				input->unitRef = result;
-			}
-			else if (input->structureIds.size() >= 2) {
-				middle::Id& structureIdA = input->structureIds[0];
-				middle::Id& structureIdB = input->structureIds[1];
-				middle::Id idA, idB;
-				bubble::findMatchingStructurePairWithVariables(gameState, topDogContainerId,
-					structureIdA, structureIdB, input->structureDepth, overrideMap, idA, idB);
-				input->unitRef = idA;
 			}
 
 		}
@@ -714,28 +594,25 @@ public:
 			auto& inputChildB = middle::getShape(gameState, inputChildren[1].index);
 			auto inputA = middle::getComponent<components::InputVariable>(inputChildA);
 			auto inputB = middle::getComponent<components::InputVariable>(inputChildB);
-			middle::Id structureIdA = inputA->structureIds.size() > 0 ? inputA->structureIds[0] : middle::Id();
-			middle::Id structureIdB = inputB->structureIds.size() > 0 ? inputB->structureIds[0] : middle::Id();
+			middle::Id startPointA = inputA->startPointNodeId;
+			middle::Id startPointB = inputB->startPointNodeId;
 
-			bool bothValid = structureIdA.index != middle::UNASSIGNED && structureIdB.index != middle::UNASSIGNED;
+
+			bool bothValid = isValidId(gameState, startPointA) && isValidId(gameState, startPointB);
 			if (bothValid) {
 				middle::Id idA, idB;
-				bubble::findMatchingStructurePairWithVariables(gameState, topDogContainerId,
-					structureIdA, structureIdB, inputA->structureDepth, overrideMap, idA, idB);
+				bubble::findMatchingPairBubbles(gameState, rootBubbleId,
+					startPointA, startPointB, inputA->rootNodeId, overrideMap, idA, idB);
 				inputA->unitRef = idA;
 				inputB->unitRef = idB;
 			}
 			// if one is valid update it for visual indicators
-			else if (structureIdA.index != middle::UNASSIGNED) {
-				auto& inputShape = middle::getShape(gameState, structureIdA.index);
-				auto comp = middle::getComponent<components::AlgebraNode>(inputShape);
-				middle::Id result = bubble::findMatchingBubbleWithVariables(gameState, topDogContainerId,
-					structureIdA, inputA->structureDepth, overrideMap);
+			else if (isValidId(gameState, startPointA)) {
+				middle::Id result = bubble::findMatchingBubble(gameState, rootBubbleId, inputA->startPointNodeId, inputA->rootNodeId, overrideMap);
 				inputA->unitRef = result;
 			}
-			else if (structureIdB.index != middle::UNASSIGNED) {
-				middle::Id result = bubble::findMatchingBubbleWithVariables(gameState, topDogContainerId,
-					structureIdB, inputB->structureDepth, overrideMap);
+			else if (isValidId(gameState, startPointB)) {
+				middle::Id result = bubble::findMatchingBubble(gameState, rootBubbleId, inputB->startPointNodeId, inputB->rootNodeId, overrideMap);
 				inputB->unitRef = result;
 			}
 
@@ -752,7 +629,6 @@ public:
 
 			// start
 			if (button->function == bubbleButton::START_PROCEDURE_BUTTON) {
-				// navigate to procedure scope... 
 				middle::Id procContainerId = procedureCache->relevantIdVector[0];
 				auto procedureShape = middle::getShape(gameState, procContainerId.index);
 				auto procedureContainer = middle::getComponent<components::ProcedureContainer>(procedureShape);
@@ -794,6 +670,13 @@ public:
 				auto procedureContainer = middle::getComponent<components::ProcedureContainer>(procedureShape);
 				procedureContainer->mode = procedureConstants::STEPPING;
 				procedureContainer->direction = procedureConstants::BACKWARD;
+			}
+
+			if (button->function == bubbleButton::REVERSE_PROCEDURE) {
+				middle::Id procedureId = procedureCache->relevantIdVector[0];
+				auto& procedureShape = middle::getShape(gameState, procedureId.index);
+				auto procedureContainer = middle::getComponent<components::ProcedureContainer>(procedureShape);
+				procedureContainer->targetActionStackSize = 0;
 			}
 		}
 
@@ -859,7 +742,7 @@ public:
 
 			if (procedure->mode == procedureConstants::EXECUTING && !skipPause) {
 				auto timer = middle::attachComponent<components::TimerComponent>(gameState, procedureShape.id);
-				timer->timeLeft = 0.1f;
+				timer->timeLeft = 0.10f;
 			}
 
 			if (procedure->mode == procedureConstants::STEPPING) {
@@ -885,6 +768,7 @@ public:
 					}
 				}
 			}
+
 		}
 	}
 };

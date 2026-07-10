@@ -23,6 +23,7 @@
 #include "InventorySlot.h"
 #include "SnapRef.h"
 #include "Layer.h"
+#include "InsertableBubble.h"
 
 
 class BubbleInventorySystem : public middle::MiddleGameplaySystem {
@@ -36,6 +37,7 @@ public:
 	components::CompCache* uiButtonsCache;
 	components::CompCache* activeCheckBoxesCache;
 	components::CompCache* inventorySlotCache;
+	components::CompCache* insertableCache;
 
 	void init(middle::GameState* gameState) {
 		inventoryCache = middle::newCompCache(gameState);
@@ -63,6 +65,8 @@ public:
 		activeCheckBoxesCache->addType<components::ActiveCheckBoxTag>();
 		inventorySlotCache = middle::newCompCache(gameState);
 		inventorySlotCache->addType<components::InventorySlot>();
+		insertableCache = middle::newCompCache(gameState);
+		insertableCache->addType<components::InsertableBubble>();
 	}
 
 	void deactivateCheckboxes(middle::GameState* gameState) {
@@ -73,21 +77,10 @@ public:
 	}
 
 	void changeTermAdditionTypes(middle::GameState* gameState, int newType) {
-		auto termIt = inventoryItemCache->begin<components::InventoryItem>();
-		for (int i = 0; i < inventoryItemCache->getSize(); ++i) {
+		auto termIt = insertableCache->begin<components::InsertableBubble>();
+		for (int i = 0; i < insertableCache->getSize(); ++i) {
 			auto* term = *termIt;
-			if (term->itemType == bubbleInventoryItemType::NEW_ADDITION_TERM) {
-				term->itemType = newType;
-			}
-			if (term->itemType == bubbleInventoryItemType::NEW_MULTIPLICATION_TERM) {
-				term->itemType = newType;
-			}
-			if (term->itemType == bubbleInventoryItemType::INSERT_X_OVER_X) {
-				term->itemType = newType;
-			}
-			if (term->itemType == bubbleInventoryItemType::INSERT_X_MINUS_X) {
-				term->itemType = newType;
-			}
+			term->insertableBubbleType = newType;
 		}
 	}
 
@@ -95,12 +88,11 @@ public:
 	void update(middle::GameState* gameState) override {
 
 		auto inventoryIt = inventoryCache->begin<components::Inventory>();
-		auto loopIt = inventoryCache->begin<components::LoopSociety>();
 		for (int i = 0; i < inventoryCache->getSize(); ++i) {
 			auto inventory = *inventoryIt;
-			auto loop = *loopIt;
 
-			std::vector < middle::Id>children = loop->loopMemberIds;
+			std::vector < middle::Id>children;
+			middle::getChildren(gameState, inventoryCache->relevantIdVector[i], children);
 			for (int i = 0; i < children.size(); ++i) {
 				middle::Id childId = children[i];
 				auto& child = middle::getShape(gameState, childId.index);
@@ -148,21 +140,24 @@ public:
 		for (int i = 0; i < snapReflessBubbleInventoryItemCache->getSize(); ++i) {
 			auto invItem = *bubbleItemIt;
 			middle::Id parentInventoryId = middle::getParent(gameState, snapReflessBubbleInventoryItemCache->relevantIdVector[i]);
+			if (parentInventoryId.index == middle::UNASSIGNED) {
+				continue;
+			}
 			std::vector<middle::Id>children;
 			middle::getChildren(gameState, parentInventoryId, children);
 			bool attachedRefs = false;
-			for (int index = 0; index < children.size(); ++index) {
-				// TODO THIS IS ASSUMES SLOTS MATCH THIS BUBBLE INVENTORYS MEMBERS
-				middle::Id slot = inventorySlotCache->relevantIdVector[index];
-				auto snapRef = middle::attachComponent<components::SnapRef>(gameState, children[index]);
-				snapRef->snapTargetId = slot;
-				//invItem->idRef = inventorySlotCache->relevantIdVector[i];
-				attachedRefs = true;
-				// set layer here, because its seems like good time
-				auto& shape = middle::getShape(gameState, children[index].index);
-				auto layer = middle::getComponent<components::Layer>(shape);
-				layer->layer = 2;
-			}
+			//for (int index = 0; index < children.size(); ++index) {
+			//	// TODO THIS IS ASSUMES SLOTS MATCH THIS BUBBLE INVENTORYS MEMBERS
+			//	middle::Id slot = inventorySlotCache->relevantIdVector[index];
+			//	auto snapRef = middle::attachComponent<components::SnapRef>(gameState, children[index]);
+			//	snapRef->snapTargetId = slot;
+			//	//invItem->idRef = inventorySlotCache->relevantIdVector[i];
+			//	attachedRefs = true;
+			//	// set layer here, because its seems like good time
+			//	auto& shape = middle::getShape(gameState, children[index].index);
+			//	auto layer = middle::getComponent<components::Layer>(shape);
+			//	layer->layer = 2;
+			//}
 			if (attachedRefs) {
 				break;
 			}
@@ -177,28 +172,35 @@ public:
 				if (!middle::getComponent<components::ActiveCheckBoxTag>(shape)) {
 					deactivateCheckboxes(gameState);
 					middle::queueComponentAttachment<components::ActiveCheckBoxTag>(gameState, buttonId);
-					changeTermAdditionTypes(gameState, bubbleInventoryItemType::NEW_ADDITION_TERM);
+					changeTermAdditionTypes(gameState, components::InsertableBubbleType::ADD_OUTER);
 				}
 			}
 			if (button->function == bubbleButton::SELECT_MULTIPLY) {
 				if (!middle::getComponent<components::ActiveCheckBoxTag>(shape)) {
 					deactivateCheckboxes(gameState);
 					middle::queueComponentAttachment<components::ActiveCheckBoxTag>(gameState, buttonId);
-					changeTermAdditionTypes(gameState, bubbleInventoryItemType::NEW_MULTIPLICATION_TERM);
+					changeTermAdditionTypes(gameState, components::MULTIPLY_OUTER);
+				}
+			}
+			if (button->function == bubbleButton::SELECT_POWER) {
+				if (!middle::getComponent<components::ActiveCheckBoxTag>(shape)) {
+					deactivateCheckboxes(gameState);
+					middle::queueComponentAttachment<components::ActiveCheckBoxTag>(gameState, buttonId);
+					changeTermAdditionTypes(gameState, components::POWER_OUTER);
 				}
 			}
 			if (button->function == bubbleButton::SELECT_INSERT_X_OVER_X) {
 				if (!middle::getComponent<components::ActiveCheckBoxTag>(shape)) {
 					deactivateCheckboxes(gameState);
 					middle::queueComponentAttachment<components::ActiveCheckBoxTag>(gameState, buttonId);
-					changeTermAdditionTypes(gameState, bubbleInventoryItemType::INSERT_X_OVER_X);
+					changeTermAdditionTypes(gameState, components::MULTIPLY_X_OVER_X);
 				}
 			}
 			if (button->function == bubbleButton::SELECT_INSERT_X_MINUS_X) {
 				if (!middle::getComponent<components::ActiveCheckBoxTag>(shape)) {
 					deactivateCheckboxes(gameState);
 					middle::queueComponentAttachment<components::ActiveCheckBoxTag>(gameState, buttonId);
-					changeTermAdditionTypes(gameState, bubbleInventoryItemType::INSERT_X_MINUS_X);
+					changeTermAdditionTypes(gameState, components::ADD_X_MINUS_X);
 				}
 			}
 		}

@@ -18,7 +18,7 @@ namespace entities{
 		middle::addComponent<components::MouseIntersectable>(shape);
 		auto reference = middle::addComponent<components::Reference>(shape);
 		auto loop = middle::addComponent<components::LoopSociety>(shape);
-		middle::registerShape(gameState, shape);
+		middle::registerShapeAtIndex(gameState, shape, index);
 		reference->sceneName = sceneName;
 		reference->folder = folder;
 		loop->loopMemberIds = members;

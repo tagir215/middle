@@ -16,6 +16,8 @@
 #include "InventorySlot.h"
 #include "InventoryItem.h"
 #include "BubbleVariable.h"
+#include "Reference.h"
+#include "CameraComponent.h"
 
 
 class BubbleLevelEditorSystem : public middle::MiddleGameplaySystem {
@@ -27,6 +29,7 @@ public:
 
 	components::CompCache* selectableCache = nullptr;
 	components::CompCache* inventorySlotCache = nullptr;
+	components::CompCache* refCache = nullptr;
 
 	void init(middle::GameState* gameState) override {
 		selectableCache = middle::newCompCache(gameState);
@@ -34,6 +37,8 @@ public:
 		selectableCache->addType<components::UiComponent>(components::NOTINTERESTED);
 		inventorySlotCache = middle::newCompCache(gameState);
 		inventorySlotCache->addType <components::InventorySlot>();
+		refCache = middle::newCompCache(gameState);
+		refCache->addType<components::Reference>();
 	}
 
 	middle::Id getSelected() {
@@ -52,6 +57,7 @@ public:
 		float randomZ = (std::rand() % 50 + 1);
 		return { 1.0f / randomX, 0, 1.0f / randomZ };
 	}
+
 
 	void update(middle::GameState* gameState) override {
 		auto ui = [gameState, this]()
@@ -96,6 +102,18 @@ public:
 						middle::loadShape(gameState, folder, "BubbleAlgebraUi", true, { -800,0,-500 });
 						Vector3 cameraPos = { 0,-1000,0 };
 						middle::loadShape(gameState, folder, "BubbleCamera", true, cameraPos);
+					}
+
+					if (ImGui::Button("Save Camera Pos")) {
+						for (middle::Id& id : refCache->relevantIdVector) {
+							middle::Id cameraId = middle::getFirstChildWithComponent(gameState, id, middle::getTypeId<components::CameraComponent>());
+							if (cameraId.index != middle::UNASSIGNED) {
+								auto& camShape = middle::getShape(gameState, cameraId.index);
+								Vector3 targetPos = middle::getShapePosition(gameState, cameraId.index);
+								Vector3 currPos = middle::getShapePosition(gameState, id.index);
+								middle::moveShape(gameState, id.index, targetPos - currPos);
+							}
+						}
 					}
 
 					if (ImGui::Button("Import Procedure Level Content")) {
@@ -170,7 +188,6 @@ public:
 					ImGui::Separator();
 					if (ImGui::Button("New Multiplication")) {
 						Vector3 containerPos = middle::getShapePosition(gameState, selectedId.index);
-						float xOffset = 20;
 						auto bubbleAProto = bubble::newBubble(gameState, containerPos + randomOffset());
 						auto bubbleBProto = bubble::newBubble(gameState, containerPos + randomOffset());
 						auto& bubbleA = middle::registerShape(gameState, bubbleAProto);
@@ -189,6 +206,22 @@ public:
 						linkAction.execute(gameState);
 					}
 					ImGui::Separator();
+					if (ImGui::Button("New Power")) {
+						Vector3 containerPos = middle::getShapePosition(gameState, selectedId.index);
+						auto containerProto = bubble::newBubble(gameState, containerPos);
+						auto bubbleAProto = bubble::newBubble(gameState, containerPos + randomOffset());
+						auto bubbleBProto = bubble::newBubble(gameState, containerPos + randomOffset());
+						auto& bubbleA = middle::registerShape(gameState, bubbleAProto);
+						auto& bubbleB = middle::registerShape(gameState, bubbleBProto);
+						auto mulAction = bubbleActions::NewMultiplication(bubbleA.id, bubbleB.id);
+						mulAction.execute(gameState);
+						middle::Id newId = mulAction.resultShapeId;
+						auto& newShape = middle::getShape(gameState, newId.index);
+						auto mul = middle::getComponent<components::BubbleMultiplyComponent>(newShape);
+						mul->operationType = static_cast<int>(components::OperationType::POWER);
+						middle::EditorActionReparent(selectedId.index, newId.index).execute(gameState);
+					}
+					ImGui::Separator();
 					static char label[20] = "x";
 					ImGui::InputText("variable lable", label, IM_ARRAYSIZE(label));
 					if (ImGui::Button("Bubble To Variable")) {
@@ -204,15 +237,6 @@ public:
 						bubble->inverse = true;
 					}
 					ImGui::Separator();
-					static bool isInverse = false;
-					static int power = 1;
-					ImGui::SliderInt("exponent", &power, -4, 4);
-					ImGui::Checkbox("isInverse", &isInverse);
-					if (ImGui::Button("Bubble To Exponent")) {
-						auto expComp = middle::attachComponent<components::ExponentComponent>(gameState, selectedId);
-						expComp->power = power;
-						expComp->isInverse = isInverse;
-					}
 				}
 
 				ImGui::End();

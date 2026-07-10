@@ -77,21 +77,16 @@ public:
 		middle::Id grabbedRefId = ref->idRef;
 
 		// GRABBED VARIABLE CASE
-		std::vector<middle::Id> grabbedChildren;
-		middle::getChildren(gameState, grabbedShape.id, grabbedChildren);
-		if (grabbedChildren.size() == 1) {
-			auto& childShape = middle::getShape(gameState, grabbedChildren[0].index);
-			auto var = middle::getComponent<components::BubbleVariable>(childShape);
-			if (var) {
-				auto bubbleEqualsVar = middle::attachComponent<components::BubbleEqualsVariable>(gameState, grabbedCopyId);
-				for (middle::Id& siblingId : siblings) {
-					if (siblingId != grabbedRefId) {
-						bubbleEqualsVar->matchingIdRef = siblingId;
-					}
+		auto grabbedVar = middle::getComponent<components::BubbleVariable>(grabbedShape);
+		if (grabbedVar) {
+			auto bubbleEqualsVar = middle::attachComponent<components::BubbleEqualsVariable>(gameState, grabbedCopyId);
+			for (middle::Id& siblingId : siblings) {
+				if (siblingId != grabbedRefId) {
+					bubbleEqualsVar->matchingIdRef = siblingId;
 				}
-				bubbleEqualsVar->wantsToReplaceBubble = true;
-				return;
 			}
+			bubbleEqualsVar->wantsToReplaceBubble = true;
+			return;
 		}
 
 		// GRABBED BUBBLE CASE
@@ -99,14 +94,8 @@ public:
 			if (id == grabbedRefId) {
 				continue;
 			}
-			// other children should be 1 and a variable, for this to work
-			std::vector<middle::Id>otherChildren;
-			middle::getChildren(gameState, id, otherChildren);
-			if (otherChildren.size() != 1) {
-				return;
-			}
-
-			auto& childOfOther = middle::getShape(gameState, otherChildren[0].index);
+			// other children should be variable, for this to work
+			auto& childOfOther = middle::getShape(gameState, id.index);
 			auto expComp = middle::getComponent<components::ExponentComponent>(childOfOther);
 			// can't be in exponent for this to work
 			if (expComp) {
@@ -128,19 +117,20 @@ public:
 
 		bool intersecting = bubble::isIntersecting(gameState, shape);
 		if (intersecting && gameState->bubbleAlgebraState.grabbedId.index == middle::UNASSIGNED && gameState->input.mouseHeld) {
+
+			// copy as grabbed
+			middle::Id copyId = middle::deepCopyShape(gameState, shape.id.index);
+			auto& copyShape = middle::getShape(gameState, copyId.index);
+			auto copyGrabbable = middle::getComponent<components::MouseGrabbable>(copyShape);
+			copyGrabbable->grabbing = true;
+			gameState->bubbleAlgebraState.grabbedId = copyId;
+			// set og as reference
+			auto ref = middle::attachComponent<components::IdRef>(gameState, copyShape.id);
+			ref->idRef = shape.id;
+			assert(ref->idRef.index != middle::UNASSIGNED);
+
 			middle::Id& parentId = middle::getParent(gameState, shape.id);
 			if (parentId.index != middle::UNASSIGNED) {
-				// copy as grabbed
-				middle::Id copyId = middle::deepCopyShape(gameState, shape.id.index);
-				auto& copyShape = middle::getShape(gameState, copyId.index);
-				auto copyGrabbable = middle::getComponent<components::MouseGrabbable>(copyShape);
-				copyGrabbable->grabbing = true;
-				gameState->bubbleAlgebraState.grabbedId = copyId;
-				// set og as reference
-				auto ref = middle::attachComponent<components::IdRef>(gameState, copyShape.id);
-				ref->idRef = shape.id;
-				assert(ref->idRef.index != middle::UNASSIGNED);
-
 				handleEqualsToVariableCase(gameState, parentId, copyId);
 			}
 		}
@@ -171,14 +161,13 @@ public:
 
 		auto unitIt = unitCache->begin<components::BubbleUnit>();
 		auto unitGrabbableIt = unitCache->begin<components::MouseGrabbable>();
-		auto loopIt = unitCache->begin<components::LoopSociety>();
 		for (int i = 0; i < unitCache->getSize(); ++i) {
 			auto& shape = middle::getShape(gameState, unitCache->relevantIdVector[i].index);
 			auto unit = *unitIt;
-			auto loop = *loopIt;
 			auto grabbable = *unitGrabbableIt;
-			if (loop->parentLoopId.index != middle::UNASSIGNED) {
-				auto& parentShape = middle::getShape(gameState, loop->parentLoopId.index);
+			middle::Id parentId = middle::getParent(gameState, shape.id);
+			if (parentId.index != middle::UNASSIGNED) {
+				auto& parentShape = middle::getShape(gameState, parentId.index);
 				auto parentFraction = middle::getComponent<components::FractionalComponent>(parentShape);
 				if (parentFraction) {
 					continue;

@@ -266,7 +266,7 @@ namespace middle {
 	void resetGenerations(GameState* gameState)
 	{
 		for (int i = 0; i < gameState->ids.size(); ++i) {
-			if (!isShapeAlive(gameState, i)) {
+			if (!isValidId(gameState, gameState->ids[i])) {
 				continue;
 			}
 			gameState->ids[i].generation = 0;
@@ -277,7 +277,7 @@ namespace middle {
 	void incrementGenerations(GameState* gameState)
 	{
 		for (int i = 0; i < gameState->ids.size(); ++i) {
-			if (!isShapeAlive(gameState, i)) {
+			if (!isValidId(gameState, gameState->ids[i])) {
 				continue;
 			}
 			static int incrementAmount = 1;
@@ -290,7 +290,7 @@ namespace middle {
 	void resetScene(GameState* gameState)
 	{
 		for (int i = 0; i < gameState->shapes.size(); ++i) {
-			if (isShapeAlive(gameState, i)) {
+			if (isValidId(gameState, gameState->ids[i])) {
 				deleteShape(gameState, i);
 			}
 		}
@@ -353,6 +353,12 @@ namespace middle {
 
 		for (auto& pair : shape.componentMap) {
 			std::string componentName = componentNameMap[pair.first];
+
+			const std::string initializedThing = "InitializedTag";
+			if (componentName == initializedThing) {
+				continue;
+			}
+
 			outFile << componentName << "\n";
 			int componentTypeId = pair.first;
 			Component component = pair.second;
@@ -381,7 +387,7 @@ namespace middle {
 		int saveSpam = GHOST_INDEX_OFFSET;
 		for (int i = 0; i < saveSpam; ++i) {
 			// skip empty parts if over max used index
-			if (!isShapeAlive(gameState, i))
+			if (!isValidId(gameState, gameState->ids[i]))
 				continue;
 
 			auto& shape = gameState->shapes[i];
@@ -419,11 +425,10 @@ namespace middle {
 			outFile << "__" << idString;
 			saveComponent(shape, outFile);
 
-			auto loop = getComponent<components::LoopSociety>(shape);
-			if (loop) {
-				for (Id& id : loop->loopMemberIds) {
-					idStack.push(id);
-				}
+			std::vector<middle::Id> children;
+			middle::getChildren(gameState, shape.id, children);
+			for (Id& id : children) {
+				idStack.push(id);
 			}
 		}
 
@@ -434,12 +439,7 @@ namespace middle {
 
 	middle::Id loadShape(GameState* gameState, const std::string& folder, const std::string& sceneName, bool import, const Vector3& pos) {
 		int freeIndex = findFreeIndex(gameState);
-		loadScene(gameState, folder, sceneName, import, pos, freeIndex);
-		if (import) {
-			auto& shape = getShape(gameState, freeIndex);
-			return shape.id;
-		}
-		return middle::Id();
+		return loadScene(gameState, folder, sceneName, import, pos, freeIndex);
 	}
 
 
@@ -517,15 +517,16 @@ namespace middle {
 			|| typeC == static_cast<char>(FieldType::Color);
 	}
 
-	void loadScene(GameState* gameState, const std::string& folder, const std::string& sceneName, bool import, const Vector3& pos, int sceneReferenceIndex) {
+	middle::Id loadScene(GameState* gameState, const std::string& folder, const std::string& sceneName, bool import, const Vector3& pos, int sceneReferenceIndex) {
 
 		std::string path = folder + sceneName + ".midsc";
+
 
 		int indexOffset = 0;
 
 		std::ifstream inputFile(path);
 		if (!inputFile.is_open()) {
-		throw std::runtime_error("Failed to open file to open");
+			throw std::runtime_error("Failed to open file to open");
 		}
 		std::string line;
 
@@ -650,7 +651,7 @@ namespace middle {
 			}
 
 			// if reference doesn't exist yet, when importing from editor, create new reference
-			if (!isShapeAlive(gameState, sceneReferenceIndex)) {
+			if (!isValidId(gameState, gameState->ids[sceneReferenceIndex])) {
 				entities::initReference(gameState, sceneReferenceIndex, members, folder, sceneName);
 			}
 			// if reference already exists, when deserializing, just update the container loop, since its refence objects are not stored to the file
@@ -661,7 +662,11 @@ namespace middle {
 
 			// move imported scene where it wants to be
 			moveShape(gameState, sceneReferenceIndex, pos);
+
+			return gameState->ids[sceneReferenceIndex];
 		}
+
+		return middle::Id();
 	}
 
 	std::vector<std::string> loadFileNamesInFolder(const std::string& folderPath)

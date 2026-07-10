@@ -57,8 +57,8 @@ public:
 	const float blockMarginX = 20;
 	const float blockMarginZ = 0;
 	const float ifoffset = 90;
-	const float variableSpacingZ = 10;
-	const float variableSpacingX = 10;
+	const float variableSpacingZ = 12;
+	const float variableSpacingX = 6.6f;
 
 	void updateRectSize(middle::GameState* gameState, middle::Shape& shape, float minW, float minH, float marginX, float marginY) {
 		components::Rectangle* rect = middle::getComponent<components::Rectangle>(shape);
@@ -89,7 +89,6 @@ public:
 		auto codeBlock = middle::getComponent<components::CodeBlock>(shape);
 		auto function = middle::getComponent<components::CodeFunction>(shape);
 		auto ifBlock = middle::getComponent<components::IfComponent>(shape);
-		auto loop = middle::getComponent<components::LoopSociety>(shape);
 
 		float marginX = 0;
 		float marginZ = 0;
@@ -109,7 +108,9 @@ public:
 		}
 		updateRectSize(gameState, shape, marginX, marginZ, blockMarginX * 2, blockMarginZ * 2);
 
-		for (middle::Id& id : loop->loopMemberIds) {
+		std::vector<middle::Id>children;
+		middle::getChildren(gameState, shape.id, children);
+		for (middle::Id& id : children) {
 			auto& child = middle::getShape(gameState, id.index);
 			updateRectSizeRecursive(gameState, child);
 		}
@@ -133,8 +134,9 @@ public:
 			referencePos.x -= procRect->width * 0.5f + variableSpacingX;
 			referencePos.z += procRect->height * 0.5f - variableSpacingZ;
 
-			auto loop = middle::getComponent<components::LoopSociety>(shape);
-			for (middle::Id& childId : loop->loopMemberIds) {
+			std::vector<middle::Id>children;
+			middle::getChildren(gameState, shape.id, children);
+			for (middle::Id& childId : children) {
 				auto& childShape = middle::getShape(gameState, childId.index);
 				auto inputVariable = middle::getComponent<components::InputVariable>(childShape);
 				if (!inputVariable)
@@ -150,11 +152,11 @@ public:
 
 		// scope layout
 		auto scopeIt = scopeCache->begin<components::ScopeComponent>();
-		auto scopeLoopIt = scopeCache->begin<components::LoopSociety>();
 		for (int i = 0; i < scopeCache->getSize(); ++i) {
 			auto scope = *scopeIt;
-			auto scopeLoop = *scopeLoopIt;
 			auto& shape = middle::getShape(gameState, scopeCache->relevantIdVector[i].index);
+			std::vector<middle::Id>children;
+			middle::getChildren(gameState, scopeCache->relevantIdVector[i], children);
 
 			updateRectSizeRecursive(gameState, shape);
 
@@ -163,7 +165,7 @@ public:
 
 			float totalHeight = scopeRect->height;
 			float totalWidth = scopeRect->width;
-			int size = scopeLoop->loopMemberIds.size();
+			int size = children.size();
 
 			Vector3 scopePos = { scopePosition->posX, scopePosition->posY, scopePosition->posZ };
 			Vector3 referencePos = scopePos;
@@ -171,7 +173,7 @@ public:
 
 			// move code block inside procedure container
 			for (int index = 0; index < size; ++index) {
-				middle::Id childId = scopeLoop->loopMemberIds[index];
+				middle::Id childId = children[index];
 				auto& childShape = middle::getShape(gameState, childId.index);
 				auto childRect = middle::getComponent<components::Rectangle>(childShape);
 				auto codeBlock = middle::getComponent<components::CodeBlock>(childShape);
@@ -195,8 +197,8 @@ public:
 			}
 			// move scope container
 			if (size > 0) {
-				auto& child0Shape = middle::getShape(gameState, scopeLoop->loopMemberIds[0].index);
-				Vector3 child0Pos = middle::getShapePosition(gameState, scopeLoop->loopMemberIds[0].index);
+				auto& child0Shape = middle::getShape(gameState, children[0].index);
+				Vector3 child0Pos = middle::getShapePosition(gameState, children[0].index);
 				auto child0Rect = middle::getComponent<components::Rectangle>(child0Shape);
 
 				float left, right, bottom, top;
@@ -211,12 +213,10 @@ public:
 
 		// code block layouts
 		auto codeBlockIt = codeBlockCache->begin<components::CodeBlock>();
-		auto codeBlockLoopIt = codeBlockCache->begin<components::LoopSociety>();
 		for (int i = 0; i < codeBlockCache->getSize(); ++i) {
 			auto codeBlock = *codeBlockIt;
 			auto& shape = middle::getShape(gameState, codeBlockCache->relevantIdVector[i].index);
 
-			auto loop = *codeBlockLoopIt;
 			float left, right, bottom, top;
 
 			auto codeBlockRect = middle::getComponent < components::Rectangle>(shape);
@@ -225,28 +225,34 @@ public:
 			float targetX = leftAlignmentX + blockMarginX;
 			float targetZ = codeBlockPos.z;
 
-			for (middle::Id& childId : loop->loopMemberIds) {
+			std::vector<middle::Id>children;
+			middle::getChildren(gameState, shape.id, children);
+			for (middle::Id& childId : children) {
+				if (childId.generation != gameState->ids[childId.index].generation) {
+					continue;
+				}
 				auto& childShape = middle::getShape(gameState, childId.index);
 				auto childRect = middle::getComponent<components::Rectangle>(childShape);
-				auto pos = middle::getComponent<components::Position>(childShape);
 				auto offset = middle::getComponent<components::Offset>(childShape);
-				pos->posX = targetX + childRect->width * 0.5f;
-				pos->posY = codeBlockPos.y;
-				pos->posZ = targetZ;
+				Vector3 currentPos = middle::getShapePosition(gameState, childId.index);
+				Vector3 targetPos = { targetX + childRect->width * 0.5f, codeBlockPos.y, targetZ };
+				middle::moveShape(gameState, childId.index, targetPos - currentPos);
 			}
 		}
 
 
 		// if block layout
 		auto ifBlockIt = ifBlockCache->begin<components::IfComponent>();
-		auto ifBlockLoopIt = ifBlockCache->begin<components::LoopSociety>();
 		for (int i = 0; i < ifBlockCache->getSize(); ++i) {
 			auto ifBlock = *ifBlockIt;
-			auto loop = *ifBlockLoopIt;
 			auto& shape = middle::getShape(gameState, ifBlockCache->relevantIdVector[i].index);
 
 			std::vector<middle::Id>scopeChildren;
-			for (middle::Id& childId : loop->loopMemberIds) {
+			std::vector<middle::Id>children;
+			middle::getChildren(gameState, ifBlockCache->relevantIdVector[i], children);
+			middle::Id parentId = middle::getParent(gameState, ifBlockCache->relevantIdVector[i]);
+
+			for (middle::Id& childId : children) {
 				middle::Shape& childShape = middle::getShape(gameState, childId.index);
 				auto scope = middle::getComponent<components::ScopeComponent>(childShape);
 				if (scope) {
@@ -259,8 +265,8 @@ public:
 			Vector3 ifPosition = middle::getShapePosition(gameState, shape.id.index);
 
 			Vector3 targetScale = { 1,1,1 };
-			if (loop->parentLoopId.index != middle::UNASSIGNED) {
-				auto& parentShape = middle::getShape(gameState, loop->parentLoopId.index);
+			if (parentId.index != middle::UNASSIGNED) {
+				auto& parentShape = middle::getShape(gameState, parentId.index);
 				auto parentCodeBlock = middle::getComponent<components::CodeBlock>(parentShape);
 				if (!parentCodeBlock) {
 					targetScale = { 0.1f,0.1f,0.1f };
@@ -270,7 +276,7 @@ public:
 			float spacingZ = ifspacing * targetScale.z;
 
 			float totalHeight = 0;
-			for (middle::Id& childId : loop->loopMemberIds) {
+			for (middle::Id& childId : children) {
 				auto& childShape = middle::getShape(gameState, childId.index);
 				auto rect = middle::getComponent<components::Rectangle>(childShape);
 				if (rect) {
@@ -288,13 +294,15 @@ public:
 				auto scopeRect = middle::getComponent<components::Rectangle>(childShape);
 				auto scopeScale = middle::getComponent<components::Scale>(childShape);
 				auto scopePos = middle::getComponent<components::Position>(childShape);
-				auto scopeLoop = middle::getComponent<components::LoopSociety>(childShape);
+				std::vector<middle::Id>children;
+				middle::getChildren(gameState, childShape.id, children);
+
 				scopeScale->scale = targetScale;
 
 				// if no children use the scopes height, otherwise use the first childs height
 				float scopeOffsetZ = scopeRect->height * 0.5f;
-				if (scopeLoop->loopMemberIds.size() > 0) {
-					auto& scopeChildShape = middle::getShape(gameState, scopeLoop->loopMemberIds[0].index);
+				if (children.size() > 0) {
+					auto& scopeChildShape = middle::getShape(gameState, children[0].index);
 					auto scopeChildRect = middle::getComponent<components::Rectangle>(scopeChildShape);
 					scopeOffsetZ = scopeChildRect->height * 0.5f;
 				}
@@ -313,15 +321,15 @@ public:
 
 		// function layout
 		auto functionIt = functionCache->begin<components::CodeFunction>();
-		auto functionLoopIt = functionCache->begin<components::LoopSociety>();
 		for (int i = 0; i < functionCache->getSize(); ++i) {
 			auto function = *functionIt;
-			auto loop = *functionLoopIt;
 			auto& shape = middle::getShape(gameState, functionCache->relevantIdVector[i].index);
+			std::vector<middle::Id>children;
+			middle::getChildren(gameState, functionCache->relevantIdVector[i], children);
 
 			int inputChildCount = 0;
 			int outputChildCount = 0;
-			for (middle::Id& childId : loop->loopMemberIds) {
+			for (middle::Id& childId : children) {
 				auto& childShape = middle::getShape(gameState, childId.index);
 				auto input = middle::getComponent<components::InputVariable>(childShape);
 				if (input) {
@@ -333,7 +341,7 @@ public:
 				}
 			}
 
-			if (loop->loopMemberIds.size() > 0) {
+			if (children.size() > 0) {
 				auto funcRect = middle::getComponent<components::Rectangle>(shape);
 				Vector3 funcPosition = middle::getShapePosition(gameState, shape.id.index);
 
@@ -347,7 +355,7 @@ public:
 				referencePosLeft.x -= funcRect->width * 0.5f + variableSpacingX;
 				referencePosLeft.z += totalHeightLeft * 0.5f;
 
-				for (middle::Id& childId : loop->loopMemberIds) {
+				for (middle::Id& childId : children) {
 					auto& childShape = middle::getShape(gameState, childId.index);
 					auto input = middle::getComponent<components::InputVariable>(childShape);
 					auto output = middle::getComponent<components::OutputVariable>(childShape);

@@ -57,9 +57,9 @@ public:
 		if (placement) {
 			return true;
 		}
-		auto loop = middle::getComponent<components::LoopSociety>(shape);
-		if (loop->parentLoopId.index != middle::UNASSIGNED) {
-			return isPlacedRecursive(gameState, loop->parentLoopId);
+		middle::Id parentId = middle::getParent(gameState, shape.id);
+		if (parentId.index != middle::UNASSIGNED) {
+			return isPlacedRecursive(gameState, parentId);
 		}
 		return false;
 	}

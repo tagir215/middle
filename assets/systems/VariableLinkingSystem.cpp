@@ -16,6 +16,9 @@
 #include "bubble_utils.h"
 #include "ProcedureContainer.h"
 #include "ProcedureInputVariable.h"
+#include "ProcedureTargetTag.h"
+#include "InitializedTag.h"
+#include "bubble_colors.h"
 
 class VariableLinkingSystem : public middle::MiddleGameplaySystem {
 public:
@@ -25,6 +28,8 @@ public:
 	components::CompCache* bubbleCache;
 	components::CompCache* procCache;
 	components::CompCache* algebraCache;
+	components::CompCache* procedureTargetCache;
+	components::CompCache* procedureInputCache;
 
 	void init(middle::GameState* gameState) {
 		inputCache = middle::newCompCache(gameState);
@@ -40,7 +45,11 @@ public:
 		procCache->addType<components::ProcedureContainer>();
 		algebraCache = middle::newCompCache(gameState);
 		algebraCache->addType<components::AlgebraNode>();
-
+		procedureTargetCache = middle::newCompCache(gameState);
+		procedureTargetCache->addType<components::ProcedureTargetTag>();
+		procedureTargetCache->addType<components::InitializedTag>(components::NOTINTERESTED);
+		procedureInputCache = middle::newCompCache(gameState);
+		procedureInputCache->addType<components::ProcedureInputVariable>();
 	}
 
 	void copy(middle::GameState* gameState, middle::Id toCopyId) {
@@ -62,7 +71,6 @@ public:
 
 		auto& grabbedShape = middle::getShape(gameState, grabbedId.index);
 		auto grabbedInput = middle::getComponent<components::InputVariable>(grabbedShape);
-		auto grabbedProcedureInput = middle::getComponent<components::ProcedureInputVariable>(grabbedShape);
 
 		auto bubbleIt = bubbleCache->begin<components::BubbleComponent>();
 		auto bubbleIntersectableIt = bubbleCache->begin<components::MouseIntersectable>();
@@ -88,6 +96,7 @@ public:
 
 			// set bubble reference
 			auto ref = middle::getComponent<components::IdRef>(grabbedShape);
+			assert(isValidId(gameState, ref->idRef));
 			auto& ogShape = middle::getShape(gameState, ref->idRef.index);
 			auto ogInput = middle::getComponent<components::InputVariable>(ogShape);
 
@@ -95,40 +104,15 @@ public:
 
 			// update structure, unless inputting it during normal level
 			if (procContainer->editMode) {
-				middle::Id structureId = bubble::bubbleToStructure(gameState, intersectingShape.id);
-				ogInput->structureIds.clear();
-				ogInput->structureIds.push_back(structureId);
-				ogInput->structureDepth = bubble::findDepth(gameState, intersectingShape.id);
-				// reparent algebra node to input, for automatic deletion and serialization
-				middle::queueAction(gameState, std::make_shared<middle::EditorActionReparent>(ogShape.id.index, structureId.index));
-
-				// add also constrainting siblings,
-				for (middle::Id id : children) {
-					if (id == intersectingShape.id) {
-						continue;
-					}
-					// reparent algebra node to input, for automatic deletion and serialization
-					middle::Id childStructureId = bubble::bubbleToStructure(gameState, id);
-					middle::queueAction(gameState, std::make_shared<middle::EditorActionReparent>(ogShape.id.index, childStructureId.index));
-					ogInput->structureIds.push_back(childStructureId);
-				}
+				middle::Id nodeRoot, startPointNode;
+				bubble::bubbleToStructureBranch(gameState, intersectingShape.id, procContainer->bubbleRef, startPointNode, nodeRoot);
+				ogInput->rootNodeId = nodeRoot;
+				ogInput->startPointNodeId = startPointNode;
+				middle::queueAction(gameState, std::make_shared<middle::EditorActionReparent>(ogShape.id.index, nodeRoot.index));
 
 				middle::queueComponentAttachment<components::Highlight>(gameState, ogShape.id);
 				highlighted = true;
-			}
-
-			// if its procedre input update unit ref here, and set proc container to point to the ref
-			if (grabbedProcedureInput) {
-				ogInput->unitRef = intersectingShape.id;
-				procContainer->bubbleRef = intersectingShape.id;
-
-				if (!procContainer->editMode) {
-					procContainer->variableOverrides = bubble::generateVariableOverrides(gameState, intersectingShape.id, ogInput->structureIds[0]);
-				}
-
-				if (!highlighted) {
-					middle::queueComponentAttachment<components::Highlight>(gameState, ogShape.id);
-				}
+				++procContainer->targetActionStackSize;
 			}
 
 		}
@@ -147,6 +131,27 @@ public:
 		}
 		else {
 			return;
+		}
+
+		if (procedureTargetCache->getSize() > 0) {
+			middle::Id procTargetId = procedureTargetCache->relevantIdVector[0];
+			assert(procedureInputCache->getSize() > 0);
+			middle::Id procInputId = procedureInputCache->relevantIdVector[0];
+			auto& procInputShape = middle::getShape(gameState, procInputId.index);
+			auto procInput = middle::getComponent<components::InputVariable>(procInputShape);
+			assert(procInput);
+
+			procInput->unitRef = procTargetId;
+			procContainer->bubbleRef = procTargetId;
+
+			middle::Id startPointNodeId, rootNodeId;
+			bubble::bubbleToStructureBranch(gameState, procTargetId, procTargetId, startPointNodeId, rootNodeId);
+			procInput->startPointNodeId = startPointNodeId;
+			procInput->rootNodeId = rootNodeId;
+			// reparent algebra node to input, for automatic deletion and serialization
+			middle::queueAction(gameState, std::make_shared<middle::EditorActionReparent>(procInputId.index, rootNodeId.index));
+
+			middle::attachComponent<components::InitializedTag>(gameState, procTargetId);
 		}
 
 		if (!gameState->input.mouseHeld) {
@@ -198,12 +203,6 @@ public:
 
 				//reset input, if not procedureInput,  procedureInput can be edited if in edit mode
 				if (!procedureInput || procContainer->editMode) {
-					if (input->structureIds.size() > 0) {
-						for (middle::Id id : input->structureIds) {
-							middle::deleteShapeRecursive(gameState, id.index);
-						}
-					}
-					input->structureIds.clear();
 					input->unitRef = middle::Id();
 				}
 
@@ -216,6 +215,8 @@ public:
 				middle::Id toCopyId = shape.id;
 				copy(gameState, toCopyId);
 			}
+
+
 		}
 
 	}

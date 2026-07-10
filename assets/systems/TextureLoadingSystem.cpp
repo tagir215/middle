@@ -16,6 +16,7 @@ public:
 
 	components::CompCache* selectableCache;
 	components::CompCache* textureCache;
+	components::CompCache* extraTextureCache;
 
 	void init(middle::GameState* gameState) override {
 		selectableCache = middle::newCompCache(gameState);
@@ -23,6 +24,8 @@ public:
 
 		textureCache = middle::newCompCache(gameState);
 		textureCache->addType<components::TextureComponent>();
+		extraTextureCache = middle::newCompCache(gameState);
+		extraTextureCache->addType<components::TextureComponent>();
 	}
 
 
@@ -38,17 +41,17 @@ public:
 				auto selectable = *selectableIt;
 				if (selectable->selected) {
 					Texture2D texture = textureContainer.texture;
-					std::string path = textureContainer.path;
+					std::string filename = textureContainer.filename;
 					middle::Id id = selectableCache->relevantIdVector[i];
 					auto customAction = std::make_shared<middle::CustomActionWithUndo>(
-						[id, texture, path](middle::GameState* gameState) {
+						[id, texture, filename](middle::GameState* gameState) {
 							auto& selectableShape = middle::getShape(gameState, id.index);
 							auto comp = middle::getComponent<components::TextureComponent>(selectableShape);
 							if (!comp) {
 								comp = middle::attachComponent<components::TextureComponent>(gameState, selectableShape.id);
 							}
 							comp->texture = texture;
-							comp->path = path;
+							comp->filename = filename;
 							comp->scale = 30;
 							comp->initialized = true;
 						},
@@ -68,8 +71,8 @@ public:
 			auto textureIt = textureCache->begin<components::TextureComponent>();
 			for (int i = 0; i < textureCache->getSize(); ++i) {
 				auto textureComp = *textureIt;
-				if (!textureComp->initialized && gameState->loadedTextureMap.find(textureComp->path) != gameState->loadedTextureMap.end()) {
-					textureComp->texture = gameState->loadedTextureMap[textureComp->path].texture;
+				if (!textureComp->initialized && gameState->loadedTextureMap.find(textureComp->filename) != gameState->loadedTextureMap.end()) {
+					textureComp->texture = gameState->loadedTextureMap[textureComp->filename].texture;
 					textureComp->initialized = true;
 				}
 			}
@@ -80,7 +83,7 @@ public:
 		for (int i = 0; i < textureCache->getSize(); ++i) {
 			auto texture = *textureIt;
 			if (!texture->initialized) {
-				gameState->texturesToLoadQueue.push(texture->path);
+				gameState->texturesToLoadQueue.push(texture->filename);
 			}
 		}
 

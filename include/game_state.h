@@ -126,7 +126,7 @@ namespace middle {
 		bool intersectingUI = false;
 		std::vector<std::shared_ptr<middle::EditorActionContainer>>bubbleActions;
 		bool justCompletedLevel = false;
-		std::string completedLevelName;
+		std::string previousLevelName;
 		std::vector<std::string>procedureNames;
 	};
 
@@ -136,7 +136,7 @@ namespace middle {
 	};
 
 	struct TextureContainer {
-		std::string path = "";
+		std::string filename = "";
 		Texture2D texture;
 	};
 
@@ -150,6 +150,7 @@ namespace middle {
 		const double nearPlaneDistance = 10;
 		const double farPlaneDistance = 4000;
 		bool systemsRegistered = false;
+		bool releaseBuild = false;
 		ApplicationMode applicationMode = ApplicationMode::EDITOR_MODE;
 		EditorState editorState;
 		Camera activeCamera;

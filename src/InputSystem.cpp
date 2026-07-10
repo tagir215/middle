@@ -137,8 +137,9 @@ public:
 				gameState->gameInput.nine = IsKeyPressed(KEY_NINE);
 				gameState->gameInput.zero = IsKeyPressed(KEY_ZERO);
 				gameState->gameInput.shiftHeld = IsKeyDown(KEY_LEFT_SHIFT) || IsKeyDown(KEY_RIGHT_SHIFT);
-				gameState->gameInput.mouseWheelMove = GetMouseWheelMove();
 			}
+
+			gameState->gameInput.mouseWheelMove = GetMouseWheelMove();
 		}
 
 		// CAMERA POSITION UPDATE

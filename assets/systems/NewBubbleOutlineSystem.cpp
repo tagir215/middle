@@ -95,7 +95,7 @@ public:
 				}
 			}
 
-			float radius = std::sqrt(totalArea / PI);
+			float radius = std::sqrt(totalArea / PI) + 4;
 			if (radius < bubble::variableRadius) {
 				radius = bubble::variableRadius;
 			}

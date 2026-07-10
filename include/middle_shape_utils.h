@@ -29,8 +29,8 @@ namespace middle {
 	bool isShapeSelected(GameState* gameState, int index);
 	// is the mouse intersecting this shape
 	bool isMouseIntersectingShape(GameState* gameState, int index);
-	// is shape slot taken and there should be instance
-	bool isShapeAlive(GameState* gameState, int index);
+	// is id generation correct?  and is alive
+	bool isValidId(GameState* gameState, middle::Id id);
 	// get pos quickly
 	Vector3 getShapePosition(GameState* gameState, int index);
 	// get shape instance
@@ -41,6 +41,8 @@ namespace middle {
 	void deleteShapeRecursive(GameState* gameState, int index, bool deleteComponentsOnly = false);
 	// add shape and updates generations
 	Shape& registerShape(GameState* gameState, middle::Shape shape);
+	// add shape and updates generations
+	Shape& registerShapeAtIndex(GameState* gameState, middle::Shape shape, int index);
 	// add shape and updates generations
 	Shape& registerAsGhostShape(GameState* gameState, middle::Shape shape);
 	// add shape, doesn't update generations
@@ -92,7 +94,7 @@ namespace middle {
 	template<typename F>
 	void loopInstances(GameState* gameState, F func) {
 		for (int i = 0; i < gameState->shapes.size(); ++i) {
-			if (!isShapeAlive(gameState, i))
+			if (!isValidId(gameState, gameState->ids[i]))
 				continue;
 			if (!func(i, gameState->shapes[i])) {
 				break;

@@ -1,10 +1,23 @@
 #pragma once
 #include "registrars.h"
 #include "editor_file_utils.h"
-#define MIDDLEBUBBLEMULTIPLYCOMPONENT(X) 
+#define MIDDLEBUBBLEMULTIPLYCOMPONENT(X) \
+	X(operationType)
 
 namespace components {
+	enum OperationType {
+		MULTIPLICATION,
+		POWER,
+		LOGARITHM,
+	};
+
+	enum PowerRole {
+		POWER_BASE,
+		POWER_EXPONENT
+	};
+
 	struct BubbleMultiplyComponent : public middle::Serializable{
+		int operationType = 0;
 
 		void serialize(std::ostream& ostream) override;
 		void deserialize(const std::vector<std::string>& buffer, int indexOffset) override;
@@ -17,4 +30,5 @@ namespace components {
 #undef X
 		}
 	};
+
 }

@@ -46,5 +46,10 @@ namespace bubbleButton{
 	inline int SCROLL_DOWN = 19;
 	inline int SELECT_INSERT_X_OVER_X = 20;
 	inline int SELECT_INSERT_X_MINUS_X = 21;
+	inline int REVERSE_PROCEDURE = 22;
+	inline int RESET_PROGRESS = 23;
+	inline int SELECT_POWER = 24;
+	inline int NEGATE_HELPERS = 25;
+	inline int INVERT_HELPERS = 26;
 }
 

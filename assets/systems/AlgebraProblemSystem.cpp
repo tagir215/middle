@@ -14,6 +14,8 @@
 #include "Position.h"
 #include "ProcedureContainer.h"
 #include "bubble_constants.h"
+#include "ProcedureInputVariable.h"
+#include "editor_file_utils.h"
 
 
 class AlgebraProblemSystem : public middle::MiddleGameplaySystem {
@@ -47,6 +49,16 @@ public:
 	}
 
 	void undo(middle::GameState* gameState) {
+
+		// return if procedure executing
+		if (procContainerCache->getSize() > 0) {
+			auto containerIt = procContainerCache->begin<components::ProcedureContainer>();
+			auto container = *containerIt;
+			if (container->targetActionStackSize > 0) {
+				return;
+			}
+		}
+
 		if (gameState->bubbleAlgebraState.bubbleActions.size() > 0) {
 			middle::queueAction(gameState, std::make_shared<middle::CustomAction>([](middle::GameState* gameState) {
 				gameState->bubbleAlgebraState.bubbleActions.back()->undo(gameState);
@@ -91,7 +103,6 @@ public:
 				if (matching) {
 					middle::loadShape(gameState, "../assets/shapes/", "ScoreScreen", true);
 					gameState->bubbleAlgebraState.justCompletedLevel = true;
-					gameState->bubbleAlgebraState.completedLevelName = gameState->activeSceneName;
 
 					if (button->function == bubbleButton::SAVE_PROCEDURE_BUTTON) {
 						auto& procShape = middle::getShape(gameState, procContainerId.index);
@@ -100,6 +111,7 @@ public:
 						auto levelConfigsIt = levelCache->begin<components::BubbleAlgebraLevelConfigs>();
 						auto configsComp = *levelConfigsIt;
 						assert(configsComp);
+
 						middle::saveShape(gameState, procContainerId, "../bubbleData/procedures/", configsComp->levelName);
 					}
 					queueSound(gameState, bubbleSounds::VICTORY_SOUND);
@@ -138,16 +150,16 @@ public:
 
 						//float deltaZ = pos->posZ;
 						float deltaZ = 0;
-						middle::moveShape(gameState, problemCache->relevantIdVector[i].index, { 0,0, -deltaZ });
+						//middle::moveShape(gameState, problemCache->relevantIdVector[i].index, { 0,0, -deltaZ });
 					}
 				}
 
 
-				problemCenterX /= 2.0f;
-				auto cameraPosIt = cameraCache->begin<components::Position>();
-				auto camPos = *cameraPosIt;
-				camPos->posX = problemCenterX;
-				camPos->posZ = 0;
+				//problemCenterX /= 2.0f;
+				//auto cameraPosIt = cameraCache->begin<components::Position>();
+				//auto camPos = *cameraPosIt;
+				//camPos->posX = problemCenterX;
+				//camPos->posZ = 0;
 				configs->initialized = true;
 			}
 		}
