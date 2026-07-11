@@ -120,6 +120,20 @@ namespace middle {
 		}
 	};
 
+	enum BubbleInsertType {
+		ADD_OUTER,
+		MULTIPLY_OUTER,
+		POWER_OUTER,
+		ADD_X_MINUS_X,
+		MULTIPLY_X_OVER_X,
+	};
+
+	enum BubbleCopyType {
+		IDENTICAL_COPY,
+		NEGATED_COPY,
+		INVERTED_COPY,
+	};
+
 	struct BubbleAlgebraState {
 		// todo refactor away
 		middle::Id grabbedId;
@@ -128,6 +142,8 @@ namespace middle {
 		bool justCompletedLevel = false;
 		std::string previousLevelName;
 		std::vector<std::string>procedureNames;
+		BubbleInsertType currentInsertType;
+		BubbleCopyType currentCopyType;
 	};
 
 	struct ModelContainer {

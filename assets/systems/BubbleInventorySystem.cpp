@@ -24,6 +24,7 @@
 #include "SnapRef.h"
 #include "Layer.h"
 #include "InsertableBubble.h"
+#include "imgui.h"
 
 
 class BubbleInventorySystem : public middle::MiddleGameplaySystem {
@@ -67,21 +68,6 @@ public:
 		inventorySlotCache->addType<components::InventorySlot>();
 		insertableCache = middle::newCompCache(gameState);
 		insertableCache->addType<components::InsertableBubble>();
-	}
-
-	void deactivateCheckboxes(middle::GameState* gameState) {
-		auto activeIt = activeCheckBoxesCache->begin<components::ActiveCheckBoxTag>();
-		for (int i = 0; i < activeCheckBoxesCache->getSize(); ++i) {
-			middle::queueComponentDeletion<components::ActiveCheckBoxTag>(gameState, activeCheckBoxesCache->relevantIdVector[i]);
-		}
-	}
-
-	void changeTermAdditionTypes(middle::GameState* gameState, int newType) {
-		auto termIt = insertableCache->begin<components::InsertableBubble>();
-		for (int i = 0; i < insertableCache->getSize(); ++i) {
-			auto* term = *termIt;
-			term->insertableBubbleType = newType;
-		}
 	}
 
 
@@ -146,64 +132,33 @@ public:
 			std::vector<middle::Id>children;
 			middle::getChildren(gameState, parentInventoryId, children);
 			bool attachedRefs = false;
-			//for (int index = 0; index < children.size(); ++index) {
-			//	// TODO THIS IS ASSUMES SLOTS MATCH THIS BUBBLE INVENTORYS MEMBERS
-			//	middle::Id slot = inventorySlotCache->relevantIdVector[index];
-			//	auto snapRef = middle::attachComponent<components::SnapRef>(gameState, children[index]);
-			//	snapRef->snapTargetId = slot;
-			//	//invItem->idRef = inventorySlotCache->relevantIdVector[i];
-			//	attachedRefs = true;
-			//	// set layer here, because its seems like good time
-			//	auto& shape = middle::getShape(gameState, children[index].index);
-			//	auto layer = middle::getComponent<components::Layer>(shape);
-			//	layer->layer = 2;
-			//}
 			if (attachedRefs) {
 				break;
 			}
 		}
 
-		auto buttonIt = uiButtonsCache->begin<components::Button>();
-		for (int i = 0; i < uiButtonsCache->getSize(); ++i) {
-			middle::Id buttonId = uiButtonsCache->relevantIdVector[i];
-			auto& shape = middle::getShape(gameState, buttonId.index);
-			auto button = *buttonIt;
-			if (button->function == bubbleButton::SELECT_PLUS) {
-				if (!middle::getComponent<components::ActiveCheckBoxTag>(shape)) {
-					deactivateCheckboxes(gameState);
-					middle::queueComponentAttachment<components::ActiveCheckBoxTag>(gameState, buttonId);
-					changeTermAdditionTypes(gameState, components::InsertableBubbleType::ADD_OUTER);
-				}
-			}
-			if (button->function == bubbleButton::SELECT_MULTIPLY) {
-				if (!middle::getComponent<components::ActiveCheckBoxTag>(shape)) {
-					deactivateCheckboxes(gameState);
-					middle::queueComponentAttachment<components::ActiveCheckBoxTag>(gameState, buttonId);
-					changeTermAdditionTypes(gameState, components::MULTIPLY_OUTER);
-				}
-			}
-			if (button->function == bubbleButton::SELECT_POWER) {
-				if (!middle::getComponent<components::ActiveCheckBoxTag>(shape)) {
-					deactivateCheckboxes(gameState);
-					middle::queueComponentAttachment<components::ActiveCheckBoxTag>(gameState, buttonId);
-					changeTermAdditionTypes(gameState, components::POWER_OUTER);
-				}
-			}
-			if (button->function == bubbleButton::SELECT_INSERT_X_OVER_X) {
-				if (!middle::getComponent<components::ActiveCheckBoxTag>(shape)) {
-					deactivateCheckboxes(gameState);
-					middle::queueComponentAttachment<components::ActiveCheckBoxTag>(gameState, buttonId);
-					changeTermAdditionTypes(gameState, components::MULTIPLY_X_OVER_X);
-				}
-			}
-			if (button->function == bubbleButton::SELECT_INSERT_X_MINUS_X) {
-				if (!middle::getComponent<components::ActiveCheckBoxTag>(shape)) {
-					deactivateCheckboxes(gameState);
-					middle::queueComponentAttachment<components::ActiveCheckBoxTag>(gameState, buttonId);
-					changeTermAdditionTypes(gameState, components::ADD_X_MINUS_X);
-				}
-			}
-		}
+		static int selectedInsertType = 0;
+		static int selectedCopyType = 0;
+		auto insertTypeUi = [gameState]() {
+			ImGui::Begin("Insert Method");
+			ImGui::RadioButton("Add outer", &selectedInsertType, 0);
+			ImGui::RadioButton("Multiply outer", &selectedInsertType, 1);
+			ImGui::RadioButton("Power outer", &selectedInsertType, 2);
+			ImGui::RadioButton("Insert as x-x", &selectedInsertType, 3);
+			ImGui::RadioButton("Insert as x/x", &selectedInsertType, 4);
+			ImGui::End();
+
+			ImGui::Begin("Copy Method");
+			ImGui::RadioButton("Copy", &selectedCopyType, 0);
+			ImGui::RadioButton("Copy Negated", &selectedCopyType, 1);
+			ImGui::RadioButton("Copy Inverted", &selectedCopyType, 2);
+			ImGui::End();
+
+			};
+		gameState->uiSetups.push_back(insertTypeUi);
+
+		gameState->bubbleAlgebraState.currentInsertType = static_cast<middle::BubbleInsertType>(selectedInsertType);
+		gameState->bubbleAlgebraState.currentCopyType = static_cast<middle::BubbleCopyType>(selectedCopyType);
 
 
 		if (gameState->bubbleAlgebraState.grabbedId.index != middle::UNASSIGNED) {

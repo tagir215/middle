@@ -2147,7 +2147,19 @@ namespace bubbleActions {
 
 	void CopyAsHelper::execute(middle::GameState* gameState)
 	{
-		copyShapeId = middle::deepCopyShape(gameState, shapeToCopyId.index);
+		if (gameState->bubbleAlgebraState.currentCopyType == BubbleCopyType::IDENTICAL_COPY) {
+			copyShapeId = middle::deepCopyShape(gameState, shapeToCopyId.index);
+		}
+		else if (gameState->bubbleAlgebraState.currentCopyType == BubbleCopyType::INVERTED_COPY) {
+			copyShapeId = middle::deepCopyShape(gameState, shapeToCopyId.index);
+			bubble::invert(gameState, copyShapeId);
+		}
+		else if (gameState->bubbleAlgebraState.currentCopyType == BubbleCopyType::NEGATED_COPY) {
+			copyShapeId = createNegatedReplacementShape(gameState, shapeToCopyId);
+		}
+		else {
+			assert(false);
+		}
 		middle::moveShape(gameState, copyShapeId.index, targetPosition - middle::getShapePosition(gameState, copyShapeId.index));
 		middle::attachComponent<components::HelperBubbleEquation>(gameState, copyShapeId);
 		//auto inventoryItem = middle::attachComponent<components::InventoryItem>(gameState, copyShapeId);

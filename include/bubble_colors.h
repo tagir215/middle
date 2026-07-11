@@ -2,12 +2,12 @@
 #include "raylib.h"
 
 namespace bubbleColors {
-	inline Color BACKGROUND = {33,33,33,255};
+	inline Color BACKGROUND = {30, 106, 71,255};
 	inline Color POSITIVE_UNIT = {150,150,150,255};
 	inline Color ZERO_UNIT = { 255,255,255,60 };
 	inline Color NEGATIVE_UNIT = { 0,0,255,255 };
 	inline Color BUBBLE_OUTLINE = {0,0,0,0};
-	inline Color BUBBLE_BACKGROUND_EVEN = {33, 33, 33, 255};
+	inline Color BUBBLE_BACKGROUND_EVEN = {0, 0, 0, 255};
 	inline Color BUBBLE_BACKGROUND_UNEVEN = {66, 66, 66, 255};
 	inline Color BUBBLE_BACKGROUND_INVERSE_EVEN = {0, 50, 0, 255};
 	inline Color BUBBLE_BACKGROUND_INVERSE_UNEVEN = {0, 80, 0, 255};

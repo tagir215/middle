@@ -26,6 +26,7 @@
 #include "SnapRef.h"
 #include "TimerComponent.h"
 #include "InsertableBubble.h"
+#include "imgui.h"
 
 class BubbleModificationSystem : public middle::MiddleGameplaySystem {
 public:
@@ -123,7 +124,7 @@ public:
 	void insertOperation(middle::GameState* gameState, int actionType, middle::Id& refId, middle::Shape& intersectedShape) {
 		std::shared_ptr<middle::EditorActionContainer>action;
 
-		if (actionType == components::InsertableBubbleType::ADD_OUTER) {
+		if (actionType == BubbleInsertType::ADD_OUTER) {
 			middle::Id copyId = copyOfInsertItem(gameState, refId);
 			auto registerAction = std::make_shared<middle::EditorActionRegisterId>(copyId);
 			auto newTermAction = std::make_shared<bubbleActions::NewAdditionTerm>(intersectedShape.id, copyId, gameState->input.mouseXZ_PlanePos);
@@ -137,7 +138,7 @@ public:
 					registerAction->undo(gameState);
 				});
 		}
-		else if (actionType == components::InsertableBubbleType::MULTIPLY_OUTER) {
+		else if (actionType == BubbleInsertType::MULTIPLY_OUTER) {
 			middle::Id copyId = copyOfInsertItem(gameState, refId);
 			auto registerAction = std::make_shared<middle::EditorActionRegisterId>(copyId);
 			auto newTermAction = std::make_shared<bubbleActions::NewMultiplicationTerm>(intersectedShape.id, copyId, gameState->input.mouseXZ_PlanePos);
@@ -151,7 +152,7 @@ public:
 					registerAction->undo(gameState);
 				});
 		}
-		else if (actionType == components::InsertableBubbleType::POWER_OUTER) {
+		else if (actionType == BubbleInsertType::POWER_OUTER) {
 			middle::Id copyId = copyOfInsertItem(gameState, refId);
 			auto registerAction = std::make_shared<middle::EditorActionRegisterId>(copyId);
 			auto newTermAction = std::make_shared<bubbleActions::NewPowerTerm>(intersectedShape.id, copyId, gameState->input.mouseXZ_PlanePos);
@@ -165,7 +166,7 @@ public:
 					registerAction->undo(gameState);
 				});
 		}
-		else if (actionType == components::InsertableBubbleType::ADD_X_MINUS_X) {
+		else if (actionType == BubbleInsertType::ADD_X_MINUS_X) {
 			middle::Id copyId = copyOfInsertItem(gameState, refId);
 			auto registerAction = std::make_shared<middle::EditorActionRegisterId>(copyId);
 			auto insertAction = std::make_shared<bubbleActions::InsertAsXMinusX>(intersectedShape.id, copyId, gameState->input.mouseXZ_PlanePos);
@@ -179,7 +180,7 @@ public:
 					registerAction->undo(gameState);
 				});
 		}
-		else if (actionType == components::InsertableBubbleType::MULTIPLY_X_OVER_X) {
+		else if (actionType == BubbleInsertType::MULTIPLY_X_OVER_X) {
 			middle::Id copyId = copyOfInsertItem(gameState, refId);
 			auto registerAction = std::make_shared<middle::EditorActionRegisterId>(copyId);
 			auto insertAction = std::make_shared<bubbleActions::InsertAsXOverX>(intersectedShape.id, copyId, gameState->input.mouseXZ_PlanePos);
@@ -236,33 +237,6 @@ public:
 		else if (actionType == bubbleInventoryItemType::COMPRESS_EXPONENT) {
 			action = std::make_shared<bubbleActions::Compress>(intersectedShape.id, true);
 		}
-		else if (actionType == bubbleInventoryItemType::BREAK_2) {
-			action = std::make_shared<bubbleActions::Break>(intersectedShape.id, 2);
-		}
-		else if (actionType == bubbleInventoryItemType::BREAK_3) {
-			action = std::make_shared<bubbleActions::Break>(intersectedShape.id, 3);
-		}
-		else if (actionType == bubbleInventoryItemType::BREAK_4) {
-			action = std::make_shared<bubbleActions::Break>(intersectedShape.id, 4);
-		}
-		else if (actionType == bubbleInventoryItemType::BREAK_5) {
-			action = std::make_shared<bubbleActions::Break>(intersectedShape.id, 5);
-		}
-		else if (actionType == bubbleInventoryItemType::BREAK_6) {
-			action = std::make_shared<bubbleActions::Break>(intersectedShape.id, 6);
-		}
-		else if (actionType == bubbleInventoryItemType::BREAK_7) {
-			action = std::make_shared<bubbleActions::Break>(intersectedShape.id, 7);
-		}
-		else if (actionType == bubbleInventoryItemType::BREAK_8) {
-			action = std::make_shared<bubbleActions::Break>(intersectedShape.id, 8);
-		}
-		else if (actionType == bubbleInventoryItemType::BREAK_9) {
-			action = std::make_shared<bubbleActions::Break>(intersectedShape.id, 9);
-		}
-		else if (actionType == bubbleInventoryItemType::BREAK_10) {
-			action = std::make_shared<bubbleActions::Break>(intersectedShape.id, 10);
-		}
 		else if (actionType == bubbleInventoryItemType::BUBBLIFY) {
 			action = std::make_shared<bubbleActions::Bubblify>(intersectedShape.id);
 		}
@@ -283,26 +257,13 @@ public:
 
 	// TODO moves these
 	void updateUi(middle::GameState* gameState, int movesLeft) {
-		auto uiCompIt = uiCompCache->begin<components::UiComponent>();
-		for (int i = 0; i < uiCompCache->getSize(); ++i) {
-			auto uiComp = *uiCompIt;
-			auto& shape = middle::getShape(gameState, uiCompCache->relevantIdVector[i].index);
-			if (uiComp->type == UiElementTypes::OUT_OF_STEPS) {
-				bool isHidden = middle::getComponent<components::RuntimeHiddenTag>(shape) != nullptr;
-				if (movesLeft <= 0 && isHidden) {
-					middle::queueComponentDeletion<components::RuntimeHiddenTag>(gameState, shape.id);
-				}
-
-				if (movesLeft > 0 && !isHidden) {
-					middle::queueComponentAttachment<components::RuntimeHiddenTag>(gameState, shape.id);
-				}
-			}
-			if (uiComp->type == UiElementTypes::STEPS_LEFT_TEXT) {
-				auto text = middle::getComponent<components::Text>(shape);
-				std::string updatedString = std::to_string(movesLeft);
-				text->text = updatedString;
-			}
-		}
+		auto stepsLeft = [gameState, movesLeft]() {
+			ImGui::Begin("Moves Left");
+			std::string updatedString = std::to_string(movesLeft);
+			ImGui::Text(updatedString.c_str());
+			ImGui::End();
+			};
+		gameState->uiSetups.push_back(stepsLeft);
 	}
 
 
@@ -320,6 +281,12 @@ public:
 			return false;
 		}
 		return true;
+	}
+
+	void copyAsHelper(middle::GameState* gameState, middle::Id id) {
+		auto copyAction = std::make_shared<bubbleActions::CopyAsHelper>(id, gameState->input.mouseXZ_PlanePos);
+		middle::queueAction(gameState, copyAction);
+		gameState->bubbleAlgebraState.bubbleActions.push_back(copyAction);
 	}
 
 	void update(middle::GameState* gameState) override {
@@ -488,7 +455,7 @@ public:
 					//}
 					auto insertable = middle::getComponent<components::InsertableBubble>(deletionsRefShape);
 					if (insertable) {
-						insertOperation(gameState, insertable->insertableBubbleType, ref->idRef, intersectableShape);
+						insertOperation(gameState, gameState->bubbleAlgebraState.currentInsertType, ref->idRef, intersectableShape);
 						break;
 					}
 				}
@@ -522,10 +489,9 @@ public:
 
 			}
 
+
 			if (intersectCount == 0) {
-				auto copyAction = std::make_shared<bubbleActions::CopyAsHelper>(ref->idRef, gameState->input.mouseXZ_PlanePos);
-				middle::queueAction(gameState, copyAction);
-				gameState->bubbleAlgebraState.bubbleActions.push_back(copyAction);
+				copyAsHelper(gameState, ref->idRef);
 			}
 		}
 

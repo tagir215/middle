@@ -67,6 +67,16 @@ class TopDogSystem : public middle::MiddleGameplaySystem {
 		middle::attachComponent<T>(gameState, gameState->ids[highestContainer]);
 	}
 
+	void transferToTopProblem(middle::GameState* gameState, middle::Id id) {
+		auto& shape = middle::getShape(gameState, id.index);
+		auto algProb = middle::getComponent<components::BubbleAlgebraProblem>(shape);
+		bool isEditable = algProb->editable;
+		middle::queueComponentDeletion<components::BubbleAlgebraProblem>(gameState, id);
+		int highestContainer = middle::findHighestLevelContainer(gameState, id.index);
+		auto newComp = middle::attachComponent<components::BubbleAlgebraProblem>(gameState, gameState->ids[highestContainer]);
+		newComp->editable = isEditable;
+	}
+
 
 	void update(middle::GameState* gameState) override {
 
@@ -74,7 +84,7 @@ class TopDogSystem : public middle::MiddleGameplaySystem {
 
 		for (middle::Id& id : problemCache->relevantIdVector) {
 			if (middle::getParent(gameState, id).index != middle::UNASSIGNED) {
-				transferToTop<components::BubbleAlgebraProblem>(gameState, id);
+				transferToTopProblem(gameState, id);
 			}
 		}
 

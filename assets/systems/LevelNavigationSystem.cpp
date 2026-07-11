@@ -13,6 +13,7 @@
 #include "CameraComponent.h"
 #include "InitializedTag.h"
 #include "Button.h"
+#include "imgui.h"
 
 
 class LevelNavigationSystem : public middle::MiddleGameplaySystem {
@@ -64,6 +65,15 @@ public:
 	}
 
 	void update(middle::GameState* gameState) override {
+
+		auto backButtonUi = [this, gameState]() {
+			ImGui::Begin("levelNavigation");
+			if (ImGui::Button("Back")) {
+				queueLevelNavigation(gameState, "LevelSelect");
+			}
+			ImGui::End();
+			};
+		gameState->uiSetups.push_back(backButtonUi);
 
 		auto clickedLevelIt = clickedCache->begin<components::LevelReference>();
 		for (int i = 0; i < clickedCache->getSize(); ++i) {
