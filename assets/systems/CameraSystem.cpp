@@ -15,7 +15,7 @@ public:
 	components::CompCache* cameraCache;
 
 	void init(middle::GameState* gameState) {
-		cameraCache = middle::newCompCache(gameState);
+		cameraCache = middle::newCompCache(gameState, systemName);
 		cameraCache->addType<components::CameraComponent>();
 	}
 

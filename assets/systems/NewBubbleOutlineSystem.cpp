@@ -26,19 +26,19 @@ public:
 	}
 
 	void init(middle::GameState* gameState) override {
-		circlessCache = middle::newCompCache(gameState);
+		circlessCache = middle::newCompCache(gameState, systemName);
 		circlessCache->addType<components::BubbleComponent>();
 		circlessCache->addType<components::Circle>(components::NOTINTERESTED);
-		circfullCache = middle::newCompCache(gameState);
+		circfullCache = middle::newCompCache(gameState, systemName);
 		circfullCache->addType<components::BubbleComponent>();
 		circfullCache->addType<components::Circle>();
 		circfullCache->addType<components::PhysicsData>();
 
-		circlessCache2 = middle::newCompCache(gameState);
+		circlessCache2 = middle::newCompCache(gameState, systemName);
 		circlessCache2->addType<components::BubbleUnit>();
 		circlessCache2->addType<components::Sphere>();
 		circlessCache2->addType<components::Circle>(components::NOTINTERESTED);
-		circfullCache2 = middle::newCompCache(gameState);
+		circfullCache2 = middle::newCompCache(gameState, systemName);
 		circfullCache2->addType<components::BubbleUnit>();
 		circfullCache2->addType<components::Circle>();
 		circfullCache2->addType<components::PhysicsData>();

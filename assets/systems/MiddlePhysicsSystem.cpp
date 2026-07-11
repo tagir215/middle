@@ -18,10 +18,10 @@ public:
 	components::CompCache* constraintCache;
 
 	void init(middle::GameState* gameState) {
-		physicsCache = middle::newCompCache(gameState);
+		physicsCache = middle::newCompCache(gameState, systemName);
 		physicsCache->addType<components::PhysicsData>();
 		physicsCache->addType<components::Position>();
-		constraintCache = middle::newCompCache(gameState);
+		constraintCache = middle::newCompCache(gameState, systemName);
 		constraintCache->addType<components::Constraint>();
 	}
 

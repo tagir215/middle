@@ -16,9 +16,9 @@ public:
 	components::CompCache* configCache;
 
 	void init(middle::GameState* gameState) {
-		testCache = middle::newCompCache(gameState);
+		testCache = middle::newCompCache(gameState, systemName);
 		testCache->addType<components::TestComponent>();
-		configCache = middle::newCompCache(gameState);
+		configCache = middle::newCompCache(gameState, systemName);
 		configCache->addType<components::EcsPerformanceTestConfigs>();
 	}
 	void update(middle::GameState* gameState) override {

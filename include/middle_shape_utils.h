@@ -84,7 +84,7 @@ namespace middle {
 	// check if is id is assigned and up to date
 	bool isIdCurrent(GameState* gameState, middle::Id& id);
 	// new comp cache for caching components for better cache locality of components
-	components::CompCache* newCompCache(GameState* gameState);
+	components::CompCache* newCompCache(GameState* gameState, const std::string& systemName);
 	// queue action
 	void queueAction(GameState* gameState, std::shared_ptr<EditorActionContainer> container);
 	// queue action for editor, with undos

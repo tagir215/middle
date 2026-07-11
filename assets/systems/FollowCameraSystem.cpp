@@ -13,7 +13,7 @@ public:
 	components::CompCache* uiCache;
 
 	void init(middle::GameState* gameState) {
-		uiCache = middle::newCompCache(gameState);
+		uiCache = middle::newCompCache(gameState, systemName);
 		uiCache->addType<components::UiNode>();
 	}
 	void update(middle::GameState* gameState) override {

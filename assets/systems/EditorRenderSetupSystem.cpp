@@ -46,52 +46,52 @@ public:
 
 
 	void init(middle::GameState* gameState) {
-		gridCache = middle::newCompCache(gameState);
+		gridCache = middle::newCompCache(gameState, systemName);
 		gridCache->addType<components::EditorConfigs>();
 		gridCache->addType<components::HiddenTag>(components::NOTINTERESTED);
-		configCache = middle::newCompCache(gameState);
+		configCache = middle::newCompCache(gameState, systemName);
 		configCache->addType<components::ConfigComponent>();
 		configCache->addType<components::Position>();
 		configCache->addType<components::HiddenTag>(components::NOTINTERESTED);
-		textCache = middle::newCompCache(gameState);
+		textCache = middle::newCompCache(gameState, systemName);
 		textCache->addType<components::Text>();
 		textCache->addType<components::Position>();
 		textCache->addType<components::HiddenTag>(components::NOTINTERESTED);
-		importRefCache = middle::newCompCache(gameState);
+		importRefCache = middle::newCompCache(gameState, systemName);
 		importRefCache->addType<components::Reference>();
 		importRefCache->addType<components::Position>();
 		importRefCache->addType<components::HiddenTag>(components::NOTINTERESTED);
-		nodeCache = middle::newCompCache(gameState);
+		nodeCache = middle::newCompCache(gameState, systemName);
 		nodeCache->addType<components::Sphere>();
 		nodeCache->addType<components::Position>();
 		nodeCache->addType<components::HiddenTag>(components::NOTINTERESTED);
-		constraintCache = middle::newCompCache(gameState);
+		constraintCache = middle::newCompCache(gameState, systemName);
 		constraintCache->addType<components::Constraint>();
 		constraintCache->addType<components::HiddenTag>(components::NOTINTERESTED);
-		loopTagCache = middle::newCompCache(gameState);
+		loopTagCache = middle::newCompCache(gameState, systemName);
 		loopTagCache->addType<components::LoopSociety>();
 		loopTagCache->addType<components::LoopTag>();
 		loopTagCache->addType<components::Position>();
 		loopTagCache->addType<components::HiddenTag>(components::NOTINTERESTED);
 		loopTagCache->addType<components::Reference>(components::NOTINTERESTED);
-		hierarchyCache = middle::newCompCache(gameState);
+		hierarchyCache = middle::newCompCache(gameState, systemName);
 		hierarchyCache->addType<components::LoopSociety>();
 		hierarchyCache->addType<components::MouseIntersectable>();
-		systemRefCache = middle::newCompCache(gameState);
+		systemRefCache = middle::newCompCache(gameState, systemName);
 		systemRefCache->addType<components::LoopSociety>();
 		systemRefCache->addType<components::SystemReference>();
 		systemRefCache->addType<components::Position>();
 		systemRefCache->addType<components::HiddenTag>(components::NOTINTERESTED);
-		selectableSphereCache = middle::newCompCache(gameState);
+		selectableSphereCache = middle::newCompCache(gameState, systemName);
 		selectableSphereCache->addType<components::MouseSelectable>();
 		selectableSphereCache->addType<components::Sphere>();
 		selectableSphereCache->addType<components::Position>();
 		selectableSphereCache->addType<components::HiddenTag>(components::NOTINTERESTED);
-		selectableLineCache = middle::newCompCache(gameState);
+		selectableLineCache = middle::newCompCache(gameState, systemName);
 		selectableLineCache->addType<components::MouseSelectable>();
 		selectableLineCache->addType<components::Constraint>();
 		selectableLineCache->addType<components::HiddenTag>(components::NOTINTERESTED);
-		positionCache = middle::newCompCache(gameState);
+		positionCache = middle::newCompCache(gameState, systemName);
 		positionCache->addType<components::Position>();
 	}
 	void update(middle::GameState* gameState) override {

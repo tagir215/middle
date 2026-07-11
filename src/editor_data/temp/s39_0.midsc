@@ -1,30 +1,35 @@
 __q  39_0
 MouseSelectable
-Text
-s  insert as x/x
-f  255.000000
-f  255.000000
-f  255.000000
-f  255.000000
-f  0.000000
-f  0.000000
-f  0.000000
-f  10.000000
-b  1
-Button
-i  5
+Layer
+i  2
 MouseIntersectable
-Position
-f  233.040833
-f  -1100.594971
-f  -465.150909
-MouseGrabbable
+BubbleComponent
+b  0
 LoopSociety
 q  -1_0
 p  
-UiComponent
-i  -1
-Sphere
-f  2.000000
-Layer
-i  1
+MouseGrabbable
+LoopTag
+PhysicsData
+f  1809.557373
+f  0.000553
+f  1.000000
+f  3.368722
+f  0.000000
+f  -6.455640
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+b  0
+Circle
+f  24.000000
+Position
+f  -15.647388
+f  0.000000
+f  -53.229900
+BubbleVariable
+s  z
+b  0

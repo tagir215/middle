@@ -30,10 +30,10 @@ namespace MouseIntersectDetectionSystem {
 		components::CompCache* intersectableCache;
 
 		void init(middle::GameState* gameState) {
-			lineIntersectableCache = middle::newCompCache(gameState);
+			lineIntersectableCache = middle::newCompCache(gameState, systemName);
 			lineIntersectableCache->addType<components::MouseIntersectable>();
 			lineIntersectableCache->addType<components::Constraint>();
-			intersectableCache = middle::newCompCache(gameState);
+			intersectableCache = middle::newCompCache(gameState, systemName);
 			intersectableCache->addType<components::MouseIntersectable>();
 		}
 

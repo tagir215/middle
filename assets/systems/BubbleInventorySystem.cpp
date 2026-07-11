@@ -41,32 +41,32 @@ public:
 	components::CompCache* insertableCache;
 
 	void init(middle::GameState* gameState) {
-		inventoryCache = middle::newCompCache(gameState);
+		inventoryCache = middle::newCompCache(gameState, systemName);
 		inventoryCache->addType<components::Inventory>();
 		inventoryCache->addType<components::LoopSociety>();
-		inventoryItemCache = middle::newCompCache(gameState);
+		inventoryItemCache = middle::newCompCache(gameState, systemName);
 		inventoryItemCache->addType<components::InventoryItem>();
-		grabbableCache = middle::newCompCache(gameState);
+		grabbableCache = middle::newCompCache(gameState, systemName);
 		grabbableCache->addType<components::InventoryItem>();
 		grabbableCache->addType<components::MouseGrabbable>();
-		uiComponentlessBubbleInventoryItemCache = middle::newCompCache(gameState);
+		uiComponentlessBubbleInventoryItemCache = middle::newCompCache(gameState, systemName);
 		uiComponentlessBubbleInventoryItemCache->addType<components::InventoryItem>();
 		uiComponentlessBubbleInventoryItemCache->addType<components::BubbleComponent>();
 		uiComponentlessBubbleInventoryItemCache->addType<components::UiComponent>(components::NOTINTERESTED);
-		snapReflessBubbleInventoryItemCache = middle::newCompCache(gameState);
+		snapReflessBubbleInventoryItemCache = middle::newCompCache(gameState, systemName);
 		snapReflessBubbleInventoryItemCache->addType<components::InventoryItem>();
 		snapReflessBubbleInventoryItemCache->addType<components::BubbleComponent>();
 		snapReflessBubbleInventoryItemCache->addType<components::SnapRef>(components::NOTINTERESTED);
 		snapReflessBubbleInventoryItemCache->addType<components::PlacementComponent>(components::NOTINTERESTED);
-		uiButtonsCache = middle::newCompCache(gameState);
+		uiButtonsCache = middle::newCompCache(gameState, systemName);
 		uiButtonsCache->addType<components::Button>();
 		uiButtonsCache->addType<components::UiComponent>();
 		uiButtonsCache->addType<components::MouseClickComponent>();
-		activeCheckBoxesCache = middle::newCompCache(gameState);
+		activeCheckBoxesCache = middle::newCompCache(gameState, systemName);
 		activeCheckBoxesCache->addType<components::ActiveCheckBoxTag>();
-		inventorySlotCache = middle::newCompCache(gameState);
+		inventorySlotCache = middle::newCompCache(gameState, systemName);
 		inventorySlotCache->addType<components::InventorySlot>();
-		insertableCache = middle::newCompCache(gameState);
+		insertableCache = middle::newCompCache(gameState, systemName);
 		insertableCache->addType<components::InsertableBubble>();
 	}
 

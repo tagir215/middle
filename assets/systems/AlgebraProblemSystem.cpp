@@ -28,18 +28,18 @@ public:
 	components::CompCache* procContainerCache = nullptr;
 
 	void init(middle::GameState* gameState) {
-		containerCache = middle::newCompCache(gameState);
+		containerCache = middle::newCompCache(gameState, systemName);
 		containerCache->addType<components::BubbleAlgebraProblemContainer>();
 		containerCache->addType<components::Position>();
-		problemCache = middle::newCompCache(gameState);
+		problemCache = middle::newCompCache(gameState, systemName);
 		problemCache->addType<components::BubbleAlgebraProblem>();
 		problemCache->addType<components::Position>();
-		levelCache = middle::newCompCache(gameState);
+		levelCache = middle::newCompCache(gameState, systemName);
 		levelCache->addType<components::BubbleAlgebraLevelConfigs>();
-		cameraCache = middle::newCompCache(gameState);
+		cameraCache = middle::newCompCache(gameState, systemName);
 		cameraCache->addType<components::CameraComponent>();
 		cameraCache->addType<components::Position>();
-		procContainerCache = middle::newCompCache(gameState);
+		procContainerCache = middle::newCompCache(gameState, systemName);
 		procContainerCache->addType<components::ProcedureContainer>();
 	}
 

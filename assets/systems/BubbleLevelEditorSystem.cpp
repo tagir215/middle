@@ -32,12 +32,12 @@ public:
 	components::CompCache* refCache = nullptr;
 
 	void init(middle::GameState* gameState) override {
-		selectableCache = middle::newCompCache(gameState);
+		selectableCache = middle::newCompCache(gameState, systemName);
 		selectableCache->addType<components::MouseSelectable>();
 		selectableCache->addType<components::UiComponent>(components::NOTINTERESTED);
-		inventorySlotCache = middle::newCompCache(gameState);
+		inventorySlotCache = middle::newCompCache(gameState, systemName);
 		inventorySlotCache->addType <components::InventorySlot>();
-		refCache = middle::newCompCache(gameState);
+		refCache = middle::newCompCache(gameState, systemName);
 		refCache->addType<components::Reference>();
 	}
 

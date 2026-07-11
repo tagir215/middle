@@ -1,27 +1,234 @@
 __q  35_0
-MouseGrabbable
-Position
-f  187.292175
-f  -1100.595093
-f  -444.312561
-MouseSelectable
-Button
-i  24
 MouseIntersectable
-Sphere
-f  2.000000
-UiComponent
-i  4
-TextureComponent
-s  C:\Users\tagir\raylib_projects\middle\assets\textures\toggleRect.png
-f  15.000000
-i  0
-s  toggleRect.png
+BubbleComponent
+b  0
+Layer
+i  2
+MouseSelectable
+MouseGrabbable
+LoopTag
 LoopSociety
 q  -1_0
 p  
+q  36_0
+q  37_0
+PhysicsData
+f  11217.938477
+f  0.000089
+f  1.000000
+f  -0.038793
+f  0.000000
+f  0.037154
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+b  0
+Circle
+f  59.756008
+Position
+f  -83.047806
+f  0.000000
+f  8.221888
+__q  37_0
+MouseIntersectable
+BubbleComponent
+b  0
 Layer
-i  1
-Rectangle
-f  20.000000
-f  20.000000
+i  3
+MouseSelectable
+MouseGrabbable
+LoopTag
+LoopSociety
+q  35_0
+p  
+q  42_0
+q  43_0
+PhysicsData
+f  1809.557373
+f  0.000553
+f  1.000000
+f  -0.051772
+f  0.000000
+f  0.054320
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+b  0
+Circle
+f  24.000000
+Position
+f  -57.899998
+f  0.000000
+f  24.855261
+__q  43_0
+MouseGrabbable
+BubbleUnit
+i  -1
+MouseIntersectable
+Layer
+i  4
+MouseSelectable
+Circle
+f  4.000000
+LoopSociety
+q  37_0
+p  
+PhysicsData
+f  50.265484
+f  0.019894
+f  1.000000
+f  -0.061694
+f  0.000000
+f  0.064768
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+b  0
+Sphere
+f  2.000000
+Position
+f  -48.628689
+f  0.000000
+f  32.491856
+__q  42_0
+MouseGrabbable
+BubbleUnit
+i  -1
+MouseIntersectable
+Layer
+i  4
+MouseSelectable
+Circle
+f  4.000000
+LoopSociety
+q  37_0
+p  
+PhysicsData
+f  50.265484
+f  0.019894
+f  1.000000
+f  -0.061726
+f  0.000000
+f  0.064645
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+b  0
+Sphere
+f  2.000000
+Position
+f  -67.064568
+f  0.000000
+f  17.092310
+__q  36_0
+MouseIntersectable
+BubbleComponent
+b  0
+Layer
+i  3
+MouseSelectable
+MouseGrabbable
+LoopTag
+LoopSociety
+q  35_0
+p  
+q  44_0
+q  45_0
+PhysicsData
+f  1809.557373
+f  0.000553
+f  1.000000
+f  -0.051603
+f  0.000000
+f  0.054037
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+b  0
+Circle
+f  24.000000
+Position
+f  -108.095673
+f  0.000000
+f  -8.571338
+__q  45_0
+MouseGrabbable
+BubbleUnit
+i  -1
+MouseIntersectable
+Layer
+i  4
+MouseSelectable
+Circle
+f  4.000000
+LoopSociety
+q  36_0
+p  
+PhysicsData
+f  50.265484
+f  0.019894
+f  1.000000
+f  -0.065031
+f  0.000000
+f  0.067385
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+b  0
+Sphere
+f  2.000000
+Position
+f  -116.917274
+f  0.000000
+f  -16.721340
+__q  44_0
+MouseGrabbable
+BubbleUnit
+i  -1
+MouseIntersectable
+Layer
+i  4
+MouseSelectable
+Circle
+f  4.000000
+LoopSociety
+q  36_0
+p  
+PhysicsData
+f  50.265484
+f  0.019894
+f  1.000000
+f  -0.064980
+f  0.000000
+f  0.067464
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+b  0
+Sphere
+f  2.000000
+Position
+f  -99.156532
+f  0.000000
+f  -0.547804

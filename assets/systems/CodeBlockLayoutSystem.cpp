@@ -29,19 +29,19 @@ public:
 	components::CompCache* ifBlockCache;
 
 	void init(middle::GameState* gameState) {
-		procedureCache = middle::newCompCache(gameState);
+		procedureCache = middle::newCompCache(gameState, systemName);
 		procedureCache->addType<components::ProcedureComponent>();
 		procedureCache->addType<components::LoopSociety>();
-		scopeCache = middle::newCompCache(gameState);
+		scopeCache = middle::newCompCache(gameState, systemName);
 		scopeCache->addType<components::ScopeComponent>();
 		scopeCache->addType<components::LoopSociety>();
-		functionCache = middle::newCompCache(gameState);
+		functionCache = middle::newCompCache(gameState, systemName);
 		functionCache->addType<components::CodeFunction>();
 		functionCache->addType<components::LoopSociety>();
-		codeBlockCache = middle::newCompCache(gameState);
+		codeBlockCache = middle::newCompCache(gameState, systemName);
 		codeBlockCache->addType<components::CodeBlock>();
 		codeBlockCache->addType<components::LoopSociety>();
-		ifBlockCache = middle::newCompCache(gameState);
+		ifBlockCache = middle::newCompCache(gameState, systemName);
 		ifBlockCache->addType<components::IfComponent>();
 		ifBlockCache->addType<components::LoopSociety>();
 	}

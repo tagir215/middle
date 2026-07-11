@@ -46,6 +46,7 @@ namespace middle {
 	struct Shape {
 		Id id;
 		std::unordered_map<int, Component> componentMap;
+		std::set<int>affectingSystems;
 	};
 
 	enum class FieldType : char {

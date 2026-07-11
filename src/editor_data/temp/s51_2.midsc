@@ -1,27 +1,22 @@
 __q  51_2
-LoopSociety
-q  -1_0
-p  
-q  52_4
-q  58_3
-q  59_3
-q  60_2
-Circle
-f  32.226448
+Layer
+i  3
+MouseSelectable
 BubbleComponent
 b  0
 MouseIntersectable
-MouseSelectable
+LoopSociety
+q  -1_0
+p  
 MouseGrabbable
-TopDogBubbleTag
 LoopTag
 PhysicsData
-f  3262.682129
-f  0.000306
+f  1809.557373
+f  0.000553
 f  1.000000
+f  -2.432171
 f  0.000000
-f  0.000000
-f  0.000000
+f  0.153144
 f  0.000000
 f  0.000000
 f  0.000000
@@ -29,146 +24,12 @@ f  0.000000
 f  0.000000
 f  0.000000
 b  0
-Position
-f  -0.317056
-f  -0.000031
-f  -3.699680
-BubbleAlgebraProblem
-b  1
-Layer
-i  0
-IdRef
-q  16_0
-DeleteComponent
-__q  60_2
-BubbleUnit
-i  -1
-MouseGrabbable
-MouseIntersectable
 Circle
-f  4.000000
-LoopSociety
-q  51_2
-p  
-Layer
-i  1
-MouseSelectable
-PhysicsData
-f  50.265484
-f  0.019894
-f  1.000000
-f  -0.000002
-f  0.000000
-f  0.000001
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-b  0
-Sphere
-f  2.000000
+f  24.000000
 Position
-f  -19.265614
-f  -0.000031
-f  -2.146906
-__q  59_3
-BubbleUnit
-i  -1
-MouseGrabbable
-MouseIntersectable
-Circle
-f  4.000000
-LoopSociety
-q  51_2
-p  
-Layer
-i  1
-MouseSelectable
-PhysicsData
-f  50.265484
-f  0.019894
-f  1.000000
-f  0.000002
+f  -18.763393
 f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
+f  60.769085
+BubbleVariable
+s  x
 b  0
-Sphere
-f  2.000000
-Position
-f  18.631680
-f  -0.000031
-f  -5.252650
-__q  58_3
-BubbleUnit
-i  1
-MouseGrabbable
-MouseIntersectable
-Circle
-f  4.000000
-LoopSociety
-q  51_2
-p  
-Layer
-i  1
-MouseSelectable
-PhysicsData
-f  50.265484
-f  0.019894
-f  1.000000
-f  -0.000000
-f  0.000000
-f  0.000002
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-b  0
-Sphere
-f  2.000000
-Position
-f  1.235898
-f  -0.000031
-f  15.248862
-__q  52_4
-BubbleUnit
-i  1
-MouseGrabbable
-MouseIntersectable
-Circle
-f  4.000000
-LoopSociety
-q  51_2
-p  
-Layer
-i  1
-MouseSelectable
-PhysicsData
-f  50.265484
-f  0.019894
-f  1.000000
-f  -0.000000
-f  0.000000
-f  -0.000004
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-b  0
-Sphere
-f  2.000000
-Position
-f  -1.869846
-f  -0.000031
-f  -22.648430

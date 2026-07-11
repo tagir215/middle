@@ -24,11 +24,11 @@ public:
 	components::CompCache* modelPosCache;
 
 	void init(middle::GameState* gameState) override {
-		selectableCache = middle::newCompCache(gameState);
+		selectableCache = middle::newCompCache(gameState, systemName);
 		selectableCache->addType<components::MouseSelectable>();
-		modelCache = middle::newCompCache(gameState);
+		modelCache = middle::newCompCache(gameState, systemName);
 		modelCache->addType<components::ModelComponent>();
-		modelPosCache = middle::newCompCache(gameState);
+		modelPosCache = middle::newCompCache(gameState, systemName);
 		modelPosCache->addType<components::ModelComponent>();
 		modelPosCache->addType<components::Position>();
 		modelPosCache->addType<components::Rotation>();

@@ -14,7 +14,7 @@ public:
 		systemUpdateType = middle::SystemUpdateType::RENDERING;
 	}
 	void init(middle::GameState* gameState) override {
-		cache = middle::newCompCache(gameState);
+		cache = middle::newCompCache(gameState, systemName);
 		cache->addType<components::ModelComponent>();
 	}
 	void update(middle::GameState* gameState) override {

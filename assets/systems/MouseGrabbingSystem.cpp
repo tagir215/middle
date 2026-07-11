@@ -26,11 +26,11 @@ namespace MouseGrabbingSystem {
 
 
 		void init(middle::GameState* gameState) {
-			grabbableCache = middle::newCompCache(gameState);
+			grabbableCache = middle::newCompCache(gameState, systemName);
 			grabbableCache->addType<components::MouseGrabbable>();
 			grabbableCache->addType<components::Position>();
 			grabbableCache->addType<components::MouseSelectable>();
-			placableCache = middle::newCompCache(gameState);
+			placableCache = middle::newCompCache(gameState, systemName);
 			placableCache->addType<components::PlacementComponent>();
 			placableCache->addType<components::Position>();
 		}

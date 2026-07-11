@@ -137,6 +137,13 @@ extern "C" {
 			loadScene(gameState, "../assets/scenes/", gameState->activeSceneName, false);
 		}
 
+		// TODO HARDCODED
+		if (gameState->reset) {
+			gameState->reset = false;
+			resetScene(gameState);
+			loadScene(gameState, "../assets/scenes/", gameState->activeSceneName, false);
+		}
+
 		if (!gameState->systemsRegistered) {
 			registerSystems(gameState);
 		}

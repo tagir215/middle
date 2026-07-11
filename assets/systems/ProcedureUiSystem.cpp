@@ -45,22 +45,22 @@ public:
 	Color highlightColor2 = bubbleColors::PROCEDURE_SELECTED;
 
 	void init(middle::GameState* gameState) {
-		buttonCache = middle::newCompCache(gameState);
+		buttonCache = middle::newCompCache(gameState, systemName);
 		buttonCache->addType<components::Button>();
 		buttonCache->addType<components::MouseClickComponent>();
 		buttonCache->addType<components::Text>();
-		procedureContainerCache = middle::newCompCache(gameState);
+		procedureContainerCache = middle::newCompCache(gameState, systemName);
 		procedureContainerCache->addType<components::ProcedureContainer>();
-		procedureCodeCache = middle::newCompCache(gameState);
+		procedureCodeCache = middle::newCompCache(gameState, systemName);
 		procedureCodeCache->addType<components::ProcedureComponent>();
-		procedureUseCache = middle::newCompCache(gameState);
+		procedureUseCache = middle::newCompCache(gameState, systemName);
 		procedureUseCache->addType<components::ProcedureUseUiTag>();
 		procedureUseCache->addType<components::LoopSociety>();
-		inputCache = middle::newCompCache(gameState);
+		inputCache = middle::newCompCache(gameState, systemName);
 		inputCache->addType<components::InputVariable>();
 		inputCache->addType<components::Highlight>();
 		inputCache->addType<components::Position>();
-		procedureImportCache = middle::newCompCache(gameState);
+		procedureImportCache = middle::newCompCache(gameState, systemName);
 		procedureImportCache->addType<components::ProcedureImportContainer>();
 		procedureImportCache->addType<components::Position>();
 	}

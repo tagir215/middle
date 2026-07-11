@@ -15,7 +15,7 @@ public:
 	components::CompCache* cache;
 
 	void init(middle::GameState* gameState) override {
-		cache = middle::newCompCache(gameState);
+		cache = middle::newCompCache(gameState, systemName);
 		cache->addType<components::Rotation>();
 		cache->addType<components::MouseSelectable>();
 		cache->addType<components::Position>();

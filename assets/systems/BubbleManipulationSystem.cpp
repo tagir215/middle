@@ -31,15 +31,15 @@ public:
 
 
 	void init(middle::GameState* gameState) {
-		bubbleCache = middle::newCompCache(gameState);
+		bubbleCache = middle::newCompCache(gameState, systemName);
 		bubbleCache->addType<components::MouseGrabbable>();
 		bubbleCache->addType<components::BubbleComponent>();
 		bubbleCache->addType<components::InventoryItem>(components::NOTINTERESTED);
-		unitCache = middle::newCompCache(gameState);
+		unitCache = middle::newCompCache(gameState, systemName);
 		unitCache->addType<components::MouseGrabbable>();
 		unitCache->addType<components::BubbleUnit>();
 		unitCache->addType<components::LoopSociety>();
-		fractionCache = middle::newCompCache(gameState);
+		fractionCache = middle::newCompCache(gameState, systemName);
 		fractionCache->addType<components::MouseGrabbable>();
 		fractionCache->addType<components::FractionalComponent>();
 	}

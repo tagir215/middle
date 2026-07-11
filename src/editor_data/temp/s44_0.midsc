@@ -10,13 +10,15 @@ LoopTag
 LoopSociety
 q  -1_0
 p  
+q  45_0
+q  46_0
 PhysicsData
 f  1809.557373
 f  0.000553
 f  1.000000
-f  1.494163
+f  -0.000134
 f  0.000000
-f  1.637883
+f  0.000134
 f  0.000000
 f  0.000000
 f  0.000000
@@ -27,6 +29,72 @@ b  0
 Circle
 f  24.000000
 Position
-f  -17.485254
+f  -23.573109
 f  0.000000
-f  -17.702417
+f  -23.880253
+__q  46_0
+MouseGrabbable
+BubbleUnit
+i  1
+MouseIntersectable
+Layer
+i  2
+MouseSelectable
+Circle
+f  4.000000
+LoopSociety
+q  44_0
+p  
+PhysicsData
+f  50.265484
+f  0.019894
+f  1.000000
+f  -0.000347
+f  0.000000
+f  0.000258
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+b  0
+Sphere
+f  2.000000
+Position
+f  -30.842762
+f  0.000000
+f  -33.440636
+__q  45_0
+MouseGrabbable
+BubbleUnit
+i  1
+MouseIntersectable
+Layer
+i  2
+MouseSelectable
+Circle
+f  4.000000
+LoopSociety
+q  44_0
+p  
+PhysicsData
+f  50.265484
+f  0.019894
+f  1.000000
+f  -0.000334
+f  0.000000
+f  0.000274
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+b  0
+Sphere
+f  2.000000
+Position
+f  -16.302305
+f  0.000000
+f  -14.319592

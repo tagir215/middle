@@ -33,12 +33,12 @@ public:
 	components::CompCache* equalsCache;
 
 	void init(middle::GameState* gameState) override {
-		unitCache = middle::newCompCache(gameState);
+		unitCache = middle::newCompCache(gameState, systemName);
 		unitCache->addType<components::Position>();
 		unitCache->addType<components::PhysicsData>();
 		unitCache->addType<components::BubbleUnit>();
 
-		bubbleCache = middle::newCompCache(gameState);
+		bubbleCache = middle::newCompCache(gameState, systemName);
 		bubbleCache->addType<components::BubbleComponent>();
 		bubbleCache->addType<components::Position>();
 		bubbleCache->addType<components::PhysicsData>();
@@ -46,24 +46,24 @@ public:
 		bubbleCache->addType<components::LoopSociety>();
 		bubbleCache->addType<components::IdRef>(components::NOTINTERESTED);
 
-		mulCache = middle::newCompCache(gameState);
+		mulCache = middle::newCompCache(gameState, systemName);
 		mulCache->addType<components::BubbleMultiplyComponent>();
 		mulCache->addType<components::LoopSociety>();
 
-		fractionCache = middle::newCompCache(gameState);
+		fractionCache = middle::newCompCache(gameState, systemName);
 		fractionCache->addType<components::FractionalComponent>();
 		fractionCache->addType<components::LoopSociety>();
 
-		equalsCache = middle::newCompCache(gameState);
+		equalsCache = middle::newCompCache(gameState, systemName);
 		equalsCache->addType<components::BubbleEqualsComponent>();
 		equalsCache->addType<components::LoopSociety>();
 
-		rectCache = middle::newCompCache(gameState);
+		rectCache = middle::newCompCache(gameState, systemName);
 		rectCache->addType<components::Rectangle>();
 		rectCache->addType<components::Position>();
 		rectCache->addType<components::PhysicsData>();
 
-		topDogBubbleCache = middle::newCompCache(gameState);
+		topDogBubbleCache = middle::newCompCache(gameState, systemName);
 		topDogBubbleCache->addType<components::TopDogBubbleTag>();
 		topDogBubbleCache->addType<components::Position>();
 		topDogBubbleCache->addType<components::PhysicsData>();

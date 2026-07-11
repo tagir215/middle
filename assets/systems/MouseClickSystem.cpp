@@ -14,9 +14,9 @@ public:
 	components::CompCache* buttonCache;
 
 	void init(middle::GameState* gameState) {
-		clickCache = middle::newCompCache(gameState);
+		clickCache = middle::newCompCache(gameState, systemName);
 		clickCache->addType<components::MouseClickComponent>();
-		buttonCache = middle::newCompCache(gameState);
+		buttonCache = middle::newCompCache(gameState, systemName);
 		buttonCache->addType<components::Button>();
 		buttonCache->addType<components::MouseIntersectable>();
 	}

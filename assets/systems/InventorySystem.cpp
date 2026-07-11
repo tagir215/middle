@@ -23,7 +23,7 @@ public:
 	}
 
 	void init(middle::GameState* gameState) {
-		inventoryRectCache = middle::newCompCache(gameState);
+		inventoryRectCache = middle::newCompCache(gameState, systemName);
 		inventoryRectCache->addType<components::Inventory>();
 		inventoryRectCache->addType<components::LoopSociety>();
 		inventoryRectCache->addType<components::Rectangle>();

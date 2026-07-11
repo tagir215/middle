@@ -12,7 +12,7 @@ public:
 	components::CompCache* cache;
 
 	void init(middle::GameState* gameState) {
-		cache = middle::newCompCache(gameState);
+		cache = middle::newCompCache(gameState, systemName);
 		cache->addType<components::TimerComponent>();
 	}
 	void update(middle::GameState* gameState) override {

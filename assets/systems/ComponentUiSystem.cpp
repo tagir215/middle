@@ -22,7 +22,7 @@ public:
 	components::CompCache* cache;
 
 	void init(middle::GameState* gameState) {
-		cache = middle::newCompCache(gameState);
+		cache = middle::newCompCache(gameState, systemName);
 		cache->addType<components::MouseSelectable>();
 	}
 
@@ -71,7 +71,6 @@ public:
 					if (ImGui::Button("(d)")) {
 						middle::queueAction(gameState, std::make_shared<middle::EditorActionRemoveComponent>(componentName, middle::getSelectedShapes(gameState)));
 					}
-
 
 					ImGui::PopID();
 					ImGui::SameLine();
@@ -189,7 +188,22 @@ public:
 
 				ImGui::Separator();
 
-				if (ImGui::Button("Save")) {
+				// affecting sytstem names
+				if (ImGui::CollapsingHeader("Affecting Systems")) {
+					for (int index : shape.affectingSystems) {
+						std::string imgId = "AS" + std::to_string(index);
+						ImGui::PushID(imgId.c_str());
+						std::string name = gameState->systemNames[index].c_str();
+						if (ImGui::Button("(o)")) {
+							middle::queueAction(gameState, std::make_shared<middle::EditorActionOpenSystem>(name));
+						}
+						ImGui::PopID();
+						ImGui::SameLine();
+						ImGui::Text(name.c_str());
+					}
+				}
+
+				if (ImGui::Button("Save Shape")) {
 
 					// Popup for entering new scene name
 					static char inputtedName[128] = ""; // buffer for scene name input
@@ -226,7 +240,7 @@ public:
 				ImGui::End();
 				};
 
-			gameState->uiSetups.push_back(ui);
+				gameState->uiSetups.push_back(ui);
 		}
 	}
 };

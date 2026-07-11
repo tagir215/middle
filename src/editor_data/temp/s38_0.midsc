@@ -1,27 +1,35 @@
 __q  38_0
-Position
-f  187.271057
-f  -1100.595093
-f  -465.430206
-MouseGrabbable
 MouseSelectable
-Button
-i  20
+Layer
+i  2
 MouseIntersectable
-UiComponent
-i  4
-Sphere
-f  2.000000
-TextureComponent
-s  C:\Users\tagir\raylib_projects\middle\assets\textures\toggleRect.png
-f  15.000000
-i  0
-s  toggleRect.png
+BubbleComponent
+b  0
 LoopSociety
 q  -1_0
 p  
-Layer
-i  1
-Rectangle
-f  20.000000
-f  20.000000
+MouseGrabbable
+LoopTag
+PhysicsData
+f  1809.557373
+f  0.000553
+f  1.000000
+f  -1.187642
+f  0.000000
+f  0.303574
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+b  0
+Circle
+f  24.000000
+Position
+f  2.997484
+f  0.000000
+f  -78.091171
+BubbleVariable
+s  y
+b  0

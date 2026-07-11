@@ -38,24 +38,24 @@ public:
 	components::CompCache* blockCache;
 
 	void init(middle::GameState* gameState) {
-		placementCache = middle::newCompCache(gameState);
+		placementCache = middle::newCompCache(gameState, systemName);
 		placementCache->addType < components::PlacementComponent>();
-		grabbableCache = middle::newCompCache(gameState);
+		grabbableCache = middle::newCompCache(gameState, systemName);
 		grabbableCache->addType < components::MouseGrabbable>();
-		scopeCache = middle::newCompCache(gameState);
+		scopeCache = middle::newCompCache(gameState, systemName);
 		scopeCache->addType <components::ScopeComponent>();
 		scopeCache->addType<components::MouseIntersectable>();
 		scopeCache->addType<components::LoopSociety>();
-		procScopeCache = middle::newCompCache(gameState);
+		procScopeCache = middle::newCompCache(gameState, systemName);
 		procScopeCache->addType<components::LoopSociety>();
 		procScopeCache->addType<components::ProcedureComponent>();
-		procedureCache = middle::newCompCache(gameState);
+		procedureCache = middle::newCompCache(gameState, systemName);
 		procedureCache->addType<components::ProcedureContainer>();
-		codeBlockCache = middle::newCompCache(gameState);
+		codeBlockCache = middle::newCompCache(gameState, systemName);
 		codeBlockCache->addType<components::CodeBlock>();
-		inventoryCache = middle::newCompCache(gameState);
+		inventoryCache = middle::newCompCache(gameState, systemName);
 		inventoryCache->addType<components::Inventory>();
-		blockCache = middle::newCompCache(gameState);
+		blockCache = middle::newCompCache(gameState, systemName);
 		blockCache->addType<components::CodeBlock>();
 		blockCache->addType<components::MouseIntersectable>();
 	}

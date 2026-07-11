@@ -749,10 +749,12 @@ namespace middle {
 		return gameState->ids[id.index] == id;
 	}
 
-	components::CompCache* newCompCache(GameState* gameState)
+	components::CompCache* newCompCache(GameState* gameState, const std::string& systemName)
 	{
+		auto newCache = std::make_unique<components::CompCache>();
+		newCache->systemName = systemName;
 		gameState->compCaches.push_back(
-			std::make_unique<components::CompCache>()
+			std::move(newCache)
 		);
 		return gameState->compCaches.back().get();
 	}

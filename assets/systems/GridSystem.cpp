@@ -18,9 +18,9 @@ public:
 		systemUpdateType = middle::SystemUpdateType::GAMEPLAY_POSTFRAME;
 	}
 	void init(middle::GameState* gameState) override {
-		cachoA = middle::newCompCache(gameState);
+		cachoA = middle::newCompCache(gameState, systemName);
 		cachoA->addType<components::EditorConfigs>();
-		cachoB = middle::newCompCache(gameState);
+		cachoB = middle::newCompCache(gameState, systemName);
 		cachoB->addType<components::GridElement>();
 		cachoB->addType<components::Position>();
 

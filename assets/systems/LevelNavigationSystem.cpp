@@ -25,19 +25,19 @@ public:
 	components::CompCache* buttonCache;
 
 	void init(middle::GameState* gameState) {
-		clickedCache = middle::newCompCache(gameState);
+		clickedCache = middle::newCompCache(gameState, systemName);
 		clickedCache->addType<components::LevelReference>();
 		clickedCache->addType<components::MouseClickComponent>();
-		levelCache = middle::newCompCache(gameState);
+		levelCache = middle::newCompCache(gameState, systemName);
 		levelCache->addType<components::LevelReference>();
 		levelCache->addType<components::Position>();
 		levelCache->addType<components::Circle>();
-		unInitializedLevelCache = middle::newCompCache(gameState);
+		unInitializedLevelCache = middle::newCompCache(gameState, systemName);
 		unInitializedLevelCache->addType<components::LevelReference>();
 		unInitializedLevelCache->addType<components::InitializedTag>(components::NOTINTERESTED);
-		cameraCache = middle::newCompCache(gameState);
+		cameraCache = middle::newCompCache(gameState, systemName);
 		cameraCache->addType<components::CameraComponent>();
-		buttonCache = middle::newCompCache(gameState);
+		buttonCache = middle::newCompCache(gameState, systemName);
 		buttonCache->addType<components::Button>();
 		buttonCache->addType<components::MouseClickComponent>();
 	}

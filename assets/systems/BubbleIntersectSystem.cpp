@@ -27,23 +27,23 @@ public:
 	components::CompCache* nonBubbleCircleCache;
 
 	void init(middle::GameState* gameState) {
-		bubbleCache = middle::newCompCache(gameState);
+		bubbleCache = middle::newCompCache(gameState, systemName);
 		bubbleCache->addType<components::BubbleComponent>();
 		bubbleCache->addType<components::MouseIntersectable>();
 		bubbleCache->addType<components::Circle>();
 		bubbleCache->addType<components::Position>();
 
-		unitCache = middle::newCompCache(gameState);
+		unitCache = middle::newCompCache(gameState, systemName);
 		unitCache->addType<components::BubbleUnit>();
 		unitCache->addType<components::MouseIntersectable>();
 		unitCache->addType<components::Circle>();
 		unitCache->addType<components::Position>();
 
-		rectangleCache = middle::newCompCache(gameState);
+		rectangleCache = middle::newCompCache(gameState, systemName);
 		rectangleCache->addType<components::MouseIntersectable>();
 		rectangleCache->addType<components::Rectangle>();
 
-		nonBubbleCircleCache = middle::newCompCache(gameState);
+		nonBubbleCircleCache = middle::newCompCache(gameState, systemName);
 		nonBubbleCircleCache->addType<components::Circle>();
 		nonBubbleCircleCache->addType<components::Position>();
 		nonBubbleCircleCache->addType<components::MouseIntersectable>();
