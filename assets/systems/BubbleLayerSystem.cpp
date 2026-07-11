@@ -64,7 +64,7 @@ public:
 			auto& grabbedShape = middle::getShape(gameState, grabbedId.index);
 			auto idRef = middle::getComponent<components::IdRef>(grabbedShape);
 
-			if (idRef) {
+			if (idRef && middle::isValidId(gameState, idRef->idRef)) {
 
 				auto& refShape = middle::getShape(gameState, idRef->idRef.index);
 				int depth = bubble::findDepth(gameState, refShape.id);

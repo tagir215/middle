@@ -42,6 +42,7 @@ public:
 	components::CompCache* systemRefCache;
 	components::CompCache* selectableSphereCache;
 	components::CompCache* selectableLineCache;
+	components::CompCache* positionCache;
 
 
 	void init(middle::GameState* gameState) {
@@ -90,6 +91,8 @@ public:
 		selectableLineCache->addType<components::MouseSelectable>();
 		selectableLineCache->addType<components::Constraint>();
 		selectableLineCache->addType<components::HiddenTag>(components::NOTINTERESTED);
+		positionCache = middle::newCompCache(gameState);
+		positionCache->addType<components::Position>();
 	}
 	void update(middle::GameState* gameState) override {
 
@@ -112,6 +115,18 @@ public:
 			//systemColor = GRAY;
 		}
 		gameState->editorState.backgroundColor = backgroundColor;
+
+		auto posIt = positionCache->begin<components::Position>();
+		for (int i = 0; i < positionCache->getSize(); ++i) {
+			auto pos = *posIt;
+			middle::RenderItem sphereItem;
+			sphereItem.type = middle::RenderItemType::SPHERE;
+			sphereItem.radius = 2;
+			sphereItem.center = { pos->posX, pos->posY, pos->posZ };
+			sphereItem.color = { 150,150,150,255 };
+			sphereItem.disableDepthTest = true;
+			gameState->renderData.push_back(sphereItem);
+		}
 
 		// drawing grid
 		auto gridIt = gridCache->begin<components::EditorConfigs>();
@@ -228,14 +243,15 @@ public:
 		}
 
 		if (gameState->editorState.creationMode == middle::CreationMode::LOOP_MODE) {
-			auto hierarchyLoopIt = hierarchyCache->begin<components::LoopSociety>();
 			auto hierarchyIntersectableIt = hierarchyCache->begin<components::MouseIntersectable>();
 			for (int i = 0; i < hierarchyCache->getSize(); ++i) {
-				auto loop = *hierarchyLoopIt;
 				auto intersectable = *hierarchyIntersectableIt;
+				std::vector<middle::Id>children;
+				middle::getChildren(gameState, hierarchyCache->relevantIdVector[i], children);
+				middle::Id parentId = middle::getParent(gameState, hierarchyCache->relevantIdVector[i]);
 
 				if (intersectable->intersecting) {
-					for (middle::Id& id : loop->loopMemberIds) {
+					for (middle::Id& id : children) {
 						Vector3 childPos = middle::getShapePosition(gameState, id.index);
 						middle::RenderItem childItem;
 						childItem.type = middle::RenderItemType::TEXT;
@@ -245,8 +261,7 @@ public:
 						gameState->renderData.push_back(childItem);
 
 					}
-					if (loop->parentLoopId.index != middle::UNASSIGNED) {
-						middle::Id& parentId = loop->parentLoopId;
+					if (parentId.index != middle::UNASSIGNED) {
 						Vector3 parentPos = middle::getShapePosition(gameState, parentId.index);
 						middle::RenderItem parentItem;
 						parentItem.type = middle::RenderItemType::TEXT;
@@ -300,6 +315,8 @@ public:
 			loopItem.center = middle::getShapePosition(gameState, shape.id.index);
 			loopItem.radius = middle::DEF_RADIUS_LOOP_INDICATOR;
 			loopItem.color = loopColor;
+			loopItem.disableDepthTest = true;
+			loopItem.layer = 6;
 			auto intersectable = middle::getComponent<components::MouseIntersectable>(shape);
 			if (intersectable && intersectable->intersecting) {
 				loopItem.color = hoveredColor;
@@ -329,6 +346,8 @@ public:
 			selectItem.height = sphere->radius * 4;
 			selectItem.length = sphere->radius * 4;
 			selectItem.color = selectionBoxColor;
+			selectItem.disableDepthTest = true;
+			selectItem.layer = 6;
 			gameState->renderData.push_back(selectItem);
 		}
 

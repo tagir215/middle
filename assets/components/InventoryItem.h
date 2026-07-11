@@ -45,4 +45,5 @@ namespace bubbleInventoryItemType {
 	inline int INSERT_X_MINUS_X = 20;
 	inline int MUL_NEGATIVE_ONE = 21;
 	inline int COMPRESS_EXPONENT = 22;
+	inline int NEW_POWER_TERM = 23;
 }

@@ -14,13 +14,13 @@
 #include "Position.h"
 #include "ProcedureContainer.h"
 #include "bubble_constants.h"
-
+#include "ProcedureInputVariable.h"
+#include "editor_file_utils.h"
+#include "imgui.h"
 
 class AlgebraProblemSystem : public middle::MiddleGameplaySystem {
 public:
 
-
-	components::CompCache* cache = nullptr;
 	components::CompCache* problemCache = nullptr;
 	components::CompCache* containerCache = nullptr;
 	components::CompCache* levelCache = nullptr;
@@ -28,9 +28,6 @@ public:
 	components::CompCache* procContainerCache = nullptr;
 
 	void init(middle::GameState* gameState) {
-		cache = middle::newCompCache(gameState);
-		cache->addType<components::MouseClickComponent>();
-		cache->addType<components::Button>();
 		containerCache = middle::newCompCache(gameState);
 		containerCache->addType<components::BubbleAlgebraProblemContainer>();
 		containerCache->addType<components::Position>();
@@ -47,6 +44,16 @@ public:
 	}
 
 	void undo(middle::GameState* gameState) {
+
+		// return if procedure executing
+		if (procContainerCache->getSize() > 0) {
+			auto containerIt = procContainerCache->begin<components::ProcedureContainer>();
+			auto container = *containerIt;
+			if (container->targetActionStackSize > 0) {
+				return;
+			}
+		}
+
 		if (gameState->bubbleAlgebraState.bubbleActions.size() > 0) {
 			middle::queueAction(gameState, std::make_shared<middle::CustomAction>([](middle::GameState* gameState) {
 				gameState->bubbleAlgebraState.bubbleActions.back()->undo(gameState);
@@ -60,6 +67,32 @@ public:
 			}
 		}
 		queueSound(gameState, bubbleSounds::UNDO_SOUND);
+	}
+
+	bool checkVictory(middle::GameState* gameState) {
+		std::vector<middle::Id> formulas;
+		assert(problemCache->getSize() == 2);
+		middle::Id& formulaA = problemCache->relevantIdVector[0];
+		middle::Id& formulaB = problemCache->relevantIdVector[1];
+		bool matching = bubble::matchingBubbles(gameState, formulaA, formulaB);
+		if (matching) {
+			middle::loadShape(gameState, "../assets/shapes/", "ScoreScreen", true);
+			gameState->bubbleAlgebraState.justCompletedLevel = true;
+
+			queueSound(gameState, bubbleSounds::VICTORY_SOUND);
+			return true;
+		}
+		return false;
+	}
+
+	void saveProcedure(middle::GameState* gameState, middle::Id procContainerId) {
+		auto& procShape = middle::getShape(gameState, procContainerId.index);
+		auto text = middle::getComponent<components::Text>(procShape);
+
+		auto levelConfigsIt = levelCache->begin<components::BubbleAlgebraLevelConfigs>();
+		auto configsComp = *levelConfigsIt;
+		assert(configsComp);
+		middle::saveShape(gameState, procContainerId, "../bubbleData/procedures/", configsComp->levelName);
 	}
 
 	bool initialized = false;
@@ -76,41 +109,19 @@ public:
 			procContainerId = procContainerCache->relevantIdVector[0];
 		}
 
+		auto undoUi = [this, gameState] {
+			ImGui::Begin("--");
 
-		auto buttonIt = cache->begin<components::Button>();
-		int size = cache->getSize();
-		for (int i = 0; i < size; ++i) {
-			auto button = *buttonIt;
-			if (button->function == bubbleButton::DONE || button->function == bubbleButton::SAVE_PROCEDURE_BUTTON) {
-				std::vector<middle::Id> formulas;
-				assert(problemCache->getSize() == 2);
-				middle::Id& formulaA = problemCache->relevantIdVector[0];
-				middle::Id& formulaB = problemCache->relevantIdVector[1];
-				bool matching = bubble::matchingBubbles(gameState, formulaA, formulaB);
-
-				if (matching) {
-					middle::loadShape(gameState, "../assets/shapes/", "ScoreScreen", true);
-					gameState->bubbleAlgebraState.justCompletedLevel = true;
-					gameState->bubbleAlgebraState.completedLevelName = gameState->activeSceneName;
-
-					if (button->function == bubbleButton::SAVE_PROCEDURE_BUTTON) {
-						auto& procShape = middle::getShape(gameState, procContainerId.index);
-						auto text = middle::getComponent<components::Text>(procShape);
-
-						auto levelConfigsIt = levelCache->begin<components::BubbleAlgebraLevelConfigs>();
-						auto configsComp = *levelConfigsIt;
-						assert(configsComp);
-						middle::saveShape(gameState, procContainerId, "../bubbleData/procedures/", configsComp->levelName);
-					}
-					queueSound(gameState, bubbleSounds::VICTORY_SOUND);
-				}
-			}
-
-
-			if (button->function == bubbleButton::UNDO) {
+			if (ImGui::Button("UNDO")) {
 				undo(gameState);
 			}
-		}
+			if (ImGui::Button("DONE")) {
+				checkVictory(gameState);
+			}
+			ImGui::End();
+			};
+
+		gameState->uiSetups.push_back(undoUi);
 
 
 		auto levelConfigsIt = levelCache->begin<components::BubbleAlgebraLevelConfigs>();
@@ -138,16 +149,16 @@ public:
 
 						//float deltaZ = pos->posZ;
 						float deltaZ = 0;
-						middle::moveShape(gameState, problemCache->relevantIdVector[i].index, { 0,0, -deltaZ });
+						//middle::moveShape(gameState, problemCache->relevantIdVector[i].index, { 0,0, -deltaZ });
 					}
 				}
 
 
-				problemCenterX /= 2.0f;
-				auto cameraPosIt = cameraCache->begin<components::Position>();
-				auto camPos = *cameraPosIt;
-				camPos->posX = problemCenterX;
-				camPos->posZ = 0;
+				//problemCenterX /= 2.0f;
+				//auto cameraPosIt = cameraCache->begin<components::Position>();
+				//auto camPos = *cameraPosIt;
+				//camPos->posX = problemCenterX;
+				//camPos->posZ = 0;
 				configs->initialized = true;
 			}
 		}

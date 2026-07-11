@@ -120,14 +120,30 @@ namespace middle {
 		}
 	};
 
+	enum BubbleInsertType {
+		ADD_OUTER,
+		MULTIPLY_OUTER,
+		POWER_OUTER,
+		ADD_X_MINUS_X,
+		MULTIPLY_X_OVER_X,
+	};
+
+	enum BubbleCopyType {
+		IDENTICAL_COPY,
+		NEGATED_COPY,
+		INVERTED_COPY,
+	};
+
 	struct BubbleAlgebraState {
 		// todo refactor away
 		middle::Id grabbedId;
 		bool intersectingUI = false;
 		std::vector<std::shared_ptr<middle::EditorActionContainer>>bubbleActions;
 		bool justCompletedLevel = false;
-		std::string completedLevelName;
+		std::string previousLevelName;
 		std::vector<std::string>procedureNames;
+		BubbleInsertType currentInsertType;
+		BubbleCopyType currentCopyType;
 	};
 
 	struct ModelContainer {
@@ -136,7 +152,7 @@ namespace middle {
 	};
 
 	struct TextureContainer {
-		std::string path = "";
+		std::string filename = "";
 		Texture2D texture;
 	};
 
@@ -150,6 +166,7 @@ namespace middle {
 		const double nearPlaneDistance = 10;
 		const double farPlaneDistance = 4000;
 		bool systemsRegistered = false;
+		bool releaseBuild = false;
 		ApplicationMode applicationMode = ApplicationMode::EDITOR_MODE;
 		EditorState editorState;
 		Camera activeCamera;

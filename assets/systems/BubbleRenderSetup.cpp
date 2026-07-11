@@ -28,6 +28,11 @@
 #include "BubbleAlgebraProblem.h"
 #include "HelperBubbleEquation.h"
 #include "EditThisTag.h"
+#include  "InputVariable.h"
+#include "ProcedureInputVariable.h"
+#include "ProcedureContainer.h"
+#include "CodeBlock.h"
+#include "IdRef.h"
 
 
 class BubbleRenderSetup : public middle::MiddleGameplaySystem {
@@ -49,6 +54,8 @@ public:
 	components::CompCache* textureCache;
 	components::CompCache* activeCheckBoxCache;
 	components::CompCache* editThisCache;
+	components::CompCache* inputCache;
+	components::CompCache* procContainerCache;
 
 	void init(middle::GameState* gameState) {
 		bubbleCache = middle::newCompCache(gameState);
@@ -57,7 +64,6 @@ public:
 		bubbleCache->addType<components::Layer>();
 		bubbleCache->addType<components::LoopSociety>();
 		bubbleCache->addType<components::RuntimeHiddenTag>(components::NOTINTERESTED);
-		bubbleCache->addType<components::BubbleVariable>(components::NOTINTERESTED);
 		mulCache = middle::newCompCache(gameState);
 		mulCache->addType<components::BubbleMultiplyComponent>();
 		mulCache->addType<components::LoopSociety>();
@@ -103,6 +109,12 @@ public:
 		editThisCache = middle::newCompCache(gameState);
 		editThisCache->addType<components::EditThisTag>();
 		editThisCache->addType<components::TextureComponent>();
+		inputCache = middle::newCompCache(gameState);
+		inputCache->addType<components::InputVariable>();
+		inputCache->addType<components::MouseIntersectable>();
+		inputCache->addType<components::ProcedureInputVariable>(components::NOTINTERESTED);
+		procContainerCache = middle::newCompCache(gameState);
+		procContainerCache->addType<components::ProcedureContainer>();
 	}
 	bool debugRendering = false;
 
@@ -119,6 +131,19 @@ public:
 		intersectOffsetX = std::sqrt(rb * rb - smallZ * smallZ);
 	}
 
+	Color getBubbleColor(middle::GameState* gameState, middle::Id id, components::BubbleComponent* bubble) {
+		Color color;
+		int depth = bubble::findBubbleDepth(gameState, id);
+		bool isEven = depth % 2 == 0;
+
+		if (bubble->inverse) {
+			color = isEven ? bubbleColors::BUBBLE_BACKGROUND_INVERSE_EVEN : bubbleColors::BUBBLE_BACKGROUND_INVERSE_UNEVEN;
+		}
+		else {
+			color = isEven ? bubbleColors::BUBBLE_BACKGROUND_EVEN : bubbleColors::BUBBLE_BACKGROUND_UNEVEN;
+		}
+		return color;
+	}
 
 	void update(middle::GameState* gameState) override {
 
@@ -134,19 +159,18 @@ public:
 		auto bubbleIt = bubbleCache->begin<components::BubbleComponent>();
 		auto bubbleCircleIt = bubbleCache->begin<components::Circle>();
 		auto bubbleLayerIt = bubbleCache->begin<components::Layer>();
-		auto loopIt = bubbleCache->begin<components::LoopSociety>();
 		for (int i = 0; i < bubbleCache->getSize(); ++i) {
 			auto bubble = *bubbleIt;
 			auto circle = *bubbleCircleIt;
 			auto layer = *bubbleLayerIt;
-			auto loop = *loopIt;
 			auto& shape = middle::getShape(gameState, bubbleCache->relevantIdVector[i].index);
 			bool isUiItem = middle::getComponent<components::UiComponent>(shape);
 
 			// todo maybe replace with tag
 			bool parentIsEditableEquals = false;
-			if (loop->parentLoopId.index != middle::UNASSIGNED) {
-				auto& parentShape = middle::getShape(gameState, loop->parentLoopId.index);
+			middle::Id parentId = middle::getParent(gameState, shape.id);
+			if (parentId.index != middle::UNASSIGNED) {
+				auto& parentShape = middle::getShape(gameState, parentId.index);
 				bool equals = middle::getComponent<components::BubbleEqualsComponent>(parentShape) != nullptr;
 				auto problem = middle::getComponent<components::BubbleAlgebraProblem>(parentShape);
 				auto helper = middle::getComponent<components::HelperBubbleEquation>(parentShape);
@@ -160,12 +184,15 @@ public:
 
 			auto intersectable = middle::getComponent<components::MouseIntersectable>(shape);
 			bool intersecting = intersectable && intersectable->intersectingTop;
-			Color color = intersecting ? bubbleColors::HOVERED_ITEM : bubbleColors::BUBBLE_OUTLINE;
+
+
 			float radius = intersecting ? circle->radius * 1.05f : circle->radius;
-			Color backgroundColor = bubble->inverse ? bubbleColors::BUBBLE_BACKGROUND_INVERSE : bubbleColors::BUBBLE_BACKGROUND;
+
+			Color backgroundColor = getBubbleColor(gameState, shape.id, bubble);
+			//Color backgroundColor = bubble->inverse ? bubbleColors::BUBBLE_BACKGROUND_INVERSE : bubbleColors::BUBBLE_BACKGROUND;
 			middle::RenderItem circleItem;
 			circleItem.type = middle::RenderItemType::CIRCLE;
-			circleItem.color = color;
+			circleItem.color = bubbleColors::BUBBLE_OUTLINE;
 			circleItem.layer = layer->layer;
 			circleItem.backgroundColor = backgroundColor;
 			circleItem.radius = radius;
@@ -188,7 +215,7 @@ public:
 				gameState->renderData.push_back(inverseIndicator);
 			}
 
-			if (addEditableTag) {
+			if (addEditableTag && editThisComp) {
 				middle::RenderItem editThisSign;
 				editThisSign.type = middle::RenderItemType::BILLBOARD;
 				editThisSign.color = WHITE;
@@ -219,6 +246,7 @@ public:
 			auto& shape = middle::getShape(gameState, unitCache->relevantIdVector[i].index);
 			bool isUiItem = middle::getComponent<components::UiComponent>(shape);
 
+			circle->radius = bubble::unitRadius;
 			float radius = circle->radius;
 			if (intersectable->intersectingTop) {
 				radius *= 1.5f;
@@ -265,7 +293,6 @@ public:
 				circle->radius = bubble::variableRadius;
 			}
 
-
 			auto pos = middle::getComponent<components::Position>(shape);
 			auto intersectable = middle::getComponent<components::MouseIntersectable>(shape);
 
@@ -275,15 +302,13 @@ public:
 				fontSize *= 1.2f;
 				radius *= 1.2f;
 			}
+
 			Color color;
 			color = bubbleColors::POSITIVE_UNIT;
 			if (variable->isNegative) {
 				color = bubbleColors::NEGATIVE_UNIT;
 			}
-			Color backgroundColor = bubbleColors::BUBBLE_BACKGROUND;
-			if ((bubble->inverse)) {
-				backgroundColor = bubbleColors::BUBBLE_BACKGROUND_INVERSE;
-			}
+			Color backgroundColor = getBubbleColor(gameState, shape.id, bubble);
 
 			middle::RenderItem variableText;
 			variableText.type = middle::RenderItemType::TEXT;
@@ -293,43 +318,18 @@ public:
 			variableText.fontSize = fontSize;
 			variableText.disableDepthTest = isUiItem;
 			gameState->renderData.push_back(variableText);
-
-			middle::RenderItem variableCircle;
-			variableCircle.type = middle::RenderItemType::CIRCLE;
-			variableCircle.center = variableText.center;
-			variableCircle.radius = radius;
-			variableCircle.backgroundColor = backgroundColor;
-			variableCircle.color = bubbleColors::VARIABLE_OUTLINE;
-			variableCircle.disableDepthTest = isUiItem;
-			variableCircle.layer = layer->layer + 1;
-			gameState->renderData.push_back(variableCircle);
-
-			if (bubble->inverse) {
-				float offsetX, offsetZ, bz, rb;
-				calculateExponentVisualFactors(circle->radius, 1, -0.33f, offsetX, offsetZ, bz, rb);
-				middle::RenderItem inverseIndicator;
-				inverseIndicator.type = middle::RenderItemType::CIRCLE;
-				inverseIndicator.color = bubbleColors::POSITIVE_UNIT;
-				inverseIndicator.backgroundColor = bubbleColors::POSITIVE_UNIT;
-				inverseIndicator.layer = layer->layer + 2;
-				inverseIndicator.radius = bubble::unitRadius;
-				Vector3 pos = variableText.center;
-				inverseIndicator.center = Vector3{ pos.x + offsetX, pos.y, pos.z + offsetZ };
-				inverseIndicator.disableDepthTest = isUiItem;
-				gameState->renderData.push_back(inverseIndicator);
-			}
 		}
 
 
 		// render muls
 		auto mulIt = mulCache->begin<components::BubbleMultiplyComponent>();
-		auto mulLoopIt = mulCache->begin<components::LoopSociety>();
 		for (int i = 0; i < mulCache->getSize(); ++i) {
 			auto multiplyComponent = *mulIt;
-			auto loop = *mulLoopIt;
-			for (int x = 1; x < loop->loopMemberIds.size(); ++x) {
-				auto& shapeA = middle::getShape(gameState, loop->loopMemberIds[x - 1].index);
-				auto& shapeB = middle::getShape(gameState, loop->loopMemberIds[x].index);
+			std::vector<middle::Id>children;
+			middle::getChildren(gameState, mulCache->relevantIdVector[i], children);
+			for (int x = 1; x < children.size(); ++x) {
+				auto& shapeA = middle::getShape(gameState, children[x - 1].index);
+				auto& shapeB = middle::getShape(gameState, children[x].index);
 				auto positionA = middle::getComponent<components::Position>(shapeA);
 				auto positionB = middle::getComponent<components::Position>(shapeB);
 				auto circleA = middle::getComponent<components::Circle>(shapeA);
@@ -346,14 +346,25 @@ public:
 				line.type = middle::RenderItemType::LINE;
 				line.linePointA = posA + Vector3Scale(axis, circleA->radius);
 				line.linePointB = posB + Vector3Scale(axis, -circleB->radius);
-				line.color = bubbleColors::MULTIPLICATION_CONNECTION;
+				if (multiplyComponent->operationType == (int)components::OperationType::MULTIPLICATION) {
+					line.color = bubbleColors::MULTIPLICATION_CONNECTION;
+				}
+				else {
+					line.color = ORANGE;
+					middle::RenderItem expCircle;
+					expCircle.type = middle::RenderItemType::CIRCLE;
+					expCircle.color = ORANGE;
+					expCircle.center = Vector3{ positionB->posX, positionB->posY, positionB->posZ };
+					expCircle.radius = circleB->radius + 1.5f;
+					expCircle.layer = layer->layer;
+					gameState->renderData.push_back(expCircle);
+				}
 				line.layer = layer->layer;
 				line.disableDepthTest = isUiItem;
 
 				gameState->renderData.push_back(line);
 			}
 		}
-
 
 
 		auto cuboidIt = cuboidCache->begin<components::Cuboid>();
@@ -373,12 +384,13 @@ public:
 			gameState->renderData.push_back(cuboidItem);
 		}
 
-		auto equalsIt = equalsCache->begin<components::LoopSociety>();
 		for (int i = 0; i < equalsCache->getSize(); ++i) {
-			auto equalsLoop = *equalsIt;
-			assert(equalsLoop->loopMemberIds.size() == 2);
-			middle::Id& idA = equalsLoop->loopMemberIds[0];
-			middle::Id& idB = equalsLoop->loopMemberIds[1];
+			std::vector<middle::Id>children;
+			middle::getChildren(gameState, equalsCache->relevantIdVector[i], children);
+
+			assert(children.size() == 2);
+			middle::Id& idA = children[0];
+			middle::Id& idB = children[1];
 			middle::Shape& shapeA = middle::getShape(gameState, idA.index);
 			middle::Shape& shapeB = middle::getShape(gameState, idB.index);
 			Vector3 posA = middle::getShapePosition(gameState, idA.index);
@@ -415,20 +427,8 @@ public:
 
 			float positionRatioToPower = 0.333f;
 
-			bool isInverse = root->isInverse;
-			if (isInverse) {
-				positionRatioToPower *= -1;
-			}
 
-			int powerIterations = root->power;
-			bool isPowerNegative = root->power < 0;
-			if (isPowerNegative) {
-				powerIterations = -root->power;
-			}
-
-			Color exponentColor = isPowerNegative ? bubbleColors::NEGATIVE_POWER : bubbleColors::POSITIVE_POWER;
-
-			for (int power = 0; power < powerIterations; ++power) {
+			for (int power = 0; power < 2; ++power) {
 
 				float intersectOffsetX, intersectOffsetZ, bz, rb;
 				calculateExponentVisualFactors(bubbleCircle->radius, power, positionRatioToPower, intersectOffsetX, intersectOffsetZ, bz, rb);
@@ -444,21 +444,15 @@ public:
 				Vector3 toEndPoint = Vector3Subtract(endPoint, powerPos);
 
 				if (power == 0) {
-					Color unitColor = root->isNegative ? bubbleColors::NEGATIVE_UNIT : bubbleColors::POSITIVE_UNIT;
 					middle::RenderItem unitIndicator;
 					unitIndicator.type = middle::RenderItemType::CIRCLE;
-					Vector3 pos = root->isInverse || isPowerNegative ? intersectPos : endPoint;
+					Vector3 pos = endPoint;
 					unitIndicator.center = pos;
-					unitIndicator.backgroundColor = unitColor;
-					unitIndicator.color = unitColor;
+					unitIndicator.backgroundColor = RED;
+					unitIndicator.color = RED;
 					unitIndicator.radius = bubble::unitRadius * 1.5f;
 					unitIndicator.layer = layer->layer + 2;
 					gameState->renderData.push_back(unitIndicator);
-				}
-
-				if (isInverse) {
-					toStartPoint.x *= -1;
-					toEndPoint.x *= -1;
 				}
 
 				float startingAngle = Vector3Angle(refAngle, toStartPoint);
@@ -479,7 +473,7 @@ public:
 				powerCircle.radius = rb;
 				powerCircle.startAngle = startingAngle;
 				powerCircle.endAngle = endAngle;
-				powerCircle.color = exponentColor;
+				powerCircle.color = RED;
 				powerCircle.ringRadius = 0.2f;
 				powerCircle.segments = 20;
 				powerCircle.layer = layer->layer + 1;
@@ -492,16 +486,9 @@ public:
 				Vector3 toNextSegment;
 				Vector3 coneDir;
 
-				if (!isPowerNegative) {
-					conePos = powerPos + toStartPoint;
-					toNextSegment = Vector3RotateByAxisAngle(toStartPoint, { 0,-1,0 }, helperAngleOffset);
-					coneDir = Vector3Normalize(Vector3Subtract(conePos, powerPos + toNextSegment));
-				}
-				else {
-					conePos = powerPos + toEndPoint;
-					toNextSegment = Vector3RotateByAxisAngle(toEndPoint, { 0,-1,0 }, -helperAngleOffset);
-					coneDir = Vector3Normalize(Vector3Subtract(conePos, powerPos + toNextSegment));
-				}
+				conePos = powerPos + toEndPoint;
+				toNextSegment = Vector3RotateByAxisAngle(toEndPoint, { 0,-1,0 }, -helperAngleOffset);
+				coneDir = Vector3Normalize(Vector3Subtract(conePos, powerPos + toNextSegment));
 
 				middle::RenderItem cone;
 				cone.type = middle::RenderItemType::CYLINDER;
@@ -517,7 +504,7 @@ public:
 				cone.transform.translation = conePos;
 				cone.transform.scale = coneScale;
 				cone.center = { 0,0,0 };
-				cone.color = exponentColor;
+				cone.color = RED;
 				cone.layer = layer->layer + 1;
 				cone.disableDepthTest = isUiItem;
 				gameState->renderData.push_back(cone);
@@ -565,6 +552,7 @@ public:
 			}
 		}
 
+
 		auto checkBoxPositionIt = activeCheckBoxCache->begin<components::Position>();
 		auto checkBoxLayerIt = activeCheckBoxCache->begin<components::Layer>();
 		for (int i = 0; i < activeCheckBoxCache->getSize(); ++i) {
@@ -582,6 +570,73 @@ public:
 			powerCircle.disableDepthTest = true;
 			gameState->renderData.push_back(powerCircle);
 		}
+
+
+		if (procContainerCache->getSize() > 0) {
+			auto procContainerIt = procContainerCache->begin<components::ProcedureContainer>();
+			auto procContainer = *procContainerIt;
+
+			auto inputIt = inputCache->begin<components::InputVariable>();
+			auto intersectabeInputIt = inputCache->begin<components::MouseIntersectable>();
+			for (int i = 0; i < inputCache->getSize(); ++i) {
+				auto input = *inputIt;
+				auto intersectable = *intersectabeInputIt;
+				
+				// render hover effect
+				if (intersectable->intersectingTop) {
+					middle::RenderItem hovering;
+					hovering.type = middle::RenderItemType::CIRCLE;
+					hovering.color = bubbleColors::INPUT_HOVER_COLOR;
+					const float hoveringInputIndicatorRadius = 3;
+					hovering.radius = hoveringInputIndicatorRadius;
+					hovering.center = middle::getShapePosition(gameState, inputCache->relevantIdVector[i].index);
+					hovering.disableDepthTest = true;
+					hovering.layer = 3;
+					gameState->renderData.push_back(hovering);
+				}
+
+
+				// render line from input to bubble
+				Vector3 p1, p2;
+				bool renderLine = false;
+
+				// todo generation checks should be always...
+				if (input->unitRef.index != middle::UNASSIGNED
+					&& input->unitRef.generation == gameState->ids[input->unitRef.index].generation
+					&& middle::isValidId(gameState, input->unitRef)) {
+					p1 = middle::getShapePosition(gameState, inputCache->relevantIdVector[i].index);
+					p2 = middle::getShapePosition(gameState, input->unitRef.index);
+					renderLine = true;
+				}
+
+				middle::Id grabbedId = gameState->bubbleAlgebraState.grabbedId;
+				if (!renderLine && grabbedId.index != middle::UNASSIGNED) {
+					auto& shape = middle::getShape(gameState, grabbedId.index);
+					auto idRef = middle::getComponent<components::IdRef>(shape);
+					if (!idRef) {
+						continue;
+					}
+					auto& ogShape = middle::getShape(gameState, idRef->idRef.index);
+					if (ogShape.id == inputCache->relevantIdVector[i]) {
+						renderLine = true;
+						p1 = middle::getShapePosition(gameState, ogShape.id.index);
+						p2 = gameState->input.mouseXZ_PlanePos;
+					}
+				}
+
+				if (renderLine) {
+					middle::RenderItem line;
+					line.type = middle::RenderItemType::LINE;
+					line.linePointA = p1;
+					line.linePointB = p2;
+					line.color = bubbleColors::HIGHLIGHT_COLOR;
+					line.disableDepthTest = true;
+					line.layer = 4;
+					gameState->renderData.push_back(line);
+				}
+			}
+		}
+
 	}
 
 

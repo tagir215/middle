@@ -37,7 +37,7 @@ namespace middle {
 	int constraintExistsAt(GameState* gameState, Id idA, Id idB) {
 		for (int i = 0; i < gameState->shapes.size(); ++i) {
 			Shape& shape = gameState->shapes[i];
-			if (!isShapeAlive(gameState, i))
+			if (!isValidId(gameState, shape.id))
 				continue;
 			auto constraint = getComponent<components::Constraint>(shape);
 			if (constraint == nullptr)
@@ -56,7 +56,10 @@ namespace middle {
 	int findFreeIndex(GameState* gameState)
 	{
 		for (int i = 0; i < gameState->shapes.size(); ++i) {
-			if (!isShapeAlive(gameState, i)) {
+			middle::Id id = gameState->ids[i];
+			if ((id.index == middle::UNASSIGNED
+				|| id != gameState->shapes[id.index].id
+				|| id.generation < 0)) {
 				return i;
 			}
 		}
@@ -75,24 +78,22 @@ namespace middle {
 
 	int findHighestLevelContainer(GameState* gameState, int index)
 	{
-		if(!isShapeAlive(gameState, index))
+		if (!isValidId(gameState, gameState->ids[index]))
 			return UNASSIGNED;
 		Shape& shape = gameState->shapes[index];
-		auto loop = getComponent<components::LoopSociety>(shape);
-		if (!loop) {
-			return UNASSIGNED;
-		}
-		if (loop->parentLoopId.index == UNASSIGNED)
+		middle::Id parentId = middle::getParent(gameState, shape.id);
+		if (parentId.index == UNASSIGNED) {
 			return index;
+		}
 
-		return findHighestLevelContainer(gameState, loop->parentLoopId.index);
+		return findHighestLevelContainer(gameState, parentId.index);
 	}
 
 	int findHighestUsedIndex(GameState* gameState)
 	{
 		int highestI = 0;
 		for (int i = 0; i < gameState->shapes.size(); ++i) {
-			if (isShapeAlive(gameState, i)) {
+			if (isValidId(gameState, gameState->ids[i])) {
 				highestI = i;
 			}
 		}
@@ -107,23 +108,22 @@ namespace middle {
 
 	void dragShape(GameState* gameState, int index, Vector3 linearVelocity) {
 		Shape& shape = getShape(gameState, index);
-		auto loop = getComponent<components::LoopSociety>(shape);
-		if (loop != nullptr) {
-			for (int i = 0; i < loop->loopMemberIds.size(); ++i) {
-				Id memberId = loop->loopMemberIds[i];
-				dragShape(gameState, memberId.index, linearVelocity);
-			}
+		std::vector<middle::Id>children;
+		middle::getChildren(gameState, shape.id, children);
+		for (int i = 0; i < children.size(); ++i) {
+			Id memberId = children[i];
+			dragShape(gameState, memberId.index, linearVelocity);
 		}
 
 		Vec linearVel = DescVec(linearVelocity);
 		auto pData = getComponent<components::PhysicsData>(shape);
 		auto posData = getComponent<components::Position>(shape);
-		if(pData != nullptr){
+		if (pData != nullptr) {
 			pData->velX = linearVel.x;
 			pData->velY = linearVel.y;
 			pData->velZ = linearVel.z;
 		}
-		else if(posData){
+		else if (posData) {
 			Vec currPos = { posData->posX, posData->posY, posData->posZ };
 			Vec newPos = AddV(currPos, ScaleV(linearVel, gameState->frameTime));
 			posData->posX = newPos.x;
@@ -135,13 +135,15 @@ namespace middle {
 	void moveShape(GameState* gameState, int index, const Vector3& displacement)
 	{
 		Shape& shape = gameState->shapes[index];
-		auto loop = getComponent<components::LoopSociety>(shape);
-		if (loop != nullptr) {
-			for (int i = 0; i < loop->loopMemberIds.size(); ++i) {
-				Id memberId = loop->loopMemberIds[i];
-				assert(index != memberId.index);
-				moveShape(gameState, memberId.index, displacement);
-			}
+		std::vector<middle::Id>children;
+		middle::getChildren(gameState, shape.id, children);
+		for (int i = 0; i < children.size(); ++i) {
+			Id memberId = children[i];
+			assert(index != memberId.index);
+			moveShape(gameState, memberId.index, displacement);
+		}
+		if (index == 1219) {
+			int a = 0;
 		}
 
 		auto pos = getComponent<components::Position>(shape);
@@ -160,8 +162,10 @@ namespace middle {
 	bool isRecursiveChildOf(GameState* gameState, int childIndex, int parentIndex)
 	{
 		auto& parent = getShape(gameState, parentIndex);
-		auto loop = getComponent<components::LoopSociety>(parent);
-		for (Id& id : loop->loopMemberIds) {
+		std::vector<middle::Id>children;
+		middle::getChildren(gameState, parent.id, children);
+
+		for (Id& id : children) {
 			if (id.index == childIndex) {
 				return true;
 			}
@@ -206,14 +210,26 @@ namespace middle {
 	}
 
 	bool isShapeAlive(GameState* gameState, int index) {
-		return gameState->shapes[index].id == gameState->ids[index] && gameState->shapes[index].id.generation >= 0;
+		return gameState->shapes[index].id == gameState->ids[index] && gameState->shapes[index].id.generation >= 0 && gameState->shapes[index].componentMap.size() > 0;
 	}
+
+	bool isValidId(GameState* gameState, middle::Id id)
+	{
+		return id.index != middle::UNASSIGNED
+			&& gameState->ids[id.index] == id
+			&& id == gameState->shapes[id.index].id
+			&& gameState->shapes[id.index].componentMap.size() > 0
+			&& id.generation >= 0;
+	}
+
 
 	Vector3 getShapePosition(GameState* gameState, int index)
 	{
 		auto& shape = getShape(gameState, index);
 		auto position = getComponent<components::Position>(shape);
-		assert(position);
+		if (!position) {
+			assert(false);
+		}
 		Vector3 result = { position->posX, position->posY, position->posZ };
 		auto offset = getComponent<components::Offset>(shape);
 		if (offset) {
@@ -238,30 +254,31 @@ namespace middle {
 		}
 
 		// remove parent indexes if deleting loops from children
-		auto loop = getComponent<components::LoopSociety>(gameState->shapes[index]);
-		if (loop) {
-			// remove childs references to this shape
-			for (Id childId : loop->loopMemberIds) {
-				if (isShapeAlive(gameState, childId.index)) {
-					auto& childShape = gameState->shapes[childId.index];
-					if (childShape.componentMap.size() == 0) {
-						continue;
-					}
-					auto childLoop = getComponent<components::LoopSociety>(childShape);
-					childLoop->parentLoopId.index = UNASSIGNED;
-				}
-			}
+		std::vector<middle::Id>children;
+		middle::getChildren(gameState, gameState->shapes[index].id, children);
 
-			// remove parent refernce to this shape
-			if (loop->parentLoopId.index != UNASSIGNED && isShapeAlive(gameState, loop->parentLoopId.index)) {
-				auto& parentShape = getShape(gameState, loop->parentLoopId.index);
-				auto parentLoop = getComponent<components::LoopSociety>(parentShape);
-				for (int i = 0; i < parentLoop->loopMemberIds.size(); ++i) {
-					Id parentChildIndex = parentLoop->loopMemberIds[i];
-					if (parentChildIndex.index == index) {
-						parentLoop->loopMemberIds.erase(parentLoop->loopMemberIds.begin() + i);
-						break;
-					}
+		// remove childs references to this shape
+		for (middle::Id& childId : children) {
+			if (isShapeAlive(gameState, childId.index)) {
+				auto& childShape = gameState->shapes[childId.index];
+				if (childShape.componentMap.size() == 0) {
+					continue;
+				}
+				auto childLoop = getComponent<components::LoopSociety>(childShape);
+				childLoop->parentLoopId.index = UNASSIGNED;
+			}
+		}
+
+		middle::Id parentId = middle::getParent(gameState, gameState->shapes[index].id);
+		// remove parent refernce to this shape
+		if (parentId.index != middle::UNASSIGNED) {
+			auto& parentShape = getShape(gameState, parentId.index);
+			auto parentLoop = getComponent<components::LoopSociety>(parentShape);
+			for (int i = 0; i < parentLoop->loopMemberIds.size(); ++i) {
+				Id parentChildIndex = parentLoop->loopMemberIds[i];
+				if (parentChildIndex.index == index) {
+					parentLoop->loopMemberIds.erase(parentLoop->loopMemberIds.begin() + i);
+					break;
 				}
 			}
 		}
@@ -299,14 +316,12 @@ namespace middle {
 			return;
 		}
 		Shape& shape = gameState->shapes[index];
-		auto loop = getComponent<components::LoopSociety>(shape);
-		if (loop) {
-			std::vector<middle::Id>children = loop->loopMemberIds;
-			int size = children.size();
-			for (int i = size - 1; i >= 0; --i) {
-				middle::Id& childId = children[i];
-				deleteShapeRecursive(gameState, childId.index, deleteComponentsOnly);
-			}
+		std::vector<middle::Id>children;
+		middle::getChildren(gameState, shape.id, children);
+		int size = children.size();
+		for (int i = size - 1; i >= 0; --i) {
+			middle::Id& childId = children[i];
+			deleteShapeRecursive(gameState, childId.index, deleteComponentsOnly);
 		}
 		deleteShape(gameState, index, deleteComponentsOnly);
 	}
@@ -319,6 +334,20 @@ namespace middle {
 		gameState->ids[freeIndex] = shape.id;
 		gameState->shapes[freeIndex] = shape;
 		middle::Shape& newShape = gameState->shapes[freeIndex];
+		for (auto& pair : newShape.componentMap) {
+			int typeId = pair.first;
+			gameState->componentTypeIdSetWithStructuralChanges.insert(typeId);
+		}
+		return newShape;
+	}
+
+	Shape& registerShapeAtIndex(GameState* gameState, middle::Shape shape, int index)
+	{
+		shape.id.generation = gameState->shapes[index].id.generation + 1;
+		shape.id.index = index;
+		gameState->ids[index] = shape.id;
+		gameState->shapes[index] = shape;
+		middle::Shape& newShape = gameState->shapes[index];
 		for (auto& pair : newShape.componentMap) {
 			int typeId = pair.first;
 			gameState->componentTypeIdSetWithStructuralChanges.insert(typeId);
@@ -585,9 +614,9 @@ namespace middle {
 		if (!scale) {
 			return { 1,1,1 };
 		}
-		auto loop = middle::getComponent<components::LoopSociety>(shape);
-		if (loop->parentLoopId.index != middle::UNASSIGNED) {
-			return scale->scale * getTotalScale(gameState, loop->parentLoopId);
+		middle::Id parentId = middle::getParent(gameState, shape.id);
+		if (parentId.index != middle::UNASSIGNED) {
+			return scale->scale * getTotalScale(gameState, parentId);
 		}
 		return scale->scale;
 	}
@@ -598,6 +627,9 @@ namespace middle {
 		if (!loopSociety) {
 			return middle::Id();
 		}
+		if (!isValidId(gameState, loopSociety->parentLoopId)) {
+			return middle::Id();
+		}
 		return loopSociety->parentLoopId;
 	}
 	void getChildren(GameState* gameState, Id id, std::vector<Id>& result)
@@ -606,7 +638,9 @@ namespace middle {
 		auto loop = getComponent<components::LoopSociety>(shape);
 		if (loop) {
 			for (Id& childId : loop->loopMemberIds) {
-				result.push_back(childId);
+				if (isValidId(gameState, childId)) {
+					result.push_back(childId);
+				}
 			}
 		}
 	}
@@ -617,8 +651,10 @@ namespace middle {
 		auto loop = getComponent<components::LoopSociety>(shape);
 		if (loop) {
 			for (Id& childId : loop->loopMemberIds) {
-				result.push_back(childId);
-				getAllChildren(gameState, childId, result);
+				if (isValidId(gameState, childId)) {
+					result.push_back(childId);
+					getAllChildren(gameState, childId, result);
+				}
 			}
 		}
 	}
@@ -629,9 +665,11 @@ namespace middle {
 		auto loop = getComponent<components::LoopSociety>(shape);
 		if (loop) {
 			for (Id& childId : loop->loopMemberIds) {
-				auto& child = middle::getShape(gameState, childId.index);
-				if (child.componentMap.find(typeId) != child.componentMap.end()) {
-					result.push_back(childId);
+				if (isValidId(gameState, childId)) {
+					auto& child = middle::getShape(gameState, childId.index);
+					if (child.componentMap.find(typeId) != child.componentMap.end()) {
+						result.push_back(childId);
+					}
 				}
 			}
 		}
@@ -643,11 +681,13 @@ namespace middle {
 		auto loop = getComponent<components::LoopSociety>(shape);
 		if (loop) {
 			for (Id& childId : loop->loopMemberIds) {
-				auto& child = middle::getShape(gameState, childId.index);
-				if (child.componentMap.find(typeId) != child.componentMap.end()) {
-					result.push_back(childId);
+				if (isValidId(gameState, childId)) {
+					auto& child = middle::getShape(gameState, childId.index);
+					if (child.componentMap.find(typeId) != child.componentMap.end()) {
+						result.push_back(childId);
+					}
+					getAllChildrenWithComp(gameState, childId, result, typeId);
 				}
-				getAllChildrenWithComp(gameState, childId, result, typeId);
 			}
 		}
 

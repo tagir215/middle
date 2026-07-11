@@ -30,7 +30,7 @@ public:
 		for (int i = 0; i < dependencyCache->getSize(); ++i) {
 			// if dependency is deleted, delete this as well
 			auto dependency = *dependencyIt;
-			if (!middle::isShapeAlive(gameState, dependency->idRef.index)) {
+			if (!middle::isValidId(gameState, dependency->idRef)) {
 				middle::Shape& shape = middle::getShape(gameState, dependencyCache->relevantIdVector[i].index);
 				middle::queueAction(gameState, std::make_shared<middle::EditorActionDeleteSingle>(shape.id));
 			}

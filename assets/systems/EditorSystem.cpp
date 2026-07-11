@@ -17,7 +17,7 @@ class EditorSystem : public middle::MiddleGameplaySystem {
 public:
 	EditorSystem() {
 		systemUpdateType = middle::SystemUpdateType::PREFRAME;
-		systemModeType = middle::SystemModeType::EDITOR;
+		systemModeType = middle::SystemModeType::ENGINE;
 	}
 	void init(middle::GameState* gameState) {
 

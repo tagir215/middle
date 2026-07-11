@@ -15,7 +15,7 @@
 class InventorySystem : public middle::MiddleGameplaySystem {
 
 public:
-	components::CompCache* inventoryItemRefCache;
+	//components::CompCache* inventoryItemRefCache;
 	components::CompCache* inventoryRectCache;
 
 	InventorySystem() {
@@ -27,9 +27,9 @@ public:
 		inventoryRectCache->addType<components::Inventory>();
 		inventoryRectCache->addType<components::LoopSociety>();
 		inventoryRectCache->addType<components::Rectangle>();
-		inventoryItemRefCache = middle::newCompCache(gameState);
-		inventoryItemRefCache->addType<components::InventoryItem>();
-		inventoryItemRefCache->addType<components::SnapRef>();
+		//inventoryItemRefCache = middle::newCompCache(gameState);
+		//inventoryItemRefCache->addType<components::InventoryItem>();
+		//inventoryItemRefCache->addType<components::SnapRef>();
 	}
 
 
@@ -37,30 +37,31 @@ public:
 
 	void update(middle::GameState* gameState) override {
 
-		auto snapRefIt = inventoryItemRefCache->begin<components::SnapRef>();
-		for (int i = 0; i < inventoryItemRefCache->getSize(); ++i) {
-			auto snapRef = *snapRefIt;
-			middle::Id id = inventoryItemRefCache->relevantIdVector[i];
-			Vector3 pos = middle::getShapePosition(gameState, snapRef->snapTargetId.index);
-			Vector3 currPos = middle::getShapePosition(gameState, id.index);
-			middle::moveShape(gameState, id.index, pos - currPos);
-		}
+		//auto snapRefIt = inventoryItemRefCache->begin<components::SnapRef>();
+		//for (int i = 0; i < inventoryItemRefCache->getSize(); ++i) {
+		//	auto snapRef = *snapRefIt;
+		//	middle::Id id = inventoryItemRefCache->relevantIdVector[i];
+		//	assert(middle::isValidId(gameState, snapRef->snapTargetId));
+		//	Vector3 pos = middle::getShapePosition(gameState, snapRef->snapTargetId.index);
+		//	Vector3 currPos = middle::getShapePosition(gameState, id.index);
+		//	middle::moveShape(gameState, id.index, pos - currPos);
+		//}
 
 		auto inventoryRectIt = inventoryRectCache->begin<components::Inventory>();
-		auto inventoryRectLoopIt = inventoryRectCache->begin<components::LoopSociety>();
 		auto rectangleIt = inventoryRectCache->begin<components::Rectangle>();
 
 		for (int i = 0; i < inventoryRectCache->getSize(); ++i) {
 			auto& shape = middle::getShape(gameState, inventoryRectCache->relevantIdVector[i].index);
 			auto inventory = *inventoryRectIt;
-			auto loop = *inventoryRectLoopIt;
 			auto inventoryRect = *rectangleIt;
+
 
 			if (inventory->freeLayout) {
 				continue;
 			}
 
-			std::vector<middle::Id>items = loop->loopMemberIds;
+			std::vector<middle::Id>items;
+			middle::getChildren(gameState, shape.id, items);
 
 			Vector3 inventoryPosition = middle::getShapePosition(gameState, shape.id.index);
 

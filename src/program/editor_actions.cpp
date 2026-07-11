@@ -71,7 +71,7 @@ namespace middle {
 
 		for (int i = 0; i < selectedIndexes.size(); ++i) {
 			int shapeIndex = selectedIndexes[i];
-			if (middle::isShapeAlive(gameState, shapeIndex)) {
+			if (middle::isValidId(gameState, gameState->ids[shapeIndex])) {
 				auto delAction = std::make_unique<middle::EditorActionDeleteSingle>(getShape(gameState, shapeIndex).id);
 				delAction->execute(gameState);
 				actions.push_back(std::move(delAction));
@@ -338,7 +338,8 @@ namespace middle {
 		Shape& childShape = getShape(gameState, childIndex);
 		auto childLoop = getComponent<components::LoopSociety>(childShape);
 		assert(childLoop);
-		if (childLoop->parentLoopId.index == UNASSIGNED) {
+		middle::Id parentId = middle::getParent(gameState, childShape.id);
+		if (parentId.index == UNASSIGNED) {
 			return;
 		}
 
@@ -370,9 +371,9 @@ namespace middle {
 	void checkCircularReferences(GameState* gameState, middle::Id& parentId, middle::Id& id) {
 		auto& parent = getShape(gameState, parentId.index);
 		assert(parentId != id);
-		auto loop = getComponent<components::LoopSociety>(parent);
-		if (loop->parentLoopId.index != UNASSIGNED) {
-			checkCircularReferences(gameState, loop->parentLoopId, id);
+		middle::Id parentParentId = middle::getParent(gameState, parent.id);
+		if (parentParentId.index != UNASSIGNED) {
+			checkCircularReferences(gameState, parentParentId, id);
 		}
 	}
 
@@ -457,11 +458,7 @@ namespace middle {
 			auto& ogShape = getShape(gameState, shapeIndex);
 
 			// store parent id
-			middle::Id parentId;
-			auto loop = getComponent<components::LoopSociety>(ogShape);
-			if (loop) {
-				parentId = loop->parentLoopId;
-			}
+			middle::Id parentId = middle::getParent(gameState, ogShape.id);
 
 			Id& newId = deepCopyShape(gameState, shapeIndex, parentId.index);
 			auto& copyShape = getShape(gameState, newId.index);
@@ -633,6 +630,20 @@ namespace middle {
 	void CustomActionWithUndo::undo(GameState* gameState)
 	{
 		this->undoFunc(gameState);
+	}
+
+	void MultiAction::execute(GameState* gameState)
+	{
+		for (auto action : actions) {
+			action->execute(gameState);
+		}
+	}
+
+	void MultiAction::undo(GameState* gameState)
+	{
+		for (int i = actions.size() - 1; i >= 0; --i) {
+			actions[i]->undo(gameState);
+		}
 	}
 
 }
