@@ -294,7 +294,6 @@ namespace middle {
 				deleteShape(gameState, i);
 			}
 		}
-		gameState->reset = true;
 		while (gameState->undoQueue.size() > 0) {
 			gameState->undoQueue.pop();
 		}

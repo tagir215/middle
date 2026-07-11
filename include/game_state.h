@@ -128,12 +128,6 @@ namespace middle {
 		MULTIPLY_X_OVER_X,
 	};
 
-	enum BubbleCopyType {
-		IDENTICAL_COPY,
-		NEGATED_COPY,
-		INVERTED_COPY,
-	};
-
 	struct BubbleAlgebraState {
 		// todo refactor away
 		middle::Id grabbedId;
@@ -143,7 +137,8 @@ namespace middle {
 		std::string previousLevelName;
 		std::vector<std::string>procedureNames;
 		BubbleInsertType currentInsertType;
-		BubbleCopyType currentCopyType;
+		bool copyNegated = false;
+		bool copyInverted = false;
 	};
 
 	struct ModelContainer {

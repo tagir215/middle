@@ -138,7 +138,8 @@ public:
 		}
 
 		static int selectedInsertType = 0;
-		static int selectedCopyType = 0;
+		static bool copyNegated = false;
+		static bool copyInverted = false;
 		auto insertTypeUi = [gameState]() {
 			ImGui::Begin("Insert Method");
 			ImGui::RadioButton("Add outer", &selectedInsertType, 0);
@@ -149,16 +150,16 @@ public:
 			ImGui::End();
 
 			ImGui::Begin("Copy Method");
-			ImGui::RadioButton("Copy", &selectedCopyType, 0);
-			ImGui::RadioButton("Copy Negated", &selectedCopyType, 1);
-			ImGui::RadioButton("Copy Inverted", &selectedCopyType, 2);
+			ImGui::Checkbox("Copy Negated", &copyNegated);
+			ImGui::Checkbox("Copy Inverted", &copyInverted);
 			ImGui::End();
 
 			};
 		gameState->uiSetups.push_back(insertTypeUi);
 
 		gameState->bubbleAlgebraState.currentInsertType = static_cast<middle::BubbleInsertType>(selectedInsertType);
-		gameState->bubbleAlgebraState.currentCopyType = static_cast<middle::BubbleCopyType>(selectedCopyType);
+		gameState->bubbleAlgebraState.copyNegated = copyNegated;
+		gameState->bubbleAlgebraState.copyInverted = copyInverted;
 
 
 		if (gameState->bubbleAlgebraState.grabbedId.index != middle::UNASSIGNED) {
