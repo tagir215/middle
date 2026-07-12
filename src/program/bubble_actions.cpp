@@ -20,6 +20,7 @@
 #include "HelperBubbleEquation.h"
 #include "EditThisTag.h"
 #include "InsertableBubble.h"
+#include "equlab_actions.h"
 
 namespace bubbleActions {
 
@@ -724,9 +725,9 @@ namespace bubbleActions {
 
 
 		// else create new multiplication
-		auto newMul = std::make_unique<NewMultiplication>(recieverShapeId, linkingShapeId);
+		auto newMul = std::make_unique<equlab::ConnectOperationLink>(recieverShapeId, linkingShapeId);
 		newMul->execute(gameState);
-		middle::Id newMulId = newMul->resultShapeId;
+		middle::Id newMulId = newMul->resultId;
 		actions.push_back(std::move(newMul));
 
 		if (parentId.index != middle::UNASSIGNED) {
@@ -1427,44 +1428,6 @@ namespace bubbleActions {
 		update.execute(gameState);
 	}
 
-	void NewMultiplication::execute(middle::GameState* gameState)
-	{
-		middle::Shape newMulShapeProto;
-		auto position = middle::addComponent<components::Position>(newMulShapeProto);
-		middle::addComponent<components::BubbleMultiplyComponent>(newMulShapeProto);
-		middle::addComponent<components::MouseIntersectable>(newMulShapeProto);
-		middle::addComponent<components::MouseGrabbable>(newMulShapeProto);
-		middle::addComponent<components::MouseSelectable>(newMulShapeProto);
-		middle::addComponent<components::LoopTag>(newMulShapeProto);
-		middle::addComponent<components::LoopSociety>(newMulShapeProto);
-		auto& newMulShape = middle::registerShape(gameState, newMulShapeProto);
-
-		auto registerAction = std::make_unique<middle::EditorActionRegisterId>(newMulShape.id);
-		registerAction->execute(gameState);
-		actions.push_back(std::move(registerAction));
-
-		auto reparentA = std::make_unique<middle::EditorActionReparent>(newMulShape.id.index, idA.index);
-		reparentA->execute(gameState);
-		actions.push_back(std::move(reparentA));
-		auto reparentB = std::make_unique<middle::EditorActionReparent>(newMulShape.id.index, idB.index);
-		reparentB->execute(gameState);
-		actions.push_back(std::move(reparentB));
-
-		Vector3 center = middle::getShapePosition(gameState, idA.index) + middle::getShapePosition(gameState, idB.index);
-		center *= 0.5f;
-		position->posX = center.x;
-		position->posY = center.y;
-		position->posZ = center.z;
-		resultShapeId = newMulShape.id;
-	}
-
-	void NewMultiplication::undo(middle::GameState* gameState)
-	{
-		while (actions.size() > 0) {
-			actions.back()->undo(gameState);
-			actions.pop_back();
-		}
-	}
 
 	bool validateNewTermState(middle::GameState* gameState, middle::Id& shapeToAddIntoId, middle::Id& termId) {
 		return true;

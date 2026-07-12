@@ -1,23 +1,11 @@
 __q  96_1
-BubbleUnit
-i  1
-MouseGrabbable
-MouseIntersectable
-MouseSelectable
-Layer
-i  3
-LoopSociety
-q  -1_0
-p  
-Circle
-f  4.000000
 PhysicsData
 f  50.265484
 f  0.019894
 f  1.000000
-f  -0.000027
+f  5.689170
 f  0.000000
-f  0.000070
+f  -5.840246
 f  0.000000
 f  0.000000
 f  0.000000
@@ -25,9 +13,21 @@ f  0.000000
 f  0.000000
 f  0.000000
 b  0
+MouseIntersectable
+BubbleUnit
+i  1
+Position
+f  21.086905
+f  0.000061
+f  -64.201614
+MouseGrabbable
+MouseSelectable
+LoopSociety
+q  -1_0
+p  
 Sphere
 f  2.000000
-Position
-f  22.026310
-f  0.000000
-f  61.513084
+Circle
+f  4.000000
+Layer
+i  3

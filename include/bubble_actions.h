@@ -67,19 +67,6 @@ namespace bubbleActions{
 	};
 
 
-	class NewMultiplication : public middle::EditorActionContainer {
-	public:
-		middle::Id idA;
-		middle::Id idB;
-		std::vector<std::unique_ptr<middle::EditorActionContainer>> actions;
-		middle::Id resultShapeId;
-		NewMultiplication(const middle::Id& idA, const middle::Id& idB) {
-			this->idA = idA;
-			this->idB = idB;
-		}
-		void execute(middle::GameState* gameState) override;
-		void undo(middle::GameState* gameState) override;
-	};
 
 	class CreateMulitiplicationReplacementShape : public middle::EditorActionContainer {
 	public:

@@ -1,23 +1,22 @@
 __q  83_1
-BubbleUnit
-i  1
-MouseGrabbable
-MouseIntersectable
-MouseSelectable
 Layer
-i  3
+i  2
+MouseSelectable
+BubbleComponent
+b  0
+MouseIntersectable
+MouseGrabbable
+LoopTag
 LoopSociety
 q  -1_0
 p  
-Circle
-f  4.000000
 PhysicsData
-f  50.265484
-f  0.019894
+f  1809.557373
+f  0.000553
 f  1.000000
-f  0.000144
+f  0.402884
 f  0.000000
-f  0.000064
+f  0.399639
 f  0.000000
 f  0.000000
 f  0.000000
@@ -25,9 +24,16 @@ f  0.000000
 f  0.000000
 f  0.000000
 b  0
-Sphere
-f  2.000000
+Circle
+f  24.000000
 Position
-f  65.384872
-f  0.000000
-f  62.354507
+f  48.227280
+f  0.000122
+f  71.983017
+BubbleVariable
+s  c
+b  0
+IdRef
+q  72_1
+TopDogBubbleTag
+DeleteComponent

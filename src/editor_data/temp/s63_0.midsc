@@ -1,30 +1,32 @@
 __q  63_0
-Text
-s  [shift]+c
-f  255.000000
-f  255.000000
-f  255.000000
-f  255.000000
-f  0.000000
-f  0.000000
-f  0.000000
-f  10.000000
-b  1
-Button
-i  5
+Layer
+i  1
 MouseSelectable
-MouseIntersectable
+BubbleComponent
+b  0
 MouseGrabbable
-Position
-f  550.390930
-f  -1100.594360
-f  -338.016785
-Sphere
-f  2.000000
-UiComponent
-i  -1
+MouseIntersectable
+LoopTag
 LoopSociety
 q  -1_0
 p  
-Layer
-i  1
+PhysicsData
+f  18930.410156
+f  0.000053
+f  1.000000
+f  0.437938
+f  0.000000
+f  -2.261341
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+b  0
+Circle
+f  77.625618
+Position
+f  -28.691923
+f  0.000153
+f  45.595943

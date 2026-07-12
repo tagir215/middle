@@ -18,6 +18,7 @@
 #include "BubbleVariable.h"
 #include "Reference.h"
 #include "CameraComponent.h"
+#include "equlab_actions.h"
 
 
 class BubbleLevelEditorSystem : public middle::MiddleGameplaySystem {
@@ -90,7 +91,8 @@ public:
 						auto& bubbleShapeA = middle::registerShape(gameState, bubbleProtoA);
 						auto bubbleProtoB = bubble::newBubble(gameState, randomOffset());
 						auto& bubbleShapeB = middle::registerShape(gameState, bubbleProtoB);
-						middle::Id equals = bubble::newEquals(gameState, bubbleShapeA.id, bubbleShapeB.id, { 0,0,0 });
+						auto newEqualsAction = equlab::ConnectEqualsLink(bubbleShapeA.id, bubbleShapeB.id);
+						middle::Id equals = newEqualsAction.resultId;
 						middle::attachComponent<components::BubbleAlgebraProblem>(gameState, equals);
 					}
 
@@ -192,9 +194,9 @@ public:
 						auto bubbleBProto = bubble::newBubble(gameState, containerPos + randomOffset());
 						auto& bubbleA = middle::registerShape(gameState, bubbleAProto);
 						auto& bubbleB = middle::registerShape(gameState, bubbleBProto);
-						auto mulAction = bubbleActions::NewMultiplication(bubbleA.id, bubbleB.id);
+						auto mulAction = equlab::ConnectOperationLink(bubbleA.id, bubbleB.id);
 						mulAction.execute(gameState);
-						middle::Id newId = mulAction.resultShapeId;
+						middle::Id newId = mulAction.resultId;
 						middle::EditorActionReparent(selectedId.index, newId.index).execute(gameState);
 					}
 					ImGui::Separator();
@@ -213,9 +215,9 @@ public:
 						auto bubbleBProto = bubble::newBubble(gameState, containerPos + randomOffset());
 						auto& bubbleA = middle::registerShape(gameState, bubbleAProto);
 						auto& bubbleB = middle::registerShape(gameState, bubbleBProto);
-						auto mulAction = bubbleActions::NewMultiplication(bubbleA.id, bubbleB.id);
+						auto mulAction = equlab::ConnectOperationLink(bubbleA.id, bubbleB.id);
 						mulAction.execute(gameState);
-						middle::Id newId = mulAction.resultShapeId;
+						middle::Id newId = mulAction.resultId;
 						auto& newShape = middle::getShape(gameState, newId.index);
 						auto mul = middle::getComponent<components::BubbleMultiplyComponent>(newShape);
 						mul->operationType = static_cast<int>(components::OperationType::POWER);

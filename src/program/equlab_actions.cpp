@@ -1,0 +1,187 @@
+#include "equlab_actions.h"
+#include "editor_actions.h"
+#include "bubble_actions.h"
+#include "bubble_utils.h"
+#include "MouseSelectable.h"
+#include "BubbleEqualsComponent.h"
+
+namespace equlab {
+
+	void AddBubble::execute(middle::GameState* gameState) {
+		middle::Shape newBubble = bubble::newBubble(gameState, targetPosition);
+		auto registerAction = std::make_unique<middle::EditorActionRegisterShape>(newBubble);
+		registerAction->execute(gameState);
+		resultId = registerAction->newShapeId;
+		actions.push_back(std::move(registerAction));
+		if (parentId.index != middle::UNASSIGNED) {
+			auto reparent = std::make_unique<middle::EditorActionReparent>(parentId.index, resultId.index);
+			reparent->execute(gameState);
+			actions.push_back(std::move(reparent));
+		}
+	}
+	void AddBubble::undo(middle::GameState* gameState) {
+		while (actions.size() > 0) {
+			actions.back()->undo(gameState);
+			actions.pop_back();
+		}
+	}
+
+	void AddUnit::execute(middle::GameState* gameState) {
+		middle::Shape newUnit = bubble::newUnit(gameState, targetPosition);
+		auto registerAction = std::make_unique<middle::EditorActionRegisterShape>(newUnit);
+		registerAction->execute(gameState);
+		resultId = registerAction->newShapeId;
+		actions.push_back(std::move(registerAction));
+		if (parentId.index != middle::UNASSIGNED) {
+			auto reparent = std::make_unique<middle::EditorActionReparent>(parentId.index, resultId.index);
+			reparent->execute(gameState);
+			actions.push_back(std::move(reparent));
+		}
+	}
+
+	void AddUnit::undo(middle::GameState* gameState) {
+		while (actions.size() > 0) {
+			actions.back()->undo(gameState);
+			actions.pop_back();
+		}
+	}
+
+	void AddVariable::execute(middle::GameState* gameState) {
+		middle::Shape newBubble = bubble::newBubble(gameState, targetPosition);
+		auto registerAction = std::make_unique<middle::EditorActionRegisterShape>(newBubble);
+		registerAction->execute(gameState);
+		resultId = registerAction->newShapeId;
+		actions.push_back(std::move(registerAction));
+		if (parentId.index != middle::UNASSIGNED) {
+			auto reparent = std::make_unique<middle::EditorActionReparent>(parentId.index, resultId.index);
+			reparent->execute(gameState);
+			actions.push_back(std::move(reparent));
+		}
+	}
+	void AddVariable::undo(middle::GameState* gameState) {
+		while (actions.size() > 0) {
+			actions.back()->undo(gameState);
+			actions.pop_back();
+		}
+	}
+
+	void Delete::execute(middle::GameState* gameState) {
+		auto del = std::make_unique < middle::EditorActionDeleteSingle>(id);
+		del->execute(gameState);
+		actions.push_back(std::move(del));
+	}
+	void Delete::undo(middle::GameState* gameState) {
+		while (actions.size() > 0) {
+			actions.back()->undo(gameState);
+			actions.pop_back();
+		}
+	}
+
+	// TODO RENAME MULTIPLY COMPONENT
+	void ConnectOperationLink::execute(middle::GameState* gameState)
+	{
+		middle::Shape newMulShapeProto;
+		auto position = middle::addComponent<components::Position>(newMulShapeProto);
+		middle::addComponent<components::BubbleMultiplyComponent>(newMulShapeProto);
+		middle::addComponent<components::MouseIntersectable>(newMulShapeProto);
+		middle::addComponent<components::MouseGrabbable>(newMulShapeProto);
+		middle::addComponent<components::MouseSelectable>(newMulShapeProto);
+		middle::addComponent<components::LoopTag>(newMulShapeProto);
+		middle::addComponent<components::LoopSociety>(newMulShapeProto);
+		auto& newMulShape = middle::registerShape(gameState, newMulShapeProto);
+
+		auto registerAction = std::make_unique<middle::EditorActionRegisterId>(newMulShape.id);
+		registerAction->execute(gameState);
+		actions.push_back(std::move(registerAction));
+
+		auto reparentA = std::make_unique<middle::EditorActionReparent>(newMulShape.id.index, idA.index);
+		reparentA->execute(gameState);
+		actions.push_back(std::move(reparentA));
+		auto reparentB = std::make_unique<middle::EditorActionReparent>(newMulShape.id.index, idB.index);
+		reparentB->execute(gameState);
+		actions.push_back(std::move(reparentB));
+
+		Vector3 center = middle::getShapePosition(gameState, idA.index) + middle::getShapePosition(gameState, idB.index);
+		center *= 0.5f;
+		position->posX = center.x;
+		position->posY = center.y;
+		position->posZ = center.z;
+		resultId = newMulShape.id;
+	}
+
+
+	void ConnectOperationLink::undo(middle::GameState* gameState)
+	{
+		while (actions.size() > 0) {
+			actions.back()->undo(gameState);
+			actions.pop_back();
+		}
+	}
+
+	void ConnectEqualsLink::execute(middle::GameState* gameState) {
+
+		middle::Shape equalsProto;
+		middle::addComponent<components::BubbleEqualsComponent>(equalsProto);
+		auto position = middle::addComponent<components::Position>(equalsProto);
+		middle::addComponent<components::MouseIntersectable>(equalsProto);
+		middle::addComponent<components::MouseGrabbable>(equalsProto);
+		middle::addComponent<components::MouseSelectable>(equalsProto);
+		middle::addComponent<components::LoopTag>(equalsProto);
+		middle::addComponent<components::LoopSociety>(equalsProto);
+		middle::Shape& equalsShape = middle::registerShape(gameState, equalsProto);
+
+		Vector3 center = middle::getShapePosition(gameState, bubbleIdA.index) + middle::getShapePosition(gameState, bubbleIdB.index);
+		center *= 0.5f;
+		position->posX = center.x;
+		position->posY = center.y;
+		position->posZ = center.z;
+
+		auto registerAction = std::make_unique<middle::EditorActionRegisterId>(equalsShape.id);
+		registerAction->execute(gameState);
+		actions.push_back(std::move(registerAction));
+
+		auto reparentA = std::make_unique<middle::EditorActionReparent>(equalsShape.id.index, bubbleIdA.index);
+		reparentA->execute(gameState);
+		actions.push_back(std::move(reparentA));
+		auto reparentB = std::make_unique<middle::EditorActionReparent>(equalsShape.id.index, bubbleIdB.index);
+		reparentB->execute(gameState);
+		actions.push_back(std::move(reparentB));
+	}
+	void ConnectEqualsLink::undo(middle::GameState* gameState) {
+		while (actions.size() > 0) {
+			actions.back()->undo(gameState);
+			actions.pop_back();
+		}
+	}
+
+	void ConnectMultiplicationLink::execute(middle::GameState* gameState) {
+		auto connectAction = std::make_unique<bubbleActions::LinkMultiplicationTerm>(bubbleIdA, bubbleIdB);
+		connectAction->execute(gameState);
+		resultId = connectAction->resultShapeId;
+		auto& resultShape = middle::getShape(gameState, resultId.index);
+		actions.push_back(std::move(connectAction));
+	}
+	void ConnectMultiplicationLink::undo(middle::GameState* gameState) {
+		while (actions.size() > 0) {
+			actions.back()->undo(gameState);
+			actions.pop_back();
+		}
+	}
+
+	void ConnectPowerLink::execute(middle::GameState* gameState) {
+		auto connectAction = std::make_unique<ConnectOperationLink>(bubbleIdA, bubbleIdB);
+		connectAction->execute(gameState);
+		resultId = connectAction->resultId;
+		auto& resultShape = middle::getShape(gameState, resultId.index);
+		auto opComp = middle::getComponent<components::BubbleMultiplyComponent>(resultShape);
+		opComp->operationType = components::OperationType::POWER;
+		actions.push_back(std::move(connectAction));
+	}
+	void ConnectPowerLink::undo(middle::GameState* gameState) {
+		while (actions.size() > 0) {
+			actions.back()->undo(gameState);
+			actions.pop_back();
+		}
+	}
+
+}

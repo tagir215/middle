@@ -1,59 +1,22 @@
 __q  49_0
-PhysicsData
-f  3262.682129
-f  0.000306
-f  1.000000
-f  0.000052
-f  0.000000
-f  0.000025
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-b  0
+MouseSelectable
 Layer
 i  2
-MouseSelectable
 MouseIntersectable
 BubbleComponent
 b  0
-MouseGrabbable
-LoopTag
 LoopSociety
 q  -1_0
 p  
-q  54_0
-q  55_0
-q  56_0
-q  57_0
-Circle
-f  32.226448
-Position
-f  44.386269
-f  0.000000
-f  -117.367432
-__q  57_0
-Circle
-f  4.000000
-LoopSociety
-q  49_0
-p  
-MouseIntersectable
 MouseGrabbable
-BubbleUnit
-i  1
-Layer
-i  3
-MouseSelectable
+LoopTag
 PhysicsData
-f  50.265484
-f  0.019894
+f  1809.557373
+f  0.000553
 f  1.000000
-f  0.000013
+f  0.237406
 f  0.000000
-f  0.000151
+f  -0.327273
 f  0.000000
 f  0.000000
 f  0.000000
@@ -61,108 +24,12 @@ f  0.000000
 f  0.000000
 f  0.000000
 b  0
-Sphere
-f  2.000000
-Position
-f  26.967968
-f  0.000000
-f  -109.664162
-__q  56_0
-LoopSociety
-q  49_0
-p  
-BubbleUnit
-i  1
-MouseIntersectable
-Layer
-i  3
-MouseSelectable
 Circle
-f  4.000000
-PhysicsData
-f  50.265484
-f  0.019894
-f  1.000000
-f  0.000080
-f  0.000000
-f  0.000136
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-b  0
-MouseGrabbable
-Sphere
-f  2.000000
+f  24.000000
 Position
-f  61.702415
+f  -93.012611
 f  0.000000
-f  -125.135956
-__q  55_0
-LoopSociety
-q  49_0
-p  
-BubbleUnit
-i  1
-MouseIntersectable
-Layer
-i  3
-MouseSelectable
-Circle
-f  4.000000
-PhysicsData
-f  50.265484
-f  0.019894
-f  1.000000
-f  -0.000019
-f  0.000000
-f  0.000287
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
+f  -24.681278
+BubbleVariable
+s  a
 b  0
-MouseGrabbable
-Sphere
-f  2.000000
-Position
-f  36.600006
-f  0.000000
-f  -134.772293
-__q  54_0
-Circle
-f  4.000000
-LoopSociety
-q  49_0
-p  
-MouseIntersectable
-MouseGrabbable
-BubbleUnit
-i  1
-Layer
-i  3
-MouseSelectable
-PhysicsData
-f  50.265484
-f  0.019894
-f  1.000000
-f  -0.000055
-f  0.000000
-f  0.000177
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-b  0
-Sphere
-f  2.000000
-Position
-f  52.071796
-f  0.000000
-f  -100.037918
