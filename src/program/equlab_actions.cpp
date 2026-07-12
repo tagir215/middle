@@ -47,8 +47,8 @@ namespace equlab {
 	}
 
 	void AddVariable::execute(middle::GameState* gameState) {
-		middle::Shape newBubble = bubble::newBubble(gameState, targetPosition);
-		auto registerAction = std::make_unique<middle::EditorActionRegisterShape>(newBubble);
+		middle::Shape newVariable = bubble::newVariable(gameState, label, targetPosition);
+		auto registerAction = std::make_unique<middle::EditorActionRegisterShape>(newVariable);
 		registerAction->execute(gameState);
 		resultId = registerAction->newShapeId;
 		actions.push_back(std::move(registerAction));
@@ -77,9 +77,26 @@ namespace equlab {
 		}
 	}
 
+	bool canConnect(middle::GameState* gameState, middle::Id idA, middle::Id idB) {
+		auto& shapeA = middle::getShape(gameState, idA.index);
+		auto& shapeB = middle::getShape(gameState, idB.index);
+		if (!middle::getComponent<components::BubbleComponent>(shapeA) || !middle::getComponent<components::BubbleComponent>(shapeB)) {
+			return false;
+		}
+		middle::Id parentAId = middle::getParent(gameState, idA);
+		middle::Id parentBId = middle::getParent(gameState, idB);
+		return parentAId == parentBId;
+	}
+
 	// TODO RENAME MULTIPLY COMPONENT
 	void ConnectOperationLink::execute(middle::GameState* gameState)
 	{
+
+		if (!canConnect(gameState, idA, idB)) {
+			cancelled = true;
+			return;
+		}
+
 		middle::Shape newMulShapeProto;
 		auto position = middle::addComponent<components::Position>(newMulShapeProto);
 		middle::addComponent<components::BubbleMultiplyComponent>(newMulShapeProto);
@@ -119,6 +136,17 @@ namespace equlab {
 	}
 
 	void ConnectEqualsLink::execute(middle::GameState* gameState) {
+		if (!canConnect(gameState, bubbleIdA, bubbleIdB)) {
+			cancelled = true;
+			return;
+		}
+
+		auto& shapeA = middle::getShape(gameState, bubbleIdA.index);
+		auto& shapeB = middle::getShape(gameState, bubbleIdB.index);
+		if (!middle::getComponent<components::BubbleComponent>(shapeA) || !middle::getComponent<components::BubbleComponent>(shapeB)) {
+			cancelled = true;
+			return;
+		}
 
 		middle::Shape equalsProto;
 		middle::addComponent<components::BubbleEqualsComponent>(equalsProto);
@@ -155,6 +183,14 @@ namespace equlab {
 	}
 
 	void ConnectMultiplicationLink::execute(middle::GameState* gameState) {
+
+		auto& shapeA = middle::getShape(gameState, bubbleIdA.index);
+		auto& shapeB = middle::getShape(gameState, bubbleIdB.index);
+		if (!middle::getComponent<components::BubbleComponent>(shapeA) || !middle::getComponent<components::BubbleComponent>(shapeB)) {
+			cancelled = true;
+			return;
+		}
+
 		auto connectAction = std::make_unique<bubbleActions::LinkMultiplicationTerm>(bubbleIdA, bubbleIdB);
 		connectAction->execute(gameState);
 		resultId = connectAction->resultShapeId;
@@ -169,6 +205,11 @@ namespace equlab {
 	}
 
 	void ConnectPowerLink::execute(middle::GameState* gameState) {
+		if (!canConnect(gameState, bubbleIdA, bubbleIdB)) {
+			cancelled = true;
+			return;
+		}
+
 		auto connectAction = std::make_unique<ConnectOperationLink>(bubbleIdA, bubbleIdB);
 		connectAction->execute(gameState);
 		resultId = connectAction->resultId;

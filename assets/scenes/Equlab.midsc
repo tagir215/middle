@@ -1,2 +1,350 @@
 #scene
 s  Equlab
+__q  0_0
+Text
+s  EditorSystem
+f  255.000000
+f  255.000000
+f  255.000000
+f  255.000000
+f  2.000000
+f  0.000000
+f  10.000000
+f  10.000000
+b  1
+MouseSelectable
+Position
+f  190.211304
+f  200.000000
+f  61.803402
+SystemReference
+s  EditorSystem
+MouseGrabbable
+MouseIntersectable
+LoopSociety
+q  -1_0
+p  
+__q  1_0
+Text
+s  MouseIntersectDetectionSystem
+f  255.000000
+f  255.000000
+f  255.000000
+f  255.000000
+f  2.000000
+f  0.000000
+f  10.000000
+f  10.000000
+b  1
+MouseSelectable
+Position
+f  165.094376
+f  200.000000
+f  112.888649
+SystemReference
+s  MouseIntersectDetectionSystem
+MouseGrabbable
+MouseIntersectable
+LoopSociety
+q  -1_0
+p  
+__q  2_0
+Text
+s  MouseGrabbingSystem
+f  255.000000
+f  255.000000
+f  255.000000
+f  255.000000
+f  2.000000
+f  0.000000
+f  10.000000
+f  10.000000
+b  1
+MouseSelectable
+Position
+f  126.602486
+f  200.000000
+f  154.828339
+SystemReference
+s  MouseGrabbingSystem
+MouseGrabbable
+MouseIntersectable
+LoopSociety
+q  -1_0
+p  
+__q  3_0
+Text
+s  MouseSelectionSystem
+f  255.000000
+f  255.000000
+f  255.000000
+f  255.000000
+f  2.000000
+f  0.000000
+f  10.000000
+f  10.000000
+b  1
+MouseSelectable
+Position
+f  77.854004
+f  200.000000
+f  184.224731
+SystemReference
+s  MouseSelectionSystem
+MouseGrabbable
+MouseIntersectable
+LoopSociety
+q  -1_0
+p  
+__q  4_0
+Text
+s  EnviromentalFileNavigationSystem
+f  255.000000
+f  255.000000
+f  255.000000
+f  255.000000
+f  2.000000
+f  0.000000
+f  10.000000
+f  10.000000
+b  1
+MouseSelectable
+Position
+f  22.798265
+f  200.000000
+f  198.696350
+SystemReference
+s  EnviromentalFileNavigationSystem
+MouseGrabbable
+MouseIntersectable
+LoopSociety
+q  -1_0
+p  
+__q  5_0
+Text
+s  EditorHotKeySystem
+f  255.000000
+f  255.000000
+f  255.000000
+f  255.000000
+f  2.000000
+f  0.000000
+f  10.000000
+f  10.000000
+b  1
+MouseSelectable
+Position
+f  -34.104458
+f  200.000000
+f  197.070770
+SystemReference
+s  EditorHotKeySystem
+MouseGrabbable
+MouseIntersectable
+LoopSociety
+q  -1_0
+p  
+__q  6_0
+Text
+s  CameraSystem
+f  255.000000
+f  255.000000
+f  255.000000
+f  255.000000
+f  2.000000
+f  0.000000
+f  10.000000
+f  10.000000
+b  1
+MouseSelectable
+Position
+f  -88.244225
+f  200.000000
+f  179.479675
+SystemReference
+s  CameraSystem
+MouseGrabbable
+MouseIntersectable
+LoopSociety
+q  -1_0
+p  
+__q  7_0
+Text
+s  MiddlePhysicsSystem
+f  255.000000
+f  255.000000
+f  255.000000
+f  255.000000
+f  2.000000
+f  0.000000
+f  10.000000
+f  10.000000
+b  1
+MouseSelectable
+Position
+f  -135.235001
+f  200.000000
+f  147.348206
+SystemReference
+s  MiddlePhysicsSystem
+MouseGrabbable
+MouseIntersectable
+LoopSociety
+q  -1_0
+p  
+__q  8_0
+Text
+s  EditorRenderSetupSystem
+f  255.000000
+f  255.000000
+f  255.000000
+f  255.000000
+f  2.000000
+f  0.000000
+f  10.000000
+f  10.000000
+b  1
+MouseSelectable
+Position
+f  -171.269836
+f  200.000000
+f  103.279449
+SystemReference
+s  EditorRenderSetupSystem
+MouseGrabbable
+MouseIntersectable
+LoopSociety
+q  -1_0
+p  
+__q  9_0
+Text
+s  EditorUiSystem
+f  255.000000
+f  255.000000
+f  255.000000
+f  255.000000
+f  2.000000
+f  0.000000
+f  10.000000
+f  10.000000
+b  1
+MouseSelectable
+Position
+f  -193.429382
+f  200.000000
+f  50.843632
+SystemReference
+s  EditorUiSystem
+MouseGrabbable
+MouseIntersectable
+LoopSociety
+q  -1_0
+p  
+__q  10_0
+Text
+s  ComponentUiSystem
+f  255.000000
+f  255.000000
+f  255.000000
+f  255.000000
+f  2.000000
+f  0.000000
+f  10.000000
+f  10.000000
+b  1
+MouseSelectable
+Position
+f  -199.918442
+f  200.000000
+f  -5.711226
+SystemReference
+s  ComponentUiSystem
+MouseGrabbable
+MouseIntersectable
+LoopSociety
+q  -1_0
+p  
+__q  11_0
+Text
+s  EqulabSystem
+f  255.000000
+f  255.000000
+f  255.000000
+f  255.000000
+f  2.000000
+f  0.000000
+f  10.000000
+f  10.000000
+b  1
+MouseSelectable
+Position
+f  -40.111473
+f  -0.000031
+f  -32.921673
+SystemReference
+s  EqulabSystem
+MouseGrabbable
+MouseIntersectable
+LoopSociety
+q  -1_0
+p  
+__q  13_0
+Reference
+s  BubbleGameplaySystems
+s  ../assets/shapes/
+MouseGrabbable
+Position
+f  400.000000
+f  0.000000
+f  -500.000000
+MouseSelectable
+MouseIntersectable
+LoopSociety
+__q  14_0
+Reference
+s  ManipulationSystems
+s  ../assets/shapes/
+MouseGrabbable
+Position
+f  800.000000
+f  0.000000
+f  -500.000000
+MouseSelectable
+MouseIntersectable
+LoopSociety
+__q  15_0
+Reference
+s  GreatWallAndProcedureAndProblemContainers
+s  ../assets/shapes/
+MouseGrabbable
+Position
+f  400.000000
+f  0.000000
+f  0.000000
+MouseSelectable
+MouseIntersectable
+LoopSociety
+__q  16_0
+Reference
+s  BubbleAlgebraUi
+s  ../assets/shapes/
+MouseGrabbable
+Position
+f  -800.000000
+f  -500.000000
+f  -500.000000
+MouseSelectable
+MouseIntersectable
+LoopSociety
+__q  17_0
+Reference
+s  BubbleCamera
+s  ../assets/shapes/
+MouseGrabbable
+Position
+f  -43.011288
+f  -1000.000122
+f  -31.600134
+MouseSelectable
+MouseIntersectable
+LoopSociety

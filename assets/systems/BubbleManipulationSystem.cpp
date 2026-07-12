@@ -147,6 +147,21 @@ public:
 
 	void update(middle::GameState* gameState) override {
 
+		// todo figure input stuff at some point
+		if (gameState->gameInput.one ||
+			gameState->gameInput.two ||
+			gameState->gameInput.three ||
+			gameState->gameInput.four ||
+			gameState->gameInput.five ||
+			gameState->gameInput.six ||
+			gameState->gameInput.seven ||
+			gameState->gameInput.eight ||
+			gameState->gameInput.nine ||
+			gameState->gameInput.zero
+			) {
+			return;
+		}
+
 		auto bubbleIt = bubbleCache->begin<components::BubbleComponent>();
 		auto bubbleGrabbableIt = bubbleCache->begin<components::MouseGrabbable>();
 		for (int i = 0; i < bubbleCache->getSize(); ++i) {

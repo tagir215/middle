@@ -111,6 +111,16 @@ public:
 			gameState->gameInput.panRight = false;
 			gameState->gameInput.undo = false;
 			gameState->gameInput.shiftHeld = false;
+			gameState->gameInput.one = false;
+			gameState->gameInput.two = false;
+			gameState->gameInput.three = false;
+			gameState->gameInput.four = false;
+			gameState->gameInput.five = false;
+			gameState->gameInput.six = false;
+			gameState->gameInput.seven = false;
+			gameState->gameInput.eight = false;
+			gameState->gameInput.nine = false;
+			gameState->gameInput.zero = false;
 
 			if (gameState->inputBlockers.find(middle::InputBlockers::KEYBOARD_BLOCK) == gameState->inputBlockers.end()) {
 				gameState->gameInput.pop = IsKeyPressed(KEY_B);
@@ -126,16 +136,16 @@ public:
 				gameState->gameInput.mulOne = IsKeyPressed(KEY_V);
 				gameState->gameInput.proc = IsKeyPressed(KEY_E);
 				gameState->gameInput.undo = IsKeyPressed(KEY_SPACE);
-				gameState->gameInput.one = IsKeyPressed(KEY_ONE);
-				gameState->gameInput.two = IsKeyPressed(KEY_TWO);
-				gameState->gameInput.three = IsKeyPressed(KEY_THREE);
-				gameState->gameInput.four = IsKeyPressed(KEY_FOUR);
-				gameState->gameInput.five = IsKeyPressed(KEY_FIVE);
-				gameState->gameInput.six = IsKeyPressed(KEY_SIX);
-				gameState->gameInput.seven = IsKeyPressed(KEY_SEVEN);
-				gameState->gameInput.eight = IsKeyPressed(KEY_EIGHT);
-				gameState->gameInput.nine = IsKeyPressed(KEY_NINE);
-				gameState->gameInput.zero = IsKeyPressed(KEY_ZERO);
+				gameState->gameInput.one = IsKeyDown(KEY_ONE);
+				gameState->gameInput.two = IsKeyDown(KEY_TWO);
+				gameState->gameInput.three = IsKeyDown(KEY_THREE);
+				gameState->gameInput.four = IsKeyDown(KEY_FOUR);
+				gameState->gameInput.five = IsKeyDown(KEY_FIVE);
+				gameState->gameInput.six = IsKeyDown(KEY_SIX);
+				gameState->gameInput.seven = IsKeyDown(KEY_SEVEN);
+				gameState->gameInput.eight = IsKeyDown(KEY_EIGHT);
+				gameState->gameInput.nine = IsKeyDown(KEY_NINE);
+				gameState->gameInput.zero = IsKeyDown(KEY_ZERO);
 				gameState->gameInput.shiftHeld = IsKeyDown(KEY_LEFT_SHIFT) || IsKeyDown(KEY_RIGHT_SHIFT);
 			}
 
