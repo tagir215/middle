@@ -40,12 +40,60 @@ public:
 
 	}
 
+	std::string keyToString(middle::GameState* gameState) {
+		auto& in = gameState->equlabInput;
+		if (in.aClicked) return "a";
+		if (in.bClicked) return "b";
+		if (in.cClicked) return "c";
+		if (in.dClicked) return "d";
+		if (in.eClicked) return "e";
+		if (in.fClicked) return "f";
+		if (in.gClicked) return "g";
+		if (in.hClicked) return "h";
+		if (in.iClicked) return "i";
+		if (in.jClicked) return "j";
+		if (in.kClicked) return "k";
+		if (in.lClicked) return "l";
+		if (in.mClicked) return "m";
+		if (in.nClicked) return "n";
+		if (in.oClicked) return "o";
+		if (in.pClicked) return "p";
+		if (in.qClicked) return "q";
+		if (in.rClicked) return "r";
+		if (in.sClicked) return "s";
+		if (in.tClicked) return "t";
+		if (in.uClicked) return "u";
+		if (in.vClicked) return "v";
+		if (in.wClicked) return "w";
+		if (in.xClicked) return "x";
+		if (in.yClicked) return "y";
+		if (in.zClicked) return "z";
+		return "";
+	}
+
 	void update(middle::GameState* gameState) override {
 
+		std::string keyString = keyToString(gameState);
+		if (keyString != "") {
+			middle::Id intersectedBubble;
+			auto intersectableBubbleIt = intersectableBubbleCache->begin<components::MouseIntersectable>();
+			for (int i = 0; i < intersectableBubbleCache->getSize(); ++i) {
+				auto intersectable = *intersectableBubbleIt;
+				if (intersectable->intersectingTop) {
+					intersectedBubble = intersectableBubbleCache->relevantIdVector[i];
+					break;
+				}
+			}
+			if (intersectedBubble.index != middle::UNASSIGNED) {
+				auto action = std::make_shared<equlab::AddLabelCharacterToVariable>(intersectedBubble, keyString);
+				middle::queueAction(gameState, action);
+				gameState->bubbleAlgebraState.bubbleActions.push_back(action);
+			}
+		}
 
 		// MOUSE CLICK ACTIONS
 		if (gameState->input.mouseClicked) {
-			
+
 			middle::Id intersectedBubble;
 			auto intersectableBubbleIt = intersectableBubbleCache->begin<components::MouseIntersectable>();
 			for (int i = 0; i < intersectableBubbleCache->getSize(); ++i) {
@@ -95,6 +143,8 @@ public:
 				middle::queueAction(gameState, action);
 				gameState->bubbleAlgebraState.bubbleActions.push_back(action);
 			}
+
+
 			else if (gameState->equlabInput.sixHeld) {
 				auto action = std::make_shared<equlab::Delete>(targetId);
 				middle::queueAction(gameState, action);
@@ -118,7 +168,7 @@ public:
 			}
 		}
 		// MOUSE RELEASE ACTIONS	
-		if (gameState->input.mouseReleased) {
+		if (gameState->input.mouseReleased && selectedCache->getSize() == 1) {
 
 			middle::Id intersectedShape;
 			auto intersectableIt = intersectableBubbleCache->begin<components::MouseIntersectable>();
@@ -130,13 +180,17 @@ public:
 				}
 			}
 
-			// there should bne 1
-			if (selectedCache->getSize() != 1) {
+			middle::Id selectedId = selectedCache->relevantIdVector[0];
+
+			if (intersectedShape.index == middle::UNASSIGNED) {
+				return;
+			}
+			if (intersectedShape == selectedId) {
 				return;
 			}
 
 			if (currentSelectType == SelectType::ADD_EQUALS) {
-				middle::Id idA = selectedCache->relevantIdVector[0];
+				middle::Id idA = selectedId;
 				middle::Id idB = intersectedShape;
 				auto connect = std::make_shared<equlab::ConnectEqualsLink>(idA, idB);
 				middle::queueAction(gameState, connect);
@@ -144,7 +198,7 @@ public:
 			}
 
 			if (currentSelectType == SelectType::ADD_MULTIPLICATION) {
-				middle::Id idA = selectedCache->relevantIdVector[0];
+				middle::Id idA = selectedId;
 				middle::Id idB = intersectedShape;
 				auto connect = std::make_shared<equlab::ConnectMultiplicationLink>(idB, idA);
 				middle::queueAction(gameState, connect);
@@ -152,7 +206,7 @@ public:
 			}
 
 			if (currentSelectType == SelectType::ADD_POWER) {
-				middle::Id idA = selectedCache->relevantIdVector[0];
+				middle::Id idA = selectedId;
 				middle::Id idB = intersectedShape;
 				auto connect = std::make_shared<equlab::ConnectPowerLink>(idA, idB);
 				middle::queueAction(gameState, connect);

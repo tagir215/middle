@@ -34,8 +34,43 @@ public:
 		}
 
 		if (gameState->applicationMode == middle::ApplicationMode::EDITOR_MODE) {
-			gameState->input = middle::EditorInput();
+			//gameState->input = middle::EditorInput();
 			auto& ip = gameState->input;
+
+			ip.mouseClicked = false;
+			ip.mouseReleased = false;
+			ip.mouseHeld = false;
+			ip.zoomIn = false;
+			ip.zoomOut = false;
+			ip.w = false;
+			ip.a = false;
+			ip.s = false;
+			ip.d = false;
+			ip.q = false;
+			ip.e = false;
+			ip.altDown = false;
+			ip.grabDown = false;
+			ip.grabReleased = false;
+			ip.rotatePressed = false;
+			ip.rotateReleased = false;
+			ip.scaleDown = false;
+			ip.scaleReleased = false;
+			ip.infoClick = false;
+			ip.loopClick = false;
+			ip.sphereModeClick = false;
+			ip.hideClick = false;
+			ip.constraintModeClick = false;
+			ip.cameraModeClick = false;
+			ip.loopModeClick = false;
+			ip.selectModeClick = false;
+			ip.deleteClick = false;
+			ip.copyClick = false;
+			ip.saveClick = false;
+			ip.navigateToFileClick = false;
+			ip.focus = false;
+			ip.newThing = false;
+			ip.reparentClick = false;
+			ip.seaprateFromParentClick = false;
 
 			if (gameState->inputBlockers.find(middle::InputBlockers::KEYBOARD_BLOCK) == gameState->inputBlockers.end()) {
 				ip.w = IsKeyDown(KEY_W);

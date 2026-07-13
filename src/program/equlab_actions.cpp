@@ -144,8 +144,6 @@ namespace equlab {
 
 
 
-
-
 	void Delete::execute(middle::GameState* gameState) {
 		middle::Id parentId = middle::getParent(gameState, id);
 
