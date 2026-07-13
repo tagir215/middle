@@ -11,13 +11,15 @@ LoopSociety
 q  -1_0
 p  
 q  29_2
+q  30_2
+q  31_2
 PhysicsData
-f  29932.769531
-f  0.000033
+f  2541.887451
+f  0.000393
 f  1.000000
-f  -0.000011
+f  -0.000018
 f  0.000000
-f  -0.000028
+f  0.000001
 f  0.000000
 f  0.000000
 f  0.000000
@@ -26,35 +28,34 @@ f  0.000000
 f  0.000000
 b  0
 Circle
-f  97.610947
+f  28.444822
 Position
-f  58.807838
-f  0.000000
-f  15.844649
+f  -145.678406
+f  0.000061
+f  -50.150841
 TopDogBubbleTag
-IdRef
-q  19_2
-DeleteComponent
-__q  29_2
-BubbleComponent
-b  0
-MouseIntersectable
+__q  31_2
 MouseGrabbable
-MouseSelectable
+BubbleUnit
+i  -1
+Sphere
+f  4.000000
+MouseIntersectable
 Layer
 i  1
-LoopTag
+MouseSelectable
+Circle
+f  4.000000
 LoopSociety
 q  28_2
 p  
-q  30_2
 PhysicsData
-f  12398.527344
-f  0.000081
+f  50.265484
+f  0.019894
 f  1.000000
-f  0.001468
+f  0.000284
 f  0.000000
-f  -0.000193
+f  -0.000084
 f  0.000000
 f  0.000000
 f  0.000000
@@ -62,64 +63,65 @@ f  0.000000
 f  0.000000
 f  0.000000
 b  0
-Circle
-f  62.821762
 Position
-f  58.696129
+f  -160.816406
 f  0.000000
-f  11.725596
+f  -46.931484
 __q  30_2
-BubbleComponent
-b  0
-MouseIntersectable
+BubbleUnit
+i  -1
+Sphere
+f  4.000000
 MouseGrabbable
+MouseIntersectable
 MouseSelectable
 Layer
-i  2
-LoopTag
+i  1
 LoopSociety
-q  29_2
+q  28_2
 p  
-q  31_2
-PhysicsData
-f  4536.459961
-f  0.000220
-f  1.000000
-f  0.875288
-f  0.000000
-f  -0.089942
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-b  0
 Circle
-f  38.000000
-Position
-f  67.883934
+f  4.000000
+PhysicsData
+f  50.265484
+f  0.019894
+f  1.000000
+f  0.000355
 f  0.000000
-f  10.578597
-__q  31_2
-BubbleComponent
+f  -0.000059
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
 b  0
-MouseIntersectable
+Position
+f  -135.327271
+f  -0.000061
+f  -38.644905
+__q  29_2
+BubbleUnit
+i  -1
+Sphere
+f  4.000000
 MouseGrabbable
+MouseIntersectable
 MouseSelectable
 Layer
-i  3
-LoopTag
+i  1
 LoopSociety
-q  30_2
+q  28_2
 p  
+Circle
+f  4.000000
 PhysicsData
-f  1809.557373
-f  0.000553
+f  50.265484
+f  0.019894
 f  1.000000
-f  -2.191907
+f  0.000257
 f  0.000000
-f  0.225565
+f  0.000116
 f  0.000000
 f  0.000000
 f  0.000000
@@ -127,9 +129,7 @@ f  0.000000
 f  0.000000
 f  0.000000
 b  0
-Circle
-f  24.000000
 Position
-f  72.316360
+f  -140.897385
 f  0.000000
-f  10.121737
+f  -64.871262

@@ -1,27 +1,25 @@
 __q  35_2
-MouseGrabbable
-Position
-f  45.812035
-f  0.000046
-f  34.807709
-BubbleRef
 BubbleComponent
-b  0
+b  1
 MouseIntersectable
+MouseGrabbable
+MouseSelectable
+Layer
+i  0
+LoopTag
 LoopSociety
 q  -1_0
 p  
 q  36_2
 q  37_2
-MouseSelectable
-LoopTag
+q  38_2
 PhysicsData
-f  1809.557373
-f  0.000553
+f  2541.887451
+f  0.000393
 f  1.000000
-f  -0.000041
+f  -0.000002
 f  0.000000
-f  0.000017
+f  -0.000002
 f  0.000000
 f  0.000000
 f  0.000000
@@ -30,76 +28,108 @@ f  0.000000
 f  0.000000
 b  0
 Circle
-f  24.000000
-Layer
-i  1
-IdRef
-q  16_0
+f  28.444822
+Position
+f  -37.696815
+f  0.000061
+f  21.897650
 TopDogBubbleTag
-DeleteComponent
+__q  38_2
+BubbleUnit
+i  1
+Sphere
+f  4.000000
+MouseGrabbable
+MouseIntersectable
+MouseSelectable
+Layer
+i  1
+LoopSociety
+q  35_2
+p  
+Circle
+f  4.000000
+PhysicsData
+f  50.265484
+f  0.019894
+f  1.000000
+f  0.000029
+f  0.000000
+f  0.000005
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+b  0
+Position
+f  -37.798187
+f  0.000031
+f  6.421543
 __q  37_2
-Position
-f  52.984268
-f  0.000046
-f  44.441360
-MouseGrabbable
 BubbleUnit
 i  1
+Sphere
+f  4.000000
+MouseGrabbable
 MouseIntersectable
 MouseSelectable
-PhysicsData
-f  50.265484
-f  0.019894
-f  1.000000
-f  -0.000000
-f  0.000000
-f  0.000000
-f  0.800000
-f  0.800000
-f  0.800000
-f  0.000000
-f  0.000000
-f  0.000000
-b  0
-Sphere
-f  2.000000
+Layer
+i  1
 LoopSociety
 q  35_2
 p  
 Circle
 f  4.000000
-Layer
-i  1
+PhysicsData
+f  50.265484
+f  0.019894
+f  1.000000
+f  -0.000036
+f  0.000000
+f  0.000037
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+b  0
+Position
+f  -24.239052
+f  -0.000061
+f  29.541151
 __q  36_2
-Position
-f  38.639339
-f  0.000046
-f  25.173203
-MouseGrabbable
 BubbleUnit
 i  1
+Sphere
+f  4.000000
+MouseGrabbable
 MouseIntersectable
 MouseSelectable
-PhysicsData
-f  50.265484
-f  0.019894
-f  1.000000
-f  -0.000000
-f  0.000000
-f  0.000000
-f  0.800000
-f  0.800000
-f  0.800000
-f  0.000000
-f  0.000000
-f  0.000000
-b  0
-Sphere
-f  2.000000
+Layer
+i  1
 LoopSociety
 q  35_2
 p  
 Circle
 f  4.000000
-Layer
-i  1
+PhysicsData
+f  50.265484
+f  0.019894
+f  1.000000
+f  0.000089
+f  0.000000
+f  0.000039
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+b  0
+Position
+f  -51.049694
+f  0.000000
+f  29.723921

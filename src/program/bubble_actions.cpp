@@ -80,6 +80,13 @@ namespace bubbleActions {
 	middle::Id createNegatedReplacementShape(middle::GameState* gameState, middle::Id id) {
 		middle::Id copyId = middle::deepCopyShape(gameState, id.index);
 
+		auto& copyShape = middle::getShape(gameState, id.index);
+		auto unit = middle::getComponent<components::BubbleUnit>(copyShape);
+		if (unit) {
+			unit->value = -unit->value;
+			return copyId;
+		}
+
 		std::vector<middle::Id>children;
 		middle::getChildren(gameState, copyId, children);
 		for (middle::Id id : children) {

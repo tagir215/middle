@@ -1,14 +1,33 @@
 __q  30_2
 MouseGrabbable
-Position
-f  -160.586807
-f  -0.000031
-f  -65.282852
+BubbleUnit
+i  -1
+Sphere
+f  4.000000
+MouseIntersectable
+Layer
+i  1
+MouseSelectable
+Circle
+f  4.000000
 LoopSociety
 q  -1_0
 p  
-BubbleMultiplyComponent
-i  0
-MouseIntersectable
-MouseSelectable
-LoopTag
+PhysicsData
+f  50.265484
+f  0.019894
+f  1.000000
+f  0.000247
+f  0.000000
+f  0.000637
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+b  0
+Position
+f  -51.049793
+f  0.000000
+f  29.723629

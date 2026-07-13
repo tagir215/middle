@@ -191,7 +191,9 @@ namespace middle {
 		std::vector<std::string>componentNames;
 		std::unordered_map<std::string, Sound>soundMap;
 		EditorInput input;
+		// todo move these
 		GameInput gameInput;
+		EqulabInput equlabInput;
 		std::set<InputBlockers> inputBlockers;
 		bool paused = false;
 		bool closeGame = false;

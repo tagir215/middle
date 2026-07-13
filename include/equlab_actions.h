@@ -31,6 +31,48 @@ namespace equlab {
 		void undo(middle::GameState* gameState);
 	};
 
+	class Negate : public middle::EditorActionContainer {
+	public:
+		middle::Id id;
+		middle::Id resultId;
+		Vector3 targetPosition;
+		std::vector<std::unique_ptr<middle::EditorActionContainer>> actions;
+		Negate(middle::Id id) {
+			this->id = id;
+		}
+		void execute(middle::GameState* gameState);
+		void undo(middle::GameState* gameState);
+	};
+
+	class Invert : public middle::EditorActionContainer {
+	public:
+		middle::Id id;
+		middle::Id resultId;
+		Vector3 targetPosition;
+		std::vector<std::unique_ptr<middle::EditorActionContainer>> actions;
+		Invert(middle::Id id) {
+			this->id = id;
+		}
+		void execute(middle::GameState* gameState);
+		void undo(middle::GameState* gameState);
+	};
+
+	class AddLabelCharacterToVariable : public middle::EditorActionContainer {
+	public:
+		middle::Id id;
+		middle::Id resultId;
+		std::string label;
+		Vector3 targetPosition;
+		std::vector<std::unique_ptr<middle::EditorActionContainer>> actions;
+		AddLabelCharacterToVariable(middle::Id id, const std::string& label) {
+			this->id = id;
+			this->label = label;
+		}
+		void execute(middle::GameState* gameState);
+		void undo(middle::GameState* gameState);
+	};
+
+
 	class AddVariable : public middle::EditorActionContainer {
 	public:
 		middle::Id parentId;

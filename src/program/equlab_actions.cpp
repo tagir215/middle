@@ -4,6 +4,8 @@
 #include "bubble_utils.h"
 #include "MouseSelectable.h"
 #include "BubbleEqualsComponent.h"
+#include "BubbleVariable.h"
+#include "component_utils.h"
 
 namespace equlab {
 
@@ -46,30 +48,124 @@ namespace equlab {
 		}
 	}
 
-	void AddVariable::execute(middle::GameState* gameState) {
-		middle::Shape newVariable = bubble::newVariable(gameState, label, targetPosition);
-		auto registerAction = std::make_unique<middle::EditorActionRegisterShape>(newVariable);
+	void Negate::execute(middle::GameState* gameState) {
+		middle::Id replacementShapeId = bubbleActions::createNegatedReplacementShape(gameState, id);
+		auto registerAction = std::make_unique<middle::EditorActionRegisterId>(replacementShapeId);
 		registerAction->execute(gameState);
-		resultId = registerAction->newShapeId;
 		actions.push_back(std::move(registerAction));
-		if (parentId.index != middle::UNASSIGNED) {
-			auto reparent = std::make_unique<middle::EditorActionReparent>(parentId.index, resultId.index);
-			reparent->execute(gameState);
-			actions.push_back(std::move(reparent));
-		}
+
+		auto replace = std::make_unique<bubbleActions::Replace>(id, replacementShapeId);
+		replace->execute(gameState);
+		actions.push_back(std::move(replace));
 	}
-	void AddVariable::undo(middle::GameState* gameState) {
+	void Negate::undo(middle::GameState* gameState) {
 		while (actions.size() > 0) {
 			actions.back()->undo(gameState);
 			actions.pop_back();
 		}
 	}
 
+	void Invert::execute(middle::GameState* gameState) {
+		middle::Id replacementShapeId = bubble::inverseBubble(gameState, id);
+		auto registerAction = std::make_unique<middle::EditorActionRegisterId>(replacementShapeId);
+		registerAction->execute(gameState);
+		actions.push_back(std::move(registerAction));
+
+		auto replace = std::make_unique<bubbleActions::Replace>(id, replacementShapeId);
+		replace->execute(gameState);
+		actions.push_back(std::move(replace));
+	}
+
+	void Invert::undo(middle::GameState* gameState) {
+		while (actions.size() > 0) {
+			actions.back()->undo(gameState);
+			actions.pop_back();
+		}
+	}
+
+	void AddLabelCharacterToVariable::execute(middle::GameState* gameState) {
+		auto& shape = middle::getShape(gameState, id.index);
+
+		auto comp = middle::getComponent<components::BubbleVariable>(shape);
+
+
+		// if no comp create new bubble variable
+		if (!comp) {
+			std::vector<middle::Id>children;
+			middle::getChildren(gameState, id, children);
+			if (children.size() > 0) {
+				cancelled = true;
+				return;
+			}
+			else {
+				middle::Id targetId = id;
+				std::string targetLabel = this->label;
+				auto customAction = std::make_unique<CustomActionWithUndo>(
+					[targetId, targetLabel](middle::GameState* gameState) {
+						auto newComp = middle::attachComponent<components::BubbleVariable>(gameState, targetId);
+						newComp->label = targetLabel;
+					},
+					[targetId](middle::GameState* gameState) {
+						middle::queueComponentDeletion<components::BubbleVariable>(gameState, targetId);
+					});
+				customAction->execute(gameState);
+				actions.push_back(std::move(customAction));
+			}
+		}
+
+		// if is already comp add character to end of current lable name
+		else {
+			middle::Id targetId = id;
+			std::string targetLabel = this->label;
+			auto customAction = std::make_unique<CustomActionWithUndo>(
+				[targetId, targetLabel](middle::GameState* gameState) {
+					auto& targetShape = middle::getShape(gameState, targetId.index);
+					auto comp = middle::getComponent<components::BubbleVariable>(targetShape);
+					comp->label += targetLabel;
+				},
+				[targetId, targetLabel](middle::GameState* gameState) {
+					auto& targetShape = middle::getShape(gameState, targetId.index);
+					auto comp = middle::getComponent<components::BubbleVariable>(targetShape);
+					int targetSize = targetLabel.size();
+					int labelSize = comp->label.size();
+					assert(targetSize < labelSize);
+					comp->label.erase(labelSize - targetSize, targetSize);
+				});
+			customAction->execute(gameState);
+			actions.push_back(std::move(customAction));
+		}
+	}
+	void AddLabelCharacterToVariable::undo(middle::GameState* gameState) {
+		while (actions.size() > 0) {
+			actions.back()->undo(gameState);
+			actions.pop_back();
+		}
+	}
+
+
+
+
+
 	void Delete::execute(middle::GameState* gameState) {
+		middle::Id parentId = middle::getParent(gameState, id);
+
+		if (parentId.index != middle::UNASSIGNED) {
+			auto& parentShape = middle::getShape(gameState, parentId.index);
+			auto opComp = middle::getComponent<components::BubbleMultiplyComponent>(parentShape);
+			// if op comp unlink instead of delete
+			if (opComp) {
+				auto unlink = std::make_unique<bubbleActions::UnlinkMultiplicationTerm>(parentId, id);
+				unlink->execute(gameState);
+				actions.push_back(std::move(unlink));
+				return;
+			}
+		}
+
 		auto del = std::make_unique < middle::EditorActionDeleteSingle>(id);
 		del->execute(gameState);
 		actions.push_back(std::move(del));
 	}
+
 	void Delete::undo(middle::GameState* gameState) {
 		while (actions.size() > 0) {
 			actions.back()->undo(gameState);
