@@ -1,36 +1,14 @@
 __q  24_2
-BubbleComponent
-b  0
-MouseIntersectable
 MouseGrabbable
-MouseSelectable
-Layer
-i  1
-LoopTag
+Position
+f  -183.036652
+f  0.000000
+f  -100.170067
 LoopSociety
 q  -1_0
 p  
-PhysicsData
-f  1809.557373
-f  0.000553
-f  1.000000
-f  0.899916
-f  0.000000
-f  2.385941
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-b  0
-Circle
-f  24.000000
-Position
-f  57.238331
-f  0.000000
-f  11.682987
-IdRef
-q  23_2
-TopDogBubbleTag
-DeleteComponent
+BubbleMultiplyComponent
+i  0
+MouseIntersectable
+MouseSelectable
+LoopTag

@@ -92,11 +92,6 @@ namespace equlab {
 	void ConnectOperationLink::execute(middle::GameState* gameState)
 	{
 
-		if (!canConnect(gameState, idA, idB)) {
-			cancelled = true;
-			return;
-		}
-
 		middle::Shape newMulShapeProto;
 		auto position = middle::addComponent<components::Position>(newMulShapeProto);
 		middle::addComponent<components::BubbleMultiplyComponent>(newMulShapeProto);
@@ -190,7 +185,24 @@ namespace equlab {
 			cancelled = true;
 			return;
 		}
+		middle::Id parentIdA = middle::getParent(gameState, bubbleIdA);
+		middle::Id parentIdB = middle::getParent(gameState, bubbleIdB);
 
+		// check if b is in a multiplication
+		// if they are remove first from the operation and connect each child seperatedly
+		// we don't have to check for a because a can work as a reciever even if its in multiplciation
+		bool parentBIsMul = false;
+		if (parentIdB.index != middle::UNASSIGNED) {
+			auto& parentShapeB = middle::getShape(gameState, parentIdB.index);
+			parentBIsMul = middle::getComponent<components::BubbleMultiplyComponent>(parentShapeB);
+		}
+		if (parentBIsMul) {
+			auto unlink = std::make_unique<bubbleActions::UnlinkMultiplicationTerm>(parentIdB, bubbleIdB);
+			unlink->execute(gameState);
+			actions.push_back(std::move(unlink));
+		}
+
+		// connect idB or if they were in operation then all the op children
 		auto connectAction = std::make_unique<bubbleActions::LinkMultiplicationTerm>(bubbleIdA, bubbleIdB);
 		connectAction->execute(gameState);
 		resultId = connectAction->resultShapeId;
@@ -210,6 +222,8 @@ namespace equlab {
 			return;
 		}
 
+		middle::Id parentId = middle::getParent(gameState, bubbleIdA);
+
 		auto connectAction = std::make_unique<ConnectOperationLink>(bubbleIdA, bubbleIdB);
 		connectAction->execute(gameState);
 		resultId = connectAction->resultId;
@@ -217,6 +231,10 @@ namespace equlab {
 		auto opComp = middle::getComponent<components::BubbleMultiplyComponent>(resultShape);
 		opComp->operationType = components::OperationType::POWER;
 		actions.push_back(std::move(connectAction));
+
+		auto reparent = std::make_unique<middle::EditorActionReparent>(parentId.index, resultId.index);
+		reparent->execute(gameState);
+		actions.push_back(std::move(reparent));
 	}
 	void ConnectPowerLink::undo(middle::GameState* gameState) {
 		while (actions.size() > 0) {
