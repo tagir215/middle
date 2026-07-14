@@ -1,24 +1,24 @@
-__q  54_1
+__q  42_4
 MouseIntersectable
 BubbleComponent
-b  1
 MouseGrabbable
 Layer
-i  3
+i  2
 MouseSelectable
 LoopTag
 LoopSociety
 q  -1_0
 p  
-q  55_1
-q  56_1
+q  43_4
+q  44_4
+q  45_4
 PhysicsData
-f  1809.557373
-f  0.000553
+f  2541.887451
+f  0.000393
 f  1.000000
-f  -0.012711
+f  -0.000326
 f  0.000000
-f  0.015271
+f  0.000032
 f  0.000000
 f  0.000000
 f  0.000000
@@ -27,66 +27,37 @@ f  0.000000
 f  0.000000
 b  0
 Circle
-f  24.000000
+f  28.444822
 Position
-f  -38.811207
+f  -97.597832
 f  -0.000061
-f  13.278997
-__q  56_1
+f  36.468945
+IdRef
+q  33_10
+TopDogBubbleTag
+DeleteComponent
+__q  45_4
 MouseGrabbable
-BubbleUnit
-i  -1
-Sphere
-f  4.000000
-MouseIntersectable
-Layer
-i  4
-MouseSelectable
-Circle
-f  4.000000
-LoopSociety
-q  54_1
-p  
-PhysicsData
-f  50.265484
-f  0.019894
-f  1.000000
-f  0.047251
-f  0.000000
-f  0.053204
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.000000
-b  0
-Position
-f  -44.853294
-f  0.000000
-f  23.662298
-__q  55_1
 BubbleUnit
 i  1
 Sphere
 f  4.000000
-MouseGrabbable
 MouseIntersectable
-MouseSelectable
 Layer
-i  4
-LoopSociety
-q  54_1
-p  
+i  1
+MouseSelectable
 Circle
 f  4.000000
+LoopSociety
+q  42_4
+p  
 PhysicsData
 f  50.265484
 f  0.019894
 f  1.000000
-f  0.047767
+f  -0.000001
 f  0.000000
-f  0.052835
+f  0.000001
 f  0.000000
 f  0.000000
 f  0.000000
@@ -95,6 +66,72 @@ f  0.000000
 f  0.000000
 b  0
 Position
-f  -32.867905
+f  -82.312378
+f  -0.000061
+f  34.489532
+__q  44_4
+Sphere
+f  4.000000
+BubbleUnit
+i  -1
+MouseGrabbable
+MouseIntersectable
+MouseSelectable
+Layer
+i  1
+LoopSociety
+q  42_4
+p  
+Circle
+f  4.000000
+PhysicsData
+f  50.265484
+f  0.019894
+f  1.000000
+f  -0.000006
 f  0.000000
-f  2.844661
+f  0.000001
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+b  0
+Position
+f  -103.605431
+f  -0.000061
+f  50.758808
+__q  43_4
+MouseGrabbable
+Sphere
+f  4.000000
+BubbleUnit
+i  1
+MouseIntersectable
+Layer
+i  1
+MouseSelectable
+Circle
+f  4.000000
+LoopSociety
+q  42_4
+p  
+PhysicsData
+f  50.265484
+f  0.019894
+f  1.000000
+f  -0.000006
+f  0.000000
+f  0.000001
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+b  0
+Position
+f  -107.045708
+f  -0.000122
+f  24.160452

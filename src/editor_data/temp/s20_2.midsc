@@ -1,4 +1,40 @@
 __q  20_2
+MouseIntersectable
+BubbleComponent
+b  0
+MouseGrabbable
+Layer
+i  3
+MouseSelectable
+LoopTag
+LoopSociety
+q  -1_0
+p  
+q  40_2
+q  41_2
+q  42_2
+q  43_2
+PhysicsData
+f  3262.682129
+f  0.000306
+f  1.000000
+f  -0.041987
+f  0.000000
+f  0.048011
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+b  0
+Circle
+f  32.226448
+Position
+f  -89.749321
+f  0.000061
+f  -30.300896
+__q  43_2
 MouseGrabbable
 BubbleUnit
 i  1
@@ -6,20 +42,20 @@ Sphere
 f  4.000000
 MouseIntersectable
 Layer
-i  1
+i  4
 MouseSelectable
 Circle
 f  4.000000
 LoopSociety
-q  -1_0
+q  20_2
 p  
 PhysicsData
 f  50.265484
 f  0.019894
 f  1.000000
-f  -0.000082
+f  -0.060154
 f  0.000000
-f  0.000079
+f  -0.026816
 f  0.000000
 f  0.000000
 f  0.000000
@@ -28,6 +64,105 @@ f  0.000000
 f  0.000000
 b  0
 Position
-f  -35.405666
-f  -0.000061
-f  -41.928276
+f  -104.733208
+f  -0.000031
+f  -18.595547
+__q  42_2
+MouseGrabbable
+BubbleUnit
+i  1
+Sphere
+f  4.000000
+MouseIntersectable
+Layer
+i  4
+MouseSelectable
+Circle
+f  4.000000
+LoopSociety
+q  20_2
+p  
+PhysicsData
+f  50.265484
+f  0.019894
+f  1.000000
+f  -0.058437
+f  0.000000
+f  -0.029339
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+b  0
+Position
+f  -74.757912
+f  0.000000
+f  -41.989883
+__q  41_2
+MouseGrabbable
+BubbleUnit
+i  1
+Sphere
+f  4.000000
+MouseIntersectable
+Layer
+i  4
+MouseSelectable
+Circle
+f  4.000000
+LoopSociety
+q  20_2
+p  
+PhysicsData
+f  50.265484
+f  0.019894
+f  1.000000
+f  0.008719
+f  0.000000
+f  -0.029709
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+b  0
+Position
+f  -78.063515
+f  -0.000031
+f  -15.314582
+__q  40_2
+MouseGrabbable
+BubbleUnit
+i  1
+Sphere
+f  4.000000
+MouseIntersectable
+Layer
+i  4
+MouseSelectable
+Circle
+f  4.000000
+LoopSociety
+q  20_2
+p  
+PhysicsData
+f  50.265484
+f  0.019894
+f  1.000000
+f  0.010954
+f  0.000000
+f  -0.028119
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+f  0.000000
+b  0
+Position
+f  -101.458664
+f  0.000000
+f  -45.290447

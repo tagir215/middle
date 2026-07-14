@@ -37,11 +37,6 @@ public:
 			//gameState->input = middle::EditorInput();
 			auto& ip = gameState->input;
 
-			ip.mouseClicked = false;
-			ip.mouseReleased = false;
-			ip.mouseHeld = false;
-			ip.zoomIn = false;
-			ip.zoomOut = false;
 			ip.w = false;
 			ip.a = false;
 			ip.s = false;

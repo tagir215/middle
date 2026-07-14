@@ -43,22 +43,6 @@ namespace bubbleActions {
 		return false;
 	}
 
-	bool multiplicativeInverses(middle::GameState* gameState, middle::Id idA, middle::Id idB)
-	{
-		auto& shapeA = middle::getShape(gameState, idA.index);
-		auto& shapeB = middle::getShape(gameState, idB.index);
-		auto bubbleA = middle::getComponent<components::BubbleComponent>(shapeA);
-		auto bubbleB = middle::getComponent<components::BubbleComponent>(shapeB);
-		assert(bubbleA && bubbleB);
-		if (bubbleA->inverse != bubbleB->inverse) {
-			bool oldInverse = bubbleA->inverse;
-			bubbleA->inverse = !oldInverse;
-			bool areMatching = bubble::matchingBubbles(gameState, idA, idB);
-			bubbleA->inverse = oldInverse;
-			return areMatching;
-		}
-		return false;
-	}
 
 	bool validateAdditionInitialState(middle::GameState* gameState, ExecuteAddition* addition) {
 
@@ -122,6 +106,25 @@ namespace bubbleActions {
 		return copyId;
 	}
 
+	middle::Id createInverseReplacementShape(middle::GameState* gameState, middle::Id id) {
+		auto& shape = middle::getShape(gameState, id.index);
+		assert(middle::getComponent<components::BubbleComponent>(shape));
+		middle::Id copyId = middle::deepCopyShape(gameState, id.index);
+		Vector3 targetPos = middle::getShapePosition(gameState, id.index) + Vector3{1,0,0};
+		// create exponent with value -1
+		middle::Shape exponentProto = bubble::newBubble(gameState, targetPos);
+		middle::Shape& exponentShape = middle::registerShape(gameState, exponentProto);
+		middle::Shape unitProto = bubble::newUnit(gameState, targetPos);
+		middle::Shape& unitShape = middle::registerShape(gameState, unitProto);
+		auto unitComp = middle::getComponent<components::BubbleUnit>(unitShape);
+		unitComp->value = -1;
+		middle::EditorActionReparent(exponentShape.id.index, unitShape.id.index).execute(gameState);
+
+		auto connect = equlab::ConnectPowerLink(copyId, exponentShape.id);
+		connect.execute(gameState);
+		middle::Id replacementShapeId = bubble::containerize(gameState, connect.resultId);
+		return replacementShapeId;
+	}
 
 
 	CreateMulitiplicationReplacementShape::CreateMulitiplicationReplacementShape(middle::Id shapeToReplace, middle::Id replacingShape)
@@ -291,12 +294,6 @@ namespace bubbleActions {
 		registerResult->execute(gameState);
 		actions.push_back(std::move(registerResult));
 
-		// if shape to add into is inverse, invert the input 
-		auto bub = middle::getComponent<components::BubbleComponent>(shapeToAddInto);
-		if (bub->inverse) {
-			bubble::invert(gameState, idA);
-		}
-
 		std::vector<middle::Id>children;
 		middle::getChildren(gameState, idB, children);
 
@@ -439,13 +436,6 @@ namespace bubbleActions {
 			cancelled = true;
 			return;
 		}
-		if (auto bub = middle::getComponent<components::BubbleComponent>(exponentShape)) {
-			if (bub->inverse) {
-				cancelled = true;
-				return;
-			}
-		}
-
 
 		// create replacement
 		middle::Id replacementShapeId;
@@ -594,10 +584,6 @@ namespace bubbleActions {
 		auto& parentShape = middle::getShape(gameState, parentId.index);
 		auto parentBubble = middle::getComponent<components::BubbleComponent>(parentShape);
 		if (!parentBubble) {
-			cancelled = true;
-			return;
-		}
-		if (bubble->inverse) {
 			cancelled = true;
 			return;
 		}
@@ -816,7 +802,6 @@ namespace bubbleActions {
 			middle::Shape containerBubbleProto = bubble::newBubble(gameState, targetPos + Vector3{ 1.0f * i, 0,0 });
 			middle::Shape& containerBubble = middle::registerShape(gameState, containerBubbleProto);
 			auto bubble = middle::getComponent<components::BubbleComponent>(containerBubble);
-			bubble->inverse = true;
 
 			// create units 
 			for (int j = 0; j < dividend; ++j) {
@@ -1126,7 +1111,6 @@ namespace bubbleActions {
 
 		auto& shapeToCompress = middle::getShape(gameState, compressTargetId.index);
 		auto bubble1 = middle::getComponent<components::BubbleComponent>(shapeToCompress);
-		bool isInverse = bubble1->inverse;
 
 		Vector3 targetPos = middle::getShapePosition(gameState, compressTargetId.index);
 
@@ -1171,11 +1155,6 @@ namespace bubbleActions {
 		}
 
 		middle::Id parentMul = middle::getParent(gameState, commonCopyId);
-
-		// if inverse, invert the things
-		if (isInverse) {
-			bubble::invert(gameState, commonCopyId);
-		}
 
 		return parentMul;
 	}

@@ -245,7 +245,6 @@ namespace bubble {
 		middle::Id copy = middle::deepCopyShape(gameState, id.index);
 		auto& copyShape = middle::getShape(gameState, copy.index);
 		auto bubble = middle::getComponent<components::BubbleComponent>(copyShape);
-		bubble->inverse = !bubble->inverse;
 		return copy;
 	}
 
@@ -359,9 +358,6 @@ namespace bubble {
 					return false;
 				}
 			}
-			if (bubbleA->inverse != bubbleB->inverse) {
-				return false;
-			}
 			return true;
 		}
 		if (bubbleA && nodeB) {
@@ -369,9 +365,6 @@ namespace bubble {
 				if (varA->isNegative != nodeB->isNegative || varA->label != nodeB->variableLabel) {
 					return false;
 				}
-			}
-			if (bubbleA->inverse != nodeB->isInverse) {
-				return false;
 			}
 			return true;
 		}
@@ -464,7 +457,6 @@ namespace bubble {
 				middle::Id nodeCopyId = middle::deepCopyShape(gameState, overridingId.index);
 				auto& nodeCopyShape = middle::getShape(gameState, nodeCopyId.index);
 				auto nodeCopy = middle::getComponent<components::AlgebraNode>(nodeCopyShape);
-				nodeCopy->isInverse = node->isInverse;
 				nodeCopy->power = node->power;
 				nodeCopy->isNegativePower = node->isNegativePower;
 				nodeCopy->isInversePower = node->isInversePower;
@@ -799,11 +791,6 @@ namespace bubble {
 
 		auto& shape = middle::getShape(gameState, bubbleId.index);
 		auto bubble = middle::getComponent<components::BubbleComponent>(shape);
-		if (bubble->inverse) {
-			if (result.scale != 0) {
-				result.scale = 1.0f / result.scale;
-			}
-		}
 
 		return result;
 	}
@@ -821,19 +808,12 @@ namespace bubble {
 			if (node->isNegative) {
 				result += "-";
 			}
-			if (node->isInverse) {
-
-				result += "1/";
-			}
 			result += node->variableLabel;
 		}
 		else {
 			assert(var && bub);
 			if (var->isNegative) {
 				result += "-";
-			}
-			if (bub->inverse) {
-				result += "1/";
 			}
 			result += var->label;
 		}
@@ -1036,7 +1016,6 @@ namespace bubble {
 	{
 		auto& shape = middle::getShape(gameState, id.index);
 		auto bub = middle::getComponent<components::BubbleComponent>(shape);
-		bub->inverse = !bub->inverse;
 	}
 
 	components::AlgebraNodeType getStructureType(middle::GameState* gameState, middle::Id id) {

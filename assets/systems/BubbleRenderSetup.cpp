@@ -136,10 +136,7 @@ public:
 		int depth = bubble::findBubbleDepth(gameState, id);
 		bool isEven = depth % 2 == 0;
 
-		if (bubble->inverse) {
-			color = isEven ? bubbleColors::BUBBLE_BACKGROUND_INVERSE_EVEN : bubbleColors::BUBBLE_BACKGROUND_INVERSE_UNEVEN;
-		}
-		else {
+		{
 			color = isEven ? bubbleColors::BUBBLE_BACKGROUND_EVEN : bubbleColors::BUBBLE_BACKGROUND_UNEVEN;
 		}
 		return color;
@@ -200,20 +197,6 @@ public:
 			circleItem.center = pos;
 			circleItem.disableDepthTest = isUiItem;
 			gameState->renderData.push_back(circleItem);
-
-			if (bubble->inverse) {
-				float offsetX, offsetZ, bz, rb;
-				calculateExponentVisualFactors(circle->radius, 1, -0.33f, offsetX, offsetZ, bz, rb);
-				middle::RenderItem inverseIndicator;
-				inverseIndicator.type = middle::RenderItemType::CIRCLE;
-				inverseIndicator.color = bubbleColors::POSITIVE_UNIT;
-				inverseIndicator.backgroundColor = bubbleColors::POSITIVE_UNIT;
-				inverseIndicator.layer = layer->layer + 2;
-				inverseIndicator.radius = bubble::unitRadius;
-				inverseIndicator.center = Vector3{ pos.x + offsetX, pos.y, pos.z + offsetZ };
-				inverseIndicator.disableDepthTest = isUiItem;
-				gameState->renderData.push_back(inverseIndicator);
-			}
 
 			if (addEditableTag && editThisComp) {
 				middle::RenderItem editThisSign;

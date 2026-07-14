@@ -6,7 +6,6 @@
 	X(variableLabel) \
 	X(value) \
 	X(power) \
-	X(isInverse) \
 	X(isNegative) \
 	X(isNegativePower) \
 	X(isInversePower)
@@ -18,7 +17,6 @@ namespace components {
 		std::string variableLabel = "";
 		float value = 0;
 		int power = 1;
-		bool isInverse = false;
 		bool isNegative = false;
 		bool isNegativePower = false;
 		bool isInversePower = false;

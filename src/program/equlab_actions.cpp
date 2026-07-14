@@ -66,7 +66,7 @@ namespace equlab {
 	}
 
 	void Invert::execute(middle::GameState* gameState) {
-		middle::Id replacementShapeId = bubble::inverseBubble(gameState, id);
+		middle::Id replacementShapeId = bubbleActions::createInverseReplacementShape(gameState, id);
 		auto registerAction = std::make_unique<middle::EditorActionRegisterId>(replacementShapeId);
 		registerAction->execute(gameState);
 		actions.push_back(std::move(registerAction));

@@ -232,13 +232,6 @@ public:
 						var->label = string;
 					}
 					ImGui::Separator();
-					static int dividend = 2;
-					if (ImGui::Button("Bubble To Inverse")) {
-						middle::Shape& selectedShape = middle::getShape(gameState, selectedId.index);
-						auto bubble = middle::getComponent<components::BubbleComponent>(selectedShape);
-						bubble->inverse = true;
-					}
-					ImGui::Separator();
 				}
 
 				ImGui::End();
