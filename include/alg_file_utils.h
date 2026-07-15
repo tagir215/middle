@@ -1,33 +1,16 @@
 #pragma once
+#include "bubequ.h"
 #include <vector>
-#include <string>
 
 namespace bubequ {
-	enum class LinkType {
-		NONE, 
-		ADDITION,
-		MULTIPLICATION,
-		POWER,
-		EQUALS
-	};
-
-	enum class UnitType {
-		NONE,
-		CONSTANT,
-		VARIABLE
-	};
-
-	struct Scope {
-		std::vector<Scope>children;
-	};
-
-	struct Unit : public Scope{
-		UnitType type;
-		std::string label;
-		int value = -1;
-	};
-	struct Link : public Scope{
-		LinkType type;
-	};
-
+	Scope parseScope(const std::string& line);
+	bool checkVersion(const std::string& line);
+	std::vector<std::string> split(const std::string& s);
+	std::string stripBrackets(const std::string& str);
+	std::string getNums(const std::string& str);
+	std::string getLetters(const std::string& str);
+	Unit parseUnit(const std::string& valueStr);
+	Link parseLink(const std::string& linkStr);
+	Scope parseScope(const std::string& line);
+	Scope parseBubequ(const std::string& path);
 }

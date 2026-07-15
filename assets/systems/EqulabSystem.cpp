@@ -9,6 +9,7 @@
 #include "component_utils.h"
 #include "imgui.h"
 #include "BubbleUnit.h"
+#include "alg_file_utils.h"
 
 class EqulabSystem : public middle::MiddleGameplaySystem {
 public:
@@ -72,6 +73,16 @@ public:
 	}
 
 	void update(middle::GameState* gameState) override {
+
+		auto testui = [gameState]() {
+			ImGui::Begin("test parsing bubequ");
+			if (ImGui::Button("TEST")) {
+				bubequ::Scope scope = bubequ::parseBubequ("../assets/equations/test.bubequ");
+				int a = 0;
+			}
+			ImGui::End();
+			};
+		gameState->uiSetups.push_back(testui);
 
 		std::string keyString = keyToString(gameState);
 		if (keyString != "") {
