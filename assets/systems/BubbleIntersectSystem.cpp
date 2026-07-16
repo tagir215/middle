@@ -17,14 +17,16 @@
 #include "PlacementComponent.h"
 #include "InventoryItem.h"
 #include "UiComponent.h"
+#include "UnIntersectableWindowComponent.h"
+#include "component_utils.h"
 
 class BubbleIntersectSystem : public middle::MiddleGameplaySystem {
 public:
 
 	components::CompCache* bubbleCache;
-	components::CompCache* unitCache;
 	components::CompCache* rectangleCache;
 	components::CompCache* nonBubbleCircleCache;
+	components::CompCache* unIntersectableBubbleCache;
 
 	void init(middle::GameState* gameState) {
 		bubbleCache = middle::newCompCache(gameState, systemName);
@@ -32,12 +34,7 @@ public:
 		bubbleCache->addType<components::MouseIntersectable>();
 		bubbleCache->addType<components::Circle>();
 		bubbleCache->addType<components::Position>();
-
-		unitCache = middle::newCompCache(gameState, systemName);
-		unitCache->addType<components::BubbleUnit>();
-		unitCache->addType<components::MouseIntersectable>();
-		unitCache->addType<components::Circle>();
-		unitCache->addType<components::Position>();
+		bubbleCache->addType<components::UnIntersectableWindowComponent>(components::NOTINTERESTED);
 
 		rectangleCache = middle::newCompCache(gameState, systemName);
 		rectangleCache->addType<components::MouseIntersectable>();
@@ -48,7 +45,10 @@ public:
 		nonBubbleCircleCache->addType<components::Position>();
 		nonBubbleCircleCache->addType<components::MouseIntersectable>();
 		nonBubbleCircleCache->addType<components::BubbleComponent>(components::NOTINTERESTED);
-		nonBubbleCircleCache->addType<components::BubbleUnit>(components::NOTINTERESTED);
+
+		unIntersectableBubbleCache = middle::newCompCache(gameState, systemName);
+		unIntersectableBubbleCache->addType<components::BubbleComponent>();
+		unIntersectableBubbleCache->addType<components::UnIntersectableWindowComponent>();
 	}
 
 	bool isPlacedRecursive(middle::GameState* gameState, middle::Id& id) {
@@ -82,6 +82,15 @@ public:
 	}
 
 	void update(middle::GameState* gameState) override {
+
+		auto unintersectableIt = unIntersectableBubbleCache->begin<components::UnIntersectableWindowComponent>();
+		for (middle::Id& id : unIntersectableBubbleCache->relevantIdVector) {
+			auto unIntersectable = *unintersectableIt;
+			unIntersectable->timeLeft -= gameState->frameTime;
+			if (unIntersectable->timeLeft <= 0) {
+				middle::queueComponentDeletion<components::UnIntersectableWindowComponent>(gameState, id);
+			}
+		}
 
 		bool uiIntersected = false;
 		auto rectangleIt = rectangleCache->begin<components::Rectangle>();
@@ -147,34 +156,6 @@ public:
 				continue;
 			}
 			childrenIntersecting(gameState, shape, intersectable);
-		}
-
-
-
-		auto unitIt = unitCache->begin<components::BubbleUnit>();
-		auto unitIntersectableIt = unitCache->begin<components::MouseIntersectable>();
-		auto unitCircleIt = unitCache->begin<components::Circle>();
-		auto unitPositionIt = unitCache->begin<components::Position>();
-		for (int i = 0; i < unitCache->getSize(); ++i) {
-			auto& shape = middle::getShape(gameState, unitCache->relevantIdVector[i].index);
-			auto unit = *unitIt;
-			auto intersectable = *unitIntersectableIt;
-			auto circle = *unitCircleIt;
-			auto position = *unitPositionIt;
-			intersectable->intersecting = false;
-			intersectable->intersectingTop = false;
-
-			if (uiIntersected) {
-				continue;
-			}
-
-			Vector3 pos = { position->posX, position->posY, position->posZ };
-			Vector3 intersectPos;
-			bool intersecting = middle::RayCastLineSphere(pos, circle->radius, gameState->activeCamera.position,
-				gameState->activeCamera.position + gameState->input.mouseDir, intersectPos);
-
-			intersectable->intersecting = intersecting;
-			intersectable->intersectingTop = intersecting;
 		}
 
 

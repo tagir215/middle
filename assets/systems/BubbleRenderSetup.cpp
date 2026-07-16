@@ -33,6 +33,7 @@
 #include "ProcedureContainer.h"
 #include "CodeBlock.h"
 #include "IdRef.h"
+#include "UnIntersectableWindowComponent.h"
 
 
 class BubbleRenderSetup : public middle::MiddleGameplaySystem {
@@ -157,6 +158,7 @@ public:
 			auto layer = *bubbleLayerIt;
 			auto& shape = middle::getShape(gameState, bubbleCache->relevantIdVector[i].index);
 			bool isUiItem = middle::getComponent<components::UiComponent>(shape);
+			bool isHighlighted = middle::getComponent<components::UnIntersectableWindowComponent>(shape);
 
 			// todo maybe replace with tag
 			bool parentIsEditableEquals = false;
@@ -181,6 +183,9 @@ public:
 			float radius = intersecting ? circle->radius * 1.05f : circle->radius;
 
 			Color backgroundColor = getBubbleColor(gameState, shape.id, bubble);
+			if (isHighlighted) {
+				backgroundColor = bubbleColors::HIGHLIGHT_COLOR;
+			}
 			//Color backgroundColor = bubble->inverse ? bubbleColors::BUBBLE_BACKGROUND_INVERSE : bubbleColors::BUBBLE_BACKGROUND;
 			middle::RenderItem circleItem;
 			circleItem.type = middle::RenderItemType::CIRCLE;

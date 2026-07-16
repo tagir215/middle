@@ -12,6 +12,8 @@
 #include "alg_file_utils.h"
 #include "LoopSociety.h"
 #include "BubbleEqualsComponent.h"
+#include "BubbleVariable.h"
+#include "TimerComponent.h"
 
 class EqulabSystem : public middle::MiddleGameplaySystem {
 public:
@@ -28,6 +30,7 @@ public:
 	components::CompCache* intersectableUnitCache;
 	components::CompCache* selectedCache;
 	components::CompCache* loopCache;
+	components::CompCache* timerCache;
 
 	void init(middle::GameState* gameState) override {
 		intersectableBubbleCache = middle::newCompCache(gameState, systemName);
@@ -44,6 +47,10 @@ public:
 
 		loopCache = middle::newCompCache(gameState, systemName);
 		loopCache->addType<components::LoopSociety>();
+
+		timerCache = middle::newCompCache(gameState, systemName);
+		timerCache->addType<components::TimerComponent>();
+		timerCache->addType<components::BubbleComponent>();
 	}
 
 	std::string keyToString(middle::GameState* gameState) {
@@ -144,31 +151,25 @@ public:
 				}
 			}
 
-			middle::Id intersectedUnit;
-			auto intersectableUnitIt = intersectableUnitCache->begin<components::MouseIntersectable>();
-			for (int i = 0; i < intersectableUnitCache->getSize(); ++i) {
-				auto intersectable = *intersectableUnitIt;
-				if (intersectable->intersectingTop) {
-					intersectedUnit = intersectableUnitCache->relevantIdVector[i];
-					break;
-				}
-			}
-
 			middle::Id targetId;
 			if (intersectedBubble.index != middle::UNASSIGNED) {
 				targetId = intersectedBubble;
 			}
-			if (intersectedUnit.index != middle::UNASSIGNED) {
-				targetId = intersectedUnit;
+
+			bool cantAdd = false;
+			if (intersectedBubble.index != middle::UNASSIGNED) {
+				auto& intersectedShape = middle::getShape(gameState, intersectedBubble.index);
+				auto unitComp = middle::getComponent<components::BubbleUnit>(intersectedShape);
+				auto varComp = middle::getComponent<components::BubbleVariable>(intersectedShape);
+				cantAdd = unitComp || varComp;
 			}
 
-
-			if (gameState->equlabInput.oneHeld) {
+			if (!cantAdd && gameState->equlabInput.oneHeld) {
 				auto action = std::make_shared<equlab::AddBubble>(intersectedBubble, gameState->input.mouseXZ_PlanePos);
 				middle::queueAction(gameState, action);
 				gameState->bubbleAlgebraState.bubbleActions.push_back(action);
 			}
-			else if (gameState->equlabInput.twoHeld && intersectedBubble.index != middle::UNASSIGNED) {
+			else if (!cantAdd && gameState->equlabInput.twoHeld && intersectedBubble.index != middle::UNASSIGNED) {
 				auto action = std::make_shared<equlab::AddUnit>(intersectedBubble, gameState->input.mouseXZ_PlanePos);
 				middle::queueAction(gameState, action);
 				gameState->bubbleAlgebraState.bubbleActions.push_back(action);

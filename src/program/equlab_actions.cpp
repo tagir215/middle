@@ -8,12 +8,15 @@
 #include "component_utils.h"
 #include "alg_file_utils.h"
 #include <queue>
+#include "UnIntersectableWindowComponent.h"
 
 namespace equlab {
 
+	const float freshnessTime = 0.3f;
+
 	void AddBubble::execute(middle::GameState* gameState) {
-		middle::Shape newBubble = bubble::newBubble(gameState, targetPosition);
-		auto registerAction = std::make_unique<middle::EditorActionRegisterShape>(newBubble);
+		middle::Shape newBubbleProto = bubble::newBubble(gameState, targetPosition);
+		auto registerAction = std::make_unique<middle::EditorActionRegisterShape>(newBubbleProto);
 		registerAction->execute(gameState);
 		resultId = registerAction->newShapeId;
 		actions.push_back(std::move(registerAction));
@@ -22,6 +25,8 @@ namespace equlab {
 			reparent->execute(gameState);
 			actions.push_back(std::move(reparent));
 		}
+		auto timer = middle::attachComponent<components::UnIntersectableWindowComponent>(gameState, resultId);
+		timer->timeLeft = freshnessTime;
 	}
 	void AddBubble::undo(middle::GameState* gameState) {
 		while (actions.size() > 0) {
@@ -31,8 +36,8 @@ namespace equlab {
 	}
 
 	void AddUnit::execute(middle::GameState* gameState) {
-		middle::Shape newUnit = bubble::newUnit(gameState, targetPosition);
-		auto registerAction = std::make_unique<middle::EditorActionRegisterShape>(newUnit);
+		middle::Shape newUnitProto = bubble::newUnit(gameState, targetPosition);
+		auto registerAction = std::make_unique<middle::EditorActionRegisterShape>(newUnitProto);
 		registerAction->execute(gameState);
 		resultId = registerAction->newShapeId;
 		actions.push_back(std::move(registerAction));
@@ -41,6 +46,8 @@ namespace equlab {
 			reparent->execute(gameState);
 			actions.push_back(std::move(reparent));
 		}
+		auto timer = middle::attachComponent<components::UnIntersectableWindowComponent>(gameState, resultId);
+		timer->timeLeft = freshnessTime;
 	}
 
 	void AddUnit::undo(middle::GameState* gameState) {
@@ -281,6 +288,8 @@ namespace equlab {
 		middle::Shape powerProto = bubble::newPower(gameState, targetPos);
 		middle::Shape& powerShape = middle::registerShape(gameState, powerProto);
 
+		middle::Id oldParentId = middle::getParent(gameState, bubbleIdA);
+
 		auto registerAction = std::make_unique<middle::EditorActionRegisterId>(powerShape.id);
 		registerAction->execute(gameState);
 		actions.push_back(std::move(registerAction));
@@ -288,9 +297,16 @@ namespace equlab {
 		auto reparentA = std::make_unique<middle::EditorActionReparent>(powerShape.id.index, bubbleIdA.index);
 		reparentA->execute(gameState);
 		actions.push_back(std::move(reparentA));
+
 		auto reparentB = std::make_unique<middle::EditorActionReparent>(powerShape.id.index, bubbleIdB.index);
 		reparentB->execute(gameState);
 		actions.push_back(std::move(reparentB));
+
+		if (oldParentId.index != middle::UNASSIGNED) {
+			auto reparentC = std::make_unique<middle::EditorActionReparent>(oldParentId.index, powerShape.id.index);
+			reparentC->execute(gameState);
+			actions.push_back(std::move(reparentC));
+		}
 
 		resultId = powerShape.id;
 	}
@@ -305,7 +321,7 @@ namespace equlab {
 		return (std::rand() % 100 + 1) * 0.01f;
 	}
 	Vector3 randOffset() {
-		return Vector3{rf(), rf(), rf()};
+		return Vector3{ rf(), rf(), rf() };
 	}
 
 	middle::Id bubequToBubble(middle::GameState* gameState, const Vector3& targetPos, const std::string& path)

@@ -113,14 +113,8 @@ namespace bubbleActions {
 		middle::Id copyId = middle::deepCopyShape(gameState, id.index);
 		Vector3 targetPos = middle::getShapePosition(gameState, id.index) + Vector3{1,0,0};
 		// create exponent with value -1
-		middle::Shape exponentProto = bubble::newBubble(gameState, targetPos);
+		middle::Shape exponentProto = bubble::newUnit(gameState, targetPos, true);
 		middle::Shape& exponentShape = middle::registerShape(gameState, exponentProto);
-		middle::Shape unitProto = bubble::newUnit(gameState, targetPos);
-		middle::Shape& unitShape = middle::registerShape(gameState, unitProto);
-		auto unitComp = middle::getComponent<components::BubbleUnit>(unitShape);
-		unitComp->value = -1;
-		middle::EditorActionReparent(exponentShape.id.index, unitShape.id.index).execute(gameState);
-
 		auto connect = equlab::ConnectPowerLink(copyId, exponentShape.id);
 		connect.execute(gameState);
 		middle::Id replacementShapeId = bubble::containerize(gameState, connect.resultId);
