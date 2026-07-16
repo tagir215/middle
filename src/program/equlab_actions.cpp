@@ -414,13 +414,8 @@ namespace equlab {
 		auto& shape = middle::getShape(gameState, id.index);
 
 		std::string result;
-		bool doCloseBrackets = false;
 
-		auto bubComp = middle::getComponent<components::BubbleComponent>(shape);
-		if (bubComp) {
-			result += "(";
-			doCloseBrackets = true;
-		}
+		result += "(";
 
 		auto op = middle::getComponent<components::BubbleMultiplyComponent>(shape);
 		if (op && op->operationType == components::OperationType::MULTIPLICATION) {
@@ -430,8 +425,7 @@ namespace equlab {
 			result += "^";
 		}
 		else if (middle::getComponent<components::BubbleEqualsComponent>(shape)) {
-			result += "(=";
-			doCloseBrackets = true;
+			result += "=";
 		}
 
 		if (auto unit = middle::getComponent<components::BubbleUnit>(shape)) {
@@ -450,9 +444,7 @@ namespace equlab {
 			result += bubbleToBubequ(gameState, childId);
 		}
 
-		if (doCloseBrackets) {
-			result += ")";
-		}
+		result += ")";
 		return result;
 	}
 

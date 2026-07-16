@@ -120,9 +120,7 @@ namespace bubequ {
 		}
 		char operatorChar = scopeStr[0];
 		if (operatorChar == '*' || operatorChar == '^') {
-			auto scope = std::make_shared<bubequ::Scope>();
-			scope->children.push_back(parseLink(scopeStr));
-			return scope;
+			return parseLink(scopeStr);
 		}
 		else if (operatorChar == '=') {
 			return parseLink(scopeStr);

@@ -1328,25 +1328,17 @@ namespace bubbleActions {
 			return;
 		}
 		Vector3 targetPos = middle::getShapePosition(gameState, recieverShapeId.index);
-		middle::Shape newBubbleProto = bubble::newBubble(gameState, targetPos + Vector3{ 1,0,0 });
 		middle::Shape newUnitProto = bubble::newUnit(gameState, targetPos);
-		auto register1 = std::make_unique<middle::EditorActionRegisterShape>(newBubbleProto);
-		register1->execute(gameState);
-		middle::Id newBubbleId = register1->newShapeId;
-		actions.push_back(std::move(register1));
-		auto register2 = std::make_unique<middle::EditorActionRegisterShape>(newUnitProto);
-		register2->execute(gameState);
-		middle::Id newUnitId = register2->newShapeId;
-		actions.push_back(std::move(register2));
+		auto registerAction = std::make_unique<middle::EditorActionRegisterShape>(newUnitProto);
+		registerAction->execute(gameState);
+		middle::Id newUnitId = registerAction->newShapeId;
+		actions.push_back(std::move(registerAction));
 
-		auto reparent = std::make_unique<middle::EditorActionReparent>(newBubbleId.index, newUnitId.index);
-		reparent->execute(gameState);
-		actions.push_back(std::move(reparent));
-		auto link = std::make_unique<LinkMultiplicationTerm>(recieverShapeId, newBubbleId);
+		auto link = std::make_unique<LinkMultiplicationTerm>(recieverShapeId, newUnitId);
 		link->execute(gameState);
 		actions.push_back(std::move(link));
 
-		resultShapeId = newBubbleId;
+		resultShapeId = newUnitId;
 
 		queueSound(gameState, bubbleSounds::MUL_ONE_SOUND);
 	}
