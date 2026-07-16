@@ -157,4 +157,5 @@ namespace equlab {
 	};
 
 	middle::Id bubequToBubble(middle::GameState* gameState, const Vector3& targetPos, const std::string& path);
+	std::string bubbleToBubequ(middle::GameState* gameState, middle::Id id);
 }

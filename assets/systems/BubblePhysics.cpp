@@ -3,7 +3,6 @@
 #include "middle_system_registrar.h"
 #include "middle_shape_utils.h"
 #include "PhysicsData.h"
-#include "BubbleUnit.h"
 #include "BubbleComponent.h"
 #include "Position.h"
 #include "component_utils.h"
@@ -24,7 +23,6 @@ public:
 		systemModeType = middle::SystemModeType::ENGINE;
 	}
 
-	components::CompCache* unitCache;
 	components::CompCache* bubbleCache;
 	components::CompCache* mulCache;
 	components::CompCache* fractionCache;
@@ -33,10 +31,6 @@ public:
 	components::CompCache* equalsCache;
 
 	void init(middle::GameState* gameState) override {
-		unitCache = middle::newCompCache(gameState, systemName);
-		unitCache->addType<components::Position>();
-		unitCache->addType<components::PhysicsData>();
-		unitCache->addType<components::BubbleUnit>();
 
 		bubbleCache = middle::newCompCache(gameState, systemName);
 		bubbleCache->addType<components::BubbleComponent>();
@@ -281,28 +275,6 @@ public:
 
 	void update(middle::GameState* gameState) override {
 
-
-		if (debugField) {
-			for (int i = 0; i < unitCache->getSize(); ++i) {
-				auto& shape = middle::getShape(gameState, unitCache->relevantIdVector[i].index);
-				if (!middle::getComponent<components::BubbleUnit>(shape)) {
-					continue;
-				}
-				auto circle = middle::attachComponent<components::Circle>(gameState, shape.id);
-				circle->radius = fieldMargin;
-			}
-			debugField = false;
-		}
-
-		if (inverses) {
-			auto inverseIt = unitCache->begin<components::PhysicsData>();
-			for (int i = 0; i < unitCache->getSize(); ++i) {
-				auto physics = *inverseIt;
-				physics->invMass = 1.0f / physics->mass;
-			}
-		}
-
-
 		// Collect bubbles
 
 		std::vector<Bubble>bubbles;
@@ -339,7 +311,6 @@ public:
 				auto position = middle::getComponent<components::Position>(childShape);
 				auto physics = middle::getComponent<components::PhysicsData>(childShape);
 				auto childCircle = middle::getComponent<components::Circle>(childShape);
-				auto childUnit = middle::getComponent<components::BubbleUnit>(childShape);
 				assert(physics);
 				// units use a field radius instead
 				float radius = childCircle ? childCircle->radius + fieldMargin : fieldMargin;
@@ -450,7 +421,6 @@ public:
 		}
 
 		integrate(gameState->frameTime, bubbleCache);
-		integrate(gameState->frameTime, unitCache);
 
 	}
 };

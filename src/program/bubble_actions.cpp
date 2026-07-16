@@ -82,16 +82,17 @@ namespace bubbleActions {
 				targetId = middle::getFirstChildWithComponent(gameState, id, middle::getTypeId<components::BubbleComponent>());
 			}
 			auto& targetShape = middle::getShape(gameState, targetId.index);
+			auto unit = middle::getComponent<components::BubbleUnit>(targetShape);
+			auto var = middle::getComponent<components::BubbleVariable>(targetShape);
 			auto bubble = middle::getComponent<components::BubbleComponent>(targetShape);
-			if (bubble) {
+			if (unit || var) {
+				bubble::negate(gameState, targetId);
+			}
+			else if (bubble) {
 				auto mulOneAction = MulOne(targetId);
 				mulOneAction.execute(gameState);
 				middle::Id one = mulOneAction.resultShapeId;
 				bubble::negate(gameState, one);
-			}
-			// directly negate units
-			else {
-				bubble::negate(gameState, targetId);
 			}
 		}
 
@@ -721,7 +722,7 @@ namespace bubbleActions {
 		Vector3 targetPos = (middle::getShapePosition(gameState, recieverShapeId.index)
 			+ middle::getShapePosition(gameState, linkingShapeId.index)) * 0.5f;
 
-		middle::Shape mulProto = bubble::newPower(gameState, targetPos);
+		middle::Shape mulProto = bubble::newMultiplication(gameState, targetPos);
 		middle::Shape& mulShape = middle::registerShape(gameState, mulProto);
 
 		auto registerAction = std::make_unique<middle::EditorActionRegisterId>(mulShape.id);

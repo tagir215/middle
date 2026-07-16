@@ -3,9 +3,11 @@
 #include <iostream>
 #include <fstream>
 namespace bubequ {
+
+	const std::string version = "ver 1";
+
 	bool checkVersion(const std::string& line) {
-		const std::string expectedLine = "ver 1";
-		return line == expectedLine;
+		return line == version;
 	}
 
 	std::vector<std::string> split(const std::string& s) {
@@ -168,5 +170,18 @@ namespace bubequ {
 		}
 
 		throw std::runtime_error("Something wrong with the data");
+	}
+	void saveBubequ(const std::string& bubequ)
+	{	
+		std::string path = "../assets/equations/test.bubequ";
+		std::ofstream outFile(path);
+		if (!outFile.is_open()) {
+			std::cerr << "failed to open to write\n";
+		}
+
+		outFile << version << "\n";
+		outFile << bubequ;
+		outFile.flush();
+		outFile.close();
 	}
 }

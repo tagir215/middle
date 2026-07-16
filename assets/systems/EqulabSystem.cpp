@@ -10,6 +10,8 @@
 #include "imgui.h"
 #include "BubbleUnit.h"
 #include "alg_file_utils.h"
+#include "LoopSociety.h"
+#include "BubbleEqualsComponent.h"
 
 class EqulabSystem : public middle::MiddleGameplaySystem {
 public:
@@ -25,6 +27,7 @@ public:
 	components::CompCache* intersectableBubbleCache;
 	components::CompCache* intersectableUnitCache;
 	components::CompCache* selectedCache;
+	components::CompCache* loopCache;
 
 	void init(middle::GameState* gameState) override {
 		intersectableBubbleCache = middle::newCompCache(gameState, systemName);
@@ -39,6 +42,8 @@ public:
 		selectedCache->addType<components::SelectedComponent>();
 		selectedCache->addType<components::BubbleComponent>();
 
+		loopCache = middle::newCompCache(gameState, systemName);
+		loopCache->addType<components::LoopSociety>();
 	}
 
 	std::string keyToString(middle::GameState* gameState) {
@@ -74,13 +79,35 @@ public:
 
 	void update(middle::GameState* gameState) override {
 
-		auto testui = [gameState]() {
+		auto testui = [gameState, this]() {
 			ImGui::Begin("test parsing bubequ");
-			if (ImGui::Button("TEST")) {
+			if (ImGui::Button("TEST LOAD")) {
 				auto scope = bubequ::parseBubequ("../assets/equations/test.bubequ");
-				middle::Id interesting = equlab::bubequToBubble(gameState, 
+				middle::Id interesting = equlab::bubequToBubble(gameState,
 					gameState->input.mouseXZ_PlanePos, "../assets/equations/test.bubequ");
 				int a = 0;
+			}
+			if (ImGui::Button("TEST SAVE")) {
+				middle::Id targetId;
+
+				auto bubIt = loopCache->begin<components::LoopSociety>();
+				for (int i = 0; i < loopCache->getSize(); ++i) {
+					auto loop = *bubIt;
+					// TODO 
+					if (loop->parentLoopId.index == middle::UNASSIGNED){
+						middle::Id relId = loopCache->relevantIdVector[i];
+						auto relShape = middle::getShape(gameState, relId.index);
+						if (middle::getComponent<components::BubbleComponent>(relShape)
+							|| middle::getComponent<components::BubbleEqualsComponent>(relShape)) {
+							targetId = relId;
+							break;
+						}
+					}
+				}
+				if (targetId.index != middle::UNASSIGNED) {
+					std::string equstring = equlab::bubbleToBubequ(gameState, targetId);
+					bubequ::saveBubequ(equstring);
+				}
 			}
 			ImGui::End();
 			};

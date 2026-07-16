@@ -46,7 +46,6 @@ public:
 	components::CompCache* bubbleCache;
 	components::CompCache* mulCache;
 	components::CompCache* fractionCache;
-	components::CompCache* unitCache;
 	components::CompCache* variableCache;
 	components::CompCache* cuboidCache;
 	components::CompCache* equalsCache;
@@ -56,6 +55,7 @@ public:
 	components::CompCache* editThisCache;
 	components::CompCache* inputCache;
 	components::CompCache* procContainerCache;
+	components::CompCache* unitCache;
 
 	void init(middle::GameState* gameState) {
 		bubbleCache = middle::newCompCache(gameState, systemName);
@@ -64,19 +64,15 @@ public:
 		bubbleCache->addType<components::Layer>();
 		bubbleCache->addType<components::LoopSociety>();
 		bubbleCache->addType<components::RuntimeHiddenTag>(components::NOTINTERESTED);
+		unitCache = middle::newCompCache(gameState, systemName);
+		unitCache->addType<components::BubbleUnit>();
+		unitCache->addType<components::Layer>();
 		mulCache = middle::newCompCache(gameState, systemName);
 		mulCache->addType<components::BubbleMultiplyComponent>();
 		mulCache->addType<components::LoopSociety>();
 		fractionCache = middle::newCompCache(gameState, systemName);
 		fractionCache->addType<components::FractionalComponent>();
 		fractionCache->addType<components::LoopSociety>();
-		unitCache = middle::newCompCache(gameState, systemName);
-		unitCache->addType<components::BubbleUnit>();
-		unitCache->addType<components::Circle>();
-		unitCache->addType<components::Position>();
-		unitCache->addType<components::Layer>();
-		unitCache->addType<components::MouseIntersectable>();
-		unitCache->addType<components::RuntimeHiddenTag>(components::NOTINTERESTED);
 		variableCache = middle::newCompCache(gameState, systemName);
 		variableCache->addType<components::BubbleComponent>();
 		variableCache->addType<components::Layer>();
@@ -146,7 +142,6 @@ public:
 
 		gameState->editorState.backgroundColor = bubbleColors::BACKGROUND;
 
-
 		// render bubbbles
 		components::TextureComponent* editThisComp = nullptr;
 		if (editThisCache->getSize() == 1) {
@@ -213,49 +208,21 @@ public:
 			}
 		}
 
-
-		// render units
+		// renderunits
 		auto unitIt = unitCache->begin<components::BubbleUnit>();
-		auto unitCircleIt = unitCache->begin<components::Circle>();
-		auto unitPosIt = unitCache->begin<components::Position>();
 		auto unitLayerIt = unitCache->begin<components::Layer>();
-		auto unitIntersectableIt = unitCache->begin<components::MouseIntersectable>();
 		for (int i = 0; i < unitCache->getSize(); ++i) {
 			auto unit = *unitIt;
-			auto circle = *unitCircleIt;
-			auto pos = *unitPosIt;
 			auto layer = *unitLayerIt;
-			auto intersectable = *unitIntersectableIt;
-			auto& shape = middle::getShape(gameState, unitCache->relevantIdVector[i].index);
-			bool isUiItem = middle::getComponent<components::UiComponent>(shape);
-
-			circle->radius = bubble::unitRadius;
-			float radius = circle->radius;
-			if (intersectable->intersectingTop) {
-				radius *= 1.5f;
-			}
-
-			middle::RenderItem particle;
-			particle.center = { pos->posX, pos->posY, pos->posZ };
-			particle.length = 0.1f;
-			particle.ringRadius = radius;
-			particle.radius = radius;
-			particle.layer = layer->layer;
-			particle.disableDepthTest = isUiItem;
-			particle.type = middle::RenderItemType::CIRCLE;
-			if (unit->value == 1) {
-				particle.color = bubbleColors::POSITIVE_UNIT;
-				particle.backgroundColor = bubbleColors::POSITIVE_UNIT;
-			}
-			if (unit->value == 0) {
-				particle.color = bubbleColors::BUBBLE_OUTLINE;
-			}
-			if (unit->value == -1) {
-				particle.color = bubbleColors::NEGATIVE_UNIT;
-				particle.backgroundColor = bubbleColors::NEGATIVE_UNIT;
-			}
-
-			gameState->renderData.push_back(particle);
+			middle::RenderItem unitItem;
+			unitItem.type = middle::RenderItemType::TEXT;
+			unitItem.text = std::to_string(unit->value);
+			middle::Id id = unitCache->relevantIdVector[i];
+			unitItem.center = middle::getShapePosition(gameState, id.index);
+			unitItem.layer = layer->layer;
+			unitItem.fontSize = 25;
+			unitItem.color = unit->value < 0 ? bubbleColors::NEGATIVE_UNIT : bubbleColors::POSITIVE_UNIT;
+			gameState->renderData.push_back(unitItem);
 		}
 
 		// render variables
@@ -286,18 +253,17 @@ public:
 				radius *= 1.2f;
 			}
 
-			Color color;
-			color = bubbleColors::POSITIVE_UNIT;
-			if (variable->isNegative) {
-				color = bubbleColors::NEGATIVE_UNIT;
-			}
-			Color backgroundColor = getBubbleColor(gameState, shape.id, bubble);
 
 			middle::RenderItem variableText;
 			variableText.type = middle::RenderItemType::TEXT;
 			variableText.center = { pos->posX, pos->posY, pos->posZ };
-			variableText.color = color;
+			variableText.color = bubbleColors::POSITIVE_UNIT;
 			variableText.text = variable->label;
+			if (variable->isNegative) {
+				variableText.color = bubbleColors::NEGATIVE_UNIT;
+				variableText.text = "-" + variable->label;
+			}
+			Color backgroundColor = getBubbleColor(gameState, shape.id, bubble);
 			variableText.fontSize = fontSize;
 			variableText.disableDepthTest = isUiItem;
 			gameState->renderData.push_back(variableText);

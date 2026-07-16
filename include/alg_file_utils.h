@@ -12,5 +12,5 @@ namespace bubequ {
 	std::shared_ptr<Link>parseLink(const std::string& linkStr);
 	std::shared_ptr<Scope>parseScope(const std::string& line);
 	std::shared_ptr<Scope>parseBubequ(const std::string& path);
-
+	void saveBubequ(const std::string& bubequ);
 }

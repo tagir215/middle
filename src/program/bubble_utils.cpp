@@ -1304,6 +1304,7 @@ namespace bubble {
 		middle::Shape newUnitShape;
 		auto unit = middle::addComponent<components::BubbleUnit>(newUnitShape);
 		unit->value = isNegative ? -1 : 1;
+		middle::addComponent<components::BubbleComponent>(newUnitShape);
 		middle::addComponent<components::MouseGrabbable>(newUnitShape);
 		middle::addComponent<components::MouseIntersectable>(newUnitShape);
 		middle::addComponent<components::MouseSelectable>(newUnitShape);
@@ -1392,16 +1393,25 @@ namespace bubble {
 
 	middle::Id newBubbleWithIntValue(middle::GameState* gameState, int value, const Vector3& targetPos)
 	{
-		middle::Shape bubbleProto = newBubble(gameState, targetPos);
-		middle::Shape& bubbleShape = middle::registerShape(gameState, bubbleProto);
 		int s = std::abs(value);
+		middle::Id containerId;
+		if (s > 1) {
+			middle::Shape bubbleProto = newBubble(gameState, targetPos);
+			middle::Shape& bubbleShape = middle::registerShape(gameState, bubbleProto);
+			containerId = bubbleShape.id;
+		}
 		bool isNegative = value < 0;
 		for (int i = 0; i < s; ++i) {
 			middle::Shape unitProto = newUnit(gameState, targetPos + Vector3{ i * 0.1f, 0,0 }, isNegative);
 			middle::Shape& unitShape = middle::registerShape(gameState, unitProto);
-			middle::EditorActionReparent(bubbleShape.id.index, unitShape.id.index).execute(gameState);
+			if (s > 1) {
+				middle::EditorActionReparent(containerId.index, unitShape.id.index).execute(gameState);
+			}
+			else {
+				containerId = unitShape.id;
+			}
 		}
-		return bubbleShape.id;
+		return containerId;
 	}
 
 	middle::Id newFraction(middle::GameState* gameState, const Vector3& targetPos, int dividend)

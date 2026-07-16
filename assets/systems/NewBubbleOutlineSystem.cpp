@@ -56,7 +56,7 @@ public:
 		}
 	}
 
-	const float minBubbleRadius = 10;
+	const float minBubbleRadius = bubble::variableRadius;
 	void update(middle::GameState* gameState) override {
 		// add circles
 		for (int i = 0; i < circlessCache->getSize(); ++i) {

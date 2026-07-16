@@ -51,6 +51,10 @@ namespace equlab {
 	}
 
 	void Negate::execute(middle::GameState* gameState) {
+		if (id.index == middle::UNASSIGNED) {
+			cancelled = true;
+			return;
+		}
 		middle::Id replacementShapeId = bubbleActions::createNegatedReplacementShape(gameState, id);
 		auto registerAction = std::make_unique<middle::EditorActionRegisterId>(replacementShapeId);
 		registerAction->execute(gameState);
@@ -68,6 +72,10 @@ namespace equlab {
 	}
 
 	void Invert::execute(middle::GameState* gameState) {
+		if (id.index == middle::UNASSIGNED) {
+			cancelled = true;
+			return;
+		}
 		middle::Id replacementShapeId = bubbleActions::createInverseReplacementShape(gameState, id);
 		auto registerAction = std::make_unique<middle::EditorActionRegisterId>(replacementShapeId);
 		registerAction->execute(gameState);
@@ -283,6 +291,8 @@ namespace equlab {
 		auto reparentB = std::make_unique<middle::EditorActionReparent>(powerShape.id.index, bubbleIdB.index);
 		reparentB->execute(gameState);
 		actions.push_back(std::move(reparentB));
+
+		resultId = powerShape.id;
 	}
 	void ConnectPowerLink::undo(middle::GameState* gameState) {
 		while (actions.size() > 0) {
@@ -380,6 +390,54 @@ namespace equlab {
 		}
 
 		return rootId;
+	}
+
+
+	std::string bubbleToBubequ(middle::GameState* gameState, middle::Id id)
+	{
+		auto& shape = middle::getShape(gameState, id.index);
+
+		std::string result;
+		bool doCloseBrackets = false;
+
+		auto bubComp = middle::getComponent<components::BubbleComponent>(shape);
+		if (bubComp) {
+			result += "(";
+			doCloseBrackets = true;
+		}
+
+		auto op = middle::getComponent<components::BubbleMultiplyComponent>(shape);
+		if (op && op->operationType == components::OperationType::MULTIPLICATION) {
+			result += "*";
+		}
+		else if (op && op->operationType == components::OperationType::POWER) {
+			result += "^";
+		}
+		else if (middle::getComponent<components::BubbleEqualsComponent>(shape)) {
+			result += "(=";
+			doCloseBrackets = true;
+		}
+
+		if (auto unit = middle::getComponent<components::BubbleUnit>(shape)) {
+			result += std::to_string(unit->value);
+		}
+		else if (auto var = middle::getComponent<components::BubbleVariable>(shape)) {
+			if (var->isNegative) {
+				result += "-";
+			}
+			result += var->label;
+		}
+
+		std::vector<middle::Id>children;
+		middle::getChildren(gameState, id, children);
+		for (middle::Id& childId : children) {
+			result += bubbleToBubequ(gameState, childId);
+		}
+
+		if (doCloseBrackets) {
+			result += ")";
+		}
+		return result;
 	}
 
 }
