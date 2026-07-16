@@ -65,15 +65,16 @@ namespace bubequ {
 			return unit;
 		}
 		unit->value = 1;
-		if (valueStr[0] == '-') {
-			unit->value = -1;
-		}
+		bool isNegative = valueStr[0] == '-';
 		std::string numSubstr = getNums(valueStr);
 		if (numSubstr == "") {
 			unit->value = 1;
 		}
 		else {
 			unit->value = std::stoi(numSubstr);
+		}
+		if (isNegative) {
+			unit->value *= -1;
 		}
 		std::string varSubstr = getLetters(valueStr);
 		unit->label = varSubstr;
@@ -110,18 +111,22 @@ namespace bubequ {
 	}
 
 	std::shared_ptr<Scope> parseScope(const std::string& line) {
-		auto scope = std::make_shared<Scope>();
 		std::string scopeStr = stripBrackets(line);
 
 		if (scopeStr == "") {
-			scope->children.push_back(parseUnit(scopeStr));
-			return scope;
+			return parseUnit(scopeStr);
 		}
 		char operatorChar = scopeStr[0];
-		if (operatorChar == '*' || operatorChar == '^' || operatorChar == '=') {
+		if (operatorChar == '*' || operatorChar == '^') {
+			auto scope = std::make_shared<bubequ::Scope>();
 			scope->children.push_back(parseLink(scopeStr));
+			return scope;
+		}
+		else if (operatorChar == '=') {
+			return parseLink(scopeStr);
 		}
 		else if (operatorChar == '(') {
+			auto scope = std::make_shared<bubequ::Scope>();
 			int bracketLevel = 0;
 			std::string currentScopeStr;
 			for (int i = 0; i < scopeStr.size(); ++i) {
@@ -138,11 +143,11 @@ namespace bubequ {
 					currentScopeStr = "";
 				}
 			}
+			return scope;
 		}
 		else {
-			scope->children.push_back(parseUnit(scopeStr));
+			return parseUnit(scopeStr);
 		}
-		return scope;
 	}
 
 	std::shared_ptr<Scope> parseBubequ(const std::string& path) {

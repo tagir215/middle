@@ -318,7 +318,32 @@ namespace equlab {
 
 			middle::Id newNodeId;
 
-			if (auto linkScope = dynamic_cast<bubequ::Link*>(currentScope)) {
+			if (auto unitScope = dynamic_cast<bubequ::Unit*>(currentScope)) {
+				if (unitScope->type == bubequ::UnitType::CONSTANT) {
+					newNodeId = bubble::newBubbleWithIntValue(gameState, unitScope->value, pos);
+				}
+				else if (unitScope->type == bubequ::UnitType::VARIABLE) {
+					int s = std::abs(unitScope->value);
+					bool isNegative = unitScope->value < 0;
+					if (s == 1) {
+						middle::Shape varProto = bubble::newVariable(gameState, unitScope->label, pos, isNegative);
+						middle::Shape& varShape = middle::registerShape(gameState, varProto);
+						newNodeId = varShape.id;
+					}
+					else {
+						middle::Shape bubbleProto = bubble::newBubble(gameState, pos);
+						middle::Shape& bubbleShape = middle::registerShape(gameState, bubbleProto);
+						for (int i = 0; i < s; ++i) {
+							middle::Shape varProto = bubble::newVariable(gameState, unitScope->label, pos, isNegative);
+							middle::Shape& varShape = middle::registerShape(gameState, varProto);
+							middle::EditorActionReparent(bubbleShape.id.index, varShape.id.index).execute(gameState);
+						}
+						newNodeId = bubbleShape.id;
+					}
+
+				}
+			}
+			else if (auto linkScope = dynamic_cast<bubequ::Link*>(currentScope)) {
 				if (linkScope->type == bubequ::LinkType::MULTIPLICATION) {
 					middle::Shape linkProto = bubble::newMultiplication(gameState, pos);
 					middle::Shape& linkShape = middle::registerShape(gameState, linkProto);

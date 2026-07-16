@@ -34,12 +34,13 @@ namespace bubble {
 	middle::Id inverseBubble(middle::GameState* gameState, middle::Id& id);
 	middle::Id topLevelBubble(middle::GameState* gameState);
 	middle::Shape newBubble(middle::GameState* gameState, const Vector3& targetPos);
-	middle::Shape newUnit(middle::GameState* gameState, const Vector3& targetPos);
-	middle::Shape newVariable(middle::GameState* gameState, const std::string& label, const Vector3& targetPos);
+	middle::Shape newUnit(middle::GameState* gameState, const Vector3& targetPos, bool isNegative = false);
+	middle::Shape newVariable(middle::GameState* gameState, const std::string& label, const Vector3& targetPos, bool isNegative = false);
 	middle::Shape newExponent(middle::GameState* gameState, const Vector3& targetPos);
 	middle::Shape newEquals(middle::GameState* gameState, const Vector3& targetPos);
 	middle::Shape newMultiplication(middle::GameState* gameState, const Vector3& targetPos);
 	middle::Shape newPower(middle::GameState* gameState, const Vector3& targetPos);
+	middle::Id newBubbleWithIntValue(middle::GameState* gameState, int value, const Vector3& targetPos);
 	bool isIntersecting(middle::GameState* gameState, middle::Shape& shape);
 	bool unitEquals(middle::GameState* gameState, middle::Id& idA, middle::Id& idB);
 	UnitValue unitValue(middle::GameState* gameState, middle::Id& containerId);

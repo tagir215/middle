@@ -1299,10 +1299,11 @@ namespace bubble {
 		return newBubbleShape;
 	}
 
-	middle::Shape newUnit(middle::GameState* gameState, const Vector3& targetPos)
+	middle::Shape newUnit(middle::GameState* gameState, const Vector3& targetPos, bool isNegative)
 	{
 		middle::Shape newUnitShape;
-		middle::addComponent<components::BubbleUnit>(newUnitShape);
+		auto unit = middle::addComponent<components::BubbleUnit>(newUnitShape);
+		unit->value = isNegative ? -1 : 1;
 		middle::addComponent<components::MouseGrabbable>(newUnitShape);
 		middle::addComponent<components::MouseIntersectable>(newUnitShape);
 		middle::addComponent<components::MouseSelectable>(newUnitShape);
@@ -1321,11 +1322,12 @@ namespace bubble {
 		return newUnitShape;
 	}
 
-	middle::Shape newVariable(middle::GameState* gameState, const std::string& label, const Vector3& targetPos)
+	middle::Shape newVariable(middle::GameState* gameState, const std::string& label, const Vector3& targetPos, bool isNegative)
 	{
 		middle::Shape variableProto = newBubble(gameState, targetPos);
 		auto varComp = middle::addComponent<components::BubbleVariable>(variableProto);
 		varComp->label = label;
+		varComp->isNegative = isNegative;
 		auto circle = middle::getComponent<components::Circle>(variableProto);
 		circle->radius = variableRadius;
 		return variableProto;
@@ -1386,6 +1388,20 @@ namespace bubble {
 		position->posY = targetPos.y;
 		position->posZ = targetPos.z;
 		return newBubbleShape;
+	}
+
+	middle::Id newBubbleWithIntValue(middle::GameState* gameState, int value, const Vector3& targetPos)
+	{
+		middle::Shape bubbleProto = newBubble(gameState, targetPos);
+		middle::Shape& bubbleShape = middle::registerShape(gameState, bubbleProto);
+		int s = std::abs(value);
+		bool isNegative = value < 0;
+		for (int i = 0; i < s; ++i) {
+			middle::Shape unitProto = newUnit(gameState, targetPos + Vector3{ i * 0.1f, 0,0 }, isNegative);
+			middle::Shape& unitShape = middle::registerShape(gameState, unitProto);
+			middle::EditorActionReparent(bubbleShape.id.index, unitShape.id.index).execute(gameState);
+		}
+		return bubbleShape.id;
 	}
 
 	middle::Id newFraction(middle::GameState* gameState, const Vector3& targetPos, int dividend)
