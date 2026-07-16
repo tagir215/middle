@@ -13,14 +13,14 @@ f  10.000000
 f  10.000000
 b  1
 MouseSelectable
+MouseGrabbable
 Position
 f  190.211304
 f  200.000000
 f  61.803402
+MouseIntersectable
 SystemReference
 s  EditorSystem
-MouseGrabbable
-MouseIntersectable
 LoopSociety
 q  -1_0
 p  
@@ -37,14 +37,14 @@ f  10.000000
 f  10.000000
 b  1
 MouseSelectable
+MouseGrabbable
 Position
 f  165.094376
 f  200.000000
 f  112.888649
+MouseIntersectable
 SystemReference
 s  MouseIntersectDetectionSystem
-MouseGrabbable
-MouseIntersectable
 LoopSociety
 q  -1_0
 p  
@@ -61,14 +61,14 @@ f  10.000000
 f  10.000000
 b  1
 MouseSelectable
+MouseGrabbable
 Position
 f  126.602486
 f  200.000000
 f  154.828339
+MouseIntersectable
 SystemReference
 s  MouseGrabbingSystem
-MouseGrabbable
-MouseIntersectable
 LoopSociety
 q  -1_0
 p  
@@ -85,14 +85,14 @@ f  10.000000
 f  10.000000
 b  1
 MouseSelectable
+MouseGrabbable
 Position
 f  77.854004
 f  200.000000
 f  184.224731
+MouseIntersectable
 SystemReference
 s  MouseSelectionSystem
-MouseGrabbable
-MouseIntersectable
 LoopSociety
 q  -1_0
 p  
@@ -109,14 +109,14 @@ f  10.000000
 f  10.000000
 b  1
 MouseSelectable
+MouseGrabbable
 Position
 f  22.798265
 f  200.000000
 f  198.696350
+MouseIntersectable
 SystemReference
 s  EnviromentalFileNavigationSystem
-MouseGrabbable
-MouseIntersectable
 LoopSociety
 q  -1_0
 p  
@@ -133,14 +133,14 @@ f  10.000000
 f  10.000000
 b  1
 MouseSelectable
+MouseGrabbable
 Position
 f  -34.104458
 f  200.000000
 f  197.070770
+MouseIntersectable
 SystemReference
 s  EditorHotKeySystem
-MouseGrabbable
-MouseIntersectable
 LoopSociety
 q  -1_0
 p  
@@ -157,14 +157,14 @@ f  10.000000
 f  10.000000
 b  1
 MouseSelectable
+MouseGrabbable
 Position
 f  -88.244225
 f  200.000000
 f  179.479675
+MouseIntersectable
 SystemReference
 s  CameraSystem
-MouseGrabbable
-MouseIntersectable
 LoopSociety
 q  -1_0
 p  
@@ -181,14 +181,14 @@ f  10.000000
 f  10.000000
 b  1
 MouseSelectable
+MouseGrabbable
 Position
 f  -135.235001
 f  200.000000
 f  147.348206
+MouseIntersectable
 SystemReference
 s  MiddlePhysicsSystem
-MouseGrabbable
-MouseIntersectable
 LoopSociety
 q  -1_0
 p  
@@ -205,14 +205,14 @@ f  10.000000
 f  10.000000
 b  1
 MouseSelectable
+MouseGrabbable
 Position
 f  -171.269836
 f  200.000000
 f  103.279449
+MouseIntersectable
 SystemReference
 s  EditorRenderSetupSystem
-MouseGrabbable
-MouseIntersectable
 LoopSociety
 q  -1_0
 p  
@@ -229,14 +229,14 @@ f  10.000000
 f  10.000000
 b  1
 MouseSelectable
+MouseGrabbable
 Position
 f  -193.429382
 f  200.000000
 f  50.843632
+MouseIntersectable
 SystemReference
 s  EditorUiSystem
-MouseGrabbable
-MouseIntersectable
 LoopSociety
 q  -1_0
 p  
@@ -253,14 +253,14 @@ f  10.000000
 f  10.000000
 b  1
 MouseSelectable
+MouseGrabbable
 Position
 f  -199.918442
 f  200.000000
 f  -5.711226
+MouseIntersectable
 SystemReference
 s  ComponentUiSystem
-MouseGrabbable
-MouseIntersectable
 LoopSociety
 q  -1_0
 p  
@@ -277,74 +277,98 @@ f  10.000000
 f  10.000000
 b  1
 MouseSelectable
+MouseGrabbable
 Position
-f  -40.111473
-f  -0.000031
-f  -32.921673
+f  -106.075012
+f  -0.000000
+f  -98.885506
+MouseIntersectable
 SystemReference
 s  EqulabSystem
+LoopSociety
+q  -1_0
+p  
+__q  12_0
+MouseSelectable
+Position
+f  -102.310799
+f  -0.000031
+f  -65.627220
 MouseGrabbable
+SystemReference
+s  WriterUnBlockingSystem
 MouseIntersectable
 LoopSociety
 q  -1_0
 p  
+Text
+s  WriterUnBlockingSystem
+f  255.000000
+f  255.000000
+f  255.000000
+f  255.000000
+f  2.000000
+f  0.000000
+f  10.000000
+f  10.000000
+b  1
 __q  13_0
-Reference
-s  BubbleGameplaySystems
-s  ../assets/shapes/
-MouseGrabbable
 Position
 f  400.000000
 f  0.000000
 f  -500.000000
+MouseGrabbable
+Reference
+s  BubbleGameplaySystems
+s  ../assets/shapes/
 MouseSelectable
 MouseIntersectable
 LoopSociety
 __q  14_0
-Reference
-s  ManipulationSystems
-s  ../assets/shapes/
-MouseGrabbable
 Position
 f  800.000000
 f  0.000000
 f  -500.000000
+MouseGrabbable
+Reference
+s  ManipulationSystems
+s  ../assets/shapes/
 MouseSelectable
 MouseIntersectable
 LoopSociety
 __q  15_0
-Reference
-s  GreatWallAndProcedureAndProblemContainers
-s  ../assets/shapes/
-MouseGrabbable
 Position
 f  400.000000
 f  0.000000
 f  0.000000
+MouseGrabbable
+Reference
+s  GreatWallAndProcedureAndProblemContainers
+s  ../assets/shapes/
 MouseSelectable
 MouseIntersectable
 LoopSociety
 __q  16_0
-Reference
-s  BubbleAlgebraUi
-s  ../assets/shapes/
-MouseGrabbable
 Position
 f  -800.000000
 f  -500.000000
 f  -500.000000
+MouseGrabbable
+Reference
+s  BubbleAlgebraUi
+s  ../assets/shapes/
 MouseSelectable
 MouseIntersectable
 LoopSociety
 __q  17_0
-Reference
-s  BubbleCamera
-s  ../assets/shapes/
-MouseGrabbable
 Position
 f  -43.011288
 f  -1000.000122
 f  -31.600134
+MouseGrabbable
+Reference
+s  BubbleCamera
+s  ../assets/shapes/
 MouseSelectable
 MouseIntersectable
 LoopSociety
