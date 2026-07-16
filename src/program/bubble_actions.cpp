@@ -716,20 +716,32 @@ namespace bubbleActions {
 			}
 		}
 
-
 		// else create new multiplication
-		auto newMul = std::make_unique<equlab::ConnectOperationLink>(recieverShapeId, linkingShapeId);
-		newMul->execute(gameState);
-		middle::Id newMulId = newMul->resultId;
-		actions.push_back(std::move(newMul));
+		//auto newMul = std::make_unique<equlab::ConnectOperationLink>(recieverShapeId, linkingShapeId);
+		Vector3 targetPos = (middle::getShapePosition(gameState, recieverShapeId.index)
+			+ middle::getShapePosition(gameState, linkingShapeId.index)) * 0.5f;
+
+		middle::Shape mulProto = bubble::newPower(gameState, targetPos);
+		middle::Shape& mulShape = middle::registerShape(gameState, mulProto);
+
+		auto registerAction = std::make_unique<middle::EditorActionRegisterId>(mulShape.id);
+		registerAction->execute(gameState);
+		actions.push_back(std::move(registerAction));
+
+		auto reparentA = std::make_unique<middle::EditorActionReparent>(mulShape.id.index, recieverShapeId.index);
+		reparentA->execute(gameState);
+		actions.push_back(std::move(reparentA));
+		auto reparentB = std::make_unique<middle::EditorActionReparent>(mulShape.id.index, linkingShapeId.index);
+		reparentB->execute(gameState);
+		actions.push_back(std::move(reparentB));
 
 		if (parentId.index != middle::UNASSIGNED) {
-			auto reparent = std::make_unique<middle::EditorActionReparent>(parentId.index, newMulId.index);
+			auto reparent = std::make_unique<middle::EditorActionReparent>(parentId.index, mulShape.id.index);
 			reparent->execute(gameState);
 			actions.push_back(std::move(reparent));
 
 		}
-		resultShapeId = newMulId;
+		resultShapeId = mulShape.id;
 	}
 
 	void LinkMultiplicationTerm::undo(middle::GameState* gameState)

@@ -77,7 +77,9 @@ public:
 		auto testui = [gameState]() {
 			ImGui::Begin("test parsing bubequ");
 			if (ImGui::Button("TEST")) {
-				bubequ::Scope scope = bubequ::parseBubequ("../assets/equations/test.bubequ");
+				auto scope = bubequ::parseBubequ("../assets/equations/test.bubequ");
+				middle::Id interesting = equlab::bubequToBubble(gameState, 
+					gameState->input.mouseXZ_PlanePos, "../assets/equations/test.bubequ");
 				int a = 0;
 			}
 			ImGui::End();

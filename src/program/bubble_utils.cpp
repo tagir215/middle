@@ -1338,6 +1338,56 @@ namespace bubble {
 		return bubble;
 	}
 
+	middle::Shape newEquals(middle::GameState* gameState, const Vector3& targetPos)
+	{
+		middle::Shape newBubbleShape;
+		middle::addComponent<components::BubbleEqualsComponent>(newBubbleShape);
+		middle::addComponent<components::MouseGrabbable>(newBubbleShape);
+		middle::addComponent<components::MouseSelectable>(newBubbleShape);
+		middle::addComponent<components::MouseIntersectable>(newBubbleShape);
+		middle::addComponent<components::LoopTag>(newBubbleShape);
+		middle::addComponent<components::LoopSociety>(newBubbleShape);
+		auto position = middle::addComponent<components::Position>(newBubbleShape);
+		position->posX = targetPos.x;
+		position->posY = targetPos.y;
+		position->posZ = targetPos.z;
+		return newBubbleShape;
+	}
+
+	middle::Shape newMultiplication(middle::GameState* gameState, const Vector3& targetPos)
+	{
+		middle::Shape newBubbleShape;
+		auto mulComp =middle::addComponent<components::BubbleMultiplyComponent>(newBubbleShape);
+		mulComp->operationType = components::OperationType::MULTIPLICATION;
+		middle::addComponent<components::MouseGrabbable>(newBubbleShape);
+		middle::addComponent<components::MouseSelectable>(newBubbleShape);
+		middle::addComponent<components::MouseIntersectable>(newBubbleShape);
+		middle::addComponent<components::LoopTag>(newBubbleShape);
+		middle::addComponent<components::LoopSociety>(newBubbleShape);
+		auto position = middle::addComponent<components::Position>(newBubbleShape);
+		position->posX = targetPos.x;
+		position->posY = targetPos.y;
+		position->posZ = targetPos.z;
+		return newBubbleShape;
+	}
+
+	middle::Shape newPower(middle::GameState* gameState, const Vector3& targetPos)
+	{
+		middle::Shape newBubbleShape;
+		auto mulComp =middle::addComponent<components::BubbleMultiplyComponent>(newBubbleShape);
+		mulComp->operationType = components::OperationType::POWER;
+		middle::addComponent<components::MouseGrabbable>(newBubbleShape);
+		middle::addComponent<components::MouseSelectable>(newBubbleShape);
+		middle::addComponent<components::MouseIntersectable>(newBubbleShape);
+		middle::addComponent<components::LoopTag>(newBubbleShape);
+		middle::addComponent<components::LoopSociety>(newBubbleShape);
+		auto position = middle::addComponent<components::Position>(newBubbleShape);
+		position->posX = targetPos.x;
+		position->posY = targetPos.y;
+		position->posZ = targetPos.z;
+		return newBubbleShape;
+	}
+
 	middle::Id newFraction(middle::GameState* gameState, const Vector3& targetPos, int dividend)
 	{
 		middle::Shape newFractionProto;

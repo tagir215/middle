@@ -58,48 +58,45 @@ namespace bubequ {
 		return result;
 	}
 
-	Unit parseUnit(const std::string& valueStr) {
-		Unit unit;
+	std::shared_ptr<Unit> parseUnit(const std::string& valueStr) {
+		auto unit = std::make_shared<Unit>();
 		if (valueStr == "") {
-			unit.value = 0;
+			unit->value = 0;
 			return unit;
 		}
-		unit.value = 1;
+		unit->value = 1;
 		if (valueStr[0] == '-') {
-			unit.value = -1;
+			unit->value = -1;
 		}
 		std::string numSubstr = getNums(valueStr);
 		if (numSubstr == "") {
-			unit.value = 1;
+			unit->value = 1;
 		}
 		else {
-			unit.value = std::stoi(numSubstr);
+			unit->value = std::stoi(numSubstr);
 		}
 		std::string varSubstr = getLetters(valueStr);
-		unit.label = varSubstr;
+		unit->label = varSubstr;
 		if (varSubstr != "") {
-			unit.type = UnitType::VARIABLE;
+			unit->type = UnitType::VARIABLE;
 		}
 		else {
-			unit.type = UnitType::CONSTANT;
+			unit->type = UnitType::CONSTANT;
 		}
 		return unit;
 	}
 
-	Link parseLink(const std::string& linkStr) {
-		Link link;
+	std::shared_ptr<Link> parseLink(const std::string& linkStr) {
+		auto link = std::make_shared<Link>();
 		char operatorChar = linkStr[0];
-		if (operatorChar == '+') {
-			link.type = LinkType::ADDITION;
-		}
-		else if (operatorChar == '*') {
-			link.type = LinkType::MULTIPLICATION;
+		if (operatorChar == '*') {
+			link->type = LinkType::MULTIPLICATION;
 		}
 		else if (operatorChar == '^') {
-			link.type = LinkType::POWER;
+			link->type = LinkType::POWER;
 		}
 		else if (operatorChar == '=') {
-			link.type == LinkType::EQUALS;
+			link->type = LinkType::EQUALS;
 		}
 		else {
 			throw std::runtime_error("file formal error: Not known linktype");
@@ -107,34 +104,48 @@ namespace bubequ {
 		std::string subStr = linkStr.substr(1);
 		std::vector<std::string>scopes = split(subStr);
 		for (const std::string& scopeStr : scopes) {
-			link.children.push_back(parseScope(scopeStr));
+			link->children.push_back(parseScope(scopeStr));
 		}
 		return link;
 	}
 
-	Scope parseScope(const std::string& line) {
-		Scope scope;
+	std::shared_ptr<Scope> parseScope(const std::string& line) {
+		auto scope = std::make_shared<Scope>();
 		std::string scopeStr = stripBrackets(line);
 
 		if (scopeStr == "") {
-			scope.children.push_back(parseUnit(scopeStr));
+			scope->children.push_back(parseUnit(scopeStr));
 			return scope;
 		}
 		char operatorChar = scopeStr[0];
-		if (operatorChar == '+' || operatorChar == '*' || operatorChar == '^' || operatorChar == '=') {
-			scope.children.push_back(parseLink(scopeStr));
+		if (operatorChar == '*' || operatorChar == '^' || operatorChar == '=') {
+			scope->children.push_back(parseLink(scopeStr));
 		}
-		// this case is just if theres brackets within brackets as only child for some reason... 
 		else if (operatorChar == '(') {
-			scope.children.push_back(parseScope(scopeStr));
+			int bracketLevel = 0;
+			std::string currentScopeStr;
+			for (int i = 0; i < scopeStr.size(); ++i) {
+				char c = scopeStr[i];
+				if (c == '(') {
+					++bracketLevel;
+				}
+				currentScopeStr += c;
+				if (c == ')') {
+					--bracketLevel;
+				}
+				if (bracketLevel == 0) {
+					scope->children.push_back(parseScope(currentScopeStr));
+					currentScopeStr = "";
+				}
+			}
 		}
 		else {
-			scope.children.push_back(parseUnit(scopeStr));
+			scope->children.push_back(parseUnit(scopeStr));
 		}
 		return scope;
 	}
 
-	Scope parseBubequ(const std::string& path) {
+	std::shared_ptr<Scope> parseBubequ(const std::string& path) {
 
 		std::ifstream inputFile(path);
 		if (!inputFile.is_open()) {

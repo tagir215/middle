@@ -1,13 +1,13 @@
 #pragma once
 #include <vector>
 #include <string>
+#include <memory>
 
 namespace bubequ {
 
 
 	enum class LinkType {
 		NONE, 
-		ADDITION,
 		MULTIPLICATION,
 		POWER,
 		EQUALS
@@ -20,7 +20,8 @@ namespace bubequ {
 	};
 
 	struct Scope {
-		std::vector<Scope>children;
+		std::vector<std::shared_ptr<Scope>>children;
+		virtual ~Scope() = default;
 	};
 
 	struct Unit : public Scope{

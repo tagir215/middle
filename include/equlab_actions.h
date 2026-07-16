@@ -128,20 +128,6 @@ namespace equlab {
 		void undo(middle::GameState* gameState);
 	};
 
-	class ConnectOperationLink : public middle::EditorActionContainer {
-	public:
-		middle::Id idA;
-		middle::Id idB;
-		std::vector<std::unique_ptr<middle::EditorActionContainer>> actions;
-		middle::Id resultId;
-		ConnectOperationLink(const middle::Id& idA, const middle::Id& idB) {
-			this->idA = idA;
-			this->idB = idB;
-		}
-		void execute(middle::GameState* gameState) override;
-		void undo(middle::GameState* gameState) override;
-	};
-
 	class ConnectMultiplicationLink : public middle::EditorActionContainer {
 	public:
 		middle::Id bubbleIdA;
@@ -170,4 +156,5 @@ namespace equlab {
 		void undo(middle::GameState* gameState);
 	};
 
+	middle::Id bubequToBubble(middle::GameState* gameState, const Vector3& targetPos, const std::string& path);
 }

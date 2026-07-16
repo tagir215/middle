@@ -6,6 +6,8 @@
 #include "BubbleEqualsComponent.h"
 #include "BubbleVariable.h"
 #include "component_utils.h"
+#include "alg_file_utils.h"
+#include <queue>
 
 namespace equlab {
 
@@ -182,47 +184,7 @@ namespace equlab {
 		return parentAId == parentBId;
 	}
 
-	// TODO RENAME MULTIPLY COMPONENT
-	void ConnectOperationLink::execute(middle::GameState* gameState)
-	{
 
-		middle::Shape newMulShapeProto;
-		auto position = middle::addComponent<components::Position>(newMulShapeProto);
-		middle::addComponent<components::BubbleMultiplyComponent>(newMulShapeProto);
-		middle::addComponent<components::MouseIntersectable>(newMulShapeProto);
-		middle::addComponent<components::MouseGrabbable>(newMulShapeProto);
-		middle::addComponent<components::MouseSelectable>(newMulShapeProto);
-		middle::addComponent<components::LoopTag>(newMulShapeProto);
-		middle::addComponent<components::LoopSociety>(newMulShapeProto);
-		auto& newMulShape = middle::registerShape(gameState, newMulShapeProto);
-
-		auto registerAction = std::make_unique<middle::EditorActionRegisterId>(newMulShape.id);
-		registerAction->execute(gameState);
-		actions.push_back(std::move(registerAction));
-
-		auto reparentA = std::make_unique<middle::EditorActionReparent>(newMulShape.id.index, idA.index);
-		reparentA->execute(gameState);
-		actions.push_back(std::move(reparentA));
-		auto reparentB = std::make_unique<middle::EditorActionReparent>(newMulShape.id.index, idB.index);
-		reparentB->execute(gameState);
-		actions.push_back(std::move(reparentB));
-
-		Vector3 center = middle::getShapePosition(gameState, idA.index) + middle::getShapePosition(gameState, idB.index);
-		center *= 0.5f;
-		position->posX = center.x;
-		position->posY = center.y;
-		position->posZ = center.z;
-		resultId = newMulShape.id;
-	}
-
-
-	void ConnectOperationLink::undo(middle::GameState* gameState)
-	{
-		while (actions.size() > 0) {
-			actions.back()->undo(gameState);
-			actions.pop_back();
-		}
-	}
 
 	void ConnectEqualsLink::execute(middle::GameState* gameState) {
 		if (!canConnect(gameState, bubbleIdA, bubbleIdB)) {
@@ -237,21 +199,11 @@ namespace equlab {
 			return;
 		}
 
-		middle::Shape equalsProto;
-		middle::addComponent<components::BubbleEqualsComponent>(equalsProto);
-		auto position = middle::addComponent<components::Position>(equalsProto);
-		middle::addComponent<components::MouseIntersectable>(equalsProto);
-		middle::addComponent<components::MouseGrabbable>(equalsProto);
-		middle::addComponent<components::MouseSelectable>(equalsProto);
-		middle::addComponent<components::LoopTag>(equalsProto);
-		middle::addComponent<components::LoopSociety>(equalsProto);
-		middle::Shape& equalsShape = middle::registerShape(gameState, equalsProto);
+		Vector3 targetPos = (middle::getShapePosition(gameState, bubbleIdA.index)
+			+ middle::getShapePosition(gameState, bubbleIdB.index)) * 0.5f;
 
-		Vector3 center = middle::getShapePosition(gameState, bubbleIdA.index) + middle::getShapePosition(gameState, bubbleIdB.index);
-		center *= 0.5f;
-		position->posX = center.x;
-		position->posY = center.y;
-		position->posZ = center.z;
+		middle::Shape equalsProto = bubble::newEquals(gameState, targetPos);
+		middle::Shape& equalsShape = middle::registerShape(gameState, equalsProto);
 
 		auto registerAction = std::make_unique<middle::EditorActionRegisterId>(equalsShape.id);
 		registerAction->execute(gameState);
@@ -315,26 +267,94 @@ namespace equlab {
 			cancelled = true;
 			return;
 		}
+		Vector3 targetPos = (middle::getShapePosition(gameState, bubbleIdA.index)
+			+ middle::getShapePosition(gameState, bubbleIdB.index)) * 0.5f;
 
-		middle::Id parentId = middle::getParent(gameState, bubbleIdA);
+		middle::Shape powerProto = bubble::newPower(gameState, targetPos);
+		middle::Shape& powerShape = middle::registerShape(gameState, powerProto);
 
-		auto connectAction = std::make_unique<ConnectOperationLink>(bubbleIdA, bubbleIdB);
-		connectAction->execute(gameState);
-		resultId = connectAction->resultId;
-		auto& resultShape = middle::getShape(gameState, resultId.index);
-		auto opComp = middle::getComponent<components::BubbleMultiplyComponent>(resultShape);
-		opComp->operationType = components::OperationType::POWER;
-		actions.push_back(std::move(connectAction));
+		auto registerAction = std::make_unique<middle::EditorActionRegisterId>(powerShape.id);
+		registerAction->execute(gameState);
+		actions.push_back(std::move(registerAction));
 
-		auto reparent = std::make_unique<middle::EditorActionReparent>(parentId.index, resultId.index);
-		reparent->execute(gameState);
-		actions.push_back(std::move(reparent));
+		auto reparentA = std::make_unique<middle::EditorActionReparent>(powerShape.id.index, bubbleIdA.index);
+		reparentA->execute(gameState);
+		actions.push_back(std::move(reparentA));
+		auto reparentB = std::make_unique<middle::EditorActionReparent>(powerShape.id.index, bubbleIdB.index);
+		reparentB->execute(gameState);
+		actions.push_back(std::move(reparentB));
 	}
 	void ConnectPowerLink::undo(middle::GameState* gameState) {
 		while (actions.size() > 0) {
 			actions.back()->undo(gameState);
 			actions.pop_back();
 		}
+	}
+
+	float rf() {
+		return (std::rand() % 100 + 1) * 0.01f;
+	}
+	Vector3 randOffset() {
+		return Vector3{rf(), rf(), rf()};
+	}
+
+	middle::Id bubequToBubble(middle::GameState* gameState, const Vector3& targetPos, const std::string& path)
+	{
+		auto bubequ = bubequ::parseBubequ(path);
+		std::queue<bubequ::Scope*>scopeQueue;
+		std::queue<middle::Id>parentQueue;
+		scopeQueue.push(bubequ.get());
+		parentQueue.push(middle::Id());
+
+		middle::Id rootId;
+
+		while (scopeQueue.size() > 0) {
+			bubequ::Scope* currentScope = scopeQueue.front();
+			middle::Id currentParentId = parentQueue.front();
+			scopeQueue.pop();
+			parentQueue.pop();
+			Vector3 randOff = randOffset();
+			Vector3 pos = targetPos + randOff;
+
+			middle::Id newNodeId;
+
+			if (auto linkScope = dynamic_cast<bubequ::Link*>(currentScope)) {
+				if (linkScope->type == bubequ::LinkType::MULTIPLICATION) {
+					middle::Shape linkProto = bubble::newMultiplication(gameState, pos);
+					middle::Shape& linkShape = middle::registerShape(gameState, linkProto);
+					newNodeId = linkShape.id;
+				}
+				else if (linkScope->type == bubequ::LinkType::EQUALS) {
+					middle::Shape linkProto = bubble::newEquals(gameState, pos);
+					middle::Shape& linkShape = middle::registerShape(gameState, linkProto);
+					newNodeId = linkShape.id;
+				}
+				else if (linkScope->type == bubequ::LinkType::POWER) {
+					middle::Shape linkProto = bubble::newPower(gameState, pos);
+					middle::Shape& linkShape = middle::registerShape(gameState, linkProto);
+					newNodeId = linkShape.id;
+				}
+			}
+			else {
+				auto addBub = equlab::AddBubble(currentParentId, pos);
+				addBub.execute(gameState);
+				middle::Id bubbleId = addBub.resultId;
+				newNodeId = bubbleId;
+			}
+
+			if (currentParentId.index != middle::UNASSIGNED) {
+				middle::EditorActionReparent(currentParentId.index, newNodeId.index).execute(gameState);
+			}
+			if (rootId.index == middle::UNASSIGNED) {
+				rootId = newNodeId;
+			}
+			for (auto& scope : currentScope->children) {
+				scopeQueue.push(scope.get());
+				parentQueue.push(newNodeId);
+			}
+		}
+
+		return rootId;
 	}
 
 }

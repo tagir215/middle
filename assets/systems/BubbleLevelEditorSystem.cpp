@@ -194,10 +194,10 @@ public:
 						auto bubbleBProto = bubble::newBubble(gameState, containerPos + randomOffset());
 						auto& bubbleA = middle::registerShape(gameState, bubbleAProto);
 						auto& bubbleB = middle::registerShape(gameState, bubbleBProto);
-						auto mulAction = equlab::ConnectOperationLink(bubbleA.id, bubbleB.id);
-						mulAction.execute(gameState);
-						middle::Id newId = mulAction.resultId;
-						middle::EditorActionReparent(selectedId.index, newId.index).execute(gameState);
+						//auto mulAction = equlab::ConnectOperationLink(bubbleA.id, bubbleB.id);
+						//mulAction.execute(gameState);
+						//middle::Id newId = mulAction.resultId;
+						//middle::EditorActionReparent(selectedId.index, newId.index).execute(gameState);
 					}
 					ImGui::Separator();
 					if (ImGui::Button("Link Multiplication")) {
@@ -215,13 +215,6 @@ public:
 						auto bubbleBProto = bubble::newBubble(gameState, containerPos + randomOffset());
 						auto& bubbleA = middle::registerShape(gameState, bubbleAProto);
 						auto& bubbleB = middle::registerShape(gameState, bubbleBProto);
-						auto mulAction = equlab::ConnectOperationLink(bubbleA.id, bubbleB.id);
-						mulAction.execute(gameState);
-						middle::Id newId = mulAction.resultId;
-						auto& newShape = middle::getShape(gameState, newId.index);
-						auto mul = middle::getComponent<components::BubbleMultiplyComponent>(newShape);
-						mul->operationType = static_cast<int>(components::OperationType::POWER);
-						middle::EditorActionReparent(selectedId.index, newId.index).execute(gameState);
 					}
 					ImGui::Separator();
 					static char label[20] = "x";
