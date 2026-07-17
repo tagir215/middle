@@ -34,6 +34,7 @@
 #include "CodeBlock.h"
 #include "IdRef.h"
 #include "UnIntersectableWindowComponent.h"
+#include "ActiveBubbleTag.h"
 
 
 class BubbleRenderSetup : public middle::MiddleGameplaySystem {
@@ -52,11 +53,11 @@ public:
 	components::CompCache* equalsCache;
 	components::CompCache* exponentCache;
 	components::CompCache* textureCache;
-	components::CompCache* activeCheckBoxCache;
 	components::CompCache* editThisCache;
 	components::CompCache* inputCache;
 	components::CompCache* procContainerCache;
 	components::CompCache* unitCache;
+	components::CompCache* activeBubbleCache;
 
 	void init(middle::GameState* gameState) {
 		bubbleCache = middle::newCompCache(gameState, systemName);
@@ -99,10 +100,6 @@ public:
 		textureCache->addType<components::TextureComponent>();
 		textureCache->addType<components::Position>();
 		textureCache->addType<components::RuntimeHiddenTag>(components::NOTINTERESTED);
-		activeCheckBoxCache = middle::newCompCache(gameState, systemName);
-		activeCheckBoxCache->addType<components::ActiveCheckBoxTag>();
-		activeCheckBoxCache->addType<components::Position>();
-		activeCheckBoxCache->addType<components::Layer>();
 		editThisCache = middle::newCompCache(gameState, systemName);
 		editThisCache->addType<components::EditThisTag>();
 		editThisCache->addType<components::TextureComponent>();
@@ -112,6 +109,8 @@ public:
 		inputCache->addType<components::ProcedureInputVariable>(components::NOTINTERESTED);
 		procContainerCache = middle::newCompCache(gameState, systemName);
 		procContainerCache->addType<components::ProcedureContainer>();
+		activeBubbleCache = middle::newCompCache(gameState, systemName);
+		activeBubbleCache->addType<components::ActiveBubbleTag>();
 	}
 	bool debugRendering = false;
 
@@ -507,22 +506,16 @@ public:
 		}
 
 
-		auto checkBoxPositionIt = activeCheckBoxCache->begin<components::Position>();
-		auto checkBoxLayerIt = activeCheckBoxCache->begin<components::Layer>();
-		for (int i = 0; i < activeCheckBoxCache->getSize(); ++i) {
-			auto pos = *checkBoxPositionIt;
-			auto layer = *checkBoxLayerIt;
-
-			middle::RenderItem powerCircle;
-			powerCircle.type = middle::RenderItemType::CYLINDER;
-			powerCircle.center = { pos->posX, pos->posY, pos->posZ };
-			powerCircle.radius = 3;
-			powerCircle.ringRadius = 3;
-			powerCircle.length = 0.001f;
-			powerCircle.color = RED;
-			powerCircle.layer = layer->layer + 1;
-			powerCircle.disableDepthTest = true;
-			gameState->renderData.push_back(powerCircle);
+		for (middle::Id& id : activeBubbleCache->relevantIdVector) {
+			float left, right, top, bottom;
+			bubble::bubbleRectBoundingBox(gameState, id, &left, &right, &bottom, &top);
+			middle::RenderItem boundingRect;
+			boundingRect.type = middle::RenderItemType::RECTANGLE;
+			boundingRect.width = right - left;
+			boundingRect.height = top - bottom;
+			boundingRect.center = { (left + right) * 0.5f, 0, (bottom + top) * 0.5f };
+			boundingRect.color = WHITE;
+			gameState->renderData.push_back(boundingRect);
 		}
 
 

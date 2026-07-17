@@ -1,6 +1,7 @@
 #include "alg_file_utils.h"
 #include <filesystem>
 #include <iostream>
+#include "bubble_paths.h"
 #include <fstream>
 namespace bubequ {
 
@@ -150,7 +151,7 @@ namespace bubequ {
 		}
 	}
 
-	std::shared_ptr<Scope> parseBubequ(const std::string& path) {
+	std::shared_ptr<Scope> loadBubequ(const std::string& path) {
 
 		std::ifstream inputFile(path);
 		if (!inputFile.is_open()) {
@@ -169,9 +170,9 @@ namespace bubequ {
 
 		throw std::runtime_error("Something wrong with the data");
 	}
-	void saveBubequ(const std::string& bubequ)
+	void saveBubequ(const std::string& equname, const std::string& bubequ)
 	{	
-		std::string path = "../assets/equations/test.bubequ";
+		std::string path = bubblePaths::EQUATION_FOLDER + "/" + equname + ".bubequ";
 		std::ofstream outFile(path);
 		if (!outFile.is_open()) {
 			std::cerr << "failed to open to write\n";
@@ -181,5 +182,33 @@ namespace bubequ {
 		outFile << bubequ;
 		outFile.flush();
 		outFile.close();
+	}
+
+	void savePuzzleText(const std::string& title, const std::string& text)
+	{
+		const std::string path = bubblePaths::WORD_PROBLEMS_FOLDER + "/" + title + ".txt";
+		std::ofstream outFile(path);
+		if (!outFile.is_open()) {
+			std::cerr << "failed to open to write\n";
+		}
+		outFile << text;
+		outFile.flush();
+		outFile.close();
+	}
+	std::vector<std::string> getFilenames(const std::string directoryPath)
+	{
+		std::vector<std::string>files;
+		try {
+			for (const auto& entry : std::filesystem::directory_iterator(directoryPath)) {
+				if (std::filesystem::is_regular_file(entry.status())) {
+					files.push_back(entry.path().filename().string());
+				}
+			}
+		}
+		catch (const std::filesystem::filesystem_error& e) {
+			std::cerr << "Error: " << e.what() << '\n';
+		}
+
+		return files;
 	}
 }

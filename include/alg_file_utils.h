@@ -11,6 +11,8 @@ namespace bubequ {
 	std::shared_ptr<Unit> parseUnit(const std::string& valueStr);
 	std::shared_ptr<Link>parseLink(const std::string& linkStr);
 	std::shared_ptr<Scope>parseScope(const std::string& line);
-	std::shared_ptr<Scope>parseBubequ(const std::string& path);
-	void saveBubequ(const std::string& bubequ);
+	std::shared_ptr<Scope>loadBubequ(const std::string& path);
+	void saveBubequ(const std::string& equname, const std::string& bubequ);
+	void savePuzzleText(const std::string& title, const std::string& text);
+	std::vector<std::string>getFilenames(const std::string directoryPath);
 }

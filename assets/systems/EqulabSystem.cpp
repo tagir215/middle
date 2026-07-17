@@ -14,23 +14,28 @@
 #include "BubbleEqualsComponent.h"
 #include "BubbleVariable.h"
 #include "TimerComponent.h"
+#include "TopDogBubbleTag.h"
+#include "bubble_paths.h"
+#include "ActiveBubbleTag.h"
+#include "component_utils.h"
 
 class EqulabSystem : public middle::MiddleGameplaySystem {
 public:
 
 	enum class SelectType {
-		ADD_EQUALS,
+		NONE,
 		ADD_MULTIPLICATION,
 		ADD_POWER
 	};
 
-	SelectType currentSelectType = SelectType::ADD_EQUALS;
+	SelectType currentSelectType = SelectType::NONE;
 
 	components::CompCache* intersectableBubbleCache;
 	components::CompCache* intersectableUnitCache;
 	components::CompCache* selectedCache;
-	components::CompCache* loopCache;
+	components::CompCache* topDogCache;
 	components::CompCache* timerCache;
+	components::CompCache* activeBubbleCache;
 
 	void init(middle::GameState* gameState) override {
 		intersectableBubbleCache = middle::newCompCache(gameState, systemName);
@@ -45,12 +50,15 @@ public:
 		selectedCache->addType<components::SelectedComponent>();
 		selectedCache->addType<components::BubbleComponent>();
 
-		loopCache = middle::newCompCache(gameState, systemName);
-		loopCache->addType<components::LoopSociety>();
+		topDogCache = middle::newCompCache(gameState, systemName);
+		topDogCache->addType<components::TopDogBubbleTag>();
 
 		timerCache = middle::newCompCache(gameState, systemName);
 		timerCache->addType<components::TimerComponent>();
 		timerCache->addType<components::BubbleComponent>();
+
+		activeBubbleCache = middle::newCompCache(gameState, systemName);
+		activeBubbleCache->addType<components::ActiveBubbleTag>();
 	}
 
 	std::string keyToString(middle::GameState* gameState) {
@@ -86,40 +94,91 @@ public:
 
 	void update(middle::GameState* gameState) override {
 
+		// UI 
 		auto testui = [gameState, this]() {
-			ImGui::Begin("test parsing bubequ");
-			if (ImGui::Button("TEST LOAD")) {
-				auto scope = bubequ::parseBubequ("../assets/equations/test.bubequ");
-				middle::Id interesting = equlab::bubequToBubble(gameState,
-					gameState->input.mouseXZ_PlanePos, "../assets/equations/test.bubequ");
-				int a = 0;
-			}
-			if (ImGui::Button("TEST SAVE")) {
+			ImGui::Begin("Bubequ file");
+			//if (ImGui::Button("Load bubequ")) {
+			//	auto scope = bubequ::parseBubequ("../assets/equations/test.bubequ");
+			//	middle::Id interesting = equlab::bubequToBubble(gameState,
+			//		gameState->input.mouseXZ_PlanePos, "../assets/equations/test.bubequ");
+			//}
+			static char equationName[128] = "";
+			ImGui::InputText("Equation name", equationName, IM_ARRAYSIZE(equationName));
+
+			if (ImGui::Button("Save bubequ")) {
 				middle::Id targetId;
 
-				auto bubIt = loopCache->begin<components::LoopSociety>();
-				for (int i = 0; i < loopCache->getSize(); ++i) {
-					auto loop = *bubIt;
-					// TODO 
-					if (loop->parentLoopId.index == middle::UNASSIGNED){
-						middle::Id relId = loopCache->relevantIdVector[i];
-						auto relShape = middle::getShape(gameState, relId.index);
-						if (middle::getComponent<components::BubbleComponent>(relShape)
-							|| middle::getComponent<components::BubbleEqualsComponent>(relShape)) {
-							targetId = relId;
-							break;
-						}
-					}
+				for (middle::Id& topDogId : topDogCache->relevantIdVector) {
+					middle::Id parentId = middle::getParent(gameState, topDogId);
+					targetId = parentId.index == middle::UNASSIGNED ? topDogId : parentId;
 				}
 				if (targetId.index != middle::UNASSIGNED) {
 					std::string equstring = equlab::bubbleToBubequ(gameState, targetId);
-					bubequ::saveBubequ(equstring);
+					bubequ::saveBubequ(equationName, equstring);
+				}
+			}
+			ImGui::End();
+
+
+
+			ImGui::Begin("bubequ list");
+			std::vector<std::string>filenames = bubequ::getFilenames(bubblePaths::EQUATION_FOLDER);
+			for (auto& name : filenames) {
+				if (ImGui::Button(name.c_str())) {
+					const std::string path = bubblePaths::EQUATION_FOLDER + "/" + name;
+					equlab::bubequToBubble(gameState, gameState->input.mouseXZ_PlanePos, path);
 				}
 			}
 			ImGui::End();
 			};
 		gameState->uiSetups.push_back(testui);
 
+
+		// ACTIVITY UPDATE
+		float minDistance = std::numeric_limits<float>::max();
+		middle::Id closestId;
+		for (middle::Id& id : topDogCache->relevantIdVector) {
+			middle::Id parentId = middle::getParent(gameState, id);
+			middle::Id targetId;
+			Vector3 center;
+			if (parentId.index != middle::UNASSIGNED) {
+				std::vector<middle::Id>children;
+				middle::getChildren(gameState, parentId, children);
+				assert(children.size() == 2);
+				middle::Id idA = children[0];
+				middle::Id idB = children[1];
+				center = middle::getShapePosition(gameState, idA.index) +
+					middle::getShapePosition(gameState, idB.index) * 0.5f;
+				targetId = parentId;
+			}
+			else {
+				center = middle::getShapePosition(gameState, id.index);
+				targetId = id;
+			}
+
+			float distSqr = Vector3DistanceSqr(center, gameState->activeCamera.position);
+			if (distSqr < minDistance) {
+				minDistance = distSqr;
+				closestId = targetId;
+			}
+		}
+		// UPDATE ACTIVE TO CLOSEST TO CAMERA
+		if (closestId.index != middle::UNASSIGNED) {
+
+			if (activeBubbleCache->relevantIdVector.size() == 1) {
+				middle::Id activeId = activeBubbleCache->relevantIdVector[0];
+				if (activeId != closestId) {
+					middle::queueComponentDeletion<components::ActiveBubbleTag>(gameState, activeId);
+					middle::queueComponentAttachment<components::ActiveBubbleTag>(gameState, closestId);
+				}
+			}
+			else if (activeBubbleCache->relevantIdVector.size() == 0) {
+				middle::queueComponentAttachment<components::ActiveBubbleTag>(gameState, closestId);
+			}
+		}
+
+
+		// ACTIONS
 		std::string keyString = keyToString(gameState);
 		if (keyString != "") {
 			middle::Id intersectedBubble;
@@ -164,6 +223,11 @@ public:
 				cantAdd = unitComp || varComp;
 			}
 
+			// have only one equation at a time..
+			if (topDogCache->getSize() > 0 && intersectedBubble.index == middle::UNASSIGNED) {
+				cantAdd = true;
+			}
+
 			if (!cantAdd && gameState->equlabInput.oneHeld) {
 				auto action = std::make_shared<equlab::AddBubble>(intersectedBubble, gameState->input.mouseXZ_PlanePos);
 				middle::queueAction(gameState, action);
@@ -174,28 +238,26 @@ public:
 				middle::queueAction(gameState, action);
 				gameState->bubbleAlgebraState.bubbleActions.push_back(action);
 			}
-			else if (gameState->equlabInput.threeHeld) {
+			else if (!cantAdd && gameState->equlabInput.threeHeld) {
+				auto action = std::make_shared<equlab::AddEquals>(gameState->input.mouseXZ_PlanePos);
+				middle::queueAction(gameState, action);
+				gameState->bubbleAlgebraState.bubbleActions.push_back(action);
+			}
+			else if (gameState->equlabInput.fourHeld) {
 				auto action = std::make_shared<equlab::Negate>(targetId);
 				middle::queueAction(gameState, action);
 				gameState->bubbleAlgebraState.bubbleActions.push_back(action);
 			}
-			else if (gameState->equlabInput.fourHeld && intersectedBubble.index != middle::UNASSIGNED) {
+			else if (gameState->equlabInput.fiveHeld && intersectedBubble.index != middle::UNASSIGNED) {
 				auto action = std::make_shared<equlab::Invert>(intersectedBubble);
 				middle::queueAction(gameState, action);
 				gameState->bubbleAlgebraState.bubbleActions.push_back(action);
 			}
 
-
 			else if (gameState->equlabInput.sixHeld) {
 				auto action = std::make_shared<equlab::Delete>(targetId);
 				middle::queueAction(gameState, action);
 				gameState->bubbleAlgebraState.bubbleActions.push_back(action);
-			}
-
-
-			else if (gameState->equlabInput.zeroHeld) {
-				middle::attachComponent<components::SelectedComponent>(gameState, intersectedBubble);
-				currentSelectType = SelectType::ADD_EQUALS;
 			}
 
 			else if (gameState->equlabInput.nineHeld) {
@@ -228,14 +290,6 @@ public:
 			}
 			if (intersectedShape == selectedId) {
 				return;
-			}
-
-			if (currentSelectType == SelectType::ADD_EQUALS) {
-				middle::Id idA = selectedId;
-				middle::Id idB = intersectedShape;
-				auto connect = std::make_shared<equlab::ConnectEqualsLink>(idA, idB);
-				middle::queueAction(gameState, connect);
-				gameState->bubbleAlgebraState.bubbleActions.push_back(connect);
 			}
 
 			if (currentSelectType == SelectType::ADD_MULTIPLICATION) {

@@ -90,6 +90,19 @@ namespace equlab {
 		void undo(middle::GameState* gameState);
 	};
 
+	class AddEquals : public middle::EditorActionContainer {
+	public:
+		middle::Id resultId;
+		Vector3 targetPos;
+		std::vector<std::unique_ptr<middle::EditorActionContainer>> actions;
+		AddEquals(const Vector3& targetPos) {
+			this->targetPos = targetPos;
+		}
+		void execute(middle::GameState* gameState);
+		void undo(middle::GameState* gameState);
+	};
+
+
 	class Move : public middle::EditorActionContainer {
 	public:
 		middle::Id id;
@@ -109,20 +122,6 @@ namespace equlab {
 		std::vector<std::unique_ptr<middle::EditorActionContainer>> actions;
 		Delete(middle::Id id) {
 			this->id = id;
-		}
-		void execute(middle::GameState* gameState);
-		void undo(middle::GameState* gameState);
-	};
-
-	class ConnectEqualsLink : public middle::EditorActionContainer {
-	public:
-		middle::Id bubbleIdA;
-		middle::Id bubbleIdB;
-		middle::Id resultId;
-		std::vector<std::unique_ptr<middle::EditorActionContainer>> actions;
-		ConnectEqualsLink(middle::Id bubbleIdA, middle::Id bubbleIdB) {
-			this->bubbleIdA = bubbleIdA;
-			this->bubbleIdB = bubbleIdB;
 		}
 		void execute(middle::GameState* gameState);
 		void undo(middle::GameState* gameState);

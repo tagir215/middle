@@ -2,6 +2,7 @@
 #include "game_state.h"
 #include "middle_system_registrar.h"
 #include "imgui.h"
+#include "alg_file_utils.h"
 
 class WriterUnBlockingSystem : public middle::MiddleGameplaySystem {
 	void init(middle::GameState* gameState) override {
@@ -29,10 +30,7 @@ class WriterUnBlockingSystem : public middle::MiddleGameplaySystem {
 
 			ImGui::Begin("File");
 			if (ImGui::Button("Save Text")) {
-
-			}
-			if (ImGui::Button("Save Equation/Term")) {
-
+				bubequ::savePuzzleText(title, text);
 			}
 			if (ImGui::Button("Save Problem reference")) {
 

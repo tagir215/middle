@@ -201,37 +201,23 @@ namespace equlab {
 
 
 
-	void ConnectEqualsLink::execute(middle::GameState* gameState) {
-		if (!canConnect(gameState, bubbleIdA, bubbleIdB)) {
-			cancelled = true;
-			return;
-		}
-
-		auto& shapeA = middle::getShape(gameState, bubbleIdA.index);
-		auto& shapeB = middle::getShape(gameState, bubbleIdB.index);
-		if (!middle::getComponent<components::BubbleComponent>(shapeA) || !middle::getComponent<components::BubbleComponent>(shapeB)) {
-			cancelled = true;
-			return;
-		}
-
-		Vector3 targetPos = (middle::getShapePosition(gameState, bubbleIdA.index)
-			+ middle::getShapePosition(gameState, bubbleIdB.index)) * 0.5f;
-
+	void AddEquals::execute(middle::GameState* gameState) {
+		middle::Shape bubAProto = bubble::newBubble(gameState, targetPos + Vector3{-1,0,0});
+		middle::Shape bubBProto = bubble::newBubble(gameState, targetPos + Vector3{1,0,0});
 		middle::Shape equalsProto = bubble::newEquals(gameState, targetPos);
-		middle::Shape& equalsShape = middle::registerShape(gameState, equalsProto);
+		middle::Shape& bubA = middle::registerShape(gameState, bubAProto);
+		middle::Shape& bubB = middle::registerShape(gameState, bubBProto);
+		middle::Shape& equals = middle::registerShape(gameState, equalsProto);
 
-		auto registerAction = std::make_unique<middle::EditorActionRegisterId>(equalsShape.id);
+		middle::EditorActionReparent(equals.id.index, bubA.id.index).execute(gameState);
+		middle::EditorActionReparent(equals.id.index, bubB.id.index).execute(gameState);
+
+		auto registerAction = std::make_unique<middle::EditorActionRegisterId>(equals.id);
 		registerAction->execute(gameState);
 		actions.push_back(std::move(registerAction));
-
-		auto reparentA = std::make_unique<middle::EditorActionReparent>(equalsShape.id.index, bubbleIdA.index);
-		reparentA->execute(gameState);
-		actions.push_back(std::move(reparentA));
-		auto reparentB = std::make_unique<middle::EditorActionReparent>(equalsShape.id.index, bubbleIdB.index);
-		reparentB->execute(gameState);
-		actions.push_back(std::move(reparentB));
 	}
-	void ConnectEqualsLink::undo(middle::GameState* gameState) {
+
+	void AddEquals::undo(middle::GameState* gameState) {
 		while (actions.size() > 0) {
 			actions.back()->undo(gameState);
 			actions.pop_back();
@@ -326,7 +312,7 @@ namespace equlab {
 
 	middle::Id bubequToBubble(middle::GameState* gameState, const Vector3& targetPos, const std::string& path)
 	{
-		auto bubequ = bubequ::parseBubequ(path);
+		auto bubequ = bubequ::loadBubequ(path);
 		std::queue<bubequ::Scope*>scopeQueue;
 		std::queue<middle::Id>parentQueue;
 		scopeQueue.push(bubequ.get());

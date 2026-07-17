@@ -91,9 +91,9 @@ public:
 						auto& bubbleShapeA = middle::registerShape(gameState, bubbleProtoA);
 						auto bubbleProtoB = bubble::newBubble(gameState, randomOffset());
 						auto& bubbleShapeB = middle::registerShape(gameState, bubbleProtoB);
-						auto newEqualsAction = equlab::ConnectEqualsLink(bubbleShapeA.id, bubbleShapeB.id);
-						middle::Id equals = newEqualsAction.resultId;
-						middle::attachComponent<components::BubbleAlgebraProblem>(gameState, equals);
+						//auto newEqualsAction = equlab::ConnectEqualsLink(bubbleShapeA.id, bubbleShapeB.id);
+						//middle::Id equals = newEqualsAction.resultId;
+						//middle::attachComponent<components::BubbleAlgebraProblem>(gameState, equals);
 					}
 
 					if (ImGui::Button("Import Bubble Level Content")) {
