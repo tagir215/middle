@@ -310,9 +310,8 @@ namespace equlab {
 		return Vector3{ rf(), rf(), rf() };
 	}
 
-	middle::Id bubequToBubble(middle::GameState* gameState, const Vector3& targetPos, const std::string& path)
+	middle::Id bubequToBubble(middle::GameState* gameState, const Vector3& targetPos, std::shared_ptr<bubequ::Scope>& bubequ)
 	{
-		auto bubequ = bubequ::loadBubequ(path);
 		std::queue<bubequ::Scope*>scopeQueue;
 		std::queue<middle::Id>parentQueue;
 		scopeQueue.push(bubequ.get());

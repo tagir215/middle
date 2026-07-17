@@ -33,4 +33,15 @@ namespace bubequ {
 		LinkType type;
 	};
 
+
+	struct SentenceUnit{
+		std::string text;
+		int bubequIndex = -1;
+	};
+
+	struct WordProblem {
+		std::string rawText;
+		std::vector<SentenceUnit> sentenceUnits;
+		std::vector<std::shared_ptr<bubequ::Scope>>bubequs;
+	};
 }

@@ -14,5 +14,6 @@ namespace bubequ {
 	std::shared_ptr<Scope>loadBubequ(const std::string& path);
 	void saveBubequ(const std::string& equname, const std::string& bubequ);
 	void savePuzzleText(const std::string& title, const std::string& text);
+	WordProblem loadPuzzleText(const std::string& path);
 	std::vector<std::string>getFilenames(const std::string directoryPath);
 }

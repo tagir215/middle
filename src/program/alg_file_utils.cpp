@@ -3,9 +3,11 @@
 #include <iostream>
 #include "bubble_paths.h"
 #include <fstream>
+#include <sstream>
+
 namespace bubequ {
 
-	const std::string version = "ver 1";
+	const std::string version = "#ver 1";
 
 	bool checkVersion(const std::string& line) {
 		return line == version;
@@ -159,7 +161,7 @@ namespace bubequ {
 		}
 		std::string line;
 		while (std::getline(inputFile, line)) {
-			if (line.find("ver") != std::string::npos) {
+			if (line.find("#ver") != std::string::npos) {
 				if (!checkVersion(line)) {
 					throw std::runtime_error("bubequ file version not matching");
 				}
@@ -195,6 +197,53 @@ namespace bubequ {
 		outFile.flush();
 		outFile.close();
 	}
+
+	WordProblem loadPuzzleText(const std::string& path) {
+		std::ifstream inputFile(path);
+		if (!inputFile.is_open()) {
+			throw std::runtime_error("Failed to open file to open");
+		}
+
+		WordProblem result;
+		std::string line;
+		while (std::getline(inputFile, line)) {
+			if (line.find("#ver") != std::string::npos) {
+				if (!checkVersion(line)) {
+					throw std::runtime_error("bubequ file version not matching");
+				}
+				continue;
+			}
+
+			result.rawText += line + '\n';
+
+			if (line.find("equ:") != std::string::npos) {
+				std::string equname = line.substr(4);
+				std::string path = bubblePaths::EQUATION_FOLDER + "/" + equname;
+				auto bubequ = loadBubequ(path);
+				result.bubequs.push_back(bubequ);
+				continue;
+			}
+			
+			std::istringstream iss(line);
+			std::string word;
+			while(iss >> word) {
+				SentenceUnit unit;
+				if (word.size() > 1 && std::isdigit(word[0]) && word[1] == '(') {
+					unit.text = word.substr(1, word.size() - 2);
+					// reduce 1 cause in data 1 means index 0
+					unit.bubequIndex = word[0] - '0' -1;
+				}
+				else {
+					unit.text = word;
+				}
+				result.sentenceUnits.push_back(unit);
+			}
+
+		}
+
+		return result;
+	}
+
 	std::vector<std::string> getFilenames(const std::string directoryPath)
 	{
 		std::vector<std::string>files;

@@ -94,46 +94,6 @@ public:
 
 	void update(middle::GameState* gameState) override {
 
-		// UI 
-		auto testui = [gameState, this]() {
-			ImGui::Begin("Bubequ file");
-			//if (ImGui::Button("Load bubequ")) {
-			//	auto scope = bubequ::parseBubequ("../assets/equations/test.bubequ");
-			//	middle::Id interesting = equlab::bubequToBubble(gameState,
-			//		gameState->input.mouseXZ_PlanePos, "../assets/equations/test.bubequ");
-			//}
-			static char equationName[128] = "";
-			ImGui::InputText("Equation name", equationName, IM_ARRAYSIZE(equationName));
-
-			if (ImGui::Button("Save bubequ")) {
-				middle::Id targetId;
-
-				for (middle::Id& topDogId : topDogCache->relevantIdVector) {
-					middle::Id parentId = middle::getParent(gameState, topDogId);
-					targetId = parentId.index == middle::UNASSIGNED ? topDogId : parentId;
-				}
-				if (targetId.index != middle::UNASSIGNED) {
-					std::string equstring = equlab::bubbleToBubequ(gameState, targetId);
-					bubequ::saveBubequ(equationName, equstring);
-				}
-			}
-			ImGui::End();
-
-
-
-			ImGui::Begin("bubequ list");
-			std::vector<std::string>filenames = bubequ::getFilenames(bubblePaths::EQUATION_FOLDER);
-			for (auto& name : filenames) {
-				if (ImGui::Button(name.c_str())) {
-					const std::string path = bubblePaths::EQUATION_FOLDER + "/" + name;
-					equlab::bubequToBubble(gameState, gameState->input.mouseXZ_PlanePos, path);
-				}
-			}
-			ImGui::End();
-			};
-		gameState->uiSetups.push_back(testui);
-
-
 		// ACTIVITY UPDATE
 		float minDistance = std::numeric_limits<float>::max();
 		middle::Id closestId;
@@ -147,8 +107,8 @@ public:
 				assert(children.size() == 2);
 				middle::Id idA = children[0];
 				middle::Id idB = children[1];
-				center = middle::getShapePosition(gameState, idA.index) +
-					middle::getShapePosition(gameState, idB.index) * 0.5f;
+				center = (middle::getShapePosition(gameState, idA.index) +
+					middle::getShapePosition(gameState, idB.index)) * 0.5f;
 				targetId = parentId;
 			}
 			else {
@@ -165,10 +125,15 @@ public:
 		// UPDATE ACTIVE TO CLOSEST TO CAMERA
 		if (closestId.index != middle::UNASSIGNED) {
 
-			if (activeBubbleCache->relevantIdVector.size() == 1) {
-				middle::Id activeId = activeBubbleCache->relevantIdVector[0];
-				if (activeId != closestId) {
-					middle::queueComponentDeletion<components::ActiveBubbleTag>(gameState, activeId);
+			if (activeBubbleCache->relevantIdVector.size() > 0) {
+				bool needUpdate = false;
+				for (middle::Id& activeId : activeBubbleCache->relevantIdVector) {
+					if (activeId != closestId) {
+						middle::queueComponentDeletion<components::ActiveBubbleTag>(gameState, activeId);
+						needUpdate = true;
+					}
+				}
+				if (needUpdate) {
 					middle::queueComponentAttachment<components::ActiveBubbleTag>(gameState, closestId);
 				}
 			}
@@ -176,6 +141,61 @@ public:
 				middle::queueComponentAttachment<components::ActiveBubbleTag>(gameState, closestId);
 			}
 		}
+
+
+
+
+		// UI 
+		auto equlabUi = [gameState, this]() {
+			ImGui::Begin("Bubequ file");
+			static char equationName[128] = "";
+			ImGui::InputText("Equation name", equationName, IM_ARRAYSIZE(equationName));
+			if (ImGui::IsItemFocused()) {
+				gameState->inputBlockers.insert(middle::InputBlockers::KEYBOARD_BLOCK);
+				gameState->inputBlockers.insert(middle::InputBlockers::MOUSE_BLOCK);
+			}
+
+			if (ImGui::Button("Save bubequ")) {
+				for (middle::Id& activeId : activeBubbleCache->relevantIdVector) {
+					std::string equstring = equlab::bubbleToBubequ(gameState, activeId);
+					bubequ::saveBubequ(equationName, equstring);
+				}
+			}
+
+			ImGui::Separator();
+			if (ImGui::Button("Delete bubequ")) {
+				for (middle::Id& activeId : activeBubbleCache->relevantIdVector) {
+					auto deleteAction = std::make_shared<middle::EditorActionDeleteSingle>(activeId);
+					middle::queueAction(gameState, deleteAction);
+					gameState->bubbleAlgebraState.bubbleActions.push_back(deleteAction);
+				}
+			}
+			ImGui::End();
+
+
+
+			ImGui::Begin("bubequ list");
+			std::vector<std::string>filenames = bubequ::getFilenames(bubblePaths::EQUATION_FOLDER);
+			for (auto& name : filenames) {
+				if (ImGui::Button(name.c_str())) {
+					const std::string path = bubblePaths::EQUATION_FOLDER + "/" + name;
+					Vector3 camXZPos = gameState->activeCamera.position;
+					camXZPos.y = 0;
+					auto bubequ = bubequ::loadBubequ(path);
+					middle::Id id = equlab::bubequToBubble(gameState, camXZPos, bubequ);
+					auto registerAction = std::make_shared<middle::EditorActionRegisterId>(id);
+					middle::queueAction(gameState, registerAction);
+					gameState->bubbleAlgebraState.bubbleActions.push_back(registerAction);
+				}
+			}
+			ImGui::End();
+			};
+		gameState->uiSetups.push_back(equlabUi);
+
+
+
+
+
 
 
 		// ACTIONS

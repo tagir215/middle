@@ -505,7 +505,16 @@ public:
 			}
 		}
 
+		// cross hair or something
+		middle::RenderItem cameraTarget;
+		cameraTarget.type = middle::RenderItemType::CIRCLE;
+		cameraTarget.radius = 1;
+		cameraTarget.center = gameState->activeCamera.position + Vector3{0,100,0};
+		cameraTarget.color = WHITE;
+		cameraTarget.disableDepthTest = true;
+		gameState->renderData.push_back(cameraTarget);
 
+		// render activity bounding box
 		for (middle::Id& id : activeBubbleCache->relevantIdVector) {
 			float left, right, top, bottom;
 			bubble::bubbleRectBoundingBox(gameState, id, &left, &right, &bottom, &top);
@@ -528,7 +537,7 @@ public:
 			for (int i = 0; i < inputCache->getSize(); ++i) {
 				auto input = *inputIt;
 				auto intersectable = *intersectabeInputIt;
-				
+
 				// render hover effect
 				if (intersectable->intersectingTop) {
 					middle::RenderItem hovering;

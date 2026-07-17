@@ -3,6 +3,10 @@
 #include "middle_system_registrar.h"
 #include "imgui.h"
 #include "alg_file_utils.h"
+#include "bubble_paths.h"
+#include "equlab_actions.h"
+#include "middle_shape_utils.h"
+#include "bubble_utils.h"
 
 class WriterUnBlockingSystem : public middle::MiddleGameplaySystem {
 	void init(middle::GameState* gameState) override {
@@ -32,9 +36,36 @@ class WriterUnBlockingSystem : public middle::MiddleGameplaySystem {
 			if (ImGui::Button("Save Text")) {
 				bubequ::savePuzzleText(title, text);
 			}
-			if (ImGui::Button("Save Problem reference")) {
+			ImGui::Separator();
 
+			std::vector<std::string>textFilenames = bubequ::getFilenames(bubblePaths::WORD_PROBLEMS_FOLDER);
+			for (const std::string& filename : textFilenames) {
+				if (ImGui::Button(filename.c_str())) {
+					bubequ::WordProblem problem =  
+						bubequ::loadPuzzleText(bubblePaths::WORD_PROBLEMS_FOLDER + "/" + filename);
+					// remove .txt 
+					std::string titleText = filename.substr(0, filename.size() - 4);
+					snprintf(title, sizeof(title), "%s", titleText.c_str());
+					snprintf(text, sizeof(text), "%s", problem.rawText.c_str());
+
+					// load bubequs
+					Vector3 cameraXZPos = gameState->activeCamera.position;
+					cameraXZPos.y = 0;
+					const float spacing = 600;
+					Vector3 offset = { 0,0,-spacing };
+					for (auto& unit : problem.sentenceUnits) {
+						if (unit.bubequIndex >= 0) {
+							middle::Id id = equlab::bubequToBubble(gameState, cameraXZPos + offset, 
+								problem.bubequs[unit.bubequIndex]);
+							auto registerAction = std::make_shared<middle::EditorActionRegisterId>(id);
+							middle::queueAction(gameState, registerAction);
+							gameState->bubbleAlgebraState.bubbleActions.push_back(registerAction);
+							offset += { spacing, 0, 0};
+						}
+					}
+				}
 			}
+
 			ImGui::End();
 			};
 		gameState->uiSetups.push_back(writingUi);
