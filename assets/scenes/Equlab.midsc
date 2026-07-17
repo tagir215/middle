@@ -1,6 +1,9 @@
 #scene
 s  Equlab
 __q  0_0
+LoopSociety
+q  -1_0
+p  
 Text
 s  EditorSystem
 f  255.000000
@@ -12,19 +15,19 @@ f  0.000000
 f  10.000000
 f  10.000000
 b  1
+SystemReference
+s  EditorSystem
 MouseSelectable
-MouseGrabbable
 Position
 f  190.211304
 f  200.000000
 f  61.803402
+MouseGrabbable
 MouseIntersectable
-SystemReference
-s  EditorSystem
+__q  1_0
 LoopSociety
 q  -1_0
 p  
-__q  1_0
 Text
 s  MouseIntersectDetectionSystem
 f  255.000000
@@ -36,19 +39,19 @@ f  0.000000
 f  10.000000
 f  10.000000
 b  1
+SystemReference
+s  MouseIntersectDetectionSystem
 MouseSelectable
-MouseGrabbable
 Position
 f  165.094376
 f  200.000000
 f  112.888649
+MouseGrabbable
 MouseIntersectable
-SystemReference
-s  MouseIntersectDetectionSystem
+__q  2_0
 LoopSociety
 q  -1_0
 p  
-__q  2_0
 Text
 s  MouseGrabbingSystem
 f  255.000000
@@ -60,19 +63,19 @@ f  0.000000
 f  10.000000
 f  10.000000
 b  1
+SystemReference
+s  MouseGrabbingSystem
 MouseSelectable
-MouseGrabbable
 Position
 f  126.602486
 f  200.000000
 f  154.828339
+MouseGrabbable
 MouseIntersectable
-SystemReference
-s  MouseGrabbingSystem
+__q  3_0
 LoopSociety
 q  -1_0
 p  
-__q  3_0
 Text
 s  MouseSelectionSystem
 f  255.000000
@@ -84,19 +87,19 @@ f  0.000000
 f  10.000000
 f  10.000000
 b  1
+SystemReference
+s  MouseSelectionSystem
 MouseSelectable
-MouseGrabbable
 Position
 f  77.854004
 f  200.000000
 f  184.224731
+MouseGrabbable
 MouseIntersectable
-SystemReference
-s  MouseSelectionSystem
+__q  4_0
 LoopSociety
 q  -1_0
 p  
-__q  4_0
 Text
 s  EnviromentalFileNavigationSystem
 f  255.000000
@@ -108,19 +111,19 @@ f  0.000000
 f  10.000000
 f  10.000000
 b  1
+SystemReference
+s  EnviromentalFileNavigationSystem
 MouseSelectable
-MouseGrabbable
 Position
 f  22.798265
 f  200.000000
 f  198.696350
+MouseGrabbable
 MouseIntersectable
-SystemReference
-s  EnviromentalFileNavigationSystem
+__q  5_0
 LoopSociety
 q  -1_0
 p  
-__q  5_0
 Text
 s  EditorHotKeySystem
 f  255.000000
@@ -132,19 +135,19 @@ f  0.000000
 f  10.000000
 f  10.000000
 b  1
+SystemReference
+s  EditorHotKeySystem
 MouseSelectable
-MouseGrabbable
 Position
 f  -34.104458
 f  200.000000
 f  197.070770
+MouseGrabbable
 MouseIntersectable
-SystemReference
-s  EditorHotKeySystem
+__q  6_0
 LoopSociety
 q  -1_0
 p  
-__q  6_0
 Text
 s  CameraSystem
 f  255.000000
@@ -156,19 +159,19 @@ f  0.000000
 f  10.000000
 f  10.000000
 b  1
+SystemReference
+s  CameraSystem
 MouseSelectable
-MouseGrabbable
 Position
 f  -88.244225
 f  200.000000
 f  179.479675
+MouseGrabbable
 MouseIntersectable
-SystemReference
-s  CameraSystem
+__q  7_0
 LoopSociety
 q  -1_0
 p  
-__q  7_0
 Text
 s  MiddlePhysicsSystem
 f  255.000000
@@ -180,19 +183,19 @@ f  0.000000
 f  10.000000
 f  10.000000
 b  1
+SystemReference
+s  MiddlePhysicsSystem
 MouseSelectable
-MouseGrabbable
 Position
 f  -135.235001
 f  200.000000
 f  147.348206
+MouseGrabbable
 MouseIntersectable
-SystemReference
-s  MiddlePhysicsSystem
+__q  8_0
 LoopSociety
 q  -1_0
 p  
-__q  8_0
 Text
 s  EditorRenderSetupSystem
 f  255.000000
@@ -204,19 +207,19 @@ f  0.000000
 f  10.000000
 f  10.000000
 b  1
+SystemReference
+s  EditorRenderSetupSystem
 MouseSelectable
-MouseGrabbable
 Position
 f  -171.269836
 f  200.000000
 f  103.279449
+MouseGrabbable
 MouseIntersectable
-SystemReference
-s  EditorRenderSetupSystem
+__q  9_0
 LoopSociety
 q  -1_0
 p  
-__q  9_0
 Text
 s  EditorUiSystem
 f  255.000000
@@ -228,19 +231,19 @@ f  0.000000
 f  10.000000
 f  10.000000
 b  1
+SystemReference
+s  EditorUiSystem
 MouseSelectable
-MouseGrabbable
 Position
 f  -193.429382
 f  200.000000
 f  50.843632
+MouseGrabbable
 MouseIntersectable
-SystemReference
-s  EditorUiSystem
+__q  10_0
 LoopSociety
 q  -1_0
 p  
-__q  10_0
 Text
 s  ComponentUiSystem
 f  255.000000
@@ -252,19 +255,19 @@ f  0.000000
 f  10.000000
 f  10.000000
 b  1
+SystemReference
+s  ComponentUiSystem
 MouseSelectable
-MouseGrabbable
 Position
 f  -199.918442
 f  200.000000
 f  -5.711226
+MouseGrabbable
 MouseIntersectable
-SystemReference
-s  ComponentUiSystem
+__q  11_0
 LoopSociety
 q  -1_0
 p  
-__q  11_0
 Text
 s  EqulabSystem
 f  255.000000
@@ -276,31 +279,25 @@ f  0.000000
 f  10.000000
 f  10.000000
 b  1
+SystemReference
+s  EqulabSystem
 MouseSelectable
-MouseGrabbable
 Position
 f  -106.075012
 f  -0.000000
 f  -98.885506
+MouseGrabbable
 MouseIntersectable
-SystemReference
-s  EqulabSystem
-LoopSociety
-q  -1_0
-p  
 __q  12_0
+SystemReference
+s  WriterUnBlockingSystem
 MouseSelectable
+MouseGrabbable
 Position
 f  -102.310799
 f  -0.000031
 f  -65.627220
-MouseGrabbable
-SystemReference
-s  WriterUnBlockingSystem
 MouseIntersectable
-LoopSociety
-q  -1_0
-p  
 Text
 s  WriterUnBlockingSystem
 f  255.000000
@@ -312,63 +309,90 @@ f  0.000000
 f  10.000000
 f  10.000000
 b  1
+LoopSociety
+q  -1_0
+p  
 __q  13_0
+MouseGrabbable
 Position
 f  400.000000
 f  0.000000
 f  -500.000000
-MouseGrabbable
+MouseIntersectable
 Reference
 s  BubbleGameplaySystems
 s  ../assets/shapes/
 MouseSelectable
-MouseIntersectable
 LoopSociety
 __q  14_0
+MouseGrabbable
 Position
 f  800.000000
 f  0.000000
 f  -500.000000
-MouseGrabbable
+MouseIntersectable
 Reference
 s  ManipulationSystems
 s  ../assets/shapes/
 MouseSelectable
-MouseIntersectable
 LoopSociety
 __q  15_0
+MouseGrabbable
 Position
 f  400.000000
 f  0.000000
 f  0.000000
-MouseGrabbable
+MouseIntersectable
 Reference
 s  GreatWallAndProcedureAndProblemContainers
 s  ../assets/shapes/
 MouseSelectable
-MouseIntersectable
 LoopSociety
 __q  16_0
+MouseGrabbable
 Position
 f  -800.000000
 f  -500.000000
 f  -500.000000
-MouseGrabbable
+MouseIntersectable
 Reference
 s  BubbleAlgebraUi
 s  ../assets/shapes/
 MouseSelectable
-MouseIntersectable
 LoopSociety
 __q  17_0
+MouseGrabbable
 Position
 f  -43.011288
 f  -1000.000122
 f  -31.600134
-MouseGrabbable
+MouseIntersectable
 Reference
 s  BubbleCamera
 s  ../assets/shapes/
 MouseSelectable
-MouseIntersectable
 LoopSociety
+__q  18_0
+SystemReference
+s  PuzzleTextSystem
+MouseSelectable
+Position
+f  -184.697540
+f  -0.000031
+f  -110.095390
+MouseGrabbable
+MouseIntersectable
+Text
+s  PuzzleTextSystem
+f  255.000000
+f  255.000000
+f  255.000000
+f  255.000000
+f  2.000000
+f  0.000000
+f  10.000000
+f  10.000000
+b  1
+LoopSociety
+q  -1_0
+p  

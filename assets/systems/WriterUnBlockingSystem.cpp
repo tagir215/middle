@@ -7,6 +7,15 @@
 #include "equlab_actions.h"
 #include "middle_shape_utils.h"
 #include "bubble_utils.h"
+#include "PuzzleTextUnit.h"
+#include "Text.h"
+#include "Position.h"
+#include "UiComponent.h"
+#include "PuzzleTextPanel.h"
+#include "Rectangle.h"
+#include "LoopTag.h"
+#include "Layer.h"
+
 
 class WriterUnBlockingSystem : public middle::MiddleGameplaySystem {
 	void init(middle::GameState* gameState) override {
@@ -53,15 +62,58 @@ class WriterUnBlockingSystem : public middle::MiddleGameplaySystem {
 					cameraXZPos.y = 0;
 					const float spacing = 600;
 					Vector3 offset = { 0,0,-spacing };
+
+					std::vector < std::shared_ptr<middle::EditorActionContainer>> actions;
+
+
+					// CREATE TEXT PANEL
+					middle::Shape textPanelProto;
+					middle::addComponent<components::PuzzleTextPanel>(textPanelProto);
+					middle::addComponent<components::Position>(textPanelProto);
+					auto rectangle = middle::addComponent<components::Rectangle>(textPanelProto);
+					rectangle->width = 100;
+					rectangle->height = 50;
+					middle::addComponent<components::UiComponent>(textPanelProto);
+					middle::addComponent<components::Layer>(textPanelProto);
+					middle::addComponent<components::LoopSociety>(textPanelProto);
+					middle::Shape& textPanel = middle::registerShape(gameState, textPanelProto);
+					auto registerAction0 = std::make_shared<middle::EditorActionRegisterId>(textPanel.id);
+					actions.push_back(registerAction0);
+					middle::moveShape(gameState, textPanel.id.index, 
+						Vector3{ 0,0,0 } - middle::getShapePosition(gameState, textPanel.id.index));
+
+					// CREATE TEXT UNITS FOR TEXT PANEL
 					for (auto& unit : problem.sentenceUnits) {
 						if (unit.bubequIndex >= 0) {
+							// create bubbles of referred equs
 							middle::Id id = equlab::bubequToBubble(gameState, cameraXZPos + offset, 
 								problem.bubequs[unit.bubequIndex]);
 							auto registerAction = std::make_shared<middle::EditorActionRegisterId>(id);
-							middle::queueAction(gameState, registerAction);
-							gameState->bubbleAlgebraState.bubbleActions.push_back(registerAction);
+							actions.push_back(registerAction);
+
 							offset += { spacing, 0, 0};
+
 						}
+
+						// create text shapes
+						middle::Shape shapeProto;
+						middle::addComponent<components::PuzzleTextUnit>(shapeProto);
+						auto textComp = middle::addComponent<components::Text>(shapeProto);
+						textComp->text = unit.text;
+						textComp->fontSize = 20;
+						middle::addComponent<components::Position>(shapeProto);
+						middle::addComponent<components::UiComponent>(shapeProto);
+						middle::Shape& textUnitShape = middle::registerShape(gameState, shapeProto);
+						middle::EditorActionReparent(textPanel.id.index, textUnitShape.id.index);
+						auto registerAction2 = std::make_shared<middle::EditorActionRegisterId>(textUnitShape.id);
+						actions.push_back(registerAction2);
+					}
+
+
+					if (actions.size() > 0) {
+						auto multiAction = std::make_shared<middle::MultiAction>(actions);
+						middle::queueAction(gameState, multiAction);
+						gameState->bubbleAlgebraState.bubbleActions.push_back(multiAction);
 					}
 				}
 			}
