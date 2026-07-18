@@ -15,6 +15,8 @@
 #include "Rectangle.h"
 #include "LoopTag.h"
 #include "Layer.h"
+#include "SceneObjectComponent.h"
+#include "TopDogBubbleTag.h"
 
 
 class WriterUnBlockingSystem : public middle::MiddleGameplaySystem {
@@ -71,40 +73,35 @@ class WriterUnBlockingSystem : public middle::MiddleGameplaySystem {
 					middle::addComponent<components::PuzzleTextPanel>(textPanelProto);
 					middle::addComponent<components::Position>(textPanelProto);
 					auto rectangle = middle::addComponent<components::Rectangle>(textPanelProto);
-					rectangle->width = 100;
-					rectangle->height = 50;
+					rectangle->width = 150;
+					rectangle->height = 300;
 					middle::addComponent<components::UiComponent>(textPanelProto);
 					middle::addComponent<components::Layer>(textPanelProto);
 					middle::addComponent<components::LoopSociety>(textPanelProto);
+					middle::addComponent<components::SceneObjectComponent>(textPanelProto);
 					middle::Shape& textPanel = middle::registerShape(gameState, textPanelProto);
 					auto registerAction0 = std::make_shared<middle::EditorActionRegisterId>(textPanel.id);
 					actions.push_back(registerAction0);
+					Vector3 targetPos = gameState->activeCamera.position;
+					targetPos.y = 0;
 					middle::moveShape(gameState, textPanel.id.index, 
-						Vector3{ 0,0,0 } - middle::getShapePosition(gameState, textPanel.id.index));
+						targetPos - middle::getShapePosition(gameState, textPanel.id.index));
 
 					// CREATE TEXT UNITS FOR TEXT PANEL
 					for (auto& unit : problem.sentenceUnits) {
-						if (unit.bubequIndex >= 0) {
-							// create bubbles of referred equs
-							middle::Id id = equlab::bubequToBubble(gameState, cameraXZPos + offset, 
-								problem.bubequs[unit.bubequIndex]);
-							auto registerAction = std::make_shared<middle::EditorActionRegisterId>(id);
-							actions.push_back(registerAction);
-
-							offset += { spacing, 0, 0};
-
-						}
 
 						// create text shapes
-						middle::Shape shapeProto;
-						middle::addComponent<components::PuzzleTextUnit>(shapeProto);
-						auto textComp = middle::addComponent<components::Text>(shapeProto);
+						middle::Shape textUnitProto;
+						middle::addComponent<components::PuzzleTextUnit>(textUnitProto);
+						auto textComp = middle::addComponent<components::Text>(textUnitProto);
 						textComp->text = unit.text;
-						textComp->fontSize = 20;
-						middle::addComponent<components::Position>(shapeProto);
-						middle::addComponent<components::UiComponent>(shapeProto);
-						middle::Shape& textUnitShape = middle::registerShape(gameState, shapeProto);
-						middle::EditorActionReparent(textPanel.id.index, textUnitShape.id.index);
+						textComp->fontSize = 10;
+						middle::addComponent<components::Position>(textUnitProto);
+						middle::addComponent<components::Rectangle>(textUnitProto);
+						middle::addComponent<components::UiComponent>(textUnitProto);
+						middle::addComponent<components::LoopSociety>(textUnitProto);
+						middle::Shape& textUnitShape = middle::registerShape(gameState, textUnitProto);
+						middle::EditorActionReparent(textPanel.id.index, textUnitShape.id.index).execute(gameState);
 						auto registerAction2 = std::make_shared<middle::EditorActionRegisterId>(textUnitShape.id);
 						actions.push_back(registerAction2);
 					}

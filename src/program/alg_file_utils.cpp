@@ -3,7 +3,8 @@
 #include <iostream>
 #include "bubble_paths.h"
 #include <fstream>
-#include <sstream>
+#include <unordered_map>
+
 
 namespace bubequ {
 
@@ -198,6 +199,16 @@ namespace bubequ {
 		outFile.close();
 	}
 
+	void cleanString(std::string& text) {
+		text.erase(
+			std::remove_if(text.begin(), text.end(), [](char c) {
+				return c == ',' || c == '.' || c == ';' ||
+					c == ':' || c == '?';
+				}),
+			text.end()
+		);
+	}
+
 	WordProblem loadPuzzleText(const std::string& path) {
 		std::ifstream inputFile(path);
 		if (!inputFile.is_open()) {
@@ -216,29 +227,72 @@ namespace bubequ {
 
 			result.rawText += line + '\n';
 
-			if (line.find("equ:") != std::string::npos) {
+			if (line.find("bobj:") != std::string::npos) {
 				std::string equname = line.substr(4);
 				std::string path = bubblePaths::EQUATION_FOLDER + "/" + equname;
 				auto bubequ = loadBubequ(path);
 				result.bubequs.push_back(bubequ);
 				continue;
 			}
-			
-			std::istringstream iss(line);
-			std::string word;
-			while(iss >> word) {
-				SentenceUnit unit;
-				if (word.size() > 1 && std::isdigit(word[0]) && word[1] == '(') {
-					unit.text = word.substr(1, word.size() - 2);
-					// reduce 1 cause in data 1 means index 0
-					unit.bubequIndex = word[0] - '0' -1;
+
+			// parse
+			std::unordered_map<std::string, std::string>varMap;
+			std::vector<std::string>words;
+			std::vector<std::string>labels;
+			std::string currentWord = "";
+			std::string currentLabel = "";
+			SentenceUnit currentUnit;
+
+			cleanString(line);
+
+			// collect words and labels
+			bool bracketOpen = false;
+			bool parsingVarLabel = false;
+			for (int i = 0; i < line.size(); ++i) {
+				char c = line[i];
+				if (c == ' ') {
+					if (parsingVarLabel) {
+						labels.push_back(currentLabel);
+						parsingVarLabel = false;
+						currentLabel = "";
+						continue;
+					}
+					else if (!bracketOpen) {
+						words.push_back(currentWord);
+						currentWord = "";
+						continue;
+					}
+				}
+				if (c == '[') {
+					bracketOpen = true;
+					parsingVarLabel = true;
+					continue;
+				}
+				else if (c == ']') {
+					bracketOpen = false;
+					varMap[currentWord] = labels.back();
+					continue;
+				}
+				if (parsingVarLabel) {
+					currentLabel += c;
 				}
 				else {
-					unit.text = word;
+					currentWord += c;
+				}
+			}
+			if (currentWord != "") {
+				words.push_back(currentWord);
+			}
+
+			// labels...
+			for (std::string& word : words) {
+				SentenceUnit unit;
+				unit.text = word;
+				if (varMap.find(word) != varMap.end()) {
+					unit.varLabel = varMap[word];
 				}
 				result.sentenceUnits.push_back(unit);
 			}
-
 		}
 
 		return result;

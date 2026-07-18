@@ -96,6 +96,7 @@ namespace middle {
 		Vector3 scale = {1,1,1};
 		Vector3 linePointA;
 		Vector3 linePointB;
+		Vector3 textOffset = { 0,0,0 };
 		Transform transform;
 		int layer = 0;
 		float radius;

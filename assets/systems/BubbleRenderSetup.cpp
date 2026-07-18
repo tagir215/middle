@@ -34,7 +34,7 @@
 #include "CodeBlock.h"
 #include "IdRef.h"
 #include "UnIntersectableWindowComponent.h"
-#include "ActiveBubbleTag.h"
+#include "ActiveSceneEditableTag.h"
 
 
 class BubbleRenderSetup : public middle::MiddleGameplaySystem {
@@ -110,7 +110,7 @@ public:
 		procContainerCache = middle::newCompCache(gameState, systemName);
 		procContainerCache->addType<components::ProcedureContainer>();
 		activeBubbleCache = middle::newCompCache(gameState, systemName);
-		activeBubbleCache->addType<components::ActiveBubbleTag>();
+		activeBubbleCache->addType<components::ActiveSceneSelectableTag>();
 	}
 	bool debugRendering = false;
 

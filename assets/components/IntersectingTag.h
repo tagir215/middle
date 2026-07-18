@@ -1,10 +1,10 @@
 #pragma once
 #include "registrars.h"
 #include "editor_file_utils.h"
-#define MIDDLEACTIVEBUBBLETAG(X) 
+#define MIDDLEINTERSECTINGTAG(X) 
 
 namespace components {
-	struct ActiveBubbleTag : public middle::Serializable{
+	struct IntersectingTag : public middle::Serializable{
 
 		void serialize(std::ostream& ostream) override;
 		void deserialize(const std::vector<std::string>& buffer, int indexOffset) override;
@@ -13,7 +13,7 @@ namespace components {
 		template<typename V>
 		void reflect(V& v) {
 #define X(f) v(#f, f);
-			MIDDLEACTIVEBUBBLETAG(X)
+			MIDDLEINTERSECTINGTAG(X)
 #undef X
 		}
 	};

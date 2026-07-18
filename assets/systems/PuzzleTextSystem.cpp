@@ -5,10 +5,12 @@
 #include "component_utils.h"
 #include "middle_shape_utils.h"
 #include "Text.h"
-#include "raylib.h"
+#include "PuzzleTextPanel.h"
+#include "Rectangle.h"
 
 class PuzzleTextSystem : public middle::MiddleGameplaySystem {
-	components::CompCache* puzzleTextCache;
+	components::CompCache* puzzlePanelCache;
+
 	int textLineSpacing = 2;
 
 	// Get index position for a unicode character on font
@@ -94,6 +96,7 @@ class PuzzleTextSystem : public middle::MiddleGameplaySystem {
 		return length;
 	}
 
+
 	Vector2 PuzzleMeasureTextEx(Font font, const char* text, float fontSize, float spacing)
 	{
 		Vector2 textSize = { 0 };
@@ -123,19 +126,11 @@ class PuzzleTextSystem : public middle::MiddleGameplaySystem {
 
 			i += codepointByteCount;
 
-			if (letter != '\n')
-			{
-				if (font.glyphs[index].advanceX > 0) textWidth += font.glyphs[index].advanceX;
-				else textWidth += (font.recs[index].width + font.glyphs[index].offsetX);
+			if (font.glyphs[index].advanceX > 0) {
+				textWidth += font.glyphs[index].advanceX;
 			}
-			else
-			{
-				if (tempTextWidth < textWidth) tempTextWidth = textWidth;
-				byteCounter = 0;
-				textWidth = 0;
-
-				// NOTE: Line spacing is a global variable, use SetTextLineSpacing() to setup
-				textHeight += (fontSize + textLineSpacing);
+			else {
+				textWidth += (font.recs[index].width + font.glyphs[index].offsetX);
 			}
 
 			if (tempByteCounter < byteCounter) tempByteCounter = byteCounter;
@@ -151,24 +146,53 @@ class PuzzleTextSystem : public middle::MiddleGameplaySystem {
 
 
 	void init(middle::GameState* gameState) override {
-		puzzleTextCache = middle::newCompCache(gameState, systemName);
-		puzzleTextCache->addType<components::PuzzleTextUnit>();
-		puzzleTextCache->addType<components::Text>();
+		puzzlePanelCache = middle::newCompCache(gameState, systemName);
+		puzzlePanelCache->addType<components::PuzzleTextPanel>();
+		puzzlePanelCache->addType<components::Rectangle>();
 	}
 	void update(middle::GameState* gameState) override {
-		auto unitIt = puzzleTextCache->begin<components::PuzzleTextUnit>();
-		auto textIt = puzzleTextCache->begin<components::Text>();
-		float spacing = 0.4f;
-		Vector3 initPos = { 0,0,0 };
-		Vector3 cursorPos = initPos;
 
-		for (middle::Id& id : puzzleTextCache->relevantIdVector) {
-			auto unit = *unitIt;
-			auto text = *textIt;
-			Vector2 textSize = PuzzleMeasureTextEx(gameState->globalFont, text->text.c_str(), text->fontSize, spacing);
-			text->offsetX = textSize.x * 0.5f;
-			middle::moveShape(gameState, id.index, cursorPos - middle::getShapePosition(gameState, id.index));
-			cursorPos += Vector3{ textSize.x, 0,0 };
+		// assumes only 1 panel for now
+		float panelWidth;
+		auto rectIt = puzzlePanelCache->begin<components::Rectangle>();
+		Vector3 panelPos;
+		for (middle::Id& panelId : puzzlePanelCache->relevantIdVector) {
+			auto panelRect = *rectIt;
+			panelWidth = panelRect->width;
+			panelPos = middle::getShapePosition(gameState, panelId.index);
+
+			std::vector<middle::Id>textUnits;
+			middle::getChildren(gameState, panelId, textUnits);
+
+
+			Vector3 cursorPos = panelPos;
+			float spacing = 1;
+
+			for (middle::Id id : textUnits) {
+				auto& unitShape = middle::getShape(gameState, id.index);
+				auto unit = middle::getComponent<components::PuzzleTextUnit>(unitShape);
+				auto text = middle::getComponent<components::Text>(unitShape);
+				auto rect = middle::getComponent<components::Rectangle>(unitShape);
+
+				Vector2 textSize = PuzzleMeasureTextEx(gameState->globalFont, text->text.c_str(), text->fontSize, spacing);
+				rect->width = textSize.x;
+				rect->height = textSize.y;
+
+				text->offsetX = -textSize.x * 0.5f;
+				text->offsetZ = textSize.y * 0.5f;
+
+				if (cursorPos.x + textSize.x > panelPos.x + panelWidth) {
+					cursorPos.x = panelPos.x;
+					cursorPos.z -= textSize.y;
+				}
+
+				Vector3 targetPos = cursorPos - Vector3{ text->offsetX, 0, 0 };
+
+				middle::moveShape(gameState, id.index, targetPos - middle::getShapePosition(gameState, id.index));
+
+				const float spaceBetweenWords = 5;
+				cursorPos += Vector3{ textSize.x + spaceBetweenWords, 0,0 };
+			}
 		}
 	}
 };

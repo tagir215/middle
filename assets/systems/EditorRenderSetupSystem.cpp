@@ -187,9 +187,8 @@ public:
 			auto text = *textIt;
 			auto position = *textPositionIt;
 			middle::RenderItem textItem;
-			Vector3 offset = { text->offsetX, text->offsetY, text->offsetZ };
 			textItem.type = middle::RenderItemType::TEXT;
-			textItem.center = Vector3Add({ position->posX, position->posY, position->posZ }, offset);
+			textItem.center = Vector3{ position->posX, position->posY, position->posZ };
 			textItem.text = text->text;
 			textItem.fontSize = text->fontSize;
 			textItem.color = textColor;

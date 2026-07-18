@@ -179,14 +179,14 @@ public:
 			Vector3 pos = middle::getShapePosition(gameState, shape.id.index);
 			textItem.type = middle::RenderItemType::TEXT;
 			textItem.text = text->text;
-			Vector3 offset = { text->offsetX, text->offsetY, text->offsetZ };
-			textItem.center = pos + offset;
+			textItem.center = pos;
 			textItem.color.r = text->fontColorR;
 			textItem.color.g = text->fontColorG;
 			textItem.color.b = text->fontColorB;
 			textItem.color.a = text->fontColorA;
 			textItem.fontSize = text->fontSize;
 			textItem.disableDepthTest = true;
+			textItem.textOffset = { text->offsetX, text->offsetY, text->offsetZ };
 			gameState->renderData.push_back(textItem);
 		}
 
@@ -198,8 +198,7 @@ public:
 			Vector3 pos = middle::getShapePosition(gameState, shape.id.index);
 			textItem.type = middle::RenderItemType::TEXT;
 			textItem.text = text->text;
-			Vector3 offset = { text->offsetX, text->offsetY, text->offsetZ };
-			textItem.center = pos + offset;
+			textItem.center = pos;
 			textItem.color.r = text->fontColorR;
 			textItem.color.g = text->fontColorG;
 			textItem.color.b = text->fontColorB;

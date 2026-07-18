@@ -35,8 +35,8 @@ namespace bubequ {
 
 
 	struct SentenceUnit{
-		std::string text;
-		int bubequIndex = -1;
+		std::string text = "";
+		std::string varLabel = "";
 	};
 
 	struct WordProblem {

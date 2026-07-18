@@ -16,8 +16,7 @@
 #include "TimerComponent.h"
 #include "TopDogBubbleTag.h"
 #include "bubble_paths.h"
-#include "ActiveBubbleTag.h"
-#include "component_utils.h"
+#include "ActiveSceneEditableTag.h"
 
 class EqulabSystem : public middle::MiddleGameplaySystem {
 public:
@@ -33,7 +32,6 @@ public:
 	components::CompCache* intersectableBubbleCache;
 	components::CompCache* intersectableUnitCache;
 	components::CompCache* selectedCache;
-	components::CompCache* topDogCache;
 	components::CompCache* timerCache;
 	components::CompCache* activeBubbleCache;
 
@@ -50,15 +48,12 @@ public:
 		selectedCache->addType<components::SelectedComponent>();
 		selectedCache->addType<components::BubbleComponent>();
 
-		topDogCache = middle::newCompCache(gameState, systemName);
-		topDogCache->addType<components::TopDogBubbleTag>();
-
 		timerCache = middle::newCompCache(gameState, systemName);
 		timerCache->addType<components::TimerComponent>();
 		timerCache->addType<components::BubbleComponent>();
 
 		activeBubbleCache = middle::newCompCache(gameState, systemName);
-		activeBubbleCache->addType<components::ActiveBubbleTag>();
+		activeBubbleCache->addType<components::ActiveSceneSelectableTag>();
 	}
 
 	std::string keyToString(middle::GameState* gameState) {
@@ -92,55 +87,8 @@ public:
 		return "";
 	}
 
+
 	void update(middle::GameState* gameState) override {
-
-		// ACTIVITY UPDATE
-		float minDistance = std::numeric_limits<float>::max();
-		middle::Id closestId;
-		for (middle::Id& id : topDogCache->relevantIdVector) {
-			middle::Id parentId = middle::getParent(gameState, id);
-			middle::Id targetId;
-			Vector3 center;
-			if (parentId.index != middle::UNASSIGNED) {
-				std::vector<middle::Id>children;
-				middle::getChildren(gameState, parentId, children);
-				assert(children.size() == 2);
-				middle::Id idA = children[0];
-				middle::Id idB = children[1];
-				center = (middle::getShapePosition(gameState, idA.index) +
-					middle::getShapePosition(gameState, idB.index)) * 0.5f;
-				targetId = parentId;
-			}
-			else {
-				center = middle::getShapePosition(gameState, id.index);
-				targetId = id;
-			}
-
-			float distSqr = Vector3DistanceSqr(center, gameState->activeCamera.position);
-			if (distSqr < minDistance) {
-				minDistance = distSqr;
-				closestId = targetId;
-			}
-		}
-		// UPDATE ACTIVE TO CLOSEST TO CAMERA
-		if (closestId.index != middle::UNASSIGNED) {
-
-			if (activeBubbleCache->relevantIdVector.size() > 0) {
-				bool needUpdate = false;
-				for (middle::Id& activeId : activeBubbleCache->relevantIdVector) {
-					if (activeId != closestId) {
-						middle::queueComponentDeletion<components::ActiveBubbleTag>(gameState, activeId);
-						needUpdate = true;
-					}
-				}
-				if (needUpdate) {
-					middle::queueComponentAttachment<components::ActiveBubbleTag>(gameState, closestId);
-				}
-			}
-			else if (activeBubbleCache->relevantIdVector.size() == 0) {
-				middle::queueComponentAttachment<components::ActiveBubbleTag>(gameState, closestId);
-			}
-		}
 
 
 
@@ -162,14 +110,6 @@ public:
 				}
 			}
 
-			ImGui::Separator();
-			if (ImGui::Button("Delete bubequ")) {
-				for (middle::Id& activeId : activeBubbleCache->relevantIdVector) {
-					auto deleteAction = std::make_shared<middle::EditorActionDeleteSingle>(activeId);
-					middle::queueAction(gameState, deleteAction);
-					gameState->bubbleAlgebraState.bubbleActions.push_back(deleteAction);
-				}
-			}
 			ImGui::End();
 
 
@@ -191,8 +131,6 @@ public:
 			ImGui::End();
 			};
 		gameState->uiSetups.push_back(equlabUi);
-
-
 
 
 
@@ -241,11 +179,6 @@ public:
 				auto unitComp = middle::getComponent<components::BubbleUnit>(intersectedShape);
 				auto varComp = middle::getComponent<components::BubbleVariable>(intersectedShape);
 				cantAdd = unitComp || varComp;
-			}
-
-			// have only one equation at a time..
-			if (topDogCache->getSize() > 0 && intersectedBubble.index == middle::UNASSIGNED) {
-				cantAdd = true;
 			}
 
 			if (!cantAdd && gameState->equlabInput.oneHeld) {
