@@ -17,101 +17,141 @@
 #include "Layer.h"
 #include "SceneObjectComponent.h"
 #include "TopDogBubbleTag.h"
+#include "bubble_paths.h"
 
 
 class WriterUnBlockingSystem : public middle::MiddleGameplaySystem {
 	void init(middle::GameState* gameState) override {
 
 	}
-	void update(middle::GameState* gameState) override {
-		auto writingUi = [gameState]() {
-			ImGui::Begin("TextInput");
 
-			static char title[1024] = ""; // buffer for scene name input
+	void loadBubequs(middle::GameState* gameState, bubequ::WordProblem& problem) {
+
+		// load bubequs
+		Vector3 cameraXZPos = gameState->activeCamera.position;
+		cameraXZPos.y = 0;
+		const float spacing = 600;
+		Vector3 offset = { 0,0,-spacing };
+
+		std::vector < std::shared_ptr<middle::EditorActionContainer>> actions;
+
+		// CREATE TEXT PANEL
+		middle::Shape textPanelProto;
+		middle::addComponent<components::PuzzleTextPanel>(textPanelProto);
+		middle::addComponent<components::Position>(textPanelProto);
+		auto rectangle = middle::addComponent<components::Rectangle>(textPanelProto);
+		rectangle->width = 150;
+		rectangle->height = 300;
+		middle::addComponent<components::UiComponent>(textPanelProto);
+		middle::addComponent<components::Layer>(textPanelProto);
+		middle::addComponent<components::LoopSociety>(textPanelProto);
+		middle::addComponent<components::SceneObjectComponent>(textPanelProto);
+		middle::Shape& textPanel = middle::registerShape(gameState, textPanelProto);
+		auto registerAction0 = std::make_shared<middle::EditorActionRegisterId>(textPanel.id);
+		actions.push_back(registerAction0);
+		Vector3 targetPos = gameState->activeCamera.position;
+		targetPos.y = 0;
+		middle::moveShape(gameState, textPanel.id.index,
+			targetPos - middle::getShapePosition(gameState, textPanel.id.index));
+
+		// CREATE TEXT UNITS FOR TEXT PANEL
+		for (auto& unit : problem.sentenceUnits) {
+
+			// create text shapes
+			middle::Shape textUnitProto;
+			middle::addComponent<components::PuzzleTextUnit>(textUnitProto);
+			auto textComp = middle::addComponent<components::Text>(textUnitProto);
+			textComp->text = unit.text;
+			textComp->fontSize = 10;
+			middle::addComponent<components::Position>(textUnitProto);
+			middle::addComponent<components::Rectangle>(textUnitProto);
+			middle::addComponent<components::UiComponent>(textUnitProto);
+			middle::addComponent<components::LoopSociety>(textUnitProto);
+			middle::Shape& textUnitShape = middle::registerShape(gameState, textUnitProto);
+			middle::EditorActionReparent(textPanel.id.index, textUnitShape.id.index).execute(gameState);
+			auto registerAction2 = std::make_shared<middle::EditorActionRegisterId>(textUnitShape.id);
+			actions.push_back(registerAction2);
+		}
+
+
+		if (actions.size() > 0) {
+			auto multiAction = std::make_shared<middle::MultiAction>(actions);
+			middle::queueAction(gameState, multiAction);
+			gameState->bubbleAlgebraState.bubbleActions.push_back(multiAction);
+		}
+	}
+
+
+	void update(middle::GameState* gameState) override {
+		auto writingUi = [gameState, this]() {
+
+
+			ImGui::Begin("Word Problem");
+			static char title[128] = ""; // buffer for scene name input
 			ImGui::InputText("Title", title, IM_ARRAYSIZE(title));
 			if (ImGui::IsItemActive()) {
 				gameState->inputBlockers.insert(middle::InputBlockers::KEYBOARD_BLOCK);
 				gameState->inputBlockers.insert(middle::InputBlockers::MOUSE_BLOCK);
 			}
-
-			// Popup for entering new scene name
-			static char text[1024] = ""; // buffer for scene name input
-			ImGui::InputTextMultiline("Text", text, IM_ARRAYSIZE(text), ImVec2(0, 200), ImGuiInputTextFlags_WordWrap);
+			static char textProblem[1024] = ""; // buffer for scene name input
+			ImGui::InputTextMultiline("Text", textProblem, IM_ARRAYSIZE(textProblem), ImVec2(0, 200), ImGuiInputTextFlags_WordWrap);
 			if (ImGui::IsItemActive()) {
 				gameState->inputBlockers.insert(middle::InputBlockers::KEYBOARD_BLOCK);
 				gameState->inputBlockers.insert(middle::InputBlockers::MOUSE_BLOCK);
 			}
+			if (ImGui::Button("Save Text")) {
+				std::string path = bubblePaths::WORD_PROBLEMS_FOLDER + "/" + title + ".txt";
+				bubequ::saveTextFile(path, textProblem);
+			}
 			ImGui::End();
 
-			ImGui::Begin("File");
-			if (ImGui::Button("Save Text")) {
-				bubequ::savePuzzleText(title, text);
-			}
-			ImGui::Separator();
 
+			ImGui::Begin("Word Problem Mobjs");
+			static char titleProblemMobj[128] = ""; // buffer for scene name input
+			ImGui::InputText("Title", titleProblemMobj, IM_ARRAYSIZE(title));
+			if (ImGui::IsItemActive()) {
+				gameState->inputBlockers.insert(middle::InputBlockers::KEYBOARD_BLOCK);
+				gameState->inputBlockers.insert(middle::InputBlockers::MOUSE_BLOCK);
+			}
+			static char textProblemMobj[612] = ""; // buffer for scene name input
+			ImGui::InputTextMultiline("Text", textProblemMobj, IM_ARRAYSIZE(textProblemMobj), ImVec2(0, 100), ImGuiInputTextFlags_WordWrap);
+			if (ImGui::IsItemActive()) {
+				gameState->inputBlockers.insert(middle::InputBlockers::KEYBOARD_BLOCK);
+				gameState->inputBlockers.insert(middle::InputBlockers::MOUSE_BLOCK);
+			}
+			if (ImGui::Button("Save Text")) {
+				std::string path = bubblePaths::WORD_PROBLEM_MOBJS_FOLDER + "/" + titleProblemMobj + ".txt";
+				bubequ::saveTextFile(path, textProblemMobj);
+			}
+			ImGui::End();
+
+
+			ImGui::Begin("WordProblemFile");
 			std::vector<std::string>textFilenames = bubequ::getFilenames(bubblePaths::WORD_PROBLEMS_FOLDER);
 			for (const std::string& filename : textFilenames) {
 				if (ImGui::Button(filename.c_str())) {
-					bubequ::WordProblem problem =  
+					bubequ::WordProblem problem =
 						bubequ::loadPuzzleText(bubblePaths::WORD_PROBLEMS_FOLDER + "/" + filename);
 					// remove .txt 
 					std::string titleText = filename.substr(0, filename.size() - 4);
 					snprintf(title, sizeof(title), "%s", titleText.c_str());
-					snprintf(text, sizeof(text), "%s", problem.rawText.c_str());
+					snprintf(textProblem, sizeof(textProblem), "%s", problem.rawText.c_str());
 
-					// load bubequs
-					Vector3 cameraXZPos = gameState->activeCamera.position;
-					cameraXZPos.y = 0;
-					const float spacing = 600;
-					Vector3 offset = { 0,0,-spacing };
-
-					std::vector < std::shared_ptr<middle::EditorActionContainer>> actions;
+					loadBubequs(gameState, problem);
+				}
+			}
+			ImGui::End();
 
 
-					// CREATE TEXT PANEL
-					middle::Shape textPanelProto;
-					middle::addComponent<components::PuzzleTextPanel>(textPanelProto);
-					middle::addComponent<components::Position>(textPanelProto);
-					auto rectangle = middle::addComponent<components::Rectangle>(textPanelProto);
-					rectangle->width = 150;
-					rectangle->height = 300;
-					middle::addComponent<components::UiComponent>(textPanelProto);
-					middle::addComponent<components::Layer>(textPanelProto);
-					middle::addComponent<components::LoopSociety>(textPanelProto);
-					middle::addComponent<components::SceneObjectComponent>(textPanelProto);
-					middle::Shape& textPanel = middle::registerShape(gameState, textPanelProto);
-					auto registerAction0 = std::make_shared<middle::EditorActionRegisterId>(textPanel.id);
-					actions.push_back(registerAction0);
-					Vector3 targetPos = gameState->activeCamera.position;
-					targetPos.y = 0;
-					middle::moveShape(gameState, textPanel.id.index, 
-						targetPos - middle::getShapePosition(gameState, textPanel.id.index));
-
-					// CREATE TEXT UNITS FOR TEXT PANEL
-					for (auto& unit : problem.sentenceUnits) {
-
-						// create text shapes
-						middle::Shape textUnitProto;
-						middle::addComponent<components::PuzzleTextUnit>(textUnitProto);
-						auto textComp = middle::addComponent<components::Text>(textUnitProto);
-						textComp->text = unit.text;
-						textComp->fontSize = 10;
-						middle::addComponent<components::Position>(textUnitProto);
-						middle::addComponent<components::Rectangle>(textUnitProto);
-						middle::addComponent<components::UiComponent>(textUnitProto);
-						middle::addComponent<components::LoopSociety>(textUnitProto);
-						middle::Shape& textUnitShape = middle::registerShape(gameState, textUnitProto);
-						middle::EditorActionReparent(textPanel.id.index, textUnitShape.id.index).execute(gameState);
-						auto registerAction2 = std::make_shared<middle::EditorActionRegisterId>(textUnitShape.id);
-						actions.push_back(registerAction2);
-					}
-
-
-					if (actions.size() > 0) {
-						auto multiAction = std::make_shared<middle::MultiAction>(actions);
-						middle::queueAction(gameState, multiAction);
-						gameState->bubbleAlgebraState.bubbleActions.push_back(multiAction);
-					}
+			ImGui::Begin("WordProblemMobjFile");
+			std::vector<std::string>mobjFilenames = bubequ::getFilenames(bubblePaths::WORD_PROBLEM_MOBJS_FOLDER);
+			for (const std::string& filename : mobjFilenames) {
+				if (ImGui::Button(filename.c_str())) {
+					std::string text = bubequ::loadText(bubblePaths::WORD_PROBLEM_MOBJS_FOLDER + "/" + filename);
+					// remove .txt 
+					std::string titleText = filename.substr(0, filename.size() - 4);
+					snprintf(titleProblemMobj, sizeof(titleProblemMobj), "%s", titleText.c_str());
+					snprintf(textProblemMobj, sizeof(textProblemMobj), "%s", text.c_str());
 				}
 			}
 

@@ -4,6 +4,7 @@
 #include "bubble_paths.h"
 #include <fstream>
 #include <unordered_map>
+#include <sstream>
 
 
 namespace bubequ {
@@ -187,9 +188,8 @@ namespace bubequ {
 		outFile.close();
 	}
 
-	void savePuzzleText(const std::string& title, const std::string& text)
+	void saveTextFile(const std::string& path, const std::string& text)
 	{
-		const std::string path = bubblePaths::WORD_PROBLEMS_FOLDER + "/" + title + ".txt";
 		std::ofstream outFile(path);
 		if (!outFile.is_open()) {
 			std::cerr << "failed to open to write\n";
@@ -207,6 +207,16 @@ namespace bubequ {
 				}),
 			text.end()
 		);
+	}
+
+	std::string loadText(const std::string& path) {
+		std::ifstream inputFile(path);
+		if (!inputFile.is_open()) {
+			throw std::runtime_error("Failed to open file to open");
+		}
+		std::stringstream buffer;
+		buffer << inputFile.rdbuf();
+		return buffer.str();
 	}
 
 	WordProblem loadPuzzleText(const std::string& path) {
