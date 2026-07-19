@@ -15,6 +15,7 @@ namespace bubequ {
 	void saveBubequ(const std::string& equname, const std::string& bubequ);
 	void saveTextFile(const std::string& title, const std::string& text);
 	std::string loadText(const std::string& path);
-	WordProblem loadPuzzleText(const std::string& path);
+	WordProblem loadWordProblem(const std::string& path);
+	WordProblemMobjs loadWordProblemMobjs(const std::string& path);
 	std::vector<std::string>getFilenames(const std::string directoryPath);
 }

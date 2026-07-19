@@ -219,7 +219,7 @@ namespace bubequ {
 		return buffer.str();
 	}
 
-	WordProblem loadPuzzleText(const std::string& path) {
+	WordProblem loadWordProblem(const std::string& path) {
 		std::ifstream inputFile(path);
 		if (!inputFile.is_open()) {
 			throw std::runtime_error("Failed to open file to open");
@@ -236,14 +236,6 @@ namespace bubequ {
 			}
 
 			result.rawText += line + '\n';
-
-			if (line.find("bobj:") != std::string::npos) {
-				std::string equname = line.substr(4);
-				std::string path = bubblePaths::EQUATION_FOLDER + "/" + equname;
-				auto bubequ = loadBubequ(path);
-				result.bubequs.push_back(bubequ);
-				continue;
-			}
 
 			// parse
 			std::unordered_map<std::string, std::string>varMap;
@@ -303,9 +295,38 @@ namespace bubequ {
 				}
 				result.sentenceUnits.push_back(unit);
 			}
+
 		}
 
 		return result;
+	}
+
+	WordProblemMobjs loadWordProblemMobjs(const std::string& path)
+	{
+		WordProblemMobjs mobjs;
+		std::ifstream inputFile(path);
+		if (!inputFile.is_open()) {
+			throw std::runtime_error("Failed to open file to open");
+		}
+		std::string line;
+		while (std::getline(inputFile, line)) {
+			if (line.find("#ver") != std::string::npos) {
+				checkVersion(line);
+			}
+			else if (line.find("text:") != std::string::npos) {
+				std::string problemFile = line.substr(5);
+				mobjs.problem = std::make_shared<WordProblem>(loadWordProblem(bubblePaths::WORD_PROBLEMS_FOLDER + "/" + problemFile));
+			}
+			else if (line.find("mobj:") != std::string::npos) {
+				std::string solutionfile = line.substr(5);
+				auto scope = loadBubequ(bubblePaths::EQUATION_FOLDER + "/" + solutionfile);
+				mobjs.solutionMobj = scope;
+			}
+			else if (line != ""){
+				throw std::runtime_error("file should have: ver: text: or mobj: at each line");
+			}
+		}
+		return mobjs;
 	}
 
 	std::vector<std::string> getFilenames(const std::string directoryPath)

@@ -34,6 +34,8 @@ namespace bubequ {
 	};
 
 
+
+
 	struct SentenceUnit{
 		std::string text = "";
 		std::string varLabel = "";
@@ -42,6 +44,10 @@ namespace bubequ {
 	struct WordProblem {
 		std::string rawText;
 		std::vector<SentenceUnit> sentenceUnits;
-		std::vector<std::shared_ptr<bubequ::Scope>>bubequs;
+	};
+
+	struct WordProblemMobjs {
+		std::shared_ptr<WordProblem> problem;
+		std::shared_ptr<Scope> solutionMobj;
 	};
 }

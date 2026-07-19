@@ -20,8 +20,6 @@ public:
 		Vector3 invertedMouse = Vector3Transform(mousePos, gameState->screenOrientorM);
 		gameState->input.mousePos.x = invertedMouse.x;
 		gameState->input.mousePos.y = invertedMouse.y;
-		gameState->input.zoomIn = GetMouseWheelMoveV().y > 0;
-		gameState->input.zoomOut = GetMouseWheelMoveV().y < 0;
 
 		gameState->input.mouseHeld = false;
 		gameState->input.mouseClicked = false;
@@ -31,6 +29,8 @@ public:
 			gameState->input.mouseHeld = IsMouseButtonDown(MOUSE_BUTTON_LEFT);
 			gameState->input.mouseClicked = IsMouseButtonPressed(MOUSE_BUTTON_LEFT);
 			gameState->input.mouseReleased = IsMouseButtonReleased(MOUSE_BUTTON_LEFT);
+			gameState->input.zoomIn = GetMouseWheelMoveV().y > 0;
+			gameState->input.zoomOut = GetMouseWheelMoveV().y < 0;
 		}
 
 		if (gameState->applicationMode == middle::ApplicationMode::EDITOR_MODE) {

@@ -25,15 +25,11 @@ class WriterUnBlockingSystem : public middle::MiddleGameplaySystem {
 
 	}
 
-	void loadBubequs(middle::GameState* gameState, bubequ::WordProblem& problem) {
+	middle::Id createTextPanel(middle::GameState* gameState, bubequ::WordProblem* problem, const Vector3& pos) {
 
 		// load bubequs
-		Vector3 cameraXZPos = gameState->activeCamera.position;
-		cameraXZPos.y = 0;
 		const float spacing = 600;
 		Vector3 offset = { 0,0,-spacing };
-
-		std::vector < std::shared_ptr<middle::EditorActionContainer>> actions;
 
 		// CREATE TEXT PANEL
 		middle::Shape textPanelProto;
@@ -47,15 +43,13 @@ class WriterUnBlockingSystem : public middle::MiddleGameplaySystem {
 		middle::addComponent<components::LoopSociety>(textPanelProto);
 		middle::addComponent<components::SceneObjectComponent>(textPanelProto);
 		middle::Shape& textPanel = middle::registerShape(gameState, textPanelProto);
-		auto registerAction0 = std::make_shared<middle::EditorActionRegisterId>(textPanel.id);
-		actions.push_back(registerAction0);
 		Vector3 targetPos = gameState->activeCamera.position;
 		targetPos.y = 0;
 		middle::moveShape(gameState, textPanel.id.index,
 			targetPos - middle::getShapePosition(gameState, textPanel.id.index));
 
 		// CREATE TEXT UNITS FOR TEXT PANEL
-		for (auto& unit : problem.sentenceUnits) {
+		for (auto& unit : problem->sentenceUnits) {
 
 			// create text shapes
 			middle::Shape textUnitProto;
@@ -70,21 +64,13 @@ class WriterUnBlockingSystem : public middle::MiddleGameplaySystem {
 			middle::Shape& textUnitShape = middle::registerShape(gameState, textUnitProto);
 			middle::EditorActionReparent(textPanel.id.index, textUnitShape.id.index).execute(gameState);
 			auto registerAction2 = std::make_shared<middle::EditorActionRegisterId>(textUnitShape.id);
-			actions.push_back(registerAction2);
 		}
-
-
-		if (actions.size() > 0) {
-			auto multiAction = std::make_shared<middle::MultiAction>(actions);
-			middle::queueAction(gameState, multiAction);
-			gameState->bubbleAlgebraState.bubbleActions.push_back(multiAction);
-		}
+		return textPanel.id;
 	}
 
 
 	void update(middle::GameState* gameState) override {
 		auto writingUi = [gameState, this]() {
-
 
 			ImGui::Begin("Word Problem");
 			static char title[128] = ""; // buffer for scene name input
@@ -131,13 +117,17 @@ class WriterUnBlockingSystem : public middle::MiddleGameplaySystem {
 			for (const std::string& filename : textFilenames) {
 				if (ImGui::Button(filename.c_str())) {
 					bubequ::WordProblem problem =
-						bubequ::loadPuzzleText(bubblePaths::WORD_PROBLEMS_FOLDER + "/" + filename);
+						bubequ::loadWordProblem(bubblePaths::WORD_PROBLEMS_FOLDER + "/" + filename);
 					// remove .txt 
 					std::string titleText = filename.substr(0, filename.size() - 4);
 					snprintf(title, sizeof(title), "%s", titleText.c_str());
 					snprintf(textProblem, sizeof(textProblem), "%s", problem.rawText.c_str());
-
-					loadBubequs(gameState, problem);
+					Vector3 cameraXZPos = gameState->activeCamera.position;
+					cameraXZPos.y = 0;
+					middle::Id textPanelId = createTextPanel(gameState, &problem, cameraXZPos);
+					auto registerAction = std::make_shared<middle::EditorActionRegisterId>(textPanelId);
+					middle::queueAction(gameState, registerAction);
+					gameState->bubbleAlgebraState.bubbleActions.push_back(registerAction);
 				}
 			}
 			ImGui::End();
@@ -147,11 +137,36 @@ class WriterUnBlockingSystem : public middle::MiddleGameplaySystem {
 			std::vector<std::string>mobjFilenames = bubequ::getFilenames(bubblePaths::WORD_PROBLEM_MOBJS_FOLDER);
 			for (const std::string& filename : mobjFilenames) {
 				if (ImGui::Button(filename.c_str())) {
+					// fill input text
 					std::string text = bubequ::loadText(bubblePaths::WORD_PROBLEM_MOBJS_FOLDER + "/" + filename);
 					// remove .txt 
 					std::string titleText = filename.substr(0, filename.size() - 4);
 					snprintf(titleProblemMobj, sizeof(titleProblemMobj), "%s", titleText.c_str());
 					snprintf(textProblemMobj, sizeof(textProblemMobj), "%s", text.c_str());
+
+					std::vector<std::shared_ptr<middle::EditorActionContainer>> actions;
+
+					// create text panel
+					bubequ::WordProblemMobjs mobjs = bubequ::loadWordProblemMobjs(bubblePaths::WORD_PROBLEM_MOBJS_FOLDER + "/" + filename);
+					Vector3 cameraXZPos = gameState->activeCamera.position;
+					cameraXZPos.y = 0;
+					middle::Id textPanelId = createTextPanel(gameState, mobjs.problem.get(), cameraXZPos);
+					auto registerPanel = std::make_shared<middle::EditorActionRegisterId>(textPanelId);
+					actions.push_back(registerPanel);
+
+					const float spacing = 400;
+					// load solution mobj
+					if (mobjs.solutionMobj != nullptr) {
+						Vector3 targetPos = cameraXZPos;
+						targetPos.z -= spacing;
+						middle::Id bubbleId = equlab::bubequToBubble(gameState, targetPos, mobjs.solutionMobj);
+						auto registerAction = std::make_shared<middle::EditorActionRegisterId>(bubbleId);
+						actions.push_back(registerAction);
+					}
+
+					auto multiAction = std::make_shared<middle::MultiAction>(actions);
+					middle::queueAction(gameState, multiAction);
+					gameState->bubbleAlgebraState.bubbleActions.push_back(multiAction);
 				}
 			}
 
