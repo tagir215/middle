@@ -727,15 +727,19 @@ namespace bubble {
 		auto& bubbleShape = middle::getShape(gameState, bubbleId.index);
 		auto variable = middle::getComponent<components::BubbleVariable>(bubbleShape);
 		auto node = middle::getComponent<components::AlgebraNode>(bubbleShape);
+		auto bubbleUnit = middle::getComponent<components::BubbleUnit>(bubbleShape);
 
+		if (bubbleUnit) {
+			result.scale += bubbleUnit->value;
+			return result;
+		}
 		if (variable) {
 			result.scale = variableValues[variable->label];
 			if (variable->isNegative) {
 				result.scale = -result.scale;
 			}
 		}
-		else
-		if (node) {
+		else if (node) {
 			if (getStructureType(gameState, bubbleId) == components::AlgebraNodeType::VARIABLE) {
 				result.scale = variableValues[node->variableLabel];
 				if (node->isNegative) {
@@ -752,14 +756,9 @@ namespace bubble {
 			middle::getChildren(gameState, bubbleId, children);
 			for (middle::Id& id : children) {
 				auto& shape = middle::getShape(gameState, id.index);
-				auto unit = middle::getComponent<components::BubbleUnit>(shape);
 				auto bubble = middle::getComponent<components::BubbleComponent>(shape);
 				auto mul = middle::getComponent<components::BubbleMultiplyComponent>(shape);
-				if (unit) {
-					UnitValue value = unitValue(gameState, id);
-					result.scale += value.scale;
-				}
-				else if (bubble) {
+				if (bubble) {
 					BubbleValue value = calculateBubbleValue(gameState, shape.id, variableValues);
 					result.scale += value.scale;
 				}

@@ -65,7 +65,6 @@ namespace bubble {
 	middle::Id fractionQuotient(middle::GameState* gameState, middle::Id& fractionId);
 	middle::Id containerize(middle::GameState* gameState, middle::Id id);
 	bool additiveInverses(middle::GameState* gameState, middle::Id idA, middle::Id idB);
-	bool multiplicativeInverses(middle::GameState* gameState, middle::Id idA, middle::Id idB);
 	void negate(middle::GameState* gameState, middle::Id id);
 	void invert(middle::GameState* gameState, middle::Id id);
 	middle::Id bubbleToStructure(middle::GameState* gameState, middle::Id bubbleId);
