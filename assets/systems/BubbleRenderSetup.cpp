@@ -35,6 +35,9 @@
 #include "UnIntersectableWindowComponent.h"
 #include "ActiveSceneEditableTag.h"
 #include "GlobalTransform.h"
+#include "component_utils.h"
+#include "LocalPosition.h"
+#include "LocalScale.h"
 
 
 class BubbleRenderSetup : public middle::MiddleGameplaySystem {
@@ -58,6 +61,7 @@ public:
 	components::CompCache* procContainerCache;
 	components::CompCache* unitCache;
 	components::CompCache* activeBubbleCache;
+	components::CompCache* oPosCache;
 
 	void init(middle::GameState* gameState) {
 		bubbleCache = middle::newCompCache(gameState, systemName);
@@ -111,8 +115,19 @@ public:
 		procContainerCache->addType<components::ProcedureContainer>();
 		activeBubbleCache = middle::newCompCache(gameState, systemName);
 		activeBubbleCache->addType<components::ActiveSceneSelectableTag>();
+
+		oPosCache = middle::newCompCache(gameState, systemName);
+		oPosCache->addType<components::Position>(components::NOTINTERESTED);
 	}
 	bool debugRendering = false;
+
+
+	void replaceMan(middle::GameState* gameState) {
+		auto ps = oPosCache->begin<components::Position>();
+		for (middle::Id& id : oPosCache->relevantIdVector) {
+			middle::queueComponentDeletion<components::Position>(gameState, id);
+		}
+	}
 
 
 	void calculateExponentVisualFactors(float radius, int power, float positionRatioToPower, float& intersectOffsetX, float& intersectOffsetZ, float& bz, float& rb) {

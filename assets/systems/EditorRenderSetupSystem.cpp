@@ -23,6 +23,8 @@
 #include "ConfigComponent.h"
 #include "EditorConfigs.h"
 #include "middle_math.h"
+#include "Position.h"
+#include "component_utils.h"
 
 class EditorRenderSetupSystem : public middle::MiddleGameplaySystem {
 public:
@@ -43,6 +45,7 @@ public:
 	components::CompCache* selectableSphereCache;
 	components::CompCache* selectableLineCache;
 	components::CompCache* positionCache;
+	components::CompCache* oPosCache;
 
 
 	void init(middle::GameState* gameState) {
@@ -93,8 +96,21 @@ public:
 		selectableLineCache->addType<components::HiddenTag>(components::NOTINTERESTED);
 		positionCache = middle::newCompCache(gameState, systemName);
 		positionCache->addType<components::GlobalTransform>();
+
+		oPosCache = middle::newCompCache(gameState, systemName);
+		oPosCache->addType<components::Position>();
 	}
+
+	void replaceMan(middle::GameState* gameState) {
+		auto ps = oPosCache->begin<components::Position>();
+		for (middle::Id& id : oPosCache->relevantIdVector) {
+			middle::queueComponentDeletion<components::Position>(gameState, id);
+		}
+	}
+
 	void update(middle::GameState* gameState) override {
+
+		replaceMan(gameState);
 
 		Color textColor = WHITE;
 		Color systemColor = GREEN;

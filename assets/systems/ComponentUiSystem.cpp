@@ -100,41 +100,33 @@ public:
 							else if (field.type == middle::FieldType::Vector3) {
 								Vector3* vector = static_cast<Vector3*>(field.value);
 								ImGui::Text(field.name);
-								ImGui::PushID("x");
-								ImGui::PushID("y");
-								ImGui::PushID("z");
-								ImGui::InputFloat("x", &vector->x);
-								ImGui::InputFloat("y", &vector->y);
-								ImGui::InputFloat("z", &vector->z);
-								ImGui::PopID();
-								ImGui::PopID();
-								ImGui::PopID();
+
+								std::string id1 = std::string(field.name) + ":x";
+								std::string id2 = std::string(field.name) + ":y";
+								std::string id3 = std::string(field.name) + ":z";
+								ImGui::InputFloat(id1.c_str(), &vector->x);
+								ImGui::InputFloat(id2.c_str(), &vector->y);
+								ImGui::InputFloat(id3.c_str(), &vector->z);
 							}
 							else if (field.type == middle::FieldType::Vector2) {
 								Vector2* vector = static_cast<Vector2*>(field.value);
 								ImGui::Text(field.name);
-								ImGui::PushID("x");
-								ImGui::PushID("y");
-								ImGui::InputFloat("x", &vector->x);
-								ImGui::InputFloat("y", &vector->y);
-								ImGui::PopID();
-								ImGui::PopID();
+								std::string id1 = std::string(field.name) + ":x";
+								std::string id2 = std::string(field.name) + ":y";
+								ImGui::InputFloat(id1.c_str(), &vector->x);
+								ImGui::InputFloat(id2.c_str(), &vector->y);
 							}
 							else if (field.type == middle::FieldType::Quaternion) {
 								Quaternion* quat = static_cast<Quaternion*>(field.value);
 								ImGui::Text(field.name);
-								ImGui::PushID("x");
-								ImGui::PushID("y");
-								ImGui::PushID("z");
-								ImGui::PushID("2");
-								ImGui::InputFloat("x", &quat->x);
-								ImGui::InputFloat("y", &quat->y);
-								ImGui::InputFloat("z", &quat->z);
-								ImGui::InputFloat("w", &quat->w);
-								ImGui::PopID();
-								ImGui::PopID();
-								ImGui::PopID();
-								ImGui::PopID();
+								std::string id1 = std::string(field.name) + ":x";
+								std::string id2 = std::string(field.name) + ":y";
+								std::string id3 = std::string(field.name) + ":z";
+								std::string id4 = std::string(field.name) + ":w";
+								ImGui::InputFloat(id1.c_str(), &quat->x);
+								ImGui::InputFloat(id2.c_str(), &quat->y);
+								ImGui::InputFloat(id3.c_str(), &quat->z);
+								ImGui::InputFloat(id4.c_str(), &quat->w);
 							}
 							else if (field.type == middle::FieldType::Color) {
 								Color* color = static_cast<Color*>(field.value);
