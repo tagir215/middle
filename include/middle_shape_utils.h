@@ -89,7 +89,10 @@ namespace middle {
 	void queueAction(GameState* gameState, std::shared_ptr<EditorActionContainer> container);
 	// queue action for editor, with undos
 	void queueEditorAction(GameState* gameState, std::shared_ptr<EditorActionContainer> container);
-
+	// get transform matrix for some id with components globaltransform, localPos, localScale, and probably rotation in future 
+	Matrix getTransformMatrix(GameState* gameState, middle::Id id);
+	// project world coordinate as local coordinate 
+	Vector3 projectGlobalCoordinateToLocalCoordinate(GameState* gameState, const Vector3& globalCoord, middle::Id shapeId);
 
 	template<typename F>
 	void loopInstances(GameState* gameState, F func) {

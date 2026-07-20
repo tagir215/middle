@@ -16,6 +16,7 @@
 #include "Scale.h"
 #include "GlobalTransform.h"
 #include "LocalPosition.h"
+#include <stack>
 
 namespace middle {
 
@@ -753,6 +754,39 @@ namespace middle {
 			--gameState->editorState.historySinkDepth;
 		}
 		gameState->editorState.actionHistory.push_back(container);
+	}
+
+	Matrix getTransformMatrix(GameState* gameState, middle::Id id) {
+		std::stack<middle::Id>parentStack;
+		parentStack.push(id);
+		while (true) {
+			middle::Id parentId = middle::getParent(gameState, parentStack.top());
+			if (parentId.index == middle::UNASSIGNED) {
+				break;
+			}
+			parentStack.push(parentId);
+		}
+		Matrix transform = MatrixIdentity();
+		while (parentStack.size() > 0) {
+			middle::Id id = parentStack.top();
+			parentStack.pop();
+			auto& shape = middle::getShape(gameState, id.index);
+			auto localPos = middle::getComponent<components::LocalPosition>(shape);
+			auto localScale = middle::getComponent<components::LocalScale>(shape);
+			Matrix translateM = MatrixTranslate(localPos->pos.x, localPos->pos.y, localPos->pos.z);
+			Matrix scaleM = MatrixScale(localScale->scale.x, localScale->scale.y, localScale->scale.z);
+			Matrix localM = MatrixMultiply(scaleM, translateM);
+			transform = MatrixMultiply(transform, localM);
+		}
+		return transform;
+	}
+
+	Vector3 projectGlobalCoordinateToLocalCoordinate(GameState* gameState, const Vector3& globalCoord, middle::Id parentId)
+	{
+		Matrix transformM = getTransformMatrix(gameState, parentId);
+		Matrix inverseM = MatrixInvert(transformM);
+		Vector3 localCoord = Vector3Transform(globalCoord, inverseM);
+		return localCoord;
 	}
 
 

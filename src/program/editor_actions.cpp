@@ -387,6 +387,7 @@ namespace middle {
 			removeAction.execute(gameState);
 		}
 
+
 		if (parentIndex != UNASSIGNED) {
 			Shape& parentShape = getShape(gameState, parentIndex);
 			auto parentLoop = getComponent<components::LoopSociety>(parentShape);
@@ -405,6 +406,16 @@ namespace middle {
 			childLoop->parentLoopId = middle::Id();
 		}
 
+
+		// move local pos to keep position same relative with respect to world 
+		auto transform = middle::getComponent<components::GlobalTransform>(childShape);
+		if (transform && childLoop->parentLoopId.index != middle::UNASSIGNED) {
+			Vector3 globalPos = transform->pos;
+			Vector3 projLocalPos = middle::projectGlobalCoordinateToLocalCoordinate(gameState, 
+				globalPos, childLoop->parentLoopId);
+			auto localPos = middle::getComponent<components::LocalPosition>(childShape);
+			localPos->pos = projLocalPos;
+		}
 	}
 
 	void EditorActionReparent::undo(GameState* gameState)

@@ -106,5 +106,4 @@ namespace middle {
 
 		return Vector3Add(rayStart, Vector3Scale(dir, rayLengthUntilHit));
 	}
-
 }
