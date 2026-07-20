@@ -439,7 +439,6 @@ namespace bubbleActions {
 
 		if (exponentChildren.size() != 0) {
 
-
 			Vector3 basePos = middle::getShapePosition(gameState, baseId.index);
 
 			middle::Id prevId;
@@ -494,14 +493,10 @@ namespace bubbleActions {
 		// replacement shape is bubble with value 1
 		else {
 			Vector3 targetPosition = middle::getShapePosition(gameState, exponentId.index);
-			middle::Shape newBubbleProto = bubble::newBubble(gameState, targetPosition);
-			middle::Shape& newBubble = middle::registerShape(gameState, newBubbleProto);
 			middle::Shape newUnitProto = bubble::newUnit(gameState, targetPosition);
 			middle::Shape& newUnit = middle::registerShape(gameState, newUnitProto);
-			middle::EditorActionReparent(newBubble.id.index, newUnit.id.index).execute(gameState);
-			replacementShapeId = newBubble.id;
+			replacementShapeId = newUnit.id;
 		}
-
 
 		auto registerId = std::make_unique<middle::EditorActionRegisterId>(replacementShapeId);
 		registerId->execute(gameState);
@@ -526,18 +521,19 @@ namespace bubbleActions {
 
 	middle::Id popReplacement(middle::GameState* gameState, middle::Id containerId, middle::Id toPopId) {
 		auto& toPopShape = middle::getShape(gameState, toPopId.index);
-		middle::Id containerCopy = middle::copyShape(gameState, containerId.index);
-		auto& newContainerShape = middle::getShape(gameState, containerCopy.index);
 		auto var = middle::getComponent<components::BubbleVariable>(toPopShape);
-		if (var) {
-			auto newVar = middle::attachComponent<components::BubbleVariable>(gameState, newContainerShape.id);
-			newVar->isNegative = var->isNegative;
-			newVar->label = var->label;
+		auto unit = middle::getComponent<components::BubbleUnit>(toPopShape);
+		middle::Id copyId;
+		if (var || unit) {
+			copyId = middle::deepCopyShape(gameState, toPopId.index);
 		}
+		else {
+			middle::Id containerCopy = middle::copyShape(gameState, containerId.index);
+		}
+		auto& newContainerShape = middle::getShape(gameState, copyId.index);
 		auto loop = middle::getComponent<components::LoopSociety>(newContainerShape);
 		loop->parentLoopId = middle::Id();
 		loop->loopMemberIds.clear();
-
 		return newContainerShape.id;
 	}
 
@@ -545,6 +541,7 @@ namespace bubbleActions {
 		middle::Shape& shapeToPop = middle::getShape(gameState, id.index);
 		// check that there is a parent
 		auto bubble = middle::getComponent<components::BubbleComponent>(shapeToPop);
+		auto unit = middle::getComponent<components::BubbleUnit>(shapeToPop);
 		auto exp = middle::getComponent<components::ExponentComponent>(shapeToPop);
 		auto variable = middle::getComponent<components::BubbleVariable>(shapeToPop);
 		middle::Id parentId = middle::getParent(gameState, shapeToPop.id);
@@ -565,8 +562,9 @@ namespace bubbleActions {
 		middle::getChildren(gameState, parentId, children);
 		int siblingCount = children.size() - 1;
 
+		// variables and units can be popped if they are the only child
 		if (siblingCount != 0) {
-			if (variable) {
+			if (variable || unit) {
 				cancelled = true;
 				return;
 			}
@@ -583,7 +581,8 @@ namespace bubbleActions {
 			return;
 		}
 
-		if (variable) {
+		// if popping variable or unit (as only child), we need to replace the parent instead. to retain var or unit identity
+		if (variable || unit) {
 			Vector3 targetPos = middle::getShapePosition(gameState, parentId.index);
 
 			middle::Id varPopReplacementId = popReplacement(gameState, parentId, shapeToPop.id);
@@ -1042,15 +1041,6 @@ namespace bubbleActions {
 		for (middle::Id& childId : children) {
 			auto& childShape = middle::getShape(gameState, childId.index);
 			auto bubbleComp = middle::getComponent<components::BubbleComponent>(childShape);
-			auto unitComp = middle::getComponent<components::BubbleUnit>(childShape);
-
-			if (unitComp) {
-				RepresentativeGroup group;
-				group.containerId = childId;
-				group.representatives.push_back(childId);
-				groups.push_back(group);
-				continue;
-			}
 
 			if (bubbleComp) {
 				RepresentativeGroup group;
@@ -1123,12 +1113,6 @@ namespace bubbleActions {
 
 		middle::Id commonCopyId = middle::deepCopyShape(gameState, commonFactorId.index);
 		auto& commonShape = middle::getShape(gameState, commonCopyId.index);
-		if (middle::getComponent<components::BubbleUnit>(commonShape)) {
-			middle::Shape bubbleProto = bubble::newBubble(gameState, targetPos);
-			middle::Shape& newBubbleShape = middle::registerShape(gameState, bubbleProto);
-			middle::EditorActionReparent(newBubbleShape.id.index, commonCopyId.index).execute(gameState);
-			commonCopyId = newBubbleShape.id;
-		}
 
 		middle::Id shapeToCompressShallowCopy = middle::copyShape(gameState, shapeToCompress.id.index);
 		middle::Shape& compressedBubble = getShape(gameState, shapeToCompressShallowCopy.index);
