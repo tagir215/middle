@@ -153,14 +153,13 @@ public:
 			ImGui::Checkbox("Copy Negated", &copyNegated);
 			ImGui::Checkbox("Copy Inverted", &copyInverted);
 			ImGui::End();
-
 			};
+
 		gameState->uiSetups.push_back(insertTypeUi);
 
 		gameState->bubbleAlgebraState.currentInsertType = static_cast<middle::BubbleInsertType>(selectedInsertType);
 		gameState->bubbleAlgebraState.copyNegated = copyNegated;
 		gameState->bubbleAlgebraState.copyInverted = copyInverted;
-
 
 		if (gameState->bubbleAlgebraState.grabbedId.index != middle::UNASSIGNED) {
 			auto grabbableIt = grabbableCache->begin<components::MouseGrabbable>();
@@ -183,6 +182,7 @@ public:
 
 			}
 		}
+
 	}
 
 

@@ -107,7 +107,7 @@ public:
 	void attachComponents(middle::GameState* gameState, middle::Shape& shape, components::MouseGrabbable* grabbable) {
 
 		bool intersecting = bubble::isIntersecting(gameState, shape);
-		if (intersecting && gameState->bubbleAlgebraState.grabbedId.index == middle::UNASSIGNED && gameState->input.mouseHeld) {
+		if (gameState->input.mouseClicked && intersecting && gameState->bubbleAlgebraState.grabbedId.index == middle::UNASSIGNED) {
 
 			// copy as grabbed
 			middle::Id copyId = middle::deepCopyShape(gameState, shape.id.index);

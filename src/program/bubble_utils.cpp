@@ -24,6 +24,9 @@
 #include "DeleteComponent.h"
 #include "HelperBubbleEquation.h"
 #include "EditThisTag.h"
+#include "LocalPosition.h"
+#include "LocalScale.h"
+#include "GlobalTransform.h"
 
 namespace bubble {
 	float unitRadius = 14;
@@ -67,8 +70,6 @@ namespace bubble {
 				return false;
 			}
 		}
-
-
 		return true;
 	}
 
@@ -140,8 +141,6 @@ namespace bubble {
 		for (const middle::Id& childId : children) {
 			loopRectBoundingBoxInternal(gameState, childId, leftX, rightX, bottomZ, topZ);
 		}
-
-
 	}
 
 	void bubbleRectBoundingBox(GameState* gameState, const Id& shapeId, float* leftX, float* rightX, float* bottomZ, float* topZ)
@@ -1290,10 +1289,10 @@ namespace bubble {
 		middle::addComponent<components::Layer>(newBubbleShape);
 		auto circle = middle::addComponent<components::Circle>(newBubbleShape);
 		circle->radius = variableRadius;
-		auto position = middle::addComponent<components::Position>(newBubbleShape);
-		position->posX = targetPos.x;
-		position->posY = targetPos.y;
-		position->posZ = targetPos.z;
+		auto position = middle::addComponent<components::LocalPosition>(newBubbleShape);
+		position->pos = targetPos;
+		middle::addComponent<components::LocalScale>(newBubbleShape);
+		middle::addComponent<components::GlobalTransform>(newBubbleShape);
 		return newBubbleShape;
 	}
 

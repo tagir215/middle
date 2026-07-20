@@ -245,7 +245,7 @@ namespace bubequ {
 			std::string currentLabel = "";
 			SentenceUnit currentUnit;
 
-			cleanString(line);
+			//cleanString(line);
 
 			// collect words and labels
 			bool bracketOpen = false;
