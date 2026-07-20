@@ -12,6 +12,7 @@
 #include "FractionalComponent.h"
 #include "bubble_utils.h"
 #include "TopDogBubbleTag.h"
+#include "BubbleVariable.h"
 
 
 class NewBubbleOutlineSystem : public middle::MiddleGameplaySystem {
@@ -96,8 +97,10 @@ public:
 			}
 
 			float radius = std::sqrt(totalArea / PI) + 4;
-			if (radius < bubble::variableRadius) {
-				radius = bubble::variableRadius;
+			auto unit = middle::getComponent<components::BubbleUnit>(shape);
+			float minRadius = unit ? bubble::unitRadius : bubble::variableRadius;
+			if (radius < minRadius) {
+				radius = minRadius;
 			}
 			circle->radius = radius;
 		}

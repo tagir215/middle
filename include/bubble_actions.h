@@ -20,6 +20,8 @@ namespace bubbleActions{
 
 	middle::Id createNegatedReplacementShape(middle::GameState* gameState, middle::Id id);
 	middle::Id createInverseReplacementShape(middle::GameState* gameState, middle::Id id);
+	middle::Id createMultiplicationReplacementShape(middle::GameState* gameState, middle::Id shapeToReplace, middle::Id replacingShape);
+	middle::Id createAdditionReplacementShape(middle::GameState* gameState, middle::Id shapeToReplace, middle::Id replacingShape);
 
 	class Cancel : public middle::EditorActionContainer {
 	public:
@@ -63,29 +65,6 @@ namespace bubbleActions{
 		std::function<middle::Id()>newUnitRefProvider;
 		middle::Id oldUnitRef;
 		UpdateVariable(std::string label, std::function<middle::Id()> newUnitrefProvider);
-		void execute(middle::GameState* gameState) override;
-		void undo(middle::GameState* gameState) override;
-	};
-
-
-
-	class CreateMulitiplicationReplacementShape : public middle::EditorActionContainer {
-	public:
-		middle::Id shapeToReplaceId;
-		middle::Id replacingShapeId;
-		middle::Id resultShapeId;
-		CreateMulitiplicationReplacementShape(middle::Id shapeToReplace, middle::Id replacingShape);
-		void execute(middle::GameState* gameState) override;
-		void undo(middle::GameState* gameState) override;
-	};
-
-
-	class CreateAdditionReplacementShape : public middle::EditorActionContainer {
-	public:
-		middle::Id idA;
-		middle::Id idB;
-		middle::Id resultId;
-		CreateAdditionReplacementShape(middle::Id idA, middle::Id idB);
 		void execute(middle::GameState* gameState) override;
 		void undo(middle::GameState* gameState) override;
 	};

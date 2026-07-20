@@ -8,7 +8,6 @@ namespace bubble {
 
 	extern float unitRadius;
 	extern float variableRadius;
-	extern float bubbleMinRadius;
 	extern float variableTextFontSize;
 	extern float minTopDogRadius;
 

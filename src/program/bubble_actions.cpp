@@ -121,91 +121,8 @@ namespace bubbleActions {
 		return replacementShapeId;
 	}
 
-
-	CreateMulitiplicationReplacementShape::CreateMulitiplicationReplacementShape(middle::Id shapeToReplace, middle::Id replacingShape)
+	middle::Id createAdditionReplacementShape(middle::GameState* gameState, middle::Id idA, middle::Id idB)
 	{
-		this->shapeToReplaceId = shapeToReplace;
-		this->replacingShapeId = replacingShape;
-	}
-
-	void CreateMulitiplicationReplacementShape::execute(middle::GameState* gameState) {
-		auto& shapeToReplace = middle::getShape(gameState, shapeToReplaceId.index);
-		auto& replacingShape = middle::getShape(gameState, replacingShapeId.index);
-
-		auto pos = middle::getComponent<components::Position>(shapeToReplace);
-		Vector3 targetPos = { pos->posX, pos->posY, pos->posZ };
-
-		auto bubbleComp = middle::getComponent<components::BubbleComponent>(shapeToReplace);
-		auto mulComp = middle::getComponent<components::BubbleMultiplyComponent>(shapeToReplace);
-		auto unit = middle::getComponent<components::BubbleUnit>(shapeToReplace);
-		auto variable = middle::getComponent<components::BubbleVariable>(shapeToReplace);
-
-		if (bubbleComp || mulComp || variable) {
-			middle::Id replacingCopyId = middle::deepCopyShape(gameState, replacingShapeId.index);
-			middle::Id toReplaceCopyId = middle::deepCopyShape(gameState, shapeToReplaceId.index);
-
-			middle::Id recieverId;
-			auto& shapeToReplaceCopy = middle::getShape(gameState, toReplaceCopyId.index);
-			// if mul comp we link to one of the children, since thats what linkMultiplication expects
-			auto mulComp = middle::getComponent<components::BubbleMultiplyComponent>(shapeToReplaceCopy);
-			if (mulComp) {
-				std::vector<middle::Id>children;
-				middle::getChildren(gameState, shapeToReplaceCopy.id, children);
-				recieverId = children[0];
-			}
-			else {
-				recieverId = toReplaceCopyId;;
-			}
-			auto linkAction = LinkMultiplicationTerm(recieverId, replacingCopyId);
-			linkAction.execute(gameState);
-			resultShapeId = linkAction.resultShapeId;
-			return;
-		}
-
-
-		// if shape to replace is a unit
-		else if (unit)
-		{
-			middle::Id shapeToCopyId = replacingShape.id;
-			if (unit->value == 0) {
-				shapeToCopyId = shapeToReplace.id;
-			}
-
-			middle::Id copyId = middle::deepCopyShape(gameState, shapeToCopyId.index);
-			// 
-			unit = middle::getComponent<components::BubbleUnit>(shapeToReplace);
-
-			if (unit->value == -1) {
-				middle::Id negativeCopyId = createNegatedReplacementShape(gameState, copyId);
-				Replace(copyId, negativeCopyId).execute(gameState);
-				copyId = negativeCopyId;
-			}
-
-			// compute displacmenet from replacing shape to shapeToReplace position
-			Vector3 replacingShapePos = middle::getShapePosition(gameState, copyId.index);
-			Vector3 displacement = targetPos - replacingShapePos;
-			middle::moveShape(gameState, copyId.index, displacement);
-			resultShapeId = copyId;
-			return;
-		}
-
-
-	}
-
-	void CreateMulitiplicationReplacementShape::undo(middle::GameState* gameState)
-	{
-		deleteShapeRecursive(gameState, resultShapeId.index, true);
-	}
-
-
-
-
-	CreateAdditionReplacementShape::CreateAdditionReplacementShape(middle::Id idA, middle::Id idB) {
-		this->idA = idA;
-		this->idB = idB;
-	}
-
-	void CreateAdditionReplacementShape::execute(middle::GameState* gameState) {
 		auto& shapeA = middle::getShape(gameState, idA.index);
 		auto& shapeB = middle::getShape(gameState, idB.index);
 
@@ -244,13 +161,69 @@ namespace bubbleActions {
 			replacementId = bubbleShape.id;
 		}
 
-		resultId = replacementId;
+		return replacementId;
 	}
 
-	void CreateAdditionReplacementShape::undo(middle::GameState* gameState) {
-		deleteShapeRecursive(gameState, resultId.index, true);
-	}
+	middle::Id createMultiplicationReplacementShape(middle::GameState* gameState, middle::Id shapeToReplaceId, middle::Id replacingShapeId)
+	{
+		auto& shapeToReplace = middle::getShape(gameState, shapeToReplaceId.index);
+		auto& replacingShape = middle::getShape(gameState, replacingShapeId.index);
 
+		auto pos = middle::getComponent<components::Position>(shapeToReplace);
+		Vector3 targetPos = { pos->posX, pos->posY, pos->posZ };
+
+		auto bubbleComp = middle::getComponent<components::BubbleComponent>(shapeToReplace);
+		auto mulComp = middle::getComponent<components::BubbleMultiplyComponent>(shapeToReplace);
+		auto unit = middle::getComponent<components::BubbleUnit>(shapeToReplace);
+		auto variable = middle::getComponent<components::BubbleVariable>(shapeToReplace);
+
+		// if shape to replace is a unit
+		if (unit)
+		{
+			middle::Id shapeToCopyId = replacingShape.id;
+			if (unit->value == 0) {
+				shapeToCopyId = shapeToReplace.id;
+			}
+
+			middle::Id copyId = middle::deepCopyShape(gameState, shapeToCopyId.index);
+			// 
+			unit = middle::getComponent<components::BubbleUnit>(shapeToReplace);
+
+			if (unit->value == -1) {
+				middle::Id negativeCopyId = createNegatedReplacementShape(gameState, copyId);
+				Replace(copyId, negativeCopyId).execute(gameState);
+				copyId = negativeCopyId;
+			}
+
+			// compute displacmenet from replacing shape to shapeToReplace position
+			Vector3 replacingShapePos = middle::getShapePosition(gameState, copyId.index);
+			Vector3 displacement = targetPos - replacingShapePos;
+			middle::moveShape(gameState, copyId.index, displacement);
+			return copyId;
+		}
+		else if (bubbleComp || mulComp || variable) {
+			middle::Id replacingCopyId = middle::deepCopyShape(gameState, replacingShapeId.index);
+			middle::Id toReplaceCopyId = middle::deepCopyShape(gameState, shapeToReplaceId.index);
+
+			middle::Id recieverId;
+			auto& shapeToReplaceCopy = middle::getShape(gameState, toReplaceCopyId.index);
+			// if mul comp we link to one of the children, since thats what linkMultiplication expects
+			auto mulComp = middle::getComponent<components::BubbleMultiplyComponent>(shapeToReplaceCopy);
+			if (mulComp) {
+				std::vector<middle::Id>children;
+				middle::getChildren(gameState, shapeToReplaceCopy.id, children);
+				recieverId = children[0];
+			}
+			else {
+				recieverId = toReplaceCopyId;;
+			}
+			auto linkAction = LinkMultiplicationTerm(recieverId, replacingCopyId);
+			linkAction.execute(gameState);
+			return linkAction.resultShapeId;
+		}
+
+		return middle::Id();
+	}
 
 
 	ExecuteMultiplication::ExecuteMultiplication(middle::Id shapeToCopyId, middle::Id shapeToCopyIntoId) {
@@ -282,70 +255,48 @@ namespace bubbleActions {
 			return;
 		}
 
-		middle::Id idA = middle::deepCopyShape(gameState, shapeToCopyId.index);
-		middle::Id idB = middle::deepCopyShape(gameState, shapeToCopyIntoId.index);
+		middle::Id mulId = middle::getParent(gameState, shapeToAddInto.id);
 
-		auto registerResult = std::make_unique<middle::EditorActionRegisterId>(idB);
-		registerResult->execute(gameState);
-		actions.push_back(std::move(registerResult));
+		auto unlinkA = std::make_unique<UnlinkMultiplicationTerm>(mulId, shapeToCopyId);
+		unlinkA->execute(gameState);
+		actions.push_back(std::move(unlinkA));
+
+		auto& shapeToCopyInto = middle::getShape(gameState, shapeToCopyIntoId.index);
 
 		std::vector<middle::Id>children;
-		middle::getChildren(gameState, idB, children);
+		middle::getChildren(gameState, shapeToCopyIntoId, children);
 
-		// create replacements to the positions of the old children
-		for (int i = 0; i < children.size(); ++i) {
-			middle::Id& childId = children[i];
+		auto unitComp = middle::getComponent<components::BubbleUnit>(shapeToCopyInto);
+		if (unitComp) {
+			middle::Id copyId = createMultiplicationReplacementShape(gameState, shapeToCopyIntoId, shapeToCopyId);
+			auto registerAction = std::make_unique<middle::EditorActionRegisterId>(copyId);
+			registerAction->execute(gameState);
+			actions.push_back(std::move(registerAction));
 
-			// replace unit with new copy bubble
-			auto createMulAction = std::make_unique<bubbleActions::CreateMulitiplicationReplacementShape>(childId, idA);
-			createMulAction->execute(gameState);
-			middle::Id copyId = createMulAction->resultShapeId;
-			actions.push_back(std::move(createMulAction));
-
-			auto replaceAction = std::make_unique<bubbleActions::Replace>(childId, copyId);
+			auto replaceAction = std::make_unique<bubbleActions::Replace>(shapeToCopyIntoId, copyId);
 			replaceAction->execute(gameState);
 			actions.push_back(std::move(replaceAction));
 		}
+		else {
+			// create replacements to the positions of the old children
+			for (int i = 0; i < children.size(); ++i) {
+				middle::Id& childId = children[i];
 
-		middle::deleteShapeRecursive(gameState, idA.index);
+				// replace unit with new copy bubble
+				middle::Id copyId = createMultiplicationReplacementShape(gameState, childId, shapeToCopyId);
+				auto registerAction = std::make_unique<middle::EditorActionRegisterId>(copyId);
+				registerAction->execute(gameState);
+				actions.push_back(std::move(registerAction));
+
+				auto replaceAction = std::make_unique<bubbleActions::Replace>(childId, copyId);
+				replaceAction->execute(gameState);
+				actions.push_back(std::move(replaceAction));
+			}
+		}
 
 		auto deleteAction2 = std::make_unique<middle::EditorActionDeleteSingle>(shapeToCopyId);
 		deleteAction2->execute(gameState);
 		actions.push_back(std::move(deleteAction2));
-
-		resultShapeId = idB;
-
-		auto replace = std::make_unique<bubbleActions::Replace>(shapeToCopyIntoId, resultShapeId);
-		replace->execute(gameState);
-		actions.push_back(std::move(replace));
-
-
-		// delete multiplication shape if children size < 2
-		middle::Id parentId = middle::getParent(gameState, resultShapeId);
-		if (parentId.index != middle::UNASSIGNED) {
-			auto& parentShape = middle::getShape(gameState, parentId.index);
-			std::vector<middle::Id>children;
-			middle::getChildren(gameState, parentId, children);
-			middle::Id parentsParentId = middle::getParent(gameState, parentId);
-			// reparent to parents parent (if it exists)
-			if (children.size() == 1 && parentsParentId.index != middle::UNASSIGNED) {
-				auto reparent = std::make_unique<middle::EditorActionReparent>(parentsParentId.index, children[0].index);
-				reparent->execute(gameState);
-				actions.push_back(std::move(reparent));
-			}
-			// (if it doesn't exist) remove from the current parent to prevent it being deleted when parent is deleted
-			else if (children.size() == 1) {
-				auto removeFromLoop = std::make_unique<middle::EditorActionRemoveFromLoop>(children[0].index);
-				removeFromLoop->execute(gameState);
-				actions.push_back(std::move(removeFromLoop));
-			}
-			// delete parent, which is a multiplication with less than 2 values
-			if (children.size() < 2) {
-				auto deleteAction = std::make_unique<middle::EditorActionDeleteSingle>(parentId);
-				deleteAction->execute(gameState);
-				actions.push_back(std::move(deleteAction));
-			}
-		}
 
 		queueSound(gameState, bubbleSounds::EXPAND_MULTIPLICATION_SOUND);
 	}
@@ -386,10 +337,10 @@ namespace bubbleActions {
 		middle::Shape& copyShapeB = middle::getShape(gameState, idB.index);
 
 		// NORMAL AVERAGE BASIC CASE
-		auto additionAction = std::make_unique<CreateAdditionReplacementShape>(idA, idB);
-		additionAction->execute(gameState);
-		resultShapeId = additionAction->resultId;
-		actions.push_back(std::move(additionAction));
+		resultShapeId = createAdditionReplacementShape(gameState, idA, idB);
+		auto registerAction = std::make_unique<middle::EditorActionRegisterId>(resultShapeId);
+		registerAction->execute(gameState);
+		actions.push_back(std::move(registerAction));
 
 		auto deleteAction = std::make_unique<middle::EditorActionDeleteSingle>(shapeToAddId);
 		deleteAction->execute(gameState);
@@ -1393,7 +1344,7 @@ namespace bubbleActions {
 	void UpdateVariable::undo(middle::GameState* gameState)
 	{
 		middle::Id& oldRef = oldUnitRef;
-		auto update = UpdateVariable(label, [oldRef]() {return oldRef;});
+		auto update = UpdateVariable(label, [oldRef]() {return oldRef; });
 		update.execute(gameState);
 	}
 
@@ -2085,13 +2036,14 @@ namespace bubbleActions {
 		else {
 			copyShapeId = createNegatedReplacementShape(gameState, shapeToCopyId);
 		}
-		if(gameState->bubbleAlgebraState.copyInverted){
-			bubble::invert(gameState, copyShapeId);
+
+		if (gameState->bubbleAlgebraState.copyInverted) {
+			middle::Id invertedShapeId = createInverseReplacementShape(gameState, copyShapeId);
+			middle::deleteShapeRecursive(gameState, copyShapeId.index);
+			copyShapeId = invertedShapeId;
 		}
 		middle::moveShape(gameState, copyShapeId.index, targetPosition - middle::getShapePosition(gameState, copyShapeId.index));
 		middle::attachComponent<components::HelperBubbleEquation>(gameState, copyShapeId);
-		//auto inventoryItem = middle::attachComponent<components::InventoryItem>(gameState, copyShapeId);
-		//inventoryItem->itemType = bubbleInventoryItemType::NEW_ADDITION_TERM;
 		auto insertable = middle::attachComponent<components::InsertableBubble>(gameState, copyShapeId);
 		auto& copyShape = middle::getShape(gameState, copyShapeId.index);
 		auto loop = middle::getComponent<components::LoopSociety>(copyShape);

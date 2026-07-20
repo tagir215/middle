@@ -34,7 +34,6 @@ class SceneEditorSelectionSystem : public middle::MiddleGameplaySystem {
 			if (parentId.index != middle::UNASSIGNED) {
 				std::vector<middle::Id>children;
 				middle::getChildren(gameState, parentId, children);
-				assert(children.size() == 2);
 				middle::Id idA = children[0];
 				middle::Id idB = children[1];
 				center = (middle::getShapePosition(gameState, idA.index) +

@@ -26,9 +26,8 @@
 #include "EditThisTag.h"
 
 namespace bubble {
-	float unitRadius = 4;
+	float unitRadius = 14;
 	float variableRadius = 24;
-	float bubbleMinRadius = 10;
 	float variableTextFontSize = 29;
 	float minTopDogRadius = 50;
 
@@ -754,17 +753,17 @@ namespace bubble {
 			for (middle::Id& id : children) {
 				auto& shape = middle::getShape(gameState, id.index);
 				auto unit = middle::getComponent<components::BubbleUnit>(shape);
+				auto bubble = middle::getComponent<components::BubbleComponent>(shape);
+				auto mul = middle::getComponent<components::BubbleMultiplyComponent>(shape);
 				if (unit) {
 					UnitValue value = unitValue(gameState, id);
 					result.scale += value.scale;
 				}
-				auto bubble = middle::getComponent<components::BubbleComponent>(shape);
-				if (bubble) {
+				else if (bubble) {
 					BubbleValue value = calculateBubbleValue(gameState, shape.id, variableValues);
 					result.scale += value.scale;
 				}
-				auto mul = middle::getComponent<components::BubbleMultiplyComponent>(shape);
-				if (mul) {
+				else if (mul) {
 					std::vector<middle::Id> mulChildren;
 					middle::getChildren(gameState, shape.id, mulChildren);
 					BubbleValue mulResult;
@@ -1291,7 +1290,7 @@ namespace bubble {
 		middle::addComponent<components::PhysicsData>(newBubbleShape);
 		middle::addComponent<components::Layer>(newBubbleShape);
 		auto circle = middle::addComponent<components::Circle>(newBubbleShape);
-		circle->radius = bubbleMinRadius;
+		circle->radius = variableRadius;
 		auto position = middle::addComponent<components::Position>(newBubbleShape);
 		position->posX = targetPos.x;
 		position->posY = targetPos.y;
