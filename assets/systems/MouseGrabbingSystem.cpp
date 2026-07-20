@@ -4,7 +4,7 @@
 #include "MouseIntersectable.h"
 #include "middle_shape_utils.h"
 #include "MouseGrabbable.h"
-#include "Position.h"
+#include "GlobalTransform.h"
 #include "PlacementComponent.h"
 #include "LoopSociety.h"
 #include "editor_actions.h"
@@ -28,11 +28,11 @@ namespace MouseGrabbingSystem {
 		void init(middle::GameState* gameState) {
 			grabbableCache = middle::newCompCache(gameState, systemName);
 			grabbableCache->addType<components::MouseGrabbable>();
-			grabbableCache->addType<components::Position>();
+			grabbableCache->addType<components::GlobalTransform>();
 			grabbableCache->addType<components::MouseSelectable>();
 			placableCache = middle::newCompCache(gameState, systemName);
 			placableCache->addType<components::PlacementComponent>();
-			placableCache->addType<components::Position>();
+			placableCache->addType<components::GlobalTransform>();
 		}
 
 		void dragging(middle::GameState* gameState, middle::Shape& shape) {
@@ -69,8 +69,8 @@ namespace MouseGrabbingSystem {
 			lastMoveAction->newPositions.resize(lastMoveAction->selectedShapes.size());
 			for (int j = 0; j < lastMoveAction->selectedShapes.size(); ++j) {
 				auto& selectedShape = middle::getShape(gameState, lastMoveAction->selectedShapes[j]);
-				auto position = middle::getComponent<components::Position>(selectedShape);
-				lastMoveAction->newPositions[j] = { position->posX, position->posY, position->posZ };
+				auto transform = middle::getComponent<components::GlobalTransform>(selectedShape);
+				lastMoveAction->newPositions[j] = transform->pos;
 			}
 			gameState->editorState.grabbing = false;
 		}
@@ -85,12 +85,10 @@ namespace MouseGrabbingSystem {
 			}
 
 			auto grabbableIt = grabbableCache->begin<components::MouseGrabbable>();
-			auto positionIt = grabbableCache->begin<components::Position>();
 			auto selectableIt = grabbableCache->begin<components::MouseSelectable>();
 			for (int i = 0; i < grabbableCache->getSize(); ++i) {
 				auto& shape = middle::getShape(gameState, grabbableCache->relevantIdVector[i].index);
 				auto grabbable = *grabbableIt;
-				auto position = *positionIt;
 				auto selectable = *selectableIt;
 
 				if (grabbable && selectable->selected && gameState->input.grabDown) {

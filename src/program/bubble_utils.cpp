@@ -159,11 +159,11 @@ namespace bubble {
 			if (!circle) {
 				continue;
 			}
-			auto childPos = middle::getComponent<components::Position>(child);
-			float left = childPos->posX - circle->radius;
-			float right = childPos->posX + circle->radius;
-			float top = childPos->posZ + circle->radius;
-			float bottom = childPos->posZ - circle->radius;
+			auto childTransform = middle::getComponent<components::GlobalTransform>(child);
+			float left = childTransform->pos.x - circle->radius;
+			float right = childTransform->pos.x + circle->radius;
+			float top = childTransform->pos.z + circle->radius;
+			float bottom = childTransform->pos.z - circle->radius;
 			if (left < *leftX) {
 				*leftX = left;
 			}

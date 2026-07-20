@@ -4,7 +4,7 @@
 #include "MouseIntersectable.h"
 #include "middle_shape_utils.h"
 #include "Sphere.h"
-#include "Position.h"
+#include "GlobalTransform.h"
 #include "middle_math.h"
 #include "Constraint.h"
 #include "JointEntity.h"
@@ -78,8 +78,8 @@ namespace MouseIntersectDetectionSystem {
 				auto placable = middle::getComponent<components::PlacementComponent>(shape);
 				if (placable)
 					continue;
-				auto position = middle::getComponent<components::Position>(shape);
-				if (!position)
+				auto transform = middle::getComponent<components::GlobalTransform>(shape);
+				if (!transform)
 					continue;
 				auto constraint = middle::getComponent<components::Constraint>(shape);
 				if (constraint) {

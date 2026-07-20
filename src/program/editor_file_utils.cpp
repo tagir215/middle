@@ -466,12 +466,12 @@ namespace middle {
 		auto referenceComponent = getComponent<components::Reference>(shape);
 		assert(referenceComponent);
 		if (referenceComponent) {
-			auto posComponent = getComponent<components::Position>(shape);
-			Vector3 pos = { posComponent->posX, posComponent->posY, posComponent->posZ };
+			auto posComponent = getComponent<components::LocalPosition>(shape);
+			Vector3 pos = { 0,0,0 };
+			if (posComponent) {
+				posComponent->pos;
+			}
 			// reset to zero, because load scene will again set the position, while also moving its children
-			posComponent->posX = 0;
-			posComponent->posY = 0;
-			posComponent->posZ = 0;
 			loadScene(gameState, referenceComponent->folder, referenceComponent->sceneName, true, pos, index);
 		}
 	}

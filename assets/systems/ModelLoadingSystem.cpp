@@ -7,7 +7,6 @@
 #include "MouseSelectable.h"
 #include "editor_actions.h"
 #include "component_utils.h"
-#include "Position.h"
 #include "Rotation.h"
 #include "Scale.h"
 
@@ -24,88 +23,88 @@ public:
 	components::CompCache* modelPosCache;
 
 	void init(middle::GameState* gameState) override {
-		selectableCache = middle::newCompCache(gameState, systemName);
-		selectableCache->addType<components::MouseSelectable>();
-		modelCache = middle::newCompCache(gameState, systemName);
-		modelCache->addType<components::ModelComponent>();
-		modelPosCache = middle::newCompCache(gameState, systemName);
-		modelPosCache->addType<components::ModelComponent>();
-		modelPosCache->addType<components::Position>();
-		modelPosCache->addType<components::Rotation>();
-		modelPosCache->addType<components::Scale>();
+		//selectableCache = middle::newCompCache(gameState, systemName);
+		//selectableCache->addType<components::MouseSelectable>();
+		//modelCache = middle::newCompCache(gameState, systemName);
+		//modelCache->addType<components::ModelComponent>();
+		//modelPosCache = middle::newCompCache(gameState, systemName);
+		//modelPosCache->addType<components::ModelComponent>();
+		//modelPosCache->addType<components::Position>();
+		//modelPosCache->addType<components::Rotation>();
+		//modelPosCache->addType<components::Scale>();
 	}
 	void update(middle::GameState* gameState) override {
-		if (gameState->loadedModels.size() > 0) {
+		//if (gameState->loadedModels.size() > 0) {
 
-			auto selectableIt = selectableCache->begin<components::MouseSelectable>();
-			for (int i = 0; i < selectableCache->getSize(); ++i) {
-				auto selectable = *selectableIt;
-				if (selectable->selected) {
-					middle::ModelContainer& modelContainer = gameState->loadedModels.back();
-					Model model = modelContainer.model;
-					std::string path = modelContainer.path;
-					middle::Id id = selectableCache->relevantIdVector[i];
-					auto customAction = std::make_shared<middle::CustomActionWithUndo>(
-						[id, model, path](middle::GameState* gameState) {
-							auto& selectableShape = middle::getShape(gameState, id.index);
-							auto comp = middle::getComponent<components::ModelComponent>(selectableShape);
-							if (!comp) {
-								comp = middle::attachComponent<components::ModelComponent>(gameState, selectableShape.id);
-							}
-							comp->model = model;
-							comp->path = path;
-							comp->initialized = true;
-						},
-						[id](middle::GameState* gameState) {
-							auto& selectableShape = middle::getShape(gameState, id.index);
-							middle::queueComponentDeletion<components::ModelComponent>(gameState, selectableShape.id);
-						});
-					middle::queueEditorAction(gameState, customAction);
-					gameState->loadedModels.pop_back();
-					break;
-				}
-			}
+		//	auto selectableIt = selectableCache->begin<components::MouseSelectable>();
+		//	for (int i = 0; i < selectableCache->getSize(); ++i) {
+		//		auto selectable = *selectableIt;
+		//		if (selectable->selected) {
+		//			middle::ModelContainer& modelContainer = gameState->loadedModels.back();
+		//			Model model = modelContainer.model;
+		//			std::string path = modelContainer.path;
+		//			middle::Id id = selectableCache->relevantIdVector[i];
+		//			auto customAction = std::make_shared<middle::CustomActionWithUndo>(
+		//				[id, model, path](middle::GameState* gameState) {
+		//					auto& selectableShape = middle::getShape(gameState, id.index);
+		//					auto comp = middle::getComponent<components::ModelComponent>(selectableShape);
+		//					if (!comp) {
+		//						comp = middle::attachComponent<components::ModelComponent>(gameState, selectableShape.id);
+		//					}
+		//					comp->model = model;
+		//					comp->path = path;
+		//					comp->initialized = true;
+		//				},
+		//				[id](middle::GameState* gameState) {
+		//					auto& selectableShape = middle::getShape(gameState, id.index);
+		//					middle::queueComponentDeletion<components::ModelComponent>(gameState, selectableShape.id);
+		//				});
+		//			middle::queueEditorAction(gameState, customAction);
+		//			gameState->loadedModels.pop_back();
+		//			break;
+		//		}
+		//	}
 
-		}
+		//}
 
-		auto modelIt = modelCache->begin<components::ModelComponent>();
-		for (int i = 0; i < modelCache->getSize(); ++i) {
-			auto model = *modelIt;
-			if (!model->initialized) {
-				gameState->modelsToLoadQueue.push(model->path);
-			}
+		//auto modelIt = modelCache->begin<components::ModelComponent>();
+		//for (int i = 0; i < modelCache->getSize(); ++i) {
+		//	auto model = *modelIt;
+		//	if (!model->initialized) {
+		//		gameState->modelsToLoadQueue.push(model->path);
+		//	}
 
-		}
+		//}
 
-		auto modelPosIt = modelPosCache->begin<components::ModelComponent>();
-		auto posIt = modelPosCache->begin<components::Position>();
-		auto rotIt = modelPosCache->begin<components::Rotation>();
-		auto scaleIt = modelPosCache->begin<components::Scale>();
-		for (int i = 0; i < modelPosCache->getSize(); ++i) {
-			auto model = *modelPosIt;
-			auto pos = *posIt;
-			auto rot = *rotIt;
-			auto scale = *scaleIt;
-			Matrix T = MatrixTranslate(pos->posX, pos->posY, pos->posZ);
-			Matrix R = QuaternionToMatrix(rot->rotation);
-			Matrix S = MatrixScale(scale->scale.x, scale->scale.y, scale->scale.z);
-			Matrix M = MatrixMultiply(MatrixMultiply(S, R), T);
-			model->model.transform = M;
-		}
+		//auto modelPosIt = modelPosCache->begin<components::ModelComponent>();
+		//auto posIt = modelPosCache->begin<components::Position>();
+		//auto rotIt = modelPosCache->begin<components::Rotation>();
+		//auto scaleIt = modelPosCache->begin<components::Scale>();
+		//for (int i = 0; i < modelPosCache->getSize(); ++i) {
+		//	auto model = *modelPosIt;
+		//	auto pos = *posIt;
+		//	auto rot = *rotIt;
+		//	auto scale = *scaleIt;
+		//	Matrix T = MatrixTranslate(pos->posX, pos->posY, pos->posZ);
+		//	Matrix R = QuaternionToMatrix(rot->rotation);
+		//	Matrix S = MatrixScale(scale->scale.x, scale->scale.y, scale->scale.z);
+		//	Matrix M = MatrixMultiply(MatrixMultiply(S, R), T);
+		//	model->model.transform = M;
+		//}
 
-		if (gameState->loadedModels.size() > 0) {
-			modelIt = modelCache->begin<components::ModelComponent>();
-			middle::ModelContainer& container = gameState->loadedModels.back();
-			for (int i = 0; i < modelCache->getSize(); ++i) {
-				auto modelComp = *modelIt;
-				if (!modelComp->initialized && container.path == modelComp->path) {
-					modelComp->model = container.model;
-					modelComp->initialized = true;
-					gameState->loadedModels.pop_back();
-					break;
-				}
-			}
-		}
+		//if (gameState->loadedModels.size() > 0) {
+		//	modelIt = modelCache->begin<components::ModelComponent>();
+		//	middle::ModelContainer& container = gameState->loadedModels.back();
+		//	for (int i = 0; i < modelCache->getSize(); ++i) {
+		//		auto modelComp = *modelIt;
+		//		if (!modelComp->initialized && container.path == modelComp->path) {
+		//			modelComp->model = container.model;
+		//			modelComp->initialized = true;
+		//			gameState->loadedModels.pop_back();
+		//			break;
+		//		}
+		//	}
+		//}
 	}
 };
 

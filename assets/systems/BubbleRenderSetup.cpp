@@ -5,7 +5,6 @@
 #include "middle_component_table.h"
 #include "BubbleComponent.h"
 #include "BubbleMultiplyComponent.h"
-#include "Position.h"
 #include "Sphere.h"
 #include "BubbleUnit.h"
 #include "FractionalComponent.h"
@@ -35,6 +34,7 @@
 #include "IdRef.h"
 #include "UnIntersectableWindowComponent.h"
 #include "ActiveSceneEditableTag.h"
+#include "GlobalTransform.h"
 
 
 class BubbleRenderSetup : public middle::MiddleGameplaySystem {
@@ -84,7 +84,7 @@ public:
 		variableCache->addType<components::RuntimeHiddenTag>(components::NOTINTERESTED);
 		cuboidCache = middle::newCompCache(gameState, systemName);
 		cuboidCache->addType<components::Cuboid>();
-		cuboidCache->addType<components::Position>();
+		cuboidCache->addType<components::GlobalTransform>();
 		cuboidCache->addType<components::TextureComponent>(components::NOTINTERESTED);
 		cuboidCache->addType<components::RuntimeHiddenTag>(components::NOTINTERESTED);
 		equalsCache = middle::newCompCache(gameState, systemName);
@@ -93,12 +93,12 @@ public:
 		exponentCache = middle::newCompCache(gameState, systemName);
 		exponentCache->addType<components::ExponentComponent>();
 		exponentCache->addType<components::Circle>();
-		exponentCache->addType<components::Position>();
+		exponentCache->addType<components::GlobalTransform>();
 		exponentCache->addType<components::Layer>();
 		exponentCache->addType<components::RuntimeHiddenTag>(components::NOTINTERESTED);
 		textureCache = middle::newCompCache(gameState, systemName);
 		textureCache->addType<components::TextureComponent>();
-		textureCache->addType<components::Position>();
+		textureCache->addType<components::GlobalTransform>();
 		textureCache->addType<components::RuntimeHiddenTag>(components::NOTINTERESTED);
 		editThisCache = middle::newCompCache(gameState, systemName);
 		editThisCache->addType<components::EditThisTag>();
@@ -250,7 +250,7 @@ public:
 				circle->radius = bubble::variableRadius;
 			}
 
-			auto pos = middle::getComponent<components::Position>(shape);
+			auto transform = middle::getComponent<components::GlobalTransform>(shape);
 			auto intersectable = middle::getComponent<components::MouseIntersectable>(shape);
 
 			float radius = circle->radius;
@@ -263,7 +263,7 @@ public:
 
 			middle::RenderItem variableText;
 			variableText.type = middle::RenderItemType::TEXT;
-			variableText.center = { pos->posX, pos->posY, pos->posZ };
+			variableText.center = transform->pos;
 			variableText.color = bubbleColors::POSITIVE_UNIT;
 			variableText.text = variable->label;
 			if (variable->isNegative) {
@@ -286,8 +286,8 @@ public:
 			for (int x = 1; x < children.size(); ++x) {
 				auto& shapeA = middle::getShape(gameState, children[x - 1].index);
 				auto& shapeB = middle::getShape(gameState, children[x].index);
-				auto positionA = middle::getComponent<components::Position>(shapeA);
-				auto positionB = middle::getComponent<components::Position>(shapeB);
+				auto transformA = middle::getComponent<components::GlobalTransform>(shapeA);
+				auto transformB = middle::getComponent<components::GlobalTransform>(shapeB);
 				auto circleA = middle::getComponent<components::Circle>(shapeA);
 				auto circleB = middle::getComponent<components::Circle>(shapeB);
 				auto layer = middle::getComponent<components::Layer>(shapeA);
@@ -295,8 +295,8 @@ public:
 
 				if (!circleA || !circleB)
 					continue;
-				Vector3 posA = { positionA->posX, positionA->posY, positionA->posZ };
-				Vector3 posB = { positionB->posX, positionB->posY, positionB->posZ };
+				Vector3 posA = transformA->pos;
+				Vector3 posB = transformB->pos;
 				Vector3 axis = Vector3Normalize(Vector3Subtract(posB, posA));
 				middle::RenderItem line;
 				line.type = middle::RenderItemType::LINE;
@@ -310,7 +310,7 @@ public:
 					middle::RenderItem expCircle;
 					expCircle.type = middle::RenderItemType::CIRCLE;
 					expCircle.color = ORANGE;
-					expCircle.center = Vector3{ positionB->posX, positionB->posY, positionB->posZ };
+					expCircle.center = transformB->pos;
 					expCircle.radius = circleB->radius + 1.5f;
 					expCircle.layer = layer->layer;
 					gameState->renderData.push_back(expCircle);
@@ -324,10 +324,10 @@ public:
 
 
 		auto cuboidIt = cuboidCache->begin<components::Cuboid>();
-		auto cuboidPosIt = cuboidCache->begin<components::Position>();
+		auto cuboidTransformIt = cuboidCache->begin<components::GlobalTransform>();
 		for (int i = 0; i < cuboidCache->getSize(); ++i) {
 			auto cuboid = *cuboidIt;
-			auto pos = *cuboidPosIt;
+			auto transform = *cuboidTransformIt;
 			middle::RenderItem cuboidItem;
 			cuboidItem.type = middle::RenderItemType::CUBOID;
 			cuboidItem.width = cuboid->width;
@@ -336,7 +336,7 @@ public:
 			cuboidItem.color = bubbleColors::BACKGROUND;
 			// TODO
 			cuboidItem.color.a = 30;
-			cuboidItem.center = { pos->posX, pos->posY, pos->posZ };
+			cuboidItem.center = transform->pos;
 			gameState->renderData.push_back(cuboidItem);
 		}
 
@@ -369,14 +369,14 @@ public:
 
 		auto exponentIt = exponentCache->begin<components::ExponentComponent>();
 		auto exponentCircleIt = exponentCache->begin<components::Circle>();
-		auto exponentPositionIt = exponentCache->begin<components::Position>();
+		auto exponentTransformIt = exponentCache->begin<components::GlobalTransform>();
 		auto exponentLayerIt = exponentCache->begin<components::Layer>();
 		for (int i = 0; i < exponentCache->getSize(); ++i) {
 			auto root = *exponentIt;
 			auto bubbleCircle = *exponentCircleIt;
-			auto position = *exponentPositionIt;
+			auto transform = *exponentTransformIt;
 			auto layer = *exponentLayerIt;
-			Vector3 bubblePos = { position->posX, position->posY, position->posZ };
+			Vector3 bubblePos = transform->pos;
 
 			auto& shape = middle::getShape(gameState, exponentCache->relevantIdVector[i].index);
 			bool isUiItem = middle::getComponent<components::UiComponent>(shape);
@@ -469,10 +469,10 @@ public:
 
 
 		auto textureIt = textureCache->begin<components::TextureComponent>();
-		auto texturePosIt = textureCache->begin<components::Position>();
+		auto textureTransformIt = textureCache->begin<components::GlobalTransform>();
 		for (int i = 0; i < textureCache->getSize(); ++i) {
 			auto texture = *textureIt;
-			auto pos = *texturePosIt;
+			auto transform = *textureTransformIt;
 			auto& shape = middle::getShape(gameState, textureCache->relevantIdVector[i].index);
 			bool isUiItem = middle::getComponent<components::UiComponent>(shape);
 			auto layer = middle::getComponent<components::Layer>(shape);
@@ -481,7 +481,7 @@ public:
 				middle::RenderItem textureItem;
 				textureItem.type = middle::RenderItemType::BILLBOARD;
 				textureItem.texture = &texture->texture;
-				textureItem.transform.translation = { pos->posX, pos->posY, pos->posZ };
+				textureItem.transform.translation = transform->pos;
 				textureItem.color = WHITE;
 				textureItem.textureScale = texture->scale;
 				textureItem.disableDepthTest = isUiItem;
@@ -495,7 +495,7 @@ public:
 				middle::RenderItem textureItem;
 				textureItem.type = middle::RenderItemType::BACKGROUND;
 				textureItem.texture = &texture->texture;
-				textureItem.transform.translation = { pos->posX, pos->posY, pos->posZ };
+				textureItem.transform.translation = transform->pos;
 				textureItem.color = WHITE;
 				textureItem.textureScale = texture->scale;
 				textureItem.disableDepthTest = false;

@@ -4,7 +4,6 @@
 #include "LoopSociety.h"
 #include "Sphere.h"
 #include "Reference.h"
-#include "Position.h"
 #include "Constraint.h"
 #include "PhysicsData.h"
 #include "MouseSelectable.h"
@@ -14,8 +13,9 @@
 #include "ComponentRefParent.h"
 #include "PlacementComponent.h"
 #include "Rectangle.h"
-#include "Offset.h"
 #include "Scale.h"
+#include "GlobalTransform.h"
+#include "LocalPosition.h"
 
 namespace middle {
 
@@ -117,18 +117,18 @@ namespace middle {
 
 		Vec linearVel = DescVec(linearVelocity);
 		auto pData = getComponent<components::PhysicsData>(shape);
-		auto posData = getComponent<components::Position>(shape);
+		auto posData = getComponent<components::LocalPosition>(shape);
 		if (pData != nullptr) {
 			pData->velX = linearVel.x;
 			pData->velY = linearVel.y;
 			pData->velZ = linearVel.z;
 		}
 		else if (posData) {
-			Vec currPos = { posData->posX, posData->posY, posData->posZ };
+			Vec currPos = DescVec(posData->pos);
 			Vec newPos = AddV(currPos, ScaleV(linearVel, gameState->frameTime));
-			posData->posX = newPos.x;
-			posData->posY = newPos.y;
-			posData->posZ = newPos.z;
+			posData->pos.z = newPos.x;
+			posData->pos.y = newPos.y;
+			posData->pos.z = newPos.z;
 		}
 	}
 
@@ -146,11 +146,15 @@ namespace middle {
 			int a = 0;
 		}
 
-		auto pos = getComponent<components::Position>(shape);
+		auto pos = getComponent<components::LocalPosition>(shape);
+		auto scale = getComponent<components::Scale>(shape);
+		Vector3 localDisp = displacement;
+		if (scale) {
+			Vector3 scalor = Vector3{ 1,1,1 } / scale->scale;
+			localDisp *= scalor;
+		}
 		if (pos) {
-			pos->posX += displacement.x;
-			pos->posY += displacement.y;
-			pos->posZ += displacement.z;
+			pos->pos += localDisp;
 		}
 	}
 
@@ -226,17 +230,11 @@ namespace middle {
 	Vector3 getShapePosition(GameState* gameState, int index)
 	{
 		auto& shape = getShape(gameState, index);
-		auto position = getComponent<components::Position>(shape);
-		if (!position) {
+		auto globalTransform = getComponent<components::GlobalTransform>(shape);
+		if (!globalTransform) {
 			assert(false);
 		}
-		Vector3 result = { position->posX, position->posY, position->posZ };
-		auto offset = getComponent<components::Offset>(shape);
-		if (offset) {
-			result.x += offset->offsetX;
-			result.y += offset->offsetY;
-			result.z += offset->offsetZ;
-		}
+		Vector3 result = globalTransform->pos;
 		return result;
 	}
 

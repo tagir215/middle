@@ -1,7 +1,9 @@
 #pragma once
 #include "middle_component_table.h"
 #include "game_state.h"
-#include "Position.h"
+#include "LocalPosition.h"
+#include "GlobalTransform.h"
+#include "LocalScale.h"
 #include "MouseSelectable.h"
 #include "MouseIntersectable.h"
 #include "LoopSociety.h"
@@ -12,7 +14,9 @@ namespace entities{
 
     void initReference(middle::GameState* gameState, int index, std::vector<middle::Id>members, const std::string& folder, const std::string& sceneName){
 		middle::Shape shape;
-		components::Position* pos = middle::addComponent<components::Position>(shape);
+		components::LocalPosition* pos = middle::addComponent<components::LocalPosition>(shape);
+		middle::addComponent<components::GlobalTransform>(shape);
+		middle::addComponent<components::LocalScale>(shape);
 		middle::addComponent<components::MouseSelectable>(shape);
 		middle::addComponent<components::MouseGrabbable>(shape);
 		middle::addComponent<components::MouseIntersectable>(shape);
@@ -26,9 +30,6 @@ namespace entities{
 		if (members.size() == 1) {
 			targetPos = middle::getShapePosition(gameState, members[0].index);
 		}
-		pos->posX = targetPos.x;
-		pos->posY = targetPos.y;
-		pos->posZ = targetPos.z;
-
+		pos->pos = targetPos;
     }
 }

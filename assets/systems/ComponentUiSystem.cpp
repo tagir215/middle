@@ -7,7 +7,7 @@
 #include <string>
 #include "imgui.h"
 #include <misc/cpp/imgui_stdlib.cpp>
-#include <Position.h>
+#include "GlobalTransform.h"
 #include "Text.h"
 #include "Rotation.h"
 
@@ -220,10 +220,10 @@ public:
 					}
 
 
-					auto pos = middle::getComponent<components::Position>(shape);
+					auto transform = middle::getComponent<components::GlobalTransform>(shape);
 					Vector3 displacement = { 0,0,0 };
-					if (pos) {
-						displacement = { pos->posX, pos->posY, pos->posZ };
+					if (transform) {
+						displacement = transform->pos;
 						// move shape to origin
 						middle::moveShape(gameState, shape.id.index, Vector3Negate(displacement));
 					}

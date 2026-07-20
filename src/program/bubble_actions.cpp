@@ -21,6 +21,7 @@
 #include "EditThisTag.h"
 #include "InsertableBubble.h"
 #include "equlab_actions.h"
+#include "GlobalTransform.h"
 
 namespace bubbleActions {
 
@@ -169,8 +170,8 @@ namespace bubbleActions {
 		auto& shapeToReplace = middle::getShape(gameState, shapeToReplaceId.index);
 		auto& replacingShape = middle::getShape(gameState, replacingShapeId.index);
 
-		auto pos = middle::getComponent<components::Position>(shapeToReplace);
-		Vector3 targetPos = { pos->posX, pos->posY, pos->posZ };
+		auto transform = middle::getComponent<components::GlobalTransform>(shapeToReplace);
+		Vector3 targetPos = transform->pos;
 
 		auto bubbleComp = middle::getComponent<components::BubbleComponent>(shapeToReplace);
 		auto mulComp = middle::getComponent<components::BubbleMultiplyComponent>(shapeToReplace);
@@ -639,10 +640,11 @@ namespace bubbleActions {
 				middle::Id copyId = middle::deepCopyShape(gameState, parentId.index);
 				middle::Id newParentId = bubble::containerize(gameState, copyId);
 				auto& newParentShape = middle::getShape(gameState, newParentId.index);
-				auto pos = middle::getComponent<components::Position>(newParentShape);
+				Vector3 pos = middle::getShapePosition(gameState, newParentShape.id.index);
 				Vector3 targetPosition = middle::getShapePosition(gameState, recieverShapeId.index);
 				// move the bubble cause the mul shape is idk where its supposed to be.
-				pos->posY = targetPosition.y;
+				//pos->posY = targetPosition.y;
+				middle::moveShape(gameState, newParentShape.id.index, targetPosition);
 
 				auto registerAction = std::make_unique<EditorActionRegisterId>(newParentId);
 				registerAction->execute(gameState);

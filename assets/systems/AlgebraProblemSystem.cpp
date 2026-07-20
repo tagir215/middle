@@ -11,12 +11,12 @@
 #include "Rectangle.h"
 #include "BubbleAlgebraLevelConfigs.h"
 #include "CameraComponent.h"
-#include "Position.h"
 #include "ProcedureContainer.h"
 #include "bubble_constants.h"
 #include "ProcedureInputVariable.h"
 #include "editor_file_utils.h"
 #include "imgui.h"
+#include "GlobalTransform.h"
 
 class AlgebraProblemSystem : public middle::MiddleGameplaySystem {
 public:
@@ -30,15 +30,15 @@ public:
 	void init(middle::GameState* gameState) {
 		containerCache = middle::newCompCache(gameState, systemName);
 		containerCache->addType<components::BubbleAlgebraProblemContainer>();
-		containerCache->addType<components::Position>();
+		containerCache->addType<components::GlobalTransform>();
 		problemCache = middle::newCompCache(gameState, systemName);
 		problemCache->addType<components::BubbleAlgebraProblem>();
-		problemCache->addType<components::Position>();
+		problemCache->addType<components::GlobalTransform>();
 		levelCache = middle::newCompCache(gameState, systemName);
 		levelCache->addType<components::BubbleAlgebraLevelConfigs>();
 		cameraCache = middle::newCompCache(gameState, systemName);
 		cameraCache->addType<components::CameraComponent>();
-		cameraCache->addType<components::Position>();
+		cameraCache->addType<components::GlobalTransform>();
 		procContainerCache = middle::newCompCache(gameState, systemName);
 		procContainerCache->addType<components::ProcedureContainer>();
 	}
@@ -132,20 +132,20 @@ public:
 				float problemCenterX = 0;
 
 				if (containerCache->getSize() == 1) {
-					auto containerPosIt = containerCache->begin<components::Position>();
-					auto containerPos = *containerPosIt;
+					auto containerTransformIt = containerCache->begin<components::GlobalTransform>();
+					auto containerTransform = *containerTransformIt;
 
 					const float minMargin = 40;
 
 					int problemIndex = -1;
-					auto posIt = problemCache->begin<components::Position>();
+					auto transformIt = problemCache->begin<components::GlobalTransform>();
 					for (int i = 0; i < problemCache->getSize(); ++i) {
-						auto pos = *posIt;
-						if (pos->posX > containerPos->posX - minMargin) {
+						auto transform = *transformIt;
+						if (transform->pos.x > containerTransform->pos.x - minMargin) {
 							problemIndex = i;
 						}
 
-						problemCenterX += pos->posX;
+						problemCenterX += transform->pos.x;
 
 						//float deltaZ = pos->posZ;
 						float deltaZ = 0;

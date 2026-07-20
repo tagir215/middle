@@ -9,7 +9,6 @@
 #include "script_opener.h"
 #include "LoopSociety.h"
 #include "Reference.h"
-#include "Position.h"
 #include "MouseSelectable.h"
 #include "JointEntity.h"
 #include "ConstraintEntity.h"
@@ -136,8 +135,8 @@ namespace middle {
 			Vector3 centroid = { 0,0,0 };
 			for (int i = 0; i < ids.size(); ++i) {
 				auto& shape = getShape(gameState, ids[i].index);
-				auto pos = getComponent<components::Position>(shape);
-				centroid += { pos->posX, pos->posY, pos->posZ };
+				Vector3 pos = middle::getShapePosition(gameState, shape.id.index);
+				centroid += pos;
 			}
 			centroid *= 1.0f / ids.size();
 			entities::initLoop(gameState, newIndex, ids, centroid);
@@ -470,7 +469,7 @@ namespace middle {
 			}
 
 			// placement component until placing is done
-			auto position = middle::getComponent<components::Position>(copyShape);
+			auto position = middle::getComponent<components::LocalPosition>(copyShape);
 			if (position) {
 				auto placable = middle::attachComponent<components::PlacementComponent>(gameState, copyShape.id);
 				placable->grabbing = true;
@@ -534,8 +533,7 @@ namespace middle {
 
 		for (int i = 0; i < selectedShapes.size(); ++i) {
 			auto& shape = getShape(gameState, selectedShapes[i]);
-			auto position = getComponent<components::Position>(shape);
-			oldPositions[i] = { position->posX, position->posY, position->posZ };
+			oldPositions[i] = middle::getShapePosition(gameState, shape.id.index);
 		}
 
 		for (int i = 0; i < newPositions.size(); ++i) {
@@ -548,8 +546,7 @@ namespace middle {
 	{
 		for (int i = 0; i < selectedShapes.size(); ++i) {
 			auto& shape = getShape(gameState, selectedShapes[i]);
-			auto position = getComponent<components::Position>(shape);
-			Vector3 currentPos = { position->posX, position->posY, position->posZ };
+			Vector3 currentPos = middle::getShapePosition(gameState, shape.id.index);
 			Vector3 displacement = currentPos - oldPositions[i];
 			middle::moveShape(gameState, selectedShapes[i], Vector3Negate(displacement));
 		}

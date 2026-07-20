@@ -1,11 +1,11 @@
 #pragma once
 #include "middle_system_registrar.h"
-#include "Position.h"
 #include "GridElement.h"
 #include "EditorConfigs.h"
 #include "middle_math.h"
 #include "comp_cache.h"
 #include "middle_shape_utils.h"
+#include "LocalPosition.h"
 
 class GridSystem : public middle::MiddleGameplaySystem {
 public:
@@ -22,7 +22,7 @@ public:
 		cachoA->addType<components::EditorConfigs>();
 		cachoB = middle::newCompCache(gameState, systemName);
 		cachoB->addType<components::GridElement>();
-		cachoB->addType<components::Position>();
+		cachoB->addType<components::LocalPosition>();
 
 	}
 
@@ -32,7 +32,7 @@ public:
 
 		auto& configIt = cachoA->begin<components::EditorConfigs>();
 		auto& gridIt = cachoB->begin<components::GridElement>();
-		auto& posIt = cachoB->begin<components::Position>();
+		auto& posIt = cachoB->begin<components::LocalPosition>();
 
 		components::EditorConfigs* editorConfigs = nullptr;
 		for (int i = 0; i < cachoA->getSize(); ++i) {

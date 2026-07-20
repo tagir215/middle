@@ -5,7 +5,7 @@
 #include "Constraint.h"
 #include "PhysicsData.h"
 #include "descart_loop.h"
-#include "Position.h"
+#include "LocalPosition.h"
 
 class MiddlePhysicsSystem : public middle::MiddleGameplaySystem {
 public:
@@ -20,7 +20,7 @@ public:
 	void init(middle::GameState* gameState) {
 		physicsCache = middle::newCompCache(gameState, systemName);
 		physicsCache->addType<components::PhysicsData>();
-		physicsCache->addType<components::Position>();
+		physicsCache->addType<components::LocalPosition>();
 		constraintCache = middle::newCompCache(gameState, systemName);
 		constraintCache->addType<components::Constraint>();
 	}
@@ -39,7 +39,7 @@ public:
 		}
 
 		auto physicsIt = physicsCache->begin<components::PhysicsData>();
-		auto posIt = physicsCache->begin<components::Position>();
+		auto posIt = physicsCache->begin<components::LocalPosition>();
 		for (int i = 0; i < physicsCache->getSize(); ++i) {
 			auto pcomp = *physicsIt;
 			auto pos = *posIt;
@@ -57,7 +57,7 @@ public:
 			body.linearAcc = { pcomp->accX, pcomp->accY, pcomp->accZ };
 			body.linearVel = { pcomp->velX, pcomp->velY, pcomp->velZ };
 			body.linearDamping = pcomp->damY;
-			body.position = { pos->posX, pos->posY, pos->posZ };
+			body.position = { pos->pos.x, pos->pos.y, pos->pos.z };
 			body.timeLeft = 1;
 		}
 
@@ -80,19 +80,20 @@ public:
 		DescLoop(gameState->frameTime, pairs, constraints, gameState->physicsBodies, iterations);
 
 		physicsIt = physicsCache->begin<components::PhysicsData>();
-		posIt = physicsCache->begin<components::Position>();
+		posIt = physicsCache->begin<components::LocalPosition>();
 		for (int i = 0; i < physicsCache->getSize(); ++i) {
 			auto& shape = middle::getShape(gameState, physicsCache->relevantIdVector[i].index);
 			auto pcomp = *physicsIt;
-			auto pos = *posIt;
-			if (pcomp != nullptr && pos != nullptr) {
+			auto posComp = *posIt;
+			if (pcomp != nullptr && posComp != nullptr) {
 				PhysicsBody& body = gameState->physicsBodies[i];
 				pcomp->velX = body.linearVel.x;
 				pcomp->velY = body.linearVel.y;
 				pcomp->velZ = body.linearVel.z;
-				pos->posX = body.position.x;
-				pos->posY = body.position.y;
-				pos->posZ = body.position.z;
+
+				posComp->pos.x = body.position.x;
+				posComp->pos.y = body.position.y;
+				posComp->pos.z = body.position.z;
 			}
 		}
 	}

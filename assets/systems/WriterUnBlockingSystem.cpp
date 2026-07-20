@@ -9,7 +9,7 @@
 #include "bubble_utils.h"
 #include "PuzzleTextUnit.h"
 #include "Text.h"
-#include "Position.h"
+#include "GlobalTransform.h"
 #include "UiComponent.h"
 #include "PuzzleTextPanel.h"
 #include "Rectangle.h"
@@ -18,6 +18,8 @@
 #include "SceneObjectComponent.h"
 #include "TopDogBubbleTag.h"
 #include "bubble_paths.h"
+#include "LocalPosition.h"
+#include "LocalScale.h"
 
 
 class WriterUnBlockingSystem : public middle::MiddleGameplaySystem {
@@ -34,7 +36,9 @@ class WriterUnBlockingSystem : public middle::MiddleGameplaySystem {
 		// CREATE TEXT PANEL
 		middle::Shape textPanelProto;
 		middle::addComponent<components::PuzzleTextPanel>(textPanelProto);
-		middle::addComponent<components::Position>(textPanelProto);
+		middle::addComponent<components::GlobalTransform>(textPanelProto);
+		middle::addComponent<components::LocalPosition>(textPanelProto);
+		middle::addComponent<components::LocalScale>(textPanelProto);
 		auto rectangle = middle::addComponent<components::Rectangle>(textPanelProto);
 		rectangle->width = 150;
 		rectangle->height = 300;
@@ -57,7 +61,9 @@ class WriterUnBlockingSystem : public middle::MiddleGameplaySystem {
 			auto textComp = middle::addComponent<components::Text>(textUnitProto);
 			textComp->text = unit.text;
 			textComp->fontSize = 10;
-			middle::addComponent<components::Position>(textUnitProto);
+			middle::addComponent<components::GlobalTransform>(textUnitProto);
+			middle::addComponent<components::LocalPosition>(textUnitProto);
+			middle::addComponent<components::LocalScale>(textUnitProto);
 			middle::addComponent<components::Rectangle>(textUnitProto);
 			middle::addComponent<components::UiComponent>(textUnitProto);
 			middle::addComponent<components::LoopSociety>(textUnitProto);

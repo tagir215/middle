@@ -4,7 +4,6 @@
 #include "middle_shape_utils.h"
 #include "LoopSociety.h"
 #include "BubbleComponent.h"
-#include "Position.h"
 #include "bubble_utils.h"
 #include "MouseGrabbable.h"
 #include "MouseIntersectable.h"
@@ -19,6 +18,7 @@
 #include "UiComponent.h"
 #include "UnIntersectableWindowComponent.h"
 #include "component_utils.h"
+#include "GlobalTransform.h"
 
 class BubbleIntersectSystem : public middle::MiddleGameplaySystem {
 public:
@@ -33,7 +33,7 @@ public:
 		bubbleCache->addType<components::BubbleComponent>();
 		bubbleCache->addType<components::MouseIntersectable>();
 		bubbleCache->addType<components::Circle>();
-		bubbleCache->addType<components::Position>();
+		bubbleCache->addType<components::GlobalTransform>();
 		bubbleCache->addType<components::UnIntersectableWindowComponent>(components::NOTINTERESTED);
 
 		rectangleCache = middle::newCompCache(gameState, systemName);
@@ -42,7 +42,7 @@ public:
 
 		nonBubbleCircleCache = middle::newCompCache(gameState, systemName);
 		nonBubbleCircleCache->addType<components::Circle>();
-		nonBubbleCircleCache->addType<components::Position>();
+		nonBubbleCircleCache->addType<components::GlobalTransform>();
 		nonBubbleCircleCache->addType<components::MouseIntersectable>();
 		nonBubbleCircleCache->addType<components::BubbleComponent>(components::NOTINTERESTED);
 
@@ -160,12 +160,12 @@ public:
 
 
 		auto bubbleIntersectableIt = bubbleCache->begin<components::MouseIntersectable>();
-		auto bubblePositionIt = bubbleCache->begin<components::Position>();
+		auto bubbleTransformIt = bubbleCache->begin<components::GlobalTransform>();
 		auto bubbleCircleIt = bubbleCache->begin<components::Circle>();
 		for (int i = 0; i < bubbleCache->getSize(); ++i) {
 			auto& shape = middle::getShape(gameState, bubbleCache->relevantIdVector[i].index);
 			auto intersectable = *bubbleIntersectableIt;
-			auto position = *bubblePositionIt;
+			auto transform = *bubbleTransformIt;
 			auto circle = *bubbleCircleIt;
 			intersectable->intersecting = false;
 			intersectable->intersectingTop = false;
@@ -199,7 +199,7 @@ public:
 				}
 			}
 
-			Vector3 pos = { position->posX, position->posY, position->posZ };
+			Vector3 pos = transform->pos;
 			Vector3 mousePos = middle::RayCastLinePlane(pos, { 0,1,0 }, gameState->activeCamera.position, gameState->input.mouseDir);
 
 			bool intersecting = Vector3DistanceSqr(pos, mousePos) < circle->radius * circle->radius;

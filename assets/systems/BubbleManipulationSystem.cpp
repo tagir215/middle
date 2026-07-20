@@ -4,7 +4,7 @@
 #include "middle_shape_utils.h"
 #include "BubbleComponent.h"
 #include "MouseGrabbable.h"
-#include "Position.h"
+#include "GlobalTransform.h"
 #include "PhysicsData.h"
 #include "LoopSociety.h"
 #include "MouseIntersectable.h"
@@ -37,9 +37,9 @@ public:
 
 	void move(middle::GameState* gameState, middle::Shape& shape) {
 		Vector3 pos;
-		auto posComponent = middle::getComponent<components::Position>(shape);
-		if (posComponent) {
-			pos = { posComponent->posX, posComponent->posY, posComponent->posZ };
+		auto transform = middle::getComponent<components::GlobalTransform>(shape);
+		if (transform) {
+			pos = transform->pos;
 		}
 
 		Vector3 cameraPos = gameState->editorState.camera.position;

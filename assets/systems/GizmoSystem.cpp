@@ -1,7 +1,6 @@
 #pragma once
 #include "game_state.h"
 #include "middle_system_registrar.h"
-#include "Position.h"
 #include "Rotation.h"
 #include "Scale.h"
 #include "MouseSelectable.h"
@@ -86,105 +85,105 @@ public:
 	}
 
 	void init(middle::GameState* gameState) override {
-		cache = middle::newCompCache(gameState, systemName);
-		cache->addType<components::Position>();
-		cache->addType<components::Rotation>();
-		cache->addType<components::Scale>();
-		cache->addType<components::MouseSelectable>();
-		draggedCache = middle::newCompCache(gameState, systemName);
-		draggedCache->addType<components::DragStart>();
-		draggedCache->addType<components::Rotation>();
+		//cache = middle::newCompCache(gameState, systemName);
+		//cache->addType<components::Position>();
+		//cache->addType<components::Rotation>();
+		//cache->addType<components::Scale>();
+		//cache->addType<components::MouseSelectable>();
+		//draggedCache = middle::newCompCache(gameState, systemName);
+		//draggedCache->addType<components::DragStart>();
+		//draggedCache->addType<components::Rotation>();
 	}
 
 	void update(middle::GameState* gameState) override {
-		auto positionIt = cache->begin<components::Position>();
-		auto rotationIt = cache->begin<components::Rotation>();
-		auto scaleIt = cache->begin<components::Scale>();
-		auto selectableIt = cache->begin<components::MouseSelectable>();
+		//auto positionIt = cache->begin<components::Position>();
+		//auto rotationIt = cache->begin<components::Rotation>();
+		//auto scaleIt = cache->begin<components::Scale>();
+		//auto selectableIt = cache->begin<components::MouseSelectable>();
 
-		for (int i = 0; i < cache->getSize(); ++i) {
-			auto position = *positionIt;
-			auto rotation = *rotationIt;
-			auto scale = *scaleIt;
-			auto selectable = *selectableIt;
+		//for (int i = 0; i < cache->getSize(); ++i) {
+		//	auto position = *positionIt;
+		//	auto rotation = *rotationIt;
+		//	auto scale = *scaleIt;
+		//	auto selectable = *selectableIt;
 
-			if (!selectable->selected) {
-				continue;
-			}
+		//	if (!selectable->selected) {
+		//		continue;
+		//	}
 
-			const float gizmoRadius = 30;
+		//	const float gizmoRadius = 30;
 
-			Vector3 gizmoPos = { position->posX, position->posY, position->posZ };
-			if (!broadTest(gameState, gizmoPos, gizmoRadius)) {
-				continue;
-			}
+		//	Vector3 gizmoPos = { position->posX, position->posY, position->posZ };
+		//	if (!broadTest(gameState, gizmoPos, gizmoRadius)) {
+		//		continue;
+		//	}
 
-			AxisTestResult axisResult = axisTest(gameState, gizmoPos, gizmoRadius);
-			middle::RenderItem indicator;
-			indicator.type = middle::RenderItemType::SPHERE;
-			indicator.center = axisResult.collisionPos;
-			indicator.radius = 3;
-			Color color;
-			if (axisResult.resultAxis == 0) {
-				color = GREEN;
-			}
-			else if (axisResult.resultAxis == 1) {
-				color = RED;
-			}
-			else if (axisResult.resultAxis == 2) {
-				color = BLUE;
-			}
-			else {
-				return;
-			}
-			color.a = 30;
-			indicator.color = color;
-			gameState->renderData.push_back(indicator);
+		//	AxisTestResult axisResult = axisTest(gameState, gizmoPos, gizmoRadius);
+		//	middle::RenderItem indicator;
+		//	indicator.type = middle::RenderItemType::SPHERE;
+		//	indicator.center = axisResult.collisionPos;
+		//	indicator.radius = 3;
+		//	Color color;
+		//	if (axisResult.resultAxis == 0) {
+		//		color = GREEN;
+		//	}
+		//	else if (axisResult.resultAxis == 1) {
+		//		color = RED;
+		//	}
+		//	else if (axisResult.resultAxis == 2) {
+		//		color = BLUE;
+		//	}
+		//	else {
+		//		return;
+		//	}
+		//	color.a = 30;
+		//	indicator.color = color;
+		//	gameState->renderData.push_back(indicator);
 
-			renderAxis(gameState, gizmoPos, color, axisResult.axis, gizmoRadius);
+		//	renderAxis(gameState, gizmoPos, color, axisResult.axis, gizmoRadius);
 
-			if (gameState->input.rotatePressed) {
-				auto& shape = middle::getShape(gameState, cache->relevantIdVector[i].index);
-				auto comp = middle::attachComponent<components::DragStart>(gameState, shape.id);
-				comp->dragStartPos = gameState->input.mouseXZ_PlanePos;
-				comp->axis = axisResult.axis;
-				comp->axisId = axisResult.resultAxis;
-				comp->gizmoPos = gizmoPos;
-				comp->initRotation = rotation->rotation;
-			}
+		//	if (gameState->input.rotatePressed) {
+		//		auto& shape = middle::getShape(gameState, cache->relevantIdVector[i].index);
+		//		auto comp = middle::attachComponent<components::DragStart>(gameState, shape.id);
+		//		comp->dragStartPos = gameState->input.mouseXZ_PlanePos;
+		//		comp->axis = axisResult.axis;
+		//		comp->axisId = axisResult.resultAxis;
+		//		comp->gizmoPos = gizmoPos;
+		//		comp->initRotation = rotation->rotation;
+		//	}
 
-			bool intersectsWithX;
-		}
+		//	bool intersectsWithX;
+		//}
 
-		auto draggedIt = draggedCache->begin<components::DragStart>();
-		auto rotationIt2 = draggedCache->begin<components::Rotation>();
-		for (int i = 0; i < draggedCache->getSize(); ++i) {
-			auto drag = *draggedIt;
-			auto rotation = *rotationIt2;
-			Color color;
-			Vector3 perpAxis = { 1,0,0 };
-			if (drag->axisId == 0) {
-				color = GREEN;
-			}
-			else if (drag->axisId == 1) {
-				color = RED;
-			}
-			else if (drag->axisId == 2) {
-				color = BLUE;
-			}
-			color.a = 60;
-			renderAxis(gameState, drag->gizmoPos, color, drag->axis, 30);
+		//auto draggedIt = draggedCache->begin<components::DragStart>();
+		//auto rotationIt2 = draggedCache->begin<components::Rotation>();
+		//for (int i = 0; i < draggedCache->getSize(); ++i) {
+		//	auto drag = *draggedIt;
+		//	auto rotation = *rotationIt2;
+		//	Color color;
+		//	Vector3 perpAxis = { 1,0,0 };
+		//	if (drag->axisId == 0) {
+		//		color = GREEN;
+		//	}
+		//	else if (drag->axisId == 1) {
+		//		color = RED;
+		//	}
+		//	else if (drag->axisId == 2) {
+		//		color = BLUE;
+		//	}
+		//	color.a = 60;
+		//	renderAxis(gameState, drag->gizmoPos, color, drag->axis, 30);
 
-			if (gameState->input.rotateReleased) {
-				middle::queueComponentDeletion<components::DragStart>(gameState, draggedCache->relevantIdVector[i]);
-			}
+		//	if (gameState->input.rotateReleased) {
+		//		middle::queueComponentDeletion<components::DragStart>(gameState, draggedCache->relevantIdVector[i]);
+		//	}
 
-			// rotation
-			float rotateDelta = Vector3Subtract(gameState->input.mouseXZ_PlanePos, drag->dragStartPos).x;
-			float scalor = 0.1f;
-			Quaternion axisQuat = QuaternionFromAxisAngle(drag->axis, rotateDelta * scalor);
-			rotation->rotation = QuaternionMultiply(drag->initRotation, axisQuat);
-		}
+		//	// rotation
+		//	float rotateDelta = Vector3Subtract(gameState->input.mouseXZ_PlanePos, drag->dragStartPos).x;
+		//	float scalor = 0.1f;
+		//	Quaternion axisQuat = QuaternionFromAxisAngle(drag->axis, rotateDelta * scalor);
+		//	rotation->rotation = QuaternionMultiply(drag->initRotation, axisQuat);
+		//}
 
 	}
 };
