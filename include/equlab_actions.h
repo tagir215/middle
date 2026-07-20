@@ -128,6 +128,17 @@ namespace equlab {
 		void undo(middle::GameState* gameState);
 	};
 
+	class ToggleEditable : public middle::EditorActionContainer {
+	public:
+		middle::Id id;
+		middle::Id topLevelId;
+		ToggleEditable(middle::Id id) {
+			this->id = id;
+		}
+		void execute(middle::GameState* gameState);
+		void undo(middle::GameState* gameState);
+	};
+
 	class ConnectMultiplicationLink : public middle::EditorActionContainer {
 	public:
 		middle::Id bubbleIdA;

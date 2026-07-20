@@ -167,7 +167,10 @@ public:
 				bool equals = middle::getComponent<components::BubbleEqualsComponent>(parentShape) != nullptr;
 				auto problem = middle::getComponent<components::BubbleAlgebraProblem>(parentShape);
 				auto helper = middle::getComponent<components::HelperBubbleEquation>(parentShape);
-				parentIsEditableEquals = equals && (problem && problem->editable) || helper;
+				if (shape.id.index == 72) {
+					int a = 0;
+				}
+				parentIsEditableEquals = equals && ((problem && problem->editable) || helper);
 			}
 
 			// check if should add editable indicator

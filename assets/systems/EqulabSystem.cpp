@@ -92,7 +92,6 @@ public:
 
 
 
-
 		// UI 
 		auto equlabUi = [gameState, this]() {
 			ImGui::Begin("Bubequ file");
@@ -134,27 +133,24 @@ public:
 		gameState->uiSetups.push_back(equlabUi);
 
 
-
-
-
 		// ACTIONS
-		std::string keyString = keyToString(gameState);
-		if (keyString != "") {
-			middle::Id intersectedBubble;
-			auto intersectableBubbleIt = intersectableBubbleCache->begin<components::MouseIntersectable>();
-			for (int i = 0; i < intersectableBubbleCache->getSize(); ++i) {
-				auto intersectable = *intersectableBubbleIt;
-				if (intersectable->intersectingTop) {
-					intersectedBubble = intersectableBubbleCache->relevantIdVector[i];
-					break;
-				}
-			}
-			if (intersectedBubble.index != middle::UNASSIGNED) {
-				auto action = std::make_shared<equlab::AddLabelCharacterToVariable>(intersectedBubble, keyString);
-				middle::queueAction(gameState, action);
-				gameState->bubbleAlgebraState.bubbleActions.push_back(action);
-			}
-		}
+		//std::string keyString = keyToString(gameState);
+		//if (keyString != "") {
+		//	middle::Id intersectedBubble;
+		//	auto intersectableBubbleIt = intersectableBubbleCache->begin<components::MouseIntersectable>();
+		//	for (int i = 0; i < intersectableBubbleCache->getSize(); ++i) {
+		//		auto intersectable = *intersectableBubbleIt;
+		//		if (intersectable->intersectingTop) {
+		//			intersectedBubble = intersectableBubbleCache->relevantIdVector[i];
+		//			break;
+		//		}
+		//	}
+		//	if (intersectedBubble.index != middle::UNASSIGNED) {
+		//		auto action = std::make_shared<equlab::AddLabelCharacterToVariable>(intersectedBubble, keyString);
+		//		middle::queueAction(gameState, action);
+		//		gameState->bubbleAlgebraState.bubbleActions.push_back(action);
+		//	}
+		//}
 
 		// MOUSE CLICK ACTIONS
 		if (gameState->input.mouseClicked) {
@@ -210,6 +206,12 @@ public:
 
 			else if (gameState->equlabInput.sixHeld) {
 				auto action = std::make_shared<equlab::Delete>(targetId);
+				middle::queueAction(gameState, action);
+				gameState->bubbleAlgebraState.bubbleActions.push_back(action);
+			}
+
+			else if (gameState->equlabInput.sevenHeld) {
+				auto action = std::make_shared<equlab::ToggleEditable>(targetId);
 				middle::queueAction(gameState, action);
 				gameState->bubbleAlgebraState.bubbleActions.push_back(action);
 			}

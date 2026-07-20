@@ -9,6 +9,8 @@
 #include "alg_file_utils.h"
 #include <queue>
 #include "UnIntersectableWindowComponent.h"
+#include "HelperBubbleEquation.h"
+#include "TopDogBubbleTag.h"
 
 namespace equlab {
 
@@ -222,6 +224,16 @@ namespace equlab {
 			actions.back()->undo(gameState);
 			actions.pop_back();
 		}
+	}
+
+	void ToggleEditable::execute(middle::GameState* gameState) {
+		int topLevelIndex = middle::findHighestLevelContainer(gameState, id.index);
+		topLevelId = gameState->ids[topLevelIndex];
+		middle::attachComponent<components::HelperBubbleEquation>(gameState, topLevelId);
+	}
+
+	void ToggleEditable::undo(middle::GameState* gameState) {
+		middle::queueComponentDeletion<components::HelperBubbleEquation>(gameState, topLevelId);
 	}
 
 	void ConnectMultiplicationLink::execute(middle::GameState* gameState) {

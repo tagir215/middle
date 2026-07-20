@@ -9,7 +9,6 @@
 #include "LoopSociety.h"
 #include "MouseIntersectable.h"
 #include "BubbleUnit.h"
-#include "FractionalComponent.h"
 #include "InventoryItem.h"
 #include "MouseSelectable.h"
 #include "DeleteComponent.h"
@@ -27,7 +26,6 @@ class BubbleManipulationSystem : public middle::MiddleGameplaySystem {
 public:
 	components::CompCache* bubbleCache;
 	components::CompCache* unitCache;
-	components::CompCache* fractionCache;
 
 
 	void init(middle::GameState* gameState) {
@@ -35,13 +33,6 @@ public:
 		bubbleCache->addType<components::MouseGrabbable>();
 		bubbleCache->addType<components::BubbleComponent>();
 		bubbleCache->addType<components::InventoryItem>(components::NOTINTERESTED);
-		unitCache = middle::newCompCache(gameState, systemName);
-		unitCache->addType<components::MouseGrabbable>();
-		unitCache->addType<components::BubbleUnit>();
-		unitCache->addType<components::LoopSociety>();
-		fractionCache = middle::newCompCache(gameState, systemName);
-		fractionCache->addType<components::MouseGrabbable>();
-		fractionCache->addType<components::FractionalComponent>();
 	}
 
 	void move(middle::GameState* gameState, middle::Shape& shape) {
@@ -172,39 +163,6 @@ public:
 				move(gameState, shape);
 			}
 			attachComponents(gameState, shape, grabbable);
-		}
-
-		auto unitIt = unitCache->begin<components::BubbleUnit>();
-		auto unitGrabbableIt = unitCache->begin<components::MouseGrabbable>();
-		for (int i = 0; i < unitCache->getSize(); ++i) {
-			auto& shape = middle::getShape(gameState, unitCache->relevantIdVector[i].index);
-			auto unit = *unitIt;
-			auto grabbable = *unitGrabbableIt;
-			middle::Id parentId = middle::getParent(gameState, shape.id);
-			if (parentId.index != middle::UNASSIGNED) {
-				auto& parentShape = middle::getShape(gameState, parentId.index);
-				auto parentFraction = middle::getComponent<components::FractionalComponent>(parentShape);
-				if (parentFraction) {
-					continue;
-				}
-			}
-			if (grabbable->grabbing) {
-				move(gameState, shape);
-			}
-			attachComponents(gameState, shape, grabbable);
-
-		}
-
-		auto fractionIt = fractionCache->begin<components::FractionalComponent>();
-		auto fractionGrabbableIt = fractionCache->begin<components::MouseGrabbable>();
-		for (int i = 0; i < fractionCache->getSize(); ++i) {
-			auto& shape = middle::getShape(gameState, fractionCache->relevantIdVector[i].index);
-			auto fraction = *fractionIt;
-			auto grabbable = *fractionGrabbableIt;
-			attachComponents(gameState, shape, grabbable);
-			if (grabbable->grabbing) {
-				move(gameState, shape);
-			}
 		}
 
 	}
