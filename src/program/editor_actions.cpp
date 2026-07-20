@@ -352,6 +352,7 @@ namespace middle {
 			if (id == childShape.id) {
 				parentLoop->loopMemberIds.erase(parentLoop->loopMemberIds.begin() + i);
 				loopIndex = i;
+				middle::updateLocalCoordinateToProjectedGlobalCoordinate(gameState, childShape.id);
 				return;
 			}
 		}
@@ -363,6 +364,9 @@ namespace middle {
 	{
 		EditorActionReparent(oldParentIndex, childIndex).execute(gameState);
 		EditorActionChangeLoopMemberIndex(oldParentIndex, childIndex, loopIndex).execute(gameState);
+
+		middle::Id childId = gameState->ids[childIndex];
+		middle::updateLocalCoordinateToProjectedGlobalCoordinate(gameState, childId);
 	}
 
 	void checkCircularReferences(GameState* gameState, middle::Id& parentId, middle::Id& id) {
@@ -406,16 +410,7 @@ namespace middle {
 			childLoop->parentLoopId = middle::Id();
 		}
 
-
-		// move local pos to keep position same relative with respect to world 
-		auto transform = middle::getComponent<components::GlobalTransform>(childShape);
-		if (transform && childLoop->parentLoopId.index != middle::UNASSIGNED) {
-			Vector3 globalPos = transform->pos;
-			Vector3 projLocalPos = middle::projectGlobalCoordinateToLocalCoordinate(gameState, 
-				globalPos, childLoop->parentLoopId);
-			auto localPos = middle::getComponent<components::LocalPosition>(childShape);
-			localPos->pos = projLocalPos;
-		}
+		updateLocalCoordinateToProjectedGlobalCoordinate(gameState, childShape.id);
 	}
 
 	void EditorActionReparent::undo(GameState* gameState)
@@ -428,6 +423,9 @@ namespace middle {
 			auto removeFromLoop = EditorActionRemoveFromLoop(childIndex);
 			removeFromLoop.execute(gameState);
 		}
+
+		middle::Id childId = gameState->ids[childIndex];
+		updateLocalCoordinateToProjectedGlobalCoordinate(gameState, childId);
 	}
 
 	void EditorActionChangeLoopMemberIndex::execute(GameState* gameState)

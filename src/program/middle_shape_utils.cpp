@@ -757,6 +757,10 @@ namespace middle {
 	}
 
 	Matrix getTransformMatrix(GameState* gameState, middle::Id id) {
+		if (id.index == middle::UNASSIGNED) {
+			return MatrixIdentity();
+		}
+
 		std::stack<middle::Id>parentStack;
 		parentStack.push(id);
 		while (true) {
@@ -789,12 +793,19 @@ namespace middle {
 		return localCoord;
 	}
 
+	void updateLocalCoordinateToProjectedGlobalCoordinate(GameState* gameState, middle::Id id)
+	{
+		auto shape = middle::getShape(gameState, id.index);
+		auto transform = middle::getComponent<components::GlobalTransform>(shape);
+		auto localPos = middle::getComponent<components::LocalPosition>(shape);
+		middle::Id parentId = middle::getParent(gameState, id);
+		if (transform) {
+			Vector3 globalPos = transform->pos;
+			Vector3 projLocalPos = middle::projectGlobalCoordinateToLocalCoordinate(gameState, 
+				globalPos, parentId);
+			localPos->pos = projLocalPos;
+		}
+	}
 
-	//components::CompCache* newCompCache(GameState* gameState)
-	//{
-	//	gameState->compCaches.push_back(
-	//		std::make_unique<components::CompCache>()
-	//	);
-	//	return gameState->compCaches.back().get();
-	//}
+
 }
