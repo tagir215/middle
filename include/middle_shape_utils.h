@@ -94,7 +94,7 @@ namespace middle {
 	// project world coordinate as local coordinate 
 	Vector3 projectGlobalCoordinateToLocalCoordinate(GameState* gameState, const Vector3& globalCoord, middle::Id shapeId);
 	// project local coordinate to match old global coordinate
-	void updateLocalCoordinateToProjectedGlobalCoordinate(GameState* gameState, middle::Id id);
+	void updateLocalCoordinateToProjectedGlobalCoordinate(GameState* gameState, middle::Id id, middle::Id oldParentId);
 
 	template<typename F>
 	void loopInstances(GameState* gameState, F func) {

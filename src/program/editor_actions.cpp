@@ -340,6 +340,7 @@ namespace middle {
 			return;
 		}
 
+		middle::Id oldParentId = childLoop->parentLoopId;
 		oldParentIndex = childLoop->parentLoopId.index;
 
 		Shape& parentShape = getShape(gameState, childLoop->parentLoopId.index);
@@ -352,7 +353,7 @@ namespace middle {
 			if (id == childShape.id) {
 				parentLoop->loopMemberIds.erase(parentLoop->loopMemberIds.begin() + i);
 				loopIndex = i;
-				middle::updateLocalCoordinateToProjectedGlobalCoordinate(gameState, childShape.id);
+				middle::updateLocalCoordinateToProjectedGlobalCoordinate(gameState, childShape.id, oldParentId);
 				return;
 			}
 		}
@@ -362,11 +363,10 @@ namespace middle {
 
 	void EditorActionRemoveFromLoop::undo(GameState* gameState)
 	{
+		middle::Id childId = gameState->ids[childIndex];
+		middle::Id currentParentId = middle::getParent(gameState, childId);
 		EditorActionReparent(oldParentIndex, childIndex).execute(gameState);
 		EditorActionChangeLoopMemberIndex(oldParentIndex, childIndex, loopIndex).execute(gameState);
-
-		middle::Id childId = gameState->ids[childIndex];
-		middle::updateLocalCoordinateToProjectedGlobalCoordinate(gameState, childId);
 	}
 
 	void checkCircularReferences(GameState* gameState, middle::Id& parentId, middle::Id& id) {
@@ -383,6 +383,7 @@ namespace middle {
 		assert(parentIndex != childIndex);
 		Shape& childShape = getShape(gameState, childIndex);
 		auto childLoop = getComponent<components::LoopSociety>(childShape);
+		middle::Id oldParentId = childLoop->parentLoopId;
 		oldParentIndex = childLoop->parentLoopId.index;
 
 		// remove from old parent 
@@ -410,11 +411,12 @@ namespace middle {
 			childLoop->parentLoopId = middle::Id();
 		}
 
-		updateLocalCoordinateToProjectedGlobalCoordinate(gameState, childShape.id);
+		updateLocalCoordinateToProjectedGlobalCoordinate(gameState, childShape.id, oldParentId);
 	}
 
 	void EditorActionReparent::undo(GameState* gameState)
 	{
+		middle::Id currentParentId = middle::getParent(gameState, gameState->ids[childIndex]);
 		if (oldParentIndex != middle::UNASSIGNED) {
 			auto metaReparent = EditorActionReparent(oldParentIndex, childIndex);
 			metaReparent.execute(gameState);
@@ -424,8 +426,6 @@ namespace middle {
 			removeFromLoop.execute(gameState);
 		}
 
-		middle::Id childId = gameState->ids[childIndex];
-		updateLocalCoordinateToProjectedGlobalCoordinate(gameState, childId);
 	}
 
 	void EditorActionChangeLoopMemberIndex::execute(GameState* gameState)

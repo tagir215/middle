@@ -21,7 +21,6 @@ namespace bubble {
 	std::vector<middle::Id>getNodes(middle::GameState* gameState, middle::Id id);
 	std::vector<middle::Id>getConstraints(middle::GameState* gameState, middle::Id id);
 	middle::Id findBubbleWithPattern(middle::GameState* gameState, middle::Id containerBubble);
-	middle::Id shapeToFraction(middle::GameState* gameState, middle::Id shapeId, const Vector3& targetPos, int dividend);
 	struct UnitValue {
 		float scale = 0;
 		float power = 1;

@@ -1298,24 +1298,9 @@ namespace bubble {
 
 	middle::Shape newUnit(middle::GameState* gameState, const Vector3& targetPos, bool isNegative)
 	{
-		middle::Shape newUnitShape;
+		middle::Shape newUnitShape = newBubble(gameState, targetPos);
 		auto unit = middle::addComponent<components::BubbleUnit>(newUnitShape);
 		unit->value = isNegative ? -1 : 1;
-		middle::addComponent<components::BubbleComponent>(newUnitShape);
-		middle::addComponent<components::MouseGrabbable>(newUnitShape);
-		middle::addComponent<components::MouseIntersectable>(newUnitShape);
-		middle::addComponent<components::MouseSelectable>(newUnitShape);
-		middle::addComponent<components::LoopSociety>(newUnitShape);
-		middle::addComponent<components::PhysicsData>(newUnitShape);
-		middle::addComponent<components::Layer>(newUnitShape);
-		middle::addComponent<components::Circle>(newUnitShape);
-		auto circle = middle::addComponent<components::Circle>(newUnitShape);
-		circle->radius = unitRadius;
-		auto sphere = middle::addComponent<components::Sphere>(newUnitShape);
-		sphere->radius = unitRadius;
-		auto position = middle::addComponent<components::LocalPosition>(newUnitShape);
-		position->pos = targetPos;
-		middle::addComponent<components::LocalScale>(newUnitShape);
 		return newUnitShape;
 	}
 
@@ -1349,6 +1334,7 @@ namespace bubble {
 		auto position = middle::addComponent<components::LocalPosition>(newBubbleShape);
 		position->pos = targetPos;
 		middle::addComponent<components::LocalScale>(newBubbleShape);
+		middle::addComponent<components::GlobalTransform>(newBubbleShape);
 		return newBubbleShape;
 	}
 
@@ -1365,6 +1351,7 @@ namespace bubble {
 		auto position = middle::addComponent<components::LocalPosition>(newBubbleShape);
 		position->pos = targetPos;
 		middle::addComponent<components::LocalScale>(newBubbleShape);
+		middle::addComponent<components::GlobalTransform>(newBubbleShape);
 		return newBubbleShape;
 	}
 
@@ -1381,6 +1368,7 @@ namespace bubble {
 		auto position = middle::addComponent<components::LocalPosition>(newBubbleShape);
 		position->pos = targetPos;
 		middle::addComponent<components::LocalScale>(newBubbleShape);
+		middle::addComponent<components::GlobalTransform>(newBubbleShape);
 		return newBubbleShape;
 	}
 

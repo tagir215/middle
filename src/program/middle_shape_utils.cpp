@@ -793,19 +793,18 @@ namespace middle {
 		return localCoord;
 	}
 
-	void updateLocalCoordinateToProjectedGlobalCoordinate(GameState* gameState, middle::Id id)
+	void updateLocalCoordinateToProjectedGlobalCoordinate(GameState* gameState, middle::Id id, middle::Id oldParentId)
 	{
 		auto shape = middle::getShape(gameState, id.index);
-		auto transform = middle::getComponent<components::GlobalTransform>(shape);
 		auto localPos = middle::getComponent<components::LocalPosition>(shape);
-		middle::Id parentId = middle::getParent(gameState, id);
-		if (transform) {
-			Vector3 globalPos = transform->pos;
+		if (localPos) {
+			Matrix oldTransform = getTransformMatrix(gameState, oldParentId);
+			Vector3 globalPos = Vector3Transform(localPos->pos, oldTransform);
+			middle::Id parentId = middle::getParent(gameState, id);
 			Vector3 projLocalPos = middle::projectGlobalCoordinateToLocalCoordinate(gameState, 
 				globalPos, parentId);
 			localPos->pos = projLocalPos;
 		}
 	}
-
 
 }
