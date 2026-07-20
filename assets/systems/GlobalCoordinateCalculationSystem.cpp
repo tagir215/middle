@@ -14,48 +14,58 @@ class GlobalCoordinateCalculationSystem : public middle::MiddleGameplaySystem {
 		posScaleCache->addType<components::LocalPosition>();
 		posScaleCache->addType<components::LocalScale>();
 		posScaleCache->addType<components::GlobalTransform>();
-
 	}
 
-	std::vector<middle::Id>getParents(middle::GameState* gameState, middle::Id id) {
-		std::vector<middle::Id>ids;
-		while (true) {
-			middle::Id parentId = middle::getParent(gameState, id);
-			if (parentId.index == middle::UNASSIGNED) {
-				break;
-			}
-			ids.push_back(parentId);
+	void calculateTransforms(middle::GameState* gameState, middle::Id id, std::unordered_map<int, Matrix>& matrixMap) {
+		auto& shape = middle::getShape(gameState, id.index);
+		auto scaleComp = middle::getComponent<components::LocalScale>(shape);
+		auto posComp = middle::getComponent<components::LocalPosition>(shape);
+		const Vector3& scale = scaleComp->scale;
+		const Vector3& pos = posComp->pos;
+		Matrix scaleM = MatrixScale(scale.x, scale.y, scale.z);
+		Matrix translateM = MatrixTranslate(pos.x, pos.y, pos.z);
+
+		Matrix& m = matrixMap[id.index];
+
+		Matrix transform = MatrixMultiply(translateM, scaleM);
+		m = MatrixMultiply(transform, m);
+
+		std::vector<middle::Id>children;
+		middle::getChildren(gameState, id, children);
+		for (middle::Id childId : children) {
+			calculateTransforms(gameState, childId, matrixMap);
 		}
-		return ids;
 	}
 
 	void update(middle::GameState* gameState) override {
 
 		Quaternion assumedRotation = { 1,1,1,1 };
 
-		auto scaleIt = posScaleCache->begin<components::LocalScale>();
-		auto posIt = posScaleCache->begin<components::LocalPosition>();
-		auto globalIt = posScaleCache->begin<components::GlobalTransform>();
-		int i = 0;
+		std::unordered_map<int, Matrix>matrixMap;
+
 		for (middle::Id id : posScaleCache->relevantIdVector) {
-			auto scale = *scaleIt;
-			auto pos = *posIt;
-			auto global = *globalIt;
-			std::vector<middle::Id>parents = getParents(gameState, id);
-			Vector3 totalScale = scale->scale;
-			Vector3 totalPos = pos->pos;
-			for (middle::Id& parentId : parents) {
-				auto parentShape = middle::getShape(gameState, parentId.index);
-				auto parentScale = middle::getComponent<components::LocalScale>(parentShape);
-				auto parentPos = middle::getComponent<components::LocalPosition>(parentShape);
-				totalScale *= parentScale->scale;
-				totalPos += parentPos->pos;
-			}
-			global->pos = totalPos;
-			global->rotation = assumedRotation;
-			global->scale = totalScale;
+			matrixMap[id.index] = MatrixIdentity();
 		}
 
+		std::vector<middle::Id>topLevelIds;
+		for (middle::Id id : posScaleCache->relevantIdVector) {
+			if (middle::getParent(gameState, id).index == middle::UNASSIGNED) {
+				topLevelIds.push_back(id);
+			}
+		}
+
+		for (middle::Id id : topLevelIds) {
+			calculateTransforms(gameState, id, matrixMap);
+		}
+
+		auto globalIt = posScaleCache->begin<components::GlobalTransform>();
+		for (middle::Id id : posScaleCache->relevantIdVector) {
+			auto globalT = *globalIt;
+			Matrix& m = matrixMap[id.index];
+			globalT->pos = Vector3Transform(Vector3{0,0,0}, m);
+			globalT->scale = Vector3Transform(Vector3{1,1,1}, m);
+			globalT->rotation = assumedRotation;
+		}
 	}
 };
 

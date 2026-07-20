@@ -4,7 +4,6 @@
 #include "middle_shape_utils.h"
 #include "PhysicsData.h"
 #include "BubbleComponent.h"
-#include "Position.h"
 #include "component_utils.h"
 #include "Circle.h"
 #include "LoopSociety.h"
@@ -15,6 +14,8 @@
 #include "BubbleEqualsComponent.h"
 #include "DeleteComponent.h" 
 #include "IdRef.h"
+#include "GlobalTransform.h"
+#include "LocalPosition.h"
 
 class BubblePhysics : public middle::MiddleGameplaySystem {
 public:
@@ -34,7 +35,8 @@ public:
 
 		bubbleCache = middle::newCompCache(gameState, systemName);
 		bubbleCache->addType<components::BubbleComponent>();
-		bubbleCache->addType<components::Position>();
+		bubbleCache->addType<components::GlobalTransform>();
+		bubbleCache->addType<components::LocalPosition>();
 		bubbleCache->addType<components::PhysicsData>();
 		bubbleCache->addType<components::Circle>();
 		bubbleCache->addType<components::LoopSociety>();
@@ -54,12 +56,14 @@ public:
 
 		rectCache = middle::newCompCache(gameState, systemName);
 		rectCache->addType<components::Rectangle>();
-		rectCache->addType<components::Position>();
+		rectCache->addType<components::GlobalTransform>();
+		rectCache->addType<components::LocalPosition>();
 		rectCache->addType<components::PhysicsData>();
 
 		topDogBubbleCache = middle::newCompCache(gameState, systemName);
 		topDogBubbleCache->addType<components::TopDogBubbleTag>();
-		topDogBubbleCache->addType<components::Position>();
+		topDogBubbleCache->addType<components::GlobalTransform>();
+		topDogBubbleCache->addType<components::LocalPosition>();
 		topDogBubbleCache->addType<components::PhysicsData>();
 		topDogBubbleCache->addType<components::Circle>();
 		topDogBubbleCache->addType<components::LoopSociety>();
@@ -69,7 +73,7 @@ public:
 
 	struct Body {
 		middle::Id id;
-		components::Position* pos;
+		components::GlobalTransform* transform;
 		components::PhysicsData* physicsData;
 		float radius;
 		float width;
@@ -101,8 +105,8 @@ public:
 	void findSiblingCollisions(std::vector<std::vector<BodyPair>>& pairVectors, std::vector<Collision>& results) {
 		for (std::vector<BodyPair>& pairVector : pairVectors) {
 			for (BodyPair& pair : pairVector) {
-				Vector3 posA = { pair.bodyA.pos->posX, pair.bodyA.pos->posY, pair.bodyA.pos->posZ };
-				Vector3 posB = { pair.bodyB.pos->posX, pair.bodyB.pos->posY, pair.bodyB.pos->posZ };
+				Vector3 posA = pair.bodyA.transform->pos;
+				Vector3 posB = pair.bodyB.transform->pos;
 				float dist = Vector3Distance(posA, posB);
 				if (dist < pair.bodyA.radius + pair.bodyB.radius) {
 					Collision collision;
@@ -119,9 +123,9 @@ public:
 	void findCollisionsWithOutline(std::vector<Bubble>& bubbles, std::vector<Collision>& results) {
 		for (Bubble& bubble : bubbles) {
 			Body& bubbleBody = bubble.bubbleBody;
-			Vector3 bubblePos = { bubbleBody.pos->posX, bubbleBody.pos->posY, bubbleBody.pos->posZ };
+			Vector3 bubblePos = bubbleBody.transform->pos;
 			for (Body& body : bubble.bodies) {
-				Vector3 bodyPos = { body.pos->posX, body.pos->posY, body.pos->posZ };
+				Vector3 bodyPos = body.transform->pos;
 				float dist = Vector3Distance(bubblePos, bodyPos);
 				if (dist > bubbleBody.radius - body.radius) {
 					Collision collision;
@@ -138,11 +142,11 @@ public:
 	void findCollisionsWithGreatCenterLine(std::vector<Body>& topDogs, Body& greatCenterLine, std::vector<Collision>& results) {
 		// great line assumed to be vertical
 		Vector3 axis = { 1,0,0 };
-		Vector3 greatCenterLinePos = { greatCenterLine.pos->posX, greatCenterLine.pos->posY, greatCenterLine.pos->posZ };
+		Vector3 greatCenterLinePos = greatCenterLine.transform->pos;
 		greatCenterLine.physicsData->infiniteMass = true;
 		greatCenterLine.physicsData->invMass = 0;
 		for (Body& body : topDogs) {
-			Vector3 bodyPos = { body.pos->posX, body.pos->posY, body.pos->posZ };
+			Vector3 bodyPos = body.transform->pos;
 			float dir = Vector3DotProduct(Vector3Subtract(bodyPos, greatCenterLinePos), axis);
 			float dist = std::abs(dir);
 			float outlineRadius = greatCenterLine.width * 0.5f + body.radius;
@@ -161,8 +165,8 @@ public:
 		Body& bodyA = collision.bodyA;
 		Body& bodyB = collision.bodyB;
 		Vector3 axis = collision.axis;
-		Vector3 posA = { bodyA.pos->posX, bodyA.pos->posY, bodyA.pos->posZ };
-		Vector3 posB = { bodyB.pos->posX, bodyB.pos->posY, bodyB.pos->posZ };
+		Vector3 posA = bodyA.transform->pos;
+		Vector3 posB = bodyB.transform->pos;
 		Vector3 velA = { bodyA.physicsData->velX, bodyA.physicsData->velY, bodyA.physicsData->velZ };
 		Vector3 velB = { bodyB.physicsData->velX, bodyB.physicsData->velY, bodyB.physicsData->velZ };
 
@@ -186,8 +190,8 @@ public:
 		for (int i = 1; i < constraint.bodies.size(); ++i) {
 			Body& bodyA = constraint.bodies[i - 1];
 			Body& bodyB = constraint.bodies[i];
-			Vector3 posA = { bodyA.pos->posX, bodyA.pos->posY, bodyA.pos->posZ };
-			Vector3 posB = { bodyB.pos->posX, bodyB.pos->posY, bodyB.pos->posZ };
+			Vector3 posA = bodyA.transform->pos;
+			Vector3 posB = bodyB.transform->pos;
 			Vector3 velA = { bodyA.physicsData->velX, bodyA.physicsData->velY, bodyA.physicsData->velZ };
 			Vector3 velB = { bodyB.physicsData->velX, bodyB.physicsData->velY, bodyB.physicsData->velZ };
 			Vector3 axis = Vector3Normalize(Vector3Subtract(posB, posA));
@@ -214,14 +218,14 @@ public:
 	void integrate(float frameTime, components::CompCache* cache) {
 		// integrating
 		const float damping = 0.2f;
-		auto posIt = cache->begin<components::Position>();
+		auto posIt = cache->begin<components::LocalPosition>();
 		auto physicsIt = cache->begin<components::PhysicsData>();
 		for (int i = 0; i < cache->getSize(); ++i) {
 			auto pos = *posIt;
 			auto physics = *physicsIt;
-			pos->posX += physics->velX * frameTime;
-			pos->posY += physics->velY * frameTime;
-			pos->posZ += physics->velZ * frameTime;
+			pos->pos.x += physics->velX * frameTime;
+			pos->pos.y += physics->velY * frameTime;
+			pos->pos.z += physics->velZ * frameTime;
 			physics->velX -= physics->velX * damping;
 			physics->velY -= physics->velY * damping;
 			physics->velZ -= physics->velZ * damping;
@@ -238,7 +242,7 @@ public:
 			Body prevBody;
 			for (int j = 0; j < children.size(); ++j) {
 				auto& childShape = middle::getShape(gameState, children[j].index);
-				auto position = middle::getComponent<components::Position>(childShape);
+				auto transform = middle::getComponent<components::GlobalTransform>(childShape);
 				auto physics = middle::getComponent<components::PhysicsData>(childShape);
 				auto childCircle = middle::getComponent<components::Circle>(childShape);
 				auto mul = middle::getComponent<components::BubbleMultiplyComponent>(childShape);
@@ -248,7 +252,7 @@ public:
 				Body body;
 				body.id = childShape.id;
 				body.physicsData = physics;
-				body.pos = position;
+				body.transform = transform;
 				body.radius = 1;
 				if (childCircle) {
 					body.radius = childCircle->radius;
@@ -279,12 +283,12 @@ public:
 
 		std::vector<Bubble>bubbles;
 		auto bubbleIt = bubbleCache->begin<components::BubbleComponent>();
-		auto bubblePosIt = bubbleCache->begin<components::Position>();
+		auto bubbleTransformIt = bubbleCache->begin<components::GlobalTransform>();
 		auto circleIt = bubbleCache->begin<components::Circle>();
 		auto physicsIt = bubbleCache->begin<components::PhysicsData>();
 		for (int i = 0; i < bubbleCache->getSize(); ++i) {
 			auto bubble = *bubbleIt;
-			auto bubblePos = *bubblePosIt;
+			auto bubbleTransform = *bubbleTransformIt;
 			auto circle = *circleIt;
 			auto bubblePhysics = *physicsIt;
 			auto& bubbleShape = middle::getShape(gameState, bubbleCache->relevantIdVector[i].index);
@@ -308,7 +312,7 @@ public:
 			std::vector<Body>bodies;
 			for (middle::Id& childId : interactingChildren) {
 				auto& childShape = middle::getShape(gameState, childId.index);
-				auto position = middle::getComponent<components::Position>(childShape);
+				auto transform = middle::getComponent<components::GlobalTransform>(childShape);
 				auto physics = middle::getComponent<components::PhysicsData>(childShape);
 				auto childCircle = middle::getComponent<components::Circle>(childShape);
 				assert(physics);
@@ -316,7 +320,7 @@ public:
 				float radius = childCircle ? childCircle->radius + fieldMargin : fieldMargin;
 				Body body;
 				body.id = childId;
-				body.pos = position;
+				body.transform = transform;
 				body.physicsData = physics;
 				body.radius = radius;
 				bodies.push_back(body);
@@ -324,7 +328,7 @@ public:
 
 			Body body;
 			body.id = bubbleShape.id;
-			body.pos = bubblePos;
+			body.transform = bubbleTransform;
 			body.physicsData = bubblePhysics;
 			body.radius = circle->radius;
 			bubbles.push_back({
@@ -333,38 +337,20 @@ public:
 				});
 		}
 
-		// Collect great rectangles
-		//auto rectIt = rectCache->begin<components::Rectangle>();
-		//auto rectPosIt = rectCache->begin<components::Position>();
-		//auto rectPhysicsIt = rectCache->begin<components::PhysicsData>();
-		//std::vector<Body>greatCenterLines;
-		//for (int i = 0; i < rectCache->getSize(); ++i) {
-		//	auto rect = *rectIt;
-		//	auto rectPos = *rectPosIt;
-		//	auto rectPhysics = *rectPhysicsIt;
-		//	Body body;
-		//	body.id = rectCache->relevantIdVector[i];
-		//	body.pos = rectPos;
-		//	body.physicsData = rectPhysics;
-		//	body.width = rect->width;
-		//	body.height = rect->height;
-		//	greatCenterLines.push_back(body);
-		//}
-
 		// Collect top bubbles
 		auto topBubbleIt = topDogBubbleCache->begin<components::TopDogBubbleTag>();
-		auto topBubblePosIt = topDogBubbleCache->begin<components::Position>();
+		auto topBubbleTransformIt = topDogBubbleCache->begin<components::GlobalTransform>();
 		auto topBubblePhysicsIt = topDogBubbleCache->begin<components::PhysicsData>();
 		auto topBubbleCircleIt = topDogBubbleCache->begin<components::Circle>();
 		std::vector<Body>topDogBubbles;
 		for (int i = 0; i < topDogBubbleCache->getSize(); ++i) {
 			auto topBubble = *topBubbleIt;
-			auto topBubblePos = *topBubblePosIt;
+			auto topBubbleTransform = *topBubbleTransformIt;
 			auto topBubblePhysics = *topBubblePhysicsIt;
 			auto circle = *topBubbleCircleIt;
 			Body body;
 			body.id = topDogBubbleCache->relevantIdVector[i];
-			body.pos = topBubblePos;
+			body.transform = topBubbleTransform;
 			body.physicsData = topBubblePhysics;
 			body.radius = circle->radius + fieldMargin;
 			topDogBubbles.push_back(body);
