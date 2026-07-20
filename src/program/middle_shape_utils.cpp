@@ -135,26 +135,9 @@ namespace middle {
 	void moveShape(GameState* gameState, int index, const Vector3& displacement)
 	{
 		Shape& shape = gameState->shapes[index];
-		std::vector<middle::Id>children;
-		middle::getChildren(gameState, shape.id, children);
-		for (int i = 0; i < children.size(); ++i) {
-			Id memberId = children[i];
-			assert(index != memberId.index);
-			moveShape(gameState, memberId.index, displacement);
-		}
-		if (index == 1219) {
-			int a = 0;
-		}
-
-		auto pos = getComponent<components::LocalPosition>(shape);
-		auto scale = getComponent<components::Scale>(shape);
-		Vector3 localDisp = displacement;
-		if (scale) {
-			Vector3 scalor = Vector3{ 1,1,1 } / scale->scale;
-			localDisp *= scalor;
-		}
+		auto pos = middle::getComponent<components::LocalPosition>(shape);
 		if (pos) {
-			pos->pos += localDisp;
+			pos->pos += displacement;
 		}
 	}
 

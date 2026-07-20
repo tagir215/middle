@@ -20,7 +20,8 @@ class GlobalCoordinateCalculationSystem : public middle::MiddleGameplaySystem {
 		posScaleCache->addType<components::GlobalTransform>();
 	}
 
-	void calculateTransforms(middle::GameState* gameState, middle::Id id, Matrix& parentM) {
+
+	void calculateTransforms(middle::GameState* gameState, middle::Id id, const Matrix& parentM, const Vector3& parentScale) {
 		auto& shape = middle::getShape(gameState, id.index);
 		auto scaleComp = middle::getComponent<components::LocalScale>(shape);
 		auto posComp = middle::getComponent<components::LocalPosition>(shape);
@@ -49,20 +50,20 @@ class GlobalCoordinateCalculationSystem : public middle::MiddleGameplaySystem {
 
 
 		Matrix m = parentM;
-		Matrix transform = MatrixMultiply(translateM, scaleM);
+		Matrix transform = MatrixMultiply(scaleM, translateM);
 		m = MatrixMultiply(transform, m);
 
 
 		auto globalT = middle::getComponent<components::GlobalTransform>(shape);
 		const Quaternion assumedRotation = { 1,1,1,1 };
 		globalT->pos = Vector3Transform(Vector3{ 0,0,0 }, m);
-		globalT->scale = Vector3Transform(Vector3{ 1,1,1 }, m);
+		globalT->scale = scaleComp->scale * parentScale;
 		globalT->rotation = assumedRotation;
 
 		std::vector<middle::Id>children;
 		middle::getChildren(gameState, id, children);
 		for (middle::Id childId : children) {
-			calculateTransforms(gameState, childId, m);
+			calculateTransforms(gameState, childId, m, globalT->scale);
 		}
 
 	}
@@ -78,7 +79,7 @@ class GlobalCoordinateCalculationSystem : public middle::MiddleGameplaySystem {
 		}
 
 		for (middle::Id id : topLevelIds) {
-			calculateTransforms(gameState, id, MatrixIdentity());
+			calculateTransforms(gameState, id, MatrixIdentity(), Vector3{1,1,1});
 		}
 	}
 };
