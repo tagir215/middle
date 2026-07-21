@@ -305,6 +305,8 @@ public:
 				auto circleB = middle::getComponent<components::Circle>(shapeB);
 				auto layer = middle::getComponent<components::Layer>(shapeA);
 				bool isUiItem = middle::getComponent<components::UiComponent>(shapeA);
+				float radiusA = circleA->radius * transformA->scale.x;
+				float radiusB = circleB->radius * transformB->scale.x;
 
 				if (!circleA || !circleB)
 					continue;
@@ -313,8 +315,8 @@ public:
 				Vector3 axis = Vector3Normalize(Vector3Subtract(posB, posA));
 				middle::RenderItem line;
 				line.type = middle::RenderItemType::LINE;
-				line.linePointA = posA + Vector3Scale(axis, circleA->radius);
-				line.linePointB = posB + Vector3Scale(axis, -circleB->radius);
+				line.linePointA = posA + Vector3Scale(axis, radiusA);
+				line.linePointB = posB + Vector3Scale(axis, -radiusB);
 				if (multiplyComponent->operationType == (int)components::OperationType::MULTIPLICATION) {
 					line.color = bubbleColors::MULTIPLICATION_CONNECTION;
 				}
@@ -325,7 +327,7 @@ public:
 					expCircle.color = ORANGE;
 					setTransform(expCircle, transformB);
 					expCircle.center = { 0,0,0 };
-					expCircle.radius = circleB->radius + 1.5f;
+					expCircle.radius = radiusB + 1.5f;
 					expCircle.layer = layer->layer;
 					gameState->renderData.push_back(expCircle);
 				}
