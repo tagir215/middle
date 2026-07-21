@@ -477,7 +477,7 @@ namespace bubbleActions {
 			copyId = middle::deepCopyShapeGlobalCoordinates(gameState, toPopId);
 		}
 		else {
-			middle::Id containerCopy = middle::shallowCopyShapeGlobalCoordinates(gameState, containerId);
+			copyId = middle::shallowCopyShapeGlobalCoordinates(gameState, containerId);
 		}
 		auto& newContainerShape = middle::getShape(gameState, copyId.index);
 		auto loop = middle::getComponent<components::LoopSociety>(newContainerShape);
@@ -555,7 +555,6 @@ namespace bubbleActions {
 			deleteAction->execute(gameState);
 			actions.push_back(std::move(deleteAction));
 		}
-
 
 		queueSound(gameState, bubbleSounds::POP_SOUND);
 	}
