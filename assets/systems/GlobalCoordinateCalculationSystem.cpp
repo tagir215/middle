@@ -58,8 +58,8 @@ class GlobalCoordinateCalculationSystem : public middle::MiddleGameplaySystem {
 
 
 		Matrix m = parentM;
-		Matrix transform = MatrixMultiply(scaleM, translateM);
-		m = MatrixMultiply(transform, m);
+		Matrix localM = MatrixMultiply(scaleM, translateM);
+		m = MatrixMultiply(localM, m);
 
 
 		auto globalT = middle::getComponent<components::GlobalTransform>(shape);

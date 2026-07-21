@@ -796,7 +796,7 @@ namespace middle {
 			Matrix translateM = MatrixTranslate(localPos->pos.x, localPos->pos.y, localPos->pos.z);
 			Matrix scaleM = MatrixScale(localScale->scale.x, localScale->scale.y, localScale->scale.z);
 			Matrix localM = MatrixMultiply(scaleM, translateM);
-			transform = MatrixMultiply(transform, localM);
+			transform = MatrixMultiply(localM, transform);
 		}
 		return transform;
 	}
@@ -837,13 +837,12 @@ namespace middle {
 		if (localPos && localScale) {
 			Matrix oldTransform = getTransformMatrix(gameState, oldParentId);
 			Vector3 globalPos = Vector3Transform(localPos->pos, oldTransform);
-			Vector3 oldParentScale = getGlobalScale(gameState, oldParentId);
-
 			middle::Id parentId = middle::getParent(gameState, id);
 			Vector3 projLocalPos = middle::projectGlobalCoordinateToLocalCoordinate(gameState, 
 				globalPos, parentId);
 			localPos->pos = projLocalPos;
 
+			Vector3 oldParentScale = getGlobalScale(gameState, oldParentId);
 			Vector3 newParentScale = getGlobalScale(gameState, parentId);
 			Vector3 ratio = oldParentScale / newParentScale;
 			localScale->scale *= ratio;
