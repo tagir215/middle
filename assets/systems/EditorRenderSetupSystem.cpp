@@ -187,7 +187,7 @@ public:
 
 			middle::RenderItem configSphere;
 			configSphere.type = middle::RenderItemType::SPHERE;
-			configSphere.center = middle::getShapePosition(gameState, shape.id.index);
+			configSphere.center = middle::getGlobalPosition(gameState, shape.id.index);
 			configSphere.radius = middle::DEF_RADIUS_SYSTEM;
 			configSphere.color = configColor;
 			auto intersectable = middle::getComponent<components::MouseIntersectable>(shape);
@@ -231,7 +231,7 @@ public:
 			middle::RenderItem sphereItem;
 			sphereItem.type = middle::RenderItemType::SPHERE;
 			sphereItem.radius = sphere->radius;
-			sphereItem.center = middle::getShapePosition(gameState, shape.id.index);
+			sphereItem.center = middle::getGlobalPosition(gameState, shape.id.index);
 			sphereItem.color = jointColor;
 			auto intersectable = middle::getComponent<components::MouseIntersectable>(shape);
 			if (intersectable && intersectable->intersecting) {
@@ -247,8 +247,8 @@ public:
 			auto& shape = middle::getShape(gameState, constraintCache->relevantIdVector[i].index);
 			middle::RenderItem lineItem;
 			lineItem.type = middle::RenderItemType::LINE;
-			lineItem.linePointA = getShapePosition(gameState, constraint->idA.index);
-			lineItem.linePointB = getShapePosition(gameState, constraint->idB.index);
+			lineItem.linePointA = getGlobalPosition(gameState, constraint->idA.index);
+			lineItem.linePointB = getGlobalPosition(gameState, constraint->idB.index);
 			lineItem.color = constraintColor;
 			auto intersectable = middle::getComponent<components::MouseIntersectable>(shape);
 			if (intersectable && intersectable->intersecting) {
@@ -267,7 +267,7 @@ public:
 
 				if (intersectable->intersecting) {
 					for (middle::Id& id : children) {
-						Vector3 childPos = middle::getShapePosition(gameState, id.index);
+						Vector3 childPos = middle::getGlobalPosition(gameState, id.index);
 						middle::RenderItem childItem;
 						childItem.type = middle::RenderItemType::TEXT;
 						childItem.color = loopItemColor;
@@ -277,7 +277,7 @@ public:
 
 					}
 					if (parentId.index != middle::UNASSIGNED) {
-						Vector3 parentPos = middle::getShapePosition(gameState, parentId.index);
+						Vector3 parentPos = middle::getGlobalPosition(gameState, parentId.index);
 						middle::RenderItem parentItem;
 						parentItem.type = middle::RenderItemType::TEXT;
 						parentItem.color = loopItemColor;
@@ -327,7 +327,7 @@ public:
 			auto& shape = middle::getShape(gameState, loopTagCache->relevantIdVector[i].index);
 			middle::RenderItem loopItem;
 			loopItem.type = middle::RenderItemType::SPHERE;
-			loopItem.center = middle::getShapePosition(gameState, shape.id.index);
+			loopItem.center = middle::getGlobalPosition(gameState, shape.id.index);
 			loopItem.radius = middle::DEF_RADIUS_LOOP_INDICATOR;
 			loopItem.color = loopColor;
 			loopItem.disableDepthTest = true;
@@ -375,8 +375,8 @@ public:
 				continue;
 			}
 
-			Vector3 linePointA = middle::getShapePosition(gameState, constraint->idA.index);
-			Vector3 linePointB = middle::getShapePosition(gameState, constraint->idB.index);
+			Vector3 linePointA = middle::getGlobalPosition(gameState, constraint->idA.index);
+			Vector3 linePointB = middle::getGlobalPosition(gameState, constraint->idB.index);
 
 			middle::RenderItem selectItem;
 			selectItem.type = middle::RenderItemType::RECTANGLE;

@@ -183,7 +183,7 @@ public:
 			auto outputVariable = middle::getComponent<components::OutputVariable>(shape);
 			if (inputVariable || outputVariable) {
 				Vector3 targetPos = gameState->input.mouseXZ_PlanePos;
-				Vector3 currentPos = middle::getShapePosition(gameState, grabbedId.index);
+				Vector3 currentPos = middle::getGlobalPosition(gameState, grabbedId.index);
 				middle::moveShape(gameState, grabbedId.index, targetPos - currentPos);
 			}
 

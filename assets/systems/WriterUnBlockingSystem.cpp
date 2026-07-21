@@ -50,7 +50,7 @@ class WriterUnBlockingSystem : public middle::MiddleGameplaySystem {
 		Vector3 targetPos = gameState->activeCamera.position;
 		targetPos.y = 0;
 		middle::moveShape(gameState, textPanel.id.index,
-			targetPos - middle::getShapePosition(gameState, textPanel.id.index));
+			targetPos - middle::getGlobalPosition(gameState, textPanel.id.index));
 
 		// CREATE TEXT UNITS FOR TEXT PANEL
 		for (auto& unit : problem->sentenceUnits) {

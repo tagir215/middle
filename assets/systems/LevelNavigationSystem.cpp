@@ -163,9 +163,9 @@ public:
 
 				auto camIt = cameraCache->begin<components::CameraComponent>();
 				middle::Id cameraId = cameraCache->relevantIdVector[0];
-				Vector3 currPos = middle::getShapePosition(gameState, cameraId.index);
+				Vector3 currPos = middle::getGlobalPosition(gameState, cameraId.index);
 				const Vector3 offset = Vector3{ 0, -350, 0 };
-				Vector3 targetPos = middle::getShapePosition(gameState, shape.id.index) + offset;
+				Vector3 targetPos = middle::getGlobalPosition(gameState, shape.id.index) + offset;
 				middle::moveShape(gameState, cameraId.index, targetPos - currPos);
 
 			}

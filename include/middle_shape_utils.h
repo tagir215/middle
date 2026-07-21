@@ -32,7 +32,7 @@ namespace middle {
 	// is id generation correct?  and is alive
 	bool isValidId(GameState* gameState, middle::Id id);
 	// get pos quickly
-	Vector3 getShapePosition(GameState* gameState, int index);
+	Vector3 getGlobalPosition(GameState* gameState, int index);
 	// get shape instance
 	Shape& getShape(GameState* gameState, int index);
 	// delete shape , updates generational indexes
@@ -59,6 +59,8 @@ namespace middle {
 	Id copyShape(GameState* gameState, int shapeToCopyIndex, int parentIndex = UNASSIGNED);
 	// copy shape and its children
 	Id deepCopyShape(GameState* gameState, int shapeToCopyIndex, int parentIndex = UNASSIGNED);
+	// copy shape and preserve its global coordinate
+	Id deepCopyShapeGlobalCoordinates(GameState* gameState, middle::Id id);
 	// get vertices of rectangles
 	std::vector<Vector3>getRectVertices(GameState* gameState, const Id& shapeId);
 	// get scale and multiply it with all the parents scales

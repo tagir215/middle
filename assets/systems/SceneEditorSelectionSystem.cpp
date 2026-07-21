@@ -36,12 +36,12 @@ class SceneEditorSelectionSystem : public middle::MiddleGameplaySystem {
 				middle::getChildren(gameState, parentId, children);
 				middle::Id idA = children[0];
 				middle::Id idB = children[1];
-				center = (middle::getShapePosition(gameState, idA.index) +
-					middle::getShapePosition(gameState, idB.index)) * 0.5f;
+				center = (middle::getGlobalPosition(gameState, idA.index) +
+					middle::getGlobalPosition(gameState, idB.index)) * 0.5f;
 				targetId = parentId;
 			}
 			else {
-				center = middle::getShapePosition(gameState, id.index);
+				center = middle::getGlobalPosition(gameState, id.index);
 				targetId = id;
 			}
 
@@ -53,7 +53,7 @@ class SceneEditorSelectionSystem : public middle::MiddleGameplaySystem {
 		}
 		// FIND CLOSEST FROM SCENE OBJECTS
 		for (middle::Id& id : sceneObjCache->relevantIdVector) {
-			Vector3 pos = middle::getShapePosition(gameState, id.index);
+			Vector3 pos = middle::getGlobalPosition(gameState, id.index);
 			float distSqr = Vector3DistanceSqr(pos, gameState->activeCamera.position);
 			if (distSqr < minDistance) {
 				minDistance = distSqr;

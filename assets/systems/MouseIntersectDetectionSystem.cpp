@@ -60,8 +60,8 @@ namespace MouseIntersectDetectionSystem {
 					continue;
 				auto& instanceA = getShape(gameState, constraint->idA.index);
 				auto& instanceB = getShape(gameState, constraint->idB.index);
-				Vector3 posA = middle::getShapePosition(gameState, constraint->idA.index);
-				Vector3 posB = middle::getShapePosition(gameState, constraint->idB.index);
+				Vector3 posA = middle::getGlobalPosition(gameState, constraint->idA.index);
+				Vector3 posB = middle::getGlobalPosition(gameState, constraint->idB.index);
 				bool mouseIntersect = middle::PointIntersectLineZX_Plane(gameState->input.mouseXZ_PlanePos, posA, posB, middle::DEF_LINE_PADDING_H, middle::DEF_LINE_PADDING_V);
 				intersectComponent->intersecting = mouseIntersect;
 				intersectComponent->intersectingTop = mouseIntersect;
@@ -110,7 +110,7 @@ namespace MouseIntersectDetectionSystem {
 					radius = middle::DEF_RADIUS_LOOP_INDICATOR;
 				}
 
-				Vector3 pos = middle::getShapePosition(gameState, shape.id.index);
+				Vector3 pos = middle::getGlobalPosition(gameState, shape.id.index);
 
 				Vector3 intersectPos;
 				bool isIntersecting = middle::RayCastLineSphere(pos, radius, gameState->activeCamera.position,

@@ -211,15 +211,17 @@ namespace middle {
 	}
 
 
-	Vector3 getShapePosition(GameState* gameState, int index)
+	Vector3 getGlobalPosition(GameState* gameState, int index)
 	{
 		auto& shape = getShape(gameState, index);
-		auto globalTransform = getComponent<components::GlobalTransform>(shape);
-		if (!globalTransform) {
+		middle::Id parentId = middle::getParent(gameState, shape.id);
+		Matrix m = getTransformMatrix(gameState, parentId);
+		auto localPos = getComponent<components::LocalPosition>(shape);
+		if (!localPos) {
 			assert(false);
 		}
-		Vector3 result = globalTransform->pos;
-		return result;
+		Vector3 pos = Vector3Transform(localPos->pos, m);
+		return pos;
 	}
 
 	Shape& getShape(GameState* gameState, int index)
@@ -566,6 +568,15 @@ namespace middle {
 		return newShape.id;
 
 	}
+	Id deepCopyShapeGlobalCoordinates(GameState* gameState, middle::Id id)
+	{
+		middle::Id parentId = middle::getParent(gameState, id);
+		middle::Id copyId = deepCopyShape(gameState, id.index);
+		if (parentId.index != middle::UNASSIGNED) {
+			updateLocalCoordinateToProjectedGlobalCoordinate(gameState, copyId, parentId);
+		}
+		return copyId;
+	}
 	Id deepCopyShapeToStorage(GameState* gameState, int shapeToCopyIndex, int parentIndex)
 	{
 		return Id();
@@ -575,7 +586,7 @@ namespace middle {
 	{
 		auto& shape = getShape(gameState, shapeId.index);
 		auto rect = getComponent<components::Rectangle>(shape);
-		Vector3 position = getShapePosition(gameState, shapeId.index);
+		Vector3 position = getGlobalPosition(gameState, shapeId.index);
 		Vector3 s = getTotalScale(gameState, shapeId);
 		std::vector<Vector3> vertices;
 		vertices.resize(4);

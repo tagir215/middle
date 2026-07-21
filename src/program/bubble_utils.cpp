@@ -42,7 +42,7 @@ namespace bubble {
 		if (!ref || !middle::isValidId(gameState, ref->idRef)) {
 			return false;
 		}
-		Vector3 center = middle::getShapePosition(gameState, bubbleShape.id.index);
+		Vector3 center = middle::getGlobalPosition(gameState, bubbleShape.id.index);
 
 		auto& bubbleContainer = middle::getShape(gameState, ref->idRef.index);
 
@@ -54,8 +54,8 @@ namespace bubble {
 
 			auto& idA = constraint->idA;
 			auto& idB = constraint->idB;
-			Vector3 posA = middle::getShapePosition(gameState, idA.index);
-			Vector3 posB = middle::getShapePosition(gameState, idB.index);
+			Vector3 posA = middle::getGlobalPosition(gameState, idA.index);
+			Vector3 posB = middle::getGlobalPosition(gameState, idB.index);
 			Vector3 dir = posB - posA;
 			// 2d normal
 			Vector3 normal = { -dir.z, 0 , dir.x };
@@ -112,7 +112,7 @@ namespace bubble {
 	void loopRectBoundingBoxInternal(GameState* gameState, const Id& shapeId, float* leftX, float* rightX, float* bottomZ, float* topZ)
 	{
 		auto& shape = middle::getShape(gameState, shapeId.index);
-		Vector3 pos = middle::getShapePosition(gameState, shapeId.index);
+		Vector3 pos = middle::getGlobalPosition(gameState, shapeId.index);
 		auto rect = middle::getComponent<components::Rectangle>(shape);
 		if (shouldSkipRectBound(shape)) {
 			return;
@@ -1398,7 +1398,7 @@ namespace bubble {
 
 	middle::Id containerize(middle::GameState* gameState, middle::Id id)
 	{
-		Vector3 targetPos = middle::getShapePosition(gameState, id.index);
+		Vector3 targetPos = middle::getGlobalPosition(gameState, id.index);
 		middle::Shape bubbleProto = newBubble(gameState, targetPos);
 		middle::Shape& newParent = middle::registerShape(gameState, bubbleProto);
 		middle::EditorActionReparent(newParent.id.index, id.index).execute(gameState);

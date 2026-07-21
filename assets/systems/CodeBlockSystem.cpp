@@ -67,7 +67,7 @@ public:
 			auto placement = *placementIt;
 			if (placement->grabbing) {
 				auto& shape = middle::getShape(gameState, placementCache->relevantIdVector[i].index);
-				Vector3 currentPos = middle::getShapePosition(gameState, shape.id.index);
+				Vector3 currentPos = middle::getGlobalPosition(gameState, shape.id.index);
 				Vector3 targetPos = gameState->input.mouseXZ_PlanePos;
 				middle::moveShape(gameState, shape.id.index, targetPos - currentPos);
 			}
@@ -78,7 +78,7 @@ public:
 			auto grabbable = *grabbableIt;
 			if (grabbable->grabbing) {
 				auto& shape = middle::getShape(gameState, grabbableCache->relevantIdVector[i].index);
-				Vector3 currentPos = middle::getShapePosition(gameState, shape.id.index);
+				Vector3 currentPos = middle::getGlobalPosition(gameState, shape.id.index);
 				Vector3 targetPos = gameState->input.mouseXZ_PlanePos;
 				middle::moveShape(gameState, shape.id.index, targetPos - currentPos);
 			}

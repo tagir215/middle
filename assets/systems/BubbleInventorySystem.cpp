@@ -171,7 +171,7 @@ public:
 
 				// item moving
 				if (grabbable->grabbing) {
-					moveShape(gameState, shape.id.index, gameState->input.mouseXZ_PlanePos - middle::getShapePosition(gameState, shape.id.index));
+					moveShape(gameState, shape.id.index, gameState->input.mouseXZ_PlanePos - middle::getGlobalPosition(gameState, shape.id.index));
 				}
 
 				if (grabbable->grabbing && !gameState->input.mouseHeld) {

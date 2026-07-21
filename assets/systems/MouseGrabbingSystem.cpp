@@ -36,7 +36,7 @@ namespace MouseGrabbingSystem {
 		}
 
 		void dragging(middle::GameState* gameState, middle::Shape& shape) {
-			Vector3 pos = middle::getShapePosition(gameState, shape.id.index);
+			Vector3 pos = middle::getGlobalPosition(gameState, shape.id.index);
 			auto grid = middle::getComponent<components::GridElement>(shape);
 
 			if (!grid) {

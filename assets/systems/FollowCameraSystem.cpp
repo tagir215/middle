@@ -22,7 +22,7 @@ public:
 		for (int i = 0; i < uiCache->getSize(); ++i) {
 			auto& shape = middle::getShape(gameState, uiCache->relevantIdVector[i].index);
 			Vector3 cameraPos = gameState->activeCamera.position;
-			Vector3 pos = middle::getShapePosition(gameState, shape.id.index);
+			Vector3 pos = middle::getGlobalPosition(gameState, shape.id.index);
 			middle::moveShape(gameState, shape.id.index, cameraPos - pos);
 		}
 	}

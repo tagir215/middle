@@ -28,7 +28,7 @@ namespace entities{
 		loop->loopMemberIds = members;
 		Vector3 targetPos = { 0,0,0 };
 		if (members.size() == 1) {
-			targetPos = middle::getShapePosition(gameState, members[0].index);
+			targetPos = middle::getGlobalPosition(gameState, members[0].index);
 		}
 		pos->pos = targetPos;
     }

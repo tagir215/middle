@@ -105,7 +105,7 @@ public:
 				continue;
 			}
 
-			Vector3 position = middle::getShapePosition(gameState, shape.id.index);
+			Vector3 position = middle::getGlobalPosition(gameState, shape.id.index);
 			Vector3 scale = middle::getTotalScale(gameState, shape.id);
 			Vector3 uiPlaneIntersectPoint = middle::RayCastLinePlane(position, { 0,-1,0 },
 				gameState->input.mouseNearPlanePos, gameState->input.mouseDir);
@@ -136,7 +136,7 @@ public:
 			auto& shape = middle::getShape(gameState, nonBubbleCircleCache->relevantIdVector[i].index);
 			auto circle = *circleIt;
 			auto intersectable = *circleIntersectableIt;
-			Vector3 position = middle::getShapePosition(gameState, shape.id.index);
+			Vector3 position = middle::getGlobalPosition(gameState, shape.id.index);
 			Vector3 scale = middle::getTotalScale(gameState, shape.id);
 			Vector3 uiPlaneIntersectPoint = middle::RayCastLinePlane(position, { 0,-1,0 },
 				gameState->input.mouseNearPlanePos, gameState->input.mouseDir);

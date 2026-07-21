@@ -50,8 +50,8 @@ namespace middle {
 		if (indexA != indexB) {
 			auto& shapeA = shapes[indexA];
 			auto& shapeB = shapes[indexB];
-			auto posA = getShapePosition(gameState, indexA);
-			auto posB = getShapePosition(gameState, indexB);
+			auto posA = getGlobalPosition(gameState, indexA);
+			auto posB = getGlobalPosition(gameState, indexB);
 			float distBetween = Vector3Distance(posA, posB);
 			entities::initConstraint(gameState, newIndex, indexA, indexB, distBetween);
 
@@ -135,7 +135,7 @@ namespace middle {
 			Vector3 centroid = { 0,0,0 };
 			for (int i = 0; i < ids.size(); ++i) {
 				auto& shape = getShape(gameState, ids[i].index);
-				Vector3 pos = middle::getShapePosition(gameState, shape.id.index);
+				Vector3 pos = middle::getGlobalPosition(gameState, shape.id.index);
 				centroid += pos;
 			}
 			centroid *= 1.0f / ids.size();
@@ -544,7 +544,7 @@ namespace middle {
 
 		for (int i = 0; i < selectedShapes.size(); ++i) {
 			auto& shape = getShape(gameState, selectedShapes[i]);
-			oldPositions[i] = middle::getShapePosition(gameState, shape.id.index);
+			oldPositions[i] = middle::getGlobalPosition(gameState, shape.id.index);
 		}
 
 		for (int i = 0; i < newPositions.size(); ++i) {
@@ -557,7 +557,7 @@ namespace middle {
 	{
 		for (int i = 0; i < selectedShapes.size(); ++i) {
 			auto& shape = getShape(gameState, selectedShapes[i]);
-			Vector3 currentPos = middle::getShapePosition(gameState, shape.id.index);
+			Vector3 currentPos = middle::getGlobalPosition(gameState, shape.id.index);
 			Vector3 displacement = currentPos - oldPositions[i];
 			middle::moveShape(gameState, selectedShapes[i], Vector3Negate(displacement));
 		}
@@ -584,7 +584,7 @@ namespace middle {
 
 	void EditorActionCopySingle::execute(GameState* gameState)
 	{
-		resultId = middle::deepCopyShape(gameState, id.index);
+		resultId = middle::deepCopyShapeGlobalCoordinates(gameState, id);
 	}
 
 	void EditorActionCopySingle::undo(GameState* gameState)

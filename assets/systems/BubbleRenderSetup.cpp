@@ -210,7 +210,7 @@ public:
 			circleItem.layer = layer->layer;
 			circleItem.backgroundColor = backgroundColor;
 			circleItem.radius = radius;
-			Vector3 pos = middle::getShapePosition(gameState, shape.id.index);
+			Vector3 pos = middle::getGlobalPosition(gameState, shape.id.index);
 			circleItem.center = pos;
 			circleItem.disableDepthTest = isUiItem;
 			gameState->renderData.push_back(circleItem);
@@ -240,7 +240,7 @@ public:
 			unitItem.type = middle::RenderItemType::TEXT;
 			unitItem.text = std::to_string(unit->value);
 			middle::Id id = unitCache->relevantIdVector[i];
-			unitItem.center = middle::getShapePosition(gameState, id.index);
+			unitItem.center = middle::getGlobalPosition(gameState, id.index);
 			unitItem.layer = layer->layer;
 			unitItem.fontSize = 25;
 			unitItem.color = unit->value < 0 ? bubbleColors::NEGATIVE_UNIT : bubbleColors::POSITIVE_UNIT;
@@ -364,8 +364,8 @@ public:
 			middle::Id& idB = children[1];
 			middle::Shape& shapeA = middle::getShape(gameState, idA.index);
 			middle::Shape& shapeB = middle::getShape(gameState, idB.index);
-			Vector3 posA = middle::getShapePosition(gameState, idA.index);
-			Vector3 posB = middle::getShapePosition(gameState, idB.index);
+			Vector3 posA = middle::getGlobalPosition(gameState, idA.index);
+			Vector3 posB = middle::getGlobalPosition(gameState, idB.index);
 			auto circleA = middle::getComponent<components::Circle>(shapeA);
 			auto circleB = middle::getComponent<components::Circle>(shapeB);
 			Vector3 axis = Vector3Normalize(Vector3Subtract(posB, posA));
@@ -563,7 +563,7 @@ public:
 					hovering.color = bubbleColors::INPUT_HOVER_COLOR;
 					const float hoveringInputIndicatorRadius = 3;
 					hovering.radius = hoveringInputIndicatorRadius;
-					hovering.center = middle::getShapePosition(gameState, inputCache->relevantIdVector[i].index);
+					hovering.center = middle::getGlobalPosition(gameState, inputCache->relevantIdVector[i].index);
 					hovering.disableDepthTest = true;
 					hovering.layer = 3;
 					gameState->renderData.push_back(hovering);
@@ -578,8 +578,8 @@ public:
 				if (input->unitRef.index != middle::UNASSIGNED
 					&& input->unitRef.generation == gameState->ids[input->unitRef.index].generation
 					&& middle::isValidId(gameState, input->unitRef)) {
-					p1 = middle::getShapePosition(gameState, inputCache->relevantIdVector[i].index);
-					p2 = middle::getShapePosition(gameState, input->unitRef.index);
+					p1 = middle::getGlobalPosition(gameState, inputCache->relevantIdVector[i].index);
+					p2 = middle::getGlobalPosition(gameState, input->unitRef.index);
 					renderLine = true;
 				}
 
@@ -593,7 +593,7 @@ public:
 					auto& ogShape = middle::getShape(gameState, idRef->idRef.index);
 					if (ogShape.id == inputCache->relevantIdVector[i]) {
 						renderLine = true;
-						p1 = middle::getShapePosition(gameState, ogShape.id.index);
+						p1 = middle::getGlobalPosition(gameState, ogShape.id.index);
 						p2 = gameState->input.mouseXZ_PlanePos;
 					}
 				}

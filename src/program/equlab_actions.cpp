@@ -280,8 +280,8 @@ namespace equlab {
 			cancelled = true;
 			return;
 		}
-		Vector3 bubbAPos = middle::getShapePosition(gameState, bubbleIdA.index);
-		Vector3 bubbBPos = middle::getShapePosition(gameState, bubbleIdB.index);
+		Vector3 bubbAPos = middle::getGlobalPosition(gameState, bubbleIdA.index);
+		Vector3 bubbBPos = middle::getGlobalPosition(gameState, bubbleIdB.index);
 		Vector3 targetPos = (bubbAPos + bubbBPos) * 0.5f;
 
 		middle::Shape powerProto = bubble::newPower(gameState, targetPos);

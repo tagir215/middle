@@ -110,7 +110,9 @@ public:
 		if (gameState->input.mouseClicked && intersecting && gameState->bubbleAlgebraState.grabbedId.index == middle::UNASSIGNED) {
 
 			// copy as grabbed
+			middle::Id oldParentId = middle::getParent(gameState, shape.id);
 			middle::Id copyId = middle::deepCopyShape(gameState, shape.id.index);
+			middle::updateLocalCoordinateToProjectedGlobalCoordinate(gameState, copyId, oldParentId);
 			auto& copyShape = middle::getShape(gameState, copyId.index);
 			auto copyGrabbable = middle::getComponent<components::MouseGrabbable>(copyShape);
 			copyGrabbable->grabbing = true;
