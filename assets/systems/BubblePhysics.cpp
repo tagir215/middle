@@ -144,16 +144,19 @@ public:
 	void findCollisionsWithOutline(std::vector<Bubble>& bubbles, std::vector<Collision>& results) {
 		for (Bubble& bubble : bubbles) {
 			Body& bubbleBody = bubble.bubbleBody;
+			float bubbleGlobalR = bubbleBody.radius * bubbleBody.transform->scale.x;
+
 			Vector3 bubblePos = bubbleBody.transform->pos;
 			for (Body& body : bubble.bodies) {
 				Vector3 bodyPos = body.transform->pos;
 				float dist = Vector3Distance(bubblePos, bodyPos);
-				if (dist > bubbleBody.radius - body.radius) {
+				float bodyGlobalR = body.radius * body.transform->scale.x;
+				if (dist > bubbleGlobalR - bodyGlobalR) {
 					Collision collision;
 					collision.axis = Vector3Normalize(Vector3Subtract(bubblePos, bodyPos));
 					collision.bodyA = bubbleBody;
 					collision.bodyB = body;
-					collision.penetration = dist - bubbleBody.radius + body.radius;
+					collision.penetration = dist - bubbleGlobalR + bodyGlobalR;
 					results.push_back(collision);
 				}
 			}

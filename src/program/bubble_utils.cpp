@@ -27,6 +27,7 @@
 #include "LocalPosition.h"
 #include "LocalScale.h"
 #include "GlobalTransform.h"
+#include "GlobalRadius.h"
 
 namespace bubble {
 	float unitRadius = 14;
@@ -1289,6 +1290,7 @@ namespace bubble {
 		middle::addComponent<components::Layer>(newBubbleShape);
 		auto circle = middle::addComponent<components::Circle>(newBubbleShape);
 		circle->radius = variableRadius;
+		middle::addComponent<components::GlobalRadius>(newBubbleShape);
 		auto position = middle::addComponent<components::LocalPosition>(newBubbleShape);
 		position->pos = targetPos;
 		middle::addComponent<components::LocalScale>(newBubbleShape);

@@ -200,9 +200,10 @@ public:
 			}
 
 			Vector3 pos = transform->pos;
+			float globalR = circle->radius * transform->scale.x;
 			Vector3 mousePos = middle::RayCastLinePlane(pos, { 0,1,0 }, gameState->activeCamera.position, gameState->input.mouseDir);
 
-			bool intersecting = Vector3DistanceSqr(pos, mousePos) < circle->radius * circle->radius;
+			bool intersecting = Vector3DistanceSqr(pos, mousePos) < globalR * globalR;
 			intersectable->intersecting = intersecting;
 
 			if (!alreadyIntersecting) {

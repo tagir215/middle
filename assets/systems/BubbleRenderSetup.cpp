@@ -327,7 +327,7 @@ public:
 					expCircle.color = ORANGE;
 					setTransform(expCircle, transformB);
 					expCircle.center = { 0,0,0 };
-					expCircle.radius = radiusB + 1.5f;
+					expCircle.radius = circleB->radius + 1.5f;
 					expCircle.layer = layer->layer;
 					gameState->renderData.push_back(expCircle);
 				}
