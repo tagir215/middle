@@ -577,9 +577,14 @@ namespace middle {
 		}
 		return copyId;
 	}
-	Id deepCopyShapeToStorage(GameState* gameState, int shapeToCopyIndex, int parentIndex)
-	{
-		return Id();
+
+	Id shallowCopyShapeGlobalCoordinates(GameState* gameState, middle::Id id) {
+		middle::Id parentId = middle::getParent(gameState, id);
+		middle::Id copyId = copyShape(gameState, id.index);
+		if (parentId.index != middle::UNASSIGNED) {
+			updateLocalCoordinateToProjectedGlobalCoordinate(gameState, copyId, parentId);
+		}
+		return copyId;
 	}
 
 	std::vector<Vector3> getRectVertices(GameState* gameState, const Id& shapeId)

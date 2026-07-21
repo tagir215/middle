@@ -477,7 +477,7 @@ namespace bubbleActions {
 			copyId = middle::deepCopyShapeGlobalCoordinates(gameState, toPopId);
 		}
 		else {
-			middle::Id containerCopy = middle::copyShape(gameState, containerId.index);
+			middle::Id containerCopy = middle::shallowCopyShapeGlobalCoordinates(gameState, containerId);
 		}
 		auto& newContainerShape = middle::getShape(gameState, copyId.index);
 		auto loop = middle::getComponent<components::LoopSociety>(newContainerShape);
@@ -1064,7 +1064,7 @@ namespace bubbleActions {
 		middle::Id commonCopyId = middle::deepCopyShapeGlobalCoordinates(gameState, commonFactorId);
 		auto& commonShape = middle::getShape(gameState, commonCopyId.index);
 
-		middle::Id shapeToCompressShallowCopy = middle::copyShape(gameState, shapeToCompress.id.index);
+		middle::Id shapeToCompressShallowCopy = middle::shallowCopyShapeGlobalCoordinates(gameState, shapeToCompress.id);
 		middle::Shape& compressedBubble = getShape(gameState, shapeToCompressShallowCopy.index);
 		// clear loop
 		auto loop = middle::getComponent<components::LoopSociety>(compressedBubble);

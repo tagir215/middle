@@ -59,6 +59,8 @@ namespace middle {
 	Id copyShape(GameState* gameState, int shapeToCopyIndex, int parentIndex = UNASSIGNED);
 	// copy shape and its children
 	Id deepCopyShape(GameState* gameState, int shapeToCopyIndex, int parentIndex = UNASSIGNED);
+	// copy shape shallowly and preserve its global coordinate
+	Id shallowCopyShapeGlobalCoordinates(GameState* gameState, middle::Id id);
 	// copy shape and preserve its global coordinate
 	Id deepCopyShapeGlobalCoordinates(GameState* gameState, middle::Id id);
 	// get vertices of rectangles
