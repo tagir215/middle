@@ -22,6 +22,7 @@ public:
 
 	BubblePhysics() {
 		systemModeType = middle::SystemModeType::ENGINE;
+		systemUpdateType = middle::SystemUpdateType::GAMEPLAY_POSTFRAME;
 	}
 
 	components::CompCache* bubbleCache;
@@ -278,7 +279,6 @@ public:
 
 
 	void update(middle::GameState* gameState) override {
-
 		// Collect bubbles
 
 		std::vector<Bubble>bubbles;

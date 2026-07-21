@@ -390,6 +390,8 @@ namespace middle {
 		if (childLoop->parentLoopId.index != UNASSIGNED) {
 			auto removeAction = EditorActionRemoveFromLoop(childIndex);
 			removeAction.execute(gameState);
+			// update this for local coordinate recalculation at end
+			oldParentId = middle::Id();
 		}
 
 

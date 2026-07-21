@@ -36,9 +36,9 @@ v
 200.000000
 61.803402
 v  
-191.211304
-201.000000
-62.803402
+1.000000
+1.000000
+1.000000
 r  
 1.000000
 1.000000
@@ -81,9 +81,9 @@ v
 200.000000
 112.888649
 v  
-166.094376
-201.000000
-113.888649
+1.000000
+1.000000
+1.000000
 r  
 1.000000
 1.000000
@@ -126,9 +126,9 @@ v
 200.000000
 154.828339
 v  
-127.602486
-201.000000
-155.828339
+1.000000
+1.000000
+1.000000
 r  
 1.000000
 1.000000
@@ -171,9 +171,9 @@ v
 200.000000
 184.224731
 v  
-78.854004
-201.000000
-185.224731
+1.000000
+1.000000
+1.000000
 r  
 1.000000
 1.000000
@@ -216,9 +216,9 @@ v
 200.000000
 198.696350
 v  
-23.798265
-201.000000
-199.696350
+1.000000
+1.000000
+1.000000
 r  
 1.000000
 1.000000
@@ -261,9 +261,9 @@ v
 200.000000
 197.070770
 v  
--33.104458
-201.000000
-198.070770
+1.000000
+1.000000
+1.000000
 r  
 1.000000
 1.000000
@@ -306,9 +306,9 @@ v
 200.000000
 179.479675
 v  
--87.244225
-201.000000
-180.479675
+1.000000
+1.000000
+1.000000
 r  
 1.000000
 1.000000
@@ -351,9 +351,9 @@ v
 200.000000
 147.348206
 v  
--134.235001
-201.000000
-148.348206
+1.000000
+1.000000
+1.000000
 r  
 1.000000
 1.000000
@@ -396,9 +396,9 @@ v
 200.000000
 103.279449
 v  
--170.269836
-201.000000
-104.279449
+1.000000
+1.000000
+1.000000
 r  
 1.000000
 1.000000
@@ -441,9 +441,9 @@ v
 200.000000
 50.843632
 v  
--192.429382
-201.000000
-51.843632
+1.000000
+1.000000
+1.000000
 r  
 1.000000
 1.000000
@@ -486,9 +486,9 @@ v
 200.000000
 -5.711226
 v  
--198.918442
-201.000000
--4.711226
+1.000000
+1.000000
+1.000000
 r  
 1.000000
 1.000000
@@ -496,11 +496,11 @@ r
 1.000000
 
 __q  11_0
+SystemReference
+s  EqulabSystem
 LoopSociety
 q  -1_0
 p  
-SystemReference
-s  EqulabSystem
 Text
 s  EqulabSystem
 f  255.000000
@@ -512,12 +512,12 @@ f  0.000000
 f  10.000000
 f  10.000000
 b  1
+MouseSelectable
 LocalPosition
 v  
 -106.075012
 -0.000000
 -98.885506
-MouseSelectable
 MouseGrabbable
 MouseIntersectable
 LocalScale
@@ -531,9 +531,9 @@ v
 0.000000
 -98.885506
 v  
--105.075012
 1.000000
--97.885506
+1.000000
+1.000000
 r  
 1.000000
 1.000000
@@ -541,17 +541,17 @@ r
 1.000000
 
 __q  12_0
-SystemReference
-s  WriterUnBlockingSystem
 LoopSociety
 q  -1_0
 p  
+SystemReference
+s  WriterUnBlockingSystem
+MouseSelectable
 LocalPosition
 v  
 -102.310799
 -0.000031
 -65.627220
-MouseSelectable
 MouseGrabbable
 MouseIntersectable
 Text
@@ -576,9 +576,9 @@ v
 -0.000031
 -65.627220
 v  
--101.310799
-0.999969
--64.627220
+1.000000
+1.000000
+1.000000
 r  
 1.000000
 1.000000
@@ -586,19 +586,19 @@ r
 1.000000
 
 __q  13_0
+MouseSelectable
 LocalPosition
 v  
 -209.056458
 -0.000061
 -286.133209
-MouseSelectable
 MouseGrabbable
 MouseIntersectable
+SystemReference
+s  GlobalCoordinateCalculationSystem
 LoopSociety
 q  -1_0
 p  
-SystemReference
-s  GlobalCoordinateCalculationSystem
 Text
 s  GlobalCoordinateCalculationSystem
 f  255.000000
@@ -621,158 +621,27 @@ v
 -0.000061
 -286.133209
 v  
--208.056458
-0.999939
--285.133209
+1.000000
+1.000000
+1.000000
 r  
 1.000000
 1.000000
 1.000000
 1.000000
 
-__q  14_0
-LoopTag
-LoopSociety
-q  -1_0
-p  
-q  15_0
-q  16_0
-LocalPosition
-v  
-228.454300
--0.000061
--177.061279
-MouseSelectable
-MouseIntersectable
-GlobalTransform
-v  
-228.454300
--0.000061
--177.061279
-v  
-229.454300
-0.999939
--176.061279
-r  
-1.000000
-1.000000
-1.000000
-1.000000
-
-MouseGrabbable
-LocalScale
-v  
-1.000000
-1.000000
-1.000000
-__q  15_0
-LocalScale
-v  
-1.000000
-1.000000
-1.000000
-Sphere
-f  2.000000
-MouseSelectable
-LocalPosition
-v  
--32.529015
-0.000122
--1.283966
-MouseGrabbable
-GlobalTransform
-v  
-195.925293
-0.000061
--178.345245
-v  
-196.925293
-1.000061
--177.345245
-r  
-1.000000
-1.000000
-1.000000
-1.000000
-
-PhysicsData
-f  1.000000
-f  1.000000
-f  1.000000
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.800000
-f  0.800000
-f  0.800000
-f  0.000000
-f  0.000000
-f  0.000000
-b  0
-MouseIntersectable
-LoopSociety
-q  14_0
-p  
-__q  16_0
-LocalScale
-v  
-1.000000
-1.000000
-1.000000
-Sphere
-f  2.000000
-MouseSelectable
-LocalPosition
-v  
-33.671402
--0.000092
--1.199517
-MouseGrabbable
-GlobalTransform
-v  
-262.125702
--0.000153
--178.260803
-v  
-263.125702
-0.999847
--177.260803
-r  
-1.000000
-1.000000
-1.000000
-1.000000
-
-PhysicsData
-f  1.000000
-f  1.000000
-f  1.000000
-f  0.000000
-f  0.000000
-f  0.000000
-f  0.800000
-f  0.800000
-f  0.800000
-f  0.000000
-f  0.000000
-f  0.000000
-b  0
-MouseIntersectable
-LoopSociety
-q  14_0
-p  
 __q  18_0
-SystemReference
-s  PuzzleTextSystem
 LoopSociety
 q  -1_0
 p  
+SystemReference
+s  PuzzleTextSystem
+MouseSelectable
 LocalPosition
 v  
 -184.697540
 -0.000031
 -110.095390
-MouseSelectable
 MouseGrabbable
 MouseIntersectable
 Text
@@ -797,9 +666,9 @@ v
 -0.000031
 -110.095390
 v  
--183.697540
-0.999969
--109.095390
+1.000000
+1.000000
+1.000000
 r  
 1.000000
 1.000000
@@ -807,19 +676,19 @@ r
 1.000000
 
 __q  19_0
+MouseSelectable
 LocalPosition
 v  
 -230.099670
 -0.000000
 -8.535034
-MouseSelectable
 MouseGrabbable
 MouseIntersectable
+SystemReference
+s  TextGrabbingSystem
 LoopSociety
 q  -1_0
 p  
-SystemReference
-s  TextGrabbingSystem
 Text
 s  TextGrabbingSystem
 f  255.000000
@@ -842,9 +711,9 @@ v
 0.000000
 -8.535034
 v  
--229.099670
 1.000000
--7.535034
+1.000000
+1.000000
 r  
 1.000000
 1.000000
@@ -852,19 +721,19 @@ r
 1.000000
 
 __q  20_0
+MouseSelectable
 LocalPosition
 v  
 -181.084930
 -0.000000
 -176.692474
-MouseSelectable
 MouseGrabbable
 MouseIntersectable
+SystemReference
+s  SceneEditorSelectionSystem
 LoopSociety
 q  -1_0
 p  
-SystemReference
-s  SceneEditorSelectionSystem
 Text
 s  SceneEditorSelectionSystem
 f  255.000000
@@ -887,9 +756,9 @@ v
 0.000000
 -176.692474
 v  
--180.084930
 1.000000
--175.692474
+1.000000
+1.000000
 r  
 1.000000
 1.000000
@@ -897,19 +766,19 @@ r
 1.000000
 
 __q  21_0
+MouseSelectable
 LocalPosition
 v  
 -193.287537
 -0.000000
 -216.228607
-MouseSelectable
 MouseGrabbable
 MouseIntersectable
-SystemReference
-s  SceneEditorUniversalSystem
 LoopSociety
 q  -1_0
 p  
+SystemReference
+s  SceneEditorUniversalSystem
 Text
 s  SceneEditorUniversalSystem
 f  255.000000
@@ -932,9 +801,9 @@ v
 0.000000
 -216.228607
 v  
--192.287537
 1.000000
--215.228607
+1.000000
+1.000000
 r  
 1.000000
 1.000000
@@ -959,16 +828,16 @@ f  0.000000
 f  0.000000
 f  0.000000
 b  0
+MouseSelectable
 LocalPosition
 v  
 194.291306
 -0.000244
 -65.955437
-MouseSelectable
-MouseIntersectable
 BubbleAlgebraLevelConfigs
 i  95
 s  
+MouseIntersectable
 LoopSociety
 q  -1_0
 p  
@@ -983,9 +852,9 @@ v
 -0.000244
 -65.955437
 v  
-195.291306
-0.999756
--64.955437
+1.000000
+1.000000
+1.000000
 r  
 1.000000
 1.000000
@@ -993,6 +862,7 @@ r
 1.000000
 
 __q  23_0
+MouseGrabbable
 GlobalTransform
 v  
 0.000000
@@ -1008,16 +878,15 @@ r
 1.000000
 1.000000
 
-MouseGrabbable
+MouseSelectable
+Reference
+s  BubbleGameplaySystems
+s  ../assets/shapes/
 LocalPosition
 v  
 0.000000
 0.000000
 0.000000
-Reference
-s  BubbleGameplaySystems
-s  ../assets/shapes/
-MouseSelectable
 MouseIntersectable
 LoopSociety
 LocalScale
@@ -1026,6 +895,7 @@ v
 1.000000
 1.000000
 __q  24_0
+MouseGrabbable
 GlobalTransform
 v  
 0.000000
@@ -1041,16 +911,15 @@ r
 1.000000
 1.000000
 
-MouseGrabbable
+MouseSelectable
+Reference
+s  ManipulationSystems
+s  ../assets/shapes/
 LocalPosition
 v  
 0.000000
 0.000000
 0.000000
-Reference
-s  ManipulationSystems
-s  ../assets/shapes/
-MouseSelectable
 MouseIntersectable
 LoopSociety
 LocalScale
@@ -1059,6 +928,7 @@ v
 1.000000
 1.000000
 __q  25_0
+MouseGrabbable
 GlobalTransform
 v  
 0.000000
@@ -1074,16 +944,15 @@ r
 1.000000
 1.000000
 
-MouseGrabbable
+MouseSelectable
+Reference
+s  GreatWallAndProcedureAndProblemContainers
+s  ../assets/shapes/
 LocalPosition
 v  
 0.000000
 0.000000
 0.000000
-Reference
-s  GreatWallAndProcedureAndProblemContainers
-s  ../assets/shapes/
-MouseSelectable
 MouseIntersectable
 LoopSociety
 LocalScale
@@ -1092,6 +961,7 @@ v
 1.000000
 1.000000
 __q  26_0
+MouseGrabbable
 GlobalTransform
 v  
 0.000000
@@ -1107,16 +977,15 @@ r
 1.000000
 1.000000
 
-MouseGrabbable
+MouseSelectable
+Reference
+s  BubbleAlgebraUi
+s  ../assets/shapes/
 LocalPosition
 v  
 0.000000
 0.000000
 0.000000
-Reference
-s  BubbleAlgebraUi
-s  ../assets/shapes/
-MouseSelectable
 MouseIntersectable
 LoopSociety
 LocalScale
@@ -1125,6 +994,7 @@ v
 1.000000
 1.000000
 __q  27_0
+MouseGrabbable
 GlobalTransform
 v  
 0.000000
@@ -1140,16 +1010,15 @@ r
 1.000000
 1.000000
 
-MouseGrabbable
+MouseSelectable
+Reference
+s  BubbleCamera
+s  ../assets/shapes/
 LocalPosition
 v  
 0.000000
 0.000000
 0.000000
-Reference
-s  BubbleCamera
-s  ../assets/shapes/
-MouseSelectable
 MouseIntersectable
 LoopSociety
 LocalScale

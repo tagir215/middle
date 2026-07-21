@@ -280,8 +280,9 @@ namespace equlab {
 			cancelled = true;
 			return;
 		}
-		Vector3 targetPos = (middle::getShapePosition(gameState, bubbleIdA.index)
-			+ middle::getShapePosition(gameState, bubbleIdB.index)) * 0.5f;
+		Vector3 bubbAPos = middle::getShapePosition(gameState, bubbleIdA.index);
+		Vector3 bubbBPos = middle::getShapePosition(gameState, bubbleIdB.index);
+		Vector3 targetPos = (bubbAPos + bubbBPos) * 0.5f;
 
 		middle::Shape powerProto = bubble::newPower(gameState, targetPos);
 		middle::Shape& powerShape = middle::registerShape(gameState, powerProto);
@@ -292,6 +293,12 @@ namespace equlab {
 		registerAction->execute(gameState);
 		actions.push_back(std::move(registerAction));
 
+		if (oldParentId.index != middle::UNASSIGNED) {
+			auto reparentC = std::make_unique<middle::EditorActionReparent>(oldParentId.index, powerShape.id.index);
+			reparentC->execute(gameState);
+			actions.push_back(std::move(reparentC));
+		}
+
 		auto reparentA = std::make_unique<middle::EditorActionReparent>(powerShape.id.index, bubbleIdA.index);
 		reparentA->execute(gameState);
 		actions.push_back(std::move(reparentA));
@@ -300,11 +307,6 @@ namespace equlab {
 		reparentB->execute(gameState);
 		actions.push_back(std::move(reparentB));
 
-		if (oldParentId.index != middle::UNASSIGNED) {
-			auto reparentC = std::make_unique<middle::EditorActionReparent>(oldParentId.index, powerShape.id.index);
-			reparentC->execute(gameState);
-			actions.push_back(std::move(reparentC));
-		}
 
 		resultId = powerShape.id;
 	}
