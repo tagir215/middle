@@ -4,13 +4,13 @@
 #define MIDDLEGLOBALTRANSFORM(X) \
 	X(pos) \
 	X(scale) \
-	X(rotation) \
+	X(rotation) 
 
 namespace components {
 	struct GlobalTransform : public middle::Serializable{
-		Vector3 pos;
-		Vector3 scale;
-		Quaternion rotation;
+		Vector3 pos = { 0,0,0 };
+		Vector3 scale = { 1,1,1 };
+		Quaternion rotation = {0,0,0,0};
 
 		void serialize(std::ostream& ostream) override;
 		void deserialize(const std::vector<std::string>& buffer, int indexOffset) override;

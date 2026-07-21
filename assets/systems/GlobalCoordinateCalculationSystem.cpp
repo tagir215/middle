@@ -55,7 +55,7 @@ class GlobalCoordinateCalculationSystem : public middle::MiddleGameplaySystem {
 
 
 		auto globalT = middle::getComponent<components::GlobalTransform>(shape);
-		const Quaternion assumedRotation = { 1,1,1,1 };
+		const Quaternion assumedRotation = { 0,0,0,0 };
 		globalT->pos = Vector3Transform(Vector3{ 0,0,0 }, m);
 		globalT->scale = scaleComp->scale * parentScale;
 		globalT->rotation = assumedRotation;
