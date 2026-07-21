@@ -84,6 +84,7 @@ public:
 	struct BodyPair {
 		Body bodyA;
 		Body bodyB;
+		Matrix m;
 	};
 
 	struct Bubble {
@@ -103,18 +104,43 @@ public:
 		std::vector<float>targetDistances;
 	};
 
+	struct CircleCircleCollisionResult {
+		float penetration;
+		Vector3 normal;
+		bool collided = false;
+	};
+
+	CircleCircleCollisionResult circlesCollisionTest(const Vector3& posA, float rA, const Vector3& posB, float rB) {
+		CircleCircleCollisionResult result;
+		float distSqr = Vector3DistanceSqr(posA, posB);
+		float radiusesSqr = (rA + rB) * (rA + rB);
+		if (distSqr < radiusesSqr) {
+			result.collided = true;
+			result.normal = Vector3Normalize(posB - posA);
+			float dist = std::sqrt(distSqr);
+			float radiuses = std::sqrt(radiusesSqr);
+			result.penetration = radiuses - dist;
+
+		}
+		return result;
+	}
+
 	void findSiblingCollisions(std::vector<std::vector<BodyPair>>& pairVectors, std::vector<Collision>& results) {
 		for (std::vector<BodyPair>& pairVector : pairVectors) {
 			for (BodyPair& pair : pairVector) {
+				float radiusScaleA = pair.bodyA.transform->scale.x;
+				float radiusScaleB = pair.bodyB.transform->scale.x;
 				Vector3 posA = pair.bodyA.transform->pos;
 				Vector3 posB = pair.bodyB.transform->pos;
-				float dist = Vector3Distance(posA, posB);
-				if (dist < pair.bodyA.radius + pair.bodyB.radius) {
+				float rA = pair.bodyA.radius;
+				float rB = pair.bodyB.radius;
+				auto circleResult = circlesCollisionTest(posA, rA * radiusScaleA, posB, rB * radiusScaleB);
+				if (circleResult.collided) {
 					Collision collision;
-					collision.axis = Vector3Normalize(Vector3Subtract(posB, posA));
+					collision.axis = circleResult.normal;
 					collision.bodyA = pair.bodyA;
 					collision.bodyB = pair.bodyB;
-					collision.penetration = pair.bodyA.radius + pair.bodyB.radius - dist;
+					collision.penetration = circleResult.penetration;
 					results.push_back(collision);
 				}
 			}
@@ -140,27 +166,6 @@ public:
 		}
 	}
 
-	void findCollisionsWithGreatCenterLine(std::vector<Body>& topDogs, Body& greatCenterLine, std::vector<Collision>& results) {
-		// great line assumed to be vertical
-		Vector3 axis = { 1,0,0 };
-		Vector3 greatCenterLinePos = greatCenterLine.transform->pos;
-		greatCenterLine.physicsData->infiniteMass = true;
-		greatCenterLine.physicsData->invMass = 0;
-		for (Body& body : topDogs) {
-			Vector3 bodyPos = body.transform->pos;
-			float dir = Vector3DotProduct(Vector3Subtract(bodyPos, greatCenterLinePos), axis);
-			float dist = std::abs(dir);
-			float outlineRadius = greatCenterLine.width * 0.5f + body.radius;
-			if (dist < outlineRadius) {
-				Collision collision;
-				collision.axis = Vector3Normalize(Vector3Scale(axis, dir));
-				collision.bodyA = greatCenterLine;
-				collision.bodyB = body;
-				collision.penetration = outlineRadius - dist;
-				results.push_back(collision);
-			}
-		}
-	}
 
 	void solveVelocity(Collision& collision, float frameTime, float inverseTime) {
 		Body& bodyA = collision.bodyA;
@@ -247,7 +252,7 @@ public:
 				auto physics = middle::getComponent<components::PhysicsData>(childShape);
 				auto childCircle = middle::getComponent<components::Circle>(childShape);
 				auto mul = middle::getComponent<components::BubbleMultiplyComponent>(childShape);
-				auto fraction = middle::getComponent<components::FractionalComponent>(childShape);
+				auto localPos = middle::getComponent<components::LocalPosition>(childShape);
 				assert(physics);
 
 				Body body;
@@ -286,16 +291,16 @@ public:
 		auto bubbleTransformIt = bubbleCache->begin<components::GlobalTransform>();
 		auto circleIt = bubbleCache->begin<components::Circle>();
 		auto physicsIt = bubbleCache->begin<components::PhysicsData>();
-		for (int i = 0; i < bubbleCache->getSize(); ++i) {
+		for (middle::Id id : bubbleCache->relevantIdVector) {
 			auto bubble = *bubbleIt;
 			auto bubbleTransform = *bubbleTransformIt;
 			auto circle = *circleIt;
 			auto bubblePhysics = *physicsIt;
-			auto& bubbleShape = middle::getShape(gameState, bubbleCache->relevantIdVector[i].index);
+			auto& bubbleShape = middle::getShape(gameState, id.index);
 
 			std::vector<middle::Id> interactingChildren;
 			std::vector<middle::Id> children;
-			middle::getChildren(gameState, bubbleCache->relevantIdVector[i], children);
+			middle::getChildren(gameState, id, children);
 			for (middle::Id& id : children) {
 				auto& childShape = middle::getShape(gameState, id.index);
 				if (middle::getComponent<components::BubbleMultiplyComponent>(childShape) 
@@ -343,13 +348,13 @@ public:
 		auto topBubblePhysicsIt = topDogBubbleCache->begin<components::PhysicsData>();
 		auto topBubbleCircleIt = topDogBubbleCache->begin<components::Circle>();
 		std::vector<Body>topDogBubbles;
-		for (int i = 0; i < topDogBubbleCache->getSize(); ++i) {
+		for (middle::Id id : topDogBubbleCache->relevantIdVector) {
 			auto topBubble = *topBubbleIt;
 			auto topBubbleTransform = *topBubbleTransformIt;
 			auto topBubblePhysics = *topBubblePhysicsIt;
 			auto circle = *topBubbleCircleIt;
 			Body body;
-			body.id = topDogBubbleCache->relevantIdVector[i];
+			body.id = id;
 			body.transform = topBubbleTransform;
 			body.physicsData = topBubblePhysics;
 			body.radius = circle->radius + fieldMargin;
