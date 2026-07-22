@@ -149,6 +149,7 @@ public:
 				ei.nineHeld = IsKeyDown(KEY_NINE);
 				ei.zeroHeld = IsKeyDown(KEY_ZERO);
 				ei.shiftHeld = IsKeyDown(KEY_LEFT_SHIFT) || IsKeyDown(KEY_RIGHT_SHIFT);
+				ei.ctrlHeld = IsKeyDown(KEY_LEFT_CONTROL) || IsKeyDown(KEY_RIGHT_CONTROL);
 				ei.oneClicked = IsKeyPressed(KEY_ONE);
 				ei.twoClicked = IsKeyPressed(KEY_TWO);
 				ei.threeClicked = IsKeyPressed(KEY_THREE);

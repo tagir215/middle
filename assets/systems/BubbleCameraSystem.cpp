@@ -19,6 +19,7 @@ public:
 
 	void update(middle::GameState* gameState) override {
 
+
 		auto cameraIt = compCache->begin<components::CameraComponent>();
 
 		int size = compCache->getSize();
@@ -62,6 +63,10 @@ public:
 			const float maxX = xzCamAxis + centerOffsetX;
 			const float minZ = -xzCamAxis + centerOffsetZ;
 			const float maxZ = xzCamAxis + centerOffsetZ;
+
+			if (gameState->equlabInput.ctrlHeld) {
+				panSpeed = 0;
+			}
 
 			if (gameState->gameInput.panLeft && oldPos.x > minX) {
 				camera->speedX = -panSpeed;

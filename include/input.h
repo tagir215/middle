@@ -91,6 +91,7 @@ namespace middle {
 		bool nineHeld = false;
 		bool zeroHeld = false;
 		bool shiftHeld = false;
+		bool ctrlHeld = false;
 
 		bool oneClicked = false;
 		bool twoClicked = false;
