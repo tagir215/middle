@@ -520,7 +520,7 @@ namespace middle {
 
 	middle::Id loadScene(GameState* gameState, const std::string& folder, const std::string& sceneName, bool import, const Vector3& pos, int sceneReferenceIndex) {
 
-		std::string path = folder + sceneName + ".midsc";
+		std::string path = folder + "/" + sceneName + ".midsc";
 
 
 		int indexOffset = 0;
@@ -662,7 +662,14 @@ namespace middle {
 			}
 
 			// move imported scene where it wants to be
-			moveShape(gameState, sceneReferenceIndex, pos);
+			Vector3 displacement = pos;
+			std::vector<middle::Id>children;
+			middle::Id sceneReferenceId = gameState->ids[sceneReferenceIndex];
+			middle::getChildren(gameState, sceneReferenceId, children);
+			moveShape(gameState, sceneReferenceIndex, displacement);
+			for (middle::Id id : children) {
+				moveShape(gameState, id.index, displacement);
+			}
 
 			return gameState->ids[sceneReferenceIndex];
 		}

@@ -496,17 +496,19 @@ public:
 
 		int actionCountPostFrame = gameState->bubbleAlgebraState.bubbleActions.size();
 
-		if (actionCountPostFrame > actionCountPreFrame) {
-			auto configsIt = levelConfigsCache->begin<components::BubbleAlgebraLevelConfigs>();
-			auto configs = *configsIt;
-			middle::queueAction(gameState, std::make_unique<middle::CustomAction>(
-				[configs](middle::GameState* gameState)
-				{
-					--configs->allowedMoves;
-					if (configs->allowedMoves < 0) {
-						configs->allowedMoves = 0;
-					}
-				}));
+		if (levelConfigsCache->getSize() > 0) {
+			if (actionCountPostFrame > actionCountPreFrame) {
+				auto configsIt = levelConfigsCache->begin<components::BubbleAlgebraLevelConfigs>();
+				auto configs = *configsIt;
+				middle::queueAction(gameState, std::make_unique<middle::CustomAction>(
+					[configs](middle::GameState* gameState)
+					{
+						--configs->allowedMoves;
+						if (configs->allowedMoves < 0) {
+							configs->allowedMoves = 0;
+						}
+					}));
+			}
 		}
 	}
 };

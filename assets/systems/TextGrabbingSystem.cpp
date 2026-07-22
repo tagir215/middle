@@ -48,7 +48,7 @@ class TextGrabbingSystem : public middle::MiddleGameplaySystem {
 			gameState->renderData.push_back(item);
 
 			if (intersecting && gameState->input.mouseClicked) {
-				middle::Id copyId = middle::deepCopyShape(gameState, id.index);
+				middle::Id copyId = middle::deepCopyShapeGlobalCoordinates(gameState, id);
 				middle::EditorActionRemoveFromLoop(copyId.index).execute(gameState);
 				middle::attachComponent<components::GrabbedTag>(gameState, copyId);
 			}

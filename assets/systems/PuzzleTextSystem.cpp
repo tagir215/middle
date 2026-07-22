@@ -152,7 +152,6 @@ class PuzzleTextSystem : public middle::MiddleGameplaySystem {
 	}
 	void update(middle::GameState* gameState) override {
 
-		// assumes only 1 panel for now
 		float panelWidth;
 		auto rectIt = puzzlePanelCache->begin<components::Rectangle>();
 		Vector3 panelPos;
@@ -163,7 +162,6 @@ class PuzzleTextSystem : public middle::MiddleGameplaySystem {
 
 			std::vector<middle::Id>textUnits;
 			middle::getChildren(gameState, panelId, textUnits);
-
 
 			Vector3 cursorPos = panelPos;
 			float spacing = 1;

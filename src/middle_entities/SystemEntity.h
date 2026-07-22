@@ -20,8 +20,8 @@ namespace entities{
 		middle::addComponent<components::MouseIntersectable>(shape);
 		middle::addComponent<components::LoopSociety>(shape);
 		auto system = middle::addComponent<components::SystemReference>(shape);
-		auto pos = middle::addComponent<components::LocalPosition>(shape);
 		auto text = middle::addComponent<components::Text>(shape);
+		auto pos = middle::addComponent<components::LocalPosition>(shape);
 		middle::addComponent<components::GlobalTransform>(shape);
 		middle::addComponent<components::LocalScale>(shape);
 		middle::registerShape(gameState, shape);

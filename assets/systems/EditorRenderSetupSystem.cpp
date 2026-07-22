@@ -35,7 +35,6 @@ public:
 
 	components::CompCache* gridCache;
 	components::CompCache* configCache;
-	components::CompCache* textCache;
 	components::CompCache* importRefCache;
 	components::CompCache* nodeCache;
 	components::CompCache* constraintCache;
@@ -56,10 +55,6 @@ public:
 		configCache->addType<components::ConfigComponent>();
 		configCache->addType<components::GlobalTransform>();
 		configCache->addType<components::HiddenTag>(components::NOTINTERESTED);
-		textCache = middle::newCompCache(gameState, systemName);
-		textCache->addType<components::Text>();
-		textCache->addType<components::GlobalTransform>();
-		textCache->addType<components::HiddenTag>(components::NOTINTERESTED);
 		importRefCache = middle::newCompCache(gameState, systemName);
 		importRefCache->addType<components::Reference>();
 		importRefCache->addType<components::GlobalTransform>();
@@ -112,7 +107,6 @@ public:
 
 		replaceMan(gameState);
 
-		Color textColor = WHITE;
 		Color systemColor = GREEN;
 		Color selectionBoxColor = { WHITE.r, WHITE.g, WHITE.b, 40 };
 		Color hoveredColor = middle::HOVERED_THING_COLOR;
@@ -197,32 +191,6 @@ public:
 			gameState->renderData.push_back(configSphere);
 		}
 
-		auto textIt = textCache->begin<components::Text>();
-		auto textGlobalTransformIt = textCache->begin<components::GlobalTransform>();
-		for (int i = 0; i < textCache->getSize(); ++i) {
-			auto text = *textIt;
-			auto transform = *textGlobalTransformIt;
-			middle::RenderItem textItem;
-			textItem.type = middle::RenderItemType::TEXT;
-			textItem.center = transform->pos;
-			textItem.text = text->text;
-			textItem.fontSize = text->fontSize;
-			textItem.color = textColor;
-			gameState->renderData.push_back(textItem);
-		}
-
-		//componentREf?
-		//auto 
-				//assert(position);
-				//middle::RenderItem compRefItem;
-				//compRefItem.type = middle::RenderItemType::SPHERE;
-				//compRefItem.radius = middle::DEF_RADIUS_REFERENCE_INDICATOR;
-				//compRefItem.color = BLUE;
-				//compRefItem.center = { position->posX, position->posY, position->posZ };
-				//if (intersectable->intersecting) {
-				//	compRefItem.color = hoveredColor;
-				//}
-				//gameState->renderData.push_back(compRefItem);
 
 		auto nodeIt = nodeCache->begin<components::Sphere>();
 		for (int i = 0; i < nodeCache->getSize(); ++i) {

@@ -7,6 +7,7 @@
 #include "Position.h"
 #include "middle_shape_utils.h"
 #include "engine_system_names.h"
+#include "bubble_paths.h"
 
 using namespace middle;
 
@@ -132,15 +133,9 @@ extern "C" {
 		}
 
 		// TODO HARDCODED
-		if (gameState->activeSceneName == "") {
-			gameState->activeSceneName = "LevelSelect";
-			loadScene(gameState, "../assets/scenes/", gameState->activeSceneName, false);
-		}
-
-		// TODO HARDCODED
 		if (gameState->reset) {
 			resetScene(gameState);
-			loadScene(gameState, "../assets/scenes/", gameState->activeSceneName, false);
+			loadScene(gameState, bubblePaths::SCENES_FOLDER, gameState->activeSceneName, false);
 			gameState->reset = false;
 		}
 
