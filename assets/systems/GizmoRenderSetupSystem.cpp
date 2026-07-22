@@ -4,7 +4,7 @@
 #include "middle_shape_utils.h"
 #include "Rotation.h" 
 #include "MouseSelectable.h"
-#include "Position.h"
+#include "GlobalTransform.h"
 
 class GizmoRenderSetupSystem : public middle::MiddleGameplaySystem {
 public:
@@ -15,23 +15,23 @@ public:
 	components::CompCache* cache;
 
 	void init(middle::GameState* gameState) override {
-		cache = middle::newCompCache(gameState);
+		cache = middle::newCompCache(gameState, systemName);
 		cache->addType<components::Rotation>();
 		cache->addType<components::MouseSelectable>();
-		cache->addType<components::Position>();
+		cache->addType<components::GlobalTransform>();
 	}
 	void update(middle::GameState* gameState) override {
 		auto rotationIt = cache->begin<components::Rotation>();
-		auto positionIt = cache->begin<components::Position>();
+		auto transformIt = cache->begin<components::GlobalTransform>();
 		auto selectableIt = cache->begin<components::MouseSelectable>();
 		for (int i = 0; i < cache->getSize(); ++i) {
 			auto rotation = *rotationIt;
-			auto position = *positionIt;
+			auto transform = *transformIt;
 			auto selectable = *selectableIt;
 			if (!selectable->selected) {
 				continue;
 			}
-			Vector3 pos = { position->posX, position->posY, position->posZ };
+			Vector3 pos = transform->pos;
 			Vector3 forward = Vector3RotateByQuaternion(middle::ROTATION_FORWARD, rotation->rotation);
 			middle::RenderItem rotItem;
 			rotItem.type = middle::RenderItemType::VECTOR;

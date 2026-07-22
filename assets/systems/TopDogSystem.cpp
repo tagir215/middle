@@ -19,16 +19,18 @@ class TopDogSystem : public middle::MiddleGameplaySystem {
 	components::CompCache* helperCache;
 
 	void init(middle::GameState* gameState) override {
-		topDogCache = middle::newCompCache(gameState);
+		systemUpdateType = middle::SystemUpdateType::PREFRAME;
+
+		topDogCache = middle::newCompCache(gameState, systemName);
 		topDogCache->addType<components::TopDogBubbleTag>();
 
-		bubbleCache = middle::newCompCache(gameState);
+		bubbleCache = middle::newCompCache(gameState, systemName);
 		bubbleCache->addType<components::BubbleComponent>();
 
-		problemCache = middle::newCompCache(gameState);
+		problemCache = middle::newCompCache(gameState, systemName);
 		problemCache->addType<components::BubbleAlgebraProblem>();
 
-		helperCache = middle::newCompCache(gameState);
+		helperCache = middle::newCompCache(gameState, systemName);
 		helperCache->addType<components::HelperBubbleEquation>();
 	}
 

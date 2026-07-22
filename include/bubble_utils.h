@@ -8,7 +8,6 @@ namespace bubble {
 
 	extern float unitRadius;
 	extern float variableRadius;
-	extern float bubbleMinRadius;
 	extern float variableTextFontSize;
 	extern float minTopDogRadius;
 
@@ -22,7 +21,6 @@ namespace bubble {
 	std::vector<middle::Id>getNodes(middle::GameState* gameState, middle::Id id);
 	std::vector<middle::Id>getConstraints(middle::GameState* gameState, middle::Id id);
 	middle::Id findBubbleWithPattern(middle::GameState* gameState, middle::Id containerBubble);
-	middle::Id shapeToFraction(middle::GameState* gameState, middle::Id shapeId, const Vector3& targetPos, int dividend);
 	struct UnitValue {
 		float scale = 0;
 		float power = 1;
@@ -34,10 +32,13 @@ namespace bubble {
 	middle::Id inverseBubble(middle::GameState* gameState, middle::Id& id);
 	middle::Id topLevelBubble(middle::GameState* gameState);
 	middle::Shape newBubble(middle::GameState* gameState, const Vector3& targetPos);
-	middle::Shape newUnit(middle::GameState* gameState, const Vector3& targetPos);
-	middle::Shape newVariable(middle::GameState* gameState, const std::string& label, const Vector3& targetPos);
+	middle::Shape newUnit(middle::GameState* gameState, const Vector3& targetPos, bool isNegative = false);
+	middle::Shape newVariable(middle::GameState* gameState, const std::string& label, const Vector3& targetPos, bool isNegative = false);
 	middle::Shape newExponent(middle::GameState* gameState, const Vector3& targetPos);
-	middle::Id newEquals(middle::GameState* gameState, middle::Id bubbleAId, middle::Id bubbleBId, const Vector3& targetPos);
+	middle::Shape newEquals(middle::GameState* gameState, const Vector3& targetPos);
+	middle::Shape newMultiplication(middle::GameState* gameState, const Vector3& targetPos);
+	middle::Shape newPower(middle::GameState* gameState, const Vector3& targetPos);
+	middle::Id newBubbleWithIntValue(middle::GameState* gameState, int value, const Vector3& targetPos);
 	bool isIntersecting(middle::GameState* gameState, middle::Shape& shape);
 	bool unitEquals(middle::GameState* gameState, middle::Id& idA, middle::Id& idB);
 	UnitValue unitValue(middle::GameState* gameState, middle::Id& containerId);
@@ -58,12 +59,8 @@ namespace bubble {
 	middle::Id findMatchingBubble(middle::GameState* gameState, middle::Id bubbleRootId, middle::Id nodeStartPointId, middle::Id nodeRootId, std::unordered_map<std::string, middle::Id>& varOverrides, std::set<int>& ignoreSet);
 	void findMatchingPairBubbles(middle::GameState* gameState, middle::Id bubbleRootId, middle::Id nodeStartPointAId, middle::Id nodeStartPointBId, middle::Id nodeRootId, std::unordered_map<std::string, middle::Id>& varOverrides, middle::Id& resultIdA, middle::Id& resultIdB);
 	middle::Id findMatchingFromSibling(middle::GameState* gameState, middle::Id nodeId, middle::Id siblingId, std::unordered_map<std::string, middle::Id>& varOverrides);
-	middle::Id newFraction(middle::GameState* gameState, const Vector3& targetPos, int dividend);
-	middle::Id shapeToFraction(middle::GameState* gameState, middle::Id shpaeId, const Vector3& targetPos, int dividend);
-	middle::Id fractionQuotient(middle::GameState* gameState, middle::Id& fractionId);
 	middle::Id containerize(middle::GameState* gameState, middle::Id id);
 	bool additiveInverses(middle::GameState* gameState, middle::Id idA, middle::Id idB);
-	bool multiplicativeInverses(middle::GameState* gameState, middle::Id idA, middle::Id idB);
 	void negate(middle::GameState* gameState, middle::Id id);
 	void invert(middle::GameState* gameState, middle::Id id);
 	middle::Id bubbleToStructure(middle::GameState* gameState, middle::Id bubbleId);

@@ -12,70 +12,63 @@
 #include "FractionalComponent.h"
 #include "bubble_utils.h"
 #include "TopDogBubbleTag.h"
+#include "BubbleVariable.h"
+#include "GlobalTransform.h"
+#include "LocalScale.h"
+#include "GlobalRadius.h"
 
 
 class NewBubbleOutlineSystem : public middle::MiddleGameplaySystem {
 public:
 	components::CompCache* circlessCache;
 	components::CompCache* circfullCache;
-	components::CompCache* circlessCache2;
-	components::CompCache* circfullCache2;
 
 	NewBubbleOutlineSystem() {
 		systemModeType = middle::SystemModeType::ENGINE;
 	}
 
 	void init(middle::GameState* gameState) override {
-		circlessCache = middle::newCompCache(gameState);
-		circlessCache->addType<components::BubbleComponent>();
-		circlessCache->addType<components::Circle>(components::NOTINTERESTED);
-		circfullCache = middle::newCompCache(gameState);
+		circfullCache = middle::newCompCache(gameState, systemName);
 		circfullCache->addType<components::BubbleComponent>();
 		circfullCache->addType<components::Circle>();
+		circfullCache->addType<components::LocalScale>();
 		circfullCache->addType<components::PhysicsData>();
-
-		circlessCache2 = middle::newCompCache(gameState);
-		circlessCache2->addType<components::BubbleUnit>();
-		circlessCache2->addType<components::Sphere>();
-		circlessCache2->addType<components::Circle>(components::NOTINTERESTED);
-		circfullCache2 = middle::newCompCache(gameState);
-		circfullCache2->addType<components::BubbleUnit>();
-		circfullCache2->addType<components::Circle>();
-		circfullCache2->addType<components::PhysicsData>();
+		circfullCache->addType<components::GlobalTransform>();
+		circfullCache->addType<components::GlobalRadius>();
 	}
 
 	void updateMasses(components::CompCache* cache) {
 		// update bubble masses based on area
 		auto circleIt = cache->begin<components::Circle>();
 		auto physicsIt = cache->begin<components::PhysicsData>();
+		auto transformIt = cache->begin<components::GlobalTransform>();
 		for (int i = 0; i < cache->getSize(); ++i) {
 			auto circle = *circleIt;
 			auto physics = *physicsIt;
-			physics->mass = circle->radius * circle->radius * PI;
-			physics->invMass = 1.0f / physics->mass;
+			auto transform = *transformIt;
+			float globalR = circle->radius * transform->scale.x;
+			if (globalR != 0) {
+				physics->mass = globalR * globalR * PI;
+				physics->invMass = 1.0f / physics->mass;
+			}
 		}
 	}
 
-	const float minBubbleRadius = 10;
+	const float minBubbleRadius = bubble::variableRadius;
+
 	void update(middle::GameState* gameState) override {
-		// add circles
-		for (int i = 0; i < circlessCache->getSize(); ++i) {
-			auto& circleId = circlessCache->relevantIdVector[i];
-			auto circle = middle::attachComponent<components::Circle>(gameState, circleId);
-			circle->radius = minBubbleRadius;
-		}
-		auto sphereIt = circlessCache2->begin<components::Sphere>();
-		for (int i = 0; i < circlessCache2->getSize(); ++i) {
-			auto& circleId = circlessCache2->relevantIdVector[i];
-			auto sphere = *sphereIt;
-			auto circle = middle::attachComponent<components::Circle>(gameState, circleId);
-			circle->radius = sphere->radius;
-		}
 
 		// calculate bubble size
 		auto circleIt = circfullCache->begin<components::Circle>();
+		auto transformIt = circfullCache->begin<components::GlobalTransform>();
 		for (int i = 0; i < circfullCache->getSize(); ++i) {
 			auto circle = *circleIt;
+			auto transform = *transformIt;
+			float inverseScale = 1;
+			if (transform->scale.x != 0) {
+				inverseScale = 1.0f / transform->scale.x;
+			}
+
 			auto& shape = middle::getShape(gameState, circfullCache->relevantIdVector[i].index);
 			std::vector<middle::Id>children;
 			middle::getAllChildrenWithComp(gameState, shape.id, children, middle::getTypeId<components::Circle>());
@@ -84,28 +77,25 @@ public:
 				auto& childShape = middle::getShape(gameState, childId.index);
 				auto childCircle = middle::getComponent<components::Circle>(childShape);
 				if (childCircle) {
-					const float margin = 10;
-					float r = childCircle->radius + margin;
+					auto childTransform = middle::getComponent<components::GlobalTransform>(childShape);
+					float scale = childTransform->scale.x * inverseScale;
+
+					float margin = 10;
+					float r = (childCircle->radius + margin) * scale;
 					totalArea += r * r * PI;
-				}
-				auto bubbleUnit = middle::getComponent<components::BubbleUnit>(childShape);
-				if(bubbleUnit){
-					const float fieldRadius = 10;
-					totalArea += fieldRadius;
 				}
 			}
 
 			float radius = std::sqrt(totalArea / PI) + 4;
-			if (radius < bubble::variableRadius) {
-				radius = bubble::variableRadius;
+			auto unit = middle::getComponent<components::BubbleUnit>(shape);
+			float minRadius = unit ? bubble::unitRadius : bubble::variableRadius;
+			if (radius < minRadius) {
+				radius = minRadius;
 			}
 			circle->radius = radius;
 		}
 
-	
 		updateMasses(circfullCache);
-		updateMasses(circfullCache2);
-
 	}
 };
 

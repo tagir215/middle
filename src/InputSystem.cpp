@@ -10,6 +10,7 @@ public:
 	}
 	void update(middle::GameState* gameState) override {
 
+
 		Matrix scalorM = MatrixScale(1, -1, 1);
 		Matrix translatorM = MatrixTranslate(0, GetScreenHeight(), 0);
 		gameState->screenOrientorM = MatrixMultiply(scalorM, translatorM);
@@ -19,8 +20,6 @@ public:
 		Vector3 invertedMouse = Vector3Transform(mousePos, gameState->screenOrientorM);
 		gameState->input.mousePos.x = invertedMouse.x;
 		gameState->input.mousePos.y = invertedMouse.y;
-		gameState->input.zoomIn = GetMouseWheelMoveV().y > 0;
-		gameState->input.zoomOut = GetMouseWheelMoveV().y < 0;
 
 		gameState->input.mouseHeld = false;
 		gameState->input.mouseClicked = false;
@@ -30,118 +29,174 @@ public:
 			gameState->input.mouseHeld = IsMouseButtonDown(MOUSE_BUTTON_LEFT);
 			gameState->input.mouseClicked = IsMouseButtonPressed(MOUSE_BUTTON_LEFT);
 			gameState->input.mouseReleased = IsMouseButtonReleased(MOUSE_BUTTON_LEFT);
+			gameState->input.zoomIn = GetMouseWheelMoveV().y > 0;
+			gameState->input.zoomOut = GetMouseWheelMoveV().y < 0;
 		}
 
 		if (gameState->applicationMode == middle::ApplicationMode::EDITOR_MODE) {
-			gameState->input.w = false;
-			gameState->input.s = false;
-			gameState->input.a = false;
-			gameState->input.d = false;
-			gameState->input.q = false;
-			gameState->input.e = false;
-			gameState->input.grabDown = false;
-			gameState->input.grabReleased = false;
-			gameState->input.grabReleased = false;
-			gameState->input.rotatePressed = false;
-			gameState->input.rotateReleased = false;
-			gameState->input.scaleDown = false;
-			gameState->input.scaleReleased = false;
-			gameState->input.infoClick = false;
-			gameState->input.loopClick = false;
-			gameState->input.selectModeClick = false;
-			gameState->input.sphereModeClick = false;
-			gameState->input.hideClick = false;
-			gameState->input.constraintModeClick = false;
-			gameState->input.cameraModeClick = false;
-			gameState->input.loopModeClick = false;
-			gameState->input.deleteClick = false;
-			gameState->input.copyClick = false;
-			gameState->input.saveClick = false;
-			gameState->input.navigateToFileClick = false;
-			gameState->input.focus = false;
-			gameState->input.newThing = false;
-			gameState->input.reparentClick = false;
-			gameState->input.seaprateFromParentClick = false;
+			//gameState->input = middle::EditorInput();
+			auto& ip = gameState->input;
+
+			ip.w = false;
+			ip.a = false;
+			ip.s = false;
+			ip.d = false;
+			ip.q = false;
+			ip.e = false;
+			ip.altDown = false;
+			ip.grabDown = false;
+			ip.grabReleased = false;
+			ip.rotatePressed = false;
+			ip.rotateReleased = false;
+			ip.scaleDown = false;
+			ip.scaleReleased = false;
+			ip.infoClick = false;
+			ip.loopClick = false;
+			ip.sphereModeClick = false;
+			ip.hideClick = false;
+			ip.constraintModeClick = false;
+			ip.cameraModeClick = false;
+			ip.loopModeClick = false;
+			ip.selectModeClick = false;
+			ip.deleteClick = false;
+			ip.copyClick = false;
+			ip.saveClick = false;
+			ip.navigateToFileClick = false;
+			ip.focus = false;
+			ip.newThing = false;
+			ip.reparentClick = false;
+			ip.seaprateFromParentClick = false;
 
 			if (gameState->inputBlockers.find(middle::InputBlockers::KEYBOARD_BLOCK) == gameState->inputBlockers.end()) {
-				gameState->input.w = IsKeyDown(KEY_W);
-				gameState->input.s = IsKeyDown(KEY_S);
-				gameState->input.a = IsKeyDown(KEY_A);
-				gameState->input.d = IsKeyDown(KEY_D);
-				gameState->input.q = IsKeyDown(KEY_Q);
-				gameState->input.e = IsKeyDown(KEY_E);
-				gameState->input.altDown = IsKeyDown(KEY_LEFT_ALT);
-				gameState->input.grabDown = IsKeyDown(KEY_G);
-				gameState->input.grabReleased = IsKeyReleased(KEY_G);
-				gameState->input.grabReleased = IsKeyReleased(KEY_G);
-				gameState->input.rotatePressed = IsKeyPressed(KEY_X);
-				gameState->input.rotateReleased = IsKeyReleased(KEY_X);
-				gameState->input.scaleDown = IsKeyDown(KEY_Z);
-				gameState->input.scaleReleased = IsKeyReleased(KEY_Z);
-				gameState->input.infoClick = IsKeyPressed(KEY_I);
-				gameState->input.loopClick = IsKeyPressed(KEY_L);
-				gameState->input.selectModeClick = IsKeyPressed(KEY_ONE);
-				gameState->input.sphereModeClick = IsKeyPressed(KEY_TWO);
-				gameState->input.hideClick = IsKeyPressed(KEY_H);
-				gameState->input.constraintModeClick = IsKeyPressed(KEY_THREE);
-				gameState->input.cameraModeClick = IsKeyPressed(KEY_FOUR);
-				gameState->input.loopModeClick = IsKeyPressed(KEY_FIVE);
-				gameState->input.deleteClick = IsKeyPressed(KEY_R);
-				gameState->input.copyClick = IsKeyPressed(KEY_C);
-				gameState->input.saveClick = IsKeyPressed(KEY_P);
-				gameState->input.navigateToFileClick = IsKeyPressed(KEY_SPACE);
-				gameState->input.focus = IsKeyPressed(KEY_F);
-				gameState->input.newThing = gameState->input.mouseClicked;
-				gameState->input.reparentClick = IsKeyPressed(KEY_E);
-				gameState->input.seaprateFromParentClick = IsKeyPressed(KEY_R);
+				ip.w = IsKeyDown(KEY_W);
+				ip.s = IsKeyDown(KEY_S);
+				ip.a = IsKeyDown(KEY_A);
+				ip.d = IsKeyDown(KEY_D);
+				ip.q = IsKeyDown(KEY_Q);
+				ip.e = IsKeyDown(KEY_E);
+				ip.altDown = IsKeyDown(KEY_LEFT_ALT);
+				ip.grabDown = IsKeyDown(KEY_G);
+				ip.grabReleased = IsKeyReleased(KEY_G);
+				ip.grabReleased = IsKeyReleased(KEY_G);
+				ip.rotatePressed = IsKeyPressed(KEY_X);
+				ip.rotateReleased = IsKeyReleased(KEY_X);
+				ip.scaleDown = IsKeyDown(KEY_Z);
+				ip.scaleReleased = IsKeyReleased(KEY_Z);
+				ip.infoClick = IsKeyPressed(KEY_I);
+				ip.loopClick = IsKeyPressed(KEY_L);
+				ip.selectModeClick = IsKeyPressed(KEY_ONE);
+				ip.sphereModeClick = IsKeyPressed(KEY_TWO);
+				ip.hideClick = IsKeyPressed(KEY_H);
+				ip.constraintModeClick = IsKeyPressed(KEY_THREE);
+				ip.cameraModeClick = IsKeyPressed(KEY_FOUR);
+				ip.loopModeClick = IsKeyPressed(KEY_FIVE);
+				ip.deleteClick = IsKeyPressed(KEY_R);
+				ip.copyClick = IsKeyPressed(KEY_C);
+				ip.saveClick = IsKeyPressed(KEY_P);
+				ip.navigateToFileClick = IsKeyPressed(KEY_SPACE);
+				ip.focus = IsKeyPressed(KEY_F);
+				ip.newThing = gameState->input.mouseClicked;
+				ip.reparentClick = IsKeyPressed(KEY_E);
+				ip.seaprateFromParentClick = IsKeyPressed(KEY_R);
 			}
 		}
 
 		if (gameState->applicationMode == middle::ApplicationMode::GAME_MODE) {
-			gameState->gameInput.pop = false;
-			gameState->gameInput.mulOne = false;
-			gameState->gameInput.comp = false;
-			gameState->gameInput.proc = false;
-			gameState->gameInput.can = false;
-			gameState->gameInput.zoomIn = false;
-			gameState->gameInput.zoomOut = false;
-			gameState->gameInput.panUp = false;
-			gameState->gameInput.panDown = false;
-			gameState->gameInput.panLeft = false;
-			gameState->gameInput.panRight = false;
-			gameState->gameInput.undo = false;
-			gameState->gameInput.shiftHeld = false;
+			gameState->gameInput = middle::GameInput();
+			auto& gi = gameState->gameInput;
 
 			if (gameState->inputBlockers.find(middle::InputBlockers::KEYBOARD_BLOCK) == gameState->inputBlockers.end()) {
-				gameState->gameInput.pop = IsKeyPressed(KEY_B);
-				gameState->gameInput.zoomIn = IsKeyDown(KEY_W);
-				gameState->gameInput.zoomOut = IsKeyDown(KEY_S);
-				gameState->gameInput.panUp = IsKeyDown(KEY_W);
-				gameState->gameInput.panDown = IsKeyDown(KEY_S);
-				gameState->gameInput.panLeft = IsKeyDown(KEY_A);
-				gameState->gameInput.panRight = IsKeyDown(KEY_D);
-				gameState->gameInput.pop = IsKeyPressed(KEY_Z);
-				gameState->gameInput.can = IsKeyPressed(KEY_X);
-				gameState->gameInput.comp = IsKeyPressed(KEY_C);
-				gameState->gameInput.mulOne = IsKeyPressed(KEY_V);
-				gameState->gameInput.proc = IsKeyPressed(KEY_E);
-				gameState->gameInput.undo = IsKeyPressed(KEY_SPACE);
-				gameState->gameInput.one = IsKeyPressed(KEY_ONE);
-				gameState->gameInput.two = IsKeyPressed(KEY_TWO);
-				gameState->gameInput.three = IsKeyPressed(KEY_THREE);
-				gameState->gameInput.four = IsKeyPressed(KEY_FOUR);
-				gameState->gameInput.five = IsKeyPressed(KEY_FIVE);
-				gameState->gameInput.six = IsKeyPressed(KEY_SIX);
-				gameState->gameInput.seven = IsKeyPressed(KEY_SEVEN);
-				gameState->gameInput.eight = IsKeyPressed(KEY_EIGHT);
-				gameState->gameInput.nine = IsKeyPressed(KEY_NINE);
-				gameState->gameInput.zero = IsKeyPressed(KEY_ZERO);
-				gameState->gameInput.shiftHeld = IsKeyDown(KEY_LEFT_SHIFT) || IsKeyDown(KEY_RIGHT_SHIFT);
+				gi.pop = IsKeyPressed(KEY_B);
+				gi.zoomIn = IsKeyDown(KEY_W);
+				gi.zoomOut = IsKeyDown(KEY_S);
+				gi.panUp = IsKeyDown(KEY_W);
+				gi.panDown = IsKeyDown(KEY_S);
+				gi.panLeft = IsKeyDown(KEY_A);
+				gi.panRight = IsKeyDown(KEY_D);
+				gi.pop = IsKeyPressed(KEY_Z);
+				gi.can = IsKeyPressed(KEY_X);
+				gi.comp = IsKeyPressed(KEY_C);
+				gi.mulOne = IsKeyPressed(KEY_V);
+				gi.proc = IsKeyPressed(KEY_E);
+				gi.undo = IsKeyPressed(KEY_SPACE);
+				gi.one = IsKeyDown(KEY_ONE);
+				gi.two = IsKeyDown(KEY_TWO);
+				gi.three = IsKeyDown(KEY_THREE);
+				gi.four = IsKeyDown(KEY_FOUR);
+				gi.five = IsKeyDown(KEY_FIVE);
+				gi.six = IsKeyDown(KEY_SIX);
+				gi.seven = IsKeyDown(KEY_SEVEN);
+				gi.eight = IsKeyDown(KEY_EIGHT);
+				gi.nine = IsKeyDown(KEY_NINE);
+				gi.zero = IsKeyDown(KEY_ZERO);
+				gi.shiftHeld = IsKeyDown(KEY_LEFT_SHIFT) || IsKeyDown(KEY_RIGHT_SHIFT);
 			}
 
 			gameState->gameInput.mouseWheelMove = GetMouseWheelMove();
+
+
+			if (gameState->inputBlockers.find(middle::InputBlockers::KEYBOARD_BLOCK) == gameState->inputBlockers.end()) {
+				gameState->equlabInput = middle::EqulabInput();
+				auto& ei = gameState->equlabInput;
+				ei.oneHeld = IsKeyDown(KEY_ONE);
+				ei.twoHeld = IsKeyDown(KEY_TWO);
+				ei.threeHeld = IsKeyDown(KEY_THREE);
+				ei.fourHeld = IsKeyDown(KEY_FOUR);
+				ei.fiveHeld = IsKeyDown(KEY_FIVE);
+				ei.sixHeld = IsKeyDown(KEY_SIX);
+				ei.sevenHeld = IsKeyDown(KEY_SEVEN);
+				ei.eightHeld = IsKeyDown(KEY_EIGHT);
+				ei.nineHeld = IsKeyDown(KEY_NINE);
+				ei.zeroHeld = IsKeyDown(KEY_ZERO);
+				ei.shiftHeld = IsKeyDown(KEY_LEFT_SHIFT) || IsKeyDown(KEY_RIGHT_SHIFT);
+				ei.oneClicked = IsKeyPressed(KEY_ONE);
+				ei.twoClicked = IsKeyPressed(KEY_TWO);
+				ei.threeClicked = IsKeyPressed(KEY_THREE);
+				ei.fourClicked = IsKeyPressed(KEY_FOUR);
+				ei.fiveClicked = IsKeyPressed(KEY_FIVE);
+				ei.sixClicked = IsKeyPressed(KEY_SIX);
+				ei.sevenClicked = IsKeyPressed(KEY_SEVEN);
+				ei.eightClicked = IsKeyPressed(KEY_EIGHT);
+				ei.nineClicked = IsKeyPressed(KEY_NINE);
+				ei.zeroClicked = IsKeyPressed(KEY_ZERO);
+				ei.aClicked = IsKeyPressed(KEY_A);
+				ei.bClicked = IsKeyPressed(KEY_B);
+				ei.cClicked = IsKeyPressed(KEY_C);
+				ei.dClicked = IsKeyPressed(KEY_D);
+				ei.eClicked = IsKeyPressed(KEY_E);
+				ei.fClicked = IsKeyPressed(KEY_F);
+				ei.gClicked = IsKeyPressed(KEY_G);
+				ei.hClicked = IsKeyPressed(KEY_H);
+				ei.iClicked = IsKeyPressed(KEY_I);
+				ei.jClicked = IsKeyPressed(KEY_J);
+				ei.kClicked = IsKeyPressed(KEY_K);
+				ei.lClicked = IsKeyPressed(KEY_L);
+				ei.mClicked = IsKeyPressed(KEY_M);
+				ei.nClicked = IsKeyPressed(KEY_N);
+				ei.oClicked = IsKeyPressed(KEY_O);
+				ei.pClicked = IsKeyPressed(KEY_P);
+				ei.qClicked = IsKeyPressed(KEY_Q);
+				ei.rClicked = IsKeyPressed(KEY_R);
+				ei.sClicked = IsKeyPressed(KEY_S);
+				ei.tClicked = IsKeyPressed(KEY_T);
+				ei.uClicked = IsKeyPressed(KEY_U);
+				ei.vClicked = IsKeyPressed(KEY_V);
+				ei.wClicked = IsKeyPressed(KEY_W);
+				ei.xClicked = IsKeyPressed(KEY_X);
+				ei.yClicked = IsKeyPressed(KEY_Y);
+				ei.zClicked = IsKeyPressed(KEY_Z);
+			}
 		}
 
+
+
+
+
+
+
+
+
+		// TODO MOVE THESE
 		// CAMERA POSITION UPDATE
 		int cameraPosX = gameState->screenWidth / 2;
 		int cameraPosY = gameState->screenHeight / 2;

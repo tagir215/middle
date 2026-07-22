@@ -19,7 +19,7 @@ namespace MouseSelectionSystem {
 		components::CompCache* intersectableCache;
 
 		void init(middle::GameState* gameState) {
-			intersectableCache = middle::newCompCache(gameState);
+			intersectableCache = middle::newCompCache(gameState, systemName);
 			intersectableCache->addType<components::MouseIntersectable>();
 			intersectableCache->addType<components::MouseSelectable>();
 		}

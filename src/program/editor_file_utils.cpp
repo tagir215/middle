@@ -294,7 +294,6 @@ namespace middle {
 				deleteShape(gameState, i);
 			}
 		}
-		gameState->reset = true;
 		while (gameState->undoQueue.size() > 0) {
 			gameState->undoQueue.pop();
 		}
@@ -467,12 +466,14 @@ namespace middle {
 		auto referenceComponent = getComponent<components::Reference>(shape);
 		assert(referenceComponent);
 		if (referenceComponent) {
-			auto posComponent = getComponent<components::Position>(shape);
-			Vector3 pos = { posComponent->posX, posComponent->posY, posComponent->posZ };
+
+			auto posComponent = getComponent<components::LocalPosition>(shape);
+			Vector3 pos = { 0,0,0 };
+			if (posComponent) {
+				pos = posComponent->pos;
 			// reset to zero, because load scene will again set the position, while also moving its children
-			posComponent->posX = 0;
-			posComponent->posY = 0;
-			posComponent->posZ = 0;
+				posComponent->pos = { 0,0,0 };
+			}
 			loadScene(gameState, referenceComponent->folder, referenceComponent->sceneName, true, pos, index);
 		}
 	}
@@ -519,7 +520,7 @@ namespace middle {
 
 	middle::Id loadScene(GameState* gameState, const std::string& folder, const std::string& sceneName, bool import, const Vector3& pos, int sceneReferenceIndex) {
 
-		std::string path = folder + sceneName + ".midsc";
+		std::string path = folder + "/" + sceneName + ".midsc";
 
 
 		int indexOffset = 0;
@@ -661,7 +662,14 @@ namespace middle {
 			}
 
 			// move imported scene where it wants to be
-			moveShape(gameState, sceneReferenceIndex, pos);
+			Vector3 displacement = pos;
+			std::vector<middle::Id>children;
+			middle::Id sceneReferenceId = gameState->ids[sceneReferenceIndex];
+			middle::getChildren(gameState, sceneReferenceId, children);
+			moveShape(gameState, sceneReferenceIndex, displacement);
+			for (middle::Id id : children) {
+				moveShape(gameState, id.index, displacement);
+			}
 
 			return gameState->ids[sceneReferenceIndex];
 		}

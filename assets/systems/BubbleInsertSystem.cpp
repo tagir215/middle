@@ -15,10 +15,10 @@ class BubbleInsertSystem : public middle::MiddleGameplaySystem {
 	components::CompCache* buttonCache;
 
 	void init(middle::GameState* gameState) override {
-		insertableCache = middle::newCompCache(gameState);
+		insertableCache = middle::newCompCache(gameState, systemName);
 		insertableCache->addType<components::InsertableBubble>();
 
-		buttonCache = middle::newCompCache(gameState);
+		buttonCache = middle::newCompCache(gameState, systemName);
 		buttonCache->addType<components::Button>();
 		buttonCache->addType<components::MouseClickComponent>();
 	}

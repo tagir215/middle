@@ -79,4 +79,55 @@ namespace middle {
 		float mouseWheelMove = false;
 	};
 
+	struct EqulabInput {
+		bool oneHeld = false;
+		bool twoHeld = false;
+		bool threeHeld = false;
+		bool fourHeld = false;
+		bool fiveHeld = false;
+		bool sixHeld = false;
+		bool sevenHeld = false;
+		bool eightHeld = false;
+		bool nineHeld = false;
+		bool zeroHeld = false;
+		bool shiftHeld = false;
+
+		bool oneClicked = false;
+		bool twoClicked = false;
+		bool threeClicked = false;
+		bool fourClicked = false;
+		bool fiveClicked = false;
+		bool sixClicked = false;
+		bool sevenClicked = false;
+		bool eightClicked = false;
+		bool nineClicked = false;
+		bool zeroClicked = false;
+		bool aClicked = false;
+		bool bClicked = false;
+		bool cClicked = false;
+		bool dClicked = false;
+		bool eClicked = false;
+		bool fClicked = false;
+		bool gClicked = false;
+		bool hClicked = false;
+		bool iClicked = false;
+		bool jClicked = false;
+		bool kClicked = false;
+		bool lClicked = false;
+		bool mClicked = false;
+		bool nClicked = false;
+		bool oClicked = false;
+		bool pClicked = false;
+		bool qClicked = false;
+		bool rClicked = false;
+		bool sClicked = false;
+		bool tClicked = false;
+		bool uClicked = false;
+		bool vClicked = false;
+		bool wClicked = false;
+		bool xClicked = false;
+		bool yClicked = false;
+		bool zClicked = false;
+	};
+
 }

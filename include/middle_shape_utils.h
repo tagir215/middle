@@ -32,7 +32,7 @@ namespace middle {
 	// is id generation correct?  and is alive
 	bool isValidId(GameState* gameState, middle::Id id);
 	// get pos quickly
-	Vector3 getShapePosition(GameState* gameState, int index);
+	Vector3 getGlobalPosition(GameState* gameState, int index);
 	// get shape instance
 	Shape& getShape(GameState* gameState, int index);
 	// delete shape , updates generational indexes
@@ -59,6 +59,10 @@ namespace middle {
 	Id copyShape(GameState* gameState, int shapeToCopyIndex, int parentIndex = UNASSIGNED);
 	// copy shape and its children
 	Id deepCopyShape(GameState* gameState, int shapeToCopyIndex, int parentIndex = UNASSIGNED);
+	// copy shape shallowly and preserve its global coordinate
+	Id shallowCopyShapeGlobalCoordinates(GameState* gameState, middle::Id id);
+	// copy shape and preserve its global coordinate
+	Id deepCopyShapeGlobalCoordinates(GameState* gameState, middle::Id id);
 	// get vertices of rectangles
 	std::vector<Vector3>getRectVertices(GameState* gameState, const Id& shapeId);
 	// get scale and multiply it with all the parents scales
@@ -84,12 +88,19 @@ namespace middle {
 	// check if is id is assigned and up to date
 	bool isIdCurrent(GameState* gameState, middle::Id& id);
 	// new comp cache for caching components for better cache locality of components
-	components::CompCache* newCompCache(GameState* gameState);
+	components::CompCache* newCompCache(GameState* gameState, const std::string& systemName);
 	// queue action
 	void queueAction(GameState* gameState, std::shared_ptr<EditorActionContainer> container);
 	// queue action for editor, with undos
 	void queueEditorAction(GameState* gameState, std::shared_ptr<EditorActionContainer> container);
-
+	// get transform matrix for some id with components globaltransform, localPos, localScale, and probably rotation in future 
+	Matrix getTransformMatrix(GameState* gameState, middle::Id id);
+	// project world coordinate as local coordinate 
+	Vector3 projectGlobalCoordinateToLocalCoordinate(GameState* gameState, const Vector3& globalCoord, middle::Id shapeId);
+	// project local coordinate to match old global coordinate
+	void updateLocalCoordinateToProjectedGlobalCoordinate(GameState* gameState, middle::Id id, middle::Id oldParentId);
+	// get global scale parents scale multiplied
+	Vector3 getGlobalScale(GameState* gameState, middle::Id id);
 
 	template<typename F>
 	void loopInstances(GameState* gameState, F func) {

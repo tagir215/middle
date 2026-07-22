@@ -1,7 +1,9 @@
 #pragma once
 #include "middle_component_table.h"
 #include "game_state.h"
-#include "Position.h"
+#include "LocalPosition.h"
+#include "LocalScale.h"
+#include "GlobalTransform.h"
 #include "Sphere.h"
 #include "MouseSelectable.h"
 #include "MouseIntersectable.h"
@@ -16,7 +18,9 @@ namespace entities{
     void initCamera(middle::GameState* gameState, int index, const Vector3& position, const Vector3& up, const Vector3& target, float fovy, int projection){
 		middle::Shape shape;
 		components::Sphere* sphere = middle::addComponent<components::Sphere>(shape);
-		components::Position* pos = middle::addComponent<components::Position>(shape);
+		components::LocalPosition* pos = middle::addComponent<components::LocalPosition>(shape);
+		middle::addComponent<components::LocalScale>(shape);
+		middle::addComponent<components::GlobalTransform>(shape);
 		components::CameraComponent* camera = middle::addComponent<components::CameraComponent>(shape);
 		middle::addComponent<components::MouseSelectable>(shape);
 		middle::addComponent<components::MouseGrabbable>(shape);
@@ -24,9 +28,7 @@ namespace entities{
 		middle::addComponent<components::LoopSociety>(shape);
 		middle::registerShape(gameState, shape);
 		sphere->radius = middle::DEF_RADIUS;
-		pos->posX = position.x;
-		pos->posY = position.y;
-		pos->posZ = position.z;
+		pos->pos = position;
 		camera->targetX = target.x;
 		camera->targetY = target.y;
 		camera->targetZ = target.z;

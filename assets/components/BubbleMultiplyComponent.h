@@ -8,7 +8,7 @@ namespace components {
 	enum OperationType {
 		MULTIPLICATION,
 		POWER,
-		LOGARITHM,
+		EQUALS,
 	};
 
 	enum PowerRole {

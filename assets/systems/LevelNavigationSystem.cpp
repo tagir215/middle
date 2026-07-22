@@ -5,7 +5,6 @@
 #include "LevelReference.h"
 #include "MouseClickComponent.h"
 #include "editor_actions.h"
-#include "Position.h"
 #include "Circle.h"
 #include "bubble_constants.h"
 #include "IdRef.h"
@@ -14,6 +13,7 @@
 #include "InitializedTag.h"
 #include "Button.h"
 #include "imgui.h"
+#include "GlobalTransform.h"
 
 
 class LevelNavigationSystem : public middle::MiddleGameplaySystem {
@@ -25,19 +25,19 @@ public:
 	components::CompCache* buttonCache;
 
 	void init(middle::GameState* gameState) {
-		clickedCache = middle::newCompCache(gameState);
+		clickedCache = middle::newCompCache(gameState, systemName);
 		clickedCache->addType<components::LevelReference>();
 		clickedCache->addType<components::MouseClickComponent>();
-		levelCache = middle::newCompCache(gameState);
+		levelCache = middle::newCompCache(gameState, systemName);
 		levelCache->addType<components::LevelReference>();
-		levelCache->addType<components::Position>();
+		levelCache->addType<components::GlobalTransform>();
 		levelCache->addType<components::Circle>();
-		unInitializedLevelCache = middle::newCompCache(gameState);
+		unInitializedLevelCache = middle::newCompCache(gameState, systemName);
 		unInitializedLevelCache->addType<components::LevelReference>();
 		unInitializedLevelCache->addType<components::InitializedTag>(components::NOTINTERESTED);
-		cameraCache = middle::newCompCache(gameState);
+		cameraCache = middle::newCompCache(gameState, systemName);
 		cameraCache->addType<components::CameraComponent>();
-		buttonCache = middle::newCompCache(gameState);
+		buttonCache = middle::newCompCache(gameState, systemName);
 		buttonCache->addType<components::Button>();
 		buttonCache->addType<components::MouseClickComponent>();
 	}
@@ -92,11 +92,11 @@ public:
 		}
 
 		auto levelIt = levelCache->begin<components::LevelReference>();
-		auto levelPosIt = levelCache->begin<components::Position>();
+		auto levelTransformIt = levelCache->begin<components::GlobalTransform>();
 		auto circleIt = levelCache->begin<components::Circle>();
 		for (int i = 0; i < levelCache->getSize(); ++i) {
 			auto levelRef = *levelIt;
-			auto pos = *levelPosIt;
+			auto transform = *levelTransformIt;
 			auto circle = *circleIt;
 			if (reset) {
 				levelRef->complete = false;
@@ -109,7 +109,7 @@ public:
 				completeInd.radius = circle->radius;
 				completeInd.ringRadius = circle->radius;
 				const float offsetY = 0.5f;
-				completeInd.transform.translation = { pos->posX, pos->posY + offsetY, pos->posZ };
+				completeInd.transform.translation = transform->pos;
 				completeInd.color = GREEN;
 				completeInd.color.a = 40;
 				completeInd.length = 0.1f;
@@ -163,9 +163,9 @@ public:
 
 				auto camIt = cameraCache->begin<components::CameraComponent>();
 				middle::Id cameraId = cameraCache->relevantIdVector[0];
-				Vector3 currPos = middle::getShapePosition(gameState, cameraId.index);
+				Vector3 currPos = middle::getGlobalPosition(gameState, cameraId.index);
 				const Vector3 offset = Vector3{ 0, -350, 0 };
-				Vector3 targetPos = middle::getShapePosition(gameState, shape.id.index) + offset;
+				Vector3 targetPos = middle::getGlobalPosition(gameState, shape.id.index) + offset;
 				middle::moveShape(gameState, cameraId.index, targetPos - currPos);
 
 			}

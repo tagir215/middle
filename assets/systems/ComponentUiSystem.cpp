@@ -7,7 +7,7 @@
 #include <string>
 #include "imgui.h"
 #include <misc/cpp/imgui_stdlib.cpp>
-#include <Position.h>
+#include "GlobalTransform.h"
 #include "Text.h"
 #include "Rotation.h"
 
@@ -22,7 +22,7 @@ public:
 	components::CompCache* cache;
 
 	void init(middle::GameState* gameState) {
-		cache = middle::newCompCache(gameState);
+		cache = middle::newCompCache(gameState, systemName);
 		cache->addType<components::MouseSelectable>();
 	}
 
@@ -72,7 +72,6 @@ public:
 						middle::queueAction(gameState, std::make_shared<middle::EditorActionRemoveComponent>(componentName, middle::getSelectedShapes(gameState)));
 					}
 
-
 					ImGui::PopID();
 					ImGui::SameLine();
 					int size = 0;
@@ -101,41 +100,33 @@ public:
 							else if (field.type == middle::FieldType::Vector3) {
 								Vector3* vector = static_cast<Vector3*>(field.value);
 								ImGui::Text(field.name);
-								ImGui::PushID("x");
-								ImGui::PushID("y");
-								ImGui::PushID("z");
-								ImGui::InputFloat("x", &vector->x);
-								ImGui::InputFloat("y", &vector->y);
-								ImGui::InputFloat("z", &vector->z);
-								ImGui::PopID();
-								ImGui::PopID();
-								ImGui::PopID();
+
+								std::string id1 = std::string(field.name) + ":x";
+								std::string id2 = std::string(field.name) + ":y";
+								std::string id3 = std::string(field.name) + ":z";
+								ImGui::InputFloat(id1.c_str(), &vector->x);
+								ImGui::InputFloat(id2.c_str(), &vector->y);
+								ImGui::InputFloat(id3.c_str(), &vector->z);
 							}
 							else if (field.type == middle::FieldType::Vector2) {
 								Vector2* vector = static_cast<Vector2*>(field.value);
 								ImGui::Text(field.name);
-								ImGui::PushID("x");
-								ImGui::PushID("y");
-								ImGui::InputFloat("x", &vector->x);
-								ImGui::InputFloat("y", &vector->y);
-								ImGui::PopID();
-								ImGui::PopID();
+								std::string id1 = std::string(field.name) + ":x";
+								std::string id2 = std::string(field.name) + ":y";
+								ImGui::InputFloat(id1.c_str(), &vector->x);
+								ImGui::InputFloat(id2.c_str(), &vector->y);
 							}
 							else if (field.type == middle::FieldType::Quaternion) {
 								Quaternion* quat = static_cast<Quaternion*>(field.value);
 								ImGui::Text(field.name);
-								ImGui::PushID("x");
-								ImGui::PushID("y");
-								ImGui::PushID("z");
-								ImGui::PushID("2");
-								ImGui::InputFloat("x", &quat->x);
-								ImGui::InputFloat("y", &quat->y);
-								ImGui::InputFloat("z", &quat->z);
-								ImGui::InputFloat("w", &quat->w);
-								ImGui::PopID();
-								ImGui::PopID();
-								ImGui::PopID();
-								ImGui::PopID();
+								std::string id1 = std::string(field.name) + ":x";
+								std::string id2 = std::string(field.name) + ":y";
+								std::string id3 = std::string(field.name) + ":z";
+								std::string id4 = std::string(field.name) + ":w";
+								ImGui::InputFloat(id1.c_str(), &quat->x);
+								ImGui::InputFloat(id2.c_str(), &quat->y);
+								ImGui::InputFloat(id3.c_str(), &quat->z);
+								ImGui::InputFloat(id4.c_str(), &quat->w);
 							}
 							else if (field.type == middle::FieldType::Color) {
 								Color* color = static_cast<Color*>(field.value);
@@ -189,7 +180,22 @@ public:
 
 				ImGui::Separator();
 
-				if (ImGui::Button("Save")) {
+				// affecting sytstem names
+				if (ImGui::CollapsingHeader("Affecting Systems")) {
+					for (int index : shape.affectingSystems) {
+						std::string imgId = "AS" + std::to_string(index);
+						ImGui::PushID(imgId.c_str());
+						std::string name = gameState->systemNames[index].c_str();
+						if (ImGui::Button("(o)")) {
+							middle::queueAction(gameState, std::make_shared<middle::EditorActionOpenSystem>(name));
+						}
+						ImGui::PopID();
+						ImGui::SameLine();
+						ImGui::Text(name.c_str());
+					}
+				}
+
+				if (ImGui::Button("Save Shape")) {
 
 					// Popup for entering new scene name
 					static char inputtedName[128] = ""; // buffer for scene name input
@@ -206,10 +212,10 @@ public:
 					}
 
 
-					auto pos = middle::getComponent<components::Position>(shape);
+					auto transform = middle::getComponent<components::GlobalTransform>(shape);
 					Vector3 displacement = { 0,0,0 };
-					if (pos) {
-						displacement = { pos->posX, pos->posY, pos->posZ };
+					if (transform) {
+						displacement = transform->pos;
 						// move shape to origin
 						middle::moveShape(gameState, shape.id.index, Vector3Negate(displacement));
 					}
@@ -226,7 +232,7 @@ public:
 				ImGui::End();
 				};
 
-			gameState->uiSetups.push_back(ui);
+				gameState->uiSetups.push_back(ui);
 		}
 	}
 };

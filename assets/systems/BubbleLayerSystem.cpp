@@ -22,20 +22,20 @@ public:
 
 	void init(middle::GameState* gameState) override {
 		// for setup , delete later
-		layerlessBubbleCache = middle::newCompCache(gameState);
+		layerlessBubbleCache = middle::newCompCache(gameState, systemName);
 		layerlessBubbleCache->addType<components::BubbleComponent>();
 		layerlessBubbleCache->addType<components::Layer>(components::NOTINTERESTED);
 		layerlessBubbleCache->addType<components::IdRef>(components::NOTINTERESTED);
-		layerlessUnitCache = middle::newCompCache(gameState);
+		layerlessUnitCache = middle::newCompCache(gameState, systemName);
 		layerlessUnitCache->addType<components::BubbleUnit>();
 		layerlessUnitCache->addType<components::Layer>(components::NOTINTERESTED);
 
-		bubbleLayerCache = middle::newCompCache(gameState);
+		bubbleLayerCache = middle::newCompCache(gameState, systemName);
 		bubbleLayerCache->addType<components::BubbleComponent>();
 		bubbleLayerCache->addType<components::Layer>();
 		bubbleLayerCache->addType<components::IdRef>(components::NOTINTERESTED);
 		bubbleLayerCache->addType<components::SnapRef>(components::NOTINTERESTED);
-		unitLayerCache = middle::newCompCache(gameState);
+		unitLayerCache = middle::newCompCache(gameState, systemName);
 		unitLayerCache->addType<components::BubbleUnit>();
 		unitLayerCache->addType<components::Layer>();
 		unitLayerCache->addType<components::IdRef>(components::NOTINTERESTED);

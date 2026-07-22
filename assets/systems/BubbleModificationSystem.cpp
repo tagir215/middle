@@ -38,26 +38,26 @@ public:
 	components::CompCache* procContainerCache;
 
 	void init(middle::GameState* gameState) {
-		deletionCache = middle::newCompCache(gameState);
+		deletionCache = middle::newCompCache(gameState, systemName);
 		deletionCache->addType<components::DeleteComponent>();
 		deletionCache->addType<components::IdRef>();
 
-		intersectableCache = middle::newCompCache(gameState);
+		intersectableCache = middle::newCompCache(gameState, systemName);
 		intersectableCache->addType<components::MouseIntersectable>();
 		intersectableCache->addType<components::DeleteComponent>(components::NOTINTERESTED);
 
-		placementCache = middle::newCompCache(gameState);
+		placementCache = middle::newCompCache(gameState, systemName);
 		placementCache->addType<components::BubbleComponent>();
 		placementCache->addType<components::PlacementComponent>();
 		placementCache->addType<components::IdRef>();
 
-		levelConfigsCache = middle::newCompCache(gameState);
+		levelConfigsCache = middle::newCompCache(gameState, systemName);
 		levelConfigsCache->addType<components::BubbleAlgebraLevelConfigs>();
 
-		uiCompCache = middle::newCompCache(gameState);
+		uiCompCache = middle::newCompCache(gameState, systemName);
 		uiCompCache->addType<components::UiComponent>();
 
-		procContainerCache = middle::newCompCache(gameState);
+		procContainerCache = middle::newCompCache(gameState, systemName);
 		procContainerCache->addType<components::ProcedureContainer>();
 	}
 
@@ -283,8 +283,8 @@ public:
 		return true;
 	}
 
-	void copyAsHelper(middle::GameState* gameState, middle::Id id) {
-		auto copyAction = std::make_shared<bubbleActions::CopyAsHelper>(id, gameState->input.mouseXZ_PlanePos);
+	void copyAsHelper(middle::GameState* gameState, middle::Id id, const Vector3& targetPos) {
+		auto copyAction = std::make_shared<bubbleActions::CopyAsHelper>(id, targetPos);
 		middle::queueAction(gameState, copyAction);
 		gameState->bubbleAlgebraState.bubbleActions.push_back(copyAction);
 	}
@@ -485,30 +485,30 @@ public:
 					tryCombine(gameState, refParent, deletionsRefShape, intersectableShape);
 					continue;
 				}
-
-
 			}
 
 
 			if (intersectCount == 0) {
-				copyAsHelper(gameState, ref->idRef);
+				copyAsHelper(gameState, ref->idRef, middle::getGlobalPosition(gameState,shapeForDeletion.id.index));
 			}
 		}
 
 
 		int actionCountPostFrame = gameState->bubbleAlgebraState.bubbleActions.size();
 
-		if (actionCountPostFrame > actionCountPreFrame) {
-			auto configsIt = levelConfigsCache->begin<components::BubbleAlgebraLevelConfigs>();
-			auto configs = *configsIt;
-			middle::queueAction(gameState, std::make_unique<middle::CustomAction>(
-				[configs](middle::GameState* gameState)
-				{
-					--configs->allowedMoves;
-					if (configs->allowedMoves < 0) {
-						configs->allowedMoves = 0;
-					}
-				}));
+		if (levelConfigsCache->getSize() > 0) {
+			if (actionCountPostFrame > actionCountPreFrame) {
+				auto configsIt = levelConfigsCache->begin<components::BubbleAlgebraLevelConfigs>();
+				auto configs = *configsIt;
+				middle::queueAction(gameState, std::make_unique<middle::CustomAction>(
+					[configs](middle::GameState* gameState)
+					{
+						--configs->allowedMoves;
+						if (configs->allowedMoves < 0) {
+							configs->allowedMoves = 0;
+						}
+					}));
+			}
 		}
 	}
 };

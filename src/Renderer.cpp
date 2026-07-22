@@ -251,17 +251,18 @@ namespace RendererSystem {
 			if (item.disableDepthTest != uiText) {
 				continue;
 			}
+
 			if (item.type == middle::RenderItemType::TEXT) {
-				Vector2 pos = GetWorldToScreen(item.center, gameState->activeCamera);
+				Vector2 pos = GetWorldToScreen(item.transform.translation + item.textOffset, gameState->activeCamera);
 				const int spacing = 1;
-				float distFactor = 1.0f / Vector3Distance(gameState->activeCamera.position, item.center);
-				float fontSize = item.fontSize * gameState->fontUnitFactor * distFactor;
-				Vector2 size = MeasureTextEx(gameState->globalFont, item.text.c_str(), fontSize, spacing);
-				float offsetX = -size.x * 0.5f;
-				float offsetY = -size.y * 0.5f;
-				pos += {offsetX, offsetY};
-				DrawTextEx(gameState->globalFont, item.text.c_str(), pos, fontSize, spacing, item.color);
+				// todo idk why aspect ratio? seemed to fix text scaling but don't trust 
+				float distFactor = gameState->aspectRatio / Vector3Distance(gameState->activeCamera.position, item.center);
+				float fontFactor = gameState->fontUnitFactor * distFactor;
+				float scaledFontSize = item.fontSize * item.transform.scale.x * fontFactor;
+
+				DrawTextEx(gameState->globalFont, item.text.c_str(), pos, scaledFontSize, spacing, item.color);
 			}
+
 		}
 	}
 

@@ -16,10 +16,10 @@ public:
 		systemUpdateType = middle::SystemUpdateType::GAMEPLAY_POSTFRAME;
 	}
 	void init(middle::GameState* gameState) {
-		dependencyCache = middle::newCompCache(gameState);
+		dependencyCache = middle::newCompCache(gameState, systemName);
 		dependencyCache->addType<components::DependencyComponent>();
 
-		deleteCache = middle::newCompCache(gameState);
+		deleteCache = middle::newCompCache(gameState, systemName);
 		deleteCache->addType<components::DeleteComponent>();
 	}
 	void update(middle::GameState* gameState) override {

@@ -4,7 +4,6 @@
 #include "LoopSociety.h"
 #include "Sphere.h"
 #include "Reference.h"
-#include "Position.h"
 #include "Constraint.h"
 #include "PhysicsData.h"
 #include "MouseSelectable.h"
@@ -14,8 +13,10 @@
 #include "ComponentRefParent.h"
 #include "PlacementComponent.h"
 #include "Rectangle.h"
-#include "Offset.h"
 #include "Scale.h"
+#include "GlobalTransform.h"
+#include "LocalPosition.h"
+#include <stack>
 
 namespace middle {
 
@@ -117,40 +118,27 @@ namespace middle {
 
 		Vec linearVel = DescVec(linearVelocity);
 		auto pData = getComponent<components::PhysicsData>(shape);
-		auto posData = getComponent<components::Position>(shape);
+		auto posData = getComponent<components::LocalPosition>(shape);
 		if (pData != nullptr) {
 			pData->velX = linearVel.x;
 			pData->velY = linearVel.y;
 			pData->velZ = linearVel.z;
 		}
 		else if (posData) {
-			Vec currPos = { posData->posX, posData->posY, posData->posZ };
+			Vec currPos = DescVec(posData->pos);
 			Vec newPos = AddV(currPos, ScaleV(linearVel, gameState->frameTime));
-			posData->posX = newPos.x;
-			posData->posY = newPos.y;
-			posData->posZ = newPos.z;
+			posData->pos.z = newPos.x;
+			posData->pos.y = newPos.y;
+			posData->pos.z = newPos.z;
 		}
 	}
 
 	void moveShape(GameState* gameState, int index, const Vector3& displacement)
 	{
 		Shape& shape = gameState->shapes[index];
-		std::vector<middle::Id>children;
-		middle::getChildren(gameState, shape.id, children);
-		for (int i = 0; i < children.size(); ++i) {
-			Id memberId = children[i];
-			assert(index != memberId.index);
-			moveShape(gameState, memberId.index, displacement);
-		}
-		if (index == 1219) {
-			int a = 0;
-		}
-
-		auto pos = getComponent<components::Position>(shape);
+		auto pos = middle::getComponent<components::LocalPosition>(shape);
 		if (pos) {
-			pos->posX += displacement.x;
-			pos->posY += displacement.y;
-			pos->posZ += displacement.z;
+			pos->pos += displacement;
 		}
 	}
 
@@ -223,21 +211,17 @@ namespace middle {
 	}
 
 
-	Vector3 getShapePosition(GameState* gameState, int index)
+	Vector3 getGlobalPosition(GameState* gameState, int index)
 	{
 		auto& shape = getShape(gameState, index);
-		auto position = getComponent<components::Position>(shape);
-		if (!position) {
+		middle::Id parentId = middle::getParent(gameState, shape.id);
+		Matrix m = getTransformMatrix(gameState, parentId);
+		auto localPos = getComponent<components::LocalPosition>(shape);
+		if (!localPos) {
 			assert(false);
 		}
-		Vector3 result = { position->posX, position->posY, position->posZ };
-		auto offset = getComponent<components::Offset>(shape);
-		if (offset) {
-			result.x += offset->offsetX;
-			result.y += offset->offsetY;
-			result.z += offset->offsetZ;
-		}
-		return result;
+		Vector3 pos = Vector3Transform(localPos->pos, m);
+		return pos;
 	}
 
 	Shape& getShape(GameState* gameState, int index)
@@ -584,16 +568,30 @@ namespace middle {
 		return newShape.id;
 
 	}
-	Id deepCopyShapeToStorage(GameState* gameState, int shapeToCopyIndex, int parentIndex)
+	Id deepCopyShapeGlobalCoordinates(GameState* gameState, middle::Id id)
 	{
-		return Id();
+		middle::Id parentId = middle::getParent(gameState, id);
+		middle::Id copyId = deepCopyShape(gameState, id.index);
+		if (parentId.index != middle::UNASSIGNED) {
+			updateLocalCoordinateToProjectedGlobalCoordinate(gameState, copyId, parentId);
+		}
+		return copyId;
+	}
+
+	Id shallowCopyShapeGlobalCoordinates(GameState* gameState, middle::Id id) {
+		middle::Id parentId = middle::getParent(gameState, id);
+		middle::Id copyId = copyShape(gameState, id.index);
+		if (parentId.index != middle::UNASSIGNED) {
+			updateLocalCoordinateToProjectedGlobalCoordinate(gameState, copyId, parentId);
+		}
+		return copyId;
 	}
 
 	std::vector<Vector3> getRectVertices(GameState* gameState, const Id& shapeId)
 	{
 		auto& shape = getShape(gameState, shapeId.index);
 		auto rect = getComponent<components::Rectangle>(shape);
-		Vector3 position = getShapePosition(gameState, shapeId.index);
+		Vector3 position = getGlobalPosition(gameState, shapeId.index);
 		Vector3 s = getTotalScale(gameState, shapeId);
 		std::vector<Vector3> vertices;
 		vertices.resize(4);
@@ -749,10 +747,12 @@ namespace middle {
 		return gameState->ids[id.index] == id;
 	}
 
-	components::CompCache* newCompCache(GameState* gameState)
+	components::CompCache* newCompCache(GameState* gameState, const std::string& systemName)
 	{
+		auto newCache = std::make_unique<components::CompCache>();
+		newCache->systemName = systemName;
 		gameState->compCaches.push_back(
-			std::make_unique<components::CompCache>()
+			std::move(newCache)
 		);
 		return gameState->compCaches.back().get();
 	}
@@ -772,12 +772,81 @@ namespace middle {
 		gameState->editorState.actionHistory.push_back(container);
 	}
 
+	Matrix getTransformMatrix(GameState* gameState, middle::Id id) {
+		if (id.index == middle::UNASSIGNED) {
+			return MatrixIdentity();
+		}
 
-	//components::CompCache* newCompCache(GameState* gameState)
-	//{
-	//	gameState->compCaches.push_back(
-	//		std::make_unique<components::CompCache>()
-	//	);
-	//	return gameState->compCaches.back().get();
-	//}
+		std::stack<middle::Id>parentStack;
+		parentStack.push(id);
+		while (true) {
+			middle::Id parentId = middle::getParent(gameState, parentStack.top());
+			if (parentId.index == middle::UNASSIGNED) {
+				break;
+			}
+			parentStack.push(parentId);
+		}
+		Matrix transform = MatrixIdentity();
+		while (parentStack.size() > 0) {
+			middle::Id id = parentStack.top();
+			parentStack.pop();
+			auto& shape = middle::getShape(gameState, id.index);
+			auto localPos = middle::getComponent<components::LocalPosition>(shape);
+			auto localScale = middle::getComponent<components::LocalScale>(shape);
+			Matrix translateM = MatrixTranslate(localPos->pos.x, localPos->pos.y, localPos->pos.z);
+			Matrix scaleM = MatrixScale(localScale->scale.x, localScale->scale.y, localScale->scale.z);
+			Matrix localM = MatrixMultiply(scaleM, translateM);
+			transform = MatrixMultiply(localM, transform);
+		}
+		return transform;
+	}
+
+	Vector3 getGlobalScale(GameState* gameState, middle::Id id) {
+		Vector3 result = { 1,1,1 };
+		if (id.index == middle::UNASSIGNED) {
+			return result;
+		}
+		middle::Id currentId = id;
+		while (true) {
+			auto& parentShape = middle::getShape(gameState, currentId.index);
+			auto localScale = middle::getComponent<components::LocalScale>(parentShape);
+			result *= localScale->scale;
+
+			middle::Id parentId = middle::getParent(gameState, currentId);
+			if (parentId.index == middle::UNASSIGNED) {
+				break;
+			}
+			currentId = parentId;
+		}
+		return result;
+	}
+
+	Vector3 projectGlobalCoordinateToLocalCoordinate(GameState* gameState, const Vector3& globalCoord, middle::Id parentId)
+	{
+		Matrix transformM = getTransformMatrix(gameState, parentId);
+		Matrix inverseM = MatrixInvert(transformM);
+		Vector3 localCoord = Vector3Transform(globalCoord, inverseM);
+		return localCoord;
+	}
+
+	void updateLocalCoordinateToProjectedGlobalCoordinate(GameState* gameState, middle::Id id, middle::Id oldParentId)
+	{
+		auto shape = middle::getShape(gameState, id.index);
+		auto localPos = middle::getComponent<components::LocalPosition>(shape);
+		auto localScale = middle::getComponent<components::LocalScale>(shape);
+		if (localPos && localScale) {
+			Matrix oldTransform = getTransformMatrix(gameState, oldParentId);
+			Vector3 globalPos = Vector3Transform(localPos->pos, oldTransform);
+			middle::Id parentId = middle::getParent(gameState, id);
+			Vector3 projLocalPos = middle::projectGlobalCoordinateToLocalCoordinate(gameState, 
+				globalPos, parentId);
+			localPos->pos = projLocalPos;
+
+			Vector3 oldParentScale = getGlobalScale(gameState, oldParentId);
+			Vector3 newParentScale = getGlobalScale(gameState, parentId);
+			Vector3 ratio = oldParentScale / newParentScale;
+			localScale->scale *= ratio;
+		}
+	}
+
 }

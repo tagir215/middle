@@ -19,6 +19,7 @@ namespace components {
 		std::vector<middle::IComponentVectorContainer*>containerVector;
 		std::vector<std::vector<int>>compOffsetsVector;
 		std::vector<middle::Id>relevantIdVector;
+		std::string systemName;
 		int componentTypeCount = -1;
 		bool needsUpdate = true;
 

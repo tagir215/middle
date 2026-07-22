@@ -30,14 +30,14 @@ public:
 	components::CompCache* inputCache;
 
 	void init(middle::GameState* gameState) {
-		buttonCache = middle::newCompCache(gameState);
+		buttonCache = middle::newCompCache(gameState, systemName);
 		buttonCache->addType<components::Button>();
 		buttonCache->addType<components::MouseClickComponent>();
 		buttonCache->addType<components::TimerComponent>(components::NOTINTERESTED);
-		procedureCache = middle::newCompCache(gameState);
+		procedureCache = middle::newCompCache(gameState, systemName);
 		procedureCache->addType<components::ProcedureContainer>();
 		procedureCache->addType<components::TimerComponent>(components::NOTINTERESTED);
-		inputCache = middle::newCompCache(gameState);
+		inputCache = middle::newCompCache(gameState, systemName);
 		inputCache->addType<components::InputVariable>();
 		inputCache->addType<components::MouseIntersectable>();
 	}
@@ -200,10 +200,9 @@ public:
 			assert(input.unitRef.index != middle::UNASSIGNED);
 			middle::Id topBubbleId = bubble::topLevelBubble(gameState);
 			middle::Id copyId = middle::deepCopyShape(gameState, funcShape.id.index, topBubbleId.index);
-			auto replacement = std::make_shared<bubbleActions::CreateMulitiplicationReplacementShape>(topBubbleId, copyId);
-			middle::queueAction(gameState, replacement);
-			container->procedureTransitionStack.back().action = replacement;
-
+		//	auto replacement = std::make_shared<bubbleActions::CreateMulitiplicationReplacementShape>(topBubbleId, copyId);
+		//	middle::queueAction(gameState, replacement);
+		//	container->procedureTransitionStack.back().action = replacement;
 		}
 
 		else if (function->type == functionTypes::POP) {

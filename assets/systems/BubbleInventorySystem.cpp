@@ -41,32 +41,32 @@ public:
 	components::CompCache* insertableCache;
 
 	void init(middle::GameState* gameState) {
-		inventoryCache = middle::newCompCache(gameState);
+		inventoryCache = middle::newCompCache(gameState, systemName);
 		inventoryCache->addType<components::Inventory>();
 		inventoryCache->addType<components::LoopSociety>();
-		inventoryItemCache = middle::newCompCache(gameState);
+		inventoryItemCache = middle::newCompCache(gameState, systemName);
 		inventoryItemCache->addType<components::InventoryItem>();
-		grabbableCache = middle::newCompCache(gameState);
+		grabbableCache = middle::newCompCache(gameState, systemName);
 		grabbableCache->addType<components::InventoryItem>();
 		grabbableCache->addType<components::MouseGrabbable>();
-		uiComponentlessBubbleInventoryItemCache = middle::newCompCache(gameState);
+		uiComponentlessBubbleInventoryItemCache = middle::newCompCache(gameState, systemName);
 		uiComponentlessBubbleInventoryItemCache->addType<components::InventoryItem>();
 		uiComponentlessBubbleInventoryItemCache->addType<components::BubbleComponent>();
 		uiComponentlessBubbleInventoryItemCache->addType<components::UiComponent>(components::NOTINTERESTED);
-		snapReflessBubbleInventoryItemCache = middle::newCompCache(gameState);
+		snapReflessBubbleInventoryItemCache = middle::newCompCache(gameState, systemName);
 		snapReflessBubbleInventoryItemCache->addType<components::InventoryItem>();
 		snapReflessBubbleInventoryItemCache->addType<components::BubbleComponent>();
 		snapReflessBubbleInventoryItemCache->addType<components::SnapRef>(components::NOTINTERESTED);
 		snapReflessBubbleInventoryItemCache->addType<components::PlacementComponent>(components::NOTINTERESTED);
-		uiButtonsCache = middle::newCompCache(gameState);
+		uiButtonsCache = middle::newCompCache(gameState, systemName);
 		uiButtonsCache->addType<components::Button>();
 		uiButtonsCache->addType<components::UiComponent>();
 		uiButtonsCache->addType<components::MouseClickComponent>();
-		activeCheckBoxesCache = middle::newCompCache(gameState);
+		activeCheckBoxesCache = middle::newCompCache(gameState, systemName);
 		activeCheckBoxesCache->addType<components::ActiveCheckBoxTag>();
-		inventorySlotCache = middle::newCompCache(gameState);
+		inventorySlotCache = middle::newCompCache(gameState, systemName);
 		inventorySlotCache->addType<components::InventorySlot>();
-		insertableCache = middle::newCompCache(gameState);
+		insertableCache = middle::newCompCache(gameState, systemName);
 		insertableCache->addType<components::InsertableBubble>();
 	}
 
@@ -138,7 +138,8 @@ public:
 		}
 
 		static int selectedInsertType = 0;
-		static int selectedCopyType = 0;
+		static bool copyNegated = false;
+		static bool copyInverted = false;
 		auto insertTypeUi = [gameState]() {
 			ImGui::Begin("Insert Method");
 			ImGui::RadioButton("Add outer", &selectedInsertType, 0);
@@ -149,17 +150,16 @@ public:
 			ImGui::End();
 
 			ImGui::Begin("Copy Method");
-			ImGui::RadioButton("Copy", &selectedCopyType, 0);
-			ImGui::RadioButton("Copy Negated", &selectedCopyType, 1);
-			ImGui::RadioButton("Copy Inverted", &selectedCopyType, 2);
+			ImGui::Checkbox("Copy Negated", &copyNegated);
+			ImGui::Checkbox("Copy Inverted", &copyInverted);
 			ImGui::End();
-
 			};
+
 		gameState->uiSetups.push_back(insertTypeUi);
 
 		gameState->bubbleAlgebraState.currentInsertType = static_cast<middle::BubbleInsertType>(selectedInsertType);
-		gameState->bubbleAlgebraState.currentCopyType = static_cast<middle::BubbleCopyType>(selectedCopyType);
-
+		gameState->bubbleAlgebraState.copyNegated = copyNegated;
+		gameState->bubbleAlgebraState.copyInverted = copyInverted;
 
 		if (gameState->bubbleAlgebraState.grabbedId.index != middle::UNASSIGNED) {
 			auto grabbableIt = grabbableCache->begin<components::MouseGrabbable>();
@@ -171,7 +171,7 @@ public:
 
 				// item moving
 				if (grabbable->grabbing) {
-					moveShape(gameState, shape.id.index, gameState->input.mouseXZ_PlanePos - middle::getShapePosition(gameState, shape.id.index));
+					moveShape(gameState, shape.id.index, gameState->input.mouseXZ_PlanePos - middle::getGlobalPosition(gameState, shape.id.index));
 				}
 
 				if (grabbable->grabbing && !gameState->input.mouseHeld) {
@@ -182,6 +182,7 @@ public:
 
 			}
 		}
+
 	}
 
 

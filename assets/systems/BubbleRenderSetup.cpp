@@ -5,7 +5,6 @@
 #include "middle_component_table.h"
 #include "BubbleComponent.h"
 #include "BubbleMultiplyComponent.h"
-#include "Position.h"
 #include "Sphere.h"
 #include "BubbleUnit.h"
 #include "FractionalComponent.h"
@@ -28,11 +27,17 @@
 #include "BubbleAlgebraProblem.h"
 #include "HelperBubbleEquation.h"
 #include "EditThisTag.h"
-#include  "InputVariable.h"
+#include "InputVariable.h"
 #include "ProcedureInputVariable.h"
 #include "ProcedureContainer.h"
 #include "CodeBlock.h"
 #include "IdRef.h"
+#include "UnIntersectableWindowComponent.h"
+#include "ActiveSceneEditableTag.h"
+#include "GlobalTransform.h"
+#include "component_utils.h"
+#include "LocalPosition.h"
+#include "LocalScale.h"
 
 
 class BubbleRenderSetup : public middle::MiddleGameplaySystem {
@@ -46,100 +51,96 @@ public:
 	components::CompCache* bubbleCache;
 	components::CompCache* mulCache;
 	components::CompCache* fractionCache;
-	components::CompCache* unitCache;
 	components::CompCache* variableCache;
 	components::CompCache* cuboidCache;
 	components::CompCache* equalsCache;
-	components::CompCache* exponentCache;
 	components::CompCache* textureCache;
-	components::CompCache* activeCheckBoxCache;
 	components::CompCache* editThisCache;
 	components::CompCache* inputCache;
 	components::CompCache* procContainerCache;
+	components::CompCache* unitCache;
+	components::CompCache* activeBubbleCache;
+	components::CompCache* oPosCache;
 
 	void init(middle::GameState* gameState) {
-		bubbleCache = middle::newCompCache(gameState);
+		bubbleCache = middle::newCompCache(gameState, systemName);
 		bubbleCache->addType<components::BubbleComponent>();
 		bubbleCache->addType<components::Circle>();
 		bubbleCache->addType<components::Layer>();
 		bubbleCache->addType<components::LoopSociety>();
+		bubbleCache->addType<components::GlobalTransform>();
 		bubbleCache->addType<components::RuntimeHiddenTag>(components::NOTINTERESTED);
-		mulCache = middle::newCompCache(gameState);
+		unitCache = middle::newCompCache(gameState, systemName);
+		unitCache->addType<components::BubbleUnit>();
+		unitCache->addType<components::Layer>();
+		unitCache->addType<components::GlobalTransform>();
+		mulCache = middle::newCompCache(gameState, systemName);
 		mulCache->addType<components::BubbleMultiplyComponent>();
 		mulCache->addType<components::LoopSociety>();
-		fractionCache = middle::newCompCache(gameState);
+		mulCache->addType<components::GlobalTransform>();
+		fractionCache = middle::newCompCache(gameState, systemName);
 		fractionCache->addType<components::FractionalComponent>();
 		fractionCache->addType<components::LoopSociety>();
-		unitCache = middle::newCompCache(gameState);
-		unitCache->addType<components::BubbleUnit>();
-		unitCache->addType<components::Circle>();
-		unitCache->addType<components::Position>();
-		unitCache->addType<components::Layer>();
-		unitCache->addType<components::MouseIntersectable>();
-		unitCache->addType<components::RuntimeHiddenTag>(components::NOTINTERESTED);
-		variableCache = middle::newCompCache(gameState);
+		fractionCache->addType<components::GlobalTransform>();
+		variableCache = middle::newCompCache(gameState, systemName);
 		variableCache->addType<components::BubbleComponent>();
 		variableCache->addType<components::Layer>();
 		variableCache->addType<components::BubbleVariable>();
 		variableCache->addType<components::Circle>();
-		variableCache->addType<components::Circle>();
+		variableCache->addType<components::GlobalTransform>();
 		variableCache->addType<components::RuntimeHiddenTag>(components::NOTINTERESTED);
-		cuboidCache = middle::newCompCache(gameState);
+		cuboidCache = middle::newCompCache(gameState, systemName);
 		cuboidCache->addType<components::Cuboid>();
-		cuboidCache->addType<components::Position>();
+		cuboidCache->addType<components::GlobalTransform>();
 		cuboidCache->addType<components::TextureComponent>(components::NOTINTERESTED);
 		cuboidCache->addType<components::RuntimeHiddenTag>(components::NOTINTERESTED);
-		equalsCache = middle::newCompCache(gameState);
+		equalsCache = middle::newCompCache(gameState, systemName);
 		equalsCache->addType<components::BubbleEqualsComponent>();
 		equalsCache->addType<components::LoopSociety>();
-		exponentCache = middle::newCompCache(gameState);
-		exponentCache->addType<components::ExponentComponent>();
-		exponentCache->addType<components::Circle>();
-		exponentCache->addType<components::Position>();
-		exponentCache->addType<components::Layer>();
-		exponentCache->addType<components::RuntimeHiddenTag>(components::NOTINTERESTED);
-		textureCache = middle::newCompCache(gameState);
+		equalsCache->addType<components::GlobalTransform>();
+		textureCache = middle::newCompCache(gameState, systemName);
 		textureCache->addType<components::TextureComponent>();
-		textureCache->addType<components::Position>();
+		textureCache->addType<components::GlobalTransform>();
 		textureCache->addType<components::RuntimeHiddenTag>(components::NOTINTERESTED);
-		activeCheckBoxCache = middle::newCompCache(gameState);
-		activeCheckBoxCache->addType<components::ActiveCheckBoxTag>();
-		activeCheckBoxCache->addType<components::Position>();
-		activeCheckBoxCache->addType<components::Layer>();
-		editThisCache = middle::newCompCache(gameState);
+		editThisCache = middle::newCompCache(gameState, systemName);
 		editThisCache->addType<components::EditThisTag>();
 		editThisCache->addType<components::TextureComponent>();
-		inputCache = middle::newCompCache(gameState);
+		inputCache = middle::newCompCache(gameState, systemName);
 		inputCache->addType<components::InputVariable>();
 		inputCache->addType<components::MouseIntersectable>();
 		inputCache->addType<components::ProcedureInputVariable>(components::NOTINTERESTED);
-		procContainerCache = middle::newCompCache(gameState);
+		procContainerCache = middle::newCompCache(gameState, systemName);
 		procContainerCache->addType<components::ProcedureContainer>();
+		activeBubbleCache = middle::newCompCache(gameState, systemName);
+		activeBubbleCache->addType<components::ActiveSceneSelectableTag>();
+		activeBubbleCache->addType<components::GlobalTransform>();
+
+		oPosCache = middle::newCompCache(gameState, systemName);
+		oPosCache->addType<components::Position>(components::NOTINTERESTED);
 	}
 	bool debugRendering = false;
 
 
-	void calculateExponentVisualFactors(float radius, int power, float positionRatioToPower, float& intersectOffsetX, float& intersectOffsetZ, float& bz, float& rb) {
-		const float powerRatioToBubble = 0.333f;
-		const float arrowGap = 6;
-
-		float ra = radius;
-		rb = radius * powerRatioToBubble + arrowGap * power;
-		bz = ra + rb * positionRatioToPower;
-		intersectOffsetZ = (ra * ra - rb * rb + bz * bz) / (bz + bz);
-		float smallZ = intersectOffsetZ - bz;
-		intersectOffsetX = std::sqrt(rb * rb - smallZ * smallZ);
+	void replaceMan(middle::GameState* gameState) {
+		auto ps = oPosCache->begin<components::Position>();
+		for (middle::Id& id : oPosCache->relevantIdVector) {
+			middle::queueComponentDeletion<components::Position>(gameState, id);
+		}
 	}
+
+	void setTransform(middle::RenderItem& item, components::GlobalTransform* transform) {
+		item.transform.translation = transform->pos;
+		item.transform.scale = transform->scale;
+		item.transform.rotation = transform->rotation;
+	}
+
 
 	Color getBubbleColor(middle::GameState* gameState, middle::Id id, components::BubbleComponent* bubble) {
 		Color color;
 		int depth = bubble::findBubbleDepth(gameState, id);
 		bool isEven = depth % 2 == 0;
 
-		if (bubble->inverse) {
-			color = isEven ? bubbleColors::BUBBLE_BACKGROUND_INVERSE_EVEN : bubbleColors::BUBBLE_BACKGROUND_INVERSE_UNEVEN;
-		}
-		else {
+		{
 			color = isEven ? bubbleColors::BUBBLE_BACKGROUND_EVEN : bubbleColors::BUBBLE_BACKGROUND_UNEVEN;
 		}
 		return color;
@@ -148,7 +149,6 @@ public:
 	void update(middle::GameState* gameState) override {
 
 		gameState->editorState.backgroundColor = bubbleColors::BACKGROUND;
-
 
 		// render bubbbles
 		components::TextureComponent* editThisComp = nullptr;
@@ -159,12 +159,16 @@ public:
 		auto bubbleIt = bubbleCache->begin<components::BubbleComponent>();
 		auto bubbleCircleIt = bubbleCache->begin<components::Circle>();
 		auto bubbleLayerIt = bubbleCache->begin<components::Layer>();
+		auto bubbleTransform = bubbleCache->begin<components::GlobalTransform>();
 		for (int i = 0; i < bubbleCache->getSize(); ++i) {
 			auto bubble = *bubbleIt;
 			auto circle = *bubbleCircleIt;
 			auto layer = *bubbleLayerIt;
+			auto transform = *bubbleTransform;
+
 			auto& shape = middle::getShape(gameState, bubbleCache->relevantIdVector[i].index);
 			bool isUiItem = middle::getComponent<components::UiComponent>(shape);
+			bool isHighlighted = middle::getComponent<components::UnIntersectableWindowComponent>(shape);
 
 			// todo maybe replace with tag
 			bool parentIsEditableEquals = false;
@@ -174,7 +178,7 @@ public:
 				bool equals = middle::getComponent<components::BubbleEqualsComponent>(parentShape) != nullptr;
 				auto problem = middle::getComponent<components::BubbleAlgebraProblem>(parentShape);
 				auto helper = middle::getComponent<components::HelperBubbleEquation>(parentShape);
-				parentIsEditableEquals = equals && (problem && problem->editable) || helper;
+				parentIsEditableEquals = equals && ((problem && problem->editable) || helper);
 			}
 
 			// check if should add editable indicator
@@ -189,6 +193,9 @@ public:
 			float radius = intersecting ? circle->radius * 1.05f : circle->radius;
 
 			Color backgroundColor = getBubbleColor(gameState, shape.id, bubble);
+			if (isHighlighted) {
+				backgroundColor = bubbleColors::HIGHLIGHT_COLOR;
+			}
 			//Color backgroundColor = bubble->inverse ? bubbleColors::BUBBLE_BACKGROUND_INVERSE : bubbleColors::BUBBLE_BACKGROUND;
 			middle::RenderItem circleItem;
 			circleItem.type = middle::RenderItemType::CIRCLE;
@@ -196,24 +203,10 @@ public:
 			circleItem.layer = layer->layer;
 			circleItem.backgroundColor = backgroundColor;
 			circleItem.radius = radius;
-			Vector3 pos = middle::getShapePosition(gameState, shape.id.index);
-			circleItem.center = pos;
+			circleItem.center = { 0,0,0 };
 			circleItem.disableDepthTest = isUiItem;
+			setTransform(circleItem, transform);
 			gameState->renderData.push_back(circleItem);
-
-			if (bubble->inverse) {
-				float offsetX, offsetZ, bz, rb;
-				calculateExponentVisualFactors(circle->radius, 1, -0.33f, offsetX, offsetZ, bz, rb);
-				middle::RenderItem inverseIndicator;
-				inverseIndicator.type = middle::RenderItemType::CIRCLE;
-				inverseIndicator.color = bubbleColors::POSITIVE_UNIT;
-				inverseIndicator.backgroundColor = bubbleColors::POSITIVE_UNIT;
-				inverseIndicator.layer = layer->layer + 2;
-				inverseIndicator.radius = bubble::unitRadius;
-				inverseIndicator.center = Vector3{ pos.x + offsetX, pos.y, pos.z + offsetZ };
-				inverseIndicator.disableDepthTest = isUiItem;
-				gameState->renderData.push_back(inverseIndicator);
-			}
 
 			if (addEditableTag && editThisComp) {
 				middle::RenderItem editThisSign;
@@ -222,6 +215,7 @@ public:
 				const float editThisZOffset = 20;
 				editThisSign.textureScale = editThisComp->scale;
 				editThisSign.disableDepthTest = isUiItem;
+				Vector3 pos = circleItem.transform.translation;
 				editThisSign.transform.translation = { pos.x, pos.y, pos.z + circle->radius + editThisZOffset };
 				editThisSign.texture = &editThisComp->texture;
 				editThisSign.layer = -1;
@@ -230,49 +224,24 @@ public:
 			}
 		}
 
-
-		// render units
+		// renderunits
 		auto unitIt = unitCache->begin<components::BubbleUnit>();
-		auto unitCircleIt = unitCache->begin<components::Circle>();
-		auto unitPosIt = unitCache->begin<components::Position>();
 		auto unitLayerIt = unitCache->begin<components::Layer>();
-		auto unitIntersectableIt = unitCache->begin<components::MouseIntersectable>();
+		auto unitTransformIt = unitCache->begin<components::GlobalTransform>();
 		for (int i = 0; i < unitCache->getSize(); ++i) {
 			auto unit = *unitIt;
-			auto circle = *unitCircleIt;
-			auto pos = *unitPosIt;
 			auto layer = *unitLayerIt;
-			auto intersectable = *unitIntersectableIt;
-			auto& shape = middle::getShape(gameState, unitCache->relevantIdVector[i].index);
-			bool isUiItem = middle::getComponent<components::UiComponent>(shape);
-
-			circle->radius = bubble::unitRadius;
-			float radius = circle->radius;
-			if (intersectable->intersectingTop) {
-				radius *= 1.5f;
-			}
-
-			middle::RenderItem particle;
-			particle.center = { pos->posX, pos->posY, pos->posZ };
-			particle.length = 0.1f;
-			particle.ringRadius = radius;
-			particle.radius = radius;
-			particle.layer = layer->layer;
-			particle.disableDepthTest = isUiItem;
-			particle.type = middle::RenderItemType::CIRCLE;
-			if (unit->value == 1) {
-				particle.color = bubbleColors::POSITIVE_UNIT;
-				particle.backgroundColor = bubbleColors::POSITIVE_UNIT;
-			}
-			if (unit->value == 0) {
-				particle.color = bubbleColors::BUBBLE_OUTLINE;
-			}
-			if (unit->value == -1) {
-				particle.color = bubbleColors::NEGATIVE_UNIT;
-				particle.backgroundColor = bubbleColors::NEGATIVE_UNIT;
-			}
-
-			gameState->renderData.push_back(particle);
+			auto transform = *unitTransformIt;
+			middle::RenderItem unitItem;
+			unitItem.type = middle::RenderItemType::TEXT;
+			unitItem.text = std::to_string(unit->value);
+			middle::Id id = unitCache->relevantIdVector[i];
+			setTransform(unitItem, transform);
+			unitItem.center = { 0,0,0 };
+			unitItem.layer = layer->layer;
+			unitItem.fontSize = 25;
+			unitItem.color = unit->value < 0 ? bubbleColors::NEGATIVE_UNIT : bubbleColors::POSITIVE_UNIT;
+			gameState->renderData.push_back(unitItem);
 		}
 
 		// render variables
@@ -280,11 +249,13 @@ public:
 		auto variableBubbleIt = variableCache->begin<components::BubbleComponent>();
 		auto variableCircleIt = variableCache->begin<components::Circle>();
 		auto layerIt = variableCache->begin<components::Layer>();
+		auto varTransformIt = variableCache->begin<components::GlobalTransform>();
 		for (int i = 0; i < variableCache->getSize(); ++i) {
 			auto variable = *variableIt;
 			auto bubble = *variableBubbleIt;
 			auto layer = *layerIt;
 			auto circle = *variableCircleIt;
+			auto transform = *varTransformIt;
 			auto& shape = middle::getShape(gameState, variableCache->relevantIdVector[i].index);
 			bool isUiItem = middle::getComponent<components::UiComponent>(shape);
 
@@ -293,7 +264,6 @@ public:
 				circle->radius = bubble::variableRadius;
 			}
 
-			auto pos = middle::getComponent<components::Position>(shape);
 			auto intersectable = middle::getComponent<components::MouseIntersectable>(shape);
 
 			float radius = circle->radius;
@@ -303,18 +273,17 @@ public:
 				radius *= 1.2f;
 			}
 
-			Color color;
-			color = bubbleColors::POSITIVE_UNIT;
-			if (variable->isNegative) {
-				color = bubbleColors::NEGATIVE_UNIT;
-			}
-			Color backgroundColor = getBubbleColor(gameState, shape.id, bubble);
 
 			middle::RenderItem variableText;
 			variableText.type = middle::RenderItemType::TEXT;
-			variableText.center = { pos->posX, pos->posY, pos->posZ };
-			variableText.color = color;
+			setTransform(variableText, transform);
+			variableText.color = bubbleColors::POSITIVE_UNIT;
 			variableText.text = variable->label;
+			if (variable->isNegative) {
+				variableText.color = bubbleColors::NEGATIVE_UNIT;
+				variableText.text = "-" + variable->label;
+			}
+			Color backgroundColor = getBubbleColor(gameState, shape.id, bubble);
 			variableText.fontSize = fontSize;
 			variableText.disableDepthTest = isUiItem;
 			gameState->renderData.push_back(variableText);
@@ -330,22 +299,24 @@ public:
 			for (int x = 1; x < children.size(); ++x) {
 				auto& shapeA = middle::getShape(gameState, children[x - 1].index);
 				auto& shapeB = middle::getShape(gameState, children[x].index);
-				auto positionA = middle::getComponent<components::Position>(shapeA);
-				auto positionB = middle::getComponent<components::Position>(shapeB);
+				auto transformA = middle::getComponent<components::GlobalTransform>(shapeA);
+				auto transformB = middle::getComponent<components::GlobalTransform>(shapeB);
 				auto circleA = middle::getComponent<components::Circle>(shapeA);
 				auto circleB = middle::getComponent<components::Circle>(shapeB);
 				auto layer = middle::getComponent<components::Layer>(shapeA);
 				bool isUiItem = middle::getComponent<components::UiComponent>(shapeA);
+				float radiusA = circleA->radius * transformA->scale.x;
+				float radiusB = circleB->radius * transformB->scale.x;
 
 				if (!circleA || !circleB)
 					continue;
-				Vector3 posA = { positionA->posX, positionA->posY, positionA->posZ };
-				Vector3 posB = { positionB->posX, positionB->posY, positionB->posZ };
+				Vector3 posA = transformA->pos;
+				Vector3 posB = transformB->pos;
 				Vector3 axis = Vector3Normalize(Vector3Subtract(posB, posA));
 				middle::RenderItem line;
 				line.type = middle::RenderItemType::LINE;
-				line.linePointA = posA + Vector3Scale(axis, circleA->radius);
-				line.linePointB = posB + Vector3Scale(axis, -circleB->radius);
+				line.linePointA = posA + Vector3Scale(axis, radiusA);
+				line.linePointB = posB + Vector3Scale(axis, -radiusB);
 				if (multiplyComponent->operationType == (int)components::OperationType::MULTIPLICATION) {
 					line.color = bubbleColors::MULTIPLICATION_CONNECTION;
 				}
@@ -354,7 +325,8 @@ public:
 					middle::RenderItem expCircle;
 					expCircle.type = middle::RenderItemType::CIRCLE;
 					expCircle.color = ORANGE;
-					expCircle.center = Vector3{ positionB->posX, positionB->posY, positionB->posZ };
+					setTransform(expCircle, transformB);
+					expCircle.center = { 0,0,0 };
 					expCircle.radius = circleB->radius + 1.5f;
 					expCircle.layer = layer->layer;
 					gameState->renderData.push_back(expCircle);
@@ -368,10 +340,10 @@ public:
 
 
 		auto cuboidIt = cuboidCache->begin<components::Cuboid>();
-		auto cuboidPosIt = cuboidCache->begin<components::Position>();
+		auto cuboidTransformIt = cuboidCache->begin<components::GlobalTransform>();
 		for (int i = 0; i < cuboidCache->getSize(); ++i) {
 			auto cuboid = *cuboidIt;
-			auto pos = *cuboidPosIt;
+			auto transform = *cuboidTransformIt;
 			middle::RenderItem cuboidItem;
 			cuboidItem.type = middle::RenderItemType::CUBOID;
 			cuboidItem.width = cuboid->width;
@@ -380,7 +352,7 @@ public:
 			cuboidItem.color = bubbleColors::BACKGROUND;
 			// TODO
 			cuboidItem.color.a = 30;
-			cuboidItem.center = { pos->posX, pos->posY, pos->posZ };
+			cuboidItem.center = transform->pos;
 			gameState->renderData.push_back(cuboidItem);
 		}
 
@@ -393,8 +365,8 @@ public:
 			middle::Id& idB = children[1];
 			middle::Shape& shapeA = middle::getShape(gameState, idA.index);
 			middle::Shape& shapeB = middle::getShape(gameState, idB.index);
-			Vector3 posA = middle::getShapePosition(gameState, idA.index);
-			Vector3 posB = middle::getShapePosition(gameState, idB.index);
+			Vector3 posA = middle::getGlobalPosition(gameState, idA.index);
+			Vector3 posB = middle::getGlobalPosition(gameState, idB.index);
 			auto circleA = middle::getComponent<components::Circle>(shapeA);
 			auto circleB = middle::getComponent<components::Circle>(shapeB);
 			Vector3 axis = Vector3Normalize(Vector3Subtract(posB, posA));
@@ -411,112 +383,13 @@ public:
 		}
 
 
-		auto exponentIt = exponentCache->begin<components::ExponentComponent>();
-		auto exponentCircleIt = exponentCache->begin<components::Circle>();
-		auto exponentPositionIt = exponentCache->begin<components::Position>();
-		auto exponentLayerIt = exponentCache->begin<components::Layer>();
-		for (int i = 0; i < exponentCache->getSize(); ++i) {
-			auto root = *exponentIt;
-			auto bubbleCircle = *exponentCircleIt;
-			auto position = *exponentPositionIt;
-			auto layer = *exponentLayerIt;
-			Vector3 bubblePos = { position->posX, position->posY, position->posZ };
-
-			auto& shape = middle::getShape(gameState, exponentCache->relevantIdVector[i].index);
-			bool isUiItem = middle::getComponent<components::UiComponent>(shape);
-
-			float positionRatioToPower = 0.333f;
-
-
-			for (int power = 0; power < 2; ++power) {
-
-				float intersectOffsetX, intersectOffsetZ, bz, rb;
-				calculateExponentVisualFactors(bubbleCircle->radius, power, positionRatioToPower, intersectOffsetX, intersectOffsetZ, bz, rb);
-
-				Vector3 powerPos = bubblePos + Vector3{ 0,0,bz };
-				Vector3 intersectOffset = Vector3{ intersectOffsetX,0, intersectOffsetZ };
-				Vector3 intersectPos = bubblePos + intersectOffset;
-
-				Vector3 refAngle = { 1,0,0 };
-
-				Vector3 toStartPoint = Vector3Subtract(intersectPos, powerPos);
-				Vector3 endPoint = intersectPos + Vector3{ -intersectOffsetX * 2, 0, 0 };
-				Vector3 toEndPoint = Vector3Subtract(endPoint, powerPos);
-
-				if (power == 0) {
-					middle::RenderItem unitIndicator;
-					unitIndicator.type = middle::RenderItemType::CIRCLE;
-					Vector3 pos = endPoint;
-					unitIndicator.center = pos;
-					unitIndicator.backgroundColor = RED;
-					unitIndicator.color = RED;
-					unitIndicator.radius = bubble::unitRadius * 1.5f;
-					unitIndicator.layer = layer->layer + 2;
-					gameState->renderData.push_back(unitIndicator);
-				}
-
-				float startingAngle = Vector3Angle(refAngle, toStartPoint);
-				if (toStartPoint.z < refAngle.z) {
-					startingAngle *= -1;
-				}
-
-				float endAngle = startingAngle + PI;
-
-				Vector3 endPointVecNonComplete = Vector3RotateByAxisAngle(refAngle, { 0,-1,0 }, endAngle);
-				float remainingAngle = Vector3Angle(endPointVecNonComplete, toEndPoint);
-				endAngle += remainingAngle;
-
-
-				middle::RenderItem powerCircle;
-				powerCircle.type = middle::RenderItemType::CIRCLE_SECTOR;
-				powerCircle.center = powerPos;
-				powerCircle.radius = rb;
-				powerCircle.startAngle = startingAngle;
-				powerCircle.endAngle = endAngle;
-				powerCircle.color = RED;
-				powerCircle.ringRadius = 0.2f;
-				powerCircle.segments = 20;
-				powerCircle.layer = layer->layer + 1;
-				powerCircle.disableDepthTest = isUiItem;
-				gameState->renderData.push_back(powerCircle);
-
-				const float helperAngleOffset = PI * 0.1f;
-
-				Vector3 conePos;
-				Vector3 toNextSegment;
-				Vector3 coneDir;
-
-				conePos = powerPos + toEndPoint;
-				toNextSegment = Vector3RotateByAxisAngle(toEndPoint, { 0,-1,0 }, -helperAngleOffset);
-				coneDir = Vector3Normalize(Vector3Subtract(conePos, powerPos + toNextSegment));
-
-				middle::RenderItem cone;
-				cone.type = middle::RenderItemType::CYLINDER;
-				const float arrowLengthProportionToRadius = 0.41f;
-				const float arrowWidthProportionToLength = 0.75f;
-				float arrowLength = arrowLengthProportionToRadius * rb;
-				float arrowRadius = arrowLength * arrowWidthProportionToLength;
-				const Vector3 coneScale = { 1,1,0.001f };
-				cone.radius = arrowRadius;
-				cone.ringRadius = 0;
-				cone.length = arrowLength;
-				cone.transform.rotation = QuaternionFromVector3ToVector3({ 0,-1,0 }, coneDir);
-				cone.transform.translation = conePos;
-				cone.transform.scale = coneScale;
-				cone.center = { 0,0,0 };
-				cone.color = RED;
-				cone.layer = layer->layer + 1;
-				cone.disableDepthTest = isUiItem;
-				gameState->renderData.push_back(cone);
-			}
-		}
 
 
 		auto textureIt = textureCache->begin<components::TextureComponent>();
-		auto texturePosIt = textureCache->begin<components::Position>();
+		auto textureTransformIt = textureCache->begin<components::GlobalTransform>();
 		for (int i = 0; i < textureCache->getSize(); ++i) {
 			auto texture = *textureIt;
-			auto pos = *texturePosIt;
+			auto transform = *textureTransformIt;
 			auto& shape = middle::getShape(gameState, textureCache->relevantIdVector[i].index);
 			bool isUiItem = middle::getComponent<components::UiComponent>(shape);
 			auto layer = middle::getComponent<components::Layer>(shape);
@@ -525,7 +398,7 @@ public:
 				middle::RenderItem textureItem;
 				textureItem.type = middle::RenderItemType::BILLBOARD;
 				textureItem.texture = &texture->texture;
-				textureItem.transform.translation = { pos->posX, pos->posY, pos->posZ };
+				textureItem.transform.translation = transform->pos;
 				textureItem.color = WHITE;
 				textureItem.textureScale = texture->scale;
 				textureItem.disableDepthTest = isUiItem;
@@ -539,7 +412,7 @@ public:
 				middle::RenderItem textureItem;
 				textureItem.type = middle::RenderItemType::BACKGROUND;
 				textureItem.texture = &texture->texture;
-				textureItem.transform.translation = { pos->posX, pos->posY, pos->posZ };
+				textureItem.transform.translation = transform->pos;
 				textureItem.color = WHITE;
 				textureItem.textureScale = texture->scale;
 				textureItem.disableDepthTest = false;
@@ -552,23 +425,26 @@ public:
 			}
 		}
 
+		// cross hair or something
+		middle::RenderItem cameraTarget;
+		cameraTarget.type = middle::RenderItemType::CIRCLE;
+		cameraTarget.radius = 1;
+		cameraTarget.center = gameState->activeCamera.position + Vector3{ 0,100,0 };
+		cameraTarget.color = WHITE;
+		cameraTarget.disableDepthTest = true;
+		gameState->renderData.push_back(cameraTarget);
 
-		auto checkBoxPositionIt = activeCheckBoxCache->begin<components::Position>();
-		auto checkBoxLayerIt = activeCheckBoxCache->begin<components::Layer>();
-		for (int i = 0; i < activeCheckBoxCache->getSize(); ++i) {
-			auto pos = *checkBoxPositionIt;
-			auto layer = *checkBoxLayerIt;
-
-			middle::RenderItem powerCircle;
-			powerCircle.type = middle::RenderItemType::CYLINDER;
-			powerCircle.center = { pos->posX, pos->posY, pos->posZ };
-			powerCircle.radius = 3;
-			powerCircle.ringRadius = 3;
-			powerCircle.length = 0.001f;
-			powerCircle.color = RED;
-			powerCircle.layer = layer->layer + 1;
-			powerCircle.disableDepthTest = true;
-			gameState->renderData.push_back(powerCircle);
+		// render activity bounding box
+		for (middle::Id& id : activeBubbleCache->relevantIdVector) {
+			float left, right, top, bottom;
+			bubble::bubbleRectBoundingBox(gameState, id, &left, &right, &bottom, &top);
+			middle::RenderItem boundingRect;
+			boundingRect.type = middle::RenderItemType::RECTANGLE;
+			boundingRect.width = right - left;
+			boundingRect.height = top - bottom;
+			boundingRect.center = { (left + right) * 0.5f, 0, (bottom + top) * 0.5f };
+			boundingRect.color = WHITE;
+			gameState->renderData.push_back(boundingRect);
 		}
 
 
@@ -581,7 +457,7 @@ public:
 			for (int i = 0; i < inputCache->getSize(); ++i) {
 				auto input = *inputIt;
 				auto intersectable = *intersectabeInputIt;
-				
+
 				// render hover effect
 				if (intersectable->intersectingTop) {
 					middle::RenderItem hovering;
@@ -589,7 +465,7 @@ public:
 					hovering.color = bubbleColors::INPUT_HOVER_COLOR;
 					const float hoveringInputIndicatorRadius = 3;
 					hovering.radius = hoveringInputIndicatorRadius;
-					hovering.center = middle::getShapePosition(gameState, inputCache->relevantIdVector[i].index);
+					hovering.center = middle::getGlobalPosition(gameState, inputCache->relevantIdVector[i].index);
 					hovering.disableDepthTest = true;
 					hovering.layer = 3;
 					gameState->renderData.push_back(hovering);
@@ -604,8 +480,8 @@ public:
 				if (input->unitRef.index != middle::UNASSIGNED
 					&& input->unitRef.generation == gameState->ids[input->unitRef.index].generation
 					&& middle::isValidId(gameState, input->unitRef)) {
-					p1 = middle::getShapePosition(gameState, inputCache->relevantIdVector[i].index);
-					p2 = middle::getShapePosition(gameState, input->unitRef.index);
+					p1 = middle::getGlobalPosition(gameState, inputCache->relevantIdVector[i].index);
+					p2 = middle::getGlobalPosition(gameState, input->unitRef.index);
 					renderLine = true;
 				}
 
@@ -619,7 +495,7 @@ public:
 					auto& ogShape = middle::getShape(gameState, idRef->idRef.index);
 					if (ogShape.id == inputCache->relevantIdVector[i]) {
 						renderLine = true;
-						p1 = middle::getShapePosition(gameState, ogShape.id.index);
+						p1 = middle::getGlobalPosition(gameState, ogShape.id.index);
 						p2 = gameState->input.mouseXZ_PlanePos;
 					}
 				}

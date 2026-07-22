@@ -38,24 +38,24 @@ public:
 	components::CompCache* blockCache;
 
 	void init(middle::GameState* gameState) {
-		placementCache = middle::newCompCache(gameState);
+		placementCache = middle::newCompCache(gameState, systemName);
 		placementCache->addType < components::PlacementComponent>();
-		grabbableCache = middle::newCompCache(gameState);
+		grabbableCache = middle::newCompCache(gameState, systemName);
 		grabbableCache->addType < components::MouseGrabbable>();
-		scopeCache = middle::newCompCache(gameState);
+		scopeCache = middle::newCompCache(gameState, systemName);
 		scopeCache->addType <components::ScopeComponent>();
 		scopeCache->addType<components::MouseIntersectable>();
 		scopeCache->addType<components::LoopSociety>();
-		procScopeCache = middle::newCompCache(gameState);
+		procScopeCache = middle::newCompCache(gameState, systemName);
 		procScopeCache->addType<components::LoopSociety>();
 		procScopeCache->addType<components::ProcedureComponent>();
-		procedureCache = middle::newCompCache(gameState);
+		procedureCache = middle::newCompCache(gameState, systemName);
 		procedureCache->addType<components::ProcedureContainer>();
-		codeBlockCache = middle::newCompCache(gameState);
+		codeBlockCache = middle::newCompCache(gameState, systemName);
 		codeBlockCache->addType<components::CodeBlock>();
-		inventoryCache = middle::newCompCache(gameState);
+		inventoryCache = middle::newCompCache(gameState, systemName);
 		inventoryCache->addType<components::Inventory>();
-		blockCache = middle::newCompCache(gameState);
+		blockCache = middle::newCompCache(gameState, systemName);
 		blockCache->addType<components::CodeBlock>();
 		blockCache->addType<components::MouseIntersectable>();
 	}
@@ -67,7 +67,7 @@ public:
 			auto placement = *placementIt;
 			if (placement->grabbing) {
 				auto& shape = middle::getShape(gameState, placementCache->relevantIdVector[i].index);
-				Vector3 currentPos = middle::getShapePosition(gameState, shape.id.index);
+				Vector3 currentPos = middle::getGlobalPosition(gameState, shape.id.index);
 				Vector3 targetPos = gameState->input.mouseXZ_PlanePos;
 				middle::moveShape(gameState, shape.id.index, targetPos - currentPos);
 			}
@@ -78,7 +78,7 @@ public:
 			auto grabbable = *grabbableIt;
 			if (grabbable->grabbing) {
 				auto& shape = middle::getShape(gameState, grabbableCache->relevantIdVector[i].index);
-				Vector3 currentPos = middle::getShapePosition(gameState, shape.id.index);
+				Vector3 currentPos = middle::getGlobalPosition(gameState, shape.id.index);
 				Vector3 targetPos = gameState->input.mouseXZ_PlanePos;
 				middle::moveShape(gameState, shape.id.index, targetPos - currentPos);
 			}

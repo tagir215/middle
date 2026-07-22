@@ -17,13 +17,24 @@ public:
 
 	}
 
+	int getSystemNameIndex(middle::GameState* gameState, const std::string& name) {
+		for (int i = 0; i < gameState->systemNames.size(); ++i) {
+			if (name == gameState->systemNames[i]) {
+				return i;
+			}
+		}
+		assert(false);
+	}
+
 	void updateCache(middle::GameState* gameState, components::CompCache* cache) {
 		cache->relevantIdVector.clear();
 		cache->compOffsetsVector.clear();
 		cache->compOffsetsVector.resize(cache->componentTypeCount);
 
+		int systemNameIndex = getSystemNameIndex(gameState, cache->systemName);
+
 		// fill relevant ids and store comp offset for each component for each entity
-		middle::loopInstances(gameState, [gameState, cache](int i, middle::Shape& shape) {
+		middle::loopInstances(gameState, [gameState, cache, systemNameIndex](int i, middle::Shape& shape) {
 			// skip if not all components found, or if not interseted skip if found
 			for (int compTypeIndex = 0; compTypeIndex < cache->componentTypeCount; ++compTypeIndex) {
 				components::CacheCompType cacheCompType = cache->typeIdVector[compTypeIndex];
@@ -48,6 +59,7 @@ public:
 				}
 			}
 
+			shape.affectingSystems.insert(systemNameIndex);
 			cache->relevantIdVector.push_back(shape.id);
 			return true;
 			});

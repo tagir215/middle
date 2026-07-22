@@ -3,69 +3,59 @@
 #include "middle_system_registrar.h"
 #include "middle_shape_utils.h"
 #include "PhysicsData.h"
-#include "BubbleUnit.h"
 #include "BubbleComponent.h"
-#include "Position.h"
 #include "component_utils.h"
 #include "Circle.h"
 #include "LoopSociety.h"
 #include "BubbleMultiplyComponent.h"
-#include "FractionalComponent.h"
 #include "Rectangle.h"
 #include "TopDogBubbleTag.h"
 #include "BubbleEqualsComponent.h"
 #include "DeleteComponent.h" 
 #include "IdRef.h"
+#include "GlobalTransform.h"
+#include "LocalPosition.h"
+#include "GlobalRadius.h"
 
 class BubblePhysics : public middle::MiddleGameplaySystem {
 public:
 
 	BubblePhysics() {
 		systemModeType = middle::SystemModeType::ENGINE;
+		systemUpdateType = middle::SystemUpdateType::GAMEPLAY_POSTFRAME;
 	}
 
-	components::CompCache* unitCache;
 	components::CompCache* bubbleCache;
 	components::CompCache* mulCache;
-	components::CompCache* fractionCache;
 	components::CompCache* rectCache;
 	components::CompCache* topDogBubbleCache;
 	components::CompCache* equalsCache;
 
 	void init(middle::GameState* gameState) override {
-		unitCache = middle::newCompCache(gameState);
-		unitCache->addType<components::Position>();
-		unitCache->addType<components::PhysicsData>();
-		unitCache->addType<components::BubbleUnit>();
 
-		bubbleCache = middle::newCompCache(gameState);
+		bubbleCache = middle::newCompCache(gameState, systemName);
 		bubbleCache->addType<components::BubbleComponent>();
-		bubbleCache->addType<components::Position>();
+		bubbleCache->addType<components::GlobalTransform>();
+		bubbleCache->addType<components::GlobalRadius>();
+		bubbleCache->addType<components::LocalPosition>();
 		bubbleCache->addType<components::PhysicsData>();
 		bubbleCache->addType<components::Circle>();
 		bubbleCache->addType<components::LoopSociety>();
 		bubbleCache->addType<components::IdRef>(components::NOTINTERESTED);
 
-		mulCache = middle::newCompCache(gameState);
+		mulCache = middle::newCompCache(gameState, systemName);
 		mulCache->addType<components::BubbleMultiplyComponent>();
 		mulCache->addType<components::LoopSociety>();
 
-		fractionCache = middle::newCompCache(gameState);
-		fractionCache->addType<components::FractionalComponent>();
-		fractionCache->addType<components::LoopSociety>();
-
-		equalsCache = middle::newCompCache(gameState);
+		equalsCache = middle::newCompCache(gameState, systemName);
 		equalsCache->addType<components::BubbleEqualsComponent>();
 		equalsCache->addType<components::LoopSociety>();
 
-		rectCache = middle::newCompCache(gameState);
-		rectCache->addType<components::Rectangle>();
-		rectCache->addType<components::Position>();
-		rectCache->addType<components::PhysicsData>();
-
-		topDogBubbleCache = middle::newCompCache(gameState);
+		topDogBubbleCache = middle::newCompCache(gameState, systemName);
 		topDogBubbleCache->addType<components::TopDogBubbleTag>();
-		topDogBubbleCache->addType<components::Position>();
+		topDogBubbleCache->addType<components::GlobalTransform>();
+		topDogBubbleCache->addType<components::GlobalRadius>();
+		topDogBubbleCache->addType<components::LocalPosition>();
 		topDogBubbleCache->addType<components::PhysicsData>();
 		topDogBubbleCache->addType<components::Circle>();
 		topDogBubbleCache->addType<components::LoopSociety>();
@@ -75,7 +65,7 @@ public:
 
 	struct Body {
 		middle::Id id;
-		components::Position* pos;
+		components::GlobalTransform* transform;
 		components::PhysicsData* physicsData;
 		float radius;
 		float width;
@@ -85,6 +75,7 @@ public:
 	struct BodyPair {
 		Body bodyA;
 		Body bodyB;
+		Matrix m;
 	};
 
 	struct Bubble {
@@ -104,18 +95,41 @@ public:
 		std::vector<float>targetDistances;
 	};
 
+	struct CircleCircleCollisionResult {
+		float penetration;
+		Vector3 normal;
+		bool collided = false;
+	};
+
+	CircleCircleCollisionResult circlesCollisionTest(const Vector3& posA, float rA, const Vector3& posB, float rB) {
+		CircleCircleCollisionResult result;
+		float distSqr = Vector3DistanceSqr(posA, posB);
+		float radiusesSqr = (rA + rB) * (rA + rB);
+		if (distSqr < radiusesSqr) {
+			result.collided = true;
+			result.normal = Vector3Normalize(posB - posA);
+			float dist = std::sqrt(distSqr);
+			float radiuses = std::sqrt(radiusesSqr);
+			result.penetration = radiuses - dist;
+
+		}
+		return result;
+	}
+
 	void findSiblingCollisions(std::vector<std::vector<BodyPair>>& pairVectors, std::vector<Collision>& results) {
 		for (std::vector<BodyPair>& pairVector : pairVectors) {
 			for (BodyPair& pair : pairVector) {
-				Vector3 posA = { pair.bodyA.pos->posX, pair.bodyA.pos->posY, pair.bodyA.pos->posZ };
-				Vector3 posB = { pair.bodyB.pos->posX, pair.bodyB.pos->posY, pair.bodyB.pos->posZ };
-				float dist = Vector3Distance(posA, posB);
-				if (dist < pair.bodyA.radius + pair.bodyB.radius) {
+				Vector3 posA = pair.bodyA.transform->pos;
+				Vector3 posB = pair.bodyB.transform->pos;
+				float rA = pair.bodyA.radius;
+				float rB = pair.bodyB.radius;
+				auto circleResult = circlesCollisionTest(posA, rA, posB, rB);
+				if (circleResult.collided) {
 					Collision collision;
-					collision.axis = Vector3Normalize(Vector3Subtract(posB, posA));
+					collision.axis = circleResult.normal;
 					collision.bodyA = pair.bodyA;
 					collision.bodyB = pair.bodyB;
-					collision.penetration = pair.bodyA.radius + pair.bodyB.radius - dist;
+					collision.penetration = circleResult.penetration;
 					results.push_back(collision);
 				}
 			}
@@ -125,50 +139,32 @@ public:
 	void findCollisionsWithOutline(std::vector<Bubble>& bubbles, std::vector<Collision>& results) {
 		for (Bubble& bubble : bubbles) {
 			Body& bubbleBody = bubble.bubbleBody;
-			Vector3 bubblePos = { bubbleBody.pos->posX, bubbleBody.pos->posY, bubbleBody.pos->posZ };
+			float bubbleGlobalR = bubbleBody.radius;
+
+			Vector3 bubblePos = bubbleBody.transform->pos;
 			for (Body& body : bubble.bodies) {
-				Vector3 bodyPos = { body.pos->posX, body.pos->posY, body.pos->posZ };
+				Vector3 bodyPos = body.transform->pos;
 				float dist = Vector3Distance(bubblePos, bodyPos);
-				if (dist > bubbleBody.radius - body.radius) {
+				float bodyGlobalR = body.radius;
+				if (dist > bubbleGlobalR - bodyGlobalR) {
 					Collision collision;
 					collision.axis = Vector3Normalize(Vector3Subtract(bubblePos, bodyPos));
 					collision.bodyA = bubbleBody;
 					collision.bodyB = body;
-					collision.penetration = dist - bubbleBody.radius + body.radius;
+					collision.penetration = dist - bubbleGlobalR + bodyGlobalR;
 					results.push_back(collision);
 				}
 			}
 		}
 	}
 
-	void findCollisionsWithGreatCenterLine(std::vector<Body>& topDogs, Body& greatCenterLine, std::vector<Collision>& results) {
-		// great line assumed to be vertical
-		Vector3 axis = { 1,0,0 };
-		Vector3 greatCenterLinePos = { greatCenterLine.pos->posX, greatCenterLine.pos->posY, greatCenterLine.pos->posZ };
-		greatCenterLine.physicsData->infiniteMass = true;
-		greatCenterLine.physicsData->invMass = 0;
-		for (Body& body : topDogs) {
-			Vector3 bodyPos = { body.pos->posX, body.pos->posY, body.pos->posZ };
-			float dir = Vector3DotProduct(Vector3Subtract(bodyPos, greatCenterLinePos), axis);
-			float dist = std::abs(dir);
-			float outlineRadius = greatCenterLine.width * 0.5f + body.radius;
-			if (dist < outlineRadius) {
-				Collision collision;
-				collision.axis = Vector3Normalize(Vector3Scale(axis, dir));
-				collision.bodyA = greatCenterLine;
-				collision.bodyB = body;
-				collision.penetration = outlineRadius - dist;
-				results.push_back(collision);
-			}
-		}
-	}
 
 	void solveVelocity(Collision& collision, float frameTime, float inverseTime) {
 		Body& bodyA = collision.bodyA;
 		Body& bodyB = collision.bodyB;
 		Vector3 axis = collision.axis;
-		Vector3 posA = { bodyA.pos->posX, bodyA.pos->posY, bodyA.pos->posZ };
-		Vector3 posB = { bodyB.pos->posX, bodyB.pos->posY, bodyB.pos->posZ };
+		Vector3 posA = bodyA.transform->pos;
+		Vector3 posB = bodyB.transform->pos;
 		Vector3 velA = { bodyA.physicsData->velX, bodyA.physicsData->velY, bodyA.physicsData->velZ };
 		Vector3 velB = { bodyB.physicsData->velX, bodyB.physicsData->velY, bodyB.physicsData->velZ };
 
@@ -192,8 +188,8 @@ public:
 		for (int i = 1; i < constraint.bodies.size(); ++i) {
 			Body& bodyA = constraint.bodies[i - 1];
 			Body& bodyB = constraint.bodies[i];
-			Vector3 posA = { bodyA.pos->posX, bodyA.pos->posY, bodyA.pos->posZ };
-			Vector3 posB = { bodyB.pos->posX, bodyB.pos->posY, bodyB.pos->posZ };
+			Vector3 posA = bodyA.transform->pos;
+			Vector3 posB = bodyB.transform->pos;
 			Vector3 velA = { bodyA.physicsData->velX, bodyA.physicsData->velY, bodyA.physicsData->velZ };
 			Vector3 velB = { bodyB.physicsData->velX, bodyB.physicsData->velY, bodyB.physicsData->velZ };
 			Vector3 axis = Vector3Normalize(Vector3Subtract(posB, posA));
@@ -220,14 +216,14 @@ public:
 	void integrate(float frameTime, components::CompCache* cache) {
 		// integrating
 		const float damping = 0.2f;
-		auto posIt = cache->begin<components::Position>();
+		auto posIt = cache->begin<components::LocalPosition>();
 		auto physicsIt = cache->begin<components::PhysicsData>();
 		for (int i = 0; i < cache->getSize(); ++i) {
 			auto pos = *posIt;
 			auto physics = *physicsIt;
-			pos->posX += physics->velX * frameTime;
-			pos->posY += physics->velY * frameTime;
-			pos->posZ += physics->velZ * frameTime;
+			pos->pos.x += physics->velX * frameTime;
+			pos->pos.y += physics->velY * frameTime;
+			pos->pos.z += physics->velZ * frameTime;
 			physics->velX -= physics->velX * damping;
 			physics->velY -= physics->velY * damping;
 			physics->velZ -= physics->velZ * damping;
@@ -236,38 +232,44 @@ public:
 	}
 
 	void collectMoleculeConstraints(middle::GameState* gameState, components::CompCache* cache, std::vector<MoleculeConstraint>& constraints, float targetSeparation) {
-		for (int i = 0; i < cache->getSize(); ++i) {
+		for (middle::Id id : cache->relevantIdVector) {
+			auto shape = middle::getShape(gameState, id.index);
+			auto operationTransform = middle::getComponent<components::GlobalTransform>(shape);
+			float separation = targetSeparation * operationTransform->scale.x;
+
 			std::vector<middle::Id>children;
-			middle::getChildren(gameState, cache->relevantIdVector[i], children);
+			middle::getChildren(gameState, id, children);
 
 			MoleculeConstraint moleculeConstraint;
-			Body prevBody;
+			float prevRadius = 0;
+
 			for (int j = 0; j < children.size(); ++j) {
 				auto& childShape = middle::getShape(gameState, children[j].index);
-				auto position = middle::getComponent<components::Position>(childShape);
+				auto transform = middle::getComponent<components::GlobalTransform>(childShape);
 				auto physics = middle::getComponent<components::PhysicsData>(childShape);
-				auto childCircle = middle::getComponent<components::Circle>(childShape);
-				auto mul = middle::getComponent<components::BubbleMultiplyComponent>(childShape);
-				auto fraction = middle::getComponent<components::FractionalComponent>(childShape);
+				auto globalR = middle::getComponent<components::GlobalRadius>(childShape);
+				auto localPos = middle::getComponent<components::LocalPosition>(childShape);
 				assert(physics);
+				float childRadius = 1;
 
 				Body body;
 				body.id = childShape.id;
 				body.physicsData = physics;
-				body.pos = position;
-				body.radius = 1;
-				if (childCircle) {
-					body.radius = childCircle->radius;
+				body.transform = transform;
+				if (globalR) {
+					childRadius = globalR->radius;
 				}
 				moleculeConstraint.bodies.push_back(body);
 
-				if (j > 0 && childCircle) {
-					moleculeConstraint.targetDistances.push_back(prevBody.radius + targetSeparation + childCircle->radius);
+				if (j > 0 && globalR) {
+					moleculeConstraint.targetDistances.push_back(prevRadius + separation + childRadius);
 				}
-				if(j > 0 && !childCircle) {
-					moleculeConstraint.targetDistances.push_back(targetSeparation);
+				if(j > 0 && !globalR) {
+					moleculeConstraint.targetDistances.push_back(separation);
 				}
-				prevBody = body;
+				if (globalR) {
+					prevRadius = globalR->radius;
+				}
 			}
 			constraints.push_back(moleculeConstraint);
 		}
@@ -280,50 +282,26 @@ public:
 
 
 	void update(middle::GameState* gameState) override {
-
-
-		if (debugField) {
-			for (int i = 0; i < unitCache->getSize(); ++i) {
-				auto& shape = middle::getShape(gameState, unitCache->relevantIdVector[i].index);
-				if (!middle::getComponent<components::BubbleUnit>(shape)) {
-					continue;
-				}
-				auto circle = middle::attachComponent<components::Circle>(gameState, shape.id);
-				circle->radius = fieldMargin;
-			}
-			debugField = false;
-		}
-
-		if (inverses) {
-			auto inverseIt = unitCache->begin<components::PhysicsData>();
-			for (int i = 0; i < unitCache->getSize(); ++i) {
-				auto physics = *inverseIt;
-				physics->invMass = 1.0f / physics->mass;
-			}
-		}
-
-
 		// Collect bubbles
 
 		std::vector<Bubble>bubbles;
 		auto bubbleIt = bubbleCache->begin<components::BubbleComponent>();
-		auto bubblePosIt = bubbleCache->begin<components::Position>();
-		auto circleIt = bubbleCache->begin<components::Circle>();
+		auto bubbleTransformIt = bubbleCache->begin<components::GlobalTransform>();
+		auto globalRIt = bubbleCache->begin<components::GlobalRadius>();
 		auto physicsIt = bubbleCache->begin<components::PhysicsData>();
-		for (int i = 0; i < bubbleCache->getSize(); ++i) {
+		for (middle::Id id : bubbleCache->relevantIdVector) {
 			auto bubble = *bubbleIt;
-			auto bubblePos = *bubblePosIt;
-			auto circle = *circleIt;
+			auto bubbleTransform = *bubbleTransformIt;
 			auto bubblePhysics = *physicsIt;
-			auto& bubbleShape = middle::getShape(gameState, bubbleCache->relevantIdVector[i].index);
+			auto globalR = *globalRIt;
+			auto& bubbleShape = middle::getShape(gameState, id.index);
 
 			std::vector<middle::Id> interactingChildren;
 			std::vector<middle::Id> children;
-			middle::getChildren(gameState, bubbleCache->relevantIdVector[i], children);
+			middle::getChildren(gameState, id, children);
 			for (middle::Id& id : children) {
 				auto& childShape = middle::getShape(gameState, id.index);
-				if (middle::getComponent<components::BubbleMultiplyComponent>(childShape) 
-					|| middle::getComponent<components::FractionalComponent>(childShape)) {
+				if (middle::getComponent<components::BubbleMultiplyComponent>(childShape)) {
 					std::vector<middle::Id>mulChildren;
 					middle::getChildrenWithComp(gameState, id, mulChildren, middle::getTypeId<components::PhysicsData>());
 					interactingChildren.insert(interactingChildren.end(), mulChildren.begin(), mulChildren.end());
@@ -336,73 +314,51 @@ public:
 			std::vector<Body>bodies;
 			for (middle::Id& childId : interactingChildren) {
 				auto& childShape = middle::getShape(gameState, childId.index);
-				auto position = middle::getComponent<components::Position>(childShape);
+				auto transform = middle::getComponent<components::GlobalTransform>(childShape);
 				auto physics = middle::getComponent<components::PhysicsData>(childShape);
-				auto childCircle = middle::getComponent<components::Circle>(childShape);
-				auto childUnit = middle::getComponent<components::BubbleUnit>(childShape);
+				auto childGlobalR = middle::getComponent<components::GlobalRadius>(childShape);
 				assert(physics);
-				// units use a field radius instead
-				float radius = childCircle ? childCircle->radius + fieldMargin : fieldMargin;
 				Body body;
 				body.id = childId;
-				body.pos = position;
+				body.transform = transform;
 				body.physicsData = physics;
-				body.radius = radius;
+				body.radius = childGlobalR->radius;
 				bodies.push_back(body);
 			}
 
 			Body body;
 			body.id = bubbleShape.id;
-			body.pos = bubblePos;
+			body.transform = bubbleTransform;
 			body.physicsData = bubblePhysics;
-			body.radius = circle->radius;
+			body.radius = globalR->radius;
 			bubbles.push_back({
 				body,
 				bodies,
 				});
 		}
 
-		// Collect great rectangles
-		//auto rectIt = rectCache->begin<components::Rectangle>();
-		//auto rectPosIt = rectCache->begin<components::Position>();
-		//auto rectPhysicsIt = rectCache->begin<components::PhysicsData>();
-		//std::vector<Body>greatCenterLines;
-		//for (int i = 0; i < rectCache->getSize(); ++i) {
-		//	auto rect = *rectIt;
-		//	auto rectPos = *rectPosIt;
-		//	auto rectPhysics = *rectPhysicsIt;
-		//	Body body;
-		//	body.id = rectCache->relevantIdVector[i];
-		//	body.pos = rectPos;
-		//	body.physicsData = rectPhysics;
-		//	body.width = rect->width;
-		//	body.height = rect->height;
-		//	greatCenterLines.push_back(body);
-		//}
-
 		// Collect top bubbles
 		auto topBubbleIt = topDogBubbleCache->begin<components::TopDogBubbleTag>();
-		auto topBubblePosIt = topDogBubbleCache->begin<components::Position>();
+		auto topBubbleTransformIt = topDogBubbleCache->begin<components::GlobalTransform>();
 		auto topBubblePhysicsIt = topDogBubbleCache->begin<components::PhysicsData>();
-		auto topBubbleCircleIt = topDogBubbleCache->begin<components::Circle>();
+		auto topBubbleCircleIt = topDogBubbleCache->begin<components::GlobalRadius>();
 		std::vector<Body>topDogBubbles;
-		for (int i = 0; i < topDogBubbleCache->getSize(); ++i) {
+		for (middle::Id id : topDogBubbleCache->relevantIdVector) {
 			auto topBubble = *topBubbleIt;
-			auto topBubblePos = *topBubblePosIt;
+			auto topBubbleTransform = *topBubbleTransformIt;
 			auto topBubblePhysics = *topBubblePhysicsIt;
-			auto circle = *topBubbleCircleIt;
+			auto globalR = *topBubbleCircleIt;
 			Body body;
-			body.id = topDogBubbleCache->relevantIdVector[i];
-			body.pos = topBubblePos;
+			body.id = id;
+			body.transform = topBubbleTransform;
 			body.physicsData = topBubblePhysics;
-			body.radius = circle->radius + fieldMargin;
+			body.radius = globalR->radius;
 			topDogBubbles.push_back(body);
 		}
 
 		// COLLECT MOLECULE CONSTRAINTS
 		std::vector<MoleculeConstraint>moleculeConstraints;
 		collectMoleculeConstraints(gameState, mulCache, moleculeConstraints, 10);
-		collectMoleculeConstraints(gameState, fractionCache, moleculeConstraints, 10);
 		collectMoleculeConstraints(gameState, equalsCache, moleculeConstraints, 30);
 
 		// CREATE COLLISION PAIRS
@@ -450,7 +406,6 @@ public:
 		}
 
 		integrate(gameState->frameTime, bubbleCache);
-		integrate(gameState->frameTime, unitCache);
 
 	}
 };

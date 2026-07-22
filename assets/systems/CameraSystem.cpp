@@ -2,7 +2,7 @@
 #include "game_state.h"
 #include "middle_system_registrar.h"
 #include "CameraComponent.h"
-#include "Position.h"
+#include "GlobalTransform.h"
 #include "middle_shape_utils.h"
 
 class CameraSystem : public middle::MiddleGameplaySystem {
@@ -15,7 +15,7 @@ public:
 	components::CompCache* cameraCache;
 
 	void init(middle::GameState* gameState) {
-		cameraCache = middle::newCompCache(gameState);
+		cameraCache = middle::newCompCache(gameState, systemName);
 		cameraCache->addType<components::CameraComponent>();
 	}
 
@@ -56,11 +56,11 @@ public:
 				auto& shape = middle::getShape(gameState, cameraCache->relevantIdVector[i].index);
 
 				if (cameraComponent->active) {
-					auto position = middle::getComponent<components::Position>(shape);
+					auto position = middle::getComponent<components::GlobalTransform>(shape);
 					assert(position);
 					Camera camera;
 					camera.fovy = cameraComponent->fovy;
-					camera.position = { position->posX, position->posY, position->posZ };
+					camera.position = position->pos;
 					camera.projection = cameraComponent->projection;
 					camera.target = { cameraComponent->targetX, cameraComponent->targetY, cameraComponent->targetZ };
 					camera.up = { cameraComponent->upX, cameraComponent->upY, cameraComponent->upZ };

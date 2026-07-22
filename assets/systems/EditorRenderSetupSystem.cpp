@@ -3,7 +3,7 @@
 #include "middle_system_registrar.h"
 #include "middle_shape_utils.h"
 #include "Sphere.h"
-#include "Position.h"
+#include "GlobalTransform.h"
 #include "Constraint.h"
 #include "PhysicsData.h"
 #include "Color.h"
@@ -23,6 +23,8 @@
 #include "ConfigComponent.h"
 #include "EditorConfigs.h"
 #include "middle_math.h"
+#include "Position.h"
+#include "component_utils.h"
 
 class EditorRenderSetupSystem : public middle::MiddleGameplaySystem {
 public:
@@ -33,7 +35,6 @@ public:
 
 	components::CompCache* gridCache;
 	components::CompCache* configCache;
-	components::CompCache* textCache;
 	components::CompCache* importRefCache;
 	components::CompCache* nodeCache;
 	components::CompCache* constraintCache;
@@ -43,60 +44,69 @@ public:
 	components::CompCache* selectableSphereCache;
 	components::CompCache* selectableLineCache;
 	components::CompCache* positionCache;
+	components::CompCache* oPosCache;
 
 
 	void init(middle::GameState* gameState) {
-		gridCache = middle::newCompCache(gameState);
+		gridCache = middle::newCompCache(gameState, systemName);
 		gridCache->addType<components::EditorConfigs>();
 		gridCache->addType<components::HiddenTag>(components::NOTINTERESTED);
-		configCache = middle::newCompCache(gameState);
+		configCache = middle::newCompCache(gameState, systemName);
 		configCache->addType<components::ConfigComponent>();
-		configCache->addType<components::Position>();
+		configCache->addType<components::GlobalTransform>();
 		configCache->addType<components::HiddenTag>(components::NOTINTERESTED);
-		textCache = middle::newCompCache(gameState);
-		textCache->addType<components::Text>();
-		textCache->addType<components::Position>();
-		textCache->addType<components::HiddenTag>(components::NOTINTERESTED);
-		importRefCache = middle::newCompCache(gameState);
+		importRefCache = middle::newCompCache(gameState, systemName);
 		importRefCache->addType<components::Reference>();
-		importRefCache->addType<components::Position>();
+		importRefCache->addType<components::GlobalTransform>();
 		importRefCache->addType<components::HiddenTag>(components::NOTINTERESTED);
-		nodeCache = middle::newCompCache(gameState);
+		nodeCache = middle::newCompCache(gameState, systemName);
 		nodeCache->addType<components::Sphere>();
-		nodeCache->addType<components::Position>();
+		nodeCache->addType<components::GlobalTransform>();
 		nodeCache->addType<components::HiddenTag>(components::NOTINTERESTED);
-		constraintCache = middle::newCompCache(gameState);
+		constraintCache = middle::newCompCache(gameState, systemName);
 		constraintCache->addType<components::Constraint>();
 		constraintCache->addType<components::HiddenTag>(components::NOTINTERESTED);
-		loopTagCache = middle::newCompCache(gameState);
+		loopTagCache = middle::newCompCache(gameState, systemName);
 		loopTagCache->addType<components::LoopSociety>();
 		loopTagCache->addType<components::LoopTag>();
-		loopTagCache->addType<components::Position>();
+		loopTagCache->addType<components::GlobalTransform>();
 		loopTagCache->addType<components::HiddenTag>(components::NOTINTERESTED);
 		loopTagCache->addType<components::Reference>(components::NOTINTERESTED);
-		hierarchyCache = middle::newCompCache(gameState);
+		hierarchyCache = middle::newCompCache(gameState, systemName);
 		hierarchyCache->addType<components::LoopSociety>();
 		hierarchyCache->addType<components::MouseIntersectable>();
-		systemRefCache = middle::newCompCache(gameState);
+		systemRefCache = middle::newCompCache(gameState, systemName);
 		systemRefCache->addType<components::LoopSociety>();
 		systemRefCache->addType<components::SystemReference>();
-		systemRefCache->addType<components::Position>();
+		systemRefCache->addType<components::GlobalTransform>();
 		systemRefCache->addType<components::HiddenTag>(components::NOTINTERESTED);
-		selectableSphereCache = middle::newCompCache(gameState);
+		selectableSphereCache = middle::newCompCache(gameState, systemName);
 		selectableSphereCache->addType<components::MouseSelectable>();
 		selectableSphereCache->addType<components::Sphere>();
-		selectableSphereCache->addType<components::Position>();
+		selectableSphereCache->addType<components::GlobalTransform>();
 		selectableSphereCache->addType<components::HiddenTag>(components::NOTINTERESTED);
-		selectableLineCache = middle::newCompCache(gameState);
+		selectableLineCache = middle::newCompCache(gameState, systemName);
 		selectableLineCache->addType<components::MouseSelectable>();
 		selectableLineCache->addType<components::Constraint>();
 		selectableLineCache->addType<components::HiddenTag>(components::NOTINTERESTED);
-		positionCache = middle::newCompCache(gameState);
-		positionCache->addType<components::Position>();
+		positionCache = middle::newCompCache(gameState, systemName);
+		positionCache->addType<components::GlobalTransform>();
+
+		oPosCache = middle::newCompCache(gameState, systemName);
+		oPosCache->addType<components::Position>();
 	}
+
+	void replaceMan(middle::GameState* gameState) {
+		auto ps = oPosCache->begin<components::Position>();
+		for (middle::Id& id : oPosCache->relevantIdVector) {
+			middle::queueComponentDeletion<components::Position>(gameState, id);
+		}
+	}
+
 	void update(middle::GameState* gameState) override {
 
-		Color textColor = WHITE;
+		replaceMan(gameState);
+
 		Color systemColor = GREEN;
 		Color selectionBoxColor = { WHITE.r, WHITE.g, WHITE.b, 40 };
 		Color hoveredColor = middle::HOVERED_THING_COLOR;
@@ -116,13 +126,13 @@ public:
 		}
 		gameState->editorState.backgroundColor = backgroundColor;
 
-		auto posIt = positionCache->begin<components::Position>();
+		auto transformIt = positionCache->begin<components::GlobalTransform>();
 		for (int i = 0; i < positionCache->getSize(); ++i) {
-			auto pos = *posIt;
+			auto transform = *transformIt;
 			middle::RenderItem sphereItem;
 			sphereItem.type = middle::RenderItemType::SPHERE;
 			sphereItem.radius = 2;
-			sphereItem.center = { pos->posX, pos->posY, pos->posZ };
+			sphereItem.center = transform->pos;
 			sphereItem.color = { 150,150,150,255 };
 			sphereItem.disableDepthTest = true;
 			gameState->renderData.push_back(sphereItem);
@@ -171,7 +181,7 @@ public:
 
 			middle::RenderItem configSphere;
 			configSphere.type = middle::RenderItemType::SPHERE;
-			configSphere.center = middle::getShapePosition(gameState, shape.id.index);
+			configSphere.center = middle::getGlobalPosition(gameState, shape.id.index);
 			configSphere.radius = middle::DEF_RADIUS_SYSTEM;
 			configSphere.color = configColor;
 			auto intersectable = middle::getComponent<components::MouseIntersectable>(shape);
@@ -181,33 +191,6 @@ public:
 			gameState->renderData.push_back(configSphere);
 		}
 
-		auto textIt = textCache->begin<components::Text>();
-		auto textPositionIt = textCache->begin<components::Position>();
-		for (int i = 0; i < textCache->getSize(); ++i) {
-			auto text = *textIt;
-			auto position = *textPositionIt;
-			middle::RenderItem textItem;
-			Vector3 offset = { text->offsetX, text->offsetY, text->offsetZ };
-			textItem.type = middle::RenderItemType::TEXT;
-			textItem.center = Vector3Add({ position->posX, position->posY, position->posZ }, offset);
-			textItem.text = text->text;
-			textItem.fontSize = text->fontSize;
-			textItem.color = textColor;
-			gameState->renderData.push_back(textItem);
-		}
-
-		//componentREf?
-		//auto 
-				//assert(position);
-				//middle::RenderItem compRefItem;
-				//compRefItem.type = middle::RenderItemType::SPHERE;
-				//compRefItem.radius = middle::DEF_RADIUS_REFERENCE_INDICATOR;
-				//compRefItem.color = BLUE;
-				//compRefItem.center = { position->posX, position->posY, position->posZ };
-				//if (intersectable->intersecting) {
-				//	compRefItem.color = hoveredColor;
-				//}
-				//gameState->renderData.push_back(compRefItem);
 
 		auto nodeIt = nodeCache->begin<components::Sphere>();
 		for (int i = 0; i < nodeCache->getSize(); ++i) {
@@ -216,7 +199,7 @@ public:
 			middle::RenderItem sphereItem;
 			sphereItem.type = middle::RenderItemType::SPHERE;
 			sphereItem.radius = sphere->radius;
-			sphereItem.center = middle::getShapePosition(gameState, shape.id.index);
+			sphereItem.center = middle::getGlobalPosition(gameState, shape.id.index);
 			sphereItem.color = jointColor;
 			auto intersectable = middle::getComponent<components::MouseIntersectable>(shape);
 			if (intersectable && intersectable->intersecting) {
@@ -232,8 +215,8 @@ public:
 			auto& shape = middle::getShape(gameState, constraintCache->relevantIdVector[i].index);
 			middle::RenderItem lineItem;
 			lineItem.type = middle::RenderItemType::LINE;
-			lineItem.linePointA = getShapePosition(gameState, constraint->idA.index);
-			lineItem.linePointB = getShapePosition(gameState, constraint->idB.index);
+			lineItem.linePointA = getGlobalPosition(gameState, constraint->idA.index);
+			lineItem.linePointB = getGlobalPosition(gameState, constraint->idB.index);
 			lineItem.color = constraintColor;
 			auto intersectable = middle::getComponent<components::MouseIntersectable>(shape);
 			if (intersectable && intersectable->intersecting) {
@@ -252,7 +235,7 @@ public:
 
 				if (intersectable->intersecting) {
 					for (middle::Id& id : children) {
-						Vector3 childPos = middle::getShapePosition(gameState, id.index);
+						Vector3 childPos = middle::getGlobalPosition(gameState, id.index);
 						middle::RenderItem childItem;
 						childItem.type = middle::RenderItemType::TEXT;
 						childItem.color = loopItemColor;
@@ -262,7 +245,7 @@ public:
 
 					}
 					if (parentId.index != middle::UNASSIGNED) {
-						Vector3 parentPos = middle::getShapePosition(gameState, parentId.index);
+						Vector3 parentPos = middle::getGlobalPosition(gameState, parentId.index);
 						middle::RenderItem parentItem;
 						parentItem.type = middle::RenderItemType::TEXT;
 						parentItem.color = loopItemColor;
@@ -274,16 +257,16 @@ public:
 			}
 		}
 
-		auto importRefPositionIt = importRefCache->begin<components::Position>();
+		auto importRefGlobalTransformIt = importRefCache->begin<components::GlobalTransform>();
 		for (int i = 0; i < importRefCache->getSize(); ++i) {
 			auto& shape = middle::getShape(gameState, importRefCache->relevantIdVector[i].index);
-			auto position = *importRefPositionIt;
+			auto transform = *importRefGlobalTransformIt;
 
 			auto selectable = middle::getComponent<components::MouseSelectable>(shape);
 			middle::RenderItem refItem;
 			refItem.type = middle::RenderItemType::SPHERE;
 			refItem.color = referenceColor;
-			refItem.center = { position->posX, position->posY, position->posZ };
+			refItem.center = transform->pos;
 			refItem.radius = middle::DEF_RADIUS_REFERENCE_INDICATOR;
 			auto intersectable = middle::getComponent<components::MouseIntersectable>(shape);
 			if (intersectable && intersectable->intersecting) {
@@ -292,13 +275,13 @@ public:
 			gameState->renderData.push_back(refItem);
 		}
 
-		auto systemPositionIt = systemRefCache->begin<components::Position>();
+		auto systemGlobalTransformIt = systemRefCache->begin<components::GlobalTransform>();
 		for (int i = 0; i < systemRefCache->getSize(); ++i) {
 			auto& shape = middle::getShape(gameState, systemRefCache->relevantIdVector[i].index);
-			auto position = *systemPositionIt;
+			auto transform = *systemGlobalTransformIt;
 			middle::RenderItem systemItem;
 			systemItem.type = middle::RenderItemType::SPHERE;
-			systemItem.center = { position->posX, position->posY, position->posZ };
+			systemItem.center = transform->pos;
 			systemItem.radius = middle::DEF_RADIUS_SYSTEM;
 			systemItem.color = systemColor;
 			auto intersectable = middle::getComponent<components::MouseIntersectable>(shape);
@@ -312,7 +295,7 @@ public:
 			auto& shape = middle::getShape(gameState, loopTagCache->relevantIdVector[i].index);
 			middle::RenderItem loopItem;
 			loopItem.type = middle::RenderItemType::SPHERE;
-			loopItem.center = middle::getShapePosition(gameState, shape.id.index);
+			loopItem.center = middle::getGlobalPosition(gameState, shape.id.index);
 			loopItem.radius = middle::DEF_RADIUS_LOOP_INDICATOR;
 			loopItem.color = loopColor;
 			loopItem.disableDepthTest = true;
@@ -327,11 +310,11 @@ public:
 
 		auto selectableSphereIt = selectableSphereCache->begin<components::MouseSelectable>();
 		auto selectableSphere = selectableSphereCache->begin<components::Sphere>();
-		auto selectableSpherePosition = selectableSphereCache->begin<components::Position>();
+		auto selectableSphereGlobalTransform = selectableSphereCache->begin<components::GlobalTransform>();
 		for (int i = 0; i < selectableSphereCache->getSize(); ++i) {
 			auto selectable = *selectableSphereIt;
 			auto sphere = *selectableSphere;
-			auto position = *selectableSpherePosition;
+			auto transform = *selectableSphereGlobalTransform;
 			if (!selectable->selected) {
 				continue;
 			}
@@ -339,7 +322,7 @@ public:
 			middle::RenderItem selectItem;
 			selectItem.type = middle::RenderItemType::RECTANGLE;
 			selectItem.center = { 0,0,0 };
-			selectItem.transform.translation = { position->posX, position->posY, position->posZ };
+			selectItem.transform.translation = transform->pos;
 			selectItem.transform.scale = { 1,1,1 };
 			selectItem.transform.rotation = { 0,0,0,0 };
 			selectItem.width = sphere->radius * 4;
@@ -360,8 +343,8 @@ public:
 				continue;
 			}
 
-			Vector3 linePointA = middle::getShapePosition(gameState, constraint->idA.index);
-			Vector3 linePointB = middle::getShapePosition(gameState, constraint->idB.index);
+			Vector3 linePointA = middle::getGlobalPosition(gameState, constraint->idA.index);
+			Vector3 linePointB = middle::getGlobalPosition(gameState, constraint->idB.index);
 
 			middle::RenderItem selectItem;
 			selectItem.type = middle::RenderItemType::RECTANGLE;

@@ -5,8 +5,10 @@
 #include "MouseIntersectable.h"
 #include "LoopSociety.h"
 #include "LoopTag.h"
-#include "Position.h"
 #include "editor_actions.h"
+#include "LocalPosition.h"
+#include "GlobalTransform.h"
+#include "LocalScale.h"
 
 namespace entities{
 
@@ -17,11 +19,11 @@ namespace entities{
 		middle::addComponent<components::MouseSelectable>(shape);
 		middle::addComponent<components::MouseIntersectable>(shape);
 		middle::addComponent<components::MouseGrabbable>(shape);
-		auto pos = middle::addComponent<components::Position>(shape);
+		middle::addComponent<components::GlobalTransform>(shape);
+		middle::addComponent<components::LocalScale>(shape);
+		auto pos = middle::addComponent<components::LocalPosition>(shape);
 		middle::registerShape(gameState, shape);
-		pos->posX = position.x;
-		pos->posY = position.y;
-		pos->posZ = position.z;
+		pos->pos = position;
 
 		// assign parents the loop as parent to children
 		for (middle::Id loopMember : loopIds) {

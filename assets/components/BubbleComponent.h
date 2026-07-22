@@ -1,13 +1,11 @@
 #pragma once
 #include "registrars.h"
 #include "editor_file_utils.h"
-#define MIDDLEBUBBLECOMPONENT(X) \
-	X(inverse) 
+#define MIDDLEBUBBLECOMPONENT(X)
 
 
 namespace components {
 	struct BubbleComponent : public middle::Serializable{
-		bool inverse = false;
 
 		void serialize(std::ostream& ostream) override;
 		void deserialize(const std::vector<std::string>& buffer, int indexOffset) override;

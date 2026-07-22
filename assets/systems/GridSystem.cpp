@@ -1,11 +1,11 @@
 #pragma once
 #include "middle_system_registrar.h"
-#include "Position.h"
 #include "GridElement.h"
 #include "EditorConfigs.h"
 #include "middle_math.h"
 #include "comp_cache.h"
 #include "middle_shape_utils.h"
+#include "LocalPosition.h"
 
 class GridSystem : public middle::MiddleGameplaySystem {
 public:
@@ -18,11 +18,11 @@ public:
 		systemUpdateType = middle::SystemUpdateType::GAMEPLAY_POSTFRAME;
 	}
 	void init(middle::GameState* gameState) override {
-		cachoA = middle::newCompCache(gameState);
+		cachoA = middle::newCompCache(gameState, systemName);
 		cachoA->addType<components::EditorConfigs>();
-		cachoB = middle::newCompCache(gameState);
+		cachoB = middle::newCompCache(gameState, systemName);
 		cachoB->addType<components::GridElement>();
-		cachoB->addType<components::Position>();
+		cachoB->addType<components::LocalPosition>();
 
 	}
 
@@ -32,7 +32,7 @@ public:
 
 		auto& configIt = cachoA->begin<components::EditorConfigs>();
 		auto& gridIt = cachoB->begin<components::GridElement>();
-		auto& posIt = cachoB->begin<components::Position>();
+		auto& posIt = cachoB->begin<components::LocalPosition>();
 
 		components::EditorConfigs* editorConfigs = nullptr;
 		for (int i = 0; i < cachoA->getSize(); ++i) {
@@ -47,7 +47,7 @@ public:
 			auto position = *posIt;
 			middle::Id id = cachoB->relevantIdVector[i];
 
-			Vector3 pos = middle::getShapePosition(gameState, id.index);
+			Vector3 pos = middle::getGlobalPosition(gameState, id.index);
 			Vector3 targetPos = middle::gridPosition(pos, editorConfigs->gridSize);
 			middle::moveShape(gameState, id.index, targetPos - pos);
 		}

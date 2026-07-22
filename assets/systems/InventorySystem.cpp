@@ -23,7 +23,7 @@ public:
 	}
 
 	void init(middle::GameState* gameState) {
-		inventoryRectCache = middle::newCompCache(gameState);
+		inventoryRectCache = middle::newCompCache(gameState, systemName);
 		inventoryRectCache->addType<components::Inventory>();
 		inventoryRectCache->addType<components::LoopSociety>();
 		inventoryRectCache->addType<components::Rectangle>();
@@ -63,7 +63,7 @@ public:
 			std::vector<middle::Id>items;
 			middle::getChildren(gameState, shape.id, items);
 
-			Vector3 inventoryPosition = middle::getShapePosition(gameState, shape.id.index);
+			Vector3 inventoryPosition = middle::getGlobalPosition(gameState, shape.id.index);
 
 			float totalWidth = inventoryRect->width;
 			float totalHeight = inventoryRect->height;
@@ -91,7 +91,7 @@ public:
 				middle::Id childId = items[j];
 				middle::Shape& child = middle::getShape(gameState, childId.index);
 
-				Vector3 displacement = referencePos - middle::getShapePosition(gameState, child.id.index);
+				Vector3 displacement = referencePos - middle::getGlobalPosition(gameState, child.id.index);
 				middle::moveShape(gameState, child.id.index, displacement);
 				if (inventory->horizontal) {
 					referencePos.x += spacing;

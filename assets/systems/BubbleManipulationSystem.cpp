@@ -4,12 +4,11 @@
 #include "middle_shape_utils.h"
 #include "BubbleComponent.h"
 #include "MouseGrabbable.h"
-#include "Position.h"
+#include "GlobalTransform.h"
 #include "PhysicsData.h"
 #include "LoopSociety.h"
 #include "MouseIntersectable.h"
 #include "BubbleUnit.h"
-#include "FractionalComponent.h"
 #include "InventoryItem.h"
 #include "MouseSelectable.h"
 #include "DeleteComponent.h"
@@ -27,28 +26,20 @@ class BubbleManipulationSystem : public middle::MiddleGameplaySystem {
 public:
 	components::CompCache* bubbleCache;
 	components::CompCache* unitCache;
-	components::CompCache* fractionCache;
 
 
 	void init(middle::GameState* gameState) {
-		bubbleCache = middle::newCompCache(gameState);
+		bubbleCache = middle::newCompCache(gameState, systemName);
 		bubbleCache->addType<components::MouseGrabbable>();
 		bubbleCache->addType<components::BubbleComponent>();
 		bubbleCache->addType<components::InventoryItem>(components::NOTINTERESTED);
-		unitCache = middle::newCompCache(gameState);
-		unitCache->addType<components::MouseGrabbable>();
-		unitCache->addType<components::BubbleUnit>();
-		unitCache->addType<components::LoopSociety>();
-		fractionCache = middle::newCompCache(gameState);
-		fractionCache->addType<components::MouseGrabbable>();
-		fractionCache->addType<components::FractionalComponent>();
 	}
 
 	void move(middle::GameState* gameState, middle::Shape& shape) {
 		Vector3 pos;
-		auto posComponent = middle::getComponent<components::Position>(shape);
-		if (posComponent) {
-			pos = { posComponent->posX, posComponent->posY, posComponent->posZ };
+		auto transform = middle::getComponent<components::GlobalTransform>(shape);
+		if (transform) {
+			pos = transform->pos;
 		}
 
 		Vector3 cameraPos = gameState->editorState.camera.position;
@@ -116,10 +107,12 @@ public:
 	void attachComponents(middle::GameState* gameState, middle::Shape& shape, components::MouseGrabbable* grabbable) {
 
 		bool intersecting = bubble::isIntersecting(gameState, shape);
-		if (intersecting && gameState->bubbleAlgebraState.grabbedId.index == middle::UNASSIGNED && gameState->input.mouseHeld) {
+		if (gameState->input.mouseClicked && intersecting && gameState->bubbleAlgebraState.grabbedId.index == middle::UNASSIGNED) {
 
 			// copy as grabbed
+			middle::Id oldParentId = middle::getParent(gameState, shape.id);
 			middle::Id copyId = middle::deepCopyShape(gameState, shape.id.index);
+			middle::updateLocalCoordinateToProjectedGlobalCoordinate(gameState, copyId, oldParentId);
 			auto& copyShape = middle::getShape(gameState, copyId.index);
 			auto copyGrabbable = middle::getComponent<components::MouseGrabbable>(copyShape);
 			copyGrabbable->grabbing = true;
@@ -147,6 +140,21 @@ public:
 
 	void update(middle::GameState* gameState) override {
 
+		// todo figure input stuff at some point
+		if (gameState->gameInput.one ||
+			gameState->gameInput.two ||
+			gameState->gameInput.three ||
+			gameState->gameInput.four ||
+			gameState->gameInput.five ||
+			gameState->gameInput.six ||
+			gameState->gameInput.seven ||
+			gameState->gameInput.eight ||
+			gameState->gameInput.nine ||
+			gameState->gameInput.zero
+			) {
+			return;
+		}
+
 		auto bubbleIt = bubbleCache->begin<components::BubbleComponent>();
 		auto bubbleGrabbableIt = bubbleCache->begin<components::MouseGrabbable>();
 		for (int i = 0; i < bubbleCache->getSize(); ++i) {
@@ -157,39 +165,6 @@ public:
 				move(gameState, shape);
 			}
 			attachComponents(gameState, shape, grabbable);
-		}
-
-		auto unitIt = unitCache->begin<components::BubbleUnit>();
-		auto unitGrabbableIt = unitCache->begin<components::MouseGrabbable>();
-		for (int i = 0; i < unitCache->getSize(); ++i) {
-			auto& shape = middle::getShape(gameState, unitCache->relevantIdVector[i].index);
-			auto unit = *unitIt;
-			auto grabbable = *unitGrabbableIt;
-			middle::Id parentId = middle::getParent(gameState, shape.id);
-			if (parentId.index != middle::UNASSIGNED) {
-				auto& parentShape = middle::getShape(gameState, parentId.index);
-				auto parentFraction = middle::getComponent<components::FractionalComponent>(parentShape);
-				if (parentFraction) {
-					continue;
-				}
-			}
-			if (grabbable->grabbing) {
-				move(gameState, shape);
-			}
-			attachComponents(gameState, shape, grabbable);
-
-		}
-
-		auto fractionIt = fractionCache->begin<components::FractionalComponent>();
-		auto fractionGrabbableIt = fractionCache->begin<components::MouseGrabbable>();
-		for (int i = 0; i < fractionCache->getSize(); ++i) {
-			auto& shape = middle::getShape(gameState, fractionCache->relevantIdVector[i].index);
-			auto fraction = *fractionIt;
-			auto grabbable = *fractionGrabbableIt;
-			attachComponents(gameState, shape, grabbable);
-			if (grabbable->grabbing) {
-				move(gameState, shape);
-			}
 		}
 
 	}

@@ -22,7 +22,7 @@ public:
 	components::CompCache* systemRefCache;
 
 	void init(middle::GameState* gameState) {
-		systemRefCache = middle::newCompCache(gameState);
+		systemRefCache = middle::newCompCache(gameState, systemName);
 		systemRefCache->addType<components::SystemReference>();
 		systemRefCache->addType<components::MouseIntersectable>();
 	}

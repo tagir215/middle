@@ -9,7 +9,6 @@
 #include "script_opener.h"
 #include "LoopSociety.h"
 #include "Reference.h"
-#include "Position.h"
 #include "MouseSelectable.h"
 #include "JointEntity.h"
 #include "ConstraintEntity.h"
@@ -51,8 +50,8 @@ namespace middle {
 		if (indexA != indexB) {
 			auto& shapeA = shapes[indexA];
 			auto& shapeB = shapes[indexB];
-			auto posA = getShapePosition(gameState, indexA);
-			auto posB = getShapePosition(gameState, indexB);
+			auto posA = getGlobalPosition(gameState, indexA);
+			auto posB = getGlobalPosition(gameState, indexB);
 			float distBetween = Vector3Distance(posA, posB);
 			entities::initConstraint(gameState, newIndex, indexA, indexB, distBetween);
 
@@ -136,8 +135,8 @@ namespace middle {
 			Vector3 centroid = { 0,0,0 };
 			for (int i = 0; i < ids.size(); ++i) {
 				auto& shape = getShape(gameState, ids[i].index);
-				auto pos = getComponent<components::Position>(shape);
-				centroid += { pos->posX, pos->posY, pos->posZ };
+				Vector3 pos = middle::getGlobalPosition(gameState, shape.id.index);
+				centroid += pos;
 			}
 			centroid *= 1.0f / ids.size();
 			entities::initLoop(gameState, newIndex, ids, centroid);
@@ -205,7 +204,6 @@ namespace middle {
 	{
 		std::string name = systemName;
 		shell_open_file("../assets/systems/" + systemName + ".cpp");
-		gameState->closeGame = true;
 	}
 
 	void EditorActionOpenSystem::undo(GameState* gameState)
@@ -326,7 +324,6 @@ namespace middle {
 	{
 		shell_open_file("../assets/components/" + componentName + ".h");
 		unselect(gameState);
-		gameState->closeGame = true;
 	}
 
 	void EditorActionOpenComponent::undo(GameState* gameState)
@@ -343,6 +340,7 @@ namespace middle {
 			return;
 		}
 
+		middle::Id oldParentId = childLoop->parentLoopId;
 		oldParentIndex = childLoop->parentLoopId.index;
 
 		Shape& parentShape = getShape(gameState, childLoop->parentLoopId.index);
@@ -355,6 +353,7 @@ namespace middle {
 			if (id == childShape.id) {
 				parentLoop->loopMemberIds.erase(parentLoop->loopMemberIds.begin() + i);
 				loopIndex = i;
+				middle::updateLocalCoordinateToProjectedGlobalCoordinate(gameState, childShape.id, oldParentId);
 				return;
 			}
 		}
@@ -364,6 +363,8 @@ namespace middle {
 
 	void EditorActionRemoveFromLoop::undo(GameState* gameState)
 	{
+		middle::Id childId = gameState->ids[childIndex];
+		middle::Id currentParentId = middle::getParent(gameState, childId);
 		EditorActionReparent(oldParentIndex, childIndex).execute(gameState);
 		EditorActionChangeLoopMemberIndex(oldParentIndex, childIndex, loopIndex).execute(gameState);
 	}
@@ -382,13 +383,17 @@ namespace middle {
 		assert(parentIndex != childIndex);
 		Shape& childShape = getShape(gameState, childIndex);
 		auto childLoop = getComponent<components::LoopSociety>(childShape);
+		middle::Id oldParentId = childLoop->parentLoopId;
 		oldParentIndex = childLoop->parentLoopId.index;
 
 		// remove from old parent 
 		if (childLoop->parentLoopId.index != UNASSIGNED) {
 			auto removeAction = EditorActionRemoveFromLoop(childIndex);
 			removeAction.execute(gameState);
+			// update this for local coordinate recalculation at end
+			oldParentId = middle::Id();
 		}
+
 
 		if (parentIndex != UNASSIGNED) {
 			Shape& parentShape = getShape(gameState, parentIndex);
@@ -408,10 +413,12 @@ namespace middle {
 			childLoop->parentLoopId = middle::Id();
 		}
 
+		updateLocalCoordinateToProjectedGlobalCoordinate(gameState, childShape.id, oldParentId);
 	}
 
 	void EditorActionReparent::undo(GameState* gameState)
 	{
+		middle::Id currentParentId = middle::getParent(gameState, gameState->ids[childIndex]);
 		if (oldParentIndex != middle::UNASSIGNED) {
 			auto metaReparent = EditorActionReparent(oldParentIndex, childIndex);
 			metaReparent.execute(gameState);
@@ -420,6 +427,7 @@ namespace middle {
 			auto removeFromLoop = EditorActionRemoveFromLoop(childIndex);
 			removeFromLoop.execute(gameState);
 		}
+
 	}
 
 	void EditorActionChangeLoopMemberIndex::execute(GameState* gameState)
@@ -472,7 +480,7 @@ namespace middle {
 			}
 
 			// placement component until placing is done
-			auto position = middle::getComponent<components::Position>(copyShape);
+			auto position = middle::getComponent<components::LocalPosition>(copyShape);
 			if (position) {
 				auto placable = middle::attachComponent<components::PlacementComponent>(gameState, copyShape.id);
 				placable->grabbing = true;
@@ -536,8 +544,7 @@ namespace middle {
 
 		for (int i = 0; i < selectedShapes.size(); ++i) {
 			auto& shape = getShape(gameState, selectedShapes[i]);
-			auto position = getComponent<components::Position>(shape);
-			oldPositions[i] = { position->posX, position->posY, position->posZ };
+			oldPositions[i] = middle::getGlobalPosition(gameState, shape.id.index);
 		}
 
 		for (int i = 0; i < newPositions.size(); ++i) {
@@ -550,8 +557,7 @@ namespace middle {
 	{
 		for (int i = 0; i < selectedShapes.size(); ++i) {
 			auto& shape = getShape(gameState, selectedShapes[i]);
-			auto position = getComponent<components::Position>(shape);
-			Vector3 currentPos = { position->posX, position->posY, position->posZ };
+			Vector3 currentPos = middle::getGlobalPosition(gameState, shape.id.index);
 			Vector3 displacement = currentPos - oldPositions[i];
 			middle::moveShape(gameState, selectedShapes[i], Vector3Negate(displacement));
 		}
@@ -578,7 +584,7 @@ namespace middle {
 
 	void EditorActionCopySingle::execute(GameState* gameState)
 	{
-		resultId = middle::deepCopyShape(gameState, id.index);
+		resultId = middle::deepCopyShapeGlobalCoordinates(gameState, id);
 	}
 
 	void EditorActionCopySingle::undo(GameState* gameState)

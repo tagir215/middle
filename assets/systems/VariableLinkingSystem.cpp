@@ -32,23 +32,23 @@ public:
 	components::CompCache* procedureInputCache;
 
 	void init(middle::GameState* gameState) {
-		inputCache = middle::newCompCache(gameState);
+		inputCache = middle::newCompCache(gameState, systemName);
 		inputCache->addType<components::InputVariable>();
 		inputCache->addType<components::MouseIntersectable>();
-		outputCache = middle::newCompCache(gameState);
+		outputCache = middle::newCompCache(gameState, systemName);
 		outputCache->addType<components::OutputVariable>();
 		outputCache->addType<components::MouseIntersectable>();
-		bubbleCache = middle::newCompCache(gameState);
+		bubbleCache = middle::newCompCache(gameState, systemName);
 		bubbleCache->addType<components::BubbleComponent>();
 		bubbleCache->addType<components::MouseIntersectable>();
-		procCache = middle::newCompCache(gameState);
+		procCache = middle::newCompCache(gameState, systemName);
 		procCache->addType<components::ProcedureContainer>();
-		algebraCache = middle::newCompCache(gameState);
+		algebraCache = middle::newCompCache(gameState, systemName);
 		algebraCache->addType<components::AlgebraNode>();
-		procedureTargetCache = middle::newCompCache(gameState);
+		procedureTargetCache = middle::newCompCache(gameState, systemName);
 		procedureTargetCache->addType<components::ProcedureTargetTag>();
 		procedureTargetCache->addType<components::InitializedTag>(components::NOTINTERESTED);
-		procedureInputCache = middle::newCompCache(gameState);
+		procedureInputCache = middle::newCompCache(gameState, systemName);
 		procedureInputCache->addType<components::ProcedureInputVariable>();
 	}
 
@@ -183,7 +183,7 @@ public:
 			auto outputVariable = middle::getComponent<components::OutputVariable>(shape);
 			if (inputVariable || outputVariable) {
 				Vector3 targetPos = gameState->input.mouseXZ_PlanePos;
-				Vector3 currentPos = middle::getShapePosition(gameState, grabbedId.index);
+				Vector3 currentPos = middle::getGlobalPosition(gameState, grabbedId.index);
 				middle::moveShape(gameState, grabbedId.index, targetPos - currentPos);
 			}
 

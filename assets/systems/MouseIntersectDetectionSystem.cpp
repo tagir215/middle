@@ -4,7 +4,7 @@
 #include "MouseIntersectable.h"
 #include "middle_shape_utils.h"
 #include "Sphere.h"
-#include "Position.h"
+#include "GlobalTransform.h"
 #include "middle_math.h"
 #include "Constraint.h"
 #include "JointEntity.h"
@@ -30,10 +30,10 @@ namespace MouseIntersectDetectionSystem {
 		components::CompCache* intersectableCache;
 
 		void init(middle::GameState* gameState) {
-			lineIntersectableCache = middle::newCompCache(gameState);
+			lineIntersectableCache = middle::newCompCache(gameState, systemName);
 			lineIntersectableCache->addType<components::MouseIntersectable>();
 			lineIntersectableCache->addType<components::Constraint>();
-			intersectableCache = middle::newCompCache(gameState);
+			intersectableCache = middle::newCompCache(gameState, systemName);
 			intersectableCache->addType<components::MouseIntersectable>();
 		}
 
@@ -60,8 +60,8 @@ namespace MouseIntersectDetectionSystem {
 					continue;
 				auto& instanceA = getShape(gameState, constraint->idA.index);
 				auto& instanceB = getShape(gameState, constraint->idB.index);
-				Vector3 posA = middle::getShapePosition(gameState, constraint->idA.index);
-				Vector3 posB = middle::getShapePosition(gameState, constraint->idB.index);
+				Vector3 posA = middle::getGlobalPosition(gameState, constraint->idA.index);
+				Vector3 posB = middle::getGlobalPosition(gameState, constraint->idB.index);
 				bool mouseIntersect = middle::PointIntersectLineZX_Plane(gameState->input.mouseXZ_PlanePos, posA, posB, middle::DEF_LINE_PADDING_H, middle::DEF_LINE_PADDING_V);
 				intersectComponent->intersecting = mouseIntersect;
 				intersectComponent->intersectingTop = mouseIntersect;
@@ -78,8 +78,8 @@ namespace MouseIntersectDetectionSystem {
 				auto placable = middle::getComponent<components::PlacementComponent>(shape);
 				if (placable)
 					continue;
-				auto position = middle::getComponent<components::Position>(shape);
-				if (!position)
+				auto transform = middle::getComponent<components::GlobalTransform>(shape);
+				if (!transform)
 					continue;
 				auto constraint = middle::getComponent<components::Constraint>(shape);
 				if (constraint) {
@@ -110,7 +110,7 @@ namespace MouseIntersectDetectionSystem {
 					radius = middle::DEF_RADIUS_LOOP_INDICATOR;
 				}
 
-				Vector3 pos = middle::getShapePosition(gameState, shape.id.index);
+				Vector3 pos = middle::getGlobalPosition(gameState, shape.id.index);
 
 				Vector3 intersectPos;
 				bool isIntersecting = middle::RayCastLineSphere(pos, radius, gameState->activeCamera.position,
