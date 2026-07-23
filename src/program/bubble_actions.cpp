@@ -402,7 +402,7 @@ namespace bubbleActions {
 		}
 	}
 
-	middle::Id createPowerReplacementShape(middle::GameState* gameState, middle::Id baseId, middle::Id exponentId) {
+	middle::Id createExpandedPowerReplacementShape(middle::GameState* gameState, middle::Id baseId, middle::Id exponentId) {
 		// create replacement
 		middle::Id replacementShapeId;
 		std::vector<middle::Id>exponentChildren;
@@ -488,7 +488,7 @@ namespace bubbleActions {
 			return;
 		}
 
-		middle::Id replacementShapeId = createPowerReplacementShape(gameState, baseId, exponentId);
+		middle::Id replacementShapeId = createExpandedPowerReplacementShape(gameState, baseId, exponentId);
 		if (replacementShapeId.index == middle::UNASSIGNED) {
 			cancelled = true;
 			return;
@@ -866,8 +866,24 @@ namespace bubbleActions {
 		return connectPower.resultId;
 	}
 
+	middle::Id createCompressedMultiplicationPowerShape(middle::GameState* gameState, middle::Id commonFactorId) {
+		middle::Id parentId = middle::getParent(gameState, commonFactorId);
+		std::vector<middle::Id>children;
+		middle::getChildren(gameState, parentId, children);
+		for (middle::Id id : children) {
+			if (!bubble::matchingBubbles(gameState, id, commonFactorId)) {
+				return middle::Id();
+			}
+		}
+		middle::Id newExponentId = bubble::newBubbleWithIntValue(gameState, children.size(), middle::getGlobalPosition(gameState, commonFactorId.index));
+		middle::Id commonCopyId = middle::deepCopyShapeGlobalCoordinates(gameState, commonFactorId);
+		auto connectPower = equlab::ConnectPower(commonCopyId, newExponentId);
+		connectPower.execute(gameState);
+		return connectPower.resultId;
+	}
 
-	middle::Id createCompressedExponentsReplacmentShape(middle::GameState* gameState, middle::Id commonFactorId) {
+	// I gave up naming this
+	middle::Id createPowPowReplacmentShape(middle::GameState* gameState, middle::Id commonFactorId) {
 		middle::Id parentId = middle::getParent(gameState, commonFactorId);
 		if (!bubble::isPowerBubble(gameState, parentId)) {
 			return middle::Id();
@@ -1130,17 +1146,19 @@ namespace bubbleActions {
 			cancelled = true;
 			return;
 		}
-		if (!bubble::isPowerBubble(gameState, parentId)) {
-			cancelled = true;
-			return;
+
+		middle::Id baseId, exponentId, replacementShapeId, targetId;
+		if (bubble::isPowerBubble(gameState, parentId)) {
+			bubble::getPowerBaseAndExponent(gameState, parentId, baseId, exponentId);
+			if (commonFactorId == baseId) {
+				replacementShapeId = createCommonBaseCompressedPowerShape(gameState, commonFactorId);
+			}
+			else if (commonFactorId == exponentId) {
+				replacementShapeId = createPowPowReplacmentShape(gameState, commonFactorId);
+			}
 		}
-		middle::Id baseId, exponentId, replacementShapeId;
-		bubble::getPowerBaseAndExponent(gameState, parentId, baseId, exponentId);
-		if (commonFactorId == baseId) {
-			replacementShapeId = createCommonBaseCompressedPowerShape(gameState, commonFactorId);
-		}
-		else if (commonFactorId == exponentId) {
-			replacementShapeId = createCompressedExponentsReplacmentShape(gameState, commonFactorId);
+		else if (bubble::isMultiplication(gameState, parentId)) {
+			replacementShapeId = createCompressedMultiplicationPowerShape(gameState, commonFactorId);
 		}
 
 		if (replacementShapeId.index != middle::UNASSIGNED) {

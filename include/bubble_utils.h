@@ -61,6 +61,7 @@ namespace bubble {
 	middle::Id findMatchingFromSibling(middle::GameState* gameState, middle::Id nodeId, middle::Id siblingId, std::unordered_map<std::string, middle::Id>& varOverrides);
 	middle::Id containerize(middle::GameState* gameState, middle::Id id);
 	bool isPowerBubble(middle::GameState* gameState, middle::Id id);
+	bool isMultiplication(middle::GameState* gameState, middle::Id id);
 	bool additiveInverses(middle::GameState* gameState, middle::Id idA, middle::Id idB);
 	void negate(middle::GameState* gameState, middle::Id id);
 	void invert(middle::GameState* gameState, middle::Id id);

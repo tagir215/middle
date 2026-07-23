@@ -1418,5 +1418,10 @@ namespace bubble {
 		return middle::getComponent<components::BubblePowerComponent>(shape);
 	}
 
+	bool isMultiplication(middle::GameState * gameState, middle::Id id) {
+		auto& shape = middle::getShape(gameState, id.index);
+		return middle::getComponent<components::BubbleMultiplyComponent>(shape);
+	}
+
 
 }
