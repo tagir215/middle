@@ -358,15 +358,17 @@ public:
 			auto& childShape = middle::getShape(gameState, exponentId.index);
 			auto exponentTransform = middle::getComponent<components::GlobalTransform>(childShape);
 			auto exponentCircle = middle::getComponent<components::Circle>(childShape);
-			middle::RenderItem circleItemB;
-			circleItemB.type = middle::RenderItemType::CIRCLE;
-			circleItemB.transform.translation = exponentTransform->pos;
-			circleItemB.transform.scale = exponentTransform->scale;
-			circleItemB.transform.rotation = exponentTransform->rotation;
-			circleItemB.radius = exponentCircle->radius - 3;
-			circleItemB.color = ORANGE;
-			circleItemB.layer = layer->layer + 2;
-			gameState->renderData.push_back(circleItemB);
+			if (exponentCircle) {
+				middle::RenderItem circleItemB;
+				circleItemB.type = middle::RenderItemType::CIRCLE;
+				circleItemB.transform.translation = exponentTransform->pos;
+				circleItemB.transform.scale = exponentTransform->scale;
+				circleItemB.transform.rotation = exponentTransform->rotation;
+				circleItemB.radius = exponentCircle->radius - 3;
+				circleItemB.color = ORANGE;
+				circleItemB.layer = layer->layer + 2;
+				gameState->renderData.push_back(circleItemB);
+			}
 		}
 
 		auto cuboidIt = cuboidCache->begin<components::Cuboid>();

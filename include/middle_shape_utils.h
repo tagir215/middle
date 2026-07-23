@@ -101,6 +101,8 @@ namespace middle {
 	void updateLocalCoordinateToProjectedGlobalCoordinate(GameState* gameState, middle::Id id, middle::Id oldParentId);
 	// get global scale parents scale multiplied
 	Vector3 getGlobalScale(GameState* gameState, middle::Id id);
+	// get index on the loop
+	int getLoopIndex(GameState* gameState, middle::Id id);
 
 	template<typename F>
 	void loopInstances(GameState* gameState, F func) {

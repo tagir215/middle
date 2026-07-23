@@ -455,7 +455,10 @@ namespace bubbleActions {
 				replacementShapeId = middle::getParent(gameState, prevId);
 			}
 		}
-		// replacement shape is bubble with value 1
+		else if (bubble::isBubbleWithValueOne(gameState, exponentId)) {
+			return middle::deepCopyShapeGlobalCoordinates(gameState, baseId);
+		}
+		// replacement shape is bubble with value 0
 		else if (bubble::isBubbleZero(gameState, exponentId)) {
 			Vector3 targetPosition = middle::getGlobalPosition(gameState, exponentId.index);
 			middle::Shape newUnitProto = bubble::newUnit(gameState, targetPosition);
@@ -623,13 +626,7 @@ namespace bubbleActions {
 			std::vector<middle::Id>children;
 			middle::getChildren(gameState, containerParent, children);
 			// find old index to preserve the same index after replacing
-			int oldIndex = middle::UNASSIGNED;
-			for (int i = 0; i < children.size(); ++i) {
-				if (children[i] == shapeToReplaceId) {
-					oldIndex = i;
-				}
-			}
-			assert(oldIndex != middle::UNASSIGNED);
+			int oldIndex = middle::getLoopIndex(gameState, shapeToReplaceId);
 			// reparent to replaced shapes parent
 			auto reparent = std::make_unique<middle::EditorActionReparent>(containerParent.index, replacingShapeId.index);
 			reparent->execute(gameState);
@@ -663,7 +660,7 @@ namespace bubbleActions {
 	void LinkMultiplicationTerm::execute(middle::GameState* gameState)
 	{
 		// if already multiplication, link as next in line
-		middle::Id& parentId = middle::getParent(gameState, recieverShapeId);
+		middle::Id parentId = middle::getParent(gameState, recieverShapeId);
 		if (parentId.index != middle::UNASSIGNED) {
 			auto& parent = middle::getShape(gameState, parentId.index);
 			auto mulComp = middle::getComponent<components::BubbleMultiplyComponent>(parent);
@@ -677,31 +674,33 @@ namespace bubbleActions {
 			}
 		}
 
-		// else create new multiplication
-		//auto newMul = std::make_unique<equlab::ConnectOperationLink>(recieverShapeId, linkingShapeId);
+
+		// else create new mul
 		Vector3 targetPos = (middle::getGlobalPosition(gameState, recieverShapeId.index)
 			+ middle::getGlobalPosition(gameState, linkingShapeId.index)) * 0.5f;
 
 		middle::Shape mulProto = bubble::newMultiplication(gameState, targetPos);
 		middle::Shape& mulShape = middle::registerShape(gameState, mulProto);
-
 		auto registerAction = std::make_unique<middle::EditorActionRegisterId>(mulShape.id);
 		registerAction->execute(gameState);
 		actions.push_back(std::move(registerAction));
 
-		auto reparentA = std::make_unique<middle::EditorActionReparent>(mulShape.id.index, recieverShapeId.index);
+		middle::Id recieverCopyId = middle::deepCopyShapeGlobalCoordinates(gameState, recieverShapeId);
+		auto registerAction2 = std::make_unique<middle::EditorActionRegisterId>(recieverCopyId);
+		registerAction2->execute(gameState);
+		actions.push_back(std::move(registerAction2));
+
+		auto reparentA = std::make_unique<middle::EditorActionReparent>(mulShape.id.index, recieverCopyId.index);
 		reparentA->execute(gameState);
 		actions.push_back(std::move(reparentA));
 		auto reparentB = std::make_unique<middle::EditorActionReparent>(mulShape.id.index, linkingShapeId.index);
 		reparentB->execute(gameState);
 		actions.push_back(std::move(reparentB));
 
-		if (parentId.index != middle::UNASSIGNED) {
-			auto reparent = std::make_unique<middle::EditorActionReparent>(parentId.index, mulShape.id.index);
-			reparent->execute(gameState);
-			actions.push_back(std::move(reparent));
+		auto replace = std::make_unique<Replace>(recieverShapeId, mulShape.id);
+		replace->execute(gameState);
+		actions.push_back(std::move(replace));
 
-		}
 		resultShapeId = mulShape.id;
 	}
 
@@ -836,7 +835,7 @@ namespace bubbleActions {
 		if (!middle::getComponent<components::BubbleMultiplyComponent>(mulShape)) {
 			return middle::Id();
 		}
-		
+
 		std::vector<middle::Id>mulChildren;
 		middle::getChildren(gameState, mulShape.id, mulChildren);
 

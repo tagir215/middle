@@ -821,6 +821,19 @@ namespace middle {
 		return result;
 	}
 
+	int getLoopIndex(GameState* gameState, middle::Id id)
+	{
+		middle::Id parentId = middle::getParent(gameState, id);
+		std::vector<middle::Id>children;
+		middle::getChildren(gameState, parentId, children);
+		for (int i = 0; i < children.size(); ++i) {
+			if (children[i] == id) {
+				return i;
+			}
+		}
+		return -1;
+	}
+
 	Vector3 projectGlobalCoordinateToLocalCoordinate(GameState* gameState, const Vector3& globalCoord, middle::Id parentId)
 	{
 		Matrix transformM = getTransformMatrix(gameState, parentId);

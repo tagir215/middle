@@ -1112,16 +1112,7 @@ namespace bubble {
 		if (!bubble) {
 			return false;
 		}
-		auto loop = middle::getComponent<components::LoopSociety>(shape);
-		if (loop->loopMemberIds.size() != 1) {
-			return false;
-		}
-		auto& firstChild = middle::getShape(gameState, loop->loopMemberIds[0].index);
-		auto variable = middle::getComponent<components::BubbleVariable>(firstChild);
-		if (variable) {
-			return false;
-		}
-		auto unit = middle::getComponent<components::BubbleUnit>(firstChild);
+		auto unit = middle::getComponent<components::BubbleUnit>(shape);
 		if (unit) {
 			return unit->value == 1;
 		}
