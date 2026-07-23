@@ -1156,17 +1156,18 @@ namespace bubbleActions {
 			else if (commonFactorId == exponentId) {
 				replacementShapeId = createPowPowReplacmentShape(gameState, commonFactorId);
 			}
+			targetId = middle::getParent(gameState, parentId);
 		}
 		else if (bubble::isMultiplication(gameState, parentId)) {
 			replacementShapeId = createCompressedMultiplicationPowerShape(gameState, commonFactorId);
+			targetId = parentId;
 		}
 
 		if (replacementShapeId.index != middle::UNASSIGNED) {
 			auto registerAction = std::make_unique<middle::EditorActionRegisterId>(replacementShapeId);
 			registerAction->execute(gameState);
 			actions.push_back(std::move(registerAction));
-			middle::Id parentParentId = middle::getParent(gameState, parentId);
-			auto replaceAction = std::make_unique<Replace>(parentParentId, replacementShapeId);
+			auto replaceAction = std::make_unique<Replace>(targetId, replacementShapeId);
 			replaceAction->execute(gameState);
 			actions.push_back(std::move(replaceAction));
 		}
