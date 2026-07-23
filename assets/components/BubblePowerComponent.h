@@ -4,6 +4,10 @@
 #define MIDDLEBUBBLEPOWERCOMPONENT(X) 
 
 namespace components {
+	enum PowerRole {
+			POWER_ROLE_BASE,
+			POWER_ROLE_EXPONENT
+	};
 	struct BubblePowerComponent : public middle::Serializable{
 
 		void serialize(std::ostream& ostream) override;

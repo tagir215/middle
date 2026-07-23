@@ -28,7 +28,6 @@
 #include "GlobalTransform.h"
 #include "GlobalRadius.h"
 #include "BubblePowerComponent.h"
-#include "BubbleExponentTag.h"
 
 namespace bubble {
 	float unitRadius = 14;
@@ -1168,21 +1167,14 @@ namespace bubble {
 
 	void getPowerBaseAndExponent(middle::GameState* gameState, middle::Id powerBubble, middle::Id& resultBaseId, middle::Id& resultExponentId)
 	{
-			std::vector<middle::Id>powerChildren;
-			middle::getChildren(gameState, powerBubble, powerChildren);
-			assert(powerChildren.size() == 2);
-			auto& powerChild0 = middle::getShape(gameState, powerChildren[0].index);
-			if (middle::getComponent<components::BubbleExponentTag>(powerChild0)) {
-				resultExponentId = powerChildren[0];
-				resultBaseId = powerChildren[1];
-			}
-			else {
-				resultExponentId = powerChildren[1];
-				resultBaseId = powerChildren[0];
-			}
+		std::vector<middle::Id>powerChildren;
+		middle::getChildren(gameState, powerBubble, powerChildren);
+		assert(powerChildren.size() == 2);
+		resultBaseId = powerChildren[components::PowerRole::POWER_ROLE_BASE];
+		resultExponentId = powerChildren[components::PowerRole::POWER_ROLE_EXPONENT];
 	}
 
-	middle::Id bubbleToStructure(middle::GameState* gameState, middle::Id bubbleId)
+	middle::Id bubbleToStructure(middle::GameState * gameState, middle::Id bubbleId)
 	{
 		// create root
 
@@ -1243,7 +1235,7 @@ namespace bubble {
 		return newNodes[0];
 	}
 
-	void bubbleToStructureBranch(middle::GameState* gameState, middle::Id startPointBubbleId, middle::Id bubbleRootId, middle::Id& startPointNodeId, middle::Id& rootNodeId)
+	void bubbleToStructureBranch(middle::GameState * gameState, middle::Id startPointBubbleId, middle::Id bubbleRootId, middle::Id & startPointNodeId, middle::Id & rootNodeId)
 	{
 		// push id and root structure to stacks
 		std::stack<middle::Id>realBubbleStack;
@@ -1310,7 +1302,7 @@ namespace bubble {
 
 
 
-	middle::Shape newBubble(middle::GameState* gameState, const Vector3& targetPos) {
+	middle::Shape newBubble(middle::GameState * gameState, const Vector3 & targetPos) {
 		middle::Shape newBubbleShape;
 		middle::addComponent<components::BubbleComponent>(newBubbleShape);
 		middle::addComponent<components::MouseGrabbable>(newBubbleShape);
@@ -1330,7 +1322,7 @@ namespace bubble {
 		return newBubbleShape;
 	}
 
-	middle::Shape newUnit(middle::GameState* gameState, const Vector3& targetPos, bool isNegative)
+	middle::Shape newUnit(middle::GameState * gameState, const Vector3 & targetPos, bool isNegative)
 	{
 		middle::Shape newUnitShape = newBubble(gameState, targetPos);
 		auto unit = middle::addComponent<components::BubbleUnit>(newUnitShape);
@@ -1338,7 +1330,7 @@ namespace bubble {
 		return newUnitShape;
 	}
 
-	middle::Shape newVariable(middle::GameState* gameState, const std::string& label, const Vector3& targetPos, bool isNegative)
+	middle::Shape newVariable(middle::GameState * gameState, const std::string & label, const Vector3 & targetPos, bool isNegative)
 	{
 		middle::Shape variableProto = newBubble(gameState, targetPos);
 		auto varComp = middle::addComponent<components::BubbleVariable>(variableProto);
@@ -1349,7 +1341,7 @@ namespace bubble {
 		return variableProto;
 	}
 
-	middle::Shape newEquals(middle::GameState* gameState, const Vector3& targetPos)
+	middle::Shape newEquals(middle::GameState * gameState, const Vector3 & targetPos)
 	{
 		middle::Shape newBubbleShape;
 		middle::addComponent<components::BubbleEqualsComponent>(newBubbleShape);
@@ -1365,10 +1357,10 @@ namespace bubble {
 		return newBubbleShape;
 	}
 
-	middle::Shape newMultiplication(middle::GameState* gameState, const Vector3& targetPos)
+	middle::Shape newMultiplication(middle::GameState * gameState, const Vector3 & targetPos)
 	{
 		middle::Shape newBubbleShape;
-		auto mulComp =middle::addComponent<components::BubbleMultiplyComponent>(newBubbleShape);
+		auto mulComp = middle::addComponent<components::BubbleMultiplyComponent>(newBubbleShape);
 		middle::addComponent<components::MouseGrabbable>(newBubbleShape);
 		middle::addComponent<components::MouseSelectable>(newBubbleShape);
 		middle::addComponent<components::MouseIntersectable>(newBubbleShape);
@@ -1381,23 +1373,22 @@ namespace bubble {
 		return newBubbleShape;
 	}
 
-	middle::Shape newPower(middle::GameState* gameState, const Vector3& targetPos)
+	middle::Shape newPower(middle::GameState * gameState, const Vector3 & targetPos)
 	{
 		middle::Shape newBubbleShape = newBubble(gameState, targetPos);
 		middle::addComponent<components::BubblePowerComponent>(newBubbleShape);
 		return newBubbleShape;
 	}
 
-	middle::Id newPower(middle::GameState* gameState, middle::Id baseId, middle::Id exponentId, const Vector3& targetPos) {
+	middle::Id newPower(middle::GameState * gameState, middle::Id baseId, middle::Id exponentId, const Vector3 & targetPos) {
 		middle::Shape powerProto = bubble::newPower(gameState, targetPos);
 		middle::Shape& powerShape = middle::registerShape(gameState, powerProto);
 		EditorActionReparent(powerShape.id.index, baseId.index).execute(gameState);
-		middle::attachComponent<components::BubbleExponentTag>(gameState, exponentId);
 		EditorActionReparent(powerShape.id.index, exponentId.index).execute(gameState);
 		return powerShape.id;
 	}
 
-	middle::Id newBubbleWithIntValue(middle::GameState* gameState, int value, const Vector3& targetPos)
+	middle::Id newBubbleWithIntValue(middle::GameState * gameState, int value, const Vector3 & targetPos)
 	{
 		int s = std::abs(value);
 		middle::Id containerId;
@@ -1421,7 +1412,7 @@ namespace bubble {
 	}
 
 
-	middle::Id containerize(middle::GameState* gameState, middle::Id id)
+	middle::Id containerize(middle::GameState * gameState, middle::Id id)
 	{
 		Vector3 targetPos = middle::getGlobalPosition(gameState, id.index);
 		middle::Shape bubbleProto = newBubble(gameState, targetPos);
@@ -1431,7 +1422,7 @@ namespace bubble {
 	}
 
 
-	bool isPowerBubble(middle::GameState* gameState, middle::Id id){
+	bool isPowerBubble(middle::GameState * gameState, middle::Id id) {
 		auto& shape = middle::getShape(gameState, id.index);
 		return middle::getComponent<components::BubblePowerComponent>(shape);
 	}

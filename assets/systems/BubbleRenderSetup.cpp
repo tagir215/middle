@@ -38,7 +38,6 @@
 #include "LocalPosition.h"
 #include "LocalScale.h"
 #include "BubblePowerComponent.h"
-#include "BubbleExponentTag.h"
 
 
 class BubbleRenderSetup : public middle::MiddleGameplaySystem {
@@ -355,23 +354,19 @@ public:
 			gameState->renderData.push_back(circleItemA);
 
 			assert(loop->loopMemberIds.size() == 2);
-			for (middle::Id childId : loop->loopMemberIds) {
-				auto& childShape = middle::getShape(gameState, childId.index);
-				if (!middle::getComponent<components::BubbleExponentTag>(childShape)) {
-					continue;
-				}
-				auto exponentTransform = middle::getComponent<components::GlobalTransform>(childShape);
-				auto exponentCircle = middle::getComponent<components::Circle>(childShape);
-				middle::RenderItem circleItemB;
-				circleItemB.type = middle::RenderItemType::CIRCLE;
-				circleItemB.transform.translation = exponentTransform->pos;
-				circleItemB.transform.scale = exponentTransform->scale;
-				circleItemB.transform.rotation = exponentTransform->rotation;
-				circleItemB.radius = exponentCircle->radius - 3;
-				circleItemB.color = ORANGE;
-				circleItemB.layer = layer->layer + 2;
-				gameState->renderData.push_back(circleItemB);
-			}
+			middle::Id exponentId = loop->loopMemberIds[components::PowerRole::POWER_ROLE_EXPONENT];
+			auto& childShape = middle::getShape(gameState, exponentId.index);
+			auto exponentTransform = middle::getComponent<components::GlobalTransform>(childShape);
+			auto exponentCircle = middle::getComponent<components::Circle>(childShape);
+			middle::RenderItem circleItemB;
+			circleItemB.type = middle::RenderItemType::CIRCLE;
+			circleItemB.transform.translation = exponentTransform->pos;
+			circleItemB.transform.scale = exponentTransform->scale;
+			circleItemB.transform.rotation = exponentTransform->rotation;
+			circleItemB.radius = exponentCircle->radius - 3;
+			circleItemB.color = ORANGE;
+			circleItemB.layer = layer->layer + 2;
+			gameState->renderData.push_back(circleItemB);
 		}
 
 		auto cuboidIt = cuboidCache->begin<components::Cuboid>();
@@ -548,7 +543,7 @@ public:
 			}
 		}
 
-	}
+		}
 
 
 };

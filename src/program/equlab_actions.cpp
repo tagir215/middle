@@ -12,7 +12,6 @@
 #include "HelperBubbleEquation.h"
 #include "TopDogBubbleTag.h"
 #include "BubblePowerComponent.h"
-#include "BubbleExponentTag.h"
 
 namespace equlab {
 
@@ -284,8 +283,6 @@ namespace equlab {
 		Vector3 targetPos = (middle::getGlobalPosition(gameState, baseId.index)
 			+ middle::getGlobalPosition(gameState, exponentId.index)) * 0.5f;
 
-		middle::attachComponent<components::BubbleExponentTag>(gameState, exponentId);
-
 		middle::Shape newPowerProto = bubble::newPower(gameState, targetPos);
 		middle::Shape& newPower = middle::registerShape(gameState, newPowerProto);
 		auto registerAction = std::make_unique<middle::EditorActionRegisterId>(newPower.id);
@@ -389,15 +386,6 @@ namespace equlab {
 			}
 
 			if (currentParentId.index != middle::UNASSIGNED) {
-				// if current parent is a power shape, and it already has 2 child, the next child should be the exponent, so we attach tag to it
-				if (bubble::isPowerBubble(gameState, currentParentId)) {
-					std::vector <middle::Id>powerChildren;
-					middle::getChildren(gameState, currentParentId, powerChildren);
-					if (powerChildren.size() == 2) {
-						middle::attachComponent<components::BubbleExponentTag>(gameState, newNodeId);
-					}
-				}
-
 				middle::EditorActionReparent(currentParentId.index, newNodeId.index).execute(gameState);
 			}
 			if (rootId.index == middle::UNASSIGNED) {
