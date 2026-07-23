@@ -261,7 +261,7 @@ public:
 				return;
 			}
 			assert(input.unitRef.index != middle::UNASSIGNED);
-			auto compressAction = std::make_shared<bubbleActions::CompressCommonFactor>(input.unitRef, false);
+			auto compressAction = std::make_shared<bubbleActions::CompressCommonFactor>(input.unitRef);
 			middle::queueAction(gameState, compressAction);
 			container->procedureTransitionStack.back().action = compressAction;
 		}
@@ -271,7 +271,7 @@ public:
 				return;
 			}
 			assert(input.unitRef.index != middle::UNASSIGNED);
-			auto compressAction = std::make_shared<bubbleActions::CompressCommonFactor>(input.unitRef, true);
+			auto compressAction = std::make_shared<bubbleActions::CompressPowers>(input.unitRef);
 			middle::queueAction(gameState, compressAction);
 			container->procedureTransitionStack.back().action = compressAction;
 		}

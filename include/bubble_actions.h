@@ -195,14 +195,14 @@ namespace bubbleActions{
 	public:
 		middle::Id commonFactorId;
 		middle::Id resultShapeId;
-		bool compressToExponent = false;
 		std::vector<std::unique_ptr<middle::EditorActionContainer>> actions;
-		CompressCommonFactor(middle::Id containerShape, bool compressToExponent);
+		CompressCommonFactor(middle::Id containerShape);
 		void execute(middle::GameState* gameState) override;
 		void undo(middle::GameState* gameState) override;
 	};
 
 	class CompressPowers : public middle::EditorActionContainer {
+	public:
 		middle::Id commonFactorId;
 		middle::Id resultShapeId;
 		std::vector<std::unique_ptr<middle::EditorActionContainer>> actions;

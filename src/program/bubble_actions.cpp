@@ -826,10 +826,9 @@ namespace bubbleActions {
 		}
 	}
 
-	CompressCommonFactor::CompressCommonFactor(middle::Id containerShape, bool compressToExponent)
+	CompressCommonFactor::CompressCommonFactor(middle::Id containerShape)
 	{
 		this->commonFactorId = containerShape;
-		this->compressToExponent = compressToExponent;
 	}
 
 	middle::Id compressToPower(middle::GameState* gameState, middle::Id compressTargetId, middle::Id commonFactorId) {
@@ -882,36 +881,48 @@ namespace bubbleActions {
 		return containerBubble.id;
 	}
 
-	middle::Id createCompressedPowersShape(middle::GameState* gameState, middle::Id commonFactorId) {
-		std::vector<middle::Id>children;
-		middle::Id powerContainer;
-		if (!getPowerContainer(gameState, commonFactorId, powerContainer)) {
+	middle::Id createCommonBaseCompressedPowerShape(middle::GameState* gameState, middle::Id commonBaseId) {
+		middle::Id parentId = middle::getParent(gameState, commonBaseId);
+		if (parentId.index == middle::UNASSIGNED) {
 			return middle::Id();
 		}
-		middle::Id mulContainer;
-		if (!getMultiplicationContainer(gameState, powerContainer, mulContainer)) {
+		middle::Id parentParentId = middle::getParent(gameState, parentId);
+		if (parentParentId.index == middle::UNASSIGNED) {
 			return middle::Id();
 		}
-		middle::getChildren(gameState, mulContainer, children);
-		std::vector<middle::Id>exponents;
-		for (middle::Id childId : children) {
-			if (!bubble::isPowerBubble(gameState, childId)) {
+		auto mulShape = middle::getShape(gameState, parentParentId.index);
+		if (!middle::getComponent<components::BubbleMultiplyComponent>(mulShape)) {
+			return middle::Id();
+		}
+		
+		std::vector<middle::Id>mulChildren;
+		middle::getChildren(gameState, mulShape.id, mulChildren);
+
+		std::vector<middle::Id>exponentIds;
+		for (middle::Id id : mulChildren) {
+			if (!bubble::isPowerBubble(gameState, id)) {
 				return middle::Id();
 			}
 			middle::Id baseId, exponentId;
-			bubble::getPowerBaseAndExponent(gameState, childId, baseId, exponentId);
-			if (!bubble::matchingBubbles(gameState, commonFactorId, baseId)) {
+			bubble::getPowerBaseAndExponent(gameState, id, baseId, exponentId);
+			if (!bubble::matchingBubbles(gameState, baseId, commonBaseId)) {
 				return middle::Id();
 			}
-			exponents.push_back(exponentId);
+			exponentIds.push_back(exponentId);
 		}
-		middle::Shape newBubble = bubble::newBubble(gameState, middle::getGlobalPosition(gameState, commonFactorId.index));
-		middle::Shape& container = middle::registerShape(gameState, newBubble);
-		for (middle::Id exponentId : exponents) {
-			middle::Id exponentCopyId = middle::deepCopyShapeGlobalCoordinates(gameState, exponentId);
-			middle::EditorActionReparent(container.id.index, exponentCopyId.index).execute(gameState);
+
+		middle::Id copyBaseId = middle::deepCopyShapeGlobalCoordinates(gameState, commonBaseId);
+
+		middle::Shape bubbleProto = bubble::newBubble(gameState, middle::getGlobalPosition(gameState, commonBaseId.index));
+		middle::Shape& newExponent = middle::registerShape(gameState, bubbleProto);
+		for (middle::Id exponentId : exponentIds) {
+			middle::Id copyExponentId = middle::deepCopyShapeGlobalCoordinates(gameState, exponentId);
+			middle::EditorActionReparent(newExponent.id.index, copyExponentId.index).execute(gameState);
 		}
-		return container.id;
+
+		auto connectPower = equlab::ConnectPower(copyBaseId, newExponent.id);
+		connectPower.execute(gameState);
+		return connectPower.resultId;
 	}
 
 	struct RepresentativeGroup {
@@ -1146,19 +1157,22 @@ namespace bubbleActions {
 			cancelled = true;
 			return;
 		}
-		middle::Id powerContainer;
-		if (!getPowerContainer(gameState, commonFactorId, powerContainer)) {
+		if (!bubble::isPowerBubble(gameState, parentId)) {
 			cancelled = true;
 			return;
 		}
 		middle::Id baseId, exponentId;
-		bubble::getPowerBaseAndExponent(gameState, powerContainer, baseId, exponentId);
-
+		bubble::getPowerBaseAndExponent(gameState, parentId, baseId, exponentId);
 		if (commonFactorId == baseId) {
-			middle::Id compressedShapeId = createCompressedPowersShape(gameState, baseId);
-			if (compressedShapeId.index == middle::UNASSIGNED) {
-				cancelled = true;
-				return;
+			middle::Id replacementShapeId = createCommonBaseCompressedPowerShape(gameState, commonFactorId);
+			if (replacementShapeId.index != middle::UNASSIGNED) {
+				auto registerAction = std::make_unique<middle::EditorActionRegisterId>(replacementShapeId);
+				registerAction->execute(gameState);
+				actions.push_back(std::move(registerAction));
+				middle::Id parentParentId = middle::getParent(gameState, parentId);
+				auto replaceAction = std::make_unique<Replace>(parentParentId, replacementShapeId);
+				replaceAction->execute(gameState);
+				actions.push_back(std::move(replaceAction));
 			}
 
 		}

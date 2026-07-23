@@ -389,12 +389,11 @@ namespace equlab {
 			}
 
 			if (currentParentId.index != middle::UNASSIGNED) {
-				// if current parent is a power shape, and it already has 1 child, the next child should be the exponent, so we attach tag to it
-				auto& currentParentShape = middle::getShape(gameState, currentParentId.index);
+				// if current parent is a power shape, and it already has 2 child, the next child should be the exponent, so we attach tag to it
 				if (bubble::isPowerBubble(gameState, currentParentId)) {
 					std::vector <middle::Id>powerChildren;
 					middle::getChildren(gameState, currentParentId, powerChildren);
-					if (powerChildren.size() == 1) {
+					if (powerChildren.size() == 2) {
 						middle::attachComponent<components::BubbleExponentTag>(gameState, newNodeId);
 					}
 				}

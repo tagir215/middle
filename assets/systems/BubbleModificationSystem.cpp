@@ -231,10 +231,10 @@ public:
 			action = std::make_shared<bubbleActions::MulNegativeOne>(intersectedShape.id);
 		}
 		else if (actionType == bubbleInventoryItemType::COMPRESS_MULTIPLICATION) {
-			action = std::make_shared<bubbleActions::CompressCommonFactor>(intersectedShape.id, false);
+			action = std::make_shared<bubbleActions::CompressCommonFactor>(intersectedShape.id);
 		}
 		else if (actionType == bubbleInventoryItemType::COMPRESS_EXPONENT) {
-			action = std::make_shared<bubbleActions::CompressCommonFactor>(intersectedShape.id, true);
+			action = std::make_shared<bubbleActions::CompressPowers>(intersectedShape.id);
 		}
 		else if (actionType == bubbleInventoryItemType::BUBBLIFY) {
 			action = std::make_shared<bubbleActions::Bubblify>(intersectedShape.id);
