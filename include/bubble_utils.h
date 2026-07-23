@@ -34,7 +34,6 @@ namespace bubble {
 	middle::Shape newBubble(middle::GameState* gameState, const Vector3& targetPos);
 	middle::Shape newUnit(middle::GameState* gameState, const Vector3& targetPos, bool isNegative = false);
 	middle::Shape newVariable(middle::GameState* gameState, const std::string& label, const Vector3& targetPos, bool isNegative = false);
-	middle::Shape newExponent(middle::GameState* gameState, const Vector3& targetPos);
 	middle::Shape newEquals(middle::GameState* gameState, const Vector3& targetPos);
 	middle::Shape newMultiplication(middle::GameState* gameState, const Vector3& targetPos);
 	middle::Shape newPower(middle::GameState* gameState, const Vector3& targetPos);
@@ -61,6 +60,7 @@ namespace bubble {
 	void findMatchingPairBubbles(middle::GameState* gameState, middle::Id bubbleRootId, middle::Id nodeStartPointAId, middle::Id nodeStartPointBId, middle::Id nodeRootId, std::unordered_map<std::string, middle::Id>& varOverrides, middle::Id& resultIdA, middle::Id& resultIdB);
 	middle::Id findMatchingFromSibling(middle::GameState* gameState, middle::Id nodeId, middle::Id siblingId, std::unordered_map<std::string, middle::Id>& varOverrides);
 	middle::Id containerize(middle::GameState* gameState, middle::Id id);
+	bool isPowerBubble(middle::GameState* gameState, middle::Id id);
 	bool additiveInverses(middle::GameState* gameState, middle::Id idA, middle::Id idB);
 	void negate(middle::GameState* gameState, middle::Id id);
 	void invert(middle::GameState* gameState, middle::Id id);

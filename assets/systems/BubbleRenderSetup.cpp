@@ -38,6 +38,7 @@
 #include "LocalPosition.h"
 #include "LocalScale.h"
 #include "BubblePowerComponent.h"
+#include "BubbleExponentTag.h"
 
 
 class BubbleRenderSetup : public middle::MiddleGameplaySystem {
@@ -349,23 +350,28 @@ public:
 			circleItemA.transform.scale = transform->scale;
 			circleItemA.transform.rotation = transform->rotation;
 			circleItemA.radius = circle->radius;
-			circleItemA.color = ORANGE;
+			circleItemA.color = RED;
 			circleItemA.layer = layer->layer + 1;
 			gameState->renderData.push_back(circleItemA);
 
 			assert(loop->loopMemberIds.size() == 2);
-			auto& exponentShape = middle::getShape(gameState, loop->loopMemberIds[components::PowerRole::POWER_EXPONENT].index);
-			auto exponentTransform = middle::getComponent<components::GlobalTransform>(exponentShape);
-			auto exponentCircle = middle::getComponent<components::Circle>(exponentShape);
-			middle::RenderItem circleItemB;
-			circleItemB.type = middle::RenderItemType::CIRCLE;
-			circleItemB.transform.translation = exponentTransform->pos;
-			circleItemB.transform.scale = exponentTransform->scale;
-			circleItemB.transform.rotation = exponentTransform->rotation;
-			circleItemB.radius = exponentCircle->radius;
-			circleItemB.color = ORANGE;
-			circleItemB.layer = layer->layer + 2;
-			gameState->renderData.push_back(circleItemB);
+			for (middle::Id childId : loop->loopMemberIds) {
+				auto& childShape = middle::getShape(gameState, childId.index);
+				if (!middle::getComponent<components::BubbleExponentTag>(childShape)) {
+					continue;
+				}
+				auto exponentTransform = middle::getComponent<components::GlobalTransform>(childShape);
+				auto exponentCircle = middle::getComponent<components::Circle>(childShape);
+				middle::RenderItem circleItemB;
+				circleItemB.type = middle::RenderItemType::CIRCLE;
+				circleItemB.transform.translation = exponentTransform->pos;
+				circleItemB.transform.scale = exponentTransform->scale;
+				circleItemB.transform.rotation = exponentTransform->rotation;
+				circleItemB.radius = exponentCircle->radius - 3;
+				circleItemB.color = ORANGE;
+				circleItemB.layer = layer->layer + 2;
+				gameState->renderData.push_back(circleItemB);
+			}
 		}
 
 		auto cuboidIt = cuboidCache->begin<components::Cuboid>();

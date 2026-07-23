@@ -28,6 +28,7 @@
 #include "GlobalTransform.h"
 #include "GlobalRadius.h"
 #include "BubblePowerComponent.h"
+#include "BubbleExponentTag.h"
 
 namespace bubble {
 	float unitRadius = 14;
@@ -777,8 +778,8 @@ namespace bubble {
 					}
 					else if (power) {
 						assert(opChildren.size() == 2);
-						middle::Id baseId = opChildren[components::PowerRole::POWER_BASE];
-						middle::Id exponentId = opChildren[components::PowerRole::POWER_EXPONENT];
+						middle::Id baseId, exponentId;
+						bubble::getPowerBaseAndExponent(gameState, shape.id, baseId, exponentId);
 						BubbleValue baseVal = calculateBubbleValue(gameState, baseId, variableValues);
 						BubbleValue exponentVal = calculateBubbleValue(gameState, exponentId, variableValues);
 						float powResult = std::pow(baseVal.scale, exponentVal.scale);
@@ -1170,8 +1171,15 @@ namespace bubble {
 			std::vector<middle::Id>powerChildren;
 			middle::getChildren(gameState, powerBubble, powerChildren);
 			assert(powerChildren.size() == 2);
-			resultBaseId = powerChildren[components::PowerRole::POWER_BASE];
-			resultExponentId = powerChildren[components::PowerRole::POWER_EXPONENT];
+			auto& powerChild0 = middle::getShape(gameState, powerChildren[0].index);
+			if (middle::getComponent<components::BubbleExponentTag>(powerChild0)) {
+				resultExponentId = powerChildren[0];
+				resultBaseId = powerChildren[1];
+			}
+			else {
+				resultExponentId = powerChildren[1];
+				resultBaseId = powerChildren[0];
+			}
 	}
 
 	middle::Id bubbleToStructure(middle::GameState* gameState, middle::Id bubbleId)
@@ -1384,6 +1392,7 @@ namespace bubble {
 		middle::Shape powerProto = bubble::newPower(gameState, targetPos);
 		middle::Shape& powerShape = middle::registerShape(gameState, powerProto);
 		EditorActionReparent(powerShape.id.index, baseId.index).execute(gameState);
+		middle::attachComponent<components::BubbleExponentTag>(gameState, exponentId);
 		EditorActionReparent(powerShape.id.index, exponentId.index).execute(gameState);
 		return powerShape.id;
 	}
@@ -1422,6 +1431,10 @@ namespace bubble {
 	}
 
 
+	bool isPowerBubble(middle::GameState* gameState, middle::Id id){
+		auto& shape = middle::getShape(gameState, id.index);
+		return middle::getComponent<components::BubblePowerComponent>(shape);
+	}
 
 
 }

@@ -12,6 +12,7 @@
 #include "HelperBubbleEquation.h"
 #include "TopDogBubbleTag.h"
 #include "BubblePowerComponent.h"
+#include "BubbleExponentTag.h"
 
 namespace equlab {
 
@@ -278,10 +279,12 @@ namespace equlab {
 	}
 
 	void ConnectPower::execute(middle::GameState* gameState) {
-		middle::Id oldParentId = middle::getParent(gameState, bubbleIdA);
+		middle::Id oldParentId = middle::getParent(gameState, baseId);
 
-		Vector3 targetPos = (middle::getGlobalPosition(gameState, bubbleIdA.index)
-			+ middle::getGlobalPosition(gameState, bubbleIdB.index)) * 0.5f;
+		Vector3 targetPos = (middle::getGlobalPosition(gameState, baseId.index)
+			+ middle::getGlobalPosition(gameState, exponentId.index)) * 0.5f;
+
+		middle::attachComponent<components::BubbleExponentTag>(gameState, exponentId);
 
 		middle::Shape newPowerProto = bubble::newPower(gameState, targetPos);
 		middle::Shape& newPower = middle::registerShape(gameState, newPowerProto);
@@ -289,10 +292,10 @@ namespace equlab {
 		registerAction->execute(gameState);
 		actions.push_back(std::move(registerAction));
 
-		auto reparentA = std::make_unique<middle::EditorActionReparent>(newPower.id.index, bubbleIdA.index);
+		auto reparentA = std::make_unique<middle::EditorActionReparent>(newPower.id.index, baseId.index);
 		reparentA->execute(gameState);
 		actions.push_back(std::move(reparentA));
-		auto reparentB = std::make_unique<middle::EditorActionReparent>(newPower.id.index, bubbleIdB.index);
+		auto reparentB = std::make_unique<middle::EditorActionReparent>(newPower.id.index, exponentId.index);
 		reparentB->execute(gameState);
 		actions.push_back(std::move(reparentB));
 
@@ -386,6 +389,16 @@ namespace equlab {
 			}
 
 			if (currentParentId.index != middle::UNASSIGNED) {
+				// if current parent is a power shape, and it already has 1 child, the next child should be the exponent, so we attach tag to it
+				auto& currentParentShape = middle::getShape(gameState, currentParentId.index);
+				if (bubble::isPowerBubble(gameState, currentParentId)) {
+					std::vector <middle::Id>powerChildren;
+					middle::getChildren(gameState, currentParentId, powerChildren);
+					if (powerChildren.size() == 1) {
+						middle::attachComponent<components::BubbleExponentTag>(gameState, newNodeId);
+					}
+				}
+
 				middle::EditorActionReparent(currentParentId.index, newNodeId.index).execute(gameState);
 			}
 			if (rootId.index == middle::UNASSIGNED) {
@@ -429,10 +442,20 @@ namespace equlab {
 			result += var->label;
 		}
 
+		
 		std::vector<middle::Id>children;
 		middle::getChildren(gameState, id, children);
-		for (middle::Id& childId : children) {
-			result += bubbleToBubequ(gameState, childId);
+		// if power bubble make sure to write base first, otherwise just loop children
+		if (bubble::isPowerBubble(gameState, shape.id)) {
+			middle::Id baseId, exponentId;
+			bubble::getPowerBaseAndExponent(gameState, shape.id, baseId, exponentId);
+			result += bubbleToBubequ(gameState, baseId);
+			result += bubbleToBubequ(gameState, exponentId);
+		}
+		else {
+			for (middle::Id& childId : children) {
+				result += bubbleToBubequ(gameState, childId);
+			}
 		}
 
 		result += ")";

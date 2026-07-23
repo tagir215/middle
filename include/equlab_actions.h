@@ -155,13 +155,13 @@ namespace equlab {
 
 	class ConnectPower : public middle::EditorActionContainer {
 	public:
-		middle::Id bubbleIdA;
-		middle::Id bubbleIdB;
+		middle::Id baseId;
+		middle::Id exponentId;
 		middle::Id resultId;
 		std::vector<std::unique_ptr<middle::EditorActionContainer>> actions;
 		ConnectPower(middle::Id bubbleIdA, middle::Id bubbleIdB) {
-			this->bubbleIdA = bubbleIdA;
-			this->bubbleIdB = bubbleIdB;
+			this->baseId = bubbleIdA;
+			this->exponentId = bubbleIdB;
 		}
 		void execute(middle::GameState* gameState);
 		void undo(middle::GameState* gameState);
