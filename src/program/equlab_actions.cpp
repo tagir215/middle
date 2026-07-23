@@ -11,6 +11,7 @@
 #include "UnIntersectableWindowComponent.h"
 #include "HelperBubbleEquation.h"
 #include "TopDogBubbleTag.h"
+#include "BubblePowerComponent.h"
 
 namespace equlab {
 
@@ -226,6 +227,7 @@ namespace equlab {
 		}
 	}
 
+
 	void ToggleEditable::execute(middle::GameState* gameState) {
 		int topLevelIndex = middle::findHighestLevelContainer(gameState, id.index);
 		topLevelId = gameState->ids[topLevelIndex];
@@ -275,42 +277,33 @@ namespace equlab {
 		}
 	}
 
-	void ConnectPowerLink::execute(middle::GameState* gameState) {
-		if (!canConnect(gameState, bubbleIdA, bubbleIdB)) {
-			cancelled = true;
-			return;
-		}
-		Vector3 bubbAPos = middle::getGlobalPosition(gameState, bubbleIdA.index);
-		Vector3 bubbBPos = middle::getGlobalPosition(gameState, bubbleIdB.index);
-		Vector3 targetPos = (bubbAPos + bubbBPos) * 0.5f;
-
-		middle::Shape powerProto = bubble::newPower(gameState, targetPos);
-		middle::Shape& powerShape = middle::registerShape(gameState, powerProto);
-		middle::Id powerBubbleId = bubble::containerize(gameState, powerShape.id);
-
+	void ConnectPower::execute(middle::GameState* gameState) {
 		middle::Id oldParentId = middle::getParent(gameState, bubbleIdA);
 
-		auto registerAction = std::make_unique<middle::EditorActionRegisterId>(powerBubbleId);
+		Vector3 targetPos = (middle::getGlobalPosition(gameState, bubbleIdA.index)
+			+ middle::getGlobalPosition(gameState, bubbleIdB.index)) * 0.5f;
+
+		middle::Shape newPowerProto = bubble::newPower(gameState, targetPos);
+		middle::Shape& newPower = middle::registerShape(gameState, newPowerProto);
+		auto registerAction = std::make_unique<middle::EditorActionRegisterId>(newPower.id);
 		registerAction->execute(gameState);
 		actions.push_back(std::move(registerAction));
 
-		if (oldParentId.index != middle::UNASSIGNED) {
-			auto reparentC = std::make_unique<middle::EditorActionReparent>(oldParentId.index, powerBubbleId.index);
-			reparentC->execute(gameState);
-			actions.push_back(std::move(reparentC));
-		}
-
-		auto reparentA = std::make_unique<middle::EditorActionReparent>(powerShape.id.index, bubbleIdA.index);
+		auto reparentA = std::make_unique<middle::EditorActionReparent>(newPower.id.index, bubbleIdA.index);
 		reparentA->execute(gameState);
 		actions.push_back(std::move(reparentA));
-
-		auto reparentB = std::make_unique<middle::EditorActionReparent>(powerShape.id.index, bubbleIdB.index);
+		auto reparentB = std::make_unique<middle::EditorActionReparent>(newPower.id.index, bubbleIdB.index);
 		reparentB->execute(gameState);
 		actions.push_back(std::move(reparentB));
 
-		resultId = powerBubbleId;
+		auto reparentC = std::make_unique<middle::EditorActionReparent>(oldParentId.index, newPower.id.index);
+		reparentC->execute(gameState);
+		actions.push_back(std::move(reparentC));
+
+		resultId = newPower.id;
 	}
-	void ConnectPowerLink::undo(middle::GameState* gameState) {
+
+	void ConnectPower::undo(middle::GameState* gameState) {
 		while (actions.size() > 0) {
 			actions.back()->undo(gameState);
 			actions.pop_back();
@@ -416,11 +409,10 @@ namespace equlab {
 
 		result += "(";
 
-		auto op = middle::getComponent<components::BubbleMultiplyComponent>(shape);
-		if (op && op->operationType == components::OperationType::MULTIPLICATION) {
+		if (middle::getComponent<components::BubbleMultiplyComponent>(shape)) {
 			result += "*";
 		}
-		else if (op && op->operationType == components::OperationType::POWER) {
+		else if (middle::getComponent<components::BubblePowerComponent>(shape)) {
 			result += "^";
 		}
 		else if (middle::getComponent<components::BubbleEqualsComponent>(shape)) {

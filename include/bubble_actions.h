@@ -22,7 +22,7 @@ namespace bubbleActions{
 	middle::Id createInverseReplacementShape(middle::GameState* gameState, middle::Id id);
 	middle::Id createMultiplicationReplacementShape(middle::GameState* gameState, middle::Id shapeToReplace, middle::Id replacingShape);
 	middle::Id createAdditionReplacementShape(middle::GameState* gameState, middle::Id shapeToReplace, middle::Id replacingShape);
-	middle::Id createInvertedPowerReplacementShape(middle::GameState* gameState, middle::Id shapeToReplace, middle::Id powerBubbleId);
+	middle::Id createMultiplicationIntoPowerReplacementShape(middle::GameState* gameState, middle::Id shapeToReplace, middle::Id powerBubbleId);
 
 	class Cancel : public middle::EditorActionContainer {
 	public:
@@ -190,13 +190,23 @@ namespace bubbleActions{
 		void undo(middle::GameState* gameState) override;
 	};
 
-	class Compress : public middle::EditorActionContainer {
+
+	class CompressCommonFactor : public middle::EditorActionContainer {
 	public:
 		middle::Id commonFactorId;
 		middle::Id resultShapeId;
 		bool compressToExponent = false;
 		std::vector<std::unique_ptr<middle::EditorActionContainer>> actions;
-		Compress(middle::Id containerShape, bool compressToExponent);
+		CompressCommonFactor(middle::Id containerShape, bool compressToExponent);
+		void execute(middle::GameState* gameState) override;
+		void undo(middle::GameState* gameState) override;
+	};
+
+	class CompressPowers : public middle::EditorActionContainer {
+		middle::Id commonFactorId;
+		middle::Id resultShapeId;
+		std::vector<std::unique_ptr<middle::EditorActionContainer>> actions;
+		CompressPowers(middle::Id commonExponentId);
 		void execute(middle::GameState* gameState) override;
 		void undo(middle::GameState* gameState) override;
 	};

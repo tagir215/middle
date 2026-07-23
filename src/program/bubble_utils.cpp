@@ -18,7 +18,6 @@
 #include "MouseSelectable.h"
 #include "BubbleEqualsComponent.h"
 #include "Layer.h"
-#include "ExponentComponent.h"
 #include "BubbleAlgebraProblem.h"
 #include "component_utils.h"
 #include "DeleteComponent.h"
@@ -28,6 +27,7 @@
 #include "LocalScale.h"
 #include "GlobalTransform.h"
 #include "GlobalRadius.h"
+#include "BubblePowerComponent.h"
 
 namespace bubble {
 	float unitRadius = 14;
@@ -758,26 +758,27 @@ namespace bubble {
 				auto& shape = middle::getShape(gameState, id.index);
 				auto bubble = middle::getComponent<components::BubbleComponent>(shape);
 				auto mul = middle::getComponent<components::BubbleMultiplyComponent>(shape);
+				auto power = middle::getComponent<components::BubblePowerComponent>(shape);
 				if (bubble) {
 					BubbleValue value = calculateBubbleValue(gameState, shape.id, variableValues);
 					result.scale += value.scale;
 				}
 				else if (mul) {
-					std::vector<middle::Id> mulChildren;
-					middle::getChildren(gameState, shape.id, mulChildren);
+					std::vector<middle::Id> opChildren;
+					middle::getChildren(gameState, shape.id, opChildren);
 					BubbleValue mulResult;
 					mulResult.scale = 1;
-					if (mul->operationType == static_cast<int>(components::OperationType::MULTIPLICATION)) {
-						for (int x = 0; x < mulChildren.size(); ++x) {
-							BubbleValue val = calculateBubbleValue(gameState, mulChildren[x], variableValues);
+					if (mul) {
+						for (int x = 0; x < opChildren.size(); ++x) {
+							BubbleValue val = calculateBubbleValue(gameState, opChildren[x], variableValues);
 							mulResult.scale *= val.scale;
 						}
 						result.scale += mulResult.scale;
 					}
-					else if (mul->operationType == static_cast<int>(components::OperationType::POWER)) {
-						assert(mulChildren.size() == 2);
-						middle::Id baseId = mulChildren[components::PowerRole::POWER_BASE];
-						middle::Id exponentId = mulChildren[components::PowerRole::POWER_EXPONENT];
+					else if (power) {
+						assert(opChildren.size() == 2);
+						middle::Id baseId = opChildren[components::PowerRole::POWER_BASE];
+						middle::Id exponentId = opChildren[components::PowerRole::POWER_EXPONENT];
 						BubbleValue baseVal = calculateBubbleValue(gameState, baseId, variableValues);
 						BubbleValue exponentVal = calculateBubbleValue(gameState, exponentId, variableValues);
 						float powResult = std::pow(baseVal.scale, exponentVal.scale);
@@ -1166,11 +1167,8 @@ namespace bubble {
 
 	void getPowerBaseAndExponent(middle::GameState* gameState, middle::Id powerBubble, middle::Id& resultBaseId, middle::Id& resultExponentId)
 	{
-			std::vector<middle::Id>powerBubbleChildren;
-			middle::getChildren(gameState, powerBubble, powerBubbleChildren);
-			assert(powerBubbleChildren.size() == 1);
 			std::vector<middle::Id>powerChildren;
-			middle::getChildren(gameState, powerBubbleChildren[0], powerChildren);
+			middle::getChildren(gameState, powerBubble, powerChildren);
 			assert(powerChildren.size() == 2);
 			resultBaseId = powerChildren[components::PowerRole::POWER_BASE];
 			resultExponentId = powerChildren[components::PowerRole::POWER_EXPONENT];
@@ -1343,13 +1341,6 @@ namespace bubble {
 		return variableProto;
 	}
 
-	middle::Shape newExponent(middle::GameState* gameState, const Vector3& targetPos)
-	{
-		middle::Shape bubble = newBubble(gameState, targetPos);
-		middle::addComponent<components::ExponentComponent>(bubble);
-		return bubble;
-	}
-
 	middle::Shape newEquals(middle::GameState* gameState, const Vector3& targetPos)
 	{
 		middle::Shape newBubbleShape;
@@ -1370,7 +1361,6 @@ namespace bubble {
 	{
 		middle::Shape newBubbleShape;
 		auto mulComp =middle::addComponent<components::BubbleMultiplyComponent>(newBubbleShape);
-		mulComp->operationType = components::OperationType::MULTIPLICATION;
 		middle::addComponent<components::MouseGrabbable>(newBubbleShape);
 		middle::addComponent<components::MouseSelectable>(newBubbleShape);
 		middle::addComponent<components::MouseIntersectable>(newBubbleShape);
@@ -1385,19 +1375,17 @@ namespace bubble {
 
 	middle::Shape newPower(middle::GameState* gameState, const Vector3& targetPos)
 	{
-		middle::Shape newBubbleShape;
-		auto mulComp =middle::addComponent<components::BubbleMultiplyComponent>(newBubbleShape);
-		mulComp->operationType = components::OperationType::POWER;
-		middle::addComponent<components::MouseGrabbable>(newBubbleShape);
-		middle::addComponent<components::MouseSelectable>(newBubbleShape);
-		middle::addComponent<components::MouseIntersectable>(newBubbleShape);
-		middle::addComponent<components::LoopTag>(newBubbleShape);
-		middle::addComponent<components::LoopSociety>(newBubbleShape);
-		auto position = middle::addComponent<components::LocalPosition>(newBubbleShape);
-		position->pos = targetPos;
-		middle::addComponent<components::LocalScale>(newBubbleShape);
-		middle::addComponent<components::GlobalTransform>(newBubbleShape);
+		middle::Shape newBubbleShape = newBubble(gameState, targetPos);
+		middle::addComponent<components::BubblePowerComponent>(newBubbleShape);
 		return newBubbleShape;
+	}
+
+	middle::Id newPower(middle::GameState* gameState, middle::Id baseId, middle::Id exponentId, const Vector3& targetPos) {
+		middle::Shape powerProto = bubble::newPower(gameState, targetPos);
+		middle::Shape& powerShape = middle::registerShape(gameState, powerProto);
+		EditorActionReparent(powerShape.id.index, baseId.index).execute(gameState);
+		EditorActionReparent(powerShape.id.index, exponentId.index).execute(gameState);
+		return powerShape.id;
 	}
 
 	middle::Id newBubbleWithIntValue(middle::GameState* gameState, int value, const Vector3& targetPos)

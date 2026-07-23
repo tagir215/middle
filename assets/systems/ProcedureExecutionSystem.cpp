@@ -19,7 +19,7 @@
 #include "component_utils.h"
 #include "MouseClickComponent.h"
 #include "PlacementComponent.h"
-#include "ExponentComponent.h"
+#include "BubblePowerComponent.h"
 
 class ProcedureExecutionSystem : public middle::MiddleGameplaySystem {
 public:
@@ -145,13 +145,14 @@ public:
 				middle::Id& parentId = middle::getParent(gameState, varA.unitRef);
 				auto& parentShape = middle::getShape(gameState, parentId.index);
 				auto bubbleMultiplication = middle::getComponent<components::BubbleMultiplyComponent>(parentShape);
+				auto bubblePower = middle::getComponent<components::BubblePowerComponent>(parentShape);
 
-				if (bubbleMultiplication && bubbleMultiplication->operationType == static_cast<int>(components::OperationType::MULTIPLICATION)) {
+				if (bubbleMultiplication) {
 					auto multiply = std::make_shared<bubbleActions::ExecuteMultiplication>(varA.unitRef, varB.unitRef);
 					middle::queueAction(gameState, multiply);
 					container->procedureTransitionStack.back().action = multiply;
 				}
-				else if (bubbleMultiplication && bubbleMultiplication->operationType == static_cast<int>(components::OperationType::POWER)) {
+				else if (bubblePower) {
 					auto doPower = std::make_shared<bubbleActions::ExecutePower>(parentShape.id);
 					middle::queueAction(gameState, doPower);
 					container->procedureTransitionStack.back().action = doPower;
@@ -260,7 +261,7 @@ public:
 				return;
 			}
 			assert(input.unitRef.index != middle::UNASSIGNED);
-			auto compressAction = std::make_shared<bubbleActions::Compress>(input.unitRef, false);
+			auto compressAction = std::make_shared<bubbleActions::CompressCommonFactor>(input.unitRef, false);
 			middle::queueAction(gameState, compressAction);
 			container->procedureTransitionStack.back().action = compressAction;
 		}
@@ -270,7 +271,7 @@ public:
 				return;
 			}
 			assert(input.unitRef.index != middle::UNASSIGNED);
-			auto compressAction = std::make_shared<bubbleActions::Compress>(input.unitRef, true);
+			auto compressAction = std::make_shared<bubbleActions::CompressCommonFactor>(input.unitRef, true);
 			middle::queueAction(gameState, compressAction);
 			container->procedureTransitionStack.back().action = compressAction;
 		}

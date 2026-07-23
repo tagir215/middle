@@ -38,6 +38,7 @@ namespace bubble {
 	middle::Shape newEquals(middle::GameState* gameState, const Vector3& targetPos);
 	middle::Shape newMultiplication(middle::GameState* gameState, const Vector3& targetPos);
 	middle::Shape newPower(middle::GameState* gameState, const Vector3& targetPos);
+	middle::Id newPower(middle::GameState* gameState, middle::Id baseId, middle::Id exponentId, const Vector3& targetPos);
 	middle::Id newBubbleWithIntValue(middle::GameState* gameState, int value, const Vector3& targetPos);
 	bool isIntersecting(middle::GameState* gameState, middle::Shape& shape);
 	bool unitEquals(middle::GameState* gameState, middle::Id& idA, middle::Id& idB);
@@ -74,7 +75,7 @@ namespace bubble {
 	void getPowerBaseAndExponent(middle::GameState* gameState, middle::Id powerBubble, middle::Id& resultBaseId, middle::Id& resultExponentId);
 
 	template<typename T>
-	middle::Id findCompFromParents(middle::GameState* gameState, middle::Id id) {
+	middle::Id findIdWithCompFromShapeOrItsParents(middle::GameState* gameState, middle::Id id) {
 		std::stack < middle::Id> parents;
 		parents.push(id);
 		while (parents.size() > 0) {

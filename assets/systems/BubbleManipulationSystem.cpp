@@ -19,7 +19,6 @@
 #include "BubbleEqualsComponent.h"
 #include "BubbleVariable.h"
 #include "BubbleEqualsVariable.h"
-#include "ExponentComponent.h"
 
 class BubbleManipulationSystem : public middle::MiddleGameplaySystem {
 
@@ -87,11 +86,6 @@ public:
 			}
 			// other children should be variable, for this to work
 			auto& childOfOther = middle::getShape(gameState, id.index);
-			auto expComp = middle::getComponent<components::ExponentComponent>(childOfOther);
-			// can't be in exponent for this to work
-			if (expComp) {
-				return;
-			}
 
 			auto varComp = middle::getComponent<components::BubbleVariable>(childOfOther);
 			if (!varComp) {

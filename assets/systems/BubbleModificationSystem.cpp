@@ -13,7 +13,6 @@
 #include "BubbleVariable.h"
 #include "TopDogBubbleTag.h"
 #include "bubble_utils.h"
-#include "ExponentComponent.h"
 #include "UiComponent.h"
 #include "BubbleAlgebraLevelConfigs.h"
 #include "RuntimeHiddenTag.h"
@@ -27,6 +26,7 @@
 #include "TimerComponent.h"
 #include "InsertableBubble.h"
 #include "imgui.h"
+#include "BubblePowerComponent.h"
 
 class BubbleModificationSystem : public middle::MiddleGameplaySystem {
 public:
@@ -92,17 +92,16 @@ public:
 	void tryCombine(middle::GameState* gameState, middle::Shape& refParent, middle::Shape& refShape, middle::Shape& intersectedShape) {
 
 		// is multiplication connection
-		if (auto mul = middle::getComponent<components::BubbleMultiplyComponent>(refParent)) {
-			if (mul->operationType == static_cast<int>(components::OperationType::MULTIPLICATION)) {
-				auto multiply = std::make_shared<bubbleActions::ExecuteMultiplication>(refShape.id, intersectedShape.id);
-				middle::queueAction(gameState, multiply);
-				gameState->bubbleAlgebraState.bubbleActions.push_back(multiply);
-			}
-			if (mul->operationType == static_cast<int>(components::OperationType::POWER)) {
-				auto doPower = std::make_shared<bubbleActions::ExecutePower>(refParent.id);
-				middle::queueAction(gameState, doPower);
-				gameState->bubbleAlgebraState.bubbleActions.push_back(doPower);
-			}
+		if (middle::getComponent<components::BubbleMultiplyComponent>(refParent)) {
+			auto multiply = std::make_shared<bubbleActions::ExecuteMultiplication>(refShape.id, intersectedShape.id);
+			middle::queueAction(gameState, multiply);
+			gameState->bubbleAlgebraState.bubbleActions.push_back(multiply);
+			return;
+		}
+		else if (middle::getComponent<components::BubblePowerComponent>(refParent)) {
+			auto doPower = std::make_shared<bubbleActions::ExecutePower>(refParent.id);
+			middle::queueAction(gameState, doPower);
+			gameState->bubbleAlgebraState.bubbleActions.push_back(doPower);
 			return;
 		}
 		// else is addition connection
@@ -232,10 +231,10 @@ public:
 			action = std::make_shared<bubbleActions::MulNegativeOne>(intersectedShape.id);
 		}
 		else if (actionType == bubbleInventoryItemType::COMPRESS_MULTIPLICATION) {
-			action = std::make_shared<bubbleActions::Compress>(intersectedShape.id, false);
+			action = std::make_shared<bubbleActions::CompressCommonFactor>(intersectedShape.id, false);
 		}
 		else if (actionType == bubbleInventoryItemType::COMPRESS_EXPONENT) {
-			action = std::make_shared<bubbleActions::Compress>(intersectedShape.id, true);
+			action = std::make_shared<bubbleActions::CompressCommonFactor>(intersectedShape.id, true);
 		}
 		else if (actionType == bubbleInventoryItemType::BUBBLIFY) {
 			action = std::make_shared<bubbleActions::Bubblify>(intersectedShape.id);
@@ -268,7 +267,7 @@ public:
 
 
 	bool canEdit(middle::GameState* gameState, middle::Shape& intersectableShape) {
-		middle::Id algebraProblemId = bubble::findCompFromParents<components::BubbleAlgebraProblem>(gameState, intersectableShape.id);
+		middle::Id algebraProblemId = bubble::findIdWithCompFromShapeOrItsParents<components::BubbleAlgebraProblem>(gameState, intersectableShape.id);
 		if (algebraProblemId.index != middle::UNASSIGNED) {
 			auto& algebraProblemShape = middle::getShape(gameState, algebraProblemId.index);
 			auto algebraProblem = middle::getComponent < components::BubbleAlgebraProblem>(algebraProblemShape);
@@ -276,7 +275,7 @@ public:
 				return false;
 			}
 		}
-		middle::Id helperId = bubble::findCompFromParents<components::HelperBubbleEquation>(gameState, intersectableShape.id);
+		middle::Id helperId = bubble::findIdWithCompFromShapeOrItsParents<components::HelperBubbleEquation>(gameState, intersectableShape.id);
 		if (algebraProblemId.index == middle::UNASSIGNED && helperId.index == middle::UNASSIGNED) {
 			return false;
 		}
@@ -489,7 +488,7 @@ public:
 
 
 			if (intersectCount == 0) {
-				copyAsHelper(gameState, ref->idRef, middle::getGlobalPosition(gameState,shapeForDeletion.id.index));
+				copyAsHelper(gameState, ref->idRef, middle::getGlobalPosition(gameState, shapeForDeletion.id.index));
 			}
 		}
 

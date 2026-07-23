@@ -259,7 +259,7 @@ public:
 			if (currentSelectType == SelectType::ADD_POWER) {
 				middle::Id idA = selectedId;
 				middle::Id idB = intersectedShape;
-				auto connect = std::make_shared<equlab::ConnectPowerLink>(idA, idB);
+				auto connect = std::make_shared<equlab::ConnectPower>(idA, idB);
 				middle::queueAction(gameState, connect);
 				gameState->bubbleAlgebraState.bubbleActions.push_back(connect);
 			}

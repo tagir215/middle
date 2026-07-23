@@ -17,7 +17,6 @@
 #include "BubbleEqualsComponent.h"
 #include "BubbleVariable.h"
 #include "bubble_colors.h"
-#include "ExponentComponent.h"
 #include "Layer.h"
 #include "Rectangle.h"
 #include "UiComponent.h"
@@ -38,6 +37,7 @@
 #include "component_utils.h"
 #include "LocalPosition.h"
 #include "LocalScale.h"
+#include "BubblePowerComponent.h"
 
 
 class BubbleRenderSetup : public middle::MiddleGameplaySystem {
@@ -61,6 +61,7 @@ public:
 	components::CompCache* unitCache;
 	components::CompCache* activeBubbleCache;
 	components::CompCache* oPosCache;
+	components::CompCache* powerCache;
 
 	void init(middle::GameState* gameState) {
 		bubbleCache = middle::newCompCache(gameState, systemName);
@@ -114,6 +115,12 @@ public:
 		activeBubbleCache = middle::newCompCache(gameState, systemName);
 		activeBubbleCache->addType<components::ActiveSceneSelectableTag>();
 		activeBubbleCache->addType<components::GlobalTransform>();
+		powerCache = middle::newCompCache(gameState, systemName);
+		powerCache->addType<components::BubblePowerComponent>();
+		powerCache->addType<components::Circle>();
+		powerCache->addType<components::LoopSociety>();
+		powerCache->addType<components::GlobalTransform>();
+		powerCache->addType<components::Layer>();
 
 		oPosCache = middle::newCompCache(gameState, systemName);
 		oPosCache->addType<components::Position>(components::NOTINTERESTED);
@@ -317,20 +324,7 @@ public:
 				line.type = middle::RenderItemType::LINE;
 				line.linePointA = posA + Vector3Scale(axis, radiusA);
 				line.linePointB = posB + Vector3Scale(axis, -radiusB);
-				if (multiplyComponent->operationType == (int)components::OperationType::MULTIPLICATION) {
-					line.color = bubbleColors::MULTIPLICATION_CONNECTION;
-				}
-				else {
-					line.color = ORANGE;
-					middle::RenderItem expCircle;
-					expCircle.type = middle::RenderItemType::CIRCLE;
-					expCircle.color = ORANGE;
-					setTransform(expCircle, transformB);
-					expCircle.center = { 0,0,0 };
-					expCircle.radius = circleB->radius + 1.5f;
-					expCircle.layer = layer->layer;
-					gameState->renderData.push_back(expCircle);
-				}
+				line.color = bubbleColors::MULTIPLICATION_CONNECTION;
 				line.layer = layer->layer;
 				line.disableDepthTest = isUiItem;
 
@@ -338,6 +332,41 @@ public:
 			}
 		}
 
+		// renderPowers
+		auto powerLoopIt = powerCache->begin<components::LoopSociety>();
+		auto powerCircleIt = powerCache->begin<components::Circle>();
+		auto powerTransformIt = powerCache->begin<components::GlobalTransform>();
+		auto powerLayerIt = powerCache->begin<components::Layer>();
+		for (middle::Id powerId : powerCache->relevantIdVector) {
+			auto loop = *powerLoopIt;
+			auto circle = *powerCircleIt;
+			auto transform = *powerTransformIt;
+			auto layer = *powerLayerIt;
+
+			middle::RenderItem circleItemA;
+			circleItemA.type = middle::RenderItemType::CIRCLE;
+			circleItemA.transform.translation = transform->pos;
+			circleItemA.transform.scale = transform->scale;
+			circleItemA.transform.rotation = transform->rotation;
+			circleItemA.radius = circle->radius;
+			circleItemA.color = ORANGE;
+			circleItemA.layer = layer->layer + 1;
+			gameState->renderData.push_back(circleItemA);
+
+			assert(loop->loopMemberIds.size() == 2);
+			auto& exponentShape = middle::getShape(gameState, loop->loopMemberIds[components::PowerRole::POWER_EXPONENT].index);
+			auto exponentTransform = middle::getComponent<components::GlobalTransform>(exponentShape);
+			auto exponentCircle = middle::getComponent<components::Circle>(exponentShape);
+			middle::RenderItem circleItemB;
+			circleItemB.type = middle::RenderItemType::CIRCLE;
+			circleItemB.transform.translation = exponentTransform->pos;
+			circleItemB.transform.scale = exponentTransform->scale;
+			circleItemB.transform.rotation = exponentTransform->rotation;
+			circleItemB.radius = exponentCircle->radius;
+			circleItemB.color = ORANGE;
+			circleItemB.layer = layer->layer + 2;
+			gameState->renderData.push_back(circleItemB);
+		}
 
 		auto cuboidIt = cuboidCache->begin<components::Cuboid>();
 		auto cuboidTransformIt = cuboidCache->begin<components::GlobalTransform>();

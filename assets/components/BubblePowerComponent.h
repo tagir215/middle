@@ -1,16 +1,15 @@
 #pragma once
 #include "registrars.h"
 #include "editor_file_utils.h"
-#define MIDDLEEXPONENTCOMPONENT(X) \
-	X(power) \
-	X(isInverse) \
-	X(isNegative)
+#define MIDDLEBUBBLEPOWERCOMPONENT(X) 
 
 namespace components {
-	struct ExponentComponent : public middle::Serializable{
-		int power = 1;
-		bool isInverse = false;
-		bool isNegative = false;
+	enum PowerRole {
+		POWER_BASE,
+		POWER_EXPONENT
+	};
+
+	struct BubblePowerComponent : public middle::Serializable{
 
 		void serialize(std::ostream& ostream) override;
 		void deserialize(const std::vector<std::string>& buffer, int indexOffset) override;
@@ -19,7 +18,7 @@ namespace components {
 		template<typename V>
 		void reflect(V& v) {
 #define X(f) v(#f, f);
-			MIDDLEEXPONENTCOMPONENT(X)
+			MIDDLEBUBBLEPOWERCOMPONENT(X)
 #undef X
 		}
 	};
