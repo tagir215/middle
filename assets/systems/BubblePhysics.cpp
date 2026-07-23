@@ -311,6 +311,7 @@ public:
 				}
 			}
 
+
 			std::vector<Body>bodies;
 			for (middle::Id& childId : interactingChildren) {
 				auto& childShape = middle::getShape(gameState, childId.index);
@@ -322,7 +323,7 @@ public:
 				body.id = childId;
 				body.transform = transform;
 				body.physicsData = physics;
-				body.radius = childGlobalR->radius;
+				body.radius = childGlobalR->radius + fieldMargin * body.transform->scale.x;
 				bodies.push_back(body);
 			}
 
@@ -352,7 +353,7 @@ public:
 			body.id = id;
 			body.transform = topBubbleTransform;
 			body.physicsData = topBubblePhysics;
-			body.radius = globalR->radius;
+			body.radius = globalR->radius + fieldMargin * body.transform->scale.x;
 			topDogBubbles.push_back(body);
 		}
 

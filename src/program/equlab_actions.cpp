@@ -286,15 +286,16 @@ namespace equlab {
 
 		middle::Shape powerProto = bubble::newPower(gameState, targetPos);
 		middle::Shape& powerShape = middle::registerShape(gameState, powerProto);
+		middle::Id powerBubbleId = bubble::containerize(gameState, powerShape.id);
 
 		middle::Id oldParentId = middle::getParent(gameState, bubbleIdA);
 
-		auto registerAction = std::make_unique<middle::EditorActionRegisterId>(powerShape.id);
+		auto registerAction = std::make_unique<middle::EditorActionRegisterId>(powerBubbleId);
 		registerAction->execute(gameState);
 		actions.push_back(std::move(registerAction));
 
 		if (oldParentId.index != middle::UNASSIGNED) {
-			auto reparentC = std::make_unique<middle::EditorActionReparent>(oldParentId.index, powerShape.id.index);
+			auto reparentC = std::make_unique<middle::EditorActionReparent>(oldParentId.index, powerBubbleId.index);
 			reparentC->execute(gameState);
 			actions.push_back(std::move(reparentC));
 		}
@@ -307,8 +308,7 @@ namespace equlab {
 		reparentB->execute(gameState);
 		actions.push_back(std::move(reparentB));
 
-
-		resultId = powerShape.id;
+		resultId = powerBubbleId;
 	}
 	void ConnectPowerLink::undo(middle::GameState* gameState) {
 		while (actions.size() > 0) {

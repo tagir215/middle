@@ -70,6 +70,8 @@ namespace bubble {
 	int findBubbleDepth(middle::GameState* gameState, middle::Id id);
 	bool isBubbleWithValueOne(middle::GameState* gameState, middle::Id id);
 	bool isBubbleWithValueOneNegative(middle::GameState* gameState, middle::Id id);
+	bool isBubbleZero(middle::GameState* gameState, middle::Id id);
+	void getPowerBaseAndExponent(middle::GameState* gameState, middle::Id powerBubble, middle::Id& resultBaseId, middle::Id& resultExponentId);
 
 	template<typename T>
 	middle::Id findCompFromParents(middle::GameState* gameState, middle::Id id) {

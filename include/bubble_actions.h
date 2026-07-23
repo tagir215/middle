@@ -22,6 +22,7 @@ namespace bubbleActions{
 	middle::Id createInverseReplacementShape(middle::GameState* gameState, middle::Id id);
 	middle::Id createMultiplicationReplacementShape(middle::GameState* gameState, middle::Id shapeToReplace, middle::Id replacingShape);
 	middle::Id createAdditionReplacementShape(middle::GameState* gameState, middle::Id shapeToReplace, middle::Id replacingShape);
+	middle::Id createInvertedPowerReplacementShape(middle::GameState* gameState, middle::Id shapeToReplace, middle::Id powerBubbleId);
 
 	class Cancel : public middle::EditorActionContainer {
 	public:

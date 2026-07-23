@@ -1150,6 +1150,32 @@ namespace bubble {
 		return false;
 	}
 
+	bool isBubbleZero(middle::GameState* gameState, middle::Id id)
+	{
+		auto& shape = middle::getShape(gameState, id.index);
+		auto bubble = middle::getComponent<components::BubbleComponent>(shape);
+		auto unit = middle::getComponent<components::BubbleUnit>(shape);
+		auto variable = middle::getComponent<components::BubbleVariable>(shape);
+		if (bubble && !unit && !variable) {
+			std::vector<middle::Id>children;
+			middle::getChildren(gameState, id, children);
+			return children.size() == 0;
+		}
+		return false;
+	}
+
+	void getPowerBaseAndExponent(middle::GameState* gameState, middle::Id powerBubble, middle::Id& resultBaseId, middle::Id& resultExponentId)
+	{
+			std::vector<middle::Id>powerBubbleChildren;
+			middle::getChildren(gameState, powerBubble, powerBubbleChildren);
+			assert(powerBubbleChildren.size() == 1);
+			std::vector<middle::Id>powerChildren;
+			middle::getChildren(gameState, powerBubbleChildren[0], powerChildren);
+			assert(powerChildren.size() == 2);
+			resultBaseId = powerChildren[components::PowerRole::POWER_BASE];
+			resultExponentId = powerChildren[components::PowerRole::POWER_EXPONENT];
+	}
+
 	middle::Id bubbleToStructure(middle::GameState* gameState, middle::Id bubbleId)
 	{
 		// create root

@@ -163,6 +163,18 @@ namespace bubbleActions {
 		return replacementId;
 	}
 
+	middle::Id createInvertedPowerReplacementShape(middle::GameState* gameState, middle::Id shapeToReplaceId, middle::Id exponentId)
+	{
+			// invert exponent
+			middle::Id copyShapeToCopyId = middle::deepCopyShapeGlobalCoordinates(gameState, shapeToReplaceId);
+			middle::Id invertedExponentId = createInverseReplacementShape(gameState, exponentId);
+
+			auto connectPower = std::make_unique<equlab::ConnectPowerLink>(copyShapeToCopyId, invertedExponentId);
+			connectPower->execute(gameState);
+			middle::Id newPowerId = connectPower->resultId;
+			return newPowerId;
+	}
+
 	middle::Id createMultiplicationReplacementShape(middle::GameState* gameState, middle::Id shapeToReplaceId, middle::Id replacingShapeId)
 	{
 		auto& shapeToReplace = middle::getShape(gameState, shapeToReplaceId.index);
@@ -245,12 +257,30 @@ namespace bubbleActions {
 
 	void ExecuteMultiplication::execute(middle::GameState* gameState) {
 
-		// cancel if trying to expand into variable or expanding into power bubble
+		// cancel if trying to expand into variable
 		auto& shapeToAddInto = middle::getShape(gameState, shapeToCopyIntoId.index);
 		auto varComp = middle::getComponent<components::BubbleVariable>(shapeToAddInto);
-		if (varComp || isPowerBubble(gameState, shapeToCopyIntoId)) {
+		if (varComp) {
 			cancelled = true;
 			return;
+		}
+
+		// if expanding into power bubble we need to add inverted exponent to shapeToAdd, and set shapetoAdd to the base of the power
+		if (isPowerBubble(gameState, shapeToCopyIntoId)) {
+			middle::Id baseId, exponentId;
+			bubble::getPowerBaseAndExponent(gameState, shapeToCopyIntoId, baseId, exponentId);
+
+			middle::Id powerReplacementShapeId = createInvertedPowerReplacementShape(gameState, shapeToCopyId, exponentId);
+			auto registerPower = std::make_unique<middle::EditorActionRegisterId>(powerReplacementShapeId);
+			registerPower->execute(gameState);
+			actions.push_back(std::move(registerPower));
+
+			auto replace = std::make_unique<Replace>(shapeToCopyId, powerReplacementShapeId);
+			replace->execute(gameState);
+			actions.push_back(std::move(replace));
+
+			shapeToCopyId = powerReplacementShapeId;
+			shapeToCopyIntoId = baseId;
 		}
 
 		middle::Id mulId = middle::getParent(gameState, shapeToAddInto.id);
@@ -440,11 +470,15 @@ namespace bubbleActions {
 			}
 		}
 		// replacement shape is bubble with value 1
-		else {
+		else if (bubble::isBubbleZero(gameState, exponentId)) {
 			Vector3 targetPosition = middle::getGlobalPosition(gameState, exponentId.index);
 			middle::Shape newUnitProto = bubble::newUnit(gameState, targetPosition);
 			middle::Shape& newUnit = middle::registerShape(gameState, newUnitProto);
 			replacementShapeId = newUnit.id;
+		}
+		else {
+			cancelled = true;
+			return;
 		}
 
 		auto registerId = std::make_unique<middle::EditorActionRegisterId>(replacementShapeId);
