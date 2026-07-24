@@ -23,9 +23,6 @@
 #include "TextureComponent.h"
 #include "RuntimeHiddenTag.h"
 #include "ActiveCheckBoxTag.h"
-#include "BubbleAlgebraProblem.h"
-#include "HelperBubbleEquation.h"
-#include "EditThisTag.h"
 #include "InputVariable.h"
 #include "ProcedureInputVariable.h"
 #include "ProcedureContainer.h"
@@ -104,7 +101,6 @@ public:
 		textureCache->addType<components::GlobalTransform>();
 		textureCache->addType<components::RuntimeHiddenTag>(components::NOTINTERESTED);
 		editThisCache = middle::newCompCache(gameState, systemName);
-		editThisCache->addType<components::EditThisTag>();
 		editThisCache->addType<components::TextureComponent>();
 		inputCache = middle::newCompCache(gameState, systemName);
 		inputCache->addType<components::InputVariable>();
@@ -177,22 +173,6 @@ public:
 			bool isUiItem = middle::getComponent<components::UiComponent>(shape);
 			bool isHighlighted = middle::getComponent<components::UnIntersectableWindowComponent>(shape);
 
-			// todo maybe replace with tag
-			bool parentIsEditableEquals = false;
-			middle::Id parentId = middle::getParent(gameState, shape.id);
-			if (parentId.index != middle::UNASSIGNED) {
-				auto& parentShape = middle::getShape(gameState, parentId.index);
-				bool equals = middle::getComponent<components::BubbleEqualsComponent>(parentShape) != nullptr;
-				auto problem = middle::getComponent<components::BubbleAlgebraProblem>(parentShape);
-				auto helper = middle::getComponent<components::HelperBubbleEquation>(parentShape);
-				parentIsEditableEquals = equals && ((problem && problem->editable) || helper);
-			}
-
-			// check if should add editable indicator
-			auto problem = middle::getComponent<components::BubbleAlgebraProblem>(shape);
-			auto helper = middle::getComponent<components::HelperBubbleEquation>(shape);
-			bool addEditableTag = (problem && problem->editable) || helper || parentIsEditableEquals;
-
 			auto intersectable = middle::getComponent<components::MouseIntersectable>(shape);
 			bool intersecting = intersectable && intersectable->intersectingTop;
 
@@ -214,21 +194,6 @@ public:
 			circleItem.disableDepthTest = isUiItem;
 			setTransform(circleItem, transform);
 			gameState->renderData.push_back(circleItem);
-
-			if (addEditableTag && editThisComp) {
-				middle::RenderItem editThisSign;
-				editThisSign.type = middle::RenderItemType::BILLBOARD;
-				editThisSign.color = WHITE;
-				const float editThisZOffset = 20;
-				editThisSign.textureScale = editThisComp->scale;
-				editThisSign.disableDepthTest = isUiItem;
-				Vector3 pos = circleItem.transform.translation;
-				editThisSign.transform.translation = { pos.x, pos.y, pos.z + circle->radius + editThisZOffset };
-				editThisSign.texture = &editThisComp->texture;
-				editThisSign.layer = -1;
-				editThisSign.disableDepthTest = true;
-				gameState->renderData.push_back(editThisSign);
-			}
 		}
 
 		// renderunits

@@ -8,7 +8,6 @@
 #include "MouseSelectable.h"
 #include "UiComponent.h"
 #include "component_utils.h"
-#include "BubbleAlgebraProblem.h"
 #include "BubbleAlgebraLevelConfigs.h"
 #include "JointEntity.h"
 #include "Inventory.h"

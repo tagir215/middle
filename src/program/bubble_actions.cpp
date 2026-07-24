@@ -13,10 +13,8 @@
 #include "bubble_utils.h"
 #include "MouseSelectable.h"
 #include "TopDogBubbleTag.h"
-#include "BubbleAlgebraProblem.h"
 #include "ProcedureContainer.h"
 #include "bubble_constants.h"
-#include "HelperBubbleEquation.h"
 #include "EditThisTag.h"
 #include "InsertableBubble.h"
 #include "equlab_actions.h"
@@ -612,8 +610,9 @@ namespace bubbleActions {
 		auto& toPopShape = middle::getShape(gameState, toPopId.index);
 		auto var = middle::getComponent<components::BubbleVariable>(toPopShape);
 		auto unit = middle::getComponent<components::BubbleUnit>(toPopShape);
+		auto power = middle::getComponent<components::BubblePowerComponent>(toPopShape);
 		middle::Id copyId;
-		if (var || unit) {
+		if (var || unit || power) {
 			copyId = middle::deepCopyShapeGlobalCoordinates(gameState, toPopId);
 		}
 		else {
@@ -622,7 +621,10 @@ namespace bubbleActions {
 		auto& newContainerShape = middle::getShape(gameState, copyId.index);
 		auto loop = middle::getComponent<components::LoopSociety>(newContainerShape);
 		loop->parentLoopId = middle::Id();
-		loop->loopMemberIds.clear();
+		// ?
+		if (!power) {
+			loop->loopMemberIds.clear();
+		}
 		return newContainerShape.id;
 	}
 
@@ -642,7 +644,7 @@ namespace bubbleActions {
 			cancelled = true;
 			return;
 		}
-		if (power || bubble::isPowerBubble(gameState, parentId)) {
+		if (bubble::isPowerBubble(gameState, parentId)) {
 			cancelled = true;
 			return;
 		}
@@ -671,7 +673,7 @@ namespace bubbleActions {
 		}
 
 		// if popping variable or unit (as only child), we need to replace the parent instead. to retain var or unit identity
-		if (variable || unit) {
+		if (variable || unit || power) {
 			Vector3 targetPos = middle::getGlobalPosition(gameState, parentId.index);
 
 			middle::Id varPopReplacementId = popReplacement(gameState, parentId, shapeToPop.id);
@@ -1543,15 +1545,9 @@ namespace bubbleActions {
 			}
 
 			// create power link
-			auto linkAction = std::make_unique<LinkMultiplicationTerm>(newBubbleId, toAddId);
-			linkAction->execute(gameState);
-			middle::Id newPowerId = linkAction->resultShapeId;
-			auto& newShape = middle::getShape(gameState, newPowerId.index);
-			auto newPowerComp = middle::getComponent<components::BubbleMultiplyComponent>(newShape);
-
-			// move added id
-			Vector3 currentPos = middle::getGlobalPosition(gameState, toAddId.index);
-			middle::moveShape(gameState, toAddId.index, targetPosition - currentPos);
+			auto connectPower = std::make_unique<equlab::ConnectPower>(newBubbleId, toAddId);
+			connectPower->execute(gameState);
+			middle::Id newPowerId = connectPower->resultId;
 
 			// reparent to og container
 			auto reparent = std::make_unique<EditorActionReparent>(containerId.index, newPowerId.index);
@@ -1980,7 +1976,6 @@ namespace bubbleActions {
 			copyShapeId = invertedShapeId;
 		}
 		middle::moveShape(gameState, copyShapeId.index, targetPosition - middle::getGlobalPosition(gameState, copyShapeId.index));
-		middle::attachComponent<components::HelperBubbleEquation>(gameState, copyShapeId);
 		auto insertable = middle::attachComponent<components::InsertableBubble>(gameState, copyShapeId);
 		auto& copyShape = middle::getShape(gameState, copyShapeId.index);
 		auto loop = middle::getComponent<components::LoopSociety>(copyShape);

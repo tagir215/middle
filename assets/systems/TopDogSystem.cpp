@@ -2,8 +2,6 @@
 #include "game_state.h"
 #include "middle_system_registrar.h"
 #include "TopDogBubbleTag.h"
-#include "BubbleAlgebraProblem.h"
-#include "HelperBubbleEquation.h"
 #include "EditThisTag.h"
 #include "middle_shape_utils.h"
 #include "component_utils.h"
@@ -26,12 +24,6 @@ class TopDogSystem : public middle::MiddleGameplaySystem {
 
 		bubbleCache = middle::newCompCache(gameState, systemName);
 		bubbleCache->addType<components::BubbleComponent>();
-
-		problemCache = middle::newCompCache(gameState, systemName);
-		problemCache->addType<components::BubbleAlgebraProblem>();
-
-		helperCache = middle::newCompCache(gameState, systemName);
-		helperCache->addType<components::HelperBubbleEquation>();
 	}
 
 	bool isTopDog(middle::GameState* gameState, middle::Id id) {
@@ -69,32 +61,10 @@ class TopDogSystem : public middle::MiddleGameplaySystem {
 		middle::attachComponent<T>(gameState, gameState->ids[highestContainer]);
 	}
 
-	void transferToTopProblem(middle::GameState* gameState, middle::Id id) {
-		auto& shape = middle::getShape(gameState, id.index);
-		auto algProb = middle::getComponent<components::BubbleAlgebraProblem>(shape);
-		bool isEditable = algProb->editable;
-		middle::queueComponentDeletion<components::BubbleAlgebraProblem>(gameState, id);
-		int highestContainer = middle::findHighestLevelContainer(gameState, id.index);
-		auto newComp = middle::attachComponent<components::BubbleAlgebraProblem>(gameState, gameState->ids[highestContainer]);
-		newComp->editable = isEditable;
-	}
-
 
 	void update(middle::GameState* gameState) override {
 
 		updateTopDogs(gameState);
-
-		for (middle::Id& id : problemCache->relevantIdVector) {
-			if (middle::getParent(gameState, id).index != middle::UNASSIGNED) {
-				transferToTopProblem(gameState, id);
-			}
-		}
-
-		for (middle::Id& id : helperCache->relevantIdVector) {
-			if (middle::getParent(gameState, id).index != middle::UNASSIGNED) {
-				transferToTop<components::HelperBubbleEquation>(gameState, id);
-			}
-		}
 	}
 };
 

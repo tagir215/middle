@@ -16,11 +16,9 @@
 #include "UiComponent.h"
 #include "BubbleAlgebraLevelConfigs.h"
 #include "RuntimeHiddenTag.h"
-#include "BubbleAlgebraProblem.h"
 #include "Layer.h"
 #include "ProcedureContainer.h"
 #include "BubbleEqualsVariable.h"
-#include "HelperBubbleEquation.h"
 #include "bubble_constants.h"
 #include "SnapRef.h"
 #include "TimerComponent.h"
@@ -116,7 +114,6 @@ public:
 	middle::Id copyOfInsertItem(middle::GameState* gameState, middle::Id& inventoryItemId) {
 		middle::Id& copyId = middle::deepCopyShape(gameState, inventoryItemId.index);
 		middle::queueComponentDeletion<components::InsertableBubble>(gameState, copyId);
-		middle::queueComponentDeletion<components::HelperBubbleEquation>(gameState, copyId);
 		return copyId;
 	}
 
@@ -266,22 +263,6 @@ public:
 	}
 
 
-	bool canEdit(middle::GameState* gameState, middle::Shape& intersectableShape) {
-		middle::Id algebraProblemId = bubble::findIdWithCompFromShapeOrItsParents<components::BubbleAlgebraProblem>(gameState, intersectableShape.id);
-		if (algebraProblemId.index != middle::UNASSIGNED) {
-			auto& algebraProblemShape = middle::getShape(gameState, algebraProblemId.index);
-			auto algebraProblem = middle::getComponent < components::BubbleAlgebraProblem>(algebraProblemShape);
-			if (!algebraProblem->editable) {
-				return false;
-			}
-		}
-		middle::Id helperId = bubble::findIdWithCompFromShapeOrItsParents<components::HelperBubbleEquation>(gameState, intersectableShape.id);
-		if (algebraProblemId.index == middle::UNASSIGNED && helperId.index == middle::UNASSIGNED) {
-			return false;
-		}
-		return true;
-	}
-
 	void copyAsHelper(middle::GameState* gameState, middle::Id id, const Vector3& targetPos) {
 		auto copyAction = std::make_shared<bubbleActions::CopyAsHelper>(id, targetPos);
 		middle::queueAction(gameState, copyAction);
@@ -343,10 +324,6 @@ public:
 				auto intersectable = *intersectingIt;
 				if (intersectable->intersectingTop) {
 					middle::Shape& intersectingShape = middle::getShape(gameState, intersectableCache->relevantIdVector[i].index);
-
-					if (!canEdit(gameState, intersectingShape)) {
-						continue;
-					}
 
 					if (gameState->gameInput.pop) {
 						if (!gameState->gameInput.shiftHeld) {
@@ -431,10 +408,6 @@ public:
 				}
 
 				++intersectCount;
-
-				if (!canEdit(gameState, intersectableShape)) {
-					continue;
-				}
 
 
 				// check if there's parent, the parent is not a fraction
