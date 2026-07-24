@@ -60,7 +60,7 @@ class WriterUnBlockingSystem : public middle::MiddleGameplaySystem {
 			middle::addComponent<components::PuzzleTextUnit>(textUnitProto);
 			auto textComp = middle::addComponent<components::Text>(textUnitProto);
 			textComp->text = unit.text;
-			textComp->fontSize = 10;
+			textComp->fontSize = 30;
 			middle::addComponent<components::GlobalTransform>(textUnitProto);
 			middle::addComponent<components::LocalPosition>(textUnitProto);
 			middle::addComponent<components::LocalScale>(textUnitProto);

@@ -18,7 +18,7 @@
 #include "Reference.h"
 #include "SystemReference.h"
 #include "ComponentReference.h"
-#include "Text.h"
+#include "EditorText.h"
 #include "HiddenTag.h"
 #include "ConfigComponent.h"
 #include "EditorConfigs.h"
@@ -45,7 +45,7 @@ public:
 	components::CompCache* selectableLineCache;
 	components::CompCache* positionCache;
 	components::CompCache* oPosCache;
-
+	components::CompCache* textCache;
 
 	void init(middle::GameState* gameState) {
 		gridCache = middle::newCompCache(gameState, systemName);
@@ -91,6 +91,9 @@ public:
 		selectableLineCache->addType<components::HiddenTag>(components::NOTINTERESTED);
 		positionCache = middle::newCompCache(gameState, systemName);
 		positionCache->addType<components::GlobalTransform>();
+		textCache = middle::newCompCache(gameState, systemName);
+		textCache->addType<components::EditorText>();
+		textCache->addType<components::GlobalTransform>();
 
 		oPosCache = middle::newCompCache(gameState, systemName);
 		oPosCache->addType<components::Position>();
@@ -361,6 +364,25 @@ public:
 			gameState->renderData.push_back(selectItem);
 		}
 
+		const float editorTextSize = 10;
+		const Color editorTextColor = WHITE;
+
+		auto textIt = textCache->begin<components::EditorText>();
+		auto textGlobalTransformIt = textCache->begin<components::GlobalTransform>();
+		for (int i = 0; i < textCache->getSize(); ++i) {
+			auto text = *textIt;
+			auto transform = *textGlobalTransformIt;
+			middle::RenderItem textItem;
+			textItem.type = middle::RenderItemType::TEXT;
+			textItem.center = { 0,0,0 };
+			textItem.transform.translation = transform->pos;
+			textItem.transform.scale = transform->scale;
+			textItem.transform.rotation = transform->rotation;
+			textItem.text = text->text;
+			textItem.fontSize = editorTextSize;
+			textItem.color = editorTextColor;
+			gameState->renderData.push_back(textItem);
+		}
 
 	}
 };

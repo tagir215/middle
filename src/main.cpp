@@ -123,7 +123,7 @@ int main(void)
 		112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123, 124, 125, 126,
 		196, 214, 228, 246 
 	};
-	gameState->globalFont = LoadFontEx("../assets/fonts/shareit-font/Shareit-LVpOG.ttf", gameState->fontUnitFactor, codepoints, 100);
+	gameState->globalFont = LoadFontEx("../assets/fonts/paduloki-personal-use-only/paludoki.ttf", gameState->fontUnitFactor, codepoints, 100);
 	GenTextureMipmaps(&gameState->globalFont.texture);
 	SetTextureFilter(gameState->globalFont.texture, TEXTURE_FILTER_TRILINEAR);
 

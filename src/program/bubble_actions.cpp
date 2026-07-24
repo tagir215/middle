@@ -1212,16 +1212,18 @@ namespace bubbleActions {
 		}
 		Vector3 targetPos = middle::getGlobalPosition(gameState, recieverShapeId.index);
 		middle::Shape newUnitProto = bubble::newUnit(gameState, targetPos);
-		auto registerAction = std::make_unique<middle::EditorActionRegisterShape>(newUnitProto);
+		middle::Shape& newUnit = middle::registerShape(gameState, newUnitProto);
+		middle::Id containerId = bubble::containerize(gameState, newUnit.id);
+
+		auto registerAction = std::make_unique<middle::EditorActionRegisterId>(containerId);
 		registerAction->execute(gameState);
-		middle::Id newUnitId = registerAction->newShapeId;
 		actions.push_back(std::move(registerAction));
 
-		auto link = std::make_unique<LinkMultiplicationTerm>(recieverShapeId, newUnitId);
+		auto link = std::make_unique<LinkMultiplicationTerm>(recieverShapeId, containerId);
 		link->execute(gameState);
 		actions.push_back(std::move(link));
 
-		resultShapeId = newUnitId;
+		resultShapeId = containerId;
 
 		queueSound(gameState, bubbleSounds::MUL_ONE_SOUND);
 	}

@@ -5,6 +5,8 @@
 #include "Text.h"
 #include "GlobalTransform.h"
 #include "HiddenTag.h"
+#include "EditorText.h"
+#include "SystemReference.h"
 
 class TextRenderSetup : public middle::MiddleGameplaySystem {
 	components::CompCache* textCache;
