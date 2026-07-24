@@ -1548,6 +1548,7 @@ namespace bubbleActions {
 			auto connectPower = std::make_unique<equlab::ConnectPower>(newBubbleId, toAddId);
 			connectPower->execute(gameState);
 			middle::Id newPowerId = connectPower->resultId;
+			actions.push_back(std::move(connectPower));
 
 			// reparent to og container
 			auto reparent = std::make_unique<EditorActionReparent>(containerId.index, newPowerId.index);
@@ -1603,13 +1604,18 @@ namespace bubbleActions {
 		resultId = registerBubble->newShapeId;
 		actions.push_back(std::move(registerBubble));
 
-		auto reparentToBubble = std::make_unique<middle::EditorActionReparent>(resultId.index, targetId.index);
+		middle::Id copyTargetId = middle::deepCopyShapeGlobalCoordinates(gameState, targetId);
+		auto registerId = std::make_unique<middle::EditorActionRegisterId>(copyTargetId);
+		registerId->execute(gameState);
+		actions.push_back(std::move(registerId));
+
+		auto reparentToBubble = std::make_unique<middle::EditorActionReparent>(resultId.index, copyTargetId.index);
 		reparentToBubble->execute(gameState);
 		actions.push_back(std::move(reparentToBubble));
 
-		auto reparentBubble = std::make_unique<middle::EditorActionReparent>(parentId.index, resultId.index);
-		reparentBubble->execute(gameState);
-		actions.push_back(std::move(reparentBubble));
+		auto replace = std::make_unique<Replace>(targetId, resultId);
+		replace->execute(gameState);
+		actions.push_back(std::move(replace));
 
 		queueSound(gameState, bubbleSounds::BUBBLIFY_SOUND);
 	}
