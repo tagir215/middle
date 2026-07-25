@@ -313,7 +313,7 @@ namespace bubbleActions {
 
 		middle::Id copyPowerShapeId = middle::deepCopyShapeGlobalCoordinates(gameState, powerShapeId);
 		middle::Id copyBaseId, copyExponentId;
-		bubble::getPowerBaseAndExponent(gameState, powerShapeId, copyBaseId, copyExponentId);
+		bubble::getPowerBaseAndExponent(gameState, copyPowerShapeId, copyBaseId, copyExponentId);
 
 		if (isPower) {
 			middle::Id childBaseId, childExponentId;
@@ -453,13 +453,15 @@ namespace bubbleActions {
 		// if expanding into power bubble we need to add inverted exponent to shapeToAdd, and set shapetoAdd to the base of the power
 		bool isPow = bubble::isPowerBubble(gameState, shapeToCopyIntoId);
 		if (isPow) {
-			middle::Id baseId, exponentId;
-			bubble::getPowerBaseAndExponent(gameState, shapeToCopyIntoId, baseId, exponentId);
+			cancelled = true;
+			return;
+			//middle::Id baseId, exponentId;
+			//bubble::getPowerBaseAndExponent(gameState, shapeToCopyIntoId, baseId, exponentId);
 
-			middle::Id powerReplacementShapeId = createMultiplicationIntoPowerReplacementShape(gameState, shapeToCopyId, exponentId);
-			middle::executeAction<EditorActionRegisterId>(gameState, this, powerReplacementShapeId);
-			middle::executeAction<Replace>(gameState, this, shapeToCopyId, powerReplacementShapeId);
-			shapeToCopyId = powerReplacementShapeId;
+			//middle::Id powerReplacementShapeId = createMultiplicationIntoPowerReplacementShape(gameState, shapeToCopyId, exponentId);
+			//middle::executeAction<EditorActionRegisterId>(gameState, this, powerReplacementShapeId);
+			//middle::executeAction<Replace>(gameState, this, shapeToCopyId, powerReplacementShapeId);
+			//shapeToCopyId = powerReplacementShapeId;
 		}
 
 		middle::Id mulId = middle::getParent(gameState, shapeToAddInto.id);
@@ -485,11 +487,11 @@ namespace bubbleActions {
 			createAndReplace(unlinkedShapeToCopyIntoId, unlinkedShapeToCopyId);
 		}
 		// in power case only replace the base
-		else if (isPow) {
-			middle::Id baseId, exponentId;
-			bubble::getPowerBaseAndExponent(gameState, unlinkedShapeToCopyIntoId, baseId, exponentId);
-			createAndReplace(baseId, unlinkedShapeToCopyId);
-		}
+		//else if (isPow) {
+		//	middle::Id baseId, exponentId;
+		//	bubble::getPowerBaseAndExponent(gameState, unlinkedShapeToCopyIntoId, baseId, exponentId);
+		//	createAndReplace(baseId, unlinkedShapeToCopyId);
+		//}
 		// in mul case  replace all children
 		else {
 			// create replacements to the positions of the old children
