@@ -307,7 +307,10 @@ namespace bubbleActions {
 
 		bool isPower = bubble::isPowerBubble(gameState, baseId);
 		bool isMul = bubble::isMultiplication(gameState, baseId);
-		if (!isPower && !isMul) {
+		std::vector<middle::Id>children;
+		middle::getChildren(gameState, baseId, children);
+		bool isChildCount1 = children.size() == 1;
+		if (!isPower && !isMul && !isChildCount1) {
 			return middle::Id();
 		}
 
@@ -325,10 +328,10 @@ namespace bubbleActions {
 			middle::deleteShapeRecursive(gameState, copyPowerShapeId.index);
 			return copyBaseId;
 		}
-		else if (isMul) {
-			std::vector<middle::Id>mulChildren;
-			middle::getChildren(gameState, copyBaseId, mulChildren);
-			for (middle::Id childId : mulChildren) {
+		else if (isMul || isChildCount1) {
+			std::vector<middle::Id>children;
+			middle::getChildren(gameState, copyBaseId, children);
+			for (middle::Id childId : children) {
 				middle::Id copyExponentId2 = middle::deepCopyShapeGlobalCoordinates(gameState, copyExponentId);
 				auto connectPower = equlab::ConnectPower(childId, copyExponentId2);
 				connectPower.execute(gameState);
