@@ -325,7 +325,7 @@ namespace bubbleActions {
 			middle::deleteShapeRecursive(gameState, copyPowerShapeId.index);
 			return copyBaseId;
 		}
-		if (isMul) {
+		else if (isMul) {
 			std::vector<middle::Id>mulChildren;
 			middle::getChildren(gameState, copyBaseId, mulChildren);
 			for (middle::Id childId : mulChildren) {
@@ -449,29 +449,14 @@ namespace bubbleActions {
 			cancelled = true;
 			return;
 		}
-
-		// if expanding into power bubble we need to add inverted exponent to shapeToAdd, and set shapetoAdd to the base of the power
 		bool isPow = bubble::isPowerBubble(gameState, shapeToCopyIntoId);
 		if (isPow) {
 			cancelled = true;
 			return;
-			//middle::Id baseId, exponentId;
-			//bubble::getPowerBaseAndExponent(gameState, shapeToCopyIntoId, baseId, exponentId);
-
-			//middle::Id powerReplacementShapeId = createMultiplicationIntoPowerReplacementShape(gameState, shapeToCopyId, exponentId);
-			//middle::executeAction<EditorActionRegisterId>(gameState, this, powerReplacementShapeId);
-			//middle::executeAction<Replace>(gameState, this, shapeToCopyId, powerReplacementShapeId);
-			//shapeToCopyId = powerReplacementShapeId;
 		}
 
 		middle::Id mulId = middle::getParent(gameState, shapeToAddInto.id);
 
-		auto unlinkA = middle::executeAction<UnlinkMultiplicationTerm>(gameState, this, shapeToCopyId);
-		middle::Id unlinkedShapeToCopyIntoId = unlinkA->resultUnlinkedMulId;
-		middle::Id unlinkedShapeToCopyId = unlinkA->resultUnlinkedId;
-
-		std::vector<middle::Id>children;
-		middle::getChildren(gameState, unlinkedShapeToCopyIntoId, children);
 
 		// create replacement shape, register and replace
 		auto createAndReplace = [gameState, this](middle::Id toReplaceId, middle::Id replacementId) {
@@ -481,27 +466,27 @@ namespace bubbleActions {
 			};
 
 		// in unit case just replace the shape to copy into
-		auto& shapeToCopyInto = middle::getShape(gameState, unlinkedShapeToCopyIntoId.index);
+		auto& shapeToCopyInto = middle::getShape(gameState, shapeToCopyIntoId.index);
 		auto unitComp = middle::getComponent<components::BubbleUnit>(shapeToCopyInto);
-		if (unitComp) {
-			createAndReplace(unlinkedShapeToCopyIntoId, unlinkedShapeToCopyId);
+		auto mulComp = middle::getComponent<components::BubbleMultiplyComponent>(shapeToCopyInto);
+		if (unitComp || mulComp) {
+			createAndReplace(shapeToCopyIntoId, shapeToCopyId);
 		}
-		// in power case only replace the base
-		//else if (isPow) {
-		//	middle::Id baseId, exponentId;
-		//	bubble::getPowerBaseAndExponent(gameState, unlinkedShapeToCopyIntoId, baseId, exponentId);
-		//	createAndReplace(baseId, unlinkedShapeToCopyId);
-		//}
 		// in mul case  replace all children
 		else {
 			// create replacements to the positions of the old children
+			std::vector<middle::Id>children;
+			middle::getChildren(gameState, shapeToCopyIntoId, children);
 			for (int i = 0; i < children.size(); ++i) {
 				middle::Id& childId = children[i];
-				createAndReplace(childId, unlinkedShapeToCopyId);
+				createAndReplace(childId, shapeToCopyId);
 			}
 		}
 
-		middle::executeAction<middle::EditorActionDeleteSingle>(gameState, this, unlinkedShapeToCopyId);
+		middle::executeAction<middle::EditorActionDeleteSingle>(gameState, this, shapeToCopyId);
+
+		middle::executeAction<UpdateBubblesMultiplicationIdentity>(gameState, this, mulId);
+
 		queueSound(gameState, bubbleSounds::EXPAND_MULTIPLICATION_SOUND);
 	}
 
@@ -1978,5 +1963,22 @@ namespace bubbleActions {
 		middle::deleteShapeRecursive(gameState, copyShapeId.index);
 	}
 
+
+	void UpdateBubblesMultiplicationIdentity::execute(middle::GameState* gameState)
+	{
+		assert(bubble::isMultiplication(gameState, mulId));
+		std::vector<middle::Id>children;
+		middle::getChildren(gameState, mulId, children);
+		if (children.size() <= 1) {
+			middle::queueComponentDeletion<components::BubbleMultiplyComponent>(gameState, mulId);
+			removedMulComp = true;
+		}
+	}
+	void UpdateBubblesMultiplicationIdentity::undo(middle::GameState* gameState)
+	{
+		if (removedMulComp) {
+			middle::attachComponent<components::BubbleMultiplyComponent>(gameState, mulId);
+		}
+	}
 
 }

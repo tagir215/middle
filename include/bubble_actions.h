@@ -116,13 +116,24 @@ namespace bubbleActions{
 		middle::Id idB;
 	};
 
+	class UpdateBubblesMultiplicationIdentity : public middle::EditorActionContainer {
+	public:
+		middle::Id mulId;
+		bool removedMulComp = false;
+		UpdateBubblesMultiplicationIdentity(middle::Id mulId) {
+			this->mulId = mulId;
+		}
+		void execute(middle::GameState* gameState) override;
+		void undo(middle::GameState* gameState) override;
+	};
+
 	class ExecuteMultiplication : public middle::EditorActionContainer {
 	public:
 		middle::Id shapeToCopyId;
 		middle::Id shapeToCopyIntoId;
 		middle::Id resultShapeId;
 		ExecuteMultiplication(middle::Id shapeToCopyId, middle::Id shapeToCopyIntoId);
-		void execute(middle::GameState* gameState);
+		void execute(middle::GameState* gameState) override;
 		void undo(middle::GameState* gameState) override;
 	};
 
