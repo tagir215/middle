@@ -171,7 +171,7 @@ namespace equlab {
 			auto opComp = middle::getComponent<components::BubbleMultiplyComponent>(parentShape);
 			// if op comp unlink instead of delete
 			if (opComp) {
-				auto unlink = std::make_unique<bubbleActions::UnlinkMultiplicationTerm>(parentId, id);
+				auto unlink = std::make_unique<bubbleActions::UnlinkMultiplicationTerm>(id);
 				unlink->execute(gameState);
 				actions.push_back(std::move(unlink));
 				return;
@@ -243,27 +243,57 @@ namespace equlab {
 		}
 		middle::Id parentIdA = middle::getParent(gameState, bubbleIdA);
 		middle::Id parentIdB = middle::getParent(gameState, bubbleIdB);
+		if (parentIdA != parentIdB) {
+			cancelled = true;
+			return;
+		}
 
-		// check if b is in a multiplication
-		// if they are remove first from the operation and connect each child seperatedly
-		// we don't have to check for a because a can work as a reciever even if its in multiplciation
 		bool parentBIsMul = false;
 		if (parentIdB.index != middle::UNASSIGNED) {
 			auto& parentShapeB = middle::getShape(gameState, parentIdB.index);
 			parentBIsMul = middle::getComponent<components::BubbleMultiplyComponent>(parentShapeB);
 		}
+		middle::Id idA, idB;
 		if (parentBIsMul) {
-			auto unlink = std::make_unique<bubbleActions::UnlinkMultiplicationTerm>(parentIdB, bubbleIdB);
-			unlink->execute(gameState);
-			actions.push_back(std::move(unlink));
+			middle::Id copyBubbleIdA = middle::deepCopyShapeGlobalCoordinates(gameState, bubbleIdA);
+			auto registerCopyA = std::make_unique<middle::EditorActionRegisterId>(copyBubbleIdA);
+			registerCopyA->execute(gameState);
+			actions.push_back(std::move(registerCopyA));
+
+			middle::Id copyBubbleIdB = middle::deepCopyShapeGlobalCoordinates(gameState, bubbleIdB);
+			auto registerCopyB = std::make_unique<middle::EditorActionRegisterId>(copyBubbleIdB);
+			registerCopyB->execute(gameState);
+			actions.push_back(std::move(registerCopyB));
+
+			// bubbleIdA is replaced later
+			auto deleteB = std::make_unique<middle::EditorActionDeleteSingle>(bubbleIdB);
+			deleteB->execute(gameState);
+			actions.push_back(std::move(deleteB));
+
+			std::vector<middle::Id>mulChildren;
+			middle::getChildren(gameState, parentIdB, mulChildren);
+			if (mulChildren.size() <= 1) {
+				middle::queueComponentDeletion<components::BubbleMultiplyComponent>(gameState, parentIdB);
+			}
+
+			idA = copyBubbleIdA;
+			idB = copyBubbleIdB;
+		}
+		else {
+			idA = bubbleIdA;
+			idB = bubbleIdB;
 		}
 
 		// connect idB or if they were in operation then all the op children
-		auto connectAction = std::make_unique<bubbleActions::LinkMultiplicationTerm>(bubbleIdA, bubbleIdB);
+		auto connectAction = std::make_unique<bubbleActions::LinkMultiplicationTerm>(idA, idB);
 		connectAction->execute(gameState);
 		resultId = connectAction->resultShapeId;
 		auto& resultShape = middle::getShape(gameState, resultId.index);
 		actions.push_back(std::move(connectAction));
+
+		auto replace = std::make_unique<bubbleActions::Replace>(bubbleIdA, resultId);
+		replace->execute(gameState);
+		actions.push_back(std::move(replace));
 	}
 	void ConnectMultiplicationLink::undo(middle::GameState* gameState) {
 		while (actions.size() > 0) {

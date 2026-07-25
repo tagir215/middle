@@ -28,9 +28,9 @@
 #include "BubblePowerComponent.h"
 
 namespace bubble {
-	float unitRadius = 14;
-	float variableRadius = 24;
-	float variableTextFontSize = 29;
+	float unitRadius = 24;
+	float variableRadius = 34;
+	float variableTextFontSize = 100;
 	float minTopDogRadius = 50;
 
 	bool pointIntersectBubble(middle::GameState* gameState, middle::Shape& bubbleShape, const Vector3& point)
@@ -235,14 +235,6 @@ namespace bubble {
 
 		}
 		return middle::Id();
-	}
-
-	middle::Id inverseBubble(middle::GameState* gameState, middle::Id& id)
-	{
-		middle::Id copy = middle::deepCopyShape(gameState, id.index);
-		auto& copyShape = middle::getShape(gameState, copy.index);
-		auto bubble = middle::getComponent<components::BubbleComponent>(copyShape);
-		return copy;
 	}
 
 	middle::Id topLevelBubble(middle::GameState* gameState)
@@ -1333,17 +1325,8 @@ namespace bubble {
 
 	middle::Shape newMultiplication(middle::GameState* gameState, const Vector3& targetPos)
 	{
-		middle::Shape newBubbleShape;
-		auto mulComp = middle::addComponent<components::BubbleMultiplyComponent>(newBubbleShape);
-		middle::addComponent<components::MouseGrabbable>(newBubbleShape);
-		middle::addComponent<components::MouseSelectable>(newBubbleShape);
-		middle::addComponent<components::MouseIntersectable>(newBubbleShape);
-		middle::addComponent<components::LoopTag>(newBubbleShape);
-		middle::addComponent<components::LoopSociety>(newBubbleShape);
-		auto position = middle::addComponent<components::LocalPosition>(newBubbleShape);
-		position->pos = targetPos;
-		middle::addComponent<components::LocalScale>(newBubbleShape);
-		middle::addComponent<components::GlobalTransform>(newBubbleShape);
+		middle::Shape newBubbleShape = newBubble(gameState, targetPos);
+		middle::addComponent<components::BubbleMultiplyComponent>(newBubbleShape);
 		return newBubbleShape;
 	}
 

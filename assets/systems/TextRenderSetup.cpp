@@ -39,6 +39,9 @@ class TextRenderSetup : public middle::MiddleGameplaySystem {
 			textItem.color.g = text->fontColorG;
 			textItem.color.b = text->fontColorB;
 			textItem.color.a = text->fontColorA;
+			textItem.textOffset.x = text->offsetX;
+			textItem.textOffset.y = text->offsetY;
+			textItem.textOffset.z = text->offsetZ;
 			gameState->renderData.push_back(textItem);
 		}
 	}

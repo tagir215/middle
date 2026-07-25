@@ -3,6 +3,14 @@
 #include "functional"
 
 namespace middle {
+	template<class T, class... Args>
+	T* executeAction(GameState* gameState, EditorActionContainer* container, Args&&... args) {
+		auto action = std::make_unique<T>(std::forward<Args>(args)...);
+		action->execute(gameState);
+		auto retVal = action.get();
+		container->actions.push_back(std::move(action));
+		return retVal;
+	}
 
 	// creation of new spheres are here
 	class EditorActionNewSphere : public EditorActionContainer {
@@ -344,7 +352,6 @@ namespace middle {
 	class EditorActionDelete : public EditorActionContainer {
 	public:
 		std::vector<int>selectedIndexes;
-		std::vector < std::unique_ptr<EditorActionDeleteSingle>>actions;
 		EditorActionDelete(std::vector<int> selectedIndexes) {
 			this->selectedIndexes = selectedIndexes;
 		}
@@ -377,10 +384,10 @@ namespace middle {
 
 	class MultiAction : public EditorActionContainer {
 	public:
-		std::vector<std::shared_ptr<EditorActionContainer>>actions;
+		std::vector<std::shared_ptr<EditorActionContainer>>actionList;
 
-		MultiAction(std::vector<std::shared_ptr<EditorActionContainer>>& actions) {
-			this->actions = actions;
+		MultiAction(std::vector<std::shared_ptr<EditorActionContainer>>& actionList) {
+			this->actionList = actionList;
 		}
 		void execute(GameState* gameState) override;
 		void undo(GameState* gameState) override;

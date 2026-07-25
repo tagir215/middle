@@ -68,14 +68,19 @@ public:
 		bubbleCache->addType<components::LoopSociety>();
 		bubbleCache->addType<components::GlobalTransform>();
 		bubbleCache->addType<components::RuntimeHiddenTag>(components::NOTINTERESTED);
+		bubbleCache->addType<components::BubbleVariable>(components::NOTINTERESTED);
+		bubbleCache->addType<components::BubbleUnit>(components::NOTINTERESTED);
 		unitCache = middle::newCompCache(gameState, systemName);
 		unitCache->addType<components::BubbleUnit>();
 		unitCache->addType<components::Layer>();
 		unitCache->addType<components::GlobalTransform>();
+		unitCache->addType<components::Circle>();
 		mulCache = middle::newCompCache(gameState, systemName);
 		mulCache->addType<components::BubbleMultiplyComponent>();
 		mulCache->addType<components::LoopSociety>();
 		mulCache->addType<components::GlobalTransform>();
+		mulCache->addType<components::Circle>();
+		mulCache->addType<components::Layer>();
 		fractionCache = middle::newCompCache(gameState, systemName);
 		fractionCache->addType<components::FractionalComponent>();
 		fractionCache->addType<components::LoopSociety>();
@@ -200,18 +205,35 @@ public:
 		auto unitIt = unitCache->begin<components::BubbleUnit>();
 		auto unitLayerIt = unitCache->begin<components::Layer>();
 		auto unitTransformIt = unitCache->begin<components::GlobalTransform>();
+		auto unitCircleIt = unitCache->begin<components::Circle>();
 		for (int i = 0; i < unitCache->getSize(); ++i) {
 			auto unit = *unitIt;
 			auto layer = *unitLayerIt;
 			auto transform = *unitTransformIt;
+			auto circle = *unitCircleIt;
 			middle::RenderItem unitItem;
 			unitItem.type = middle::RenderItemType::TEXT;
-			unitItem.text = std::to_string(unit->value);
+			if (unit->value > 0) {
+				unitItem.text = "+";
+			}
+			else {
+				unitItem.text = "-";
+			}
 			middle::Id id = unitCache->relevantIdVector[i];
 			setTransform(unitItem, transform);
+
+			auto& shape = middle::getShape(gameState, unitCache->relevantIdVector[i].index);
+			auto intersectable = middle::getComponent<components::MouseIntersectable>(shape);
+			float fontSize = 50;
+			if (intersectable && intersectable->intersectingTop) {
+				fontSize *= 1.2f;
+			}
+
 			unitItem.center = { 0,0,0 };
 			unitItem.layer = layer->layer;
-			unitItem.fontSize = 25;
+			unitItem.fontSize = fontSize;
+			unitItem.textOffset.x = -circle->radius * 0.5f;
+			unitItem.textOffset.z = circle->radius * 1.1f;
 			unitItem.color = unit->value < 0 ? bubbleColors::NEGATIVE_UNIT : bubbleColors::POSITIVE_UNIT;
 			gameState->renderData.push_back(unitItem);
 		}
@@ -255,6 +277,8 @@ public:
 				variableText.color = bubbleColors::NEGATIVE_UNIT;
 				variableText.text = "-" + variable->label;
 			}
+			variableText.textOffset.x = -circle->radius * 0.42f;
+			variableText.textOffset.z = circle->radius * 1.5f;
 			Color backgroundColor = getBubbleColor(gameState, shape.id, bubble);
 			variableText.fontSize = fontSize;
 			variableText.disableDepthTest = isUiItem;
@@ -264,37 +288,54 @@ public:
 
 		// render muls
 		auto mulIt = mulCache->begin<components::BubbleMultiplyComponent>();
+		auto mulCircleIt = mulCache->begin<components::Circle>();
+		auto mulTransformIt = mulCache->begin<components::GlobalTransform>();
+		auto mulLayerIt = mulCache->begin<components::Layer>();
 		for (int i = 0; i < mulCache->getSize(); ++i) {
 			auto multiplyComponent = *mulIt;
-			std::vector<middle::Id>children;
-			middle::getChildren(gameState, mulCache->relevantIdVector[i], children);
-			for (int x = 1; x < children.size(); ++x) {
-				auto& shapeA = middle::getShape(gameState, children[x - 1].index);
-				auto& shapeB = middle::getShape(gameState, children[x].index);
-				auto transformA = middle::getComponent<components::GlobalTransform>(shapeA);
-				auto transformB = middle::getComponent<components::GlobalTransform>(shapeB);
-				auto circleA = middle::getComponent<components::Circle>(shapeA);
-				auto circleB = middle::getComponent<components::Circle>(shapeB);
-				auto layer = middle::getComponent<components::Layer>(shapeA);
-				bool isUiItem = middle::getComponent<components::UiComponent>(shapeA);
-				float radiusA = circleA->radius * transformA->scale.x;
-				float radiusB = circleB->radius * transformB->scale.x;
+			auto circle = *mulCircleIt;
+			auto transform = *mulTransformIt;
+			auto layer = *mulLayerIt;
 
-				if (!circleA || !circleB)
-					continue;
-				Vector3 posA = transformA->pos;
-				Vector3 posB = transformB->pos;
-				Vector3 axis = Vector3Normalize(Vector3Subtract(posB, posA));
-				middle::RenderItem line;
-				line.type = middle::RenderItemType::LINE;
-				line.linePointA = posA + Vector3Scale(axis, radiusA);
-				line.linePointB = posB + Vector3Scale(axis, -radiusB);
-				line.color = bubbleColors::MULTIPLICATION_CONNECTION;
-				line.layer = layer->layer;
-				line.disableDepthTest = isUiItem;
+			middle::RenderItem mulCircle;
+			mulCircle.type = middle::RenderItemType::CIRCLE;
+			mulCircle.transform.translation = transform->pos;
+			mulCircle.transform.scale = transform->scale;
+			mulCircle.transform.rotation = transform->rotation;
+			mulCircle.radius = circle->radius + 4;
+			mulCircle.color = GREEN;
+			mulCircle.layer = layer->layer + 2;
+			gameState->renderData.push_back(mulCircle);
 
-				gameState->renderData.push_back(line);
-			}
+//			std::vector<middle::Id>children;
+//			middle::getChildren(gameState, mulCache->relevantIdVector[i], children);
+//			for (int x = 1; x < children.size(); ++x) {
+//				auto& shapeA = middle::getShape(gameState, children[x - 1].index);
+//				auto& shapeB = middle::getShape(gameState, children[x].index);
+//				auto transformA = middle::getComponent<components::GlobalTransform>(shapeA);
+//				auto transformB = middle::getComponent<components::GlobalTransform>(shapeB);
+//				auto circleA = middle::getComponent<components::Circle>(shapeA);
+//				auto circleB = middle::getComponent<components::Circle>(shapeB);
+//				auto layer = middle::getComponent<components::Layer>(shapeA);
+//				bool isUiItem = middle::getComponent<components::UiComponent>(shapeA);
+//				float radiusA = circleA->radius * transformA->scale.x;
+//				float radiusB = circleB->radius * transformB->scale.x;
+//
+//				if (!circleA || !circleB)
+//					continue;
+//				Vector3 posA = transformA->pos;
+//				Vector3 posB = transformB->pos;
+//				Vector3 axis = Vector3Normalize(Vector3Subtract(posB, posA));
+//				middle::RenderItem line;
+//				line.type = middle::RenderItemType::LINE;
+//				line.linePointA = posA + Vector3Scale(axis, radiusA);
+//				line.linePointB = posB + Vector3Scale(axis, -radiusB);
+//				line.color = bubbleColors::MULTIPLICATION_CONNECTION;
+//				line.layer = layer->layer;
+//				line.disableDepthTest = isUiItem;
+//
+//				gameState->renderData.push_back(line);
+//			}
 		}
 
 		// renderPowers

@@ -9,7 +9,6 @@ namespace equlab {
 		middle::Id parentId;
 		middle::Id resultId;
 		Vector3 targetPosition;
-		std::vector<std::unique_ptr<middle::EditorActionContainer>> actions;
 		AddBubble(middle::Id parentId, const Vector3& targetPosition) {
 			this->parentId = parentId;
 			this->targetPosition = targetPosition;
@@ -23,7 +22,6 @@ namespace equlab {
 		middle::Id parentId;
 		middle::Id resultId;
 		Vector3 targetPosition;
-		std::vector<std::unique_ptr<middle::EditorActionContainer>> actions;
 		AddUnit(middle::Id parentId, const Vector3& targetPosition) {
 			this->parentId = parentId;
 			this->targetPosition = targetPosition;
@@ -37,7 +35,6 @@ namespace equlab {
 		middle::Id id;
 		middle::Id resultId;
 		Vector3 targetPosition;
-		std::vector<std::unique_ptr<middle::EditorActionContainer>> actions;
 		Negate(middle::Id id) {
 			this->id = id;
 		}
@@ -50,7 +47,6 @@ namespace equlab {
 		middle::Id id;
 		middle::Id resultId;
 		Vector3 targetPosition;
-		std::vector<std::unique_ptr<middle::EditorActionContainer>> actions;
 		Invert(middle::Id id) {
 			this->id = id;
 		}
@@ -64,7 +60,6 @@ namespace equlab {
 		middle::Id resultId;
 		std::string label;
 		Vector3 targetPosition;
-		std::vector<std::unique_ptr<middle::EditorActionContainer>> actions;
 		AddLabelCharacterToVariable(middle::Id id, const std::string& label) {
 			this->id = id;
 			this->label = label;
@@ -80,7 +75,6 @@ namespace equlab {
 		middle::Id resultId;
 		std::string label;
 		Vector3 targetPosition;
-		std::vector<std::unique_ptr<middle::EditorActionContainer>> actions;
 		AddVariable(middle::Id parentId, const std::string& label, const Vector3& targetPosition) {
 			this->parentId = parentId;
 			this->targetPosition = targetPosition;
@@ -95,7 +89,6 @@ namespace equlab {
 	public:
 		middle::Id resultId;
 		Vector3 targetPos;
-		std::vector<std::unique_ptr<middle::EditorActionContainer>> actions;
 		AddEquals(const Vector3& targetPos) {
 			this->targetPos = targetPos;
 		}
@@ -108,7 +101,6 @@ namespace equlab {
 	public:
 		middle::Id id;
 		Vector3 targetPosition;
-		std::vector<std::unique_ptr<middle::EditorActionContainer>> actions;
 		Move(middle::Id id, const Vector3& targetPosition) {
 			this->id = id;
 			this->targetPosition = targetPosition;
@@ -120,7 +112,6 @@ namespace equlab {
 	class Delete : public middle::EditorActionContainer {
 	public:
 		middle::Id id;
-		std::vector<std::unique_ptr<middle::EditorActionContainer>> actions;
 		Delete(middle::Id id) {
 			this->id = id;
 		}
@@ -144,7 +135,6 @@ namespace equlab {
 		middle::Id bubbleIdA;
 		middle::Id bubbleIdB;
 		middle::Id resultId;
-		std::vector<std::unique_ptr<middle::EditorActionContainer>> actions;
 		ConnectMultiplicationLink(middle::Id bubbleIdA, middle::Id bubbleIdB) {
 			this->bubbleIdA = bubbleIdA;
 			this->bubbleIdB = bubbleIdB;
@@ -158,7 +148,6 @@ namespace equlab {
 		middle::Id baseId;
 		middle::Id exponentId;
 		middle::Id resultId;
-		std::vector<std::unique_ptr<middle::EditorActionContainer>> actions;
 		ConnectPower(middle::Id bubbleIdA, middle::Id bubbleIdB) {
 			this->baseId = bubbleIdA;
 			this->exponentId = bubbleIdB;

@@ -28,7 +28,6 @@ namespace bubbleActions{
 	public:
 		middle::Id id;
 		middle::Id resultId;
-		std::vector<std::unique_ptr<middle::EditorActionContainer>> actions;
 		Cancel(middle::Id id) {
 			this->id = id;
 		}
@@ -40,7 +39,6 @@ namespace bubbleActions{
 	public:
 		middle::Id id;
 		middle::Id resultId;
-		std::vector<std::unique_ptr<middle::EditorActionContainer>> actions;
 		Simplify(middle::Id id){
 			this->id = id;
 		}
@@ -51,7 +49,6 @@ namespace bubbleActions{
 	class Bubblify : public middle::EditorActionContainer{
 	public:
 		middle::Id id;
-		std::vector<std::unique_ptr<middle::EditorActionContainer>> actions;
 		middle::Id resultId;
 		Bubblify(middle::Id id) {
 			this->id = id;
@@ -75,7 +72,6 @@ namespace bubbleActions{
 		middle::Id recieverShapeId;
 		middle::Id linkingShapeId;
 		middle::Id resultShapeId;
-		std::vector<std::unique_ptr<middle::EditorActionContainer>> actions;
 		LinkMultiplicationTerm(middle::Id reciverShapeId, middle::Id linkikngShapeId);
 		void execute(middle::GameState* gameState) override;
 		void undo(middle::GameState* gameState) override;
@@ -83,12 +79,10 @@ namespace bubbleActions{
 
 	class UnlinkMultiplicationTerm : public middle::EditorActionContainer {
 	public:
-		middle::Id multiplicationId;
 		middle::Id unlinkingShapeId;
-		middle::Id resultShapeId;
-		std::vector<std::unique_ptr<middle::EditorActionContainer>> actions;
-		UnlinkMultiplicationTerm(middle::Id multiplicationId, middle::Id unlinkingShapeId) {
-			this->multiplicationId = multiplicationId;
+		middle::Id resultUnlinkedMulId;
+		middle::Id resultUnlinkedId;
+		UnlinkMultiplicationTerm(middle::Id unlinkingShapeId) {
 			this->unlinkingShapeId = unlinkingShapeId;
 		}
 		void execute(middle::GameState* gameState) override;
@@ -99,7 +93,6 @@ namespace bubbleActions{
 	public:
 		middle::Id recieverShapeId;
 		middle::Id resultShapeId;
-		std::vector<std::unique_ptr<middle::EditorActionContainer>> actions;
 		MulOne(middle::Id recieverShapeId);
 		void execute(middle::GameState* gameState) override;
 		void undo(middle::GameState* gameState) override;
@@ -109,7 +102,6 @@ namespace bubbleActions{
 	public:
 		middle::Id recieverShapeId;
 		middle::Id resultShapeId;
-		std::vector<std::unique_ptr<middle::EditorActionContainer>> actions;
 		MulNegativeOne(middle::Id recieverShapeId) {
 			this->recieverShapeId = recieverShapeId;
 		}
@@ -129,7 +121,6 @@ namespace bubbleActions{
 		middle::Id shapeToCopyId;
 		middle::Id shapeToCopyIntoId;
 		middle::Id resultShapeId;
-		std::vector<std::unique_ptr<middle::EditorActionContainer>> actions;
 		ExecuteMultiplication(middle::Id shapeToCopyId, middle::Id shapeToCopyIntoId);
 		void execute(middle::GameState* gameState);
 		void undo(middle::GameState* gameState) override;
@@ -141,7 +132,6 @@ namespace bubbleActions{
 		middle::Id shapeToAddId;
 		middle::Id shapeToAddIntoId;
 		middle::Id resultShapeId;
-		std::vector<std::unique_ptr<middle::EditorActionContainer>> actions;
 		ExecuteAddition(middle::Id shapeToAddId, middle::Id shapeToAddIntoId);
 		void execute(middle::GameState* gameState) override;
 		void undo(middle::GameState* gameState) override;
@@ -151,7 +141,6 @@ namespace bubbleActions{
 	public:
 		middle::Id powerShapeId;
 		middle::Id resultShapeId;
-		std::vector<std::unique_ptr<middle::EditorActionContainer>> actions;
 		ExecutePower(middle::Id powerShapeId) {
 			this->powerShapeId = powerShapeId;
 		}
@@ -164,7 +153,6 @@ namespace bubbleActions{
 	public:
 		middle::Id id;
 		Pop(middle::Id id);
-		std::vector<std::unique_ptr<middle::EditorActionContainer>> actions;
 		void execute(middle::GameState* gameState) override;
 		void undo(middle::GameState* gameState) override;
 	};
@@ -173,7 +161,6 @@ namespace bubbleActions{
 	public:
 		middle::Id shapeToReplaceId;
 		middle::Id replacingShapeId;
-		std::vector<std::unique_ptr<middle::EditorActionContainer>> actions;
 		Replace(middle::Id shapeToReplace, middle::Id replacingShape);
 		void execute(middle::GameState* gameState) override;
 		void undo(middle::GameState* gameState) override;
@@ -184,7 +171,6 @@ namespace bubbleActions{
 		middle::Id unitShapeId;
 		middle::Id resultShapeId;
 		int dividend;
-		std::vector<std::unique_ptr<middle::EditorActionContainer>> actions;
 		Break(middle::Id containerShape, int dividend);
 		void execute(middle::GameState* gameState) override;
 		void undo(middle::GameState* gameState) override;
@@ -195,7 +181,6 @@ namespace bubbleActions{
 	public:
 		middle::Id commonFactorId;
 		middle::Id resultShapeId;
-		std::vector<std::unique_ptr<middle::EditorActionContainer>> actions;
 		CompressCommonFactor(middle::Id containerShape);
 		void execute(middle::GameState* gameState) override;
 		void undo(middle::GameState* gameState) override;
@@ -205,7 +190,6 @@ namespace bubbleActions{
 	public:
 		middle::Id commonFactorId;
 		middle::Id resultShapeId;
-		std::vector<std::unique_ptr<middle::EditorActionContainer>> actions;
 		CompressPowers(middle::Id commonExponentId);
 		void execute(middle::GameState* gameState) override;
 		void undo(middle::GameState* gameState) override;
@@ -216,7 +200,6 @@ namespace bubbleActions{
 		middle::Id shapeToAddIntoId;
 		middle::Id newTermId;
 		Vector3 targetPosition;
-		std::vector<std::unique_ptr<middle::EditorActionContainer>> actions;
 		NewAdditionTerm(middle::Id& shapeToAddIntoId, middle::Id& newTermId, const Vector3& targetPosition) {
 			this->shapeToAddIntoId = shapeToAddIntoId;
 			this->newTermId = newTermId;
@@ -231,7 +214,6 @@ namespace bubbleActions{
 		middle::Id shapeToAddIntoId;
 		middle::Id newTermId;
 		Vector3 targetPosition;
-		std::vector<std::unique_ptr<middle::EditorActionContainer>> actions;
 		NewMultiplicationTerm(middle::Id& shapeToAddIntoId, middle::Id& newTermId, const Vector3& targetPosition) {
 			this->shapeToAddIntoId = shapeToAddIntoId;
 			this->newTermId = newTermId;
@@ -246,7 +228,6 @@ namespace bubbleActions{
 		middle::Id shapeToAddIntoId;
 		middle::Id newTermId;
 		Vector3 targetPosition;
-		std::vector<std::unique_ptr<middle::EditorActionContainer>> actions;
 		NewPowerTerm(middle::Id& shapeToAddIntoId, middle::Id& newTermId, const Vector3& targetPosition) {
 			this->shapeToAddIntoId = shapeToAddIntoId;
 			this->newTermId = newTermId;
@@ -261,7 +242,6 @@ namespace bubbleActions{
 		middle::Id shapeToAddIntoId;
 		middle::Id newTermId;
 		Vector3 targetPos;
-		std::vector<std::unique_ptr<middle::EditorActionContainer>> actions;
 		InsertAsXOverX(middle::Id shapeToAddIntoId, middle::Id newTermId, const Vector3& targetPosition) {
 			this->shapeToAddIntoId = shapeToAddIntoId;
 			this->newTermId = newTermId;
@@ -276,7 +256,6 @@ namespace bubbleActions{
 		middle::Id shapeToAddIntoId;
 		middle::Id newTermId;
 		Vector3 targetPos;
-		std::vector<std::unique_ptr<middle::EditorActionContainer>> actions;
 		InsertAsXMinusX(middle::Id shapeToAddIntoId, middle::Id newTermId, const Vector3& targetPosition) {
 			this->shapeToAddIntoId = shapeToAddIntoId;
 			this->newTermId = newTermId;
@@ -290,7 +269,6 @@ namespace bubbleActions{
 	public:
 		middle::Id procContainer;
 		middle::Id input;
-		std::vector<std::shared_ptr<middle::EditorActionContainer>> actions;
 		StartProcedure(middle::Id procContainerId, middle::Id inputId) {
 			this->procContainer = procContainerId;
 			this->input = inputId;
@@ -308,7 +286,6 @@ namespace bubbleActions{
 			this->shapeToReplaceId = shapeToReplaceId;
 			this->shapeToInsertId = shapeToInsertId;
 		}
-		std::vector<std::unique_ptr<middle::EditorActionContainer>> actions;
 		void execute(middle::GameState* gameState) override;
 		void undo(middle::GameState* gameState) override;
 	};
@@ -323,7 +300,6 @@ namespace bubbleActions{
 			this->shapeToCopyId = shapeToCopyId;
 			this->targetPosition = targetPosition;
 		}
-		std::vector<std::unique_ptr<middle::EditorActionContainer>> actions;
 		void execute(middle::GameState* gameState) override;
 		void undo(middle::GameState* gameState) override;
 	};

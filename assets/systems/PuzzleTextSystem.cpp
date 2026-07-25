@@ -176,7 +176,7 @@ class PuzzleTextSystem : public middle::MiddleGameplaySystem {
 				rect->width = textSize.x;
 				rect->height = textSize.y;
 
-				text->offsetX = -textSize.x * 0.5f;
+				text->offsetX = -textSize.x * 8.5f;
 				text->offsetZ = textSize.y;
 
 				if (cursorPos.x + textSize.x > panelPos.x + panelWidth) {

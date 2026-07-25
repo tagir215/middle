@@ -29,7 +29,6 @@ namespace bubble {
 	struct BubbleValue {
 		float scale = 0;
 	};
-	middle::Id inverseBubble(middle::GameState* gameState, middle::Id& id);
 	middle::Id topLevelBubble(middle::GameState* gameState);
 	middle::Shape newBubble(middle::GameState* gameState, const Vector3& targetPos);
 	middle::Shape newUnit(middle::GameState* gameState, const Vector3& targetPos, bool isNegative = false);

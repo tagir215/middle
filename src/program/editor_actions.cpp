@@ -640,15 +640,15 @@ namespace middle {
 
 	void MultiAction::execute(GameState* gameState)
 	{
-		for (auto action : actions) {
+		for (auto action : actionList) {
 			action->execute(gameState);
 		}
 	}
 
 	void MultiAction::undo(GameState* gameState)
 	{
-		for (int i = actions.size() - 1; i >= 0; --i) {
-			actions[i]->undo(gameState);
+		for (int i = actionList.size() - 1; i >= 0; --i) {
+			actionList[i]->undo(gameState);
 		}
 	}
 

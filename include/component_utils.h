@@ -11,6 +11,13 @@ namespace middle {
 		return newComp;
 	}
 
+	template<typename T>
+	inline T* getComp(middle::GameState* gameState, middle::Id id) {
+		auto& shape = middle::getShape(gameState, id.index);
+		return middle::getComponent<T>(shape);
+	}
+
+
 	template<typename CompType>
 	void queueComponentAttachment(middle::GameState* gameState, middle::Id id) {
 		middle::queueAction(gameState, std::make_shared<middle::CustomAction>([id](middle::GameState* gameState) {
