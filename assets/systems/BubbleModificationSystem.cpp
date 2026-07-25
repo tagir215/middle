@@ -97,7 +97,7 @@ public:
 			return;
 		}
 		else if (middle::getComponent<components::BubblePowerComponent>(refParent)) {
-			auto doPower = std::make_shared<bubbleActions::ExecutePower>(refParent.id);
+			auto doPower = std::make_shared<bubbleActions::ExecutePower>(refShape.id, intersectedShape.id);
 			middle::queueAction(gameState, doPower);
 			gameState->bubbleAlgebraState.bubbleActions.push_back(doPower);
 			return;

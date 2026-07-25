@@ -139,10 +139,12 @@ namespace bubbleActions{
 
 	class ExecutePower : public middle::EditorActionContainer {
 	public:
-		middle::Id powerShapeId;
+		middle::Id idA;
+		middle::Id idB;
 		middle::Id resultShapeId;
-		ExecutePower(middle::Id powerShapeId) {
-			this->powerShapeId = powerShapeId;
+		ExecutePower(middle::Id idA, middle::Id idB) {
+			this->idA = idA;
+			this->idB = idB;
 		}
 		void execute(middle::GameState* gameState) override;
 		void undo(middle::GameState* gameState) override;

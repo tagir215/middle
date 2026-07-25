@@ -1133,6 +1133,7 @@ namespace bubble {
 
 	void getPowerBaseAndExponent(middle::GameState* gameState, middle::Id powerBubble, middle::Id& resultBaseId, middle::Id& resultExponentId)
 	{
+		assert(isPowerBubble(gameState, powerBubble));
 		std::vector<middle::Id>powerChildren;
 		middle::getChildren(gameState, powerBubble, powerChildren);
 		assert(powerChildren.size() == 2);

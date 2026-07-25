@@ -253,31 +253,13 @@ namespace equlab {
 			auto& parentShapeB = middle::getShape(gameState, parentIdB.index);
 			parentBIsMul = middle::getComponent<components::BubbleMultiplyComponent>(parentShapeB);
 		}
+
 		middle::Id idA, idB;
 		if (parentBIsMul) {
-			middle::Id copyBubbleIdA = middle::deepCopyShapeGlobalCoordinates(gameState, bubbleIdA);
-			auto registerCopyA = std::make_unique<middle::EditorActionRegisterId>(copyBubbleIdA);
-			registerCopyA->execute(gameState);
-			actions.push_back(std::move(registerCopyA));
-
-			middle::Id copyBubbleIdB = middle::deepCopyShapeGlobalCoordinates(gameState, bubbleIdB);
-			auto registerCopyB = std::make_unique<middle::EditorActionRegisterId>(copyBubbleIdB);
-			registerCopyB->execute(gameState);
-			actions.push_back(std::move(registerCopyB));
-
-			// bubbleIdA is replaced later
-			auto deleteB = std::make_unique<middle::EditorActionDeleteSingle>(bubbleIdB);
-			deleteB->execute(gameState);
-			actions.push_back(std::move(deleteB));
-
-			std::vector<middle::Id>mulChildren;
-			middle::getChildren(gameState, parentIdB, mulChildren);
-			if (mulChildren.size() <= 1) {
-				middle::queueComponentDeletion<components::BubbleMultiplyComponent>(gameState, parentIdB);
-			}
-
-			idA = copyBubbleIdA;
-			idB = copyBubbleIdB;
+			auto unlinkA = middle::executeAction<bubbleActions::UnlinkMultiplicationTerm>(gameState, this, bubbleIdA);
+			auto unlinkB = middle::executeAction<bubbleActions::UnlinkMultiplicationTerm>(gameState, this, bubbleIdB);
+			idA = unlinkA->resultUnlinkedId;
+			idB = unlinkB->resultUnlinkedId;
 		}
 		else {
 			idA = bubbleIdA;
@@ -285,15 +267,10 @@ namespace equlab {
 		}
 
 		// connect idB or if they were in operation then all the op children
-		auto connectAction = std::make_unique<bubbleActions::LinkMultiplicationTerm>(idA, idB);
-		connectAction->execute(gameState);
+		auto connectAction = middle::executeAction<bubbleActions::LinkMultiplicationTerm>(gameState, this, idA, idB);
 		resultId = connectAction->resultShapeId;
-		auto& resultShape = middle::getShape(gameState, resultId.index);
-		actions.push_back(std::move(connectAction));
 
-		auto replace = std::make_unique<bubbleActions::Replace>(bubbleIdA, resultId);
-		replace->execute(gameState);
-		actions.push_back(std::move(replace));
+		middle::executeAction<bubbleActions::Replace>(gameState, this, bubbleIdA, resultId);
 	}
 	void ConnectMultiplicationLink::undo(middle::GameState* gameState) {
 		while (actions.size() > 0) {
