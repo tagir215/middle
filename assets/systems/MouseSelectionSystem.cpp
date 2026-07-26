@@ -1,11 +1,11 @@
 #pragma once
 #include "game_state.h"
 #include "middle_system_registrar.h"
-#include "MouseIntersectable.h"
 #include "middle_shape_utils.h"
 #include "MouseSelectable.h"
 #include "Constraint.h"
 #include "ConstraintEntity.h"
+#include "IntersectingTag.h"
 
 namespace MouseSelectionSystem {
 
@@ -20,7 +20,6 @@ namespace MouseSelectionSystem {
 
 		void init(middle::GameState* gameState) {
 			intersectableCache = middle::newCompCache(gameState, systemName);
-			intersectableCache->addType<components::MouseIntersectable>();
 			intersectableCache->addType<components::MouseSelectable>();
 		}
 		void update(middle::GameState* gameState) override {
@@ -36,12 +35,11 @@ namespace MouseSelectionSystem {
 			}
 
 
-			auto intersectableIt = intersectableCache->begin<components::MouseIntersectable>();
 			auto selectableIt = intersectableCache->begin<components::MouseSelectable>();
 			for (int i = 0; i < intersectableCache->getSize(); ++i) {
-				auto intersectable = *intersectableIt;
 				auto selectable = *selectableIt;
 				auto& shape = middle::getShape(gameState, intersectableCache->relevantIdVector[i].index);
+				auto intersecting = middle::getComponent<components::IntersectingTag>(shape);
 
 				// in constraint mode unselect constraints 
 				if (gameState->editorState.creationMode == middle::CreationMode::CONSTRAINT_MODE) {
@@ -53,19 +51,19 @@ namespace MouseSelectionSystem {
 				}
 
 				// when holding down, don't immediatedly toggle once when starting intersect
-				if (!intersectable->wasIntersecting && intersectable->intersectingTop && gameState->input.mouseHeld) {
+				if (intersecting && intersecting->framesIntersected < 2 && intersecting->intersectingTop && gameState->input.mouseHeld) {
 					selectable->selected = !selectable->selected;
 					++gameState->editorState.selectChangeCountAfterClick;
 				}
 
 				// toggle selection when clicking
-				if (intersectable->intersectingTop && gameState->input.mouseClicked) {
+				if (intersecting && intersecting->intersectingTop && gameState->input.mouseClicked) {
 					selectable->selected = !selectable->selected;
 					++gameState->editorState.selectChangeCountAfterClick;
 				}
 
 				// grabbing activates selected if there's no selections yet, except can't grab constraints
-				if (intersectable->intersectingTop && gameState->input.grabDown && gameState->editorState.selectCount == 0) {
+				if (intersecting && intersecting->intersectingTop && gameState->input.grabDown && gameState->editorState.selectCount == 0) {
 					auto constraint = middle::getComponent<components::Constraint>(shape);
 					if (!constraint) {
 						selectable->selected = true;
@@ -79,14 +77,10 @@ namespace MouseSelectionSystem {
 			gameState->editorState.intersectCount = 0;
 			gameState->editorState.selectCount = 0;
 
-			intersectableIt = intersectableCache->begin<components::MouseIntersectable>();
 			selectableIt = intersectableCache->begin<components::MouseSelectable>();
 			for (int i = 0; i < intersectableCache->getSize(); ++i) {
-				auto intersectable = *intersectableIt;
 				auto selectable = *selectableIt;
-				if (intersectable->intersecting) {
-					++gameState->editorState.intersectCount;
-				}
+				++gameState->editorState.intersectCount;
 				if (selectable->selected) {
 					++gameState->editorState.selectCount;
 				}

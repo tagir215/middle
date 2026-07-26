@@ -7,7 +7,7 @@
 #include "Constraint.h"
 #include "PhysicsData.h"
 #include "MouseSelectable.h"
-#include "MouseIntersectable.h"
+#include "IntersectingTag.h"
 #include "JointEntity.h"
 #include "LoopEntity.h"
 #include "ComponentRefParent.h"
@@ -190,9 +190,9 @@ namespace middle {
 	bool isMouseIntersectingShape(GameState* gameState, int index)
 	{
 		auto& shape = gameState->shapes[index];
-		auto intersectable = getComponent<components::MouseIntersectable>(shape);
+		auto intersectable = getComponent<components::IntersectingTag>(shape);
 		if (intersectable) {
-			return intersectable->intersecting;
+			return true;
 		}
 		return false;
 	}

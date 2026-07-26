@@ -9,7 +9,7 @@
 #include "BubbleUnit.h"
 #include "FractionalComponent.h"
 #include "LoopSociety.h"
-#include "MouseIntersectable.h"
+#include "IntersectingTag.h"
 #include "bubble_utils.h"
 #include "BubbleRef.h"
 #include "Circle.h"
@@ -109,7 +109,7 @@ public:
 		editThisCache->addType<components::TextureComponent>();
 		inputCache = middle::newCompCache(gameState, systemName);
 		inputCache->addType<components::InputVariable>();
-		inputCache->addType<components::MouseIntersectable>();
+		inputCache->addType<components::IntersectingTag>();
 		inputCache->addType<components::ProcedureInputVariable>(components::NOTINTERESTED);
 		procContainerCache = middle::newCompCache(gameState, systemName);
 		procContainerCache->addType<components::ProcedureContainer>();
@@ -178,7 +178,7 @@ public:
 			bool isUiItem = middle::getComponent<components::UiComponent>(shape);
 			bool isHighlighted = middle::getComponent<components::UnIntersectableWindowComponent>(shape);
 
-			auto intersectable = middle::getComponent<components::MouseIntersectable>(shape);
+			auto intersectable = middle::getComponent<components::IntersectingTag>(shape);
 			bool intersecting = intersectable && intersectable->intersectingTop;
 
 
@@ -223,7 +223,7 @@ public:
 			setTransform(unitItem, transform);
 
 			auto& shape = middle::getShape(gameState, unitCache->relevantIdVector[i].index);
-			auto intersectable = middle::getComponent<components::MouseIntersectable>(shape);
+			auto intersectable = middle::getComponent<components::IntersectingTag>(shape);
 			float fontSize = 50;
 			if (intersectable && intersectable->intersectingTop) {
 				fontSize *= 1.2f;
@@ -258,7 +258,7 @@ public:
 				circle->radius = bubble::variableRadius;
 			}
 
-			auto intersectable = middle::getComponent<components::MouseIntersectable>(shape);
+			auto intersectable = middle::getComponent<components::IntersectingTag>(shape);
 
 			float radius = circle->radius;
 			float fontSize = bubble::variableTextFontSize;
@@ -307,35 +307,6 @@ public:
 			mulCircle.layer = layer->layer + 2;
 			gameState->renderData.push_back(mulCircle);
 
-//			std::vector<middle::Id>children;
-//			middle::getChildren(gameState, mulCache->relevantIdVector[i], children);
-//			for (int x = 1; x < children.size(); ++x) {
-//				auto& shapeA = middle::getShape(gameState, children[x - 1].index);
-//				auto& shapeB = middle::getShape(gameState, children[x].index);
-//				auto transformA = middle::getComponent<components::GlobalTransform>(shapeA);
-//				auto transformB = middle::getComponent<components::GlobalTransform>(shapeB);
-//				auto circleA = middle::getComponent<components::Circle>(shapeA);
-//				auto circleB = middle::getComponent<components::Circle>(shapeB);
-//				auto layer = middle::getComponent<components::Layer>(shapeA);
-//				bool isUiItem = middle::getComponent<components::UiComponent>(shapeA);
-//				float radiusA = circleA->radius * transformA->scale.x;
-//				float radiusB = circleB->radius * transformB->scale.x;
-//
-//				if (!circleA || !circleB)
-//					continue;
-//				Vector3 posA = transformA->pos;
-//				Vector3 posB = transformB->pos;
-//				Vector3 axis = Vector3Normalize(Vector3Subtract(posB, posA));
-//				middle::RenderItem line;
-//				line.type = middle::RenderItemType::LINE;
-//				line.linePointA = posA + Vector3Scale(axis, radiusA);
-//				line.linePointB = posB + Vector3Scale(axis, -radiusB);
-//				line.color = bubbleColors::MULTIPLICATION_CONNECTION;
-//				line.layer = layer->layer;
-//				line.disableDepthTest = isUiItem;
-//
-//				gameState->renderData.push_back(line);
-//			}
 		}
 
 		// renderPowers
@@ -491,7 +462,7 @@ public:
 			auto procContainer = *procContainerIt;
 
 			auto inputIt = inputCache->begin<components::InputVariable>();
-			auto intersectabeInputIt = inputCache->begin<components::MouseIntersectable>();
+			auto intersectabeInputIt = inputCache->begin<components::IntersectingTag>();
 			for (int i = 0; i < inputCache->getSize(); ++i) {
 				auto input = *inputIt;
 				auto intersectable = *intersectabeInputIt;

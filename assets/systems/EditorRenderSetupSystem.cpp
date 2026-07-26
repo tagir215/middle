@@ -25,6 +25,7 @@
 #include "middle_math.h"
 #include "Position.h"
 #include "component_utils.h"
+#include "IntersectingTag.h"
 
 class EditorRenderSetupSystem : public middle::MiddleGameplaySystem {
 public:
@@ -74,7 +75,7 @@ public:
 		loopTagCache->addType<components::Reference>(components::NOTINTERESTED);
 		hierarchyCache = middle::newCompCache(gameState, systemName);
 		hierarchyCache->addType<components::LoopSociety>();
-		hierarchyCache->addType<components::MouseIntersectable>();
+		hierarchyCache->addType<components::IntersectingTag>();
 		systemRefCache = middle::newCompCache(gameState, systemName);
 		systemRefCache->addType<components::LoopSociety>();
 		systemRefCache->addType<components::SystemReference>();
@@ -187,8 +188,8 @@ public:
 			configSphere.center = middle::getGlobalPosition(gameState, shape.id.index);
 			configSphere.radius = middle::DEF_RADIUS_SYSTEM;
 			configSphere.color = configColor;
-			auto intersectable = middle::getComponent<components::MouseIntersectable>(shape);
-			if (intersectable && intersectable->intersecting) {
+			auto intersecting = middle::getComponent<components::IntersectingTag>(shape);
+			if (intersecting) {
 				configSphere.color = hoveredColor;
 			}
 			gameState->renderData.push_back(configSphere);
@@ -204,8 +205,8 @@ public:
 			sphereItem.radius = sphere->radius;
 			sphereItem.center = middle::getGlobalPosition(gameState, shape.id.index);
 			sphereItem.color = jointColor;
-			auto intersectable = middle::getComponent<components::MouseIntersectable>(shape);
-			if (intersectable && intersectable->intersecting) {
+			auto intersecting = middle::getComponent<components::IntersectingTag>(shape);
+			if (intersecting) {
 				sphereItem.color = hoveredColor;
 			}
 			gameState->renderData.push_back(sphereItem);
@@ -221,41 +222,38 @@ public:
 			lineItem.linePointA = getGlobalPosition(gameState, constraint->idA.index);
 			lineItem.linePointB = getGlobalPosition(gameState, constraint->idB.index);
 			lineItem.color = constraintColor;
-			auto intersectable = middle::getComponent<components::MouseIntersectable>(shape);
-			if (intersectable && intersectable->intersecting) {
+			auto intersecting = middle::getComponent<components::IntersectingTag>(shape);
+			if (intersecting) {
 				lineItem.color = hoveredColor;
 			}
 			gameState->renderData.push_back(lineItem);
 		}
 
 		if (gameState->editorState.creationMode == middle::CreationMode::LOOP_MODE) {
-			auto hierarchyIntersectableIt = hierarchyCache->begin<components::MouseIntersectable>();
+			auto hierarchyIntersectableIt = hierarchyCache->begin<components::IntersectingTag>();
 			for (int i = 0; i < hierarchyCache->getSize(); ++i) {
 				auto intersectable = *hierarchyIntersectableIt;
 				std::vector<middle::Id>children;
 				middle::getChildren(gameState, hierarchyCache->relevantIdVector[i], children);
 				middle::Id parentId = middle::getParent(gameState, hierarchyCache->relevantIdVector[i]);
+				for (middle::Id& id : children) {
+					Vector3 childPos = middle::getGlobalPosition(gameState, id.index);
+					middle::RenderItem childItem;
+					childItem.type = middle::RenderItemType::TEXT;
+					childItem.color = loopItemColor;
+					childItem.center = childPos;
+					childItem.text = "child";
+					gameState->renderData.push_back(childItem);
 
-				if (intersectable->intersecting) {
-					for (middle::Id& id : children) {
-						Vector3 childPos = middle::getGlobalPosition(gameState, id.index);
-						middle::RenderItem childItem;
-						childItem.type = middle::RenderItemType::TEXT;
-						childItem.color = loopItemColor;
-						childItem.center = childPos;
-						childItem.text = "child";
-						gameState->renderData.push_back(childItem);
-
-					}
-					if (parentId.index != middle::UNASSIGNED) {
-						Vector3 parentPos = middle::getGlobalPosition(gameState, parentId.index);
-						middle::RenderItem parentItem;
-						parentItem.type = middle::RenderItemType::TEXT;
-						parentItem.color = loopItemColor;
-						parentItem.center = parentPos;
-						parentItem.text = "parent";
-						gameState->renderData.push_back(parentItem);
-					}
+				}
+				if (parentId.index != middle::UNASSIGNED) {
+					Vector3 parentPos = middle::getGlobalPosition(gameState, parentId.index);
+					middle::RenderItem parentItem;
+					parentItem.type = middle::RenderItemType::TEXT;
+					parentItem.color = loopItemColor;
+					parentItem.center = parentPos;
+					parentItem.text = "parent";
+					gameState->renderData.push_back(parentItem);
 				}
 			}
 		}
@@ -271,8 +269,8 @@ public:
 			refItem.color = referenceColor;
 			refItem.center = transform->pos;
 			refItem.radius = middle::DEF_RADIUS_REFERENCE_INDICATOR;
-			auto intersectable = middle::getComponent<components::MouseIntersectable>(shape);
-			if (intersectable && intersectable->intersecting) {
+			auto intersecting = middle::getComponent<components::IntersectingTag>(shape);
+			if (intersecting) {
 				refItem.color = hoveredColor;
 			}
 			gameState->renderData.push_back(refItem);
@@ -287,8 +285,8 @@ public:
 			systemItem.center = transform->pos;
 			systemItem.radius = middle::DEF_RADIUS_SYSTEM;
 			systemItem.color = systemColor;
-			auto intersectable = middle::getComponent<components::MouseIntersectable>(shape);
-			if (intersectable && intersectable->intersecting) {
+			auto intersecting = middle::getComponent<components::IntersectingTag>(shape);
+			if (intersecting) {
 				systemItem.color = hoveredColor;
 			}
 			gameState->renderData.push_back(systemItem);
@@ -303,8 +301,8 @@ public:
 			loopItem.color = loopColor;
 			loopItem.disableDepthTest = true;
 			loopItem.layer = 6;
-			auto intersectable = middle::getComponent<components::MouseIntersectable>(shape);
-			if (intersectable && intersectable->intersecting) {
+			auto intersecting = middle::getComponent<components::IntersectingTag>(shape);
+			if (intersecting) {
 				loopItem.color = hoveredColor;
 			}
 			gameState->renderData.push_back(loopItem);

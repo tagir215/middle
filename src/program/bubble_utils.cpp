@@ -6,7 +6,7 @@
 #include "InputVariable.h"
 #include "OutputVariable.h"
 #include "Button.h"
-#include "MouseIntersectable.h"
+#include "IntersectingTag.h"
 #include "Sphere.h"
 #include "Constraint.h"
 #include "BubbleRef.h"
@@ -190,9 +190,9 @@ namespace bubble {
 		if (button->function != function) {
 			return false;
 		}
-		auto intersectable = middle::getComponent<components::MouseIntersectable>(shape);
-		assert(intersectable);
-		if (intersectable->intersectingTop) {
+		auto intersecting = middle::getComponent<components::IntersectingTag>(shape);
+		assert(intersecting);
+		if (intersecting->intersectingTop) {
 			return true;
 		}
 		return false;
@@ -259,9 +259,8 @@ namespace bubble {
 
 
 	bool isIntersecting(middle::GameState* gameState, middle::Shape& shape) {
-		auto intersectable = middle::getComponent<components::MouseIntersectable>(shape);
-
-		return intersectable->intersectingTop;
+		auto intersecting = middle::getComponent<components::IntersectingTag>(shape);
+		return intersecting && intersecting->intersectingTop;
 	}
 
 	bool unitEquals(middle::GameState* gameState, middle::Id& idA, middle::Id& idB)

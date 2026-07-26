@@ -3,7 +3,6 @@
 #include "middle_system_registrar.h"
 #include "middle_shape_utils.h"
 #include "equlab_actions.h"
-#include "MouseIntersectable.h"
 #include "BubbleComponent.h"
 #include "SelectedComponent.h"
 #include "component_utils.h"
@@ -17,6 +16,7 @@
 #include "TopDogBubbleTag.h"
 #include "bubble_paths.h"
 #include "ActiveSceneEditableTag.h"
+#include "IntersectingTag.h"
 
 class EqulabSystem : public middle::MiddleGameplaySystem {
 public:
@@ -37,11 +37,11 @@ public:
 
 	void init(middle::GameState* gameState) override {
 		intersectableBubbleCache = middle::newCompCache(gameState, systemName);
-		intersectableBubbleCache->addType<components::MouseIntersectable>();
+		intersectableBubbleCache->addType<components::IntersectingTag>();
 		intersectableBubbleCache->addType<components::BubbleComponent>();
 
 		intersectableUnitCache = middle::newCompCache(gameState, systemName);
-		intersectableUnitCache->addType<components::MouseIntersectable>();
+		intersectableUnitCache->addType<components::IntersectingTag>();
 		intersectableUnitCache->addType<components::BubbleUnit>();
 
 		selectedCache = middle::newCompCache(gameState, systemName);
@@ -137,10 +137,10 @@ public:
 		std::string keyString = keyToString(gameState);
 		if (gameState->equlabInput.ctrlHeld && keyString != "") {
 			middle::Id intersectedBubble;
-			auto intersectableBubbleIt = intersectableBubbleCache->begin<components::MouseIntersectable>();
+			auto intersectingBubbleIt = intersectableBubbleCache->begin<components::IntersectingTag>();
 			for (int i = 0; i < intersectableBubbleCache->getSize(); ++i) {
-				auto intersectable = *intersectableBubbleIt;
-				if (intersectable->intersectingTop) {
+				auto intersecting = *intersectingBubbleIt;
+				if (intersecting->intersectingTop) {
 					intersectedBubble = intersectableBubbleCache->relevantIdVector[i];
 					break;
 				}
@@ -156,9 +156,9 @@ public:
 		if (gameState->input.mouseClicked) {
 
 			middle::Id intersectedBubble;
-			auto intersectableBubbleIt = intersectableBubbleCache->begin<components::MouseIntersectable>();
+			auto intersectingBubbleIt = intersectableBubbleCache->begin<components::IntersectingTag>();
 			for (int i = 0; i < intersectableBubbleCache->getSize(); ++i) {
-				auto intersectable = *intersectableBubbleIt;
+				auto intersectable = *intersectingBubbleIt;
 				if (intersectable->intersectingTop) {
 					intersectedBubble = intersectableBubbleCache->relevantIdVector[i];
 					break;
@@ -230,10 +230,10 @@ public:
 		if (gameState->input.mouseReleased && selectedCache->getSize() == 1) {
 
 			middle::Id intersectedShape;
-			auto intersectableIt = intersectableBubbleCache->begin<components::MouseIntersectable>();
+			auto intersectingIt = intersectableBubbleCache->begin<components::IntersectingTag>();
 			for (int i = 0; i < intersectableBubbleCache->getSize(); ++i) {
-				auto intersectable = *intersectableIt;
-				if (intersectable->intersectingTop) {
+				auto intersecting = *intersectingIt;
+				if (intersecting->intersectingTop) {
 					intersectedShape = intersectableBubbleCache->relevantIdVector[i];
 					break;
 				}

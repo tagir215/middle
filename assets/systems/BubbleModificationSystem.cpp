@@ -3,7 +3,6 @@
 #include "middle_system_registrar.h"
 #include "middle_shape_utils.h"
 #include "DeleteComponent.h"
-#include "MouseIntersectable.h"
 #include "IdRef.h"
 #include "BubbleMultiplyComponent.h"
 #include "bubble_actions.h"
@@ -25,11 +24,12 @@
 #include "InsertableBubble.h"
 #include "imgui.h"
 #include "BubblePowerComponent.h"
+#include "IntersectingTag.h"
 
 class BubbleModificationSystem : public middle::MiddleGameplaySystem {
 public:
 	components::CompCache* deletionCache;
-	components::CompCache* intersectableCache;
+	components::CompCache* intersectingCache;
 	components::CompCache* placementCache;
 	components::CompCache* levelConfigsCache;
 	components::CompCache* uiCompCache;
@@ -40,9 +40,9 @@ public:
 		deletionCache->addType<components::DeleteComponent>();
 		deletionCache->addType<components::IdRef>();
 
-		intersectableCache = middle::newCompCache(gameState, systemName);
-		intersectableCache->addType<components::MouseIntersectable>();
-		intersectableCache->addType<components::DeleteComponent>(components::NOTINTERESTED);
+		intersectingCache = middle::newCompCache(gameState, systemName);
+		intersectingCache->addType<components::IntersectingTag>();
+		intersectingCache->addType<components::DeleteComponent>(components::NOTINTERESTED);
 
 		placementCache = middle::newCompCache(gameState, systemName);
 		placementCache->addType<components::BubbleComponent>();
@@ -319,11 +319,11 @@ public:
 			|| inp.nine;
 
 		if (hotKeyPressed) {
-			auto intersectingIt = intersectableCache->begin<components::MouseIntersectable>();
-			for (int i = 0; i < intersectableCache->getSize(); ++i) {
-				auto intersectable = *intersectingIt;
-				if (intersectable->intersectingTop) {
-					middle::Shape& intersectingShape = middle::getShape(gameState, intersectableCache->relevantIdVector[i].index);
+			auto intersectingIt = intersectingCache->begin<components::IntersectingTag>();
+			for (int i = 0; i < intersectingCache->getSize(); ++i) {
+				auto intersecting = *intersectingIt;
+				if (intersecting->intersectingTop) {
+					middle::Shape& intersectingShape = middle::getShape(gameState, intersectingCache->relevantIdVector[i].index);
 
 					if (gameState->gameInput.pop) {
 						if (!gameState->gameInput.shiftHeld) {
@@ -396,19 +396,14 @@ public:
 
 			int intersectCount = 0;
 
-			auto intersectableIt = intersectableCache->begin<components::MouseIntersectable>();
-			for (int i = 0; i < intersectableCache->getSize(); ++i) {
+			auto intersectableIt = intersectingCache->begin<components::IntersectingTag>();
+			for (int i = 0; i < intersectingCache->getSize(); ++i) {
 				auto intersectable = *intersectableIt;
 
-				auto& intersectableShape = middle::getShape(gameState, intersectableCache->relevantIdVector[i].index);
+				auto& intersectableShape = middle::getShape(gameState, intersectingCache->relevantIdVector[i].index);
 				middle::Id parentId = middle::getParent(gameState, intersectableShape.id);
 
-				if (!intersectable->intersecting) {
-					continue;
-				}
-
 				++intersectCount;
-
 
 				// check if there's parent, the parent is not a fraction
 				if (parentId.index != middle::UNASSIGNED) {

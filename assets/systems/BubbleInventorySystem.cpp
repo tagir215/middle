@@ -4,7 +4,6 @@
 #include "middle_shape_utils.h"
 #include "Inventory.h"
 #include "BubbleComponent.h"
-#include "MouseIntersectable.h"
 #include "MouseGrabbable.h"
 #include "editor_actions.h"
 #include "LoopSociety.h"
@@ -25,6 +24,7 @@
 #include "Layer.h"
 #include "InsertableBubble.h"
 #include "imgui.h"
+#include "IntersectingTag.h"
 
 
 class BubbleInventorySystem : public middle::MiddleGameplaySystem {
@@ -82,7 +82,7 @@ public:
 			for (int i = 0; i < children.size(); ++i) {
 				middle::Id childId = children[i];
 				auto& child = middle::getShape(gameState, childId.index);
-				auto intersectable = middle::getComponent<components::MouseIntersectable>(child);
+				auto intersectable = middle::getComponent<components::IntersectingTag>(child);
 				auto grabbable = middle::getComponent<components::MouseGrabbable>(child);
 				if (!grabbable) {
 					continue;
