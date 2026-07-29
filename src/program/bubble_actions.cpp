@@ -1320,63 +1320,24 @@ namespace bubbleActions {
 		middle::Id topDog = bubble::findIdWithCompFromShapeOrItsParents<components::TopDogBubbleTag>(gameState, shapeToAddIntoId);
 		shapeToAddIntoId = topDog;
 
-		middle::Id parentId = middle::getParent(gameState, shapeToAddIntoId);
 		std::vector<middle::Id>shapesToAddIntoIds;
 
-		std::vector<middle::Id>shapesToAddIds;
-		// if no parent, add just the og shapeToAddIntoId
-		if (parentId.index == middle::UNASSIGNED) {
-			shapesToAddIntoIds.push_back(shapeToAddIntoId);
-			shapesToAddIds.push_back(newTermId);
+		bool isEquOrInequ = bubble::isEqualsOrInequals(gameState, topDog);
+		if (isEquOrInequ) {
+			std::vector<middle::Id>equChildren;
+			middle::getChildren(gameState, topDog, equChildren);
+			for (middle::Id childId : equChildren) {
+				shapesToAddIntoIds.push_back(childId);
+			}
 		}
-		// else we check that the parent has equals component, then we add all the children of it as shapes to add into
 		else {
-			auto& parentShape = middle::getShape(gameState, parentId.index);
-			auto equalsComp = middle::getComponent<components::BubbleEqualsComponent>(parentShape);
-			if (!equalsComp) {
-				cancelled = true;
-				return;
-			}
-			shapesToAddIds.push_back(newTermId);
-			middle::getChildren(gameState, parentShape.id, shapesToAddIntoIds);
-			// copy the new terms to be added to the other containers
-			for (int i = 1; i < shapesToAddIntoIds.size(); ++i) {
-				auto copyAction = std::make_unique<middle::EditorActionCopySingle>(newTermId);
-				copyAction->execute(gameState);
-				shapesToAddIds.push_back(copyAction->resultId);
-				actions.push_back(std::move(copyAction));
-			}
+			shapesToAddIntoIds.push_back(shapeToAddIntoId);
 		}
 
-
-		assert(shapesToAddIntoIds.size() == shapesToAddIds.size());
-		for (int i = 0; i < shapesToAddIntoIds.size(); ++i) {
-			middle::Id& intoId = shapesToAddIntoIds[i];
-
-			// if its a single variable, or exponent we need to containerize first
-			auto& shapeToAddInto = middle::getShape(gameState, intoId.index);
-			auto var = middle::getComponent<components::BubbleVariable>(shapeToAddInto);
-			if (var) {
-				middle::Id copyId = middle::deepCopyShapeGlobalCoordinates(gameState, shapeToAddIntoId);
-				middle::Id replacingId = bubble::containerize(gameState, copyId);
-
-				auto registerAction = std::make_unique<middle::EditorActionRegisterId>(replacingId);
-				registerAction->execute(gameState);
-				actions.push_back(std::move(registerAction));
-
-				auto replaceAction = std::make_unique<Replace>(intoId, replacingId);
-				replaceAction->execute(gameState);
-				actions.push_back(std::move(replaceAction));
-
-				intoId = replacingId;
-			}
-
-			middle::Id& toAddId = shapesToAddIds[i];
-			auto reparentAction = std::make_unique<middle::EditorActionReparent>(intoId.index, toAddId.index);
-			reparentAction->execute(gameState);
-			Vector3 currentPos = middle::getGlobalPosition(gameState, toAddId.index);
-			middle::moveShape(gameState, toAddId.index, targetPosition - currentPos);
-			actions.push_back(std::move(reparentAction));
+		for (middle::Id shapeToAddInto : shapesToAddIntoIds) {
+			middle::Id copyId = middle::deepCopyShapeGlobalCoordinates(gameState, newTermId);
+			middle::executeAction<middle::EditorActionRegisterId>(gameState, this, copyId);
+			middle::executeAction<middle::EditorActionReparent>(gameState, this, shapeToAddInto.index, copyId.index);
 		}
 
 		queueSound(gameState, bubbleSounds::ADD_TERM_SOUND);
@@ -1395,105 +1356,27 @@ namespace bubbleActions {
 		middle::Id topDog = bubble::findIdWithCompFromShapeOrItsParents<components::TopDogBubbleTag>(gameState, shapeToAddIntoId);
 		shapeToAddIntoId = topDog;
 
-		middle::Id parentId = middle::getParent(gameState, shapeToAddIntoId);
 		std::vector<middle::Id>shapesToAddIntoIds;
-		std::vector<middle::Id>shapesToAddIds;
-		// if no parent, add just the og shapeToAddIntoId
-		if (parentId.index == middle::UNASSIGNED) {
-			shapesToAddIntoIds.push_back(shapeToAddIntoId);
-			shapesToAddIds.push_back(newTermId);
+
+		bool isEquOrInequ = bubble::isEqualsOrInequals(gameState, topDog);
+		if (isEquOrInequ) {
+			std::vector<middle::Id>equChildren;
+			middle::getChildren(gameState, topDog, equChildren);
+			for (middle::Id childId : equChildren) {
+				shapesToAddIntoIds.push_back(childId);
+			}
 		}
-		// else we check that the parent has equals component, then we add all the children of it as shapes to add into
 		else {
-			auto& parentShape = middle::getShape(gameState, parentId.index);
-			auto equalsComp = middle::getComponent<components::BubbleEqualsComponent>(parentShape);
-			if (!equalsComp) {
-				cancelled = true;
-				return;
-			}
-			shapesToAddIds.push_back(newTermId);
-			middle::getChildren(gameState, parentShape.id, shapesToAddIntoIds);
-			// copy the new terms to be added to the other containers
-			for (int i = 1; i < shapesToAddIntoIds.size(); ++i) {
-				auto copyAction = std::make_unique<middle::EditorActionCopySingle>(newTermId);
-				copyAction->execute(gameState);
-				shapesToAddIds.push_back(copyAction->resultId);
-				actions.push_back(std::move(copyAction));
-			}
+			shapesToAddIntoIds.push_back(shapeToAddIntoId);
 		}
 
-		for (int i = 0; i < shapesToAddIntoIds.size(); ++i) {
-			middle::Id containerId = shapesToAddIntoIds[i];
-			middle::Id toAddId = shapesToAddIds[i];
-
-			// if its a single variable, or exponent we need to containerize first
-			auto& shapeToAddInto = middle::getShape(gameState, containerId.index);
-			auto var = middle::getComponent<components::BubbleVariable>(shapeToAddInto);
-			if (var) {
-				middle::Id copyId = middle::deepCopyShapeGlobalCoordinates(gameState, shapeToAddIntoId);
-				middle::Id replacingId = bubble::containerize(gameState, copyId);
-
-				auto registerAction = std::make_unique<middle::EditorActionRegisterId>(replacingId);
-				registerAction->execute(gameState);
-				actions.push_back(std::move(registerAction));
-
-				auto replaceAction = std::make_unique<Replace>(containerId, replacingId);
-				replaceAction->execute(gameState);
-				actions.push_back(std::move(replaceAction));
-
-				containerId = replacingId;
-			}
-
-
-			std::vector<middle::Id>children;
-			middle::getChildren(gameState, containerId, children);
-			if (children.size() == 0) {
-				return;
-			}
-			middle::Id toLinkIntoId;
-
-
-			if (children.size() == 1) {
-				std::vector<middle::Id>multiplicationMembers;
-				auto& child = middle::getShape(gameState, children[0].index);
-				auto mul = middle::getComponent<components::BubbleMultiplyComponent>(child);
-				// if mul link to one of multiplications members
-				if (mul) {
-					middle::getChildren(gameState, children[0], multiplicationMembers);
-					assert(multiplicationMembers.size() >= 2);
-					toLinkIntoId = multiplicationMembers[0];
-				}
-				else {
-					toLinkIntoId = child.id;
-				}
-			}
-			// create new container bubble, because the top dog bubble should be alone
-			else if (children.size() > 1) {
-				middle::Shape newContainer = bubble::newBubble(gameState, middle::getGlobalPosition(gameState, containerId.index));
-				auto registerAction = std::make_unique<middle::EditorActionRegisterShape>(newContainer);
-				registerAction->execute(gameState);
-				toLinkIntoId = registerAction->newShapeId;
-				actions.push_back(std::move(registerAction));
-				for (middle::Id childId : children) {
-					auto reparentAction = std::make_unique<middle::EditorActionReparent>(toLinkIntoId.index, childId.index);
-					reparentAction->execute(gameState);
-					actions.push_back(std::move(reparentAction));
-				}
-
-				auto reparentNewBubble = std::make_unique<middle::EditorActionReparent>(containerId.index, toLinkIntoId.index);
-				reparentNewBubble->execute(gameState);
-				actions.push_back(std::move(reparentNewBubble));
-			}
-
-			auto linkAction = std::make_unique<bubbleActions::LinkMultiplicationTerm>(toLinkIntoId, toAddId);
-			linkAction->execute(gameState);
-			actions.push_back(std::move(linkAction));
-
-			Vector3 currentPos = middle::getGlobalPosition(gameState, toAddId.index);
-			middle::moveShape(gameState, toAddId.index, targetPosition - currentPos);
-
-			queueSound(gameState, bubbleSounds::ADD_TERM_SOUND);
+		for (middle::Id shapeToAddInto : shapesToAddIntoIds) {
+			middle::Id replacementShapeId = createMultiplicationReplacementShape(gameState, shapeToAddInto, newTermId);
+			middle::executeAction<middle::EditorActionRegisterId>(gameState, this, replacementShapeId);
+			middle::executeAction<Replace>(gameState, this, shapeToAddInto, replacementShapeId);
 		}
+
+		queueSound(gameState, bubbleSounds::ADD_TERM_SOUND);
 	}
 
 	void NewMultiplicationTerm::undo(middle::GameState* gameState)
@@ -1509,64 +1392,25 @@ namespace bubbleActions {
 		middle::Id topDog = bubble::findIdWithCompFromShapeOrItsParents<components::TopDogBubbleTag>(gameState, shapeToAddIntoId);
 		shapeToAddIntoId = topDog;
 
-		middle::Id parentId = middle::getParent(gameState, shapeToAddIntoId);
 		std::vector<middle::Id>shapesToAddIntoIds;
-		std::vector<middle::Id>shapesToAddIds;
-		// if no parent, add just the og shapeToAddIntoId
-		if (parentId.index == middle::UNASSIGNED) {
-			shapesToAddIntoIds.push_back(shapeToAddIntoId);
-			shapesToAddIds.push_back(newTermId);
+
+		bool isEquOrInequ = bubble::isEqualsOrInequals(gameState, topDog);
+		if (isEquOrInequ) {
+			std::vector<middle::Id>equChildren;
+			middle::getChildren(gameState, topDog, equChildren);
+			for (middle::Id childId : equChildren) {
+				shapesToAddIntoIds.push_back(childId);
+			}
 		}
-		// else we check that the parent has equals component, then we add all the children of it as shapes to add into
 		else {
-			auto& parentShape = middle::getShape(gameState, parentId.index);
-			auto equalsComp = middle::getComponent<components::BubbleEqualsComponent>(parentShape);
-			if (!equalsComp) {
-				cancelled = true;
-				return;
-			}
-			shapesToAddIds.push_back(newTermId);
-			middle::getChildren(gameState, parentShape.id, shapesToAddIntoIds);
-			// copy the new terms to be added to the other containers
-			for (int i = 1; i < shapesToAddIntoIds.size(); ++i) {
-				auto copyAction = std::make_unique<middle::EditorActionCopySingle>(newTermId);
-				copyAction->execute(gameState);
-				shapesToAddIds.push_back(copyAction->resultId);
-				actions.push_back(std::move(copyAction));
-			}
+			shapesToAddIntoIds.push_back(shapeToAddIntoId);
 		}
-
-		for (int i = 0; i < shapesToAddIntoIds.size(); ++i) {
-			middle::Id containerId = shapesToAddIntoIds[i];
-			middle::Id toAddId = shapesToAddIds[i];
-
-			// create new container
-			middle::Shape newBubbleProto = bubble::newBubble(gameState, middle::getGlobalPosition(gameState, containerId.index));
-			auto registerNewContainer = std::make_unique<EditorActionRegisterShape>(newBubbleProto);
-			registerNewContainer->execute(gameState);
-			middle::Id newBubbleId = registerNewContainer->newShapeId;
-			actions.push_back(std::move(registerNewContainer));
-
-			// reparent children to new container
-			std::vector<middle::Id>containerChildren;
-			middle::getChildren(gameState, containerId, containerChildren);
-			for (middle::Id childId : containerChildren) {
-				auto reparent = std::make_unique<middle::EditorActionReparent>(newBubbleId.index, childId.index);
-				reparent->execute(gameState);
-				actions.push_back(std::move(reparent));
-			}
-
-			// create power link
-			auto connectPower = std::make_unique<equlab::ConnectPower>(newBubbleId, toAddId);
-			connectPower->execute(gameState);
-			middle::Id newPowerId = connectPower->resultId;
-			actions.push_back(std::move(connectPower));
-
-			// reparent to og container
-			auto reparent = std::make_unique<EditorActionReparent>(containerId.index, newPowerId.index);
-			reparent->execute(gameState);
-			actions.push_back(std::move(reparent));
+		for (middle::Id shapeToAddInto : shapesToAddIntoIds) {
+			middle::Id copyId = middle::deepCopyShapeGlobalCoordinates(gameState, newTermId);
+			middle::executeAction<middle::EditorActionRegisterId>(gameState, this, copyId);
+			middle::executeAction<equlab::ConnectPower>(gameState, this, shapeToAddInto, copyId);
 		}
+		queueSound(gameState, bubbleSounds::ADD_TERM_SOUND);
 	}
 
 	void NewPowerTerm::undo(middle::GameState* gameState)

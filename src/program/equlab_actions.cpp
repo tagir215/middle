@@ -39,6 +39,11 @@ namespace equlab {
 	}
 
 	void AddUnit::execute(middle::GameState* gameState) {
+		if (parentId.index == middle::UNASSIGNED) {
+			cancelled = true;
+			return;
+		}
+
 		middle::Shape newUnitProto = bubble::newUnit(gameState, targetPosition);
 		auto registerAction = std::make_unique<middle::EditorActionRegisterShape>(newUnitProto);
 		registerAction->execute(gameState);

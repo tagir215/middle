@@ -718,7 +718,6 @@ namespace bubble {
 		auto variable = middle::getComponent<components::BubbleVariable>(bubbleShape);
 		auto node = middle::getComponent<components::AlgebraNode>(bubbleShape);
 		auto bubbleUnit = middle::getComponent<components::BubbleUnit>(bubbleShape);
-		auto power = middle::getComponent<components::BubblePowerComponent>(bubbleShape);
 
 		if (bubbleUnit) {
 			result.scale += bubbleUnit->value;
@@ -731,7 +730,7 @@ namespace bubble {
 			}
 			return result;
 		}
-		else if (power) {
+		else if (bubble::isPowerBubble(gameState, bubbleId)) {
 			middle::Id baseId, exponentId;
 			bubble::getPowerBaseAndExponent(gameState, bubbleShape.id, baseId, exponentId);
 			BubbleValue baseVal = calculateBubbleValue(gameState, baseId, variableValues);
@@ -740,29 +739,25 @@ namespace bubble {
 			result.scale += powResult;
 			return result;
 		}
-
-		std::vector<middle::Id>children;
-		middle::getChildren(gameState, bubbleId, children);
-		for (middle::Id& id : children) {
-			auto& shape = middle::getShape(gameState, id.index);
-			auto bubble = middle::getComponent<components::BubbleComponent>(shape);
-			auto mul = middle::getComponent<components::BubbleMultiplyComponent>(shape);
-			if (mul) {
-				std::vector<middle::Id> opChildren;
-				middle::getChildren(gameState, shape.id, opChildren);
-				BubbleValue mulResult;
-				mulResult.scale = 1;
-				if (mul) {
-					for (int x = 0; x < opChildren.size(); ++x) {
-						BubbleValue val = calculateBubbleValue(gameState, opChildren[x], variableValues);
-						mulResult.scale *= val.scale;
-					}
-					result.scale += mulResult.scale;
-				}
+		else if (bubble::isMultiplication(gameState, bubbleId)) {
+			std::vector<middle::Id>children;
+			middle::getChildren(gameState, bubbleId, children);
+			BubbleValue mulResult;
+			mulResult.scale = 1;
+			for (int x = 0; x < children.size(); ++x) {
+				BubbleValue val = calculateBubbleValue(gameState, children[x], variableValues);
+				mulResult.scale *= val.scale;
 			}
-			else if (bubble) {
-				BubbleValue value = calculateBubbleValue(gameState, shape.id, variableValues);
-				result.scale += value.scale;
+			result.scale += mulResult.scale;
+			return result;
+		}
+		// assume addition
+		else {
+			std::vector<middle::Id>children;
+			middle::getChildren(gameState, bubbleId, children);
+			for (int x = 0; x < children.size(); ++x) {
+				BubbleValue val = calculateBubbleValue(gameState, children[x], variableValues);
+				result.scale += val.scale;
 			}
 		}
 
