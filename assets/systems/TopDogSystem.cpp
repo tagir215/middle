@@ -31,9 +31,7 @@ class TopDogSystem : public middle::MiddleGameplaySystem {
 		if (parentId.index == middle::UNASSIGNED) {
 			return true;
 		}
-		middle::Shape& parentShape = middle::getShape(gameState, parentId.index);
-		bool parentIsEquals = middle::getComponent<components::BubbleEqualsComponent>(parentShape) != nullptr;
-		return parentIsEquals;
+		return false;
 	}
 
 	void updateTopDogs(middle::GameState* gameState) {

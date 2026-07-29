@@ -100,6 +100,8 @@ public:
 		equalsCache = middle::newCompCache(gameState, systemName);
 		equalsCache->addType<components::BubbleEqualsComponent>();
 		equalsCache->addType<components::LoopSociety>();
+		equalsCache->addType<components::Layer>();
+		equalsCache->addType<components::Circle>();
 		equalsCache->addType<components::GlobalTransform>();
 		textureCache = middle::newCompCache(gameState, systemName);
 		textureCache->addType<components::TextureComponent>();
@@ -200,6 +202,7 @@ public:
 			setTransform(circleItem, transform);
 			gameState->renderData.push_back(circleItem);
 		}
+
 
 		// renderunits
 		auto unitIt = unitCache->begin<components::BubbleUnit>();
@@ -365,30 +368,21 @@ public:
 			gameState->renderData.push_back(cuboidItem);
 		}
 
-		for (int i = 0; i < equalsCache->getSize(); ++i) {
-			std::vector<middle::Id>children;
-			middle::getChildren(gameState, equalsCache->relevantIdVector[i], children);
+		auto equTransformIt = equalsCache->begin<components::GlobalTransform>();
+		auto equCircleIt = equalsCache->begin<components::Circle>();
+		auto equLayerIt = equalsCache->begin<components::Layer>();
+		for (middle::Id id : equalsCache->relevantIdVector){
+			auto transform = *equTransformIt;
+			auto circle = *equCircleIt;;
+			auto layer = *equLayerIt;
 
-			assert(children.size() == 2);
-			middle::Id& idA = children[0];
-			middle::Id& idB = children[1];
-			middle::Shape& shapeA = middle::getShape(gameState, idA.index);
-			middle::Shape& shapeB = middle::getShape(gameState, idB.index);
-			Vector3 posA = middle::getGlobalPosition(gameState, idA.index);
-			Vector3 posB = middle::getGlobalPosition(gameState, idB.index);
-			auto circleA = middle::getComponent<components::Circle>(shapeA);
-			auto circleB = middle::getComponent<components::Circle>(shapeB);
-			Vector3 axis = Vector3Normalize(Vector3Subtract(posB, posA));
-			Vector3 linePointA = posA + Vector3Scale(axis, circleA->radius);
-			Vector3 linePointB = posB + Vector3Scale(axis, -circleB->radius);
-			auto layer = middle::getComponent<components::Layer>(shapeA);
-			middle::RenderItem equalsLine;
-			equalsLine.type = middle::RenderItemType::LINE;
-			equalsLine.linePointA = linePointA;
-			equalsLine.linePointB = linePointB;
-			equalsLine.color = bubbleColors::EQUALS_CONNECTION;
-			equalsLine.layer = layer->layer;
-			gameState->renderData.push_back(equalsLine);
+			middle::RenderItem equCirc;
+			equCirc.type = middle::RenderItemType::CIRCLE;
+			equCirc.radius = circle->radius + 8;
+			setTransform(equCirc, transform);
+			equCirc.layer = layer->layer;
+			equCirc.color = bubbleColors::EQUALS_CONNECTION;
+			gameState->renderData.push_back(equCirc);
 		}
 
 

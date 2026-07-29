@@ -9,7 +9,6 @@
 #include "LoopSociety.h"
 #include "Rectangle.h"
 #include "TopDogBubbleTag.h"
-#include "BubbleEqualsComponent.h"
 #include "DeleteComponent.h" 
 #include "IdRef.h"
 #include "GlobalTransform.h"
@@ -41,10 +40,6 @@ public:
 		bubbleCache->addType<components::Circle>();
 		bubbleCache->addType<components::LoopSociety>();
 		bubbleCache->addType<components::IdRef>(components::NOTINTERESTED);
-
-		equalsCache = middle::newCompCache(gameState, systemName);
-		equalsCache->addType<components::BubbleEqualsComponent>();
-		equalsCache->addType<components::LoopSociety>();
 
 		topDogBubbleCache = middle::newCompCache(gameState, systemName);
 		topDogBubbleCache->addType<components::TopDogBubbleTag>();
@@ -299,10 +294,6 @@ public:
 		findSiblingCollisions(pairVectors, collisions);
 		findSiblingCollisions(topDogPairVectors, collisions);
 		findCollisionsWithOutline(bubbles, collisions);
-
-		//if (greatCenterLines.size() == 1) {
-		//	findCollisionsWithGreatCenterLine(topDogBubbles, greatCenterLines[0], collisions);
-		//}
 
 		const float inverseTime = 1.0f / gameState->frameTime;
 		// forces between units

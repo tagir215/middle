@@ -1028,9 +1028,6 @@ namespace bubble {
 			parents.pop();
 
 			auto& parentShape = middle::getShape(gameState, currentId.index);
-			if (middle::getComponent<components::InputVariable>(parentShape)) {
-				return depth - 1;
-			}
 			if (middle::getComponent<components::TopDogBubbleTag>(parentShape)) {
 				return depth;
 			}
@@ -1309,17 +1306,8 @@ namespace bubble {
 
 	middle::Shape newEquals(middle::GameState* gameState, const Vector3& targetPos)
 	{
-		middle::Shape newBubbleShape;
+		middle::Shape newBubbleShape = newBubble(gameState, targetPos);
 		middle::addComponent<components::BubbleEqualsComponent>(newBubbleShape);
-		middle::addComponent<components::MouseGrabbable>(newBubbleShape);
-		middle::addComponent<components::MouseSelectable>(newBubbleShape);
-		middle::addComponent<components::MouseIntersectable>(newBubbleShape);
-		middle::addComponent<components::LoopTag>(newBubbleShape);
-		middle::addComponent<components::LoopSociety>(newBubbleShape);
-		auto position = middle::addComponent<components::LocalPosition>(newBubbleShape);
-		position->pos = targetPos;
-		middle::addComponent<components::LocalScale>(newBubbleShape);
-		middle::addComponent<components::GlobalTransform>(newBubbleShape);
 		return newBubbleShape;
 	}
 
