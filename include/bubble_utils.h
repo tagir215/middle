@@ -34,6 +34,7 @@ namespace bubble {
 	middle::Shape newUnit(middle::GameState* gameState, const Vector3& targetPos, bool isNegative = false);
 	middle::Shape newVariable(middle::GameState* gameState, const std::string& label, const Vector3& targetPos, bool isNegative = false);
 	middle::Shape newEquals(middle::GameState* gameState, const Vector3& targetPos);
+	middle::Shape newInequals(middle::GameState* gameState, const Vector3& targetPos, bool equalOr);
 	middle::Shape newMultiplication(middle::GameState* gameState, const Vector3& targetPos);
 	middle::Shape newPower(middle::GameState* gameState, const Vector3& targetPos);
 	middle::Id newPower(middle::GameState* gameState, middle::Id baseId, middle::Id exponentId, const Vector3& targetPos);
@@ -72,7 +73,11 @@ namespace bubble {
 	bool isBubbleWithValueOne(middle::GameState* gameState, middle::Id id);
 	bool isBubbleWithValueOneNegative(middle::GameState* gameState, middle::Id id);
 	bool isBubbleZero(middle::GameState* gameState, middle::Id id);
+	bool isEqualsOrInequals(middle::GameState* gameState, middle::Id id);
+	bool isEqualsBubble(middle::GameState* gameState, middle::Id id);
+	bool isInequalBubble(middle::GameState* gameState, middle::Id id);
 	void getPowerBaseAndExponent(middle::GameState* gameState, middle::Id powerBubble, middle::Id& resultBaseId, middle::Id& resultExponentId);
+	void getInequaltyLesserAndGreater(middle::GameState* gameState, middle::Id inequalBubble, middle::Id& resultLesserId, middle::Id& resultGreaterId);
 
 	template<typename T>
 	middle::Id findIdWithCompFromShapeOrItsParents(middle::GameState* gameState, middle::Id id) {

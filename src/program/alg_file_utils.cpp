@@ -69,6 +69,7 @@ namespace bubequ {
 		auto unit = std::make_shared<Unit>();
 		if (valueStr == "") {
 			unit->value = 0;
+			unit->type = UnitType::ZERO;
 			return unit;
 		}
 		unit->value = 1;
@@ -97,11 +98,21 @@ namespace bubequ {
 	std::shared_ptr<Link> parseLink(const std::string& linkStr) {
 		auto link = std::make_shared<Link>();
 		char operatorChar = linkStr[0];
+		int substringStart = 1;
 		if (operatorChar == '*') {
 			link->type = LinkType::MULTIPLICATION;
 		}
 		else if (operatorChar == '^') {
 			link->type = LinkType::POWER;
+		}
+		else if (operatorChar == '>') {
+			if (linkStr[1] == '=') {
+				link->type = LinkType::GREATER_OR_EQUAL;
+				++substringStart;
+			}
+			else {
+				link->type = LinkType::GREATER;
+			}
 		}
 		else if (operatorChar == '=') {
 			link->type = LinkType::EQUALS;
@@ -109,7 +120,7 @@ namespace bubequ {
 		else {
 			throw std::runtime_error("file formal error: Not known linktype");
 		}
-		std::string subStr = linkStr.substr(1);
+		std::string subStr = linkStr.substr(substringStart);
 		std::vector<std::string>scopes = split(subStr);
 		for (const std::string& scopeStr : scopes) {
 			link->children.push_back(parseScope(scopeStr));
@@ -127,7 +138,7 @@ namespace bubequ {
 		if (operatorChar == '*' || operatorChar == '^') {
 			return parseLink(scopeStr);
 		}
-		else if (operatorChar == '=') {
+		else if (operatorChar == '>' || operatorChar == '=') {
 			return parseLink(scopeStr);
 		}
 		else if (operatorChar == '(') {

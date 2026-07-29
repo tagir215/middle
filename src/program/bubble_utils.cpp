@@ -26,6 +26,7 @@
 #include "GlobalTransform.h"
 #include "GlobalRadius.h"
 #include "BubblePowerComponent.h"
+#include "BubbleInequaltyComponent.h"
 
 namespace bubble {
 	float unitRadius = 24;
@@ -1127,6 +1128,21 @@ namespace bubble {
 		return false;
 	}
 
+	bool isEqualsOrInequals(middle::GameState* gameState, middle::Id id)
+	{
+		return isEqualsBubble(gameState, id) || isInequalBubble(gameState, id);
+	}
+
+	bool isEqualsBubble(middle::GameState* gameState, middle::Id id)
+	{
+		return middle::getComp<components::BubbleEqualsComponent>(gameState, id) != nullptr;
+	}
+
+	bool isInequalBubble(middle::GameState* gameState, middle::Id id)
+	{
+		return middle::getComp<components::BubbleInequaltyComponent>(gameState, id) != nullptr;
+	}
+
 	void getPowerBaseAndExponent(middle::GameState* gameState, middle::Id powerBubble, middle::Id& resultBaseId, middle::Id& resultExponentId)
 	{
 		assert(isPowerBubble(gameState, powerBubble));
@@ -1135,6 +1151,16 @@ namespace bubble {
 		assert(powerChildren.size() == 2);
 		resultBaseId = powerChildren[components::PowerRole::POWER_ROLE_BASE];
 		resultExponentId = powerChildren[components::PowerRole::POWER_ROLE_EXPONENT];
+	}
+
+	void getInequaltyLesserAndGreater(middle::GameState* gameState, middle::Id inequalBubble, middle::Id& resultLesserId, middle::Id& resultGreaterId)
+	{
+		assert(isInequalBubble(gameState, inequalBubble));
+		std::vector<middle::Id>inequalChildren;
+		middle::getChildren(gameState, inequalBubble, inequalChildren);
+		assert(inequalChildren.size() == 2);
+		resultLesserId = inequalChildren[components::InequaltyRole::INEQUAL_LESSER];
+		resultGreaterId = inequalChildren[components::InequaltyRole::INEQUAL_GREATER];
 	}
 
 	middle::Id bubbleToStructure(middle::GameState* gameState, middle::Id bubbleId)
@@ -1308,6 +1334,16 @@ namespace bubble {
 	{
 		middle::Shape newBubbleShape = newBubble(gameState, targetPos);
 		middle::addComponent<components::BubbleEqualsComponent>(newBubbleShape);
+		return newBubbleShape;
+	}
+
+	middle::Shape newInequals(middle::GameState* gameState, const Vector3& targetPos, bool equalOr)
+	{
+		middle::Shape newBubbleShape = newBubble(gameState, targetPos);
+		middle::addComponent<components::BubbleInequaltyComponent>(newBubbleShape);
+		if (equalOr) {
+			middle::addComponent<components::BubbleEqualsComponent>(newBubbleShape);
+		}
 		return newBubbleShape;
 	}
 

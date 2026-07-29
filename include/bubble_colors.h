@@ -20,6 +20,7 @@ namespace bubbleColors {
 	inline Color NEGATIVE_POWER = {0,0,255,255};
 	inline Color TEXT = BLACK;
 	inline Color EQUALS_CONNECTION = BLUE;
+	inline Color INEQUALS_COLOR = PURPLE;
 	inline Color PROCEDURE_SELECTED = {0, 255,255,30};
 	inline Color ELEMENT_SELECTED = {0,255,0,60};
 	inline Color UI_BUTTON = BLACK;

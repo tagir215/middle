@@ -668,6 +668,10 @@ namespace bubbleActions {
 			cancelled = true;
 			return;
 		}
+		if (bubble::isEqualsOrInequals(gameState, parentId)) {
+			cancelled = true;
+			return;
+		}
 		if (bubble::isPowerBubble(gameState, parentId)) {
 			cancelled = true;
 			return;

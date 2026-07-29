@@ -11,6 +11,7 @@
 #include "UnIntersectableWindowComponent.h"
 #include "TopDogBubbleTag.h"
 #include "BubblePowerComponent.h"
+#include "BubbleInequaltyComponent.h"
 
 namespace equlab {
 
@@ -226,6 +227,30 @@ namespace equlab {
 		}
 	}
 
+	void AddInequals::execute(middle::GameState* gameState) {
+		middle::Shape bubAProto = bubble::newBubble(gameState, targetPos + Vector3{-1,0,0});
+		middle::Shape bubBProto = bubble::newBubble(gameState, targetPos + Vector3{1,0,0});
+		middle::Shape inequalsProto = bubble::newInequals(gameState, targetPos, equalOr);
+		middle::Shape& bubA = middle::registerShape(gameState, bubAProto);
+		middle::Shape& bubB = middle::registerShape(gameState, bubBProto);
+		middle::Shape& inequalsShape = middle::registerShape(gameState, inequalsProto);
+
+		middle::EditorActionReparent(inequalsShape.id.index, bubA.id.index).execute(gameState);
+		middle::EditorActionReparent(inequalsShape.id.index, bubB.id.index).execute(gameState);
+
+		auto registerAction = std::make_unique<middle::EditorActionRegisterId>(inequalsShape.id);
+		registerAction->execute(gameState);
+		actions.push_back(std::move(registerAction));
+	}
+
+	void AddInequals::undo(middle::GameState* gameState) {
+		while (actions.size() > 0) {
+			actions.back()->undo(gameState);
+			actions.pop_back();
+		}
+	}
+
+
 
 	void ToggleEditable::execute(middle::GameState* gameState) {
 	}
@@ -338,6 +363,10 @@ namespace equlab {
 			middle::Id newNodeId;
 
 			if (auto unitScope = dynamic_cast<bubequ::Unit*>(currentScope)) {
+				if (unitScope->type == bubequ::UnitType::ZERO) {
+					middle::Shape bubProto = bubble::newBubble(gameState, pos);
+					newNodeId = middle::registerShape(gameState, bubProto).id;
+				}
 				if (unitScope->type == bubequ::UnitType::CONSTANT) {
 					newNodeId = bubble::newBubbleWithIntValue(gameState, unitScope->value, pos);
 				}
@@ -365,6 +394,16 @@ namespace equlab {
 			else if (auto linkScope = dynamic_cast<bubequ::Link*>(currentScope)) {
 				if (linkScope->type == bubequ::LinkType::MULTIPLICATION) {
 					middle::Shape linkProto = bubble::newMultiplication(gameState, pos);
+					middle::Shape& linkShape = middle::registerShape(gameState, linkProto);
+					newNodeId = linkShape.id;
+				}
+				else if (linkScope->type == bubequ::LinkType::GREATER) {
+					middle::Shape linkProto = bubble::newInequals(gameState, pos, false);
+					middle::Shape& linkShape = middle::registerShape(gameState, linkProto);
+					newNodeId = linkShape.id;
+				}
+				else if (linkScope->type == bubequ::LinkType::GREATER_OR_EQUAL) {
+					middle::Shape linkProto = bubble::newInequals(gameState, pos, true);
 					middle::Shape& linkShape = middle::registerShape(gameState, linkProto);
 					newNodeId = linkShape.id;
 				}
@@ -416,7 +455,12 @@ namespace equlab {
 		else if (middle::getComponent<components::BubblePowerComponent>(shape)) {
 			result += "^";
 		}
-		else if (middle::getComponent<components::BubbleEqualsComponent>(shape)) {
+
+
+		if (middle::getComponent<components::BubbleInequaltyComponent>(shape)) {
+			result += ">";
+		}
+		if (middle::getComponent<components::BubbleEqualsComponent>(shape)) {
 			result += "=";
 		}
 

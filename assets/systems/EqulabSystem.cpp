@@ -178,18 +178,21 @@ public:
 				cantAdd = unitComp || varComp;
 			}
 
+
+			Vector3& mousePos = gameState->input.mouseXZ_PlanePos;
+
 			if (!cantAdd && gameState->equlabInput.oneHeld) {
-				auto action = std::make_shared<equlab::AddBubble>(intersectedBubble, gameState->input.mouseXZ_PlanePos);
+				auto action = std::make_shared<equlab::AddBubble>(intersectedBubble, mousePos);
 				middle::queueAction(gameState, action);
 				gameState->bubbleAlgebraState.bubbleActions.push_back(action);
 			}
 			else if (!cantAdd && gameState->equlabInput.twoHeld && intersectedBubble.index != middle::UNASSIGNED) {
-				auto action = std::make_shared<equlab::AddUnit>(intersectedBubble, gameState->input.mouseXZ_PlanePos);
+				auto action = std::make_shared<equlab::AddUnit>(intersectedBubble, mousePos);
 				middle::queueAction(gameState, action);
 				gameState->bubbleAlgebraState.bubbleActions.push_back(action);
 			}
 			else if (!cantAdd && gameState->equlabInput.threeHeld) {
-				auto action = std::make_shared<equlab::AddEquals>(gameState->input.mouseXZ_PlanePos);
+				auto action = std::make_shared<equlab::AddEquals>(mousePos);
 				middle::queueAction(gameState, action);
 				gameState->bubbleAlgebraState.bubbleActions.push_back(action);
 			}
@@ -216,6 +219,18 @@ public:
 				gameState->bubbleAlgebraState.bubbleActions.push_back(action);
 			}
 
+			// indequalties
+			else if (gameState->equlabInput.leftHeld) {
+				auto action = std::make_shared<equlab::AddInequals>(mousePos, false);
+				middle::queueAction(gameState, action);
+				gameState->bubbleAlgebraState.bubbleActions.push_back(action);
+			}
+			else if (gameState->equlabInput.upHeld) {
+				auto action = std::make_shared<equlab::AddInequals>(mousePos, true);
+				middle::queueAction(gameState, action);
+				gameState->bubbleAlgebraState.bubbleActions.push_back(action);
+			}
+
 			else if (gameState->equlabInput.nineHeld) {
 				middle::attachComponent<components::SelectedComponent>(gameState, intersectedBubble);
 				currentSelectType = SelectType::ADD_MULTIPLICATION;
@@ -225,6 +240,7 @@ public:
 				middle::attachComponent<components::SelectedComponent>(gameState, intersectedBubble);
 				currentSelectType = SelectType::ADD_POWER;
 			}
+
 		}
 		// MOUSE RELEASE ACTIONS	
 		if (gameState->input.mouseReleased && selectedCache->getSize() == 1) {

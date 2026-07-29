@@ -10,13 +10,16 @@ namespace bubequ {
 		NONE, 
 		MULTIPLICATION,
 		POWER,
-		EQUALS
+		EQUALS,
+		GREATER,
+		GREATER_OR_EQUAL,
 	};
 
 	enum class UnitType {
 		NONE,
 		CONSTANT,
-		VARIABLE
+		VARIABLE,
+		ZERO,
 	};
 
 	struct Scope {

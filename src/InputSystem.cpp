@@ -148,6 +148,10 @@ public:
 				ei.eightHeld = IsKeyDown(KEY_EIGHT);
 				ei.nineHeld = IsKeyDown(KEY_NINE);
 				ei.zeroHeld = IsKeyDown(KEY_ZERO);
+				ei.leftHeld = IsKeyDown(KEY_LEFT);
+				ei.rightHeld = IsKeyDown(KEY_RIGHT);
+				ei.upHeld = IsKeyDown(KEY_UP);
+				ei.downHeld = IsKeyDown(KEY_DOWN);
 				ei.shiftHeld = IsKeyDown(KEY_LEFT_SHIFT) || IsKeyDown(KEY_RIGHT_SHIFT);
 				ei.ctrlHeld = IsKeyDown(KEY_LEFT_CONTROL) || IsKeyDown(KEY_RIGHT_CONTROL);
 				ei.oneClicked = IsKeyPressed(KEY_ONE);

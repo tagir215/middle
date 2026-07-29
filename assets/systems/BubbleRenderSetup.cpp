@@ -35,6 +35,7 @@
 #include "LocalPosition.h"
 #include "LocalScale.h"
 #include "BubblePowerComponent.h"
+#include "BubbleInequaltyComponent.h"
 
 
 class BubbleRenderSetup : public middle::MiddleGameplaySystem {
@@ -51,6 +52,7 @@ public:
 	components::CompCache* variableCache;
 	components::CompCache* cuboidCache;
 	components::CompCache* equalsCache;
+	components::CompCache* inequCache;
 	components::CompCache* textureCache;
 	components::CompCache* editThisCache;
 	components::CompCache* inputCache;
@@ -99,10 +101,14 @@ public:
 		cuboidCache->addType<components::RuntimeHiddenTag>(components::NOTINTERESTED);
 		equalsCache = middle::newCompCache(gameState, systemName);
 		equalsCache->addType<components::BubbleEqualsComponent>();
-		equalsCache->addType<components::LoopSociety>();
 		equalsCache->addType<components::Layer>();
 		equalsCache->addType<components::Circle>();
 		equalsCache->addType<components::GlobalTransform>();
+		inequCache = middle::newCompCache(gameState, systemName);
+		inequCache->addType<components::BubbleInequaltyComponent>();
+		inequCache->addType<components::Layer>();
+		inequCache->addType<components::Circle>();
+		inequCache->addType<components::GlobalTransform>();
 		textureCache = middle::newCompCache(gameState, systemName);
 		textureCache->addType<components::TextureComponent>();
 		textureCache->addType<components::GlobalTransform>();
@@ -382,6 +388,23 @@ public:
 			setTransform(equCirc, transform);
 			equCirc.layer = layer->layer;
 			equCirc.color = bubbleColors::EQUALS_CONNECTION;
+			gameState->renderData.push_back(equCirc);
+		}
+
+		auto inequTransformIt = inequCache->begin<components::GlobalTransform>();
+		auto inequCircleIt = inequCache->begin<components::Circle>();
+		auto inequLayerIt = inequCache->begin<components::Layer>();
+		for (middle::Id id : inequCache->relevantIdVector){
+			auto transform = *inequTransformIt;
+			auto circle = *inequCircleIt;;
+			auto layer = *inequLayerIt;
+
+			middle::RenderItem equCirc;
+			equCirc.type = middle::RenderItemType::CIRCLE;
+			equCirc.radius = circle->radius + 4;
+			setTransform(equCirc, transform);
+			equCirc.layer = layer->layer;
+			equCirc.color = bubbleColors::INEQUALS_COLOR;
 			gameState->renderData.push_back(equCirc);
 		}
 

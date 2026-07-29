@@ -96,6 +96,19 @@ namespace equlab {
 		void undo(middle::GameState* gameState);
 	};
 
+	class AddInequals : public middle::EditorActionContainer {
+	public:
+		middle::Id resultId;
+		bool equalOr;
+		Vector3 targetPos;
+		AddInequals(const Vector3& targetPos, bool equalOr) {
+			this->targetPos = targetPos;
+			this->equalOr = equalOr;
+		}
+		void execute(middle::GameState* gameState);
+		void undo(middle::GameState* gameState);
+	};
+
 
 	class Move : public middle::EditorActionContainer {
 	public:
