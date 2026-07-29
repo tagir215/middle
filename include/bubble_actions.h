@@ -291,11 +291,11 @@ namespace bubbleActions{
 	};
 
 
-	class Insert : public middle::EditorActionContainer {
+	class Substitute : public middle::EditorActionContainer {
 	public:
 		middle::Id shapeToInsertId;
 		middle::Id shapeToReplaceId;
-		Insert(middle::Id shapeToReplaceId, middle::Id shapeToInsertId) {
+		Substitute(middle::Id shapeToReplaceId, middle::Id shapeToInsertId) {
 			this->shapeToReplaceId = shapeToReplaceId;
 			this->shapeToInsertId = shapeToInsertId;
 		}

@@ -67,8 +67,8 @@ public:
 		return false;
 	}
 
-	void replace(middle::GameState* gameState, middle::Shape& intersectedShape, middle::Shape& deletionRefShape, middle::Shape& shapeForDeletion) {
-		auto insertAction = std::make_shared<bubbleActions::Insert>(intersectedShape.id, deletionRefShape.id);
+	void substitute(middle::GameState* gameState, middle::Shape& intersectedShape, middle::Shape& deletionRefShape, middle::Shape& shapeForDeletion) {
+		auto insertAction = std::make_shared<bubbleActions::Substitute>(intersectedShape.id, deletionRefShape.id);
 		middle::queueAction(gameState, insertAction);
 		gameState->bubbleAlgebraState.bubbleActions.push_back(insertAction);
 	}
@@ -412,7 +412,7 @@ public:
 				// variables can be non same layer, so check before layer filter, but it needs parent to be equals
 				if (intersecting->intersectingTop) {
 					if (bubble::isEqualsBubble(gameState, refParentId)) {
-						replace(gameState, intersectableShape, deletionsRefShape, shapeForDeletion);
+						substitute(gameState, intersectableShape, deletionsRefShape, shapeForDeletion);
 						continue;
 					}
 				}

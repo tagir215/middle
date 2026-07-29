@@ -1675,7 +1675,7 @@ namespace bubbleActions {
 		}
 	}
 
-	void Insert::execute(middle::GameState* gameState)
+	void Substitute::execute(middle::GameState* gameState)
 	{
 		middle::Id equalsParentId = middle::getParent(gameState, shapeToInsertId);
 		if (equalsParentId.index == middle::UNASSIGNED || !bubble::isEqualsBubble(gameState, equalsParentId)) {
@@ -1708,7 +1708,7 @@ namespace bubbleActions {
 		queueSound(gameState, bubbleSounds::ADD_TERM_SOUND);
 	}
 
-	void Insert::undo(middle::GameState* gameState)
+	void Substitute::undo(middle::GameState* gameState)
 	{
 		while (actions.size() > 0) {
 			actions.back()->undo(gameState);
