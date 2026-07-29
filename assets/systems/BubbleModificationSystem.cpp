@@ -67,24 +67,10 @@ public:
 		return false;
 	}
 
-	void insert(middle::GameState* gameState, middle::Shape& intersectedShape, middle::Shape& deletionRefShape, middle::Shape& shapeForDeletion) {
-		// check that grabbed bubble equals a variable and that variable where is being inserted has the same label
-		auto bubbleEqualsVar = middle::getComponent<components::BubbleEqualsVariable>(shapeForDeletion);
-		auto varComp = middle::getComponent<components::BubbleVariable>(intersectedShape);
-
-		// Insert bubble to variable
-		if (bubbleEqualsVar && bubbleEqualsVar->wantsToReplaceVariable && varComp && bubbleEqualsVar->variableLabel == varComp->label) {
-			auto insertAction = std::make_shared<bubbleActions::Insert>(intersectedShape.id, deletionRefShape.id);
-			middle::queueAction(gameState, insertAction);
-			gameState->bubbleAlgebraState.bubbleActions.push_back(insertAction);
-		}
-
-		// Replace bubble with variable
-		else if (bubbleEqualsVar && bubbleEqualsVar->wantsToReplaceBubble && bubble::matchingBubbles(gameState, bubbleEqualsVar->matchingIdRef, intersectedShape.id)) {
-			auto insertAction = std::make_shared<bubbleActions::Insert>(intersectedShape.id, deletionRefShape.id);
-			middle::queueAction(gameState, insertAction);
-			gameState->bubbleAlgebraState.bubbleActions.push_back(insertAction);
-		}
+	void replace(middle::GameState* gameState, middle::Shape& intersectedShape, middle::Shape& deletionRefShape, middle::Shape& shapeForDeletion) {
+		auto insertAction = std::make_shared<bubbleActions::Insert>(intersectedShape.id, deletionRefShape.id);
+		middle::queueAction(gameState, insertAction);
+		gameState->bubbleAlgebraState.bubbleActions.push_back(insertAction);
 	}
 
 	void tryCombine(middle::GameState* gameState, middle::Shape& refParent, middle::Shape& refShape, middle::Shape& intersectedShape) {
@@ -396,9 +382,9 @@ public:
 
 			int intersectCount = 0;
 
-			auto intersectableIt = intersectingCache->begin<components::IntersectingTag>();
+			auto intersectingIt = intersectingCache->begin<components::IntersectingTag>();
 			for (int i = 0; i < intersectingCache->getSize(); ++i) {
-				auto intersectable = *intersectableIt;
+				auto intersecting = *intersectingIt;
 
 				auto& intersectableShape = middle::getShape(gameState, intersectingCache->relevantIdVector[i].index);
 				middle::Id parentId = middle::getParent(gameState, intersectableShape.id);
@@ -414,12 +400,7 @@ public:
 					}
 				}
 
-				if (intersectable->intersectingTop) {
-					//auto inventoryItem = middle::getComponent<components::InventoryItem>(deletionsRefShape);
-					//if (inventoryItem) {
-					//	inventoryAction(gameState, inventoryItem->itemType, ref->idRef, intersectableShape);
-					//	break;
-					//}
+				if (intersecting->intersectingTop) {
 					auto insertable = middle::getComponent<components::InsertableBubble>(deletionsRefShape);
 					if (insertable) {
 						insertOperation(gameState, gameState->bubbleAlgebraState.currentInsertType, ref->idRef, intersectableShape);
@@ -428,11 +409,11 @@ public:
 				}
 
 
-				// variables can be non same layer, so check before layer filter, but it needs to intersect at top
-				if (intersectable->intersectingTop) {
-					auto topDogComp = middle::getComponent<components::TopDogBubbleTag>(deletionsRefShape);
-					if (topDogComp) {
-						insert(gameState, intersectableShape, deletionsRefShape, shapeForDeletion);
+				// variables can be non same layer, so check before layer filter, but it needs parent to be equals
+				if (intersecting->intersectingTop) {
+					if (bubble::isEqualsBubble(gameState, refParentId)) {
+						replace(gameState, intersectableShape, deletionsRefShape, shapeForDeletion);
+						continue;
 					}
 				}
 

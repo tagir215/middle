@@ -1677,25 +1677,33 @@ namespace bubbleActions {
 
 	void Insert::execute(middle::GameState* gameState)
 	{
-		auto copy = std::make_unique <middle::EditorActionCopySingle>(shapeToInsertId);
-		copy->execute(gameState);
-		middle::Id copyId = copy->resultId;
-		actions.push_back(std::move(copy));
-
-		auto& varShape = middle::getShape(gameState, shapeToReplaceId.index);
-		auto bubVar = middle::getComponent<components::BubbleVariable>(varShape);
-		if (bubVar && bubVar->isNegative) {
-			bubble::negate(gameState, copyId);
+		middle::Id equalsParentId = middle::getParent(gameState, shapeToInsertId);
+		if (equalsParentId.index == middle::UNASSIGNED || !bubble::isEqualsBubble(gameState, equalsParentId)) {
+			cancelled = true;
+			return;
+		}
+		std::vector<middle::Id>children;
+		middle::getChildren(gameState, equalsParentId, children);
+		// find other , equals should have 2 children
+		assert(children.size() == 2);
+		middle::Id otherId;
+		for (middle::Id childId : children) {
+			if (childId != shapeToInsertId) {
+				otherId = childId;
+				break;
+			}
 		}
 
-		Vector3 targetPos = middle::getGlobalPosition(gameState, shapeToReplaceId.index);
-		Vector3 currentPos = middle::getGlobalPosition(gameState, copyId.index);
-		middle::moveShape(gameState, copyId.index, targetPos - currentPos);
-
-		auto replace = std::make_unique<bubbleActions::Replace>(shapeToReplaceId, copyId);
-		replace->replacingShapeId = copyId;
-		replace->execute(gameState);
-		actions.push_back(std::move(replace));
+		bool matching = bubble::matchingBubbles(gameState, shapeToReplaceId, otherId);
+		if (matching) {
+			middle::Id copyId = middle::deepCopyShapeGlobalCoordinates(gameState, shapeToInsertId);
+			middle::executeAction<middle::EditorActionRegisterId>(gameState, this, copyId);
+			middle::executeAction<Replace>(gameState, this, shapeToReplaceId, copyId);
+		}
+		else {
+			cancelled = true;
+			return;
+		}
 
 		queueSound(gameState, bubbleSounds::ADD_TERM_SOUND);
 	}

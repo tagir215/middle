@@ -50,53 +50,6 @@ public:
 		moveShape(gameState, shape.id.index, Vector3Scale(xzVel, gameState->frameTime));
 	}
 
-	// attach bubble equals variable component to indicate this grabbed bubble equals to a variable
-	void handleEqualsToVariableCase(middle::GameState* gameState, middle::Id parentId, middle::Id grabbedCopyId) {
-
-		// check if the parent is equals comp
-		auto& parentShape = middle::getShape(gameState, parentId.index);
-		if (!middle::getComponent<components::BubbleEqualsComponent>(parentShape)) {
-			return;
-		}
-
-		std::vector<middle::Id> siblings;
-		middle::getChildren(gameState, parentShape.id, siblings);
-
-		auto& grabbedShape = middle::getShape(gameState, grabbedCopyId.index);
-		auto ref = middle::getComponent<components::IdRef>(grabbedShape);
-		middle::Id grabbedRefId = ref->idRef;
-
-		// GRABBED VARIABLE CASE
-		auto grabbedVar = middle::getComponent<components::BubbleVariable>(grabbedShape);
-		if (grabbedVar) {
-			auto bubbleEqualsVar = middle::attachComponent<components::BubbleEqualsVariable>(gameState, grabbedCopyId);
-			for (middle::Id& siblingId : siblings) {
-				if (siblingId != grabbedRefId) {
-					bubbleEqualsVar->matchingIdRef = siblingId;
-				}
-			}
-			bubbleEqualsVar->wantsToReplaceBubble = true;
-			return;
-		}
-
-		// GRABBED BUBBLE CASE
-		for (middle::Id& id : siblings) {
-			if (id == grabbedRefId) {
-				continue;
-			}
-			// other children should be variable, for this to work
-			auto& childOfOther = middle::getShape(gameState, id.index);
-
-			auto varComp = middle::getComponent<components::BubbleVariable>(childOfOther);
-			if (!varComp) {
-				return;
-			}
-
-			auto bubbleEqualsVar = middle::attachComponent<components::BubbleEqualsVariable>(gameState, grabbedCopyId);
-			bubbleEqualsVar->variableLabel = varComp->label;
-			bubbleEqualsVar->wantsToReplaceVariable = true;
-		}
-	}
 
 	void attachComponents(middle::GameState* gameState, middle::Shape& shape, components::MouseGrabbable* grabbable) {
 
@@ -115,11 +68,6 @@ public:
 			auto ref = middle::attachComponent<components::IdRef>(gameState, copyShape.id);
 			ref->idRef = shape.id;
 			assert(ref->idRef.index != middle::UNASSIGNED);
-
-			middle::Id& parentId = middle::getParent(gameState, shape.id);
-			if (parentId.index != middle::UNASSIGNED) {
-				handleEqualsToVariableCase(gameState, parentId, copyId);
-			}
 		}
 
 

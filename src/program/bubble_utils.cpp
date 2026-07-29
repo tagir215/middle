@@ -711,7 +711,6 @@ namespace bubble {
 
 	BubbleValue calculateBubbleValue(middle::GameState* gameState, middle::Id bubbleId, std::unordered_map<std::string, int>& variableValues)
 	{
-
 		BubbleValue result;
 
 		auto& bubbleShape = middle::getShape(gameState, bubbleId.index);
