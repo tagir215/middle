@@ -403,9 +403,22 @@ public:
 			equCirc.type = middle::RenderItemType::CIRCLE;
 			equCirc.radius = circle->radius + 4;
 			setTransform(equCirc, transform);
-			equCirc.layer = layer->layer;
+			equCirc.layer = layer->layer + 1;
 			equCirc.color = bubbleColors::INEQUALS_COLOR;
 			gameState->renderData.push_back(equCirc);
+
+			middle::Id lesser, greater;
+			bubble::getInequaltyLesserAndGreater(gameState, id, lesser, greater);
+
+			middle::RenderItem greaterCirc;
+			greaterCirc.type = middle::RenderItemType::CIRCLE;
+			auto greaterTransform = middle::getComp<components::GlobalTransform>(gameState, greater);
+			setTransform(greaterCirc, greaterTransform);
+			auto greaterCircleComp = middle::getComp<components::Circle>(gameState, greater);
+			greaterCirc.radius = greaterCircleComp->radius;
+			greaterCirc.layer = layer->layer + 2;
+			greaterCirc.color = bubbleColors::INEQUALS_COLOR;
+			gameState->renderData.push_back(greaterCirc);
 		}
 
 
