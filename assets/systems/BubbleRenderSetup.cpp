@@ -580,12 +580,13 @@ public:
 		auto functionCircleIt = functionCache->begin<components::Circle>();
 		auto functionLayerIt = functionCache->begin<components::Layer>();
 		for (middle::Id id : functionCache->relevantIdVector) {
+			// render functionlabel
 			auto transform = *functionTransformIt;
 			auto circle = *functionCircleIt;
 			auto func = *functionIt;
 			auto layer = *functionLayerIt;
 			renderBubbleLabel(gameState, transform, circle->radius, func->label, layer->layer);
-
+			// render function circle
 			middle::RenderItem funcCircle;
 			funcCircle.type = middle::RenderItemType::CIRCLE;
 			funcCircle.radius = circle->radius;
@@ -593,10 +594,19 @@ public:
 			funcCircle.color = GRAY;
 			funcCircle.layer = layer->layer;
 			gameState->renderData.push_back(funcCircle);
+			// render indexes
+			std::vector<middle::Id>children;
+			middle::getChildren(gameState, id, children);
+			int index = 1;
+			for (middle::Id childId : children) {
+				auto transform = middle::getComp<components::GlobalTransform>(gameState, childId);
+				auto circle = middle::getComp<components::Circle>(gameState, childId);
+				auto layer = middle::getComp<components::Layer>(gameState, childId);
+				renderBubbleLabel(gameState, transform, circle->radius, std::to_string(index++), layer->layer);
+			}
 		}
 
 	}
-
 
 };
 

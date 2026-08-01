@@ -13,6 +13,7 @@ namespace bubequ {
 		EQUALS,
 		GREATER,
 		GREATER_OR_EQUAL,
+		FUNCTION,
 	};
 
 	enum class UnitType {
@@ -34,6 +35,7 @@ namespace bubequ {
 	};
 	struct Link : public Scope {
 		LinkType type;
+		std::string label;
 	};
 
 

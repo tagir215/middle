@@ -1356,10 +1356,11 @@ namespace bubble {
 		return newBubbleShape;
 	}
 
-	middle::Shape newFunction(middle::GameState* gameState, const Vector3& targetPos)
+	middle::Shape newFunction(middle::GameState* gameState, const std::string& label, const Vector3& targetPos)
 	{
 		middle::Shape newBubbleShape = newBubble(gameState, targetPos);
-		middle::addComponent<components::BubbleFunctionComponent>(newBubbleShape);
+		auto funcComp = middle::addComponent<components::BubbleFunctionComponent>(newBubbleShape);
+		funcComp->label = label;
 		return newBubbleShape;
 	}
 

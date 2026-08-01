@@ -5,6 +5,7 @@
 #include <fstream>
 #include <unordered_map>
 #include <sstream>
+#include <cassert>
 
 
 namespace bubequ {
@@ -117,6 +118,10 @@ namespace bubequ {
 		else if (operatorChar == '=') {
 			link->type = LinkType::EQUALS;
 		}
+		else if (std::isalpha(operatorChar)) {
+			link->type = LinkType::FUNCTION;
+			link->label = operatorChar;
+		}
 		else {
 			throw std::runtime_error("file formal error: Not known linktype");
 		}
@@ -128,6 +133,7 @@ namespace bubequ {
 		return link;
 	}
 
+
 	std::shared_ptr<Scope> parseScope(const std::string& line) {
 		std::string scopeStr = stripBrackets(line);
 
@@ -135,10 +141,18 @@ namespace bubequ {
 			return parseUnit(scopeStr);
 		}
 		char operatorChar = scopeStr[0];
+		char nextChar = 0;
+		if (scopeStr.size() > 0) {
+			nextChar = scopeStr[1];
+		}
+
 		if (operatorChar == '*' || operatorChar == '^') {
 			return parseLink(scopeStr);
 		}
 		else if (operatorChar == '>' || operatorChar == '=') {
+			return parseLink(scopeStr);
+		}
+		else if (std::isalpha(operatorChar) && nextChar == '(') {
 			return parseLink(scopeStr);
 		}
 		else if (operatorChar == '(') {

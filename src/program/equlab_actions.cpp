@@ -421,6 +421,11 @@ namespace equlab {
 					middle::Shape& linkShape = middle::registerShape(gameState, linkProto);
 					newNodeId = linkShape.id;
 				}
+				else if (linkScope->type == bubequ::LinkType::FUNCTION) {
+					middle::Shape linkProto = bubble::newFunction(gameState, linkScope->label, pos);
+					middle::Shape& linkShape = middle::registerShape(gameState, linkProto);
+					newNodeId = linkShape.id;
+				}
 			}
 			else {
 				auto addBub = equlab::AddBubble(currentParentId, pos);
@@ -466,6 +471,9 @@ namespace equlab {
 		}
 		if (middle::getComponent<components::BubbleEqualsComponent>(shape)) {
 			result += "=";
+		}
+		if (auto func = middle::getComponent<components::BubbleFunctionComponent>(shape)) {
+			result += func->label;
 		}
 
 		if (auto unit = middle::getComponent<components::BubbleUnit>(shape)) {
