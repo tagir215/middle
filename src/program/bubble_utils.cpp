@@ -1137,6 +1137,10 @@ namespace bubble {
 	{
 		return middle::getComp<components::BubbleInequaltyComponent>(gameState, id) != nullptr;
 	}
+	bool isFunctionBubble(middle::GameState* gameState, middle::Id id)
+	{
+		return middle::getComp<components::BubbleFunctionComponent>(gameState, id);
+	}
 
 	void getPowerBaseAndExponent(middle::GameState* gameState, middle::Id powerBubble, middle::Id& resultBaseId, middle::Id& resultExponentId)
 	{
@@ -1157,6 +1161,20 @@ namespace bubble {
 		resultLesserId = inequalChildren[components::InequaltyRole::INEQUAL_LESSER];
 		resultGreaterId = inequalChildren[components::InequaltyRole::INEQUAL_GREATER];
 	}
+
+	middle::Id getOtherFromContainerOf2(middle::GameState* gameState, middle::Id id)
+	{
+		middle::Id parentId = middle::getParent(gameState, id);
+		std::vector<middle::Id>children;
+		middle::getChildren(gameState, parentId, children);
+		assert(children.size() == 2);
+		for (middle::Id childId : children) {
+			if (childId != id) {
+				return childId;
+			}
+		}
+	}
+
 
 	middle::Id bubbleToStructure(middle::GameState* gameState, middle::Id bubbleId)
 	{

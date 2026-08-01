@@ -68,9 +68,23 @@ public:
 	}
 
 	void substitute(middle::GameState* gameState, middle::Shape& intersectedShape, middle::Shape& deletionRefShape, middle::Shape& shapeForDeletion) {
-		auto insertAction = std::make_shared<bubbleActions::Substitute>(intersectedShape.id, deletionRefShape.id);
-		middle::queueAction(gameState, insertAction);
-		gameState->bubbleAlgebraState.bubbleActions.push_back(insertAction);
+
+		middle::Id parentId = middle::getParent(gameState, deletionRefShape.id);
+		if (!bubble::isEqualsBubble(gameState, parentId)) {
+			return;
+		}
+
+		middle::Id otherFunc = bubble::getOtherFromContainerOf2(gameState, deletionRefShape.id);
+		std::shared_ptr<middle::EditorActionContainer>action;
+		if (otherFunc.index != middle::UNASSIGNED) {
+			action = std::make_shared<bubbleActions::SubstituteFunction>(intersectedShape.id, deletionRefShape.id);
+		}
+		else {
+			action = std::make_shared<bubbleActions::Substitute>(intersectedShape.id, deletionRefShape.id);
+		}
+
+		middle::queueAction(gameState, action);
+		gameState->bubbleAlgebraState.bubbleActions.push_back(action);
 	}
 
 	void tryCombine(middle::GameState* gameState, middle::Shape& refParent, middle::Shape& refShape, middle::Shape& intersectedShape) {
@@ -411,7 +425,7 @@ public:
 
 				// variables can be non same layer, so check before layer filter, but it needs parent to be equals
 				if (intersecting->intersectingTop) {
-					if (bubble::isEqualsBubble(gameState, refParentId)) {
+					if (refParentId.index != middle::UNASSIGNED && bubble::isEqualsBubble(gameState, refParentId)) {
 						substitute(gameState, intersectableShape, deletionsRefShape, shapeForDeletion);
 						continue;
 					}

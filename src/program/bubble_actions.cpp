@@ -20,6 +20,7 @@
 #include "equlab_actions.h"
 #include "GlobalTransform.h"
 #include "BubblePowerComponent.h"
+#include "BubbleFunctionComponent.h"
 
 namespace bubbleActions {
 
@@ -611,8 +612,9 @@ namespace bubbleActions {
 		auto unit = middle::getComponent<components::BubbleUnit>(toPopShape);
 		auto power = middle::getComponent<components::BubblePowerComponent>(toPopShape);
 		auto mul = middle::getComponent<components::BubbleMultiplyComponent>(toPopShape);
+		auto func = middle::getComponent<components::BubbleFunctionComponent>(toPopShape);
 		middle::Id copyId;
-		if (var || unit || power || mul) {
+		if (var || unit || power || mul || func) {
 			copyId = middle::deepCopyShapeGlobalCoordinates(gameState, toPopId);
 		}
 		else {
@@ -622,7 +624,7 @@ namespace bubbleActions {
 		auto loop = middle::getComponent<components::LoopSociety>(newContainerShape);
 		loop->parentLoopId = middle::Id();
 		// ?
-		if (!power && !mul) {
+		if (!power && !mul && !func) {
 			loop->loopMemberIds.clear();
 		}
 		return newContainerShape.id;
@@ -636,6 +638,7 @@ namespace bubbleActions {
 		auto variable = middle::getComponent<components::BubbleVariable>(shapeToPop);
 		auto power = middle::getComponent<components::BubblePowerComponent>(shapeToPop);
 		auto mul = middle::getComponent<components::BubbleMultiplyComponent>(shapeToPop);
+		auto func = middle::getComponent<components::BubbleFunctionComponent>(shapeToPop);
 		middle::Id parentId = middle::getParent(gameState, shapeToPop.id);
 		if (parentId.index == middle::UNASSIGNED) {
 			cancelled = true;
@@ -657,6 +660,10 @@ namespace bubbleActions {
 			cancelled = true;
 			return;
 		}
+		if (bubble::isFunctionBubble(gameState, parentId)) {
+			cancelled = true;
+			return;
+		}
 
 		std::vector<middle::Id>children;
 		middle::getChildren(gameState, parentId, children);
@@ -664,7 +671,7 @@ namespace bubbleActions {
 
 		// variables and units can be popped if they are the only child
 		if (siblingCount != 0) {
-			if (variable || unit || mul) {
+			if (variable || unit || mul || func) {
 				cancelled = true;
 				return;
 			}
@@ -1693,6 +1700,87 @@ namespace bubbleActions {
 		}
 	}
 
+	void SubstituteFunction::execute(middle::GameState* gameState)
+	{
+		middle::Id equalsParentId = middle::getParent(gameState, functionBodyId);
+		if (equalsParentId.index == middle::UNASSIGNED || !bubble::isEqualsBubble(gameState, equalsParentId)) {
+			cancelled = true;
+			return;
+		}
+		std::vector<middle::Id>children;
+		middle::getChildren(gameState, equalsParentId, children);
+		// find other , equals should have 2 children
+		assert(children.size() == 2);
+		middle::Id otherId;
+		for (middle::Id childId : children) {
+			if (childId != functionBodyId) {
+				otherId = childId;
+				break;
+			}
+		}
+		middle::Id definitionId = otherId;
+		// get definitionLabel from comp
+		auto definitionFuncComp = middle::getComp<components::BubbleFunctionComponent>(gameState, definitionId);
+		auto funcComp = middle::getComp<components::BubbleFunctionComponent>(gameState, functionToReplaceId);
+		if (!definitionFuncComp || !funcComp) {
+			cancelled = true;
+			return;
+		}
+		// if funcs have different labels return, cancel
+		if (funcComp->label != definitionFuncComp->label) {
+			cancelled = true;
+			return;
+		}
+		// get input ids
+		std::vector<middle::Id>inputChildren;
+		middle::getChildren(gameState, functionToReplaceId, inputChildren);
+
+		// map input children to labels
+		std::unordered_map<std::string, int>inputIndexLabelMap;
+		std::vector<middle::Id>definitionInputChildren;
+		middle::getChildren(gameState, definitionId, definitionInputChildren);
+		int inputIndex = 0;
+		for (middle::Id childId : definitionInputChildren) {
+			auto varComp = middle::getComp<components::BubbleVariable>(gameState, childId);
+			assert(varComp);
+			inputIndexLabelMap[varComp->label] = inputIndex++;
+		}
+
+		// replace body variables with matching labels
+		middle::Id copyBodyId = middle::deepCopyShapeGlobalCoordinates(gameState, functionBodyId);
+
+		Vector3 targetPos = middle::getGlobalPosition(gameState, functionToReplaceId.index);
+		Vector3 currPos = middle::getGlobalPosition(gameState, copyBodyId.index);
+		middle::moveShape(gameState, copyBodyId.index, targetPos - currPos);
+
+		std::vector<middle::Id>bodyChildren;
+		middle::getAllChildren(gameState, copyBodyId, bodyChildren);
+		int index = 0;
+		for (middle::Id childId : bodyChildren) {
+			if (auto varComp = middle::getComp<components::BubbleVariable>(gameState, childId)) {
+				if(inputIndexLabelMap.find(varComp->label) == inputIndexLabelMap.end()){
+					continue;
+				}
+				int inputIndex = inputIndexLabelMap[varComp->label];
+				middle::Id inputId = inputChildren[inputIndex];
+				middle::Id copyInput = middle::deepCopyShapeGlobalCoordinates(gameState, inputId);
+				Replace(childId, copyInput).execute(gameState);
+			}
+		}
+
+		middle::executeAction<middle::EditorActionRegisterId>(gameState, this, copyBodyId);
+		middle::executeAction<Replace>(gameState, this, functionToReplaceId, copyBodyId);
+
+		queueSound(gameState, bubbleSounds::ADD_TERM_SOUND);
+	}
+
+	void SubstituteFunction::undo(middle::GameState* gameState)
+	{
+		while (actions.size() > 0) {
+			actions.back()->undo(gameState);
+			actions.pop_back();
+		}
+	}
 
 	void InsertAsXOverX::execute(middle::GameState* gameState)
 	{
@@ -1851,5 +1939,6 @@ namespace bubbleActions {
 			middle::attachComponent<components::BubbleMultiplyComponent>(gameState, mulId);
 		}
 	}
+
 
 }

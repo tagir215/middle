@@ -293,8 +293,8 @@ namespace bubbleActions{
 
 	class Substitute : public middle::EditorActionContainer {
 	public:
-		middle::Id shapeToInsertId;
 		middle::Id shapeToReplaceId;
+		middle::Id shapeToInsertId;
 		Substitute(middle::Id shapeToReplaceId, middle::Id shapeToInsertId) {
 			this->shapeToReplaceId = shapeToReplaceId;
 			this->shapeToInsertId = shapeToInsertId;
@@ -303,6 +303,17 @@ namespace bubbleActions{
 		void undo(middle::GameState* gameState) override;
 	};
 
+	class SubstituteFunction : public middle::EditorActionContainer {
+	public:
+		middle::Id functionToReplaceId;
+		middle::Id functionBodyId;
+		SubstituteFunction(middle::Id functionToReplaceId, middle::Id functionBodyId) {
+			this->functionToReplaceId = functionToReplaceId;
+			this->functionBodyId = functionBodyId;
+		}
+		void execute(middle::GameState* gameState) override;
+		void undo(middle::GameState* gameState) override;
+	};
 
 	class CopyAsHelper : public middle::EditorActionContainer {
 	public:
@@ -316,5 +327,4 @@ namespace bubbleActions{
 		void execute(middle::GameState* gameState) override;
 		void undo(middle::GameState* gameState) override;
 	};
-
 }

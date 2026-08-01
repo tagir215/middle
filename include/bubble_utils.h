@@ -76,8 +76,10 @@ namespace bubble {
 	bool isEqualsOrInequals(middle::GameState* gameState, middle::Id id);
 	bool isEqualsBubble(middle::GameState* gameState, middle::Id id);
 	bool isInequalBubble(middle::GameState* gameState, middle::Id id);
+	bool isFunctionBubble(middle::GameState* gameState, middle::Id id);
 	void getPowerBaseAndExponent(middle::GameState* gameState, middle::Id powerBubble, middle::Id& resultBaseId, middle::Id& resultExponentId);
 	void getInequaltyLesserAndGreater(middle::GameState* gameState, middle::Id inequalBubble, middle::Id& resultLesserId, middle::Id& resultGreaterId);
+	middle::Id getOtherFromContainerOf2(middle::GameState* gameState, middle::Id id);
 
 	template<typename T>
 	middle::Id findIdWithCompFromShapeOrItsParents(middle::GameState* gameState, middle::Id id) {
