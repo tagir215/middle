@@ -27,6 +27,7 @@
 #include "GlobalRadius.h"
 #include "BubblePowerComponent.h"
 #include "BubbleInequaltyComponent.h"
+#include "BubbleFunctionComponent.h"
 
 namespace bubble {
 	float unitRadius = 24;
@@ -1352,6 +1353,13 @@ namespace bubble {
 	{
 		middle::Shape newBubbleShape = newBubble(gameState, targetPos);
 		middle::addComponent<components::BubblePowerComponent>(newBubbleShape);
+		return newBubbleShape;
+	}
+
+	middle::Shape newFunction(middle::GameState* gameState, const Vector3& targetPos)
+	{
+		middle::Shape newBubbleShape = newBubble(gameState, targetPos);
+		middle::addComponent<components::BubbleFunctionComponent>(newBubbleShape);
 		return newBubbleShape;
 	}
 

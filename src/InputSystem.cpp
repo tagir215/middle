@@ -154,6 +154,7 @@ public:
 				ei.downHeld = IsKeyDown(KEY_DOWN);
 				ei.shiftHeld = IsKeyDown(KEY_LEFT_SHIFT) || IsKeyDown(KEY_RIGHT_SHIFT);
 				ei.ctrlHeld = IsKeyDown(KEY_LEFT_CONTROL) || IsKeyDown(KEY_RIGHT_CONTROL);
+				ei.altHeld = IsKeyDown(KEY_LEFT_ALT) || IsKeyDown(KEY_RIGHT_ALT);
 				ei.oneClicked = IsKeyPressed(KEY_ONE);
 				ei.twoClicked = IsKeyPressed(KEY_TWO);
 				ei.threeClicked = IsKeyPressed(KEY_THREE);

@@ -37,6 +37,7 @@ namespace bubble {
 	middle::Shape newInequals(middle::GameState* gameState, const Vector3& targetPos, bool equalOr);
 	middle::Shape newMultiplication(middle::GameState* gameState, const Vector3& targetPos);
 	middle::Shape newPower(middle::GameState* gameState, const Vector3& targetPos);
+	middle::Shape newFunction(middle::GameState* gameState, const Vector3& targetPos);
 	middle::Id newPower(middle::GameState* gameState, middle::Id baseId, middle::Id exponentId, const Vector3& targetPos);
 	middle::Id newBubbleWithIntValue(middle::GameState* gameState, int value, const Vector3& targetPos);
 	bool isIntersecting(middle::GameState* gameState, middle::Shape& shape);
@@ -62,7 +63,6 @@ namespace bubble {
 	middle::Id containerize(middle::GameState* gameState, middle::Id id);
 	bool isPowerBubble(middle::GameState* gameState, middle::Id id);
 	bool isMultiplication(middle::GameState* gameState, middle::Id id);
-	bool additiveInverses(middle::GameState* gameState, middle::Id idA, middle::Id idB);
 	void negate(middle::GameState* gameState, middle::Id id);
 	void invert(middle::GameState* gameState, middle::Id id);
 	middle::Id bubbleToStructure(middle::GameState* gameState, middle::Id bubbleId);

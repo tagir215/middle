@@ -49,4 +49,20 @@ namespace middle {
 			}));
 	}
 
+	template<typename T>
+	class AttachComponentAction : public middle::EditorActionContainer {
+	public:
+		middle::Id id;
+		T* resultComp;
+		AttachComponentAction(middle::Id id) {
+			this->id = id;
+		}
+		void execute(middle::GameState* gameState) override {
+			auto newComp = middle::attachComponent<T>(gameState, id);
+			resultComp = newComp;
+		}
+		void undo(middle::GameState* gameState) override {
+			middle::queueComponentDeletion<T>(gameState, id);
+		}
+	};
 }

@@ -59,7 +59,6 @@ namespace equlab {
 		middle::Id id;
 		middle::Id resultId;
 		std::string label;
-		Vector3 targetPosition;
 		AddLabelCharacterToVariable(middle::Id id, const std::string& label) {
 			this->id = id;
 			this->label = label;
@@ -68,6 +67,18 @@ namespace equlab {
 		void undo(middle::GameState* gameState);
 	};
 
+	class AddLabelToFunction : public middle::EditorActionContainer {
+	public:
+		middle::Id id;
+		middle::Id resultId;
+		std::string label;
+		AddLabelToFunction(middle::Id id, const std::string& label) {
+			this->id = id;
+			this->label = label;
+		}
+		void execute(middle::GameState* gameState);
+		void undo(middle::GameState* gameState);
+	};
 
 	class AddVariable : public middle::EditorActionContainer {
 	public:

@@ -23,37 +23,14 @@
 
 namespace bubbleActions {
 
-	bool additiveInverses(middle::GameState* gameState, middle::Id idA, middle::Id idB) {
-		auto& shapeA = middle::getShape(gameState, idA.index);
-		auto& shapeB = middle::getShape(gameState, idB.index);
-		auto unitA = middle::getComponent<components::BubbleUnit>(shapeA);
-		auto unitB = middle::getComponent<components::BubbleUnit>(shapeB);
-		if (!unitA || !unitB) {
-			return false;
-		}
-		auto variableA = middle::getComponent<components::BubbleVariable>(shapeA);
-		auto variableB = middle::getComponent<components::BubbleVariable>(shapeB);
-		if (variableA && variableB && variableA->label == variableB->label) {
-			return unitA->value + unitB->value == 0;
-		}
-		else if (!variableA && !variableB) {
-			return unitA->value + unitB->value == 0;
-		}
-		return false;
-	}
-
 
 	bool validateAdditionInitialState(middle::GameState* gameState, ExecuteAddition* addition) {
-
 		middle::Id& parentAId = middle::getParent(gameState, addition->shapeToAddId);
 		middle::Id& parentBId = middle::getParent(gameState, addition->shapeToAddIntoId);
 		if (parentAId != parentBId) {
 			return false;
 		}
-		auto& parentShape = middle::getShape(gameState, parentAId.index);
-		auto parentMul = middle::getComponent<components::BubbleMultiplyComponent>(parentShape);
-		auto parentEquals = middle::getComponent<components::BubbleEqualsComponent>(parentShape);
-		if (parentMul || parentEquals) {
+		if (bubble::isMultiplication(gameState, parentAId) || bubble::isEqualsOrInequals(gameState, parentAId)) {
 			return false;
 		}
 

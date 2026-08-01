@@ -36,6 +36,7 @@
 #include "LocalScale.h"
 #include "BubblePowerComponent.h"
 #include "BubbleInequaltyComponent.h"
+#include "BubbleFunctionComponent.h"
 
 
 class BubbleRenderSetup : public middle::MiddleGameplaySystem {
@@ -61,6 +62,7 @@ public:
 	components::CompCache* activeBubbleCache;
 	components::CompCache* oPosCache;
 	components::CompCache* powerCache;
+	components::CompCache* functionCache;
 
 	void init(middle::GameState* gameState) {
 		bubbleCache = middle::newCompCache(gameState, systemName);
@@ -130,6 +132,11 @@ public:
 		powerCache->addType<components::LoopSociety>();
 		powerCache->addType<components::GlobalTransform>();
 		powerCache->addType<components::Layer>();
+		functionCache = middle::newCompCache(gameState, systemName);
+		functionCache->addType<components::BubbleFunctionComponent>();
+		functionCache->addType<components::GlobalTransform>();
+		functionCache->addType<components::Layer>();
+		functionCache->addType<components::Circle>();
 
 		oPosCache = middle::newCompCache(gameState, systemName);
 		oPosCache->addType<components::Position>(components::NOTINTERESTED);
@@ -150,6 +157,21 @@ public:
 		item.transform.rotation = transform->rotation;
 	}
 
+	void renderBubbleLabel(middle::GameState* gameState, components::GlobalTransform* transform, float radius, const std::string& label, int layer) {
+		middle::RenderItem text;
+		text.type = middle::RenderItemType::TEXT;
+		text.text = label;
+		text.color = WHITE;
+		const float labelFontSize = 60;
+		const float offsetFactor = 0.5f;
+		float offsetZ = radius * offsetFactor;
+		text.fontSize = labelFontSize;
+		text.layer = layer + 1;
+		text.transform.translation = transform->pos + Vector3{0,0, radius + offsetZ};
+		text.transform.scale = transform->scale;
+		text.transform.rotation = transform->rotation;
+		gameState->renderData.push_back(text);
+	}
 
 	Color getBubbleColor(middle::GameState* gameState, middle::Id id, components::BubbleComponent* bubble) {
 		Color color;
@@ -552,7 +574,28 @@ public:
 			}
 		}
 
+
+		auto functionTransformIt = functionCache->begin<components::GlobalTransform>();
+		auto functionIt = functionCache->begin<components::BubbleFunctionComponent>();
+		auto functionCircleIt = functionCache->begin<components::Circle>();
+		auto functionLayerIt = functionCache->begin<components::Layer>();
+		for (middle::Id id : functionCache->relevantIdVector) {
+			auto transform = *functionTransformIt;
+			auto circle = *functionCircleIt;
+			auto func = *functionIt;
+			auto layer = *functionLayerIt;
+			renderBubbleLabel(gameState, transform, circle->radius, func->label, layer->layer);
+
+			middle::RenderItem funcCircle;
+			funcCircle.type = middle::RenderItemType::CIRCLE;
+			funcCircle.radius = circle->radius;
+			setTransform(funcCircle, transform);
+			funcCircle.color = GRAY;
+			funcCircle.layer = layer->layer;
+			gameState->renderData.push_back(funcCircle);
 		}
+
+	}
 
 
 };

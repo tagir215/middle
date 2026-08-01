@@ -392,4 +392,5 @@ namespace middle {
 		void execute(GameState* gameState) override;
 		void undo(GameState* gameState) override;
 	};
+
 }

@@ -12,6 +12,7 @@
 #include "TopDogBubbleTag.h"
 #include "BubblePowerComponent.h"
 #include "BubbleInequaltyComponent.h"
+#include "BubbleFunctionComponent.h"
 
 namespace equlab {
 
@@ -108,11 +109,10 @@ namespace equlab {
 		}
 	}
 
+
 	void AddLabelCharacterToVariable::execute(middle::GameState* gameState) {
 		auto& shape = middle::getShape(gameState, id.index);
-
 		auto comp = middle::getComponent<components::BubbleVariable>(shape);
-
 
 		// if no comp create new bubble variable
 		if (!comp) {
@@ -125,39 +125,12 @@ namespace equlab {
 			else {
 				middle::Id targetId = id;
 				std::string targetLabel = this->label;
-				auto customAction = std::make_unique<CustomActionWithUndo>(
-					[targetId, targetLabel](middle::GameState* gameState) {
-						auto newComp = middle::attachComponent<components::BubbleVariable>(gameState, targetId);
-						newComp->label = targetLabel;
-					},
-					[targetId](middle::GameState* gameState) {
-						middle::queueComponentDeletion<components::BubbleVariable>(gameState, targetId);
-					});
-				customAction->execute(gameState);
-				actions.push_back(std::move(customAction));
+				auto action = middle::executeAction<middle::AttachComponentAction<components::BubbleVariable>>(gameState, this, targetId);
+				action->resultComp->label = targetLabel;
 			}
 		}
-
-		// if is already comp add character to end of current lable name
 		else {
-			middle::Id targetId = id;
-			std::string targetLabel = this->label;
-			auto customAction = std::make_unique<CustomActionWithUndo>(
-				[targetId, targetLabel](middle::GameState* gameState) {
-					auto& targetShape = middle::getShape(gameState, targetId.index);
-					auto comp = middle::getComponent<components::BubbleVariable>(targetShape);
-					comp->label += targetLabel;
-				},
-				[targetId, targetLabel](middle::GameState* gameState) {
-					auto& targetShape = middle::getShape(gameState, targetId.index);
-					auto comp = middle::getComponent<components::BubbleVariable>(targetShape);
-					int targetSize = targetLabel.size();
-					int labelSize = comp->label.size();
-					assert(targetSize < labelSize);
-					comp->label.erase(labelSize - targetSize, targetSize);
-				});
-			customAction->execute(gameState);
-			actions.push_back(std::move(customAction));
+			cancelled = true;
 		}
 	}
 	void AddLabelCharacterToVariable::undo(middle::GameState* gameState) {
@@ -167,7 +140,37 @@ namespace equlab {
 		}
 	}
 
+	void AddLabelToFunction::execute(middle::GameState* gameState) {
+		auto& shape = middle::getShape(gameState, id.index);
+		auto comp = middle::getComponent<components::BubbleVariable>(shape);
 
+		// if no comp create new function
+		if (!comp) {
+			std::vector<middle::Id>children;
+			middle::getChildren(gameState, id, children);
+			if (children.size() > 0) {
+				cancelled = true;
+				return;
+			}
+			else {
+				middle::Id targetId = id;
+				std::string targetLabel = this->label;
+				auto attach = middle::executeAction
+					<middle::AttachComponentAction<components::BubbleFunctionComponent>>
+					(gameState, this, targetId);
+				attach->resultComp->label = targetLabel;
+			}
+		}
+		else {
+			cancelled = true;
+		}
+	}
+	void AddLabelToFunction::undo(middle::GameState* gameState) {
+		while (actions.size() > 0) {
+			actions.back()->undo(gameState);
+			actions.pop_back();
+		}
+	}
 
 	void Delete::execute(middle::GameState* gameState) {
 		middle::Id parentId = middle::getParent(gameState, id);
@@ -243,9 +246,7 @@ namespace equlab {
 		middle::EditorActionReparent(inequalsShape.id.index, bubA.id.index).execute(gameState);
 		middle::EditorActionReparent(inequalsShape.id.index, bubB.id.index).execute(gameState);
 
-		auto registerAction = std::make_unique<middle::EditorActionRegisterId>(inequalsShape.id);
-		registerAction->execute(gameState);
-		actions.push_back(std::move(registerAction));
+		middle::executeAction<middle::EditorActionRegisterId>(gameState, this, inequalsShape.id);
 	}
 
 	void AddInequals::undo(middle::GameState* gameState) {
@@ -254,8 +255,6 @@ namespace equlab {
 			actions.pop_back();
 		}
 	}
-
-
 
 	void ToggleEditable::execute(middle::GameState* gameState) {
 	}

@@ -109,9 +109,7 @@ public:
 				}
 			}
 
-
 			ImGui::End();
-
 
 
 			ImGui::Begin("bubequ list");
@@ -147,6 +145,22 @@ public:
 			}
 			if (intersectedBubble.index != middle::UNASSIGNED) {
 				auto action = std::make_shared<equlab::AddLabelCharacterToVariable>(intersectedBubble, keyString);
+				middle::queueAction(gameState, action);
+				gameState->bubbleAlgebraState.bubbleActions.push_back(action);
+			}
+		}
+		if (gameState->equlabInput.altHeld && keyString != "") {
+			middle::Id intersectedBubble;
+			auto intersectingBubbleIt = intersectableBubbleCache->begin<components::IntersectingTag>();
+			for (int i = 0; i < intersectableBubbleCache->getSize(); ++i) {
+				auto intersecting = *intersectingBubbleIt;
+				if (intersecting->intersectingTop) {
+					intersectedBubble = intersectableBubbleCache->relevantIdVector[i];
+					break;
+				}
+			}
+			if (intersectedBubble.index != middle::UNASSIGNED) {
+				auto action = std::make_shared<equlab::AddLabelToFunction>(intersectedBubble, keyString);
 				middle::queueAction(gameState, action);
 				gameState->bubbleAlgebraState.bubbleActions.push_back(action);
 			}
