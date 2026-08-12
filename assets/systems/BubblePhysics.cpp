@@ -93,6 +93,9 @@ public:
 		if (distSqr < radiusesSqr) {
 			result.collided = true;
 			result.normal = Vector3Normalize(posB - posA);
+			if (distSqr == 0) {
+				result.normal = { 1,0,0 };
+			}
 			float dist = std::sqrt(distSqr);
 			float radiuses = std::sqrt(radiusesSqr);
 			result.penetration = radiuses - dist;

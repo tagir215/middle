@@ -1233,25 +1233,19 @@ namespace bubbleActions {
 
 	void MulNegativeOne::execute(middle::GameState* gameState)
 	{
-		auto mulOne = std::make_unique<MulOne>(recieverShapeId);
-		mulOne->execute(gameState);
-		if (mulOne->cancelled) {
-			cancelled = true;
-			return;
-		}
-		middle::Id one = mulOne->resultShapeId;
-		bubble::negate(gameState, one);
-		actions.push_back(std::move(mulOne));
+		Vector3 pos = middle::getGlobalPosition(gameState, recieverShapeId.index);
+		middle::Shape bubbleProto = bubble::newMultiplication(gameState, pos);
+		middle::Shape& mul = middle::registerShape(gameState, bubbleProto);
+		middle::Id unit1 = bubble::newBubbleWithIntValue(gameState, -1, pos);
+		middle::Id unit2 = bubble::newBubbleWithIntValue(gameState, -1, pos);
+		EditorActionReparent(mul.id.index, unit1.index).execute(gameState);
+		EditorActionReparent(mul.id.index, unit2.index).execute(gameState);
+		middle::Id copyReciever = middle::deepCopyShapeGlobalCoordinates(gameState, recieverShapeId);
+		EditorActionReparent(mul.id.index, copyReciever.index).execute(gameState);
+		middle::executeAction<EditorActionRegisterId>(gameState, this, mul.id);
+		middle::executeAction<Replace>(gameState, this, recieverShapeId, mul.id);
 
-		auto mulOne2 = std::make_unique<MulOne>(recieverShapeId);
-		mulOne2->execute(gameState);
-		if (mulOne2->cancelled) {
-			cancelled = true;
-			return;
-		}
-		middle::Id one2 = mulOne2->resultShapeId;
-		bubble::negate(gameState, one2);
-		actions.push_back(std::move(mulOne2));
+		queueSound(gameState, bubbleSounds::MUL_ONE_SOUND);
 	}
 
 	void MulNegativeOne::undo(middle::GameState* gameState)
