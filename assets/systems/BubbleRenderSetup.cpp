@@ -37,6 +37,7 @@
 #include "BubblePowerComponent.h"
 #include "BubbleInequaltyComponent.h"
 #include "BubbleFunctionComponent.h"
+#include "GlobalRadius.h"
 
 
 class BubbleRenderSetup : public middle::MiddleGameplaySystem {
@@ -126,6 +127,7 @@ public:
 		activeBubbleCache = middle::newCompCache(gameState, systemName);
 		activeBubbleCache->addType<components::ActiveSceneSelectableTag>();
 		activeBubbleCache->addType<components::GlobalTransform>();
+		activeBubbleCache->addType<components::GlobalRadius>();
 		powerCache = middle::newCompCache(gameState, systemName);
 		powerCache->addType<components::BubblePowerComponent>();
 		powerCache->addType<components::Circle>();
@@ -496,14 +498,16 @@ public:
 		gameState->renderData.push_back(cameraTarget);
 
 		// render activity bounding box
+		auto activeRIt = activeBubbleCache->begin<components::GlobalRadius>();
+		auto activeTransformIt = activeBubbleCache->begin<components::GlobalTransform>();
 		for (middle::Id& id : activeBubbleCache->relevantIdVector) {
-			float left, right, top, bottom;
-			bubble::bubbleRectBoundingBox(gameState, id, &left, &right, &bottom, &top);
+			auto globalR = *activeRIt;
+			auto transform = *activeTransformIt;
 			middle::RenderItem boundingRect;
 			boundingRect.type = middle::RenderItemType::RECTANGLE;
-			boundingRect.width = right - left;
-			boundingRect.height = top - bottom;
-			boundingRect.center = { (left + right) * 0.5f, 0, (bottom + top) * 0.5f };
+			boundingRect.width = globalR->radius * 2;
+			boundingRect.height = globalR->radius * 2;
+			boundingRect.center = transform->pos;
 			boundingRect.color = WHITE;
 			gameState->renderData.push_back(boundingRect);
 		}
