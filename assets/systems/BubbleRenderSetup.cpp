@@ -72,8 +72,8 @@ public:
 		bubbleCache->addType<components::LoopSociety>();
 		bubbleCache->addType<components::GlobalTransform>();
 		bubbleCache->addType<components::RuntimeHiddenTag>(components::NOTINTERESTED);
-		bubbleCache->addType<components::BubbleVariable>(components::NOTINTERESTED);
-		bubbleCache->addType<components::BubbleUnit>(components::NOTINTERESTED);
+		//bubbleCache->addType<components::BubbleVariable>(components::NOTINTERESTED);
+		//bubbleCache->addType<components::BubbleUnit>(components::NOTINTERESTED);
 		unitCache = middle::newCompCache(gameState, systemName);
 		unitCache->addType<components::BubbleUnit>();
 		unitCache->addType<components::Layer>();
