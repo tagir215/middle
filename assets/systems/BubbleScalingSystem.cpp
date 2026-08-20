@@ -9,8 +9,7 @@
 
 class BubbleScalingSystem : public middle::MiddleGameplaySystem {
 	components::CompCache* bubbleCache;
-
-	const float targetRatio = 0.21803398875;
+	const float goldenRatio = 0.618;
 
 	void init(middle::GameState* gameState) override {
 		bubbleCache = middle::newCompCache(gameState, systemName);
@@ -29,15 +28,14 @@ class BubbleScalingSystem : public middle::MiddleGameplaySystem {
 			if (parentId.index == middle::UNASSIGNED) {
 				continue;
 			}
+			std::vector<middle::Id>children;
+			middle::getChildren(gameState, parentId, children);
+			int childCount = children.size();
+
 			auto parentGlobalR = middle::getComp<components::GlobalRadius>(gameState, parentId);
-			if (parentGlobalR == 0) {
-				continue;
-			}
 			float currentRatio = globalR->radius / parentGlobalR->radius;
-			if (currentRatio == 0) {
-				continue;
-			}
-			float scalar = targetRatio / currentRatio;
+			float targetRadius = (parentGlobalR->radius / childCount) * goldenRatio;
+			float scalar = targetRadius / globalR->radius;
 			localScale->scale *= scalar;
 		}
 	}
