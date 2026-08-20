@@ -362,6 +362,7 @@ namespace equlab {
 			scopeQueue.pop();
 			parentQueue.pop();
 			Vector3 randOff = randOffset();
+			randOff.y = 0;
 			Vector3 pos = targetPos + randOff;
 
 			middle::Id newNodeId;

@@ -84,8 +84,10 @@ namespace MouseIntersectDetectionSystem {
 				}
 				else {
 					auto tag = middle::getComp<components::IntersectingTag>(gameState, id);
-					tag->intersectingTop = true;
-					++tag->framesIntersected;
+					if (tag) {
+						tag->intersectingTop = true;
+						++tag->framesIntersected;
+					}
 				}
 			}
 
