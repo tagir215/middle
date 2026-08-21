@@ -199,6 +199,7 @@ public:
 
 	void update(middle::GameState* gameState) override {
 		// Collect bubbles
+		return;
 
 		std::vector<Bubble>bubbles;
 		auto bubbleIt = bubbleCache->begin<components::BubbleComponent>();

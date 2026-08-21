@@ -17,6 +17,7 @@
 #include "GlobalTransform.h"
 #include "LocalPosition.h"
 #include <stack>
+#include "component_utils.h"
 
 namespace middle {
 
@@ -140,6 +141,20 @@ namespace middle {
 		if (pos) {
 			pos->pos += displacement;
 		}
+	}
+
+	void setGlobalPosition(GameState* gameState, middle::Id id, const Vector3& targetPos)
+	{
+		middle::Id parentId = middle::getParent(gameState, id);
+		Vector3 localPos = projectGlobalCoordinateToLocalCoordinate(gameState, targetPos, parentId);
+		auto localPosComp = middle::getComp<components::LocalPosition>(gameState, id);
+		localPosComp->pos = localPos;
+	}
+
+	void setLocalPosition(GameState* gameState, middle::Id id, const Vector3& targetPos)
+	{
+		auto localPosComp = middle::getComp<components::LocalPosition>(gameState, id);
+		localPosComp->pos = targetPos;
 	}
 
 	bool isGhostShape(int index)

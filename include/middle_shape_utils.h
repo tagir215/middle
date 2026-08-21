@@ -15,6 +15,10 @@ namespace middle {
 	void dragShape(GameState* gameState, int index, Vector3 linearVel);
 	// move shape and its chidlren
 	void moveShape(GameState* gameState, int index, const Vector3& displacement);
+	// set local pos in a way so it has this global pos
+	void setGlobalPosition(GameState* gameState, middle::Id id, const Vector3& targetPos);
+	// set local pos
+	void setLocalPosition(GameState* gameState, middle::Id id, const Vector3& targetPos);
 	// find container of containers containers
 	int findHighestLevelContainer(GameState* gameState, int index);
 	// loop the shape instances
