@@ -458,6 +458,15 @@ namespace bubbleActions {
 		this->shapeToCopyIntoId = shapeToCopyIntoId;
 	}
 
+	void layoutPauseEffect(middle::GameState* gameState, middle::EditorActionContainer* container, middle::Id id) {
+		middle::Id parentId = middle::getParent(gameState, id);
+		if (parentId.index != middle::UNASSIGNED) {
+			auto action = middle::executeAction<middle::AttachComponentAction<components::PauseLayoutTag>>(gameState, container, parentId);
+			auto pauseEffect = action->resultComp;
+			pauseEffect->timeLeft = 0.5f;
+		}
+	}
+
 	void ExecuteMultiplication::execute(middle::GameState* gameState) {
 
 		// cancel if trying to expand into variable
@@ -510,12 +519,7 @@ namespace bubbleActions {
 
 		// effects, move somewhere
 		queueSound(gameState, bubbleSounds::EXPAND_MULTIPLICATION_SOUND);
-		middle::Id parentId = middle::getParent(gameState, shapeToCopyIntoId);
-		if (parentId.index != middle::UNASSIGNED) {
-			auto action = middle::executeAction<middle::AttachComponentAction<components::PauseLayoutTag>>(gameState, this, parentId);
-			auto pauseEffect = action->resultComp;
-			pauseEffect->timeLeft = 0.5f;
-		}
+		layoutPauseEffect(gameState, this, shapeToCopyIntoId);
 	}
 
 	void ExecuteMultiplication::undo(middle::GameState* gameState) {
@@ -603,6 +607,8 @@ namespace bubbleActions {
 		}
 		middle::executeAction<middle::EditorActionRegisterId>(gameState, this, replacementShapeId);
 		middle::executeAction<Replace>(gameState, this, powerId, replacementShapeId);;
+
+		layoutPauseEffect(gameState, this, replacementShapeId);
 	}
 
 	void ExecutePower::undo(middle::GameState* gameState)
