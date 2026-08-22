@@ -153,6 +153,15 @@ public:
 		}
 	}
 
+	int getCircleSlices(components::GlobalTransform* transform) {
+		int slices = (int)(transform->scale.x * 30);
+		const int maxSlices = 200;
+		const int minSlices = 10;
+		slices = slices > minSlices ? slices : minSlices;
+		slices = slices < maxSlices ? slices : maxSlices;
+		return slices;
+	}
+
 	void setTransform(middle::RenderItem& item, components::GlobalTransform* transform) {
 		item.transform.translation = transform->pos;
 		item.transform.scale = transform->scale;
@@ -169,7 +178,7 @@ public:
 		float offsetZ = radius * offsetFactor;
 		text.fontSize = labelFontSize;
 		text.layer = layer + 1;
-		text.transform.translation = transform->pos + Vector3{0,0, radius + offsetZ};
+		text.transform.translation = transform->pos + Vector3{ 0,0, radius + offsetZ };
 		text.transform.scale = transform->scale;
 		text.transform.rotation = transform->rotation;
 		gameState->renderData.push_back(text);
@@ -229,6 +238,7 @@ public:
 			circleItem.radius = radius;
 			circleItem.center = { 0,0,0 };
 			circleItem.disableDepthTest = isUiItem;
+			circleItem.slices = getCircleSlices(transform);
 			setTransform(circleItem, transform);
 			gameState->renderData.push_back(circleItem);
 		}
@@ -338,6 +348,7 @@ public:
 			mulCircle.radius = circle->radius + 4;
 			mulCircle.color = GREEN;
 			mulCircle.layer = layer->layer + 2;
+			mulCircle.slices = getCircleSlices(transform);
 			gameState->renderData.push_back(mulCircle);
 
 		}
@@ -361,6 +372,7 @@ public:
 			circleItemA.radius = circle->radius;
 			circleItemA.color = RED;
 			circleItemA.layer = layer->layer + 1;
+			circleItemA.slices = getCircleSlices(transform);
 			gameState->renderData.push_back(circleItemA);
 
 			assert(loop->loopMemberIds.size() == 2);
@@ -377,6 +389,7 @@ public:
 				circleItemB.radius = exponentCircle->radius - 3;
 				circleItemB.color = ORANGE;
 				circleItemB.layer = layer->layer + 2;
+				circleItemB.slices = getCircleSlices(transform);
 				gameState->renderData.push_back(circleItemB);
 			}
 		}
@@ -401,7 +414,7 @@ public:
 		auto equTransformIt = equalsCache->begin<components::GlobalTransform>();
 		auto equCircleIt = equalsCache->begin<components::Circle>();
 		auto equLayerIt = equalsCache->begin<components::Layer>();
-		for (middle::Id id : equalsCache->relevantIdVector){
+		for (middle::Id id : equalsCache->relevantIdVector) {
 			auto transform = *equTransformIt;
 			auto circle = *equCircleIt;;
 			auto layer = *equLayerIt;
@@ -412,13 +425,14 @@ public:
 			setTransform(equCirc, transform);
 			equCirc.layer = layer->layer;
 			equCirc.color = bubbleColors::EQUALS_CONNECTION;
+			equCirc.slices = getCircleSlices(transform);
 			gameState->renderData.push_back(equCirc);
 		}
 
 		auto inequTransformIt = inequCache->begin<components::GlobalTransform>();
 		auto inequCircleIt = inequCache->begin<components::Circle>();
 		auto inequLayerIt = inequCache->begin<components::Layer>();
-		for (middle::Id id : inequCache->relevantIdVector){
+		for (middle::Id id : inequCache->relevantIdVector) {
 			auto transform = *inequTransformIt;
 			auto circle = *inequCircleIt;;
 			auto layer = *inequLayerIt;
@@ -429,6 +443,7 @@ public:
 			setTransform(equCirc, transform);
 			equCirc.layer = layer->layer + 1;
 			equCirc.color = bubbleColors::INEQUALS_COLOR;
+			equCirc.slices = getCircleSlices(transform);
 			gameState->renderData.push_back(equCirc);
 
 			middle::Id lesser, greater;
@@ -442,6 +457,7 @@ public:
 			greaterCirc.radius = greaterCircleComp->radius;
 			greaterCirc.layer = layer->layer + 2;
 			greaterCirc.color = bubbleColors::INEQUALS_COLOR;
+			greaterCirc.slices = getCircleSlices(transform);
 			gameState->renderData.push_back(greaterCirc);
 		}
 
@@ -597,6 +613,7 @@ public:
 			setTransform(funcCircle, transform);
 			funcCircle.color = GRAY;
 			funcCircle.layer = layer->layer;
+			funcCircle.slices = getCircleSlices(transform);
 			gameState->renderData.push_back(funcCircle);
 			// render indexes
 			std::vector<middle::Id>children;

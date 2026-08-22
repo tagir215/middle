@@ -13,6 +13,22 @@ namespace RendererSystem {
 	static std::string scriptName = "RendererSystem";
 	const float layerGap = -1.0f;
 
+	void DrawCustomCircle3D(Vector3 center, float radius, Vector3 rotationAxis, float rotationAngle, int segments, Color color) {
+		// Custom implementation using rlgl for variable segment counts
+		rlPushMatrix();
+		rlTranslatef(center.x, center.y, center.z);
+		rlRotatef(rotationAngle, rotationAxis.x, rotationAxis.y, rotationAxis.z);
+		rlBegin(RL_LINES);
+		for (int i = 0; i < 360; i += 360 / segments) {
+			rlColor4ub(color.r, color.g, color.b, color.a);
+			// Calculate vertices for line segments based on input 'segments'
+			rlVertex3f(sinf(DEG2RAD * i) * radius, cosf(DEG2RAD * i) * radius, 0.0f);
+			rlVertex3f(sinf(DEG2RAD * (i + 360 / segments)) * radius, cosf(DEG2RAD * (i + 360 / segments)) * radius, 0.0f);
+		}
+		rlEnd();
+		rlPopMatrix();
+	}
+
 	Matrix transformMatrix(Transform& transform, int layer) {
 		Matrix S = MatrixScale(transform.scale.x, transform.scale.y, transform.scale.z);
 		Matrix R = QuaternionToMatrix(transform.rotation);
@@ -153,9 +169,9 @@ namespace RendererSystem {
 				rlPushMatrix();
 				rlLoadIdentity();
 				rlMultMatrixf(MatrixToFloatV(M).v);
-				DrawCircle3D(item.center, item.radius, { 1,0,0 }, 90, item.color);
+				DrawCustomCircle3D(item.center, item.radius, { 1,0,0 }, 90, item.slices, item.color);
 				if (item.backgroundColor.a != 0) {
-					DrawCylinder(item.center, item.radius, item.radius, 0.000000001f, 20, item.backgroundColor);
+					DrawCylinder(item.center, item.radius, item.radius, 0.000000001f, item.slices, item.backgroundColor);
 				}
 				rlPopMatrix();
 			}

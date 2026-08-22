@@ -100,6 +100,7 @@ namespace middle {
 		Vector3 textOffset = { 0,0,0 };
 		Transform transform;
 		int layer = 0;
+		int slices = 20;
 		float radius;
 		float ringRadius;
 		float startAngle;
