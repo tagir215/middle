@@ -37,6 +37,8 @@ namespace middle {
 	bool isValidId(GameState* gameState, middle::Id id);
 	// get pos quickly
 	Vector3 getGlobalPosition(GameState* gameState, int index);
+	// get pos quickly very
+	Vector3 getLocalPosition(GameState* gameState, middle::Id id);
 	// get shape instance
 	Shape& getShape(GameState* gameState, int index);
 	// delete shape , updates generational indexes

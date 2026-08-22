@@ -239,6 +239,15 @@ namespace middle {
 		return pos;
 	}
 
+	Vector3 getLocalPosition(GameState* gameState, middle::Id id)
+	{
+		auto localPos = getComp<components::LocalPosition>(gameState, id);
+		if (!localPos) {
+			assert(false);
+		}
+		return localPos->pos;
+	}
+
 	Shape& getShape(GameState* gameState, int index)
 	{
 		if (gameState->shapes[index].id == gameState->ids[index]) {

@@ -14,6 +14,8 @@ public:
 
 	components::CompCache* bubbleCache;
 
+	const float moveSpeed = 5;
+
 	void init(middle::GameState* gameState) override {
 		bubbleCache = middle::newCompCache(gameState, systemName);
 		bubbleCache->addType<components::BubbleComponent>();
@@ -127,7 +129,9 @@ public:
 				Vector3 layoutPos = { layout[i].x * diameter, 0, layout[i].y * diameter };
 				Vector3 targetPosition = leftBottomCorner + layoutPos;
 				middle::Id childId = children[i];
-				middle::setLocalPosition(gameState, childId, targetPosition);
+				Vector3 currentPos = middle::getLocalPosition(gameState, childId);
+				Vector3 disp = (targetPosition - currentPos) * moveSpeed * gameState->frameTime;
+				middle::setLocalPosition(gameState, childId, currentPos + disp);
 			}
 		}
 
