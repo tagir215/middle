@@ -9,7 +9,7 @@
 
 class BubbleScalingSystem : public middle::MiddleGameplaySystem {
 	components::CompCache* bubbleCache;
-	const float scaleRatio = 0.618;
+	const float scaleRatio = 0.958;
 	const float smoothFactor = 0.07f;
 
 	void init(middle::GameState* gameState) override {

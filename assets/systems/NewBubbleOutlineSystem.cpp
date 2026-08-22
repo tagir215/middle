@@ -58,6 +58,8 @@ public:
 
 	void update(middle::GameState* gameState) override {
 
+		return;
+
 		// calculate bubble size
 		auto circleIt = circfullCache->begin<components::Circle>();
 		auto transformIt = circfullCache->begin<components::GlobalTransform>();
@@ -80,7 +82,7 @@ public:
 					auto childTransform = middle::getComponent<components::GlobalTransform>(childShape);
 					float scale = childTransform->scale.x * inverseScale;
 
-					float margin = 10;
+					float margin = 0;
 					float r = (childCircle->radius + margin) * scale;
 					totalArea += r * r * PI;
 				}
