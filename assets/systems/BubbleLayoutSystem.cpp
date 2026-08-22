@@ -5,6 +5,7 @@
 #include "BubbleComponent.h"
 #include "Circle.h"
 #include "imgui.h"
+#include "PauseLayoutTag.h"
 
 class BubbleLayoutSystem : public middle::MiddleGameplaySystem {
 public:
@@ -13,6 +14,7 @@ public:
 	}
 
 	components::CompCache* bubbleCache;
+	components::CompCache* pausedBubblesCache;
 
 	const float moveSpeed = 5;
 
@@ -20,6 +22,10 @@ public:
 		bubbleCache = middle::newCompCache(gameState, systemName);
 		bubbleCache->addType<components::BubbleComponent>();
 		bubbleCache->addType<components::Circle>();
+		bubbleCache->addType<components::PauseLayoutTag>(components::NOTINTERESTED);
+
+		pausedBubblesCache = middle::newCompCache(gameState, systemName);
+		pausedBubblesCache->addType<components::PauseLayoutTag>();
 	}
 
 	typedef std::vector<Vector2> BubbleLayout;
@@ -88,6 +94,15 @@ public:
         {0.666f, 0.333f}},
     };
 	void update(middle::GameState* gameState) override {
+
+		auto pauseTagIt = pausedBubblesCache->begin<components::PauseLayoutTag>();
+		for (middle::Id id : pausedBubblesCache->relevantIdVector) {
+			auto pause = *pauseTagIt;
+			if (pause->timeLeft <= 0) {
+				middle::queueComponentDeletion<components::PauseLayoutTag>(gameState, id);
+			}
+			pause->timeLeft -= gameState->frameTime;
+		}
 
 		auto circleIt = bubbleCache->begin<components::Circle>();
 		for (middle::Id id : bubbleCache->relevantIdVector) {

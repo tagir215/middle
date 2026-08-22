@@ -21,6 +21,7 @@
 #include "GlobalTransform.h"
 #include "BubblePowerComponent.h"
 #include "BubbleFunctionComponent.h"
+#include "PauseLayoutTag.h"
 
 namespace bubbleActions {
 
@@ -477,9 +478,12 @@ namespace bubbleActions {
 
 		// create replacement shape, register and replace
 		auto createAndReplace = [gameState, this](middle::Id toReplaceId, middle::Id replacementId) {
+			Vector3 oldPos = middle::getGlobalPosition(gameState, replacementId.index);
 			middle::Id copyId = createMultiplicationReplacementShape(gameState, toReplaceId, replacementId);
 			middle::executeAction<EditorActionRegisterId>(gameState, this, copyId);
 			middle::executeAction<Replace>(gameState, this, toReplaceId, copyId);
+			// just for effect of having bubble transition
+			middle::setGlobalPosition(gameState, copyId, oldPos);
 			};
 
 		// in unit case just replace the shape to copy into
@@ -501,10 +505,17 @@ namespace bubbleActions {
 		}
 
 		middle::executeAction<middle::EditorActionDeleteSingle>(gameState, this, shapeToCopyId);
-
 		middle::executeAction<UpdateBubblesMultiplicationIdentity>(gameState, this, mulId);
 
+
+		// effects, move somewhere
 		queueSound(gameState, bubbleSounds::EXPAND_MULTIPLICATION_SOUND);
+		middle::Id parentId = middle::getParent(gameState, shapeToCopyIntoId);
+		if (parentId.index != middle::UNASSIGNED) {
+			auto action = middle::executeAction<middle::AttachComponentAction<components::PauseLayoutTag>>(gameState, this, parentId);
+			auto pauseEffect = action->resultComp;
+			pauseEffect->timeLeft = 0.5f;
+		}
 	}
 
 	void ExecuteMultiplication::undo(middle::GameState* gameState) {
@@ -1752,7 +1763,7 @@ namespace bubbleActions {
 		int index = 0;
 		for (middle::Id childId : bodyChildren) {
 			if (auto varComp = middle::getComp<components::BubbleVariable>(gameState, childId)) {
-				if(inputIndexLabelMap.find(varComp->label) == inputIndexLabelMap.end()){
+				if (inputIndexLabelMap.find(varComp->label) == inputIndexLabelMap.end()) {
 					continue;
 				}
 				int inputIndex = inputIndexLabelMap[varComp->label];
