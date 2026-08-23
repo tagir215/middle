@@ -139,6 +139,7 @@ public:
 		functionCache->addType<components::GlobalTransform>();
 		functionCache->addType<components::Layer>();
 		functionCache->addType<components::Circle>();
+		functionCache->addType<components::GlobalRadius>();
 
 		oPosCache = middle::newCompCache(gameState, systemName);
 		oPosCache->addType<components::Position>(components::NOTINTERESTED);
@@ -599,13 +600,16 @@ public:
 		auto functionIt = functionCache->begin<components::BubbleFunctionComponent>();
 		auto functionCircleIt = functionCache->begin<components::Circle>();
 		auto functionLayerIt = functionCache->begin<components::Layer>();
+		auto functionGlobalRIt = functionCache->begin<components::GlobalRadius>();
 		for (middle::Id id : functionCache->relevantIdVector) {
 			// render functionlabel
 			auto transform = *functionTransformIt;
 			auto circle = *functionCircleIt;
 			auto func = *functionIt;
 			auto layer = *functionLayerIt;
-			renderBubbleLabel(gameState, transform, circle->radius, func->label, layer->layer);
+			auto globalR = *functionGlobalRIt;
+
+			renderBubbleLabel(gameState, transform, globalR->radius, func->label, layer->layer);
 			// render function circle
 			middle::RenderItem funcCircle;
 			funcCircle.type = middle::RenderItemType::CIRCLE;
@@ -621,9 +625,9 @@ public:
 			int index = 1;
 			for (middle::Id childId : children) {
 				auto transform = middle::getComp<components::GlobalTransform>(gameState, childId);
-				auto circle = middle::getComp<components::Circle>(gameState, childId);
+				auto globalRChild = middle::getComp<components::GlobalRadius>(gameState, childId);
 				auto layer = middle::getComp<components::Layer>(gameState, childId);
-				renderBubbleLabel(gameState, transform, circle->radius, std::to_string(index++), layer->layer);
+				renderBubbleLabel(gameState, transform, globalRChild->radius, std::to_string(index++), layer->layer);
 			}
 		}
 
