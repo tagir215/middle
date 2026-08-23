@@ -7,12 +7,17 @@
 #include "GlobalTransform.h"
 #include "LocalScale.h"
 #include "PauseLayoutTag.h"
+#include "BubblePowerComponent.h"
+#include "bubble_utils.h"
 
 class BubbleScalingSystem : public middle::MiddleGameplaySystem {
 	components::CompCache* bubbleCache;
+	components::CompCache* powerCache;
 	const float scaleRatio = 0.958;
 	const float oneChildScaleRatio = 0.758;
 	const float smoothFactor = 10;
+	const float powerBaseRatio = 1.28f;
+	const float powerExponentRatio = 0.25f;
 
 	void init(middle::GameState* gameState) override {
 		bubbleCache = middle::newCompCache(gameState, systemName);
@@ -20,36 +25,67 @@ class BubbleScalingSystem : public middle::MiddleGameplaySystem {
 		bubbleCache->addType<components::GlobalRadius>();
 		bubbleCache->addType<components::LocalScale>();
 		bubbleCache->addType<components::GlobalTransform>();
+		bubbleCache->addType<components::BubblePowerComponent>(components::NOTINTERESTED);
 		bubbleCache->addType<components::PauseLayoutTag>(components::NOTINTERESTED);
+
+		powerCache = middle::newCompCache(gameState, systemName);
+		powerCache->addType<components::BubbleComponent>();
+		powerCache->addType<components::GlobalRadius>();
+		powerCache->addType<components::GlobalTransform>();
+		powerCache->addType<components::BubblePowerComponent>();
+		powerCache->addType<components::PauseLayoutTag>(components::NOTINTERESTED);
 	}
+
+	void updateScale(middle::GameState* gameState, middle::Id id, float targetRadius) {
+		auto childGlobalR = middle::getComp<components::GlobalRadius>(gameState, id);
+		auto childScale = middle::getComp<components::LocalScale>(gameState, id);
+		float scalar = targetRadius / childGlobalR->radius;
+		Vector3 targetScale = childScale->scale * scalar;
+		childScale->scale += (targetScale - childScale->scale) * smoothFactor * gameState->frameTime;
+	}
+
 	void update(middle::GameState* gameState) override {
 
 		auto globalRIt = bubbleCache->begin<components::GlobalRadius>();
-		auto localScaleIt = bubbleCache->begin<components::LocalScale>();
 		for (middle::Id id : bubbleCache->relevantIdVector) {
 			auto globalR = *globalRIt;
-			auto localScale = *localScaleIt;
-			middle::Id parentId = middle::getParent(gameState, id);
-			if (parentId.index == middle::UNASSIGNED 
-				|| middle::getComp<components::PauseLayoutTag>(gameState, parentId)) {
+
+			std::vector<middle::Id>children;
+			middle::getChildren(gameState, id, children);
+			int childCount = children.size();
+
+			if (childCount == 0) {
 				continue;
 			}
-			std::vector<middle::Id>children;
-			middle::getChildren(gameState, parentId, children);
-			int childCount = children.size();
-			auto parentGlobalR = middle::getComp<components::GlobalRadius>(gameState, parentId);
 
 			float ratio = scaleRatio;
 			if (childCount == 1) {
 				ratio = oneChildScaleRatio;
 			}
 
-			float targetRadius = (parentGlobalR->radius / childCount) * ratio;
-		
-			float scalar = targetRadius / globalR->radius;
-			Vector3 targetScale = localScale->scale * scalar;
-			localScale->scale += (targetScale - localScale->scale) * smoothFactor * gameState->frameTime;
+			const float targetRadius = (globalR->radius / childCount) * ratio;
+
+			for (middle::Id childId : children) {
+				updateScale(gameState, childId, targetRadius);
+			}
 		}
+
+		auto powerGlobalRIt = powerCache->begin<components::GlobalRadius>();
+		for (middle::Id id : powerCache->relevantIdVector) {
+			auto globalR = *powerGlobalRIt;
+
+			middle::Id baseId, exponentId;
+			bubble::getPowerBaseAndExponent(gameState, id, baseId, exponentId);
+
+			float halfRadius = globalR->radius * 0.5f;
+
+			const float targetRadiusBase = halfRadius * powerBaseRatio;
+			const float targetRadiusExponent = halfRadius * powerExponentRatio;
+
+			updateScale(gameState, baseId, targetRadiusBase);
+			updateScale(gameState, exponentId, targetRadiusExponent);
+		}
+
 	}
 };
 

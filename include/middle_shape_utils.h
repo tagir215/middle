@@ -21,6 +21,10 @@ namespace middle {
 	void setLocalPosition(GameState* gameState, middle::Id id, const Vector3& targetPos);
 	// find container of containers containers
 	int findHighestLevelContainer(GameState* gameState, int index);
+	// local scale
+	Vector3 getLocalScale(GameState* gameState, middle::Id id);
+	// set local scale
+	void setLocalScale(GameState* gameState, middle::Id id, const Vector3& targetScale);
 	// loop the shape instances
 	int findHighestUsedIndex(GameState* gameState);
 	// find next usable ghost index

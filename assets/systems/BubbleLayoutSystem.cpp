@@ -6,6 +6,8 @@
 #include "Circle.h"
 #include "imgui.h"
 #include "PauseLayoutTag.h"
+#include "BubblePowerComponent.h"
+#include "bubble_utils.h"
 
 class BubbleLayoutSystem : public middle::MiddleGameplaySystem {
 public:
@@ -14,6 +16,7 @@ public:
 	}
 
 	components::CompCache* bubbleCache;
+	components::CompCache* powerCache;
 	components::CompCache* pausedBubblesCache;
 
 	const float moveSpeed = 5;
@@ -23,6 +26,14 @@ public:
 		bubbleCache->addType<components::BubbleComponent>();
 		bubbleCache->addType<components::Circle>();
 		bubbleCache->addType<components::PauseLayoutTag>(components::NOTINTERESTED);
+		bubbleCache->addType<components::BubblePowerComponent>(components::NOTINTERESTED);
+
+		powerCache = middle::newCompCache(gameState, systemName);
+		powerCache->addType<components::BubbleComponent>();
+		powerCache->addType<components::Circle>();
+		powerCache->addType<components::BubblePowerComponent>();
+		powerCache->addType<components::PauseLayoutTag>(components::NOTINTERESTED);
+
 
 		pausedBubblesCache = middle::newCompCache(gameState, systemName);
 		pausedBubblesCache->addType<components::PauseLayoutTag>();
@@ -93,6 +104,13 @@ public:
         {0.5f,   0.333f},
         {0.666f, 0.333f}},
     };
+
+	BubbleLayout powerLayout =
+	{
+		{0.45, 0.45},
+		{0.75f, 0.75f}
+	};
+
 	void update(middle::GameState* gameState) override {
 
 		auto pauseTagIt = pausedBubblesCache->begin<components::PauseLayoutTag>();
@@ -104,6 +122,7 @@ public:
 			pause->timeLeft -= gameState->frameTime;
 		}
 
+		// bubbles
 		auto circleIt = bubbleCache->begin<components::Circle>();
 		for (middle::Id id : bubbleCache->relevantIdVector) {
 			auto circle = *circleIt;
@@ -150,6 +169,30 @@ public:
 			}
 		}
 
+
+		// powers
+		auto powerCircleIt = powerCache->begin<components::Circle>();
+		for (middle::Id id : powerCache->relevantIdVector) {
+			auto circle = *powerCircleIt;
+			middle::Id baseId, exponentId;
+			bubble::getPowerBaseAndExponent(gameState, id, baseId, exponentId);
+			float diameter = circle->radius * 2;
+			Vector3 leftBottomCorner = Vector3{ -circle->radius, 0, -circle->radius };
+			Vector2 posBase = powerLayout[0];
+			Vector2 posExponent = powerLayout[1];
+
+			Vector3 targetPosBase = leftBottomCorner + Vector3{ posBase.x, 0, posBase.y } * diameter;
+			Vector3 targetPosExponent = leftBottomCorner + Vector3{ posExponent.x, 0, posExponent.y } * diameter;
+
+			Vector3 currentBasePos = middle::getLocalPosition(gameState, baseId);
+			Vector3 currentExponentPos = middle::getLocalPosition(gameState, exponentId);
+
+			Vector3 dispBase = (targetPosBase - currentBasePos) * moveSpeed * gameState->frameTime;
+			Vector3 dispExponent = (targetPosExponent - currentExponentPos) * moveSpeed * gameState->frameTime;
+
+			middle::setLocalPosition(gameState, baseId, currentBasePos + dispBase);
+			middle::setLocalPosition(gameState, exponentId, currentExponentPos + dispExponent);
+		}
 	}
 };
 

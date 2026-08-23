@@ -91,6 +91,18 @@ namespace middle {
 		return findHighestLevelContainer(gameState, parentId.index);
 	}
 
+	Vector3 getLocalScale(GameState* gameState, middle::Id id)
+	{
+		auto localScale = middle::getComp<components::LocalScale>(gameState, id);
+		return localScale->scale;
+	}
+
+	void setLocalScale(GameState* gameState, middle::Id id, const Vector3& targetScale)
+	{
+		auto localScale = middle::getComp<components::LocalScale>(gameState, id);
+		localScale->scale = targetScale;
+	}
+
 	int findHighestUsedIndex(GameState* gameState)
 	{
 		int highestI = 0;

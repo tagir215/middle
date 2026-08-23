@@ -221,8 +221,10 @@ namespace bubbleActions {
 			for (middle::Id& exponentChildId : exponentChildren) {
 				auto& childShape = middle::getShape(gameState, exponentChildId.index);
 
+				Vector3 oldChildScale = middle::getLocalScale(gameState, exponentChildId);
+				Vector3 oldChildPos = middle::getGlobalPosition(gameState, exponentChildId.index);
+
 				middle::Id baseCopyId = middle::deepCopyShapeGlobalCoordinates(gameState, baseId);
-				middle::moveShape(gameState, baseCopyId.index, middle::getGlobalPosition(gameState, exponentChildId.index) - basePos);
 
 				middle::Id linkingId;
 				auto unit = middle::getComponent<components::BubbleUnit>(childShape);
@@ -248,10 +250,14 @@ namespace bubbleActions {
 					linkingId = newPowerId;
 				}
 
+				middle::setLocalScale(gameState, linkingId, oldChildScale);
+				middle::setGlobalPosition(gameState, linkingId, oldChildPos);
+
 				// link as multiplication
 				if (prevId.index != middle::UNASSIGNED) {
 					LinkMultiplicationTerm(prevId, linkingId).execute(gameState);
 				}
+
 				prevId = linkingId;
 
 			}
@@ -277,7 +283,13 @@ namespace bubbleActions {
 			return middle::Id();
 		}
 
-		return bubble::containerize(gameState, replacementShapeId);
+		Vector3 oldScale = middle::getLocalScale(gameState, exponentId);
+		Vector3 oldPos = middle::getGlobalPosition(gameState, exponentId.index);
+		replacementShapeId = bubble::containerize(gameState, replacementShapeId);
+		middle::setLocalScale(gameState, replacementShapeId, oldScale);
+		middle::setGlobalPosition(gameState, replacementShapeId, oldPos);
+
+		return replacementShapeId;
 	}
 
 	middle::Id createExpandedExponentReplacementShape(middle::GameState* gameState, middle::Id powerShapeId) {
@@ -487,12 +499,11 @@ namespace bubbleActions {
 
 		// create replacement shape, register and replace
 		auto createAndReplace = [gameState, this](middle::Id toReplaceId, middle::Id replacementId) {
-			Vector3 oldPos = middle::getGlobalPosition(gameState, replacementId.index);
 			middle::Id copyId = createMultiplicationReplacementShape(gameState, toReplaceId, replacementId);
 			middle::executeAction<EditorActionRegisterId>(gameState, this, copyId);
+			Vector3 oldScale = middle::getLocalScale(gameState, toReplaceId);
 			middle::executeAction<Replace>(gameState, this, toReplaceId, copyId);
-			// just for effect of having bubble transition
-			middle::setGlobalPosition(gameState, copyId, oldPos);
+			middle::setLocalScale(gameState, copyId, oldScale);
 			};
 
 		// in unit case just replace the shape to copy into
@@ -516,10 +527,7 @@ namespace bubbleActions {
 		middle::executeAction<middle::EditorActionDeleteSingle>(gameState, this, shapeToCopyId);
 		middle::executeAction<UpdateBubblesMultiplicationIdentity>(gameState, this, mulId);
 
-
-		// effects, move somewhere
 		queueSound(gameState, bubbleSounds::EXPAND_MULTIPLICATION_SOUND);
-		layoutPauseEffect(gameState, this, shapeToCopyIntoId);
 	}
 
 	void ExecuteMultiplication::undo(middle::GameState* gameState) {
@@ -608,7 +616,7 @@ namespace bubbleActions {
 		middle::executeAction<middle::EditorActionRegisterId>(gameState, this, replacementShapeId);
 		middle::executeAction<Replace>(gameState, this, powerId, replacementShapeId);;
 
-		layoutPauseEffect(gameState, this, replacementShapeId);
+		queueSound(gameState, bubbleSounds::EXPAND_POWER_SOUND);
 	}
 
 	void ExecutePower::undo(middle::GameState* gameState)
