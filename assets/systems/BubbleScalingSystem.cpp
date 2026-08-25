@@ -16,7 +16,7 @@ class BubbleScalingSystem : public middle::MiddleGameplaySystem {
 	const float scaleRatio = 0.958;
 	const float oneChildScaleRatio = 0.758;
 	const float smoothFactor = 10;
-	const float powerBaseRatio = 1.28f;
+	const float powerBaseRatio = 1.5f;
 	const float powerExponentRatio = 0.25f;
 
 	void init(middle::GameState* gameState) override {

@@ -69,11 +69,11 @@ public:
 
         // 6 - dice-style
 		{{0.333f, 0.666f},
-		 {0.666f, 0.666f},
-		 {0.333f, 0.5f},
-		 {0.666f, 0.5f},
-		 {0.333f, 0.333f},
-		 {0.666f, 0.333f}}, // layout 6
+		{0.666f, 0.666f},
+		{0.333f, 0.5f},
+		{0.666f, 0.5f},
+		{0.333f, 0.333f},
+		{0.666f, 0.333f}}, // layout 6
 
 		{{0.2f, 0.666f},
 		{0.4f, 0.666f},
@@ -108,7 +108,7 @@ public:
 	BubbleLayout powerLayout =
 	{
 		{0.45, 0.45},
-		{0.75f, 0.75f}
+		{0.90f, 0.90f}
 	};
 
 	void update(middle::GameState* gameState) override {
