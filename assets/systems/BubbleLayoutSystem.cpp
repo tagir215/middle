@@ -3,7 +3,7 @@
 #include "middle_system_registrar.h"
 #include "component_utils.h"
 #include "BubbleComponent.h"
-#include "Circle.h"
+#include "Rectangle.h"
 #include "imgui.h"
 #include "PauseLayoutTag.h"
 #include "BubblePowerComponent.h"
@@ -24,13 +24,13 @@ public:
 	void init(middle::GameState* gameState) override {
 		bubbleCache = middle::newCompCache(gameState, systemName);
 		bubbleCache->addType<components::BubbleComponent>();
-		bubbleCache->addType<components::Circle>();
+		bubbleCache->addType<components::Rectangle>();
 		bubbleCache->addType<components::PauseLayoutTag>(components::NOTINTERESTED);
 		bubbleCache->addType<components::BubblePowerComponent>(components::NOTINTERESTED);
 
 		powerCache = middle::newCompCache(gameState, systemName);
 		powerCache->addType<components::BubbleComponent>();
-		powerCache->addType<components::Circle>();
+		powerCache->addType<components::Rectangle>();
 		powerCache->addType<components::BubblePowerComponent>();
 		powerCache->addType<components::PauseLayoutTag>(components::NOTINTERESTED);
 
@@ -85,13 +85,13 @@ public:
 
         // 8 - two rows of four
 		{{0.2f, 0.666f},
-		 {0.4f, 0.666f},
-		 {0.6f, 0.666f},
-		 {0.8f, 0.666f},
-		 {0.2f, 0.333f},
-		 {0.4f, 0.333f},
-		 {0.6f, 0.333f},
-		 {0.8f, 0.333f}}, // layout 8
+		{0.4f, 0.666f},
+		{0.6f, 0.666f},
+		{0.8f, 0.666f},
+		{0.2f, 0.333f},
+		{0.4f, 0.333f},
+		{0.6f, 0.333f},
+		{0.8f, 0.333f}}, // layout 8
 
          // 9 - 3x3 grid
         {{0.333f, 0.666f},
@@ -123,9 +123,9 @@ public:
 		}
 
 		// bubbles
-		auto circleIt = bubbleCache->begin<components::Circle>();
+		auto rectIt = bubbleCache->begin<components::Rectangle>();
 		for (middle::Id id : bubbleCache->relevantIdVector) {
-			auto circle = *circleIt;
+			auto rect = *rectIt;
 			std::vector<middle::Id>children;
 			middle::getChildren(gameState, id, children);
 			int childCount = children.size();
@@ -133,8 +133,8 @@ public:
 				continue;
 			}
 
-			float diameter = circle->radius * 2;
-			Vector3 leftBottomCorner = Vector3{ -circle->radius, 0, -circle->radius };
+			float diameter = rect->width;
+			Vector3 leftBottomCorner = Vector3{ -rect->width * 0.5f, 0, -rect->height * 0.5f };
 
 			BubbleLayout layout;
 			if (childCount < 10) {
@@ -171,13 +171,13 @@ public:
 
 
 		// powers
-		auto powerCircleIt = powerCache->begin<components::Circle>();
+		auto powerRectIt = powerCache->begin<components::Rectangle>();
 		for (middle::Id id : powerCache->relevantIdVector) {
-			auto circle = *powerCircleIt;
+			auto rect = *powerRectIt;
 			middle::Id baseId, exponentId;
 			bubble::getPowerBaseAndExponent(gameState, id, baseId, exponentId);
-			float diameter = circle->radius * 2;
-			Vector3 leftBottomCorner = Vector3{ -circle->radius, 0, -circle->radius };
+			float diameter = rect->width;
+			Vector3 leftBottomCorner = Vector3{ -rect->width * 0.5f, 0, -rect->height * 0.5f };
 			Vector2 posBase = powerLayout[0];
 			Vector2 posExponent = powerLayout[1];
 

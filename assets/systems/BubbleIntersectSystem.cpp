@@ -11,7 +11,6 @@
 #include "FractionalComponent.h"
 #include "middle_math.h"
 #include "Sphere.h"
-#include "Circle.h"
 #include "Rectangle.h"
 #include "PlacementComponent.h"
 #include "InventoryItem.h"
@@ -19,7 +18,7 @@
 #include "UnIntersectableWindowComponent.h"
 #include "component_utils.h"
 #include "GlobalTransform.h"
-#include "GlobalRadius.h"
+#include "GlobalRect.h"
 #include "IntersectingTag.h"
 
 class BubbleIntersectSystem : public middle::MiddleGameplaySystem {
@@ -33,16 +32,16 @@ public:
 		bubbleCache = middle::newCompCache(gameState, systemName);
 		bubbleCache->addType<components::BubbleComponent>();
 		bubbleCache->addType<components::MouseIntersectable>();
-		bubbleCache->addType<components::Circle>();
-		bubbleCache->addType<components::GlobalRadius>();
+		bubbleCache->addType<components::Rectangle>();
+		bubbleCache->addType<components::GlobalRect>();
 		bubbleCache->addType<components::GlobalTransform>();
 		bubbleCache->addType<components::UnIntersectableWindowComponent>(components::NOTINTERESTED);
 
 		intersectingBubbleCache = middle::newCompCache(gameState, systemName);
 		intersectingBubbleCache->addType<components::BubbleComponent>();
 		intersectingBubbleCache->addType<components::MouseIntersectable>();
-		intersectingBubbleCache->addType<components::Circle>();
-		intersectingBubbleCache->addType<components::GlobalRadius>();
+		intersectingBubbleCache->addType<components::Rectangle>();
+		intersectingBubbleCache->addType<components::GlobalRect>();
 		intersectingBubbleCache->addType<components::GlobalTransform>();
 		intersectingBubbleCache->addType<components::IntersectingTag>();
 		intersectingBubbleCache->addType<components::UnIntersectableWindowComponent>(components::NOTINTERESTED);
@@ -97,13 +96,16 @@ public:
 
 		// delete tag if not itersecting anymore
 		auto intersectingTransformIt = intersectingBubbleCache->begin<components::GlobalTransform>();
-		auto intersectingGlobalRadiusIt = intersectingBubbleCache->begin<components::GlobalRadius>();
+		auto intersectingGlobalRectIt = intersectingBubbleCache->begin<components::GlobalRect>();
 		for (middle::Id id : intersectingBubbleCache->relevantIdVector) {
 			auto transform = *intersectingTransformIt;
-			auto globalR = *intersectingGlobalRadiusIt;
+			auto globalR = *intersectingGlobalRectIt;
 			Vector3 pos = transform->pos;
 			Vector3 mousePos = middle::RayCastLinePlane(pos, { 0,1,0 }, gameState->activeCamera.position, gameState->input.mouseDir);
-			bool intersecting = Vector3DistanceSqr(pos, mousePos) < globalR->radius * globalR->radius;
+			bool intersecting = mousePos.x > pos.x - globalR->width * 0.5f
+				&& mousePos.x < pos.x + globalR->width * 0.5f
+				&& mousePos.z > pos.z - globalR->height * 0.5f 
+				&& mousePos.z < pos.z + globalR->height * 0.5f;
 			if (!intersecting) {
 				middle::queueComponentDeletion<components::IntersectingTag>(gameState, id);
 			}
@@ -112,7 +114,7 @@ public:
 		// add tag to newly intersecting shapes, and update intersecting top value 
 		auto bubbleIntersectableIt = bubbleCache->begin<components::MouseIntersectable>();
 		auto bubbleTransformIt = bubbleCache->begin<components::GlobalTransform>();
-		auto bubbleGlobalRadiusIt = bubbleCache->begin<components::GlobalRadius>();
+		auto bubbleGlobalRadiusIt = bubbleCache->begin<components::GlobalRect>();
 		for (middle::Id id : bubbleCache->relevantIdVector) {
 			auto intersectable = *bubbleIntersectableIt;
 			auto transform = *bubbleTransformIt;
@@ -124,7 +126,10 @@ public:
 
 			if (!intersecting) {
 				Vector3 mousePos = middle::RayCastLinePlane(pos, { 0,1,0 }, gameState->activeCamera.position, gameState->input.mouseDir);
-				intersecting =  Vector3DistanceSqr(pos, mousePos) < globalR->radius * globalR->radius;
+				intersecting = mousePos.x > pos.x - globalR->width * 0.5f
+					&& mousePos.x < pos.x + globalR->width * 0.5f
+					&& mousePos.z > pos.z - globalR->height * 0.5f
+					&& mousePos.z < pos.z + globalR->height * 0.5f;
 			}
 
 			if (intersecting) {

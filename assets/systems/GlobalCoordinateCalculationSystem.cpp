@@ -8,10 +8,13 @@
 #include "Position.h"
 #include "GlobalRadius.h"
 #include "Circle.h"
+#include "Rectangle.h"
+#include "GlobalRect.h"
 
 class GlobalCoordinateCalculationSystem : public middle::MiddleGameplaySystem {
 	components::CompCache* posScaleCache;
 	components::CompCache* circleCache;
+	components::CompCache* rectCache;
 
 	void init(middle::GameState* gameState) override {
 		systemModeType = middle::SystemModeType::ENGINE;
@@ -26,6 +29,11 @@ class GlobalCoordinateCalculationSystem : public middle::MiddleGameplaySystem {
 		circleCache->addType<components::Circle>();
 		circleCache->addType<components::GlobalRadius>();
 		circleCache->addType<components::GlobalTransform>();
+
+		rectCache = middle::newCompCache(gameState, systemName);
+		rectCache->addType<components::Rectangle>();
+		rectCache->addType<components::GlobalRect>();
+		rectCache->addType<components::GlobalTransform>();
 	}
 
 
@@ -100,6 +108,18 @@ class GlobalCoordinateCalculationSystem : public middle::MiddleGameplaySystem {
 			auto globalR = *globalRadiusIt;
 			auto transform = *transformIt;
 			globalR->radius = circle->radius * transform->scale.x;
+		}
+
+		// updated global rects
+		auto rectIt = rectCache->begin<components::Rectangle>();
+		auto globalRectIt = rectCache->begin<components::GlobalRect>();
+		auto rectTransformIt = rectCache->begin<components::GlobalTransform>();
+		for (middle::Id id : rectCache->relevantIdVector) {
+			auto rect = *rectIt;
+			auto globalRect = *globalRectIt;
+			auto transform = *rectTransformIt;
+			globalRect->width = rect->width * transform->scale.x;
+			globalRect->height = rect->height * transform->scale.z;
 		}
 	}
 };

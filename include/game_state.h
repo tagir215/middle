@@ -106,9 +106,9 @@ namespace middle {
 		float startAngle;
 		float endAngle;
 		int segments;
-		float length;
-		float width;
-		float height;
+		float length = 0;
+		float width = 0;
+		float height = 0;
 		float textureScale = 10;
 		int fontSize = 10;
 		bool disableDepthTest = false;

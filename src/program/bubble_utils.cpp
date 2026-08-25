@@ -13,7 +13,6 @@
 #include "editor_actions.h"
 #include "PhysicsData.h"
 #include "BubbleVariable.h"
-#include "Circle.h"
 #include "TopDogBubbleTag.h"
 #include "MouseSelectable.h"
 #include "BubbleEqualsComponent.h"
@@ -28,6 +27,7 @@
 #include "BubblePowerComponent.h"
 #include "BubbleInequaltyComponent.h"
 #include "BubbleFunctionComponent.h"
+#include "GlobalRect.h"
 
 namespace bubble {
 	float unitRadius = 24;
@@ -156,15 +156,15 @@ namespace bubble {
 		*topZ = *rightX;
 		for (middle::Id& id : allThingsInTheBubbleSinceTheBeginningOfTime) {
 			auto& child = middle::getShape(gameState, id.index);
-			auto circle = middle::getComponent<components::Circle>(child);
-			if (!circle) {
+			auto rect = middle::getComponent<components::Rectangle>(child);
+			if (!rect) {
 				continue;
 			}
 			auto childTransform = middle::getComponent<components::GlobalTransform>(child);
-			float left = childTransform->pos.x - circle->radius;
-			float right = childTransform->pos.x + circle->radius;
-			float top = childTransform->pos.z + circle->radius;
-			float bottom = childTransform->pos.z - circle->radius;
+			float left = childTransform->pos.x - rect->width * 0.5f;
+			float right = childTransform->pos.x + rect->width * 0.5f;
+			float top = childTransform->pos.z + rect->height * 0.5f;
+			float bottom = childTransform->pos.z - rect->height * 0.5f;
 			if (left < *leftX) {
 				*leftX = left;
 			}
@@ -1314,9 +1314,10 @@ namespace bubble {
 		middle::addComponent<components::LoopSociety>(newBubbleShape);
 		middle::addComponent<components::PhysicsData>(newBubbleShape);
 		middle::addComponent<components::Layer>(newBubbleShape);
-		auto circle = middle::addComponent<components::Circle>(newBubbleShape);
-		circle->radius = variableRadius;
-		middle::addComponent<components::GlobalRadius>(newBubbleShape);
+		auto rect = middle::addComponent<components::Rectangle>(newBubbleShape);
+		rect->width = variableRadius * 2;
+		rect->height = variableRadius * 2;
+		middle::addComponent<components::GlobalRect>(newBubbleShape);
 		auto position = middle::addComponent<components::LocalPosition>(newBubbleShape);
 		position->pos = targetPos;
 		middle::addComponent<components::LocalScale>(newBubbleShape);
@@ -1338,8 +1339,6 @@ namespace bubble {
 		auto varComp = middle::addComponent<components::BubbleVariable>(variableProto);
 		varComp->label = label;
 		varComp->isNegative = isNegative;
-		auto circle = middle::getComponent<components::Circle>(variableProto);
-		circle->radius = variableRadius;
 		return variableProto;
 	}
 
