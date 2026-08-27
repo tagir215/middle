@@ -206,7 +206,7 @@ public:
 				gameState->bubbleAlgebraState.bubbleActions.push_back(action);
 			}
 			else if (!cantAdd && gameState->equlabInput.threeHeld) {
-				auto action = std::make_shared<equlab::AddEquals>(mousePos);
+				auto action = std::make_shared<equlab::AddEquals>(targetId, mousePos);
 				middle::queueAction(gameState, action);
 				gameState->bubbleAlgebraState.bubbleActions.push_back(action);
 			}
@@ -235,12 +235,18 @@ public:
 
 			// indequalties
 			else if (gameState->equlabInput.leftHeld) {
-				auto action = std::make_shared<equlab::AddInequals>(mousePos, false);
+				auto action = std::make_shared<equlab::AddInequals>(targetId, mousePos, false);
 				middle::queueAction(gameState, action);
 				gameState->bubbleAlgebraState.bubbleActions.push_back(action);
 			}
 			else if (gameState->equlabInput.upHeld) {
-				auto action = std::make_shared<equlab::AddInequals>(mousePos, true);
+				auto action = std::make_shared<equlab::AddInequals>(targetId, mousePos, true);
+				middle::queueAction(gameState, action);
+				gameState->bubbleAlgebraState.bubbleActions.push_back(action);
+			}
+			// summation
+			else if (gameState->equlabInput.rightHeld) {
+				auto action = std::make_shared<equlab::AddSummation>(targetId, mousePos);
 				middle::queueAction(gameState, action);
 				gameState->bubbleAlgebraState.bubbleActions.push_back(action);
 			}

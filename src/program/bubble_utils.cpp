@@ -1393,6 +1393,33 @@ namespace bubble {
 		return newBubbleShape;
 	}
 
+	middle::Id newSummation(middle::GameState* gameState, const Vector3& targetPos)
+	{
+		middle::Shape newBubbleShape = newBubble(gameState, targetPos);
+		middle::addComponent<components::BubbleSummationComponent>(newBubbleShape);
+		middle::Shape& container = middle::registerShape(gameState, newBubbleShape);
+
+		middle::Shape newIndexProto = newEquals(gameState, targetPos);
+		middle::Shape& index = middle::registerShape(gameState, newIndexProto);
+		middle::Shape indexVarProto = newBubble(gameState, targetPos);
+		middle::Shape& indexVar = middle::registerShape(gameState, indexVarProto);
+		middle::Shape indexValueProto = newBubble(gameState, targetPos);
+		middle::Shape& indexValue = middle::registerShape(gameState, indexValueProto);
+		middle::EditorActionReparent(index.id.index, indexVar.id.index).execute(gameState);
+		middle::EditorActionReparent(index.id.index, indexValue.id.index).execute(gameState);
+
+		middle::Shape newUpperLimitProto = newBubble(gameState, targetPos);
+		middle::Shape& upperLimit = middle::registerShape(gameState, newUpperLimitProto);
+		middle::Shape newSummandProto = newBubble(gameState, targetPos);
+		middle::Shape& summand = middle::registerShape(gameState, newSummandProto);
+
+		middle::EditorActionReparent(container.id.index, index.id.index).execute(gameState);
+		middle::EditorActionReparent(container.id.index, upperLimit.id.index).execute(gameState);
+		middle::EditorActionReparent(container.id.index, summand.id.index).execute(gameState);
+
+		return container.id;
+	}
+
 	middle::Id newPower(middle::GameState* gameState, middle::Id baseId, middle::Id exponentId, const Vector3& targetPos) {
 		middle::Shape powerProto = bubble::newPower(gameState, targetPos);
 		middle::Shape& powerShape = middle::registerShape(gameState, powerProto);

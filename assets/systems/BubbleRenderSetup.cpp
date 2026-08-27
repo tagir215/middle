@@ -38,6 +38,7 @@
 #include "BubbleInequaltyComponent.h"
 #include "BubbleFunctionComponent.h"
 #include "GlobalRect.h"
+#include "BubbleSummationComponent.h"
 
 
 class BubbleRenderSetup : public middle::MiddleGameplaySystem {
@@ -64,6 +65,7 @@ public:
 	components::CompCache* oPosCache;
 	components::CompCache* powerCache;
 	components::CompCache* functionCache;
+	components::CompCache* summationCache;
 
 	void init(middle::GameState* gameState) {
 		bubbleCache = middle::newCompCache(gameState, systemName);
@@ -138,6 +140,11 @@ public:
 		functionCache->addType<components::Layer>();
 		functionCache->addType<components::Rectangle>();
 		functionCache->addType<components::GlobalRect>();
+		summationCache = middle::newCompCache(gameState, systemName);
+		summationCache->addType<components::BubbleSummationComponent>();
+		summationCache->addType<components::Layer>();
+		summationCache->addType<components::Rectangle>();
+		summationCache->addType<components::GlobalTransform>();
 
 		oPosCache = middle::newCompCache(gameState, systemName);
 		oPosCache->addType<components::Position>(components::NOTINTERESTED);
@@ -349,7 +356,7 @@ public:
 			mulCircle.slices = getCircleSlices(transform);
 			gameState->renderData.push_back(mulCircle);
 
-			renderBubbleLabel(gameState, transform, rect->height, "*", layer->layer, LabelPos::CENTER);
+			renderBubbleLabel(gameState, transform, rect->height, u8"\u00D7", layer->layer, LabelPos::CENTER);
 		}
 
 		// renderPowers
@@ -637,6 +644,26 @@ public:
 			}
 		}
 
+		auto summationTransformIt = summationCache->begin<components::GlobalTransform>();
+		auto summationRectIt = summationCache->begin<components::Rectangle>();
+		auto summationLayerIt = summationCache->begin<components::Layer>();
+		for (middle::Id id : summationCache->relevantIdVector) {
+			// render functionlabel
+			auto transform = *summationTransformIt;
+			auto rect = *summationRectIt;
+			auto layer = *summationLayerIt;
+
+			// render function circle
+			middle::RenderItem sumRect;
+			sumRect.type = middle::RenderItemType::RECTANGLE;
+			sumRect.width = rect->width;
+			sumRect.height = rect->height;
+			sumRect.color = ORANGE;
+			sumRect.layer = layer->layer;
+			setTransform(sumRect, transform);
+			gameState->renderData.push_back(sumRect);
+			renderBubbleLabel(gameState, transform, rect->width, u8"\u2211", layer->layer, LabelPos::CENTER);
+		}
 	}
 
 };

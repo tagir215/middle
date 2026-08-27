@@ -16,7 +16,7 @@
 
 namespace equlab {
 
-	const float freshnessTime = 0.3f;
+	const float freshnessTime = 0.8f;
 
 	void AddBubble::execute(middle::GameState* gameState) {
 		middle::Shape newBubbleProto = bubble::newBubble(gameState, targetPosition);
@@ -223,9 +223,8 @@ namespace equlab {
 		middle::EditorActionReparent(equals.id.index, bubA.id.index).execute(gameState);
 		middle::EditorActionReparent(equals.id.index, bubB.id.index).execute(gameState);
 
-		auto registerAction = std::make_unique<middle::EditorActionRegisterId>(equals.id);
-		registerAction->execute(gameState);
-		actions.push_back(std::move(registerAction));
+		middle::executeAction<middle::EditorActionRegisterId>(gameState, this, equals.id);
+		middle::executeAction<middle::EditorActionReparent>(gameState, this, parentId.index, equals.id.index);
 	}
 
 	void AddEquals::undo(middle::GameState* gameState) {
@@ -247,9 +246,23 @@ namespace equlab {
 		middle::EditorActionReparent(inequalsShape.id.index, bubB.id.index).execute(gameState);
 
 		middle::executeAction<middle::EditorActionRegisterId>(gameState, this, inequalsShape.id);
+		middle::executeAction<middle::EditorActionReparent>(gameState, this, parentId.index, inequalsShape.id.index);
 	}
 
 	void AddInequals::undo(middle::GameState* gameState) {
+		while (actions.size() > 0) {
+			actions.back()->undo(gameState);
+			actions.pop_back();
+		}
+	}
+
+	void AddSummation::execute(middle::GameState* gameState) {
+		middle::Id newSum = bubble::newSummation(gameState, targetPos);
+		middle::executeAction<middle::EditorActionRegisterId>(gameState, this, newSum);
+		middle::executeAction<middle::EditorActionReparent>(gameState, this, parentId.index, newSum.index);
+	}
+
+	void AddSummation::undo(middle::GameState* gameState) {
 		while (actions.size() > 0) {
 			actions.back()->undo(gameState);
 			actions.pop_back();

@@ -9,15 +9,20 @@
 #include "PauseLayoutTag.h"
 #include "BubblePowerComponent.h"
 #include "bubble_utils.h"
+#include "BubbleSummationComponent.h"
 
 class BubbleScalingSystem : public middle::MiddleGameplaySystem {
 	components::CompCache* bubbleCache;
 	components::CompCache* powerCache;
+	components::CompCache* summationCache;
 	const float scaleRatio = 0.958;
 	const float oneChildScaleRatio = 0.758;
 	const float smoothFactor = 10;
 	const float powerBaseRatio = 1.5f;
 	const float powerExponentRatio = 0.25f;
+	const float summationIndexRatio = 0.25f;
+	const float summationUpperLimitRatio = 0.25f;
+	const float summationSummandRatio = 0.5f;
 
 	void init(middle::GameState* gameState) override {
 		bubbleCache = middle::newCompCache(gameState, systemName);
@@ -34,6 +39,13 @@ class BubbleScalingSystem : public middle::MiddleGameplaySystem {
 		powerCache->addType<components::GlobalTransform>();
 		powerCache->addType<components::BubblePowerComponent>();
 		powerCache->addType<components::PauseLayoutTag>(components::NOTINTERESTED);
+
+		summationCache = middle::newCompCache(gameState, systemName);
+		summationCache->addType<components::BubbleComponent>();
+		summationCache->addType<components::GlobalRect>();
+		summationCache->addType<components::GlobalTransform>();
+		summationCache->addType<components::BubbleSummationComponent>();
+		summationCache->addType<components::PauseLayoutTag>(components::NOTINTERESTED);
 	}
 
 	void updateScale(middle::GameState* gameState, middle::Id id, float targetWidth) {
@@ -86,6 +98,23 @@ class BubbleScalingSystem : public middle::MiddleGameplaySystem {
 			updateScale(gameState, exponentId, targetWidthExponent);
 		}
 
+		auto summationGlobalRIt = summationCache->begin<components::GlobalRect>();
+		for (middle::Id id : summationCache->relevantIdVector) {
+			auto globalR = *summationGlobalRIt;
+
+			middle::Id indexId, upperLimitId, summandId;
+			bubble::getSummationIndexLimitSummand(gameState, id, indexId, upperLimitId, summandId);
+
+			float width = globalR->width;
+
+			const float targetWidthIndex = width * summationIndexRatio;
+			const float targetWidthUpperLimit = width * summationUpperLimitRatio;
+			const float targetWidthSummand = width * summationSummandRatio;
+
+			updateScale(gameState, indexId, targetWidthIndex);
+			updateScale(gameState, upperLimitId, targetWidthUpperLimit);
+			updateScale(gameState, summandId, targetWidthSummand);
+		}
 	}
 };
 

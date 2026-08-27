@@ -100,7 +100,9 @@ namespace equlab {
 	public:
 		middle::Id resultId;
 		Vector3 targetPos;
-		AddEquals(const Vector3& targetPos) {
+		middle::Id parentId;
+		AddEquals(middle::Id parentId, const Vector3& targetPos) {
+			this->parentId = parentId;
 			this->targetPos = targetPos;
 		}
 		void execute(middle::GameState* gameState);
@@ -111,8 +113,10 @@ namespace equlab {
 	public:
 		middle::Id resultId;
 		bool equalOr;
+		middle::Id parentId;
 		Vector3 targetPos;
-		AddInequals(const Vector3& targetPos, bool equalOr) {
+		AddInequals(middle::Id parentId, const Vector3& targetPos, bool equalOr) {
+			this->parentId = parentId;
 			this->targetPos = targetPos;
 			this->equalOr = equalOr;
 		}
@@ -120,6 +124,18 @@ namespace equlab {
 		void undo(middle::GameState* gameState);
 	};
 
+	class AddSummation : public middle::EditorActionContainer {
+	public:
+		middle::Id resultId;
+		middle::Id parentId;
+		Vector3 targetPos;
+		AddSummation(middle::Id parentId, const Vector3& targetPos) {
+			this->parentId = parentId;
+			this->targetPos = targetPos;
+		}
+		void execute(middle::GameState* gameState);
+		void undo(middle::GameState* gameState);
+	};
 
 	class Move : public middle::EditorActionContainer {
 	public:

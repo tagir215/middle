@@ -29,6 +29,7 @@ public:
 		bubbleCache->addType<components::Rectangle>();
 		bubbleCache->addType<components::PauseLayoutTag>(components::NOTINTERESTED);
 		bubbleCache->addType<components::BubblePowerComponent>(components::NOTINTERESTED);
+		bubbleCache->addType<components::BubbleSummationComponent>(components::NOTINTERESTED);
 
 		powerCache = middle::newCompCache(gameState, systemName);
 		powerCache->addType<components::BubbleComponent>();
@@ -121,8 +122,8 @@ public:
 
 	BubbleLayout summationLayout =
 	{
-		{0.25f, 0.25f},
-		{0.25f, 0.75f},
+		{0.25f, 0.333f},
+		{0.25f, 0.666f},
 		{0.75f, 0.5f},
 	};
 
@@ -217,9 +218,9 @@ public:
 			bubble::getSummationIndexLimitSummand(gameState, id, indexId, upperLimitId, summandId);
 			float diameter = rect->width;
 			Vector3 leftBottomCorner = Vector3{ -rect->width * 0.5f, 0, -rect->height * 0.5f };
-			Vector2 posIndex = powerLayout[components::SummationRole::INDEX];
-			Vector2 posUpperLimit = powerLayout[components::SummationRole::UPPER_LIMIT];
-			Vector2 posSummand = powerLayout[components::SummationRole::SUMMAND];
+			Vector2 posIndex = summationLayout[components::SummationRole::INDEX];
+			Vector2 posUpperLimit = summationLayout[components::SummationRole::UPPER_LIMIT];
+			Vector2 posSummand = summationLayout[components::SummationRole::SUMMAND];
 
 			Vector3 targetPosIndex = leftBottomCorner + Vector3{ posIndex.x, 0, posIndex.y } * diameter;
 			Vector3 targetPosUpperLimit = leftBottomCorner + Vector3{ posUpperLimit.x, 0, posUpperLimit.y } * diameter;
