@@ -10,6 +10,11 @@ namespace components {
 		SUMMAND
 	};
 
+	enum SummationIndexRole {
+		INDEX_VARIABLE,
+		INDEX_VALUE
+	};
+
 	struct BubbleSummationComponent : public middle::Serializable{
 
 		void serialize(std::ostream& ostream) override;

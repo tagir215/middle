@@ -102,6 +102,12 @@ public:
 			gameState->bubbleAlgebraState.bubbleActions.push_back(doPower);
 			return;
 		}
+		else if (bubble::isSummation(gameState, refParent.id)) {
+			auto summation = std::make_shared<bubbleActions::ExpandSummation>(refParent.id);
+			middle::queueAction(gameState, summation);
+			gameState->bubbleAlgebraState.bubbleActions.push_back(summation);
+			return;
+		}
 		// else is addition connection
 		else {
 			auto add = std::make_shared<bubbleActions::ExecuteAddition>(refShape.id, intersectedShape.id);

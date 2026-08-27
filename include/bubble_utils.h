@@ -62,6 +62,7 @@ namespace bubble {
 	void findMatchingPairBubbles(middle::GameState* gameState, middle::Id bubbleRootId, middle::Id nodeStartPointAId, middle::Id nodeStartPointBId, middle::Id nodeRootId, std::unordered_map<std::string, middle::Id>& varOverrides, middle::Id& resultIdA, middle::Id& resultIdB);
 	middle::Id findMatchingFromSibling(middle::GameState* gameState, middle::Id nodeId, middle::Id siblingId, std::unordered_map<std::string, middle::Id>& varOverrides);
 	middle::Id containerize(middle::GameState* gameState, middle::Id id);
+	bool isAddition(middle::GameState* gameState, middle::Id id);
 	bool isPowerBubble(middle::GameState* gameState, middle::Id id);
 	bool isSummation(middle::GameState* gameState, middle::Id id);
 	bool isMultiplication(middle::GameState* gameState, middle::Id id);

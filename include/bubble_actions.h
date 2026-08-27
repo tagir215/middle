@@ -137,6 +137,14 @@ namespace bubbleActions{
 		void undo(middle::GameState* gameState) override;
 	};
 
+	class ExpandSummation : public middle::EditorActionContainer {
+	public:
+		middle::Id summationId;
+		middle::Id resultShapeId;
+		ExpandSummation(middle::Id summationId);
+		void execute(middle::GameState* gameState) override;
+		void undo(middle::GameState* gameState) override;
+	};
 
 	class ExecuteAddition : public middle::EditorActionContainer {
 	public:

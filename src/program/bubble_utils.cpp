@@ -1461,6 +1461,24 @@ namespace bubble {
 		return newParent.id;
 	}
 
+	bool isAddition(middle::GameState* gameState, middle::Id id)
+	{
+		if (id.index == middle::UNASSIGNED) {
+			return false;
+		}
+		if (isPowerBubble(gameState, id)) {
+			return false;
+		}
+		if (isMultiplication(gameState, id)) {
+			return false;
+		}
+		if (isSummation(gameState, id)) {
+			return false;
+		}
+		bool isBubble = middle::getComp<components::BubbleComponent>(gameState, id);
+		return isBubble;
+	}
+
 
 	bool isPowerBubble(middle::GameState* gameState, middle::Id id) {
 		auto& shape = middle::getShape(gameState, id.index);

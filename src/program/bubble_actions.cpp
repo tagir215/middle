@@ -22,6 +22,7 @@
 #include "BubblePowerComponent.h"
 #include "BubbleFunctionComponent.h"
 #include "PauseLayoutTag.h"
+#include "BubbleSummationComponent.h"
 
 namespace bubbleActions {
 
@@ -32,7 +33,9 @@ namespace bubbleActions {
 		if (parentAId != parentBId) {
 			return false;
 		}
-		if (bubble::isMultiplication(gameState, parentAId) || bubble::isEqualsOrInequals(gameState, parentAId)) {
+		if (bubble::isMultiplication(gameState, parentAId) 
+			|| bubble::isEqualsOrInequals(gameState, parentAId)
+			|| bubble::isSummation(gameState, parentAId)) {
 			return false;
 		}
 
@@ -1959,5 +1962,98 @@ namespace bubbleActions {
 		}
 	}
 
+
+	ExpandSummation::ExpandSummation(middle::Id summationId)
+	{
+		this->summationId = summationId;
+	}
+
+	void ExpandSummation::execute(middle::GameState* gameState)
+	{
+		middle::Id parentId = middle::getParent(gameState, summationId);
+		middle::Id indexId, upperLimitId, summandId;
+		bubble::getSummationIndexLimitSummand(gameState, summationId, indexId, upperLimitId, summandId);
+
+		// get index value
+		std::vector<middle::Id>indexChildren;
+		middle::getChildren(gameState, indexId, indexChildren);
+		assert(indexChildren.size() == 2);
+		middle::Id indexValueId = indexChildren[components::SummationIndexRole::INDEX_VALUE];
+
+		Vector3 targetPos = middle::getGlobalPosition(gameState, summationId.index);
+
+		// generating should return empty map for both index and upper limit...
+		// if not we return since there are unknown variables
+		std::unordered_map<std::string, int>varMapIndex;
+		int valueCounter = 0;
+		bubble::generateRandomVariablesValues(gameState, indexValueId, varMapIndex, valueCounter);
+		bubble::generateRandomVariablesValues(gameState, upperLimitId, varMapIndex, valueCounter);
+		if (varMapIndex.size() > 0) {
+			cancelled = true;
+			return;
+		}
+
+
+		bubble::BubbleValue indexValue = bubble::calculateBubbleValue(gameState, indexValueId, varMapIndex);
+		bubble::BubbleValue upperLimitValue = bubble::calculateBubbleValue(gameState, upperLimitId, varMapIndex);
+
+
+		middle::Id summandCopyId = middle::deepCopyShapeGlobalCoordinates(gameState, summandId);
+		// if summand contains index variables... replace them with the index
+		middle::Id indexVariableId = indexChildren[components::SummationIndexRole::INDEX_VARIABLE];
+		auto varComp = middle::getComp<components::BubbleVariable>(gameState, indexVariableId);
+		// should have var comp, like i
+		assert(varComp);
+		std::unordered_map<std::string, std::vector<middle::Id>>varMap;
+		bubble::getVariableStructuresMap(gameState, summandId, varMap);
+		if (varMap.find(varComp->label) != varMap.end()) {
+			std::vector<middle::Id>& vars = varMap[varComp->label];
+			for (middle::Id var : vars) {
+				middle::Id indexValueCopyId = middle::deepCopyShapeGlobalCoordinates(gameState, indexValueId);
+				bubbleActions::Replace(var, indexValueCopyId).execute(gameState);
+			}
+		}
+		middle::executeAction<middle::EditorActionRegisterId>(gameState, this, summandCopyId);
+
+
+		if (indexValue.scale + 1 <= upperLimitValue.scale) {
+			// increment summation index
+			middle::Shape unitProto = bubble::newUnit(gameState, targetPos);
+			middle::Shape& newUnit = middle::registerShape(gameState, unitProto);
+			middle::executeAction<middle::EditorActionRegisterId>(gameState, this, newUnit.id);
+			middle::executeAction<middle::EditorActionReparent>(gameState, this, indexValueId.index, newUnit.id.index);
+		}
+		// if incremented over the upper limit... delete the summand
+		else {
+			middle::executeAction<middle::EditorActionDeleteSingle>(gameState, this, summationId);
+			return;
+		}
+
+
+		// parent is addition
+		bool parentIsAddition = bubble::isAddition(gameState, parentId);
+		middle::Id parentAddition;
+		if (parentIsAddition) {
+			parentAddition = parentId;
+		}
+		// if parent is not addition.. we need to create new container, then replace old summation 
+		else {
+			middle::Shape bubbleProto = bubble::newBubble(gameState, targetPos);
+			middle::Shape& newBubble = middle::registerShape(gameState, bubbleProto);
+			middle::Id summationCopyId = middle::deepCopyShapeGlobalCoordinates(gameState, summationId);
+			middle::EditorActionReparent(newBubble.id.index, summationCopyId.index).execute(gameState);
+			middle::executeAction<middle::EditorActionRegisterId>(gameState, this, newBubble.id);
+			middle::executeAction<Replace>(gameState, this, summationId, newBubble.id);
+			parentAddition = newBubble.id;
+		}
+
+		// reparent summand copy 
+		middle::executeAction<middle::EditorActionReparent>(gameState, this, parentAddition.index, summandCopyId.index);
+
+	}
+
+	void ExpandSummation::undo(middle::GameState* gameState)
+	{
+	}
 
 }
