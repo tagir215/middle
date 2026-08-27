@@ -118,6 +118,9 @@ namespace bubequ {
 		else if (operatorChar == '=') {
 			link->type = LinkType::EQUALS;
 		}
+		else if (operatorChar == '$') {
+			link->type = LinkType::SUMMATION;
+		}
 		else if (std::isalpha(operatorChar)) {
 			link->type = LinkType::FUNCTION;
 			link->label = operatorChar;
@@ -146,10 +149,13 @@ namespace bubequ {
 			nextChar = scopeStr[1];
 		}
 
-		if (operatorChar == '*' || operatorChar == '^') {
-			return parseLink(scopeStr);
-		}
-		else if (operatorChar == '>' || operatorChar == '=') {
+		if (operatorChar == '*' 
+			|| operatorChar == '^' 
+			|| operatorChar == '>'
+			|| operatorChar == '='
+			|| operatorChar == '$'
+			)
+		{
 			return parseLink(scopeStr);
 		}
 		else if (std::isalpha(operatorChar) && nextChar == '(') {

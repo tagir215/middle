@@ -13,6 +13,7 @@
 #include "BubblePowerComponent.h"
 #include "BubbleInequaltyComponent.h"
 #include "BubbleFunctionComponent.h"
+#include "BubbleSummationComponent.h"
 
 namespace equlab {
 
@@ -440,6 +441,9 @@ namespace equlab {
 					middle::Shape& linkShape = middle::registerShape(gameState, linkProto);
 					newNodeId = linkShape.id;
 				}
+				else if (linkScope->type == bubequ::LinkType::SUMMATION) {
+					newNodeId = bubble::newSummation(gameState, pos);
+				}
 			}
 			else {
 				auto addBub = equlab::AddBubble(currentParentId, pos);
@@ -478,8 +482,9 @@ namespace equlab {
 		else if (middle::getComponent<components::BubblePowerComponent>(shape)) {
 			result += "^";
 		}
-
-
+		else if (middle::getComponent<components::BubbleSummationComponent>(shape)) {
+			result += "$";
+		}
 		if (middle::getComponent<components::BubbleInequaltyComponent>(shape)) {
 			result += ">";
 		}

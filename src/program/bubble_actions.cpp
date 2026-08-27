@@ -1993,7 +1993,6 @@ namespace bubbleActions {
 			return;
 		}
 
-
 		bubble::BubbleValue indexValue = bubble::calculateBubbleValue(gameState, indexValueId, varMapIndex);
 		bubble::BubbleValue upperLimitValue = bubble::calculateBubbleValue(gameState, upperLimitId, varMapIndex);
 
@@ -2005,7 +2004,7 @@ namespace bubbleActions {
 		// should have var comp, like i
 		assert(varComp);
 		std::unordered_map<std::string, std::vector<middle::Id>>varMap;
-		bubble::getVariableStructuresMap(gameState, summandId, varMap);
+		bubble::getVariableStructuresMap(gameState, summandCopyId, varMap);
 		if (varMap.find(varComp->label) != varMap.end()) {
 			std::vector<middle::Id>& vars = varMap[varComp->label];
 			for (middle::Id var : vars) {
@@ -2015,7 +2014,7 @@ namespace bubbleActions {
 		}
 		middle::executeAction<middle::EditorActionRegisterId>(gameState, this, summandCopyId);
 
-
+		bool summationDeleted = false;
 		if (indexValue.scale + 1 <= upperLimitValue.scale) {
 			// increment summation index
 			middle::Shape unitProto = bubble::newUnit(gameState, targetPos);
@@ -2026,9 +2025,8 @@ namespace bubbleActions {
 		// if incremented over the upper limit... delete the summand
 		else {
 			middle::executeAction<middle::EditorActionDeleteSingle>(gameState, this, summationId);
-			return;
+			summationDeleted = true;
 		}
-
 
 		// parent is addition
 		bool parentIsAddition = bubble::isAddition(gameState, parentId);
@@ -2040,8 +2038,10 @@ namespace bubbleActions {
 		else {
 			middle::Shape bubbleProto = bubble::newBubble(gameState, targetPos);
 			middle::Shape& newBubble = middle::registerShape(gameState, bubbleProto);
-			middle::Id summationCopyId = middle::deepCopyShapeGlobalCoordinates(gameState, summationId);
-			middle::EditorActionReparent(newBubble.id.index, summationCopyId.index).execute(gameState);
+			if (!summationDeleted) {
+				middle::Id summationCopyId = middle::deepCopyShapeGlobalCoordinates(gameState, summationId);
+				middle::EditorActionReparent(newBubble.id.index, summationCopyId.index).execute(gameState);
+			}
 			middle::executeAction<middle::EditorActionRegisterId>(gameState, this, newBubble.id);
 			middle::executeAction<Replace>(gameState, this, summationId, newBubble.id);
 			parentAddition = newBubble.id;
@@ -2049,11 +2049,14 @@ namespace bubbleActions {
 
 		// reparent summand copy 
 		middle::executeAction<middle::EditorActionReparent>(gameState, this, parentAddition.index, summandCopyId.index);
-
 	}
 
 	void ExpandSummation::undo(middle::GameState* gameState)
 	{
+		while (actions.size() > 0) {
+			actions.back()->undo(gameState);
+			actions.pop_back();
+		}
 	}
 
 }

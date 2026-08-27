@@ -14,6 +14,7 @@ namespace bubequ {
 		GREATER,
 		GREATER_OR_EQUAL,
 		FUNCTION,
+		SUMMATION,
 	};
 
 	enum class UnitType {
