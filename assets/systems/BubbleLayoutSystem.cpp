@@ -8,6 +8,7 @@
 #include "PauseLayoutTag.h"
 #include "BubblePowerComponent.h"
 #include "bubble_utils.h"
+#include "BubbleSummationComponent.h"
 
 class BubbleLayoutSystem : public middle::MiddleGameplaySystem {
 public:
@@ -17,6 +18,7 @@ public:
 
 	components::CompCache* bubbleCache;
 	components::CompCache* powerCache;
+	components::CompCache* summationCache;
 	components::CompCache* pausedBubblesCache;
 
 	const float moveSpeed = 5;
@@ -33,6 +35,12 @@ public:
 		powerCache->addType<components::Rectangle>();
 		powerCache->addType<components::BubblePowerComponent>();
 		powerCache->addType<components::PauseLayoutTag>(components::NOTINTERESTED);
+
+		summationCache = middle::newCompCache(gameState, systemName);
+		summationCache->addType<components::BubbleComponent>();
+		summationCache->addType<components::Rectangle>();
+		summationCache->addType<components::BubbleSummationComponent>();
+		summationCache->addType<components::PauseLayoutTag>(components::NOTINTERESTED);
 
 
 		pausedBubblesCache = middle::newCompCache(gameState, systemName);
@@ -111,6 +119,13 @@ public:
 		{0.90f, 0.90f}
 	};
 
+	BubbleLayout summationLayout =
+	{
+		{0.25f, 0.25f},
+		{0.25f, 0.75f},
+		{0.75f, 0.5f},
+	};
+
 	void update(middle::GameState* gameState) override {
 
 		auto pauseTagIt = pausedBubblesCache->begin<components::PauseLayoutTag>();
@@ -178,8 +193,8 @@ public:
 			bubble::getPowerBaseAndExponent(gameState, id, baseId, exponentId);
 			float diameter = rect->width;
 			Vector3 leftBottomCorner = Vector3{ -rect->width * 0.5f, 0, -rect->height * 0.5f };
-			Vector2 posBase = powerLayout[0];
-			Vector2 posExponent = powerLayout[1];
+			Vector2 posBase = powerLayout[components::PowerRole::POWER_ROLE_BASE];
+			Vector2 posExponent = powerLayout[components::PowerRole::POWER_ROLE_EXPONENT];
 
 			Vector3 targetPosBase = leftBottomCorner + Vector3{ posBase.x, 0, posBase.y } * diameter;
 			Vector3 targetPosExponent = leftBottomCorner + Vector3{ posExponent.x, 0, posExponent.y } * diameter;
@@ -192,6 +207,35 @@ public:
 
 			middle::setLocalPosition(gameState, baseId, currentBasePos + dispBase);
 			middle::setLocalPosition(gameState, exponentId, currentExponentPos + dispExponent);
+		}
+
+		// summations
+		auto summationRectIt = summationCache->begin<components::Rectangle>();
+		for (middle::Id id : summationCache->relevantIdVector) {
+			auto rect = *summationRectIt;
+			middle::Id indexId, upperLimitId, summandId;
+			bubble::getSummationIndexLimitSummand(gameState, id, indexId, upperLimitId, summandId);
+			float diameter = rect->width;
+			Vector3 leftBottomCorner = Vector3{ -rect->width * 0.5f, 0, -rect->height * 0.5f };
+			Vector2 posIndex = powerLayout[components::SummationRole::INDEX];
+			Vector2 posUpperLimit = powerLayout[components::SummationRole::UPPER_LIMIT];
+			Vector2 posSummand = powerLayout[components::SummationRole::SUMMAND];
+
+			Vector3 targetPosIndex = leftBottomCorner + Vector3{ posIndex.x, 0, posIndex.y } * diameter;
+			Vector3 targetPosUpperLimit = leftBottomCorner + Vector3{ posUpperLimit.x, 0, posUpperLimit.y } * diameter;
+			Vector3 targetPosSummand = leftBottomCorner + Vector3{ posSummand.x, 0, posSummand.y } * diameter;
+
+			Vector3 currentPosIndex = middle::getLocalPosition(gameState, indexId);
+			Vector3 currentPosUpperLimit = middle::getLocalPosition(gameState, upperLimitId);
+			Vector3 currentPosSummand = middle::getLocalPosition(gameState, summandId);
+
+			Vector3 dispIndex = (targetPosIndex - currentPosIndex) * moveSpeed * gameState->frameTime;
+			Vector3 dispUpperLimit = (targetPosUpperLimit - currentPosUpperLimit) * moveSpeed * gameState->frameTime;
+			Vector3 dispSummand = (targetPosSummand - currentPosSummand) * moveSpeed * gameState->frameTime;
+
+			middle::setLocalPosition(gameState, indexId, currentPosIndex + dispIndex);
+			middle::setLocalPosition(gameState, upperLimitId, currentPosUpperLimit + dispUpperLimit);
+			middle::setLocalPosition(gameState, summandId, currentPosSummand + dispSummand);
 		}
 	}
 };

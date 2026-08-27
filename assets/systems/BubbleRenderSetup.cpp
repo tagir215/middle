@@ -73,8 +73,6 @@ public:
 		bubbleCache->addType<components::LoopSociety>();
 		bubbleCache->addType<components::GlobalTransform>();
 		bubbleCache->addType<components::RuntimeHiddenTag>(components::NOTINTERESTED);
-		//bubbleCache->addType<components::BubbleVariable>(components::NOTINTERESTED);
-		//bubbleCache->addType<components::BubbleUnit>(components::NOTINTERESTED);
 		unitCache = middle::newCompCache(gameState, systemName);
 		unitCache->addType<components::BubbleUnit>();
 		unitCache->addType<components::Layer>();
@@ -169,18 +167,29 @@ public:
 		item.transform.rotation = transform->rotation;
 	}
 
-	void renderBubbleLabel(middle::GameState* gameState, components::GlobalTransform* transform, float height, const std::string& label, int layer) {
+	enum class LabelPos {
+		LEFT,
+		CENTER,
+		RIGHT
+	};
+
+	void renderBubbleLabel(middle::GameState* gameState, components::GlobalTransform* transform, float height, const std::string& label, int layer, LabelPos pos) {
 		middle::RenderItem text;
 		text.type = middle::RenderItemType::TEXT;
 		text.text = label;
 		text.color = WHITE;
 		const float labelFontSize = 20;
 		const float offsetFactor = 0.1f;
-		float offset = height * offsetFactor;
-		float axis = height * 0.5f;
+		float offset = height * offsetFactor * transform->scale.z;
+		float axis = height * 0.5f * transform->scale.z;
 		text.fontSize = labelFontSize;
 		text.layer = layer + 1;
-		text.transform.translation = transform->pos + Vector3{ -axis + offset,0, axis - offset };
+		if(pos == LabelPos::LEFT)
+			text.transform.translation = transform->pos + Vector3{ -axis + offset,0, axis - offset };
+		else if (pos == LabelPos::CENTER)
+			text.transform.translation = transform->pos + Vector3{ 0,0, axis - offset };
+		else if (pos == LabelPos::RIGHT)
+			text.transform.translation = transform->pos + Vector3{ axis + offset, axis - offset };
 		text.transform.scale = transform->scale;
 		text.transform.rotation = transform->rotation;
 		gameState->renderData.push_back(text);
@@ -340,6 +349,7 @@ public:
 			mulCircle.slices = getCircleSlices(transform);
 			gameState->renderData.push_back(mulCircle);
 
+			renderBubbleLabel(gameState, transform, rect->height, "*", layer->layer, LabelPos::CENTER);
 		}
 
 		// renderPowers
@@ -364,6 +374,8 @@ public:
 			circleItemA.layer = layer->layer + 1;
 			circleItemA.slices = getCircleSlices(transform);
 			gameState->renderData.push_back(circleItemA);
+
+			renderBubbleLabel(gameState, transform, rect->height, "^", layer->layer, LabelPos::CENTER);
 
 			assert(loop->loopMemberIds.size() == 2);
 			middle::Id exponentId = loop->loopMemberIds[components::PowerRole::POWER_ROLE_EXPONENT];
@@ -419,6 +431,8 @@ public:
 			equCirc.color = bubbleColors::EQUALS_CONNECTION;
 			equCirc.slices = getCircleSlices(transform);
 			gameState->renderData.push_back(equCirc);
+
+			renderBubbleLabel(gameState, transform, rect->height, "=", layer->layer, LabelPos::CENTER);
 		}
 
 		auto inequTransformIt = inequCache->begin<components::GlobalTransform>();
@@ -593,16 +607,14 @@ public:
 		auto functionIt = functionCache->begin<components::BubbleFunctionComponent>();
 		auto functionRectIt = functionCache->begin<components::Rectangle>();
 		auto functionLayerIt = functionCache->begin<components::Layer>();
-		auto functionGlobalRIt = functionCache->begin<components::GlobalRect>();
 		for (middle::Id id : functionCache->relevantIdVector) {
 			// render functionlabel
 			auto transform = *functionTransformIt;
 			auto rect = *functionRectIt;
 			auto func = *functionIt;
 			auto layer = *functionLayerIt;
-			auto globalR = *functionGlobalRIt;
 
-			renderBubbleLabel(gameState, transform, globalR->width, func->label + "()", layer->layer);
+			renderBubbleLabel(gameState, transform, rect->width, func->label + "()", layer->layer, LabelPos::CENTER);
 			// render function circle
 			middle::RenderItem funcCircle;
 			funcCircle.type = middle::RenderItemType::RECTANGLE;
@@ -621,7 +633,7 @@ public:
 				auto transform = middle::getComp<components::GlobalTransform>(gameState, childId);
 				auto globalRChild = middle::getComp<components::GlobalRect>(gameState, childId);
 				auto layer = middle::getComp<components::Layer>(gameState, childId);
-				renderBubbleLabel(gameState, transform, globalRChild->width, std::to_string(index++), layer->layer);
+				renderBubbleLabel(gameState, transform, rect->width, std::to_string(index++), layer->layer, LabelPos::LEFT);
 			}
 		}
 

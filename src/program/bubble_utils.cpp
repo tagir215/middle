@@ -28,6 +28,7 @@
 #include "BubbleInequaltyComponent.h"
 #include "BubbleFunctionComponent.h"
 #include "GlobalRect.h"
+#include "BubbleSummationComponent.h"
 
 namespace bubble {
 	float unitRadius = 24;
@@ -1152,6 +1153,17 @@ namespace bubble {
 		resultExponentId = powerChildren[components::PowerRole::POWER_ROLE_EXPONENT];
 	}
 
+	void getSummationIndexLimitSummand(middle::GameState* gameState, middle::Id summationBubble, middle::Id& resultIndex, middle::Id& resultUpperLimit, middle::Id& resultSummand)
+	{
+		assert(isSummation(gameState, summationBubble));
+		std::vector<middle::Id>summationChildren;
+		middle::getChildren(gameState, summationBubble, summationChildren);
+		assert(summationChildren.size() == 3);
+		resultIndex = summationChildren[components::SummationRole::INDEX];
+		resultUpperLimit = summationChildren[components::SummationRole::UPPER_LIMIT];
+		resultSummand = summationChildren[components::SummationRole::SUMMAND];
+	}
+
 	void getInequaltyLesserAndGreater(middle::GameState* gameState, middle::Id inequalBubble, middle::Id& resultLesserId, middle::Id& resultGreaterId)
 	{
 		assert(isInequalBubble(gameState, inequalBubble));
@@ -1426,6 +1438,10 @@ namespace bubble {
 	bool isPowerBubble(middle::GameState* gameState, middle::Id id) {
 		auto& shape = middle::getShape(gameState, id.index);
 		return middle::getComponent<components::BubblePowerComponent>(shape);
+	}
+
+	bool isSummation(middle::GameState* gameState, middle::Id id) {
+		return middle::getComp<components::BubbleSummationComponent>(gameState, id) != nullptr;
 	}
 
 	bool isMultiplication(middle::GameState* gameState, middle::Id id) {

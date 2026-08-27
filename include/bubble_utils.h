@@ -62,6 +62,7 @@ namespace bubble {
 	middle::Id findMatchingFromSibling(middle::GameState* gameState, middle::Id nodeId, middle::Id siblingId, std::unordered_map<std::string, middle::Id>& varOverrides);
 	middle::Id containerize(middle::GameState* gameState, middle::Id id);
 	bool isPowerBubble(middle::GameState* gameState, middle::Id id);
+	bool isSummation(middle::GameState* gameState, middle::Id id);
 	bool isMultiplication(middle::GameState* gameState, middle::Id id);
 	void negate(middle::GameState* gameState, middle::Id id);
 	void invert(middle::GameState* gameState, middle::Id id);
@@ -78,6 +79,7 @@ namespace bubble {
 	bool isInequalBubble(middle::GameState* gameState, middle::Id id);
 	bool isFunctionBubble(middle::GameState* gameState, middle::Id id);
 	void getPowerBaseAndExponent(middle::GameState* gameState, middle::Id powerBubble, middle::Id& resultBaseId, middle::Id& resultExponentId);
+	void getSummationIndexLimitSummand(middle::GameState* gameState, middle::Id summationBubble, middle::Id& resultIndex, middle::Id& resultUpperLimit, middle::Id& resultSummand);
 	void getInequaltyLesserAndGreater(middle::GameState* gameState, middle::Id inequalBubble, middle::Id& resultLesserId, middle::Id& resultGreaterId);
 	middle::Id getOtherFromContainerOf2(middle::GameState* gameState, middle::Id id);
 
