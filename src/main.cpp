@@ -33,18 +33,19 @@
 #include <raymath.h>
 #include <rlImGui.h>
 #include "editor_actions.h"
-#include "middle_gameplay_script_map.h"
 #include "middle_math.h"
 #include "game.h"
 #include "sound_helper.h"
+#include "init_external_systems.h"
+#include <iostream>
 
 #if defined(_DEBUG)
 static const char* DLL_PATH = "Debug/game.dll";
-static const char* TEMP_PATH = "Debug/game.load.dll";
+static const char* TEMP_DLL_NAME = "Debug/game.load";
 bool gameMode = false;
 #else
 static const char* DLL_PATH = "Release/game.dll";
-static const char* TEMP_PATH = "Release/game.load.dll";
+static const char* TEMP_DLL_NAME = "Release/game.load";
 bool gameMode = true;
 #endif
 
@@ -55,7 +56,7 @@ void ReloadGameDLL();
 typedef decltype(UpdateGame) UpdateGameType;
 static UpdateGameType* updateGamePtr;
 
-GameState* gameState;
+std::unique_ptr<GameState> gameState;
 
 
 //------------------------------------------------------------------------------------
@@ -75,7 +76,7 @@ int main(void)
 	//set_window_always_on_top(GetWindowHandle());
 	HideCursor();
 
-	gameState = new GameState();
+	gameState = std::make_unique<GameState>();
 	gameState->worldM = MatrixIdentity();
 
 	SetTargetFPS(60);               // Set our game to run at 60 frames-per-second
@@ -101,13 +102,8 @@ int main(void)
 
 	ShowCursor();
 
+	initExternalSystems(gameState.get());
 
-	auto& systemMap = getSystemMap();
-
-	// these are called in middle project
-	auto inputSystem = std::move(systemMap["InputSystem"]);
-	auto renderSystem = std::move(systemMap["RendererSystem"]);
-	auto fileDropSystem = std::move(systemMap["FileDropSystem"]);
 
 	gameState->workingDir = GetWorkingDirectory();
 
@@ -128,7 +124,7 @@ int main(void)
 	SetTextureFilter(gameState->globalFont.texture, TEXTURE_FILTER_TRILINEAR);
 
 	InitAudioDevice();
-	loadSoundEffects(gameState);
+	loadSoundEffects(gameState.get());
 
 
 	// Main game loop
@@ -147,17 +143,18 @@ int main(void)
 		gameState->screenWidth = GetScreenWidth();
 		gameState->screenHeight = GetScreenHeight();
 
-
-		fileDropSystem->update(gameState);
-
-		inputSystem->update(gameState);
+		for (auto sys : gameState->externalPreFrameSystems) {
+			sys->recordTimeUpdate(gameState.get());
+		}
 
 		gameState->frameTimeAccumulator += GetFrameTime();
-		UpdateGame(gameState);
+		UpdateGame(gameState.get());
 
-		renderSystem->update(gameState);
+		for (auto sys : gameState->externalPostFrameSystems) {
+			sys->recordTimeUpdate(gameState.get());
+		}
 
-		playSoundEffects(gameState);
+		playSoundEffects(gameState.get());
 
 		if (gameState->closeGame) {
 			break;
@@ -166,15 +163,13 @@ int main(void)
 	}
 
 	gameState->closeGame = true;
-	UpdateGame(gameState);
+	UpdateGame(gameState.get());
 
 	CloseAudioDevice();
 	// De-Initialization
 	//--------------------------------------------------------------------------------------
 	CloseWindow();        // Close window and OpenGL context
 	//--------------------------------------------------------------------------------------
-
-	delete gameState;
 
 	return 0;
 }
@@ -191,6 +186,8 @@ void ReloadGameDLL()
 	static std::filesystem::file_time_type lastWriteTime;
 	auto writeTime = std::filesystem::last_write_time(DLL_PATH);
 
+	static int loadIndex = 0;
+
 	if (writeTime != lastWriteTime) {
 
 		if (gameDLL) {
@@ -203,15 +200,30 @@ void ReloadGameDLL()
 			std::this_thread::sleep_for(std::chrono::milliseconds(100));
 		}
 
-		if (std::filesystem::exists(TEMP_PATH)) {
-			std::filesystem::remove(TEMP_PATH);
+		std::string loadPath = std::string(TEMP_DLL_NAME) + std::to_string(loadIndex) + ".dll";
+		++loadIndex;
+
+		if (std::filesystem::exists(loadPath)) {
+			std::filesystem::remove(loadPath);
 		}
 
-		while (!std::filesystem::copy_file(DLL_PATH, TEMP_PATH)) {
-			std::this_thread::sleep_for(std::chrono::milliseconds(10));
-		}
+		std::error_code ec;
+		bool copied = std::filesystem::copy_file(
+			DLL_PATH,
+			loadPath,
+			std::filesystem::copy_options::overwrite_existing,
+			ec
+		);
 
-		gameDLL = platform_load_dynamic_library("game.load.dll");
+		if (!copied) {
+			std::cout << "Failed to copy DLL\n";
+			std::cout << "source: " << DLL_PATH << '\n';
+			std::cout << "dest:   " << loadPath << '\n';
+			std::cout << "error:  " << ec.message() << '\n';
+			std::cout << "code:   " << ec.value() << '\n';
+			return;
+		}
+		gameDLL = platform_load_dynamic_library(loadPath.data());
 
 		gameState->reload = true;
 		gameState->systemsRegistered = false;

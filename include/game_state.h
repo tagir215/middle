@@ -176,6 +176,8 @@ namespace middle {
 		std::unordered_map<std::string, std::unique_ptr<MiddleGameplaySystem>> gameplaySystemsPostFrame;
 		std::vector<std::unique_ptr<MiddleGameplaySystem>> engineSystemsFrameStart;
 		std::vector<std::unique_ptr<MiddleGameplaySystem>> engineRendererSystems;
+		std::vector<std::shared_ptr<MiddleGameplaySystem>> externalPreFrameSystems;
+		std::vector<std::shared_ptr<MiddleGameplaySystem>> externalPostFrameSystems;
 		std::vector<middle::Id>newShapeList;
 
 		std::array<Vector3, MAX_VERTEX_COUNT> vertexArray;

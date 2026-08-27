@@ -56,7 +56,7 @@ namespace middle{
 				continue;
 			}
 
-			system->update(gameState);
+			system->recordTimeUpdate(gameState);
 		}
 
 		if (!gameState->loaded) {
@@ -84,7 +84,7 @@ namespace middle{
 					return true;
 				}
 
-				system->update(gameState);
+				system->recordTimeUpdate(gameState);
 			}
 			return true;
 			});
@@ -110,7 +110,7 @@ namespace middle{
 					return true;
 				}
 
-				system->update(gameState);
+				system->recordTimeUpdate(gameState);
 			}
 			return true;
 			});
@@ -164,7 +164,7 @@ extern "C" {
 				continue;
 			}
 
-			renderSystem->update(gameState);
+			renderSystem->recordTimeUpdate(gameState);
 		}
 
 		while (gameState->actionQueue.size() > 0) {

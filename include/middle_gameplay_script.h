@@ -1,6 +1,7 @@
 #pragma once
 #include <memory>
 #include <string>
+#include <chrono>
 
 namespace middle {
 
@@ -29,8 +30,16 @@ namespace middle {
 		SystemUpdateType systemUpdateType = SystemUpdateType::GAMEPLAY_MIDFRAME;
 		SystemModeType systemModeType = SystemModeType::GAMEPLAY;
 		std::string systemName;
+		std::chrono::milliseconds updateTime;
+
 		virtual void init(GameState* gameState) = 0;
 		virtual void update(GameState* gameState) = 0;
+		virtual void recordTimeUpdate(GameState* gameState) {
+			auto start = std::chrono::high_resolution_clock::now();
+			update(gameState);
+			auto end = std::chrono::high_resolution_clock::now();
+			updateTime = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
+		}
 	};
 
 }

@@ -37,7 +37,7 @@
 #include "BubblePowerComponent.h"
 #include "BubbleInequaltyComponent.h"
 #include "BubbleFunctionComponent.h"
-#include "GlobalRadius.h"
+#include "GlobalRect.h"
 
 
 class BubbleRenderSetup : public middle::MiddleGameplaySystem {
@@ -127,7 +127,7 @@ public:
 		activeBubbleCache = middle::newCompCache(gameState, systemName);
 		activeBubbleCache->addType<components::ActiveSceneSelectableTag>();
 		activeBubbleCache->addType<components::GlobalTransform>();
-		activeBubbleCache->addType<components::GlobalRadius>();
+		activeBubbleCache->addType<components::GlobalRect>();
 		powerCache = middle::newCompCache(gameState, systemName);
 		powerCache->addType<components::BubblePowerComponent>();
 		powerCache->addType<components::Rectangle>();
@@ -139,7 +139,7 @@ public:
 		functionCache->addType<components::GlobalTransform>();
 		functionCache->addType<components::Layer>();
 		functionCache->addType<components::Rectangle>();
-		functionCache->addType<components::GlobalRadius>();
+		functionCache->addType<components::GlobalRect>();
 
 		oPosCache = middle::newCompCache(gameState, systemName);
 		oPosCache->addType<components::Position>(components::NOTINTERESTED);
@@ -169,17 +169,18 @@ public:
 		item.transform.rotation = transform->rotation;
 	}
 
-	void renderBubbleLabel(middle::GameState* gameState, components::GlobalTransform* transform, float radius, const std::string& label, int layer) {
+	void renderBubbleLabel(middle::GameState* gameState, components::GlobalTransform* transform, float height, const std::string& label, int layer) {
 		middle::RenderItem text;
 		text.type = middle::RenderItemType::TEXT;
 		text.text = label;
 		text.color = WHITE;
-		const float labelFontSize = 60;
-		const float offsetFactor = 0.5f;
-		float offsetZ = radius * offsetFactor;
+		const float labelFontSize = 20;
+		const float offsetFactor = 0.1f;
+		float offset = height * offsetFactor;
+		float axis = height * 0.5f;
 		text.fontSize = labelFontSize;
 		text.layer = layer + 1;
-		text.transform.translation = transform->pos + Vector3{ 0,0, radius + offsetZ };
+		text.transform.translation = transform->pos + Vector3{ -axis + offset,0, axis - offset };
 		text.transform.scale = transform->scale;
 		text.transform.rotation = transform->rotation;
 		gameState->renderData.push_back(text);
@@ -297,7 +298,6 @@ public:
 			bool isUiItem = middle::getComponent<components::UiComponent>(shape);
 
 			auto intersectable = middle::getComponent<components::IntersectingTag>(shape);
-
 
 			middle::RenderItem variableText;
 			variableText.type = middle::RenderItemType::TEXT;
@@ -508,15 +508,15 @@ public:
 		gameState->renderData.push_back(cameraTarget);
 
 		// render activity bounding box
-		auto activeRIt = activeBubbleCache->begin<components::GlobalRadius>();
+		auto activeRIt = activeBubbleCache->begin<components::GlobalRect>();
 		auto activeTransformIt = activeBubbleCache->begin<components::GlobalTransform>();
 		for (middle::Id& id : activeBubbleCache->relevantIdVector) {
 			auto globalR = *activeRIt;
 			auto transform = *activeTransformIt;
 			middle::RenderItem boundingRect;
 			boundingRect.type = middle::RenderItemType::RECTANGLE;
-			boundingRect.width = globalR->radius * 2;
-			boundingRect.height = globalR->radius * 2;
+			boundingRect.width = globalR->width;
+			boundingRect.height = globalR->height;
 			boundingRect.center = transform->pos;
 			boundingRect.color = WHITE;
 			gameState->renderData.push_back(boundingRect);
@@ -593,7 +593,7 @@ public:
 		auto functionIt = functionCache->begin<components::BubbleFunctionComponent>();
 		auto functionRectIt = functionCache->begin<components::Rectangle>();
 		auto functionLayerIt = functionCache->begin<components::Layer>();
-		auto functionGlobalRIt = functionCache->begin<components::GlobalRadius>();
+		auto functionGlobalRIt = functionCache->begin<components::GlobalRect>();
 		for (middle::Id id : functionCache->relevantIdVector) {
 			// render functionlabel
 			auto transform = *functionTransformIt;
@@ -602,12 +602,12 @@ public:
 			auto layer = *functionLayerIt;
 			auto globalR = *functionGlobalRIt;
 
-			renderBubbleLabel(gameState, transform, globalR->radius, func->label, layer->layer);
+			renderBubbleLabel(gameState, transform, globalR->width, func->label + "()", layer->layer);
 			// render function circle
 			middle::RenderItem funcCircle;
 			funcCircle.type = middle::RenderItemType::RECTANGLE;
 			funcCircle.width = rect->width;
-			funcCircle.width = rect->height;
+			funcCircle.height = rect->height;
 			setTransform(funcCircle, transform);
 			funcCircle.color = GRAY;
 			funcCircle.layer = layer->layer;
@@ -619,9 +619,9 @@ public:
 			int index = 1;
 			for (middle::Id childId : children) {
 				auto transform = middle::getComp<components::GlobalTransform>(gameState, childId);
-				auto globalRChild = middle::getComp<components::GlobalRadius>(gameState, childId);
+				auto globalRChild = middle::getComp<components::GlobalRect>(gameState, childId);
 				auto layer = middle::getComp<components::Layer>(gameState, childId);
-				renderBubbleLabel(gameState, transform, globalRChild->radius, std::to_string(index++), layer->layer);
+				renderBubbleLabel(gameState, transform, globalRChild->width, std::to_string(index++), layer->layer);
 			}
 		}
 
