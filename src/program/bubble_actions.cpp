@@ -497,6 +497,14 @@ namespace bubbleActions {
 			return;
 		}
 
+		// if is summation, targetId = summand
+		bool isSummation = bubble::isSummation(gameState, shapeToCopyIntoId);
+		if (isSummation) {
+			middle::Id indexId, upperLimitId, summandId;
+			bubble::getSummationIndexLimitSummand(gameState, shapeToCopyIntoId, indexId, upperLimitId, summandId);
+			shapeToCopyIntoId = summandId;
+		}
+
 		middle::Id mulId = middle::getParent(gameState, shapeToAddInto.id);
 
 
