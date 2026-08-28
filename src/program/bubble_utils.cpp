@@ -1393,7 +1393,13 @@ namespace bubble {
 		return newBubbleShape;
 	}
 
-	middle::Id newSummation(middle::GameState* gameState, const Vector3& targetPos)
+	middle::Shape newSummation(middle::GameState* gameState, const Vector3& targetPos) {
+		middle::Shape newBubbleShape = newBubble(gameState, targetPos);
+		middle::addComponent<components::BubbleSummationComponent>(newBubbleShape);
+		return newBubbleShape;
+	}
+
+	middle::Id newSummationWithChildren(middle::GameState* gameState, const Vector3& targetPos)
 	{
 		middle::Shape newBubbleShape = newBubble(gameState, targetPos);
 		middle::addComponent<components::BubbleSummationComponent>(newBubbleShape);

@@ -258,7 +258,7 @@ namespace equlab {
 	}
 
 	void AddSummation::execute(middle::GameState* gameState) {
-		middle::Id newSum = bubble::newSummation(gameState, targetPos);
+		middle::Id newSum = bubble::newSummationWithChildren(gameState, targetPos);
 		middle::executeAction<middle::EditorActionRegisterId>(gameState, this, newSum);
 		middle::executeAction<middle::EditorActionReparent>(gameState, this, parentId.index, newSum.index);
 	}
@@ -442,7 +442,9 @@ namespace equlab {
 					newNodeId = linkShape.id;
 				}
 				else if (linkScope->type == bubequ::LinkType::SUMMATION) {
-					newNodeId = bubble::newSummation(gameState, pos);
+					middle::Shape linkProto = bubble::newSummation(gameState, pos);
+					middle::Shape& linkShape = middle::registerShape(gameState, linkProto);
+					newNodeId = linkShape.id;
 				}
 			}
 			else {

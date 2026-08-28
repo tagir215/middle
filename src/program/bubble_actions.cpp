@@ -161,6 +161,7 @@ namespace bubbleActions {
 		auto mulComp = middle::getComponent<components::BubbleMultiplyComponent>(shapeToReplace);
 		auto unit = middle::getComponent<components::BubbleUnit>(shapeToReplace);
 		auto variable = middle::getComponent<components::BubbleVariable>(shapeToReplace);
+		bool isSummation = bubble::isSummation(gameState, shapeToReplaceId);
 
 		// if shape to replace is a unit
 		if (unit)
@@ -206,7 +207,6 @@ namespace bubbleActions {
 			linkAction.execute(gameState);
 			return linkAction.resultShapeId;
 		}
-
 		return middle::Id();
 	}
 

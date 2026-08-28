@@ -9,6 +9,7 @@ namespace middle {
 		action->execute(gameState);
 		auto retVal = action.get();
 		container->actions.push_back(std::move(action));
+		container->callerSystem = gameState->activeSystemName;
 		return retVal;
 	}
 

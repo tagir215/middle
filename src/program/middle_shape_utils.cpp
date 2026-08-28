@@ -795,6 +795,7 @@ namespace middle {
 
 	void queueAction(GameState* gameState, std::shared_ptr<EditorActionContainer> container)
 	{
+		container->callerSystem = gameState->activeSystemName;
 		gameState->actionQueue.push(container);
 	}
 

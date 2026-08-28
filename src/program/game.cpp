@@ -56,6 +56,7 @@ namespace middle{
 				continue;
 			}
 
+			gameState->activeSystemName = system->systemName;
 			system->recordTimeUpdate(gameState);
 		}
 
@@ -84,6 +85,7 @@ namespace middle{
 					return true;
 				}
 
+				gameState->activeSystemName = system->systemName;
 				system->recordTimeUpdate(gameState);
 			}
 			return true;
@@ -110,6 +112,7 @@ namespace middle{
 					return true;
 				}
 
+				gameState->activeSystemName = system->systemName;
 				system->recordTimeUpdate(gameState);
 			}
 			return true;
@@ -164,6 +167,7 @@ extern "C" {
 				continue;
 			}
 
+			gameState->activeSystemName = renderSystem->systemName;
 			renderSystem->recordTimeUpdate(gameState);
 		}
 

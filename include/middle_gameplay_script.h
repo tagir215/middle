@@ -5,7 +5,7 @@
 
 namespace middle {
 
-	class GameState;
+	struct GameState;
 
 	enum class SystemUpdateType {
 		PREFRAME,

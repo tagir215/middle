@@ -21,6 +21,9 @@ namespace middle {
 	template<typename CompType>
 	void queueComponentAttachment(middle::GameState* gameState, middle::Id id) {
 		middle::queueAction(gameState, std::make_shared<middle::CustomAction>([id](middle::GameState* gameState) {
+			if (!middle::isValidId(gameState, id)) {
+				return;
+			}
 			middle::Shape& shape = middle::getShape(gameState, id.index);
 			middle::addComponent<CompType>(shape);
 			gameState->componentTypeIdSetWithStructuralChanges.insert(middle::getTypeId<CompType>());
@@ -30,6 +33,9 @@ namespace middle {
 	template<typename CompType, typename Init>
 	void queueComponentAttachment(middle::GameState* gameState, middle::Id id, Init init) {
 		middle::queueAction(gameState, std::make_shared<middle::CustomAction>([id, &init](middle::GameState* gameState) {
+			if (!middle::isValidId(gameState, id)) {
+				return;
+			}
 			middle::Shape& shape = middle::getShape(gameState, id.index);
 			auto newComp = middle::addComponent<CompType>(shape);
 			init(newComp);
@@ -40,6 +46,9 @@ namespace middle {
 	template<typename CompType>
 	void queueComponentDeletion(middle::GameState* gameState, middle::Id id) {
 		middle::queueAction(gameState, std::make_shared<middle::CustomAction>([id](middle::GameState* gameState) {
+			if (!middle::isValidId(gameState, id)) {
+				return;
+			}
 			middle::Shape& shape = middle::getShape(gameState, id.index);
 			if (!middle::getComponent<CompType>(shape)) {
 				return;

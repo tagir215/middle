@@ -22,6 +22,7 @@ namespace middle {
 
 	struct GameState;
 
+
 	enum class CreationMode {
 		SELECT_MODE,
 		SPHERE_MODE,
@@ -53,8 +54,9 @@ namespace middle {
 		virtual void undo(GameState* gameState) = 0;
 		std::vector < std::unique_ptr<EditorActionContainer>>actions;
 		bool cancelled = false;
+		// for debugging only
+		std::string callerSystem;
 	};
-
 
 	struct EditorState {
 		CreationMode creationMode;
@@ -187,6 +189,7 @@ namespace middle {
 		Matrix screenOrientorM;
 		Vector3 mouseIntersectTopPosition;
 		std::string activeSceneName = "";
+		std::string activeSystemName = "";
 		int vertexIndex = 0;
 		int loopIndex = 0;
 		int uniqueComponentCount = 0;
