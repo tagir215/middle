@@ -1156,7 +1156,16 @@ namespace bubbleActions {
 
 		middle::executeAction<middle::EditorActionRegisterId>(gameState, this, linkingFactorId);
 		middle::executeAction<Replace>(gameState, this, containerBubbleId, compressedBubbleId);
-		middle::executeAction<LinkMultiplicationTerm>(gameState, this, compressedBubbleId, linkingFactorId);
+
+		// if parent of container is summsation we link common factor outside of summation
+		middle::Id compressedParentId = middle::getParent(gameState, compressedBubbleId);
+		if (compressedParentId.index != middle::UNASSIGNED && bubble::isSummation(gameState, compressedParentId)) {
+			middle::executeAction<LinkMultiplicationTerm>(gameState, this, compressedParentId, linkingFactorId);
+		}
+		// else we just link to the compressed
+		else {
+			middle::executeAction<LinkMultiplicationTerm>(gameState, this, compressedBubbleId, linkingFactorId);
+		}
 
 		queueSound(gameState, bubbleSounds::COMPRESS_SOUND);
 	}
