@@ -40,8 +40,6 @@ public:
 	components::CompCache* procedureCodeCache;
 	components::CompCache* procedureImportCache;
 
-	Color highlightColor = bubbleColors::HOVERED_ITEM;
-	Color highlightColor2 = bubbleColors::PROCEDURE_SELECTED;
 
 	void init(middle::GameState* gameState) {
 		//buttonCache = middle::newCompCache(gameState, systemName);

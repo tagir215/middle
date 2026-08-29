@@ -217,7 +217,7 @@ public:
 		bool isEven = depth % 2 == 0;
 
 		{
-			color = isEven ? bubbleColors::BUBBLE_BACKGROUND_EVEN : bubbleColors::BUBBLE_BACKGROUND_UNEVEN;
+			color = isEven ? bubbleColors::BUBBLE_EVEN : bubbleColors::BUBBLE_UNEVEN;
 		}
 		return color;
 	}
@@ -251,9 +251,6 @@ public:
 
 
 			Color backgroundColor = getBubbleColor(gameState, shape.id, bubble);
-			if (isHighlighted) {
-				backgroundColor = bubbleColors::HIGHLIGHT_COLOR;
-			}
 
 			middle::RenderItem texture;
 			texture.type = middle::RenderItemType::BILLBOARD;
@@ -297,7 +294,7 @@ public:
 				fontSize *= 1.2f;
 			}
 
-			unitItem.color = BLACK;
+			unitItem.color = bubbleColors::UNIT_TEXT;
 			unitItem.textOffset.x = -rect->width * 0.42f;
 			unitItem.textOffset.z = rect->height * 1.5f;
 			unitItem.fontSize = bubble::variableTextFontSize;
@@ -409,7 +406,7 @@ public:
 			texture.transform.scale.x *= scaleCorrection;
 			texture.transform.scale.y *= scaleCorrection;
 			texture.transform.scale.z *= scaleCorrection;
-			texture.color = RED;
+			texture.color = bubbleColors::POWER_EVEN;
 			gameState->renderData.push_back(texture);
 
 			renderBubbleLabel(gameState, transform, rect->height, "^", layer->layer, LabelPos::CENTER);
@@ -449,7 +446,7 @@ public:
 			texture.transform.scale.x *= scaleCorrection;
 			texture.transform.scale.y *= scaleCorrection;
 			texture.transform.scale.z *= scaleCorrection;
-			texture.color = bubbleColors::EQUALS_CONNECTION;
+			texture.color = bubbleColors::EQUALS_EVEN;
 			gameState->renderData.push_back(texture);
 
 			renderBubbleLabel(gameState, transform, rect->height, "=", layer->layer, LabelPos::CENTER);
@@ -472,7 +469,7 @@ public:
 			texture.transform.scale.x *= scaleCorrection;
 			texture.transform.scale.y *= scaleCorrection;
 			texture.transform.scale.z *= scaleCorrection;
-			texture.color = bubbleColors::INEQUALS_COLOR;
+			texture.color = bubbleColors::INEQUALS_EVEN;
 			gameState->renderData.push_back(texture);
 		}
 
@@ -544,69 +541,6 @@ public:
 		}
 
 
-		if (procContainerCache->getSize() > 0) {
-			auto procContainerIt = procContainerCache->begin<components::ProcedureContainer>();
-			auto procContainer = *procContainerIt;
-
-			auto inputIt = inputCache->begin<components::InputVariable>();
-			auto intersectabeInputIt = inputCache->begin<components::IntersectingTag>();
-			for (int i = 0; i < inputCache->getSize(); ++i) {
-				auto input = *inputIt;
-				auto intersectable = *intersectabeInputIt;
-
-				// render hover effect
-				if (intersectable->intersectingTop) {
-					middle::RenderItem hovering;
-					hovering.type = middle::RenderItemType::CIRCLE;
-					hovering.color = bubbleColors::INPUT_HOVER_COLOR;
-					const float hoveringInputIndicatorRadius = 3;
-					hovering.radius = hoveringInputIndicatorRadius;
-					hovering.center = middle::getGlobalPosition(gameState, inputCache->relevantIdVector[i].index);
-					hovering.layer = 3;
-					gameState->renderData.push_back(hovering);
-				}
-
-
-				// render line from input to bubble
-				Vector3 p1, p2;
-				bool renderLine = false;
-
-				// todo generation checks should be always...
-				if (input->unitRef.index != middle::UNASSIGNED
-					&& input->unitRef.generation == gameState->ids[input->unitRef.index].generation
-					&& middle::isValidId(gameState, input->unitRef)) {
-					p1 = middle::getGlobalPosition(gameState, inputCache->relevantIdVector[i].index);
-					p2 = middle::getGlobalPosition(gameState, input->unitRef.index);
-					renderLine = true;
-				}
-
-				middle::Id grabbedId = gameState->bubbleAlgebraState.grabbedId;
-				if (!renderLine && grabbedId.index != middle::UNASSIGNED) {
-					auto& shape = middle::getShape(gameState, grabbedId.index);
-					auto idRef = middle::getComponent<components::IdRef>(shape);
-					if (!idRef) {
-						continue;
-					}
-					auto& ogShape = middle::getShape(gameState, idRef->idRef.index);
-					if (ogShape.id == inputCache->relevantIdVector[i]) {
-						renderLine = true;
-						p1 = middle::getGlobalPosition(gameState, ogShape.id.index);
-						p2 = gameState->input.mouseXZ_PlanePos;
-					}
-				}
-
-				if (renderLine) {
-					middle::RenderItem line;
-					line.type = middle::RenderItemType::LINE;
-					line.linePointA = p1;
-					line.linePointB = p2;
-					line.color = bubbleColors::HIGHLIGHT_COLOR;
-					line.layer = 4;
-					gameState->renderData.push_back(line);
-				}
-			}
-		}
-
 
 		auto functionTransformIt = functionCache->begin<components::GlobalTransform>();
 		auto functionIt = functionCache->begin<components::BubbleFunctionComponent>();
@@ -630,7 +564,7 @@ public:
 			texture.transform.scale.x *= scaleCorrection;
 			texture.transform.scale.y *= scaleCorrection;
 			texture.transform.scale.z *= scaleCorrection;
-			texture.color = GRAY;
+			texture.color = bubbleColors::FUNCTION_EVEN;
 			gameState->renderData.push_back(texture);
 
 			// render indexes
@@ -663,7 +597,7 @@ public:
 			texture.transform.scale.x *= scaleCorrection;
 			texture.transform.scale.y *= scaleCorrection;
 			texture.transform.scale.z *= scaleCorrection;
-			texture.color = ORANGE;
+			texture.color = bubbleColors::SUMMATION_EVEN;
 			gameState->renderData.push_back(texture);
 
 			renderBubbleLabel(gameState, transform, rect->width, u8"\u2211", layer->layer, LabelPos::CENTER);
