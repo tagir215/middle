@@ -1,6 +1,8 @@
 #pragma once
 #include "game_state.h"
 #include "middle_gameplay_script_map.h"
+#include "raylib.h"
+#include "bubble_paths.h"
 namespace middle{
 
 	void initExternalSystems(middle::GameState* gameState) {
@@ -13,5 +15,6 @@ namespace middle{
 		gameState->externalPreFrameSystems.push_back(inputSystem);
 		gameState->externalPreFrameSystems.push_back(fileDropSystem);
 		gameState->externalPostFrameSystems.push_back(renderSystem);
+
 	}
 }

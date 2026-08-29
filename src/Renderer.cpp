@@ -228,7 +228,11 @@ namespace RendererSystem {
 					DrawCube(pos, 4, 4, 4, BLACK);
 				}
 				else {
+					if(item.shader)
+						BeginShaderMode(*item.shader);
 					DrawBillboard(gameState->activeCamera, *item.texture, pos, item.textureScale, item.color);
+					if(item.shader)
+						EndShaderMode();
 				}
 				rlPopMatrix();
 			}

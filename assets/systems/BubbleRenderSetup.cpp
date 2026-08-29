@@ -39,7 +39,7 @@
 #include "BubbleFunctionComponent.h"
 #include "GlobalRect.h"
 #include "BubbleSummationComponent.h"
-
+#include "bubble_paths.h"
 
 class BubbleRenderSetup : public middle::MiddleGameplaySystem {
 public:
@@ -67,6 +67,8 @@ public:
 	components::CompCache* functionCache;
 	components::CompCache* summationCache;
 
+			const float scaleCorrection = 7.2f;
+
 	void init(middle::GameState* gameState) {
 		bubbleCache = middle::newCompCache(gameState, systemName);
 		bubbleCache->addType<components::BubbleComponent>();
@@ -74,6 +76,13 @@ public:
 		bubbleCache->addType<components::Layer>();
 		bubbleCache->addType<components::LoopSociety>();
 		bubbleCache->addType<components::GlobalTransform>();
+		bubbleCache->addType<components::RuntimeHiddenTag>(components::NOTINTERESTED);
+		bubbleCache->addType<components::BubblePowerComponent>(components::NOTINTERESTED);
+		bubbleCache->addType<components::BubbleSummationComponent>(components::NOTINTERESTED);
+		bubbleCache->addType<components::BubbleFunctionComponent>(components::NOTINTERESTED);
+		bubbleCache->addType<components::BubbleMultiplyComponent>(components::NOTINTERESTED);
+		bubbleCache->addType<components::BubbleVariable>(components::NOTINTERESTED);
+		bubbleCache->addType<components::BubbleUnit>(components::NOTINTERESTED);
 		bubbleCache->addType<components::RuntimeHiddenTag>(components::NOTINTERESTED);
 		unitCache = middle::newCompCache(gameState, systemName);
 		unitCache->addType<components::BubbleUnit>();
@@ -245,19 +254,18 @@ public:
 			if (isHighlighted) {
 				backgroundColor = bubbleColors::HIGHLIGHT_COLOR;
 			}
-			//Color backgroundColor = bubble->inverse ? bubbleColors::BUBBLE_BACKGROUND_INVERSE : bubbleColors::BUBBLE_BACKGROUND;
-			middle::RenderItem circleItem;
-			circleItem.type = middle::RenderItemType::RECTANGLE;
-			circleItem.color = bubbleColors::BUBBLE_OUTLINE;
-			circleItem.layer = layer->layer;
-			circleItem.backgroundColor = backgroundColor;
-			circleItem.width = rect->width;
-			circleItem.height = rect->height;
-			circleItem.center = { 0,0,0 };
-			circleItem.disableDepthTest = isUiItem;
-			circleItem.slices = getCircleSlices(transform);
-			setTransform(circleItem, transform);
-			gameState->renderData.push_back(circleItem);
+
+			middle::RenderItem texture;
+			texture.type = middle::RenderItemType::BILLBOARD;
+			texture.shader = &gameState->shaderMap[bubbleShaderNames::BUBBLE_SHADER].shader;
+			texture.texture = &gameState->textureMap[bubbleTextureNames::TEXTURE_BACKGROUND].texture;
+			texture.layer = layer->layer;
+			setTransform(texture, transform);
+			texture.transform.scale.x *= scaleCorrection;
+			texture.transform.scale.y *= scaleCorrection;
+			texture.transform.scale.z *= scaleCorrection;
+			texture.color = backgroundColor;
+			gameState->renderData.push_back(texture);
 		}
 
 
@@ -289,13 +297,23 @@ public:
 				fontSize *= 1.2f;
 			}
 
-			unitItem.center = { 0,0,0 };
-			unitItem.layer = layer->layer;
-			unitItem.fontSize = fontSize;
-			unitItem.textOffset.x = -rect->width * 0.5f;
-			unitItem.textOffset.z = rect->height * 1.1f;
-			unitItem.color = unit->value < 0 ? bubbleColors::NEGATIVE_UNIT : bubbleColors::POSITIVE_UNIT;
+			unitItem.color = BLACK;
+			unitItem.textOffset.x = -rect->width * 0.42f;
+			unitItem.textOffset.z = rect->height * 1.5f;
+			unitItem.fontSize = bubble::variableTextFontSize;
 			gameState->renderData.push_back(unitItem);
+
+			middle::RenderItem texture;
+			texture.type = middle::RenderItemType::BILLBOARD;
+			texture.shader = &gameState->shaderMap[bubbleShaderNames::BUBBLE_SHADER].shader;
+			texture.texture = &gameState->textureMap[bubbleTextureNames::TEXTURE_BACKGROUND].texture;
+			texture.layer = layer->layer;
+			setTransform(texture, transform);
+			texture.transform.scale.x *= scaleCorrection;
+			texture.transform.scale.y *= scaleCorrection;
+			texture.transform.scale.z *= scaleCorrection;
+			texture.color = unit->value < 0 ? bubbleColors::NEGATIVE_UNIT : bubbleColors::POSITIVE_UNIT;
+			gameState->renderData.push_back(texture);
 		}
 
 		// render variables
@@ -315,6 +333,19 @@ public:
 
 			auto intersectable = middle::getComponent<components::IntersectingTag>(shape);
 
+			Color backgroundColor = getBubbleColor(gameState, shape.id, bubble);
+			middle::RenderItem texture;
+			texture.type = middle::RenderItemType::BILLBOARD;
+			texture.shader = &gameState->shaderMap[bubbleShaderNames::BUBBLE_SHADER].shader;
+			texture.texture = &gameState->textureMap[bubbleTextureNames::TEXTURE_BACKGROUND].texture;
+			texture.layer = layer->layer;
+			setTransform(texture, transform);
+			texture.transform.scale.x *= scaleCorrection;
+			texture.transform.scale.y *= scaleCorrection;
+			texture.transform.scale.z *= scaleCorrection;
+			texture.color = backgroundColor;
+			gameState->renderData.push_back(texture);
+
 			middle::RenderItem variableText;
 			variableText.type = middle::RenderItemType::TEXT;
 			setTransform(variableText, transform);
@@ -326,10 +357,9 @@ public:
 			}
 			variableText.textOffset.x = -rect->width * 0.42f;
 			variableText.textOffset.z = rect->height * 1.5f;
-			Color backgroundColor = getBubbleColor(gameState, shape.id, bubble);
 			variableText.fontSize = bubble::variableTextFontSize;
-			variableText.disableDepthTest = isUiItem;
 			gameState->renderData.push_back(variableText);
+
 		}
 
 
@@ -344,17 +374,17 @@ public:
 			auto transform = *mulTransformIt;
 			auto layer = *mulLayerIt;
 
-			middle::RenderItem mulCircle;
-			mulCircle.type = middle::RenderItemType::RECTANGLE;
-			mulCircle.transform.translation = transform->pos;
-			mulCircle.transform.scale = transform->scale;
-			mulCircle.transform.rotation = transform->rotation;
-			mulCircle.width = rect->width + 4;
-			mulCircle.height = rect->height + 4;
-			mulCircle.color = GREEN;
-			mulCircle.layer = layer->layer + 2;
-			mulCircle.slices = getCircleSlices(transform);
-			gameState->renderData.push_back(mulCircle);
+			middle::RenderItem texture;
+			texture.type = middle::RenderItemType::BILLBOARD;
+			texture.shader = &gameState->shaderMap[bubbleShaderNames::BUBBLE_SHADER].shader;
+			texture.texture = &gameState->textureMap[bubbleTextureNames::TEXTURE_BACKGROUND].texture;
+			texture.layer = layer->layer;
+			setTransform(texture, transform);
+			texture.transform.scale.x *= scaleCorrection;
+			texture.transform.scale.y *= scaleCorrection;
+			texture.transform.scale.z *= scaleCorrection;
+			texture.color = GREEN;
+			gameState->renderData.push_back(texture);
 
 			renderBubbleLabel(gameState, transform, rect->height, u8"\u00D7", layer->layer, LabelPos::CENTER);
 		}
@@ -370,38 +400,19 @@ public:
 			auto transform = *powerTransformIt;
 			auto layer = *powerLayerIt;
 
-			middle::RenderItem circleItemA;
-			circleItemA.type = middle::RenderItemType::RECTANGLE;
-			circleItemA.transform.translation = transform->pos;
-			circleItemA.transform.scale = transform->scale;
-			circleItemA.transform.rotation = transform->rotation;
-			circleItemA.width = rect->width;
-			circleItemA.height = rect->height;
-			circleItemA.color = RED;
-			circleItemA.layer = layer->layer + 1;
-			circleItemA.slices = getCircleSlices(transform);
-			gameState->renderData.push_back(circleItemA);
+			middle::RenderItem texture;
+			texture.type = middle::RenderItemType::BILLBOARD;
+			texture.shader = &gameState->shaderMap[bubbleShaderNames::BUBBLE_SHADER].shader;
+			texture.texture = &gameState->textureMap[bubbleTextureNames::TEXTURE_BACKGROUND].texture;
+			texture.layer = layer->layer;
+			setTransform(texture, transform);
+			texture.transform.scale.x *= scaleCorrection;
+			texture.transform.scale.y *= scaleCorrection;
+			texture.transform.scale.z *= scaleCorrection;
+			texture.color = RED;
+			gameState->renderData.push_back(texture);
 
 			renderBubbleLabel(gameState, transform, rect->height, "^", layer->layer, LabelPos::CENTER);
-
-			assert(loop->loopMemberIds.size() == 2);
-			middle::Id exponentId = loop->loopMemberIds[components::PowerRole::POWER_ROLE_EXPONENT];
-			auto& childShape = middle::getShape(gameState, exponentId.index);
-			auto exponentTransform = middle::getComponent<components::GlobalTransform>(childShape);
-			auto exponentRect = middle::getComponent<components::Rectangle>(childShape);
-			if (exponentRect) {
-				middle::RenderItem circleItemB;
-				circleItemB.type = middle::RenderItemType::RECTANGLE;
-				circleItemB.transform.translation = exponentTransform->pos;
-				circleItemB.transform.scale = exponentTransform->scale;
-				circleItemB.transform.rotation = exponentTransform->rotation;
-				circleItemB.width = exponentRect->width - 3;
-				circleItemB.height = exponentRect->height - 3;
-				circleItemB.color = ORANGE;
-				circleItemB.layer = layer->layer + 2;
-				circleItemB.slices = getCircleSlices(transform);
-				gameState->renderData.push_back(circleItemB);
-			}
 		}
 
 		auto cuboidIt = cuboidCache->begin<components::Cuboid>();
@@ -429,15 +440,17 @@ public:
 			auto rect = *equCircleIt;;
 			auto layer = *equLayerIt;
 
-			middle::RenderItem equCirc;
-			equCirc.type = middle::RenderItemType::RECTANGLE;
-			equCirc.width = rect->width + 8;
-			equCirc.height = rect->height + 8;
-			setTransform(equCirc, transform);
-			equCirc.layer = layer->layer;
-			equCirc.color = bubbleColors::EQUALS_CONNECTION;
-			equCirc.slices = getCircleSlices(transform);
-			gameState->renderData.push_back(equCirc);
+			middle::RenderItem texture;
+			texture.type = middle::RenderItemType::BILLBOARD;
+			texture.shader = &gameState->shaderMap[bubbleShaderNames::BUBBLE_SHADER].shader;
+			texture.texture = &gameState->textureMap[bubbleTextureNames::TEXTURE_BACKGROUND].texture;
+			texture.layer = layer->layer;
+			setTransform(texture, transform);
+			texture.transform.scale.x *= scaleCorrection;
+			texture.transform.scale.y *= scaleCorrection;
+			texture.transform.scale.z *= scaleCorrection;
+			texture.color = bubbleColors::EQUALS_CONNECTION;
+			gameState->renderData.push_back(texture);
 
 			renderBubbleLabel(gameState, transform, rect->height, "=", layer->layer, LabelPos::CENTER);
 		}
@@ -450,30 +463,17 @@ public:
 			auto rect = *inequRectIt;
 			auto layer = *inequLayerIt;
 
-			middle::RenderItem equCirc;
-			equCirc.type = middle::RenderItemType::RECTANGLE;
-			equCirc.width = rect->width + 4;
-			equCirc.height = rect->height + 4;
-			setTransform(equCirc, transform);
-			equCirc.layer = layer->layer + 1;
-			equCirc.color = bubbleColors::INEQUALS_COLOR;
-			equCirc.slices = getCircleSlices(transform);
-			gameState->renderData.push_back(equCirc);
-
-			middle::Id lesser, greater;
-			bubble::getInequaltyLesserAndGreater(gameState, id, lesser, greater);
-
-			middle::RenderItem greaterRect;
-			greaterRect.type = middle::RenderItemType::RECTANGLE;
-			auto greaterTransform = middle::getComp<components::GlobalTransform>(gameState, greater);
-			setTransform(greaterRect, greaterTransform);
-			auto greaterRectComp = middle::getComp<components::Rectangle>(gameState, greater);
-			greaterRect.width = greaterRectComp->width;
-			greaterRect.height = greaterRectComp->height;
-			greaterRect.layer = layer->layer + 2;
-			greaterRect.color = bubbleColors::INEQUALS_COLOR;
-			greaterRect.slices = getCircleSlices(transform);
-			gameState->renderData.push_back(greaterRect);
+			middle::RenderItem texture;
+			texture.type = middle::RenderItemType::BILLBOARD;
+			texture.shader = &gameState->shaderMap[bubbleShaderNames::BUBBLE_SHADER].shader;
+			texture.texture = &gameState->textureMap[bubbleTextureNames::TEXTURE_BACKGROUND].texture;
+			texture.layer = layer->layer;
+			setTransform(texture, transform);
+			texture.transform.scale.x *= scaleCorrection;
+			texture.transform.scale.y *= scaleCorrection;
+			texture.transform.scale.z *= scaleCorrection;
+			texture.color = bubbleColors::INEQUALS_COLOR;
+			gameState->renderData.push_back(texture);
 		}
 
 
@@ -525,7 +525,6 @@ public:
 		cameraTarget.radius = 1;
 		cameraTarget.center = gameState->activeCamera.position + Vector3{ 0,100,0 };
 		cameraTarget.color = WHITE;
-		cameraTarget.disableDepthTest = true;
 		gameState->renderData.push_back(cameraTarget);
 
 		// render activity bounding box
@@ -536,8 +535,9 @@ public:
 			auto transform = *activeTransformIt;
 			middle::RenderItem boundingRect;
 			boundingRect.type = middle::RenderItemType::RECTANGLE;
-			boundingRect.width = globalR->width;
-			boundingRect.height = globalR->height;
+			const float margin = 10 * transform->scale.x;
+			boundingRect.width = globalR->width + margin;
+			boundingRect.height = globalR->height + margin;
 			boundingRect.center = transform->pos;
 			boundingRect.color = WHITE;
 			gameState->renderData.push_back(boundingRect);
@@ -562,7 +562,6 @@ public:
 					const float hoveringInputIndicatorRadius = 3;
 					hovering.radius = hoveringInputIndicatorRadius;
 					hovering.center = middle::getGlobalPosition(gameState, inputCache->relevantIdVector[i].index);
-					hovering.disableDepthTest = true;
 					hovering.layer = 3;
 					gameState->renderData.push_back(hovering);
 				}
@@ -602,7 +601,6 @@ public:
 					line.linePointA = p1;
 					line.linePointB = p2;
 					line.color = bubbleColors::HIGHLIGHT_COLOR;
-					line.disableDepthTest = true;
 					line.layer = 4;
 					gameState->renderData.push_back(line);
 				}
@@ -622,16 +620,19 @@ public:
 			auto layer = *functionLayerIt;
 
 			renderBubbleLabel(gameState, transform, rect->width, func->label + "()", layer->layer, LabelPos::CENTER);
-			// render function circle
-			middle::RenderItem funcCircle;
-			funcCircle.type = middle::RenderItemType::RECTANGLE;
-			funcCircle.width = rect->width;
-			funcCircle.height = rect->height;
-			setTransform(funcCircle, transform);
-			funcCircle.color = GRAY;
-			funcCircle.layer = layer->layer;
-			funcCircle.slices = getCircleSlices(transform);
-			gameState->renderData.push_back(funcCircle);
+
+			middle::RenderItem texture;
+			texture.type = middle::RenderItemType::BILLBOARD;
+			texture.shader = &gameState->shaderMap[bubbleShaderNames::BUBBLE_SHADER].shader;
+			texture.texture = &gameState->textureMap[bubbleTextureNames::TEXTURE_BACKGROUND].texture;
+			texture.layer = layer->layer;
+			setTransform(texture, transform);
+			texture.transform.scale.x *= scaleCorrection;
+			texture.transform.scale.y *= scaleCorrection;
+			texture.transform.scale.z *= scaleCorrection;
+			texture.color = GRAY;
+			gameState->renderData.push_back(texture);
+
 			// render indexes
 			std::vector<middle::Id>children;
 			middle::getChildren(gameState, id, children);
@@ -653,15 +654,18 @@ public:
 			auto rect = *summationRectIt;
 			auto layer = *summationLayerIt;
 
-			// render function circle
-			middle::RenderItem sumRect;
-			sumRect.type = middle::RenderItemType::RECTANGLE;
-			sumRect.width = rect->width;
-			sumRect.height = rect->height;
-			sumRect.color = ORANGE;
-			sumRect.layer = layer->layer;
-			setTransform(sumRect, transform);
-			gameState->renderData.push_back(sumRect);
+			middle::RenderItem texture;
+			texture.type = middle::RenderItemType::BILLBOARD;
+			texture.shader = &gameState->shaderMap[bubbleShaderNames::BUBBLE_SHADER].shader;
+			texture.texture = &gameState->textureMap[bubbleTextureNames::TEXTURE_BACKGROUND].texture;
+			texture.layer = layer->layer;
+			setTransform(texture, transform);
+			texture.transform.scale.x *= scaleCorrection;
+			texture.transform.scale.y *= scaleCorrection;
+			texture.transform.scale.z *= scaleCorrection;
+			texture.color = ORANGE;
+			gameState->renderData.push_back(texture);
+
 			renderBubbleLabel(gameState, transform, rect->width, u8"\u2211", layer->layer, LabelPos::CENTER);
 		}
 	}

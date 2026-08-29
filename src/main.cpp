@@ -38,6 +38,7 @@
 #include "sound_helper.h"
 #include "init_external_systems.h"
 #include <iostream>
+#include "assets_loading.h"
 
 #if defined(_DEBUG)
 static const char* DLL_PATH = "Debug/game.dll";
@@ -76,8 +77,11 @@ int main(void)
 	//set_window_always_on_top(GetWindowHandle());
 	HideCursor();
 
+
 	gameState = std::make_unique<GameState>();
 	gameState->worldM = MatrixIdentity();
+
+	bubbleAssets::loadAssets(gameState.get());
 
 	SetTargetFPS(60);               // Set our game to run at 60 frames-per-second
 	//--------------------------------------------------------------------------------------
@@ -103,6 +107,7 @@ int main(void)
 	ShowCursor();
 
 	initExternalSystems(gameState.get());
+
 
 
 	gameState->workingDir = GetWorkingDirectory();

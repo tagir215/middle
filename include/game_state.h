@@ -115,8 +115,9 @@ namespace middle {
 		int fontSize = 10;
 		bool disableDepthTest = false;
 		std::string text = "";
-		Model* model;
-		Texture2D* texture;
+		Model* model = nullptr;
+		Texture2D* texture = nullptr;
+		Shader* shader = nullptr;
 
 		RenderItem() {
 			transform.translation = { 0,0,0 };
@@ -153,8 +154,11 @@ namespace middle {
 	};
 
 	struct TextureContainer {
-		std::string filename = "";
 		Texture2D texture;
+	};
+
+	struct ShaderContainer {
+		Shader shader;
 	};
 
 	struct GameState {
@@ -225,9 +229,9 @@ namespace middle {
 		std::queue<std::shared_ptr<EditorActionContainer>>actionQueue;
 		std::queue<std::shared_ptr<EditorActionContainer>>undoQueue;
 		std::vector<ModelContainer> loadedModels;
-		std::unordered_map<std::string, TextureContainer>loadedTextureMap;
+		std::unordered_map<std::string, TextureContainer>textureMap;
+		std::unordered_map<std::string, ShaderContainer>shaderMap;
 		std::queue<std::string>modelsToLoadQueue;
-		std::queue<std::string>texturesToLoadQueue;
 		std::queue<Sound>soundQueue;
 	};
 
