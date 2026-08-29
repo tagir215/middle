@@ -1500,5 +1500,10 @@ namespace bubble {
 		return middle::getComponent<components::BubbleMultiplyComponent>(shape);
 	}
 
+	bool isUnit(middle::GameState* gameState, middle::Id id)
+	{
+		return middle::getComp<components::BubbleUnit>(gameState, id);
+	}
+
 
 }

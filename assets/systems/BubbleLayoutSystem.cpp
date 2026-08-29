@@ -181,7 +181,11 @@ public:
 				middle::Id childId = children[i];
 				Vector3 currentPos = middle::getLocalPosition(gameState, childId);
 				Vector3 disp = (targetPosition - currentPos) * moveSpeed * gameState->frameTime;
-				middle::setLocalPosition(gameState, childId, currentPos + disp);
+
+				if(gameState->bubbleAlgebraState.postUndoFrames == 0)
+					middle::setLocalPosition(gameState, childId, currentPos + disp);
+				else
+					middle::setLocalPosition(gameState, childId, targetPosition);
 			}
 		}
 

@@ -30,10 +30,15 @@ public:
 				gameState->bubbleAlgebraState.bubbleActions.pop_back();
 				}));
 		}
+		gameState->bubbleAlgebraState.postUndoFrames = 2;
 		queueSound(gameState, bubbleSounds::UNDO_SOUND);
 	}
 
 	void update(middle::GameState* gameState) override {
+
+		if (gameState->bubbleAlgebraState.postUndoFrames > 0) {
+			--gameState->bubbleAlgebraState.postUndoFrames;
+		}
 
 		if (gameState->gameInput.undo) {
 			undo(gameState);

@@ -12,6 +12,10 @@
 #include "BubbleSummationComponent.h"
 
 class BubbleScalingSystem : public middle::MiddleGameplaySystem {
+public:
+	BubbleScalingSystem() {
+		systemUpdateType = middle::SystemUpdateType::GAMEPLAY_POSTFRAME;
+	}
 	components::CompCache* bubbleCache;
 	components::CompCache* powerCache;
 	components::CompCache* summationCache;
@@ -53,7 +57,10 @@ class BubbleScalingSystem : public middle::MiddleGameplaySystem {
 		auto childScale = middle::getComp<components::LocalScale>(gameState, id);
 		float scalar = targetWidth / childGlobalR->width;
 		Vector3 targetScale = childScale->scale * scalar;
-		childScale->scale += (targetScale - childScale->scale) * smoothFactor * gameState->frameTime;
+		if(gameState->bubbleAlgebraState.postUndoFrames == 0)
+			childScale->scale += (targetScale - childScale->scale) * smoothFactor * gameState->frameTime;
+		else
+			childScale->scale = targetScale;
 	}
 
 	void update(middle::GameState* gameState) override {

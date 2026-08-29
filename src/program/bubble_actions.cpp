@@ -181,10 +181,6 @@ namespace bubbleActions {
 				copyId = negativeCopyId;
 			}
 
-			// compute displacmenet from replacing shape to shapeToReplace position
-			Vector3 replacingShapePos = middle::getGlobalPosition(gameState, copyId.index);
-			Vector3 displacement = targetPos - replacingShapePos;
-			middle::moveShape(gameState, copyId.index, displacement);
 			return copyId;
 		}
 		else if (bubbleComp || mulComp || variable) {
@@ -218,14 +214,9 @@ namespace bubbleActions {
 
 		if (exponentChildren.size() != 0) {
 
-			Vector3 basePos = middle::getGlobalPosition(gameState, baseId.index);
-
 			middle::Id prevId;
 			for (middle::Id& exponentChildId : exponentChildren) {
 				auto& childShape = middle::getShape(gameState, exponentChildId.index);
-
-				Vector3 oldChildScale = middle::getLocalScale(gameState, exponentChildId);
-				Vector3 oldChildPos = middle::getGlobalPosition(gameState, exponentChildId.index);
 
 				middle::Id baseCopyId = middle::deepCopyShapeGlobalCoordinates(gameState, baseId);
 
@@ -252,9 +243,6 @@ namespace bubbleActions {
 					middle::Id newPowerId = bubble::newPower(gameState, baseCopyId, exponentChildId, middle::getGlobalPosition(gameState, exponentChildId.index));
 					linkingId = newPowerId;
 				}
-
-				middle::setLocalScale(gameState, linkingId, oldChildScale);
-				middle::setGlobalPosition(gameState, linkingId, oldChildPos);
 
 				// link as multiplication
 				if (prevId.index != middle::UNASSIGNED) {
@@ -510,11 +498,12 @@ namespace bubbleActions {
 
 		// create replacement shape, register and replace
 		auto createAndReplace = [gameState, this](middle::Id toReplaceId, middle::Id replacementId) {
+			bool setOldPos = bubble::isUnit(gameState, toReplaceId);
+
 			middle::Id copyId = createMultiplicationReplacementShape(gameState, toReplaceId, replacementId);
 			middle::executeAction<EditorActionRegisterId>(gameState, this, copyId);
-			Vector3 oldScale = middle::getLocalScale(gameState, toReplaceId);
 			middle::executeAction<Replace>(gameState, this, toReplaceId, copyId);
-			middle::setLocalScale(gameState, copyId, oldScale);
+
 			};
 
 		// in unit case just replace the shape to copy into

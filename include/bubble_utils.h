@@ -67,6 +67,7 @@ namespace bubble {
 	bool isPowerBubble(middle::GameState* gameState, middle::Id id);
 	bool isSummation(middle::GameState* gameState, middle::Id id);
 	bool isMultiplication(middle::GameState* gameState, middle::Id id);
+	bool isUnit(middle::GameState* gameState, middle::Id id);
 	void negate(middle::GameState* gameState, middle::Id id);
 	void invert(middle::GameState* gameState, middle::Id id);
 	middle::Id bubbleToStructure(middle::GameState* gameState, middle::Id bubbleId);

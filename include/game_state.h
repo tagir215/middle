@@ -144,6 +144,7 @@ namespace middle {
 		BubbleInsertType currentInsertType;
 		bool copyNegated = false;
 		bool copyInverted = false;
+		int postUndoFrames = 0;
 	};
 
 	struct ModelContainer {
