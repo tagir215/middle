@@ -3,9 +3,9 @@
 
 namespace bubbleColors {
 	//inline Color BACKGROUND = {30, 106, 71,255};
-	inline Color BACKGROUND = WHITE;
 	inline Color BUBBLE_EVEN = {215, 215, 215, 255};
 	inline Color BUBBLE_UNEVEN = {194, 194, 194, 194};
+	inline Color BACKGROUND = BUBBLE_UNEVEN;
 	inline Color POSITIVE_EVEN = BUBBLE_EVEN;
 	inline Color POSITIVE_UNEVEN = BUBBLE_UNEVEN;
 	inline Color NEGATIVE_EVEN = BUBBLE_EVEN;
