@@ -189,11 +189,12 @@ public:
 		RIGHT
 	};
 
-	void renderBubbleLabel(middle::GameState* gameState, components::GlobalTransform* transform, float height, const std::string& label, int layer, LabelPos pos) {
+	void renderBubbleLabel(middle::GameState* gameState, components::GlobalTransform* transform, float height, 
+		const std::string& label, int layer, LabelPos pos, const Color& color) {
 		middle::RenderItem text;
 		text.type = middle::RenderItemType::TEXT;
 		text.text = label;
-		text.color = WHITE;
+		text.color = color;
 		const float labelFontSize = 20;
 		const float offsetFactor = 0.1f;
 		float offset = height * offsetFactor * transform->scale.z;
@@ -211,15 +212,10 @@ public:
 		gameState->renderData.push_back(text);
 	}
 
-	Color getBubbleColor(middle::GameState* gameState, middle::Id id, components::BubbleComponent* bubble) {
-		Color color;
+	bool isEven(middle::GameState* gameState, middle::Id id) {
 		int depth = bubble::findBubbleDepth(gameState, id);
 		bool isEven = depth % 2 == 0;
-
-		{
-			color = isEven ? bubbleColors::BUBBLE_EVEN : bubbleColors::BUBBLE_UNEVEN;
-		}
-		return color;
+		return isEven;
 	}
 
 	void update(middle::GameState* gameState) override {
@@ -250,7 +246,7 @@ public:
 			bool intersecting = intersectable && intersectable->intersectingTop;
 
 
-			Color backgroundColor = getBubbleColor(gameState, shape.id, bubble);
+			Color backgroundColor = isEven(gameState, shape.id) ? bubbleColors::BUBBLE_EVEN : bubbleColors::BUBBLE_UNEVEN;
 
 			middle::RenderItem texture;
 			texture.type = middle::RenderItemType::BILLBOARD;
@@ -278,13 +274,19 @@ public:
 			auto rect = *unitRectIt;
 			middle::RenderItem unitItem;
 			unitItem.type = middle::RenderItemType::TEXT;
+			Color textColor;
+			Color backgroundColor;
+			middle::Id id = unitCache->relevantIdVector[i];
 			if (unit->value > 0) {
 				unitItem.text = "+";
+				textColor = bubbleColors::UNIT_TEXT_POSITIVE;
+				backgroundColor = isEven(gameState, id) ? bubbleColors::POSITIVE_EVEN : bubbleColors::POSITIVE_UNEVEN;
 			}
 			else {
 				unitItem.text = "-";
+				textColor = bubbleColors::UNIT_TEXT_NEGATIVE;
+				backgroundColor = isEven(gameState, id) ? bubbleColors::NEGATIVE_EVEN : bubbleColors::NEGATIVE_UNEVEN;
 			}
-			middle::Id id = unitCache->relevantIdVector[i];
 			setTransform(unitItem, transform);
 
 			auto& shape = middle::getShape(gameState, unitCache->relevantIdVector[i].index);
@@ -294,7 +296,7 @@ public:
 				fontSize *= 1.2f;
 			}
 
-			unitItem.color = bubbleColors::UNIT_TEXT;
+			unitItem.color = textColor;
 			unitItem.textOffset.x = -rect->width * 0.42f;
 			unitItem.textOffset.z = rect->height * 1.5f;
 			unitItem.fontSize = bubble::variableTextFontSize;
@@ -309,7 +311,7 @@ public:
 			texture.transform.scale.x *= scaleCorrection;
 			texture.transform.scale.y *= scaleCorrection;
 			texture.transform.scale.z *= scaleCorrection;
-			texture.color = unit->value < 0 ? bubbleColors::NEGATIVE_UNIT : bubbleColors::POSITIVE_UNIT;
+			texture.color = backgroundColor;
 			gameState->renderData.push_back(texture);
 		}
 
@@ -325,12 +327,22 @@ public:
 			auto layer = *layerIt;
 			auto rect = *variableRectIt;
 			auto transform = *varTransformIt;
-			auto& shape = middle::getShape(gameState, variableCache->relevantIdVector[i].index);
-			bool isUiItem = middle::getComponent<components::UiComponent>(shape);
+			auto id = variableCache->relevantIdVector[i];
 
-			auto intersectable = middle::getComponent<components::IntersectingTag>(shape);
+			std::string varText;
+			Color colorText;
+			Color colorBackground;
+			if (!variable->isNegative) {
+				colorText = bubbleColors::VARIABLE_TEXT_POSITIVE;
+				colorBackground = isEven(gameState, id) ? bubbleColors::POSITIVE_EVEN : bubbleColors::POSITIVE_UNEVEN;
+			}
+			else{
+				varText = "-";
+				colorText = bubbleColors::VARIABLE_TEXT_NEGATIVE;
+				colorBackground = isEven(gameState, id) ? bubbleColors::NEGATIVE_EVEN : bubbleColors::NEGATIVE_UNEVEN;
+			}
+			varText += variable->label;
 
-			Color backgroundColor = getBubbleColor(gameState, shape.id, bubble);
 			middle::RenderItem texture;
 			texture.type = middle::RenderItemType::BILLBOARD;
 			texture.shader = &gameState->shaderMap[bubbleShaderNames::BUBBLE_SHADER].shader;
@@ -340,18 +352,14 @@ public:
 			texture.transform.scale.x *= scaleCorrection;
 			texture.transform.scale.y *= scaleCorrection;
 			texture.transform.scale.z *= scaleCorrection;
-			texture.color = backgroundColor;
+			texture.color = colorBackground;
 			gameState->renderData.push_back(texture);
 
 			middle::RenderItem variableText;
 			variableText.type = middle::RenderItemType::TEXT;
 			setTransform(variableText, transform);
-			variableText.color = bubbleColors::POSITIVE_UNIT;
-			variableText.text = variable->label;
-			if (variable->isNegative) {
-				variableText.color = bubbleColors::NEGATIVE_UNIT;
-				variableText.text = "-" + variable->label;
-			}
+			variableText.text = varText;
+			variableText.color = colorText;
 			variableText.textOffset.x = -rect->width * 0.42f;
 			variableText.textOffset.z = rect->height * 1.5f;
 			variableText.fontSize = bubble::variableTextFontSize;
@@ -365,7 +373,7 @@ public:
 		auto mulRectIt = mulCache->begin<components::Rectangle>();
 		auto mulTransformIt = mulCache->begin<components::GlobalTransform>();
 		auto mulLayerIt = mulCache->begin<components::Layer>();
-		for (int i = 0; i < mulCache->getSize(); ++i) {
+		for (middle::Id id : mulCache->relevantIdVector) {
 			auto multiplyComponent = *mulIt;
 			auto rect = *mulRectIt;
 			auto transform = *mulTransformIt;
@@ -380,10 +388,11 @@ public:
 			texture.transform.scale.x *= scaleCorrection;
 			texture.transform.scale.y *= scaleCorrection;
 			texture.transform.scale.z *= scaleCorrection;
-			texture.color = GREEN;
+			texture.color = isEven(gameState, id) ? bubbleColors::MULTIPLICATION_EVEN : bubbleColors::MULTIPLICATION_UNEVEN;
 			gameState->renderData.push_back(texture);
 
-			renderBubbleLabel(gameState, transform, rect->height, u8"\u00D7", layer->layer, LabelPos::CENTER);
+			renderBubbleLabel(gameState, transform, rect->height, u8"\u00D7", 
+				layer->layer, LabelPos::CENTER, bubbleColors::MULTIPLICATION_TEXT);
 		}
 
 		// renderPowers
@@ -406,10 +415,11 @@ public:
 			texture.transform.scale.x *= scaleCorrection;
 			texture.transform.scale.y *= scaleCorrection;
 			texture.transform.scale.z *= scaleCorrection;
-			texture.color = bubbleColors::POWER_EVEN;
+			texture.color = isEven(gameState, powerId) ? bubbleColors::POWER_EVEN : bubbleColors::POWER_UNEVEN;
 			gameState->renderData.push_back(texture);
 
-			renderBubbleLabel(gameState, transform, rect->height, "^", layer->layer, LabelPos::CENTER);
+			renderBubbleLabel(gameState, transform, rect->height, "^", 
+				layer->layer, LabelPos::CENTER, bubbleColors::POWER_TEXT);
 		}
 
 		auto cuboidIt = cuboidCache->begin<components::Cuboid>();
@@ -446,10 +456,11 @@ public:
 			texture.transform.scale.x *= scaleCorrection;
 			texture.transform.scale.y *= scaleCorrection;
 			texture.transform.scale.z *= scaleCorrection;
-			texture.color = bubbleColors::EQUALS_EVEN;
+			texture.color = isEven(gameState, id) ? bubbleColors::EQUALS_EVEN : bubbleColors::EQUALS_UNEVEN;
 			gameState->renderData.push_back(texture);
 
-			renderBubbleLabel(gameState, transform, rect->height, "=", layer->layer, LabelPos::CENTER);
+			renderBubbleLabel(gameState, transform, rect->height, "=", 
+				layer->layer, LabelPos::CENTER, bubbleColors::EQUALS_TEXT);
 		}
 
 		auto inequTransformIt = inequCache->begin<components::GlobalTransform>();
@@ -469,7 +480,7 @@ public:
 			texture.transform.scale.x *= scaleCorrection;
 			texture.transform.scale.y *= scaleCorrection;
 			texture.transform.scale.z *= scaleCorrection;
-			texture.color = bubbleColors::INEQUALS_EVEN;
+			texture.color = isEven(gameState, id) ? bubbleColors::INEQUALS_EVEN : bubbleColors::INEQUALS_UNEVEN;
 			gameState->renderData.push_back(texture);
 		}
 
@@ -553,7 +564,8 @@ public:
 			auto func = *functionIt;
 			auto layer = *functionLayerIt;
 
-			renderBubbleLabel(gameState, transform, rect->width, func->label + "()", layer->layer, LabelPos::CENTER);
+			renderBubbleLabel(gameState, transform, rect->width, func->label + "()",
+				layer->layer, LabelPos::CENTER, bubbleColors::FUNCTION_TEXT);
 
 			middle::RenderItem texture;
 			texture.type = middle::RenderItemType::BILLBOARD;
@@ -564,7 +576,7 @@ public:
 			texture.transform.scale.x *= scaleCorrection;
 			texture.transform.scale.y *= scaleCorrection;
 			texture.transform.scale.z *= scaleCorrection;
-			texture.color = bubbleColors::FUNCTION_EVEN;
+			texture.color = isEven(gameState, id) ? bubbleColors::FUNCTION_EVEN : bubbleColors::FUNCTION_UNEVEN;
 			gameState->renderData.push_back(texture);
 
 			// render indexes
@@ -575,7 +587,8 @@ public:
 				auto transform = middle::getComp<components::GlobalTransform>(gameState, childId);
 				auto globalRChild = middle::getComp<components::GlobalRect>(gameState, childId);
 				auto layer = middle::getComp<components::Layer>(gameState, childId);
-				renderBubbleLabel(gameState, transform, rect->width, std::to_string(index++), layer->layer, LabelPos::LEFT);
+				renderBubbleLabel(gameState, transform, rect->width, std::to_string(index++),
+					layer->layer, LabelPos::LEFT, bubbleColors::FUNCTION_TEXT);
 			}
 		}
 
@@ -597,10 +610,11 @@ public:
 			texture.transform.scale.x *= scaleCorrection;
 			texture.transform.scale.y *= scaleCorrection;
 			texture.transform.scale.z *= scaleCorrection;
-			texture.color = bubbleColors::SUMMATION_EVEN;
+			texture.color = isEven(gameState, id) ? bubbleColors::SUMMATION_EVEN : bubbleColors::SUMMATION_UNEVEN;
 			gameState->renderData.push_back(texture);
 
-			renderBubbleLabel(gameState, transform, rect->width, u8"\u2211", layer->layer, LabelPos::CENTER);
+			renderBubbleLabel(gameState, transform, rect->width, u8"\u2211", 
+				layer->layer, LabelPos::CENTER, bubbleColors::SUMMATION_TEXT);
 		}
 	}
 
