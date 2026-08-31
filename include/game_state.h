@@ -146,6 +146,7 @@ namespace middle {
 		bool copyNegated = false;
 		bool copyInverted = false;
 		int postUndoFrames = 0;
+		float worldScale = 1;
 	};
 
 	struct ModelContainer {

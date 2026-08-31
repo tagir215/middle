@@ -21,15 +21,17 @@ class BubbleManualScalingSystem : public middle::MiddleGameplaySystem {
 			return;
 		}
 
-		const float scaleSpeed = 0.3f * -gameState->gameInput.mouseWheelMove;
+		const float scaleSpeed = 20.0f;
+		const float scaleDelta = scaleSpeed * gameState->frameTime * -gameState->gameInput.mouseWheelMove;
 
 		float scalar = 1;
 		if (gameState->gameInput.zoomIn) {
-			scalar = scalar + scaleSpeed;
+			scalar = scalar + scaleDelta;
 		}
 		else {
-			scalar = scalar - scaleSpeed;
+			scalar = scalar - scaleDelta;
 		}
+		gameState->bubbleAlgebraState.worldScale *= scalar;
 
 		Vector3 mousePos = gameState->input.mouseXZ_PlanePos;
 		Matrix transM = MatrixTranslate(-mousePos.x, -mousePos.y, -mousePos.z);
@@ -47,7 +49,7 @@ class BubbleManualScalingSystem : public middle::MiddleGameplaySystem {
 			Vector3 newPos = Vector3Transform(transform->pos, m);
 
 			scale->scale *= scalar;
-			middle::moveShape(gameState, id.index, newPos - transform->pos);
+			middle::setLocalPosition(gameState, id, newPos);
 		}
 	}
 };

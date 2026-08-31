@@ -40,6 +40,7 @@
 #include "GlobalRect.h"
 #include "BubbleSummationComponent.h"
 #include "bubble_paths.h"
+#include "imgui.h"
 
 class BubbleRenderSetup : public middle::MiddleGameplaySystem {
 public:
@@ -212,11 +213,31 @@ public:
 		gameState->renderData.push_back(text);
 	}
 
-	bool isEven(middle::GameState* gameState, middle::Id id) {
-		int depth = bubble::findBubbleDepth(gameState, id);
-		bool isEven = depth % 2 == 0;
-		return isEven;
+	Color calculateFadedColor(middle::GameState* gameState, const Color& color, components::GlobalTransform* transform, int layer) {
+		const Color background = bubbleColors::BACKGROUND;
+		float s = 1;
+
+		const float oneChildScaleRatio = 0.758;
+		const float stepScale = 1 - oneChildScaleRatio;
+		float layerOffset = 0;
+		//if(stepScale != 0)
+		//	layerOffset = gameState->bubbleAlgebraState.imaginaryYPos * stepScale;
+
+		float layerY = layer + layerOffset;
+
+		if (layerY > 0) {
+			s = 1.0f / (layerY + 1);
+		}
+		//s = std::powf(s, 0.20f);
+
+		Color result;
+		result.r = color.r * s + background.r * (1 - s);
+		result.g = color.g * s + background.g * (1 - s);
+		result.b = color.b * s + background.b * (1 - s);
+		result.a = 255;
+		return result;
 	}
+
 
 	void update(middle::GameState* gameState) override {
 
@@ -245,8 +266,7 @@ public:
 			auto intersectable = middle::getComponent<components::IntersectingTag>(shape);
 			bool intersecting = intersectable && intersectable->intersectingTop;
 
-
-			Color backgroundColor = isEven(gameState, shape.id) ? bubbleColors::BUBBLE_EVEN : bubbleColors::BUBBLE_UNEVEN;
+			Color backgroundColor = calculateFadedColor(gameState, bubbleColors::BUBBLE, transform, layer->layer);
 
 			middle::RenderItem texture;
 			texture.type = middle::RenderItemType::BILLBOARD;
@@ -280,12 +300,12 @@ public:
 			if (unit->value > 0) {
 				unitItem.text = "+";
 				textColor = bubbleColors::UNIT_TEXT_POSITIVE;
-				backgroundColor = isEven(gameState, id) ? bubbleColors::POSITIVE_EVEN : bubbleColors::POSITIVE_UNEVEN;
+				backgroundColor = calculateFadedColor(gameState, bubbleColors::POSITIVE_UNIT, transform, layer->layer);
 			}
 			else {
 				unitItem.text = "-";
 				textColor = bubbleColors::UNIT_TEXT_NEGATIVE;
-				backgroundColor = isEven(gameState, id) ? bubbleColors::NEGATIVE_EVEN : bubbleColors::NEGATIVE_UNEVEN;
+				backgroundColor = calculateFadedColor(gameState, bubbleColors::NEGATIVE_UNIT, transform, layer->layer);
 			}
 			setTransform(unitItem, transform);
 
@@ -333,13 +353,13 @@ public:
 			Color colorText;
 			Color colorBackground;
 			if (!variable->isNegative) {
-				colorText = bubbleColors::VARIABLE_TEXT_POSITIVE;
-				colorBackground = isEven(gameState, id) ? bubbleColors::POSITIVE_EVEN : bubbleColors::POSITIVE_UNEVEN;
+				colorText = bubbleColors::UNIT_TEXT_POSITIVE;
+				colorBackground = calculateFadedColor(gameState, bubbleColors::POSITIVE_UNIT, transform, layer->layer);
 			}
 			else{
 				varText = "-";
-				colorText = bubbleColors::VARIABLE_TEXT_NEGATIVE;
-				colorBackground = isEven(gameState, id) ? bubbleColors::NEGATIVE_EVEN : bubbleColors::NEGATIVE_UNEVEN;
+				colorText = bubbleColors::UNIT_TEXT_NEGATIVE;
+				colorBackground = calculateFadedColor(gameState, bubbleColors::NEGATIVE_UNIT, transform, layer->layer);
 			}
 			varText += variable->label;
 
@@ -388,7 +408,8 @@ public:
 			texture.transform.scale.x *= scaleCorrection;
 			texture.transform.scale.y *= scaleCorrection;
 			texture.transform.scale.z *= scaleCorrection;
-			texture.color = isEven(gameState, id) ? bubbleColors::MULTIPLICATION_EVEN : bubbleColors::MULTIPLICATION_UNEVEN;
+			texture.color = calculateFadedColor(gameState, bubbleColors::MULTIPLICATION, transform, layer->layer);
+			
 			gameState->renderData.push_back(texture);
 
 			renderBubbleLabel(gameState, transform, rect->height, u8"\u00D7", 
@@ -415,7 +436,7 @@ public:
 			texture.transform.scale.x *= scaleCorrection;
 			texture.transform.scale.y *= scaleCorrection;
 			texture.transform.scale.z *= scaleCorrection;
-			texture.color = isEven(gameState, powerId) ? bubbleColors::POWER_EVEN : bubbleColors::POWER_UNEVEN;
+			texture.color = calculateFadedColor(gameState, bubbleColors::POWER, transform, layer->layer);
 			gameState->renderData.push_back(texture);
 
 			renderBubbleLabel(gameState, transform, rect->height, "^", 
@@ -456,7 +477,7 @@ public:
 			texture.transform.scale.x *= scaleCorrection;
 			texture.transform.scale.y *= scaleCorrection;
 			texture.transform.scale.z *= scaleCorrection;
-			texture.color = isEven(gameState, id) ? bubbleColors::EQUALS_EVEN : bubbleColors::EQUALS_UNEVEN;
+			texture.color = calculateFadedColor(gameState, bubbleColors::EQUALS, transform, layer->layer);
 			gameState->renderData.push_back(texture);
 
 			renderBubbleLabel(gameState, transform, rect->height, "=", 
@@ -480,7 +501,7 @@ public:
 			texture.transform.scale.x *= scaleCorrection;
 			texture.transform.scale.y *= scaleCorrection;
 			texture.transform.scale.z *= scaleCorrection;
-			texture.color = isEven(gameState, id) ? bubbleColors::INEQUALS_EVEN : bubbleColors::INEQUALS_UNEVEN;
+			texture.color = calculateFadedColor(gameState, bubbleColors::INEQUALS, transform, layer->layer);
 			gameState->renderData.push_back(texture);
 		}
 
@@ -576,7 +597,7 @@ public:
 			texture.transform.scale.x *= scaleCorrection;
 			texture.transform.scale.y *= scaleCorrection;
 			texture.transform.scale.z *= scaleCorrection;
-			texture.color = isEven(gameState, id) ? bubbleColors::FUNCTION_EVEN : bubbleColors::FUNCTION_UNEVEN;
+			texture.color = calculateFadedColor(gameState, bubbleColors::FUNCTION, transform, layer->layer);
 			gameState->renderData.push_back(texture);
 
 			// render indexes
@@ -610,7 +631,7 @@ public:
 			texture.transform.scale.x *= scaleCorrection;
 			texture.transform.scale.y *= scaleCorrection;
 			texture.transform.scale.z *= scaleCorrection;
-			texture.color = isEven(gameState, id) ? bubbleColors::SUMMATION_EVEN : bubbleColors::SUMMATION_UNEVEN;
+			texture.color = calculateFadedColor(gameState, bubbleColors::SUMMATION, transform, layer->layer);
 			gameState->renderData.push_back(texture);
 
 			renderBubbleLabel(gameState, transform, rect->width, u8"\u2211", 

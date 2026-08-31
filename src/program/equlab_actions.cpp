@@ -14,6 +14,7 @@
 #include "BubbleInequaltyComponent.h"
 #include "BubbleFunctionComponent.h"
 #include "BubbleSummationComponent.h"
+#include "LocalScale.h"
 
 namespace equlab {
 
@@ -21,15 +22,18 @@ namespace equlab {
 
 	void AddBubble::execute(middle::GameState* gameState) {
 		middle::Shape newBubbleProto = bubble::newBubble(gameState, targetPosition);
-		auto registerAction = std::make_unique<middle::EditorActionRegisterShape>(newBubbleProto);
-		registerAction->execute(gameState);
+		auto registerAction = middle::executeAction<middle::EditorActionRegisterShape>
+			(gameState, this, newBubbleProto);
 		resultId = registerAction->newShapeId;
-		actions.push_back(std::move(registerAction));
 		if (parentId.index != middle::UNASSIGNED) {
-			auto reparent = std::make_unique<middle::EditorActionReparent>(parentId.index, resultId.index);
-			reparent->execute(gameState);
-			actions.push_back(std::move(reparent));
+			middle::executeAction<middle::EditorActionReparent>(gameState, this, parentId.index, resultId.index);
 		}
+		auto scaleComp = middle::getComp<components::LocalScale>(gameState, resultId);
+		float scale = gameState->bubbleAlgebraState.worldScale;
+
+		scaleComp->scale.x = scale;
+		scaleComp->scale.y = scale;
+		scaleComp->scale.z = scale;
 		auto timer = middle::attachComponent<components::UnIntersectableWindowComponent>(gameState, resultId);
 		timer->timeLeft = freshnessTime;
 	}
