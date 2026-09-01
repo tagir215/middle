@@ -42,6 +42,7 @@
 #include "bubble_paths.h"
 #include "imgui.h"
 
+
 class BubbleRenderSetup : public middle::MiddleGameplaySystem {
 public:
 
@@ -68,7 +69,7 @@ public:
 	components::CompCache* functionCache;
 	components::CompCache* summationCache;
 
-			const float scaleCorrection = 7.2f;
+			const float scaleCorrection = 10.2f;
 
 	void init(middle::GameState* gameState) {
 		bubbleCache = middle::newCompCache(gameState, systemName);
@@ -213,29 +214,108 @@ public:
 		gameState->renderData.push_back(text);
 	}
 
+
 	Color calculateFadedColor(middle::GameState* gameState, const Color& color, components::GlobalTransform* transform, int layer) {
 		const Color background = bubbleColors::BACKGROUND;
-		float s = 1;
 
 		const float oneChildScaleRatio = 0.758;
-		const float stepScale = 1 - oneChildScaleRatio;
+		const float stepScale = 1.0f / oneChildScaleRatio;
 		float layerOffset = 0;
-		//if(stepScale != 0)
-		//	layerOffset = gameState->bubbleAlgebraState.imaginaryYPos * stepScale;
 
-		float layerY = layer + layerOffset;
+		float camDist = gameState->activeCamera.position.y;
+		// todo... is cosntant
+		float axisY = gameState->nearPlaneAxisY / gameState->nearPlaneDistance * -camDist;
 
-		if (layerY > 0) {
-			s = 1.0f / (layerY + 1);
+		const float firstStepScale = axisY / bubble::bubbleAxis;
+
+		float maxScale = firstStepScale;
+		float minScale = 0.0001f;
+
+		float scaleRatio = transform->scale.x / maxScale;
+		if (scaleRatio > 1) {
+			scaleRatio = 1;
 		}
-		//s = std::powf(s, 0.20f);
+
+		float s = scaleRatio;
+
+		s = std::powf(s, 0.17f);
 
 		Color result;
 		result.r = color.r * s + background.r * (1 - s);
 		result.g = color.g * s + background.g * (1 - s);
 		result.b = color.b * s + background.b * (1 - s);
 		result.a = 255;
+
 		return result;
+
+
+		//if (gameState->bubbleAlgebraState.worldScale * bubble::bubbleAxis > axisY) {
+		//	float overFlowScale = gameState->bubbleAlgebraState.worldScale / firstStepScale;
+		//	float layersPassed = std::log(overFlowScale) / std::log(stepScale);
+
+		//	layerOffset = layersPassed;
+
+		//	auto ui = [gameState, layersPassed]() {
+		//		ImGui::Begin("xxx");
+		//		ImGui::Text(std::to_string(layersPassed).c_str());
+		//		ImGui::End();
+		//		};
+		//	gameState->uiSetups.push_back(ui);
+		//}
+
+		//float layerY = layer - layerOffset;
+
+		//if (layerY > 0) {
+		//	s = 1.0f / (layerY + 1);
+
+		//	s = std::powf(s, 0.1f);
+
+		//	Color result = color;
+		//	result.r = color.r * s + background.r * (1 - s);
+		//	result.g = color.g * s + background.g * (1 - s);
+		//	result.b = color.b * s + background.b * (1 - s);
+		//	result.a = 255;
+
+		//	return result;
+		//}
+		//else {
+		//	s = 1.0f / (-layerY + 1);
+
+		//	s = std::powf(s, 0.2f);
+
+		//	Color result;
+		//	result.r = color.r * s + background.r * (1 - s);
+		//	result.g = color.g * s + background.g * (1 - s);
+		//	result.b = color.b * s + background.b * (1 - s);
+		//	result.a = 255;
+		//	return result;
+		//}
+	}
+
+	void renderBubble(middle::GameState* gameState, int layer, Color color, components::GlobalTransform* transform) {
+
+		//middle::RenderItem rect;
+		//rect.type = middle::RenderItemType::RECTANGLE;
+		//rect.color = BLACK;
+		//setTransform(rect, transform);
+		//rect.layer = layer;
+		//rect.width = bubble::bubbleAxis * 2;
+		//rect.height = bubble::bubbleAxis * 2;
+		//rect.length = 0;
+		//rect.backgroundColor = color;
+		//gameState->renderData.push_back(rect);
+
+		middle::RenderItem texture;
+		texture.type = middle::RenderItemType::BILLBOARD;
+		texture.shader = &gameState->shaderMap[bubbleShaderNames::BUBBLE_SHADER].shader;
+		texture.texture = &gameState->textureMap[bubbleTextureNames::TEXTURE_BACKGROUND].texture;
+		texture.layer = layer;
+		setTransform(texture, transform);
+		texture.transform.scale.x *= scaleCorrection;
+		texture.transform.scale.y *= scaleCorrection;
+		texture.transform.scale.z *= scaleCorrection;
+		texture.color = color;
+		gameState->renderData.push_back(texture);
 	}
 
 
@@ -268,17 +348,17 @@ public:
 
 			Color backgroundColor = calculateFadedColor(gameState, bubbleColors::BUBBLE, transform, layer->layer);
 
-			middle::RenderItem texture;
-			texture.type = middle::RenderItemType::BILLBOARD;
-			texture.shader = &gameState->shaderMap[bubbleShaderNames::BUBBLE_SHADER].shader;
-			texture.texture = &gameState->textureMap[bubbleTextureNames::TEXTURE_BACKGROUND].texture;
-			texture.layer = layer->layer;
-			setTransform(texture, transform);
-			texture.transform.scale.x *= scaleCorrection;
-			texture.transform.scale.y *= scaleCorrection;
-			texture.transform.scale.z *= scaleCorrection;
-			texture.color = backgroundColor;
-			gameState->renderData.push_back(texture);
+			//middle::RenderItem debugRect;
+			//debugRect.type = middle::RenderItemType::RECTANGLE;
+			//setTransform(debugRect, transform);
+			//debugRect.color = BLUE;
+			//debugRect.layer = layer->layer;
+			//debugRect.width = bubble::bubbleAxis * 2;
+			//debugRect.height = bubble::bubbleAxis * 2;
+			//debugRect.length = 0;
+			//gameState->renderData.push_back(debugRect);
+
+			renderBubble(gameState, layer->layer, backgroundColor, transform);
 		}
 
 
@@ -319,20 +399,10 @@ public:
 			unitItem.color = textColor;
 			unitItem.textOffset.x = -rect->width * 0.42f;
 			unitItem.textOffset.z = rect->height * 1.5f;
-			unitItem.fontSize = bubble::variableTextFontSize;
+			unitItem.fontSize = bubble::bubbleFontSize;
 			gameState->renderData.push_back(unitItem);
 
-			middle::RenderItem texture;
-			texture.type = middle::RenderItemType::BILLBOARD;
-			texture.shader = &gameState->shaderMap[bubbleShaderNames::BUBBLE_SHADER].shader;
-			texture.texture = &gameState->textureMap[bubbleTextureNames::TEXTURE_BACKGROUND].texture;
-			texture.layer = layer->layer;
-			setTransform(texture, transform);
-			texture.transform.scale.x *= scaleCorrection;
-			texture.transform.scale.y *= scaleCorrection;
-			texture.transform.scale.z *= scaleCorrection;
-			texture.color = backgroundColor;
-			gameState->renderData.push_back(texture);
+			renderBubble(gameState, layer->layer, backgroundColor, transform);
 		}
 
 		// render variables
@@ -356,24 +426,14 @@ public:
 				colorText = bubbleColors::UNIT_TEXT_POSITIVE;
 				colorBackground = calculateFadedColor(gameState, bubbleColors::POSITIVE_UNIT, transform, layer->layer);
 			}
-			else{
+			else {
 				varText = "-";
 				colorText = bubbleColors::UNIT_TEXT_NEGATIVE;
 				colorBackground = calculateFadedColor(gameState, bubbleColors::NEGATIVE_UNIT, transform, layer->layer);
 			}
 			varText += variable->label;
 
-			middle::RenderItem texture;
-			texture.type = middle::RenderItemType::BILLBOARD;
-			texture.shader = &gameState->shaderMap[bubbleShaderNames::BUBBLE_SHADER].shader;
-			texture.texture = &gameState->textureMap[bubbleTextureNames::TEXTURE_BACKGROUND].texture;
-			texture.layer = layer->layer;
-			setTransform(texture, transform);
-			texture.transform.scale.x *= scaleCorrection;
-			texture.transform.scale.y *= scaleCorrection;
-			texture.transform.scale.z *= scaleCorrection;
-			texture.color = colorBackground;
-			gameState->renderData.push_back(texture);
+			renderBubble(gameState, layer->layer, colorBackground, transform);
 
 			middle::RenderItem variableText;
 			variableText.type = middle::RenderItemType::TEXT;
@@ -382,7 +442,7 @@ public:
 			variableText.color = colorText;
 			variableText.textOffset.x = -rect->width * 0.42f;
 			variableText.textOffset.z = rect->height * 1.5f;
-			variableText.fontSize = bubble::variableTextFontSize;
+			variableText.fontSize = bubble::bubbleFontSize;
 			gameState->renderData.push_back(variableText);
 
 		}
@@ -399,20 +459,9 @@ public:
 			auto transform = *mulTransformIt;
 			auto layer = *mulLayerIt;
 
-			middle::RenderItem texture;
-			texture.type = middle::RenderItemType::BILLBOARD;
-			texture.shader = &gameState->shaderMap[bubbleShaderNames::BUBBLE_SHADER].shader;
-			texture.texture = &gameState->textureMap[bubbleTextureNames::TEXTURE_BACKGROUND].texture;
-			texture.layer = layer->layer;
-			setTransform(texture, transform);
-			texture.transform.scale.x *= scaleCorrection;
-			texture.transform.scale.y *= scaleCorrection;
-			texture.transform.scale.z *= scaleCorrection;
-			texture.color = calculateFadedColor(gameState, bubbleColors::MULTIPLICATION, transform, layer->layer);
-			
-			gameState->renderData.push_back(texture);
+			renderBubble(gameState, layer->layer, calculateFadedColor(gameState, bubbleColors::MULTIPLICATION, transform, layer->layer), transform);
 
-			renderBubbleLabel(gameState, transform, rect->height, u8"\u00D7", 
+			renderBubbleLabel(gameState, transform, rect->height, u8"\u00D7",
 				layer->layer, LabelPos::CENTER, bubbleColors::MULTIPLICATION_TEXT);
 		}
 
@@ -427,19 +476,9 @@ public:
 			auto transform = *powerTransformIt;
 			auto layer = *powerLayerIt;
 
-			middle::RenderItem texture;
-			texture.type = middle::RenderItemType::BILLBOARD;
-			texture.shader = &gameState->shaderMap[bubbleShaderNames::BUBBLE_SHADER].shader;
-			texture.texture = &gameState->textureMap[bubbleTextureNames::TEXTURE_BACKGROUND].texture;
-			texture.layer = layer->layer;
-			setTransform(texture, transform);
-			texture.transform.scale.x *= scaleCorrection;
-			texture.transform.scale.y *= scaleCorrection;
-			texture.transform.scale.z *= scaleCorrection;
-			texture.color = calculateFadedColor(gameState, bubbleColors::POWER, transform, layer->layer);
-			gameState->renderData.push_back(texture);
+			renderBubble(gameState, layer->layer, calculateFadedColor(gameState, bubbleColors::POWER, transform, layer->layer), transform);
 
-			renderBubbleLabel(gameState, transform, rect->height, "^", 
+			renderBubbleLabel(gameState, transform, rect->height, "^",
 				layer->layer, LabelPos::CENTER, bubbleColors::POWER_TEXT);
 		}
 
@@ -468,19 +507,9 @@ public:
 			auto rect = *equCircleIt;;
 			auto layer = *equLayerIt;
 
-			middle::RenderItem texture;
-			texture.type = middle::RenderItemType::BILLBOARD;
-			texture.shader = &gameState->shaderMap[bubbleShaderNames::BUBBLE_SHADER].shader;
-			texture.texture = &gameState->textureMap[bubbleTextureNames::TEXTURE_BACKGROUND].texture;
-			texture.layer = layer->layer;
-			setTransform(texture, transform);
-			texture.transform.scale.x *= scaleCorrection;
-			texture.transform.scale.y *= scaleCorrection;
-			texture.transform.scale.z *= scaleCorrection;
-			texture.color = calculateFadedColor(gameState, bubbleColors::EQUALS, transform, layer->layer);
-			gameState->renderData.push_back(texture);
+			renderBubble(gameState, layer->layer, calculateFadedColor(gameState, bubbleColors::EQUALS, transform, layer->layer), transform);
 
-			renderBubbleLabel(gameState, transform, rect->height, "=", 
+			renderBubbleLabel(gameState, transform, rect->height, "=",
 				layer->layer, LabelPos::CENTER, bubbleColors::EQUALS_TEXT);
 		}
 
@@ -492,17 +521,7 @@ public:
 			auto rect = *inequRectIt;
 			auto layer = *inequLayerIt;
 
-			middle::RenderItem texture;
-			texture.type = middle::RenderItemType::BILLBOARD;
-			texture.shader = &gameState->shaderMap[bubbleShaderNames::BUBBLE_SHADER].shader;
-			texture.texture = &gameState->textureMap[bubbleTextureNames::TEXTURE_BACKGROUND].texture;
-			texture.layer = layer->layer;
-			setTransform(texture, transform);
-			texture.transform.scale.x *= scaleCorrection;
-			texture.transform.scale.y *= scaleCorrection;
-			texture.transform.scale.z *= scaleCorrection;
-			texture.color = calculateFadedColor(gameState, bubbleColors::INEQUALS, transform, layer->layer);
-			gameState->renderData.push_back(texture);
+			renderBubble(gameState, layer->layer, calculateFadedColor(gameState, bubbleColors::INEQUALS, transform, layer->layer), transform);
 		}
 
 
@@ -588,17 +607,7 @@ public:
 			renderBubbleLabel(gameState, transform, rect->width, func->label + "()",
 				layer->layer, LabelPos::CENTER, bubbleColors::FUNCTION_TEXT);
 
-			middle::RenderItem texture;
-			texture.type = middle::RenderItemType::BILLBOARD;
-			texture.shader = &gameState->shaderMap[bubbleShaderNames::BUBBLE_SHADER].shader;
-			texture.texture = &gameState->textureMap[bubbleTextureNames::TEXTURE_BACKGROUND].texture;
-			texture.layer = layer->layer;
-			setTransform(texture, transform);
-			texture.transform.scale.x *= scaleCorrection;
-			texture.transform.scale.y *= scaleCorrection;
-			texture.transform.scale.z *= scaleCorrection;
-			texture.color = calculateFadedColor(gameState, bubbleColors::FUNCTION, transform, layer->layer);
-			gameState->renderData.push_back(texture);
+			renderBubble(gameState, layer->layer, calculateFadedColor(gameState, bubbleColors::FUNCTION, transform, layer->layer), transform);
 
 			// render indexes
 			std::vector<middle::Id>children;
@@ -622,19 +631,9 @@ public:
 			auto rect = *summationRectIt;
 			auto layer = *summationLayerIt;
 
-			middle::RenderItem texture;
-			texture.type = middle::RenderItemType::BILLBOARD;
-			texture.shader = &gameState->shaderMap[bubbleShaderNames::BUBBLE_SHADER].shader;
-			texture.texture = &gameState->textureMap[bubbleTextureNames::TEXTURE_BACKGROUND].texture;
-			texture.layer = layer->layer;
-			setTransform(texture, transform);
-			texture.transform.scale.x *= scaleCorrection;
-			texture.transform.scale.y *= scaleCorrection;
-			texture.transform.scale.z *= scaleCorrection;
-			texture.color = calculateFadedColor(gameState, bubbleColors::SUMMATION, transform, layer->layer);
-			gameState->renderData.push_back(texture);
+			renderBubble(gameState, layer->layer, calculateFadedColor(gameState, bubbleColors::SUMMATION, transform, layer->layer), transform);
 
-			renderBubbleLabel(gameState, transform, rect->width, u8"\u2211", 
+			renderBubbleLabel(gameState, transform, rect->width, u8"\u2211",
 				layer->layer, LabelPos::CENTER, bubbleColors::SUMMATION_TEXT);
 		}
 	}

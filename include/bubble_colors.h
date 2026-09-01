@@ -8,7 +8,7 @@ namespace bubbleColors {
 	inline Color NEGATIVE_UNIT = BLACK;
 	inline Color UNIT_TEXT_POSITIVE = BLACK;
 	inline Color UNIT_TEXT_NEGATIVE = WHITE;
-	inline Color MULTIPLICATION = {194,49,121,255};
+	inline Color MULTIPLICATION = {58,81,66,255};
 	inline Color MULTIPLICATION_TEXT = BLACK;
 	inline Color POWER = {165,117,163,255};
 	inline Color POWER_TEXT = BLACK;

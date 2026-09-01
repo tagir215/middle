@@ -31,10 +31,8 @@
 #include "BubbleSummationComponent.h"
 
 namespace bubble {
-	float unitRadius = 24;
-	float variableRadius = 34;
-	float variableTextFontSize = 100;
-	float minTopDogRadius = 50;
+	float bubbleAxis = 50;
+	float bubbleFontSize = 150;
 
 	bool pointIntersectBubble(middle::GameState* gameState, middle::Shape& bubbleShape, const Vector3& point)
 	{
@@ -1327,8 +1325,8 @@ namespace bubble {
 		middle::addComponent<components::PhysicsData>(newBubbleShape);
 		middle::addComponent<components::Layer>(newBubbleShape);
 		auto rect = middle::addComponent<components::Rectangle>(newBubbleShape);
-		rect->width = variableRadius * 2;
-		rect->height = variableRadius * 2;
+		rect->width = bubbleAxis * 2;
+		rect->height = bubbleAxis * 2;
 		middle::addComponent<components::GlobalRect>(newBubbleShape);
 		auto position = middle::addComponent<components::LocalPosition>(newBubbleShape);
 		position->pos = targetPos;

@@ -5,11 +5,8 @@
 using namespace middle;
 
 namespace bubble {
-
-	extern float unitRadius;
-	extern float variableRadius;
-	extern float variableTextFontSize;
-	extern float minTopDogRadius;
+	extern float bubbleAxis;
+	extern float bubbleFontSize;
 
 	bool pointIntersectBubble(middle::GameState* gameState, middle::Shape& bubble, const Vector3& point);
 	// get left right top bottom of a rect containing rect children 

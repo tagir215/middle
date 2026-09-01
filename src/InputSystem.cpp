@@ -214,8 +214,14 @@ public:
 		gameState->input.mouseNormalizedPos.y = (float)relativeY / (float)cameraPosX;
 		gameState->aspectRatio = gameState->screenWidth / gameState->screenHeight;
 		float angle = gameState->activeCamera.fovy * DEG2RAD * 0.5f;
+
+		// todo move {
 		float nearAxisY = tan(angle) * gameState->nearPlaneDistance;
 		float nearAxisX = nearAxisY * gameState->aspectRatio;
+		gameState->nearPlaneAxisY = nearAxisY;
+		gameState->nearPlaneAxisX = nearAxisX;
+		// }
+
 		float nearPlanePos2dX = nearAxisX * gameState->input.mouseNormalizedPos.x;
 		float nearPlanePos2dY = nearAxisX * gameState->input.mouseNormalizedPos.y;
 

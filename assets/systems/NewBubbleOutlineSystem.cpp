@@ -54,50 +54,10 @@ public:
 		}
 	}
 
-	const float minBubbleRadius = bubble::variableRadius;
+	const float minBubbleRadius = bubble::bubbleAxis;
 
 	void update(middle::GameState* gameState) override {
-
-		return;
-
-		// calculate bubble size
-		auto circleIt = circfullCache->begin<components::Circle>();
-		auto transformIt = circfullCache->begin<components::GlobalTransform>();
-		for (int i = 0; i < circfullCache->getSize(); ++i) {
-			auto circle = *circleIt;
-			auto transform = *transformIt;
-			float inverseScale = 1;
-			if (transform->scale.x != 0) {
-				inverseScale = 1.0f / transform->scale.x;
-			}
-
-			auto& shape = middle::getShape(gameState, circfullCache->relevantIdVector[i].index);
-			std::vector<middle::Id>children;
-			middle::getAllChildrenWithComp(gameState, shape.id, children, middle::getTypeId<components::Circle>());
-			float totalArea = 0;
-			for (middle::Id& childId : children) {
-				auto& childShape = middle::getShape(gameState, childId.index);
-				auto childCircle = middle::getComponent<components::Circle>(childShape);
-				if (childCircle) {
-					auto childTransform = middle::getComponent<components::GlobalTransform>(childShape);
-					float scale = childTransform->scale.x * inverseScale;
-
-					float margin = 0;
-					float r = (childCircle->radius + margin) * scale;
-					totalArea += r * r * PI;
-				}
-			}
-
-			float radius = std::sqrt(totalArea / PI) + 4;
-			auto unit = middle::getComponent<components::BubbleUnit>(shape);
-			float minRadius = unit ? bubble::unitRadius : bubble::variableRadius;
-			if (radius < minRadius) {
-				radius = minRadius;
-			}
-			circle->radius = radius;
-		}
-
-		updateMasses(circfullCache);
+		//todo ddelete
 	}
 };
 

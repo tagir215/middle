@@ -470,6 +470,11 @@ namespace equlab {
 			}
 		}
 
+		auto localScaleRoot = middle::getComp<components::LocalScale>(gameState, rootId);
+		localScaleRoot->scale.x = gameState->bubbleAlgebraState.worldScale;
+		localScaleRoot->scale.y = gameState->bubbleAlgebraState.worldScale;
+		localScaleRoot->scale.z = gameState->bubbleAlgebraState.worldScale;
+
 		return rootId;
 	}
 
