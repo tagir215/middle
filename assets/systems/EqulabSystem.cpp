@@ -108,8 +108,9 @@ public:
 					std::string equstring = bubequ::bubbleToBubequ(gameState, activeId);
 
 					std::unordered_map<std::string, std::string>hashMap;
-					std::string bubequ = bubequ::bubbleToBubequHashes(gameState, activeId, hashMap);
-					bubequ::saveBubequ(equationName, hashMap[bubequ]);
+					std::string head = bubequ::bubbleToBubequHashes(gameState, activeId, hashMap);
+
+					bubequ::saveBubequHead(equationName, head, hashMap);
 				}
 			}
 
@@ -123,11 +124,16 @@ public:
 					const std::string path = bubblePaths::EQUATION_FOLDER + "/" + name;
 					Vector3 camXZPos = gameState->activeCamera.position;
 					camXZPos.y = 0;
-					auto bubequ = bubequ::loadBubequ(path);
-					middle::Id id = bubequ::bubequToBubble(gameState, camXZPos, bubequ);
-					auto registerAction = std::make_shared<middle::EditorActionRegisterId>(id);
-					middle::queueAction(gameState, registerAction);
-					gameState->bubbleAlgebraState.bubbleActions.push_back(registerAction);
+					//auto bubequ = bubequ::loadBubequ(path);
+
+					//middle::Id id = bubequ::bubequToBubble(gameState, camXZPos, bubequ);
+					//auto registerAction = std::make_shared<middle::EditorActionRegisterId>(id);
+					//middle::queueAction(gameState, registerAction);
+					//gameState->bubbleAlgebraState.bubbleActions.push_back(registerAction);
+
+					auto hmm = bubequ::loadBubequHead(name, {}, 3);
+					int a = 0;
+
 				}
 			}
 			ImGui::End();

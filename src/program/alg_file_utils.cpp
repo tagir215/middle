@@ -7,47 +7,23 @@
 #include <sstream>
 #include <cassert>
 #include "sha256.h"
+#include "bubequ_mapping.h"
 
 namespace bubequ {
 
 	const std::string version = "#ver 1";
 
-	bool checkVersion(const std::string& line) {
-		return line == version;
-	}
-
-	std::vector<std::string> split(const std::string& s) {
-		std::vector<std::string>parts;
-		std::string currentPart = "";
-		int bracketLevel = 0;
-		for (int i = 0; i < s.size(); ++i) {
-			char c = s[i];
-			if (c == '(') {
-				++bracketLevel;
-			}
-
-			currentPart += c;
-
-			if (c == ')') {
-				--bracketLevel;
-			}
-
-			if (bracketLevel == 0) {
-				parts.push_back(currentPart);
-				currentPart = "";
-			}
-		}
-		return parts;
-	}
-
-	std::string stripBrackets(const std::string& str) {
-		if (str[0] != '(' || str[str.size() -1] != ')') {
+	inline std::string stripBrackets(const std::string& str) {
+		if (
+			(str[0] != '(' || str[str.size() -1] != ')')
+			&& (str[0] != '[' || str[str.size() -1] != ']')
+			) {
 			throw std::runtime_error("bracket something wrong (file error)");
 		}
 		return str.substr(1, str.size() - 2);
 	}
 
-	std::string getNums(const std::string& str) {
+	inline std::string getNums(const std::string& str) {
 		std::string result;
 		for (int i = 0; i < str.size(); ++i) {
 			if (std::isdigit(str[i])) {
@@ -56,7 +32,9 @@ namespace bubequ {
 		}
 		return result;
 	}
-	std::string getLetters(const std::string& str) {
+
+
+	inline std::string getLetters(const std::string& str) {
 		std::string result;
 		for (int i = 0; i < str.size(); ++i) {
 			if (std::isalpha(str[i])) {
@@ -66,7 +44,7 @@ namespace bubequ {
 		return result;
 	}
 
-	std::shared_ptr<Unit> parseUnit(const std::string& valueStr) {
+	inline std::shared_ptr<Unit> parseUnit(const std::string& valueStr) {
 		auto unit = std::make_shared<Unit>();
 		if (valueStr == "") {
 			unit->value = 0;
@@ -96,7 +74,7 @@ namespace bubequ {
 		return unit;
 	}
 
-	std::shared_ptr<Link> parseLink(const std::string& linkStr) {
+	inline std::shared_ptr<Link> parseLink(const std::string& linkStr) {
 		auto link = std::make_shared<Link>();
 		char operatorChar = linkStr[0];
 		int substringStart = 1;
@@ -136,8 +114,7 @@ namespace bubequ {
 		return link;
 	}
 
-
-	std::shared_ptr<Scope> parseScope(const std::string& line) {
+	inline std::shared_ptr<Scope> parseScope(const std::string& line) {
 		std::string scopeStr = stripBrackets(line);
 
 		if (scopeStr == "") {
@@ -181,9 +158,42 @@ namespace bubequ {
 			}
 			return scope;
 		}
+		else if (operatorChar == '[') {
+			auto scope = std::make_shared < bubequ::Scope>();
+			scope->hash = stripBrackets(line);
+			return scope;
+		}
 		else {
 			return parseUnit(scopeStr);
 		}
+	}
+
+	bool checkVersion(const std::string& line, const std::string ver) {
+		return line == ver;
+	}
+
+	std::vector<std::string> split(const std::string& s) {
+		std::vector<std::string>parts;
+		std::string currentPart = "";
+		int bracketLevel = 0;
+		for (int i = 0; i < s.size(); ++i) {
+			char c = s[i];
+			if (c == '(') {
+				++bracketLevel;
+			}
+
+			currentPart += c;
+
+			if (c == ')') {
+				--bracketLevel;
+			}
+
+			if (bracketLevel == 0) {
+				parts.push_back(currentPart);
+				currentPart = "";
+			}
+		}
+		return parts;
 	}
 
 	std::shared_ptr<Scope> loadBubequ(const std::string& path) {
@@ -195,7 +205,7 @@ namespace bubequ {
 		std::string line;
 		while (std::getline(inputFile, line)) {
 			if (line.find("#ver") != std::string::npos) {
-				if (!checkVersion(line)) {
+				if (!checkVersion(line, "ver1")) {
 					throw std::runtime_error("bubequ file version not matching");
 				}
 				continue;
@@ -205,6 +215,7 @@ namespace bubequ {
 
 		throw std::runtime_error("Something wrong with the data");
 	}
+
 	void saveBubequ(const std::string& equname, const std::string& bubequ)
 	{	
 		std::string path = bubblePaths::EQUATION_FOLDER + "/" + equname + ".bubequ";
@@ -217,6 +228,91 @@ namespace bubequ {
 		outFile << bubequ;
 		outFile.flush();
 		outFile.close();
+	}
+
+	void saveBubequHead(const std::string& equName, const std::string& headHash, const std::unordered_map<std::string, std::string>& map)
+	{	
+		// write head ref
+		std::string path = bubblePaths::EQUATION_FOLDER + "/" + equName + ".bubequ";
+		std::ofstream outFile(path);
+		if (!outFile.is_open()) {
+			std::cerr << "failed to open to write\n";
+		}
+		outFile << version << "\n";
+		outFile << headHash;
+		outFile.flush();
+		outFile.close();
+
+		// write all the bubs
+		for (auto& pair : map) {
+			const std::string hash = pair.first;
+			const std::string content = pair.second;
+			std::string bubPath = bubblePaths::BUBBLE_TREE_FOLDER + "/" + hash;
+			std::ofstream bubOutFile(bubPath);
+			if (!bubOutFile.is_open()) {
+				std::cerr << "failed to open to write\n";
+			}
+			bubOutFile << version << "\n";
+			bubOutFile << content;
+			bubOutFile.flush();
+			bubOutFile.close();
+		}
+	}
+
+	std::shared_ptr<bubequ::Scope> loadBub(const std::string& bubHash, const BubTraversePath& traversePath, int loadDepth, int pathStepIndex, int depthIndex) {
+		const std::string path = bubblePaths::BUBBLE_TREE_FOLDER + "/" + bubHash;
+		std::ifstream inputFile(path);
+		if (!inputFile.is_open()) {
+			throw std::runtime_error("Failed to open file to open");
+		}
+		std::string line;
+		if (std::getline(inputFile, line)) {
+			auto scope = parseScope(line);
+			// at end return
+			if (traversePath.size() + depthIndex >= loadDepth) {
+				return scope;
+			}
+
+			// traverse path, don't load the whole tree until at destination
+			if (pathStepIndex < traversePath.size()) {
+				int pathDirection = traversePath[pathStepIndex];
+				auto& toLoadBub = scope->children[pathDirection];
+				toLoadBub = loadBub(toLoadBub->hash, traversePath, loadDepth, ++pathStepIndex, depthIndex);
+				return scope;
+			}
+
+			// load the whole tree until depth reached
+			for (auto& toLoadBub : scope->children) {
+				toLoadBub = loadBub(toLoadBub->hash, traversePath, loadDepth, pathStepIndex, ++depthIndex);
+			}
+			return scope;
+		}
+		throw std::runtime_error("Something wrong with the data");
+	}
+
+	std::shared_ptr<Scope> loadBubequHead(const std::string& headName, const BubTraversePath& traversePath, int loadDepth) {
+		const std::string path = bubblePaths::EQUATION_FOLDER + "/" + headName;
+
+		std::ifstream inputFile(path);
+		if (!inputFile.is_open()) {
+			throw std::runtime_error("Failed to open file to open");
+		}
+		std::string line;
+		while (std::getline(inputFile, line)) {
+			if (line.find("#ver") != std::string::npos) {
+				if (!checkVersion(line, "ver2")) {
+					throw std::runtime_error("bubequ file version not matching");
+				}
+				continue;
+			}
+
+			// line after ver assumed to be hash
+			std::string hash = line;
+			return loadBub(line, traversePath, loadDepth, 0, 0);
+		}
+
+		throw std::runtime_error("Something wrong with the data");
+
 	}
 
 	void saveTextFile(const std::string& path, const std::string& text)
@@ -248,116 +344,6 @@ namespace bubequ {
 		std::stringstream buffer;
 		buffer << inputFile.rdbuf();
 		return buffer.str();
-	}
-
-	WordProblem loadWordProblem(const std::string& path) {
-		std::ifstream inputFile(path);
-		if (!inputFile.is_open()) {
-			throw std::runtime_error("Failed to open file to open");
-		}
-
-		WordProblem result;
-		std::string line;
-		while (std::getline(inputFile, line)) {
-			if (line.find("#ver") != std::string::npos) {
-				if (!checkVersion(line)) {
-					throw std::runtime_error("bubequ file version not matching");
-				}
-				continue;
-			}
-
-			result.rawText += line + '\n';
-
-			// parse
-			std::unordered_map<std::string, std::string>varMap;
-			std::vector<std::string>words;
-			std::vector<std::string>labels;
-			std::string currentWord = "";
-			std::string currentLabel = "";
-			SentenceUnit currentUnit;
-
-			//cleanString(line);
-
-			// collect words and labels
-			bool bracketOpen = false;
-			bool parsingVarLabel = false;
-			for (int i = 0; i < line.size(); ++i) {
-				char c = line[i];
-				if (c == ' ') {
-					if (parsingVarLabel) {
-						labels.push_back(currentLabel);
-						parsingVarLabel = false;
-						currentLabel = "";
-						continue;
-					}
-					else if (!bracketOpen) {
-						words.push_back(currentWord);
-						currentWord = "";
-						continue;
-					}
-				}
-				if (c == '[') {
-					bracketOpen = true;
-					parsingVarLabel = true;
-					continue;
-				}
-				else if (c == ']') {
-					bracketOpen = false;
-					varMap[currentWord] = labels.back();
-					continue;
-				}
-				if (parsingVarLabel) {
-					currentLabel += c;
-				}
-				else {
-					currentWord += c;
-				}
-			}
-			if (currentWord != "") {
-				words.push_back(currentWord);
-			}
-
-			// labels...
-			for (std::string& word : words) {
-				SentenceUnit unit;
-				unit.text = word;
-				if (varMap.find(word) != varMap.end()) {
-					unit.varLabel = varMap[word];
-				}
-				result.sentenceUnits.push_back(unit);
-			}
-
-		}
-
-		return result;
-	}
-
-	WordProblemMobjs loadWordProblemMobjs(const std::string& path)
-	{
-		WordProblemMobjs mobjs;
-		std::ifstream inputFile(path);
-		if (!inputFile.is_open()) {
-			throw std::runtime_error("Failed to open file to open");
-		}
-		std::string line;
-		while (std::getline(inputFile, line)) {
-			if (line.find("#ver") != std::string::npos) {
-				checkVersion(line);
-			}
-			else if (line.find("text:") != std::string::npos) {
-				std::string problemFile = line.substr(5);
-				mobjs.problem = std::make_shared<WordProblem>(loadWordProblem(bubblePaths::WORD_PROBLEMS_FOLDER + "/" + problemFile));
-			}
-			else if (line.find("mobj:") != std::string::npos) {
-				std::string solutionfile = line.substr(5);
-				auto scope = loadBubequ(bubblePaths::EQUATION_FOLDER + "/" + solutionfile);
-				mobjs.solutionMobj = scope;
-			}
-			else if (line != ""){
-				throw std::runtime_error("file should have: ver: text: or mobj: at each line");
-			}
-		}
-		return mobjs;
 	}
 
 	std::vector<std::string> getFilenames(const std::string directoryPath)

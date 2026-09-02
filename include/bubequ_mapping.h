@@ -16,10 +16,13 @@
 #include "BubbleEqualsComponent.h"
 #include "BubbleVariable.h"
 #include "sha256.h"
+#include "bubequ.h"
 
 namespace bubequ{
 	inline middle::Id bubequToBubble(middle::GameState* gameState, const Vector3& targetPos, std::shared_ptr<bubequ::Scope>& bubequ);
-	inline std::string bubbleToBubequ(middle::GameState* gameState, middle::Id id);
+	inline std::string bubbleToBubequ(middle::GameState* gameState, const middle::Id id);
+	inline std::string bubbleToBubequHashes(middle::GameState* gameState, const middle::Id id, std::unordered_map<std::string, std::string>& resultMap);
+
 
 	inline middle::Id bubequToBubble(middle::GameState* gameState, const Vector3& targetPos, std::shared_ptr<bubequ::Scope>& bubequ)
 	{
@@ -230,7 +233,14 @@ namespace bubequ{
 		
 
 		for (middle::Id& childId : children) {
-			bubbleString += bubbleToBubequHashes(gameState, childId, resultMap);
+			std::string childString = bubbleToBubequHashes(gameState, childId, resultMap);
+			if (childString.size() > 0 && childString[0] == '(') {
+				bubbleString += childString;
+			}
+			// assume to be hash so contain in []
+			else {
+				bubbleString += "[" + childString + "]";
+			}
 		}
 
 		bubbleString += ")";

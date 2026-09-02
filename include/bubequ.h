@@ -25,9 +25,15 @@ namespace bubequ {
 	};
 
 	struct Scope {
+		std::string hash;
+		// actual loaded children
 		std::vector<std::shared_ptr<Scope>>children;
 		virtual ~Scope() = default;
 	};
+
+	// path from root to node
+	typedef std::vector<int> BubTraversePath;
+
 
 	struct Unit : public Scope{
 		UnitType type;
