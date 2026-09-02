@@ -107,7 +107,7 @@ namespace bubequ {
 			throw std::runtime_error("file formal error: Not known linktype");
 		}
 		std::string subStr = linkStr.substr(substringStart);
-		std::vector<std::string>scopes = split(subStr);
+		std::vector<std::string>scopes = splitChildren(subStr);
 		for (const std::string& scopeStr : scopes) {
 			link->children.push_back(parseScope(scopeStr));
 		}
@@ -115,7 +115,14 @@ namespace bubequ {
 	}
 
 	inline std::shared_ptr<Scope> parseScope(const std::string& line) {
+
 		std::string scopeStr = stripBrackets(line);
+
+		if (line[0] == '[') {
+			auto scope = std::make_shared<Scope>();
+			scope->hash = scopeStr;
+			return scope;
+		}
 
 		if (scopeStr == "") {
 			return parseUnit(scopeStr);
@@ -138,17 +145,17 @@ namespace bubequ {
 		else if (std::isalpha(operatorChar) && nextChar == '(') {
 			return parseLink(scopeStr);
 		}
-		else if (operatorChar == '(') {
+		else if (operatorChar == '(' || operatorChar == '[') {
 			auto scope = std::make_shared<bubequ::Scope>();
 			int bracketLevel = 0;
-			std::string currentScopeStr;
+			std::string currentScopeStr = "";
 			for (int i = 0; i < scopeStr.size(); ++i) {
 				char c = scopeStr[i];
-				if (c == '(') {
+				if (c == '(' || c == '[') {
 					++bracketLevel;
 				}
 				currentScopeStr += c;
-				if (c == ')') {
+				if (c == ')' || c == ']') {
 					--bracketLevel;
 				}
 				if (bracketLevel == 0) {
@@ -158,33 +165,28 @@ namespace bubequ {
 			}
 			return scope;
 		}
-		else if (operatorChar == '[') {
-			auto scope = std::make_shared < bubequ::Scope>();
-			scope->hash = stripBrackets(line);
-			return scope;
-		}
 		else {
 			return parseUnit(scopeStr);
 		}
 	}
 
 	bool checkVersion(const std::string& line, const std::string ver) {
-		return line == ver;
+		return line == "#" + ver;
 	}
 
-	std::vector<std::string> split(const std::string& s) {
+	std::vector<std::string> splitChildren(const std::string& s) {
 		std::vector<std::string>parts;
 		std::string currentPart = "";
 		int bracketLevel = 0;
 		for (int i = 0; i < s.size(); ++i) {
 			char c = s[i];
-			if (c == '(') {
+			if (c == '(' || c == '[') {
 				++bracketLevel;
 			}
 
 			currentPart += c;
 
-			if (c == ')') {
+			if (c == ')' || c == ']') {
 				--bracketLevel;
 			}
 
@@ -205,7 +207,7 @@ namespace bubequ {
 		std::string line;
 		while (std::getline(inputFile, line)) {
 			if (line.find("#ver") != std::string::npos) {
-				if (!checkVersion(line, "ver1")) {
+				if (!checkVersion(line, "ver 1")) {
 					throw std::runtime_error("bubequ file version not matching");
 				}
 				continue;
@@ -217,7 +219,7 @@ namespace bubequ {
 	}
 
 	void saveBubequ(const std::string& equname, const std::string& bubequ)
-	{	
+	{
 		std::string path = bubblePaths::EQUATION_FOLDER + "/" + equname + ".bubequ";
 		std::ofstream outFile(path);
 		if (!outFile.is_open()) {
@@ -231,14 +233,16 @@ namespace bubequ {
 	}
 
 	void saveBubequHead(const std::string& equName, const std::string& headHash, const std::unordered_map<std::string, std::string>& map)
-	{	
+	{
 		// write head ref
 		std::string path = bubblePaths::EQUATION_FOLDER + "/" + equName + ".bubequ";
 		std::ofstream outFile(path);
 		if (!outFile.is_open()) {
 			std::cerr << "failed to open to write\n";
 		}
-		outFile << version << "\n";
+		// todo move
+		const std::string version = "ver 2";
+		outFile << "#" + version << "\n";
 		outFile << headHash;
 		outFile.flush();
 		outFile.close();
@@ -252,7 +256,6 @@ namespace bubequ {
 			if (!bubOutFile.is_open()) {
 				std::cerr << "failed to open to write\n";
 			}
-			bubOutFile << version << "\n";
 			bubOutFile << content;
 			bubOutFile.flush();
 			bubOutFile.close();
@@ -268,22 +271,26 @@ namespace bubequ {
 		std::string line;
 		if (std::getline(inputFile, line)) {
 			auto scope = parseScope(line);
-			// at end return
-			if (traversePath.size() + depthIndex >= loadDepth) {
-				return scope;
-			}
 
 			// traverse path, don't load the whole tree until at destination
 			if (pathStepIndex < traversePath.size()) {
 				int pathDirection = traversePath[pathStepIndex];
 				auto& toLoadBub = scope->children[pathDirection];
-				toLoadBub = loadBub(toLoadBub->hash, traversePath, loadDepth, ++pathStepIndex, depthIndex);
+				return loadBub(toLoadBub->hash, traversePath, loadDepth, ++pathStepIndex, depthIndex);
+			}
+
+			// at end return
+			if (traversePath.size() + depthIndex >= loadDepth || dynamic_cast<Unit*>(scope.get())) {
 				return scope;
 			}
 
 			// load the whole tree until depth reached
-			for (auto& toLoadBub : scope->children) {
-				toLoadBub = loadBub(toLoadBub->hash, traversePath, loadDepth, pathStepIndex, ++depthIndex);
+			for (int i = 0; i < scope->children.size(); ++i) {
+				auto& child = scope->children[i];
+				if (child->hash != "") {
+					auto newChild = loadBub(child->hash, traversePath, loadDepth, pathStepIndex, ++depthIndex);
+					child = newChild;
+				}
 			}
 			return scope;
 		}
@@ -300,7 +307,7 @@ namespace bubequ {
 		std::string line;
 		while (std::getline(inputFile, line)) {
 			if (line.find("#ver") != std::string::npos) {
-				if (!checkVersion(line, "ver2")) {
+				if (!checkVersion(line, "ver 2")) {
 					throw std::runtime_error("bubequ file version not matching");
 				}
 				continue;
@@ -308,7 +315,7 @@ namespace bubequ {
 
 			// line after ver assumed to be hash
 			std::string hash = line;
-			return loadBub(line, traversePath, loadDepth, 0, 0);
+			return loadBub(hash, traversePath, loadDepth, 0, 0);
 		}
 
 		throw std::runtime_error("Something wrong with the data");

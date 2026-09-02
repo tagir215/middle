@@ -11,7 +11,7 @@ namespace bubequ {
 	std::shared_ptr<Unit> parseUnit(const std::string& valueStr);
 	std::shared_ptr<Link> parseLink(const std::string& linkStr);
 	bool checkVersion(const std::string& line, const std::string ver);
-	std::vector<std::string> split(const std::string& s);
+	std::vector<std::string> splitChildren(const std::string& s);
 	std::shared_ptr<Scope>loadBubequ(const std::string& path);
 	void saveBubequ(const std::string& equname, const std::string& bubequ);
 	void saveTextFile(const std::string& title, const std::string& text);

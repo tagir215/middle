@@ -126,13 +126,13 @@ public:
 					camXZPos.y = 0;
 					//auto bubequ = bubequ::loadBubequ(path);
 
-					//middle::Id id = bubequ::bubequToBubble(gameState, camXZPos, bubequ);
-					//auto registerAction = std::make_shared<middle::EditorActionRegisterId>(id);
-					//middle::queueAction(gameState, registerAction);
-					//gameState->bubbleAlgebraState.bubbleActions.push_back(registerAction);
 
-					auto hmm = bubequ::loadBubequHead(name, {}, 3);
-					int a = 0;
+					auto bubequ = bubequ::loadBubequHead(name, {}, 400);
+
+					middle::Id id = bubequ::bubequToBubble(gameState, camXZPos, bubequ);
+					auto registerAction = std::make_shared<middle::EditorActionRegisterId>(id);
+					middle::queueAction(gameState, registerAction);
+					gameState->bubbleAlgebraState.bubbleActions.push_back(registerAction);
 
 				}
 			}
