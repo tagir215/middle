@@ -17,9 +17,9 @@
 #include "Layer.h"
 #include "SceneObjectComponent.h"
 #include "TopDogBubbleTag.h"
-#include "bubble_paths.h"
 #include "LocalPosition.h"
 #include "LocalScale.h"
+#include "bubequ_mapping.h"
 
 
 class WriterUnBlockingSystem : public middle::MiddleGameplaySystem {
@@ -165,7 +165,7 @@ class WriterUnBlockingSystem : public middle::MiddleGameplaySystem {
 					if (mobjs.solutionMobj != nullptr) {
 						Vector3 targetPos = cameraXZPos;
 						targetPos.z -= spacing;
-						middle::Id bubbleId = equlab::bubequToBubble(gameState, targetPos, mobjs.solutionMobj);
+						middle::Id bubbleId = bubequ::bubequToBubble(gameState, targetPos, mobjs.solutionMobj);
 						auto registerAction = std::make_shared<middle::EditorActionRegisterId>(bubbleId);
 						actions.push_back(registerAction);
 					}

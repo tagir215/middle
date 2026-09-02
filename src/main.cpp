@@ -127,9 +127,10 @@ int main(void)
 		// Custom Math Codepoints
 		0x00D7,   // Multiplication sign (×)
 		0x22C5,   // Dot operator (⋅)
-		0x2211    // Summation operator (∑)
+		0x2211,    // Summation operator (∑)
 	};
-	gameState->globalFont = LoadFontEx("../assets/fonts/math-sans/NotoSansMath-Regular.ttf", gameState->fontUnitFactor, codepoints, 100);
+	int codepointCount = sizeof(codepoints) / sizeof(codepoints[0]);
+	gameState->globalFont = LoadFontEx("../assets/fonts/math-sans/NotoSansMath-Regular.ttf", gameState->fontUnitFactor, codepoints, codepointCount);
 	GenTextureMipmaps(&gameState->globalFont.texture);
 	SetTextureFilter(gameState->globalFont.texture, TEXTURE_FILTER_TRILINEAR);
 

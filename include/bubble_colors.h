@@ -14,7 +14,7 @@ namespace bubbleColors {
 	inline Color POWER_TEXT = BLACK;
 	inline Color EQUALS = {171,151,223,255};
 	inline Color EQUALS_TEXT = BLACK;
-	inline Color INEQUALS = EQUALS;
+	inline Color INEQUALS = {65,32,32,255};
 	inline Color INEQUALS_TEXT = BLACK;
 	inline Color SUMMATION = {246,145,122,244};
 	inline Color SUMMATION_TEXT = BLACK;

@@ -20,7 +20,7 @@ public:
 	components::CompCache* powerCache;
 	components::CompCache* summationCache;
 	const float scaleRatio = 0.93f;
-	const float oneChildScaleRatio = 0.758;
+	const float oneChildScaleRatio = 0.600f;
 	const float smoothFactor = 10;
 	const float powerBaseRatio = 1.5f;
 	const float powerExponentRatio = 0.25f;

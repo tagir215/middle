@@ -6,7 +6,7 @@
 #include <unordered_map>
 #include <sstream>
 #include <cassert>
-
+#include "sha256.h"
 
 namespace bubequ {
 

@@ -196,6 +196,5 @@ namespace equlab {
 		void undo(middle::GameState* gameState);
 	};
 
-	middle::Id bubequToBubble(middle::GameState* gameState, const Vector3& targetPos, std::shared_ptr<bubequ::Scope>& bubequ);
-	std::string bubbleToBubequ(middle::GameState* gameState, middle::Id id);
+
 }

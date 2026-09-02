@@ -83,8 +83,10 @@ public:
 		bubbleCache->addType<components::BubbleSummationComponent>(components::NOTINTERESTED);
 		bubbleCache->addType<components::BubbleFunctionComponent>(components::NOTINTERESTED);
 		bubbleCache->addType<components::BubbleMultiplyComponent>(components::NOTINTERESTED);
+		bubbleCache->addType<components::BubbleInequaltyComponent>(components::NOTINTERESTED);
 		bubbleCache->addType<components::BubbleVariable>(components::NOTINTERESTED);
 		bubbleCache->addType<components::BubbleUnit>(components::NOTINTERESTED);
+		bubbleCache->addType<components::BubbleEqualsComponent>(components::NOTINTERESTED);
 		bubbleCache->addType<components::RuntimeHiddenTag>(components::NOTINTERESTED);
 		unitCache = middle::newCompCache(gameState, systemName);
 		unitCache->addType<components::BubbleUnit>();
@@ -222,13 +224,15 @@ public:
 		const float stepScale = 1.0f / oneChildScaleRatio;
 		float layerOffset = 0;
 
+		bool isEven = layer % 2 == 0;
+
 		float camDist = gameState->activeCamera.position.y;
 		// todo... is cosntant
 		float axisY = gameState->nearPlaneAxisY / gameState->nearPlaneDistance * -camDist;
 
 		const float firstStepScale = axisY / bubble::bubbleAxis;
 
-		float maxScale = firstStepScale;
+		float maxScale = firstStepScale * 0.5f;
 		float minScale = 0.0001f;
 
 		float scaleRatio = transform->scale.x / maxScale;
@@ -359,6 +363,9 @@ public:
 			//gameState->renderData.push_back(debugRect);
 
 			renderBubble(gameState, layer->layer, backgroundColor, transform);
+
+			renderBubbleLabel(gameState, transform, rect->height, "+",
+				layer->layer, LabelPos::CENTER, bubbleColors::MULTIPLICATION_TEXT);
 		}
 
 
@@ -378,12 +385,12 @@ public:
 			Color backgroundColor;
 			middle::Id id = unitCache->relevantIdVector[i];
 			if (unit->value > 0) {
-				unitItem.text = "+";
+				unitItem.text = "1";
 				textColor = bubbleColors::UNIT_TEXT_POSITIVE;
 				backgroundColor = calculateFadedColor(gameState, bubbleColors::POSITIVE_UNIT, transform, layer->layer);
 			}
 			else {
-				unitItem.text = "-";
+				unitItem.text = "-1";
 				textColor = bubbleColors::UNIT_TEXT_NEGATIVE;
 				backgroundColor = calculateFadedColor(gameState, bubbleColors::NEGATIVE_UNIT, transform, layer->layer);
 			}
@@ -520,6 +527,9 @@ public:
 			auto transform = *inequTransformIt;
 			auto rect = *inequRectIt;
 			auto layer = *inequLayerIt;
+
+			renderBubbleLabel(gameState, transform, rect->height, ">",
+				layer->layer, LabelPos::CENTER, bubbleColors::EQUALS_TEXT);
 
 			renderBubble(gameState, layer->layer, calculateFadedColor(gameState, bubbleColors::INEQUALS, transform, layer->layer), transform);
 		}
