@@ -84,6 +84,7 @@ namespace bubble {
 	void getInequaltyLesserAndGreater(middle::GameState* gameState, middle::Id inequalBubble, middle::Id& resultLesserId, middle::Id& resultGreaterId);
 	middle::Id getOtherFromContainerOf2(middle::GameState* gameState, middle::Id id);
 	void matchBubbleTransforms(middle::GameState* gameState, middle::Id matchingModelId, middle::Id toMatchId);
+	// slow but immediate layout update
 	void recursiveBubbleLayoutUpdate(middle::GameState* gameState, middle::Id id);
 
 	template<typename T>

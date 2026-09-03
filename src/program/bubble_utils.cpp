@@ -1190,8 +1190,8 @@ namespace bubble {
 	{
 		// find ratio
 		auto targetTransform = middle::getComp<components::GlobalTransform>(gameState, matchingModelId);
-		auto toMatchTransform = middle::getComp<components::GlobalTransform>(gameState, toMatchId);
-		float scalar = targetTransform->scale.x / toMatchTransform->scale.x;
+		Vector3 toMatchGlobalScale = middle::getGlobalScale(gameState, toMatchId);
+		float scalar = targetTransform->scale.x / toMatchGlobalScale.x;
 
 		// scale topDog since that will scale all the children and it scales at same ratio
 		middle::Id topParent = toMatchId;
@@ -1214,21 +1214,25 @@ namespace bubble {
 		Vector3 newPosAfterScaling = Vector3Transform({ 0,0,0 }, transformAfterScaling);
 		auto localPos = middle::getComp<components::LocalPosition>(gameState, toMatchId);
 		Vector3 displacement = targetTransform->pos - newPosAfterScaling;
-		middle::moveShape(gameState, topParent.index, Vector3Negate(displacement));
+		middle::moveShape(gameState, topParent.index, displacement);
 	}
 
 	void recursiveBubbleLayoutUpdate(middle::GameState* gameState, middle::Id id)
 	{
 		const float moveSpeed = 10000000.0f;
+		const float scaleSmoothFactor = 1;
 		if (bubble::isPowerBubble(gameState, id)) {
+			bubble::updatePowerLayoutScale(gameState, id, scaleSmoothFactor);
 			auto rect = middle::getComp<components::Rectangle>(gameState, id);
 			bubble::updatePowerLayout(gameState, id, rect->width, moveSpeed);
 		}
 		else if (bubble::isSummation(gameState, id)) {
+			bubble::updateSummationLayoutScale(gameState, id, scaleSmoothFactor);
 			auto rect = middle::getComp<components::Rectangle>(gameState, id);
 			bubble::updatePowerLayout(gameState, id, rect->width, moveSpeed);
 		}
 		else {
+			bubble::updateBubbleLayoutScale(gameState, id, scaleSmoothFactor);
 			auto rect = middle::getComp<components::Rectangle>(gameState, id);
 			bubble::updateBubbleLayout(gameState, id, rect->width, moveSpeed);
 		}

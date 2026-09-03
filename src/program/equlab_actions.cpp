@@ -380,22 +380,25 @@ namespace equlab {
 	void LoadParent::execute(middle::GameState* gameState)
 	{
 		std::vector<int> traversePath = gameState->bubbleAlgebraState.traversePath;
-		//traversePath.pop_back();
+		std::vector<int>& traversePathOg = gameState->bubbleAlgebraState.traversePath;
+		traversePath.pop_back();
 
 		auto scope = bubequ::loadBubequHead(gameState->bubbleAlgebraState.activeBubbleName, 
 			traversePath, traversePath.size() + 1);
 		middle::Id loadedId = bubequ::bubequToBubble(gameState, Vector3{0,0,0}, scope);
 		bubble::recursiveBubbleLayoutUpdate(gameState, loadedId);
 
-		middle::Id pathStepId = loadedId;
-		for (int childIndex : traversePath) {
-			std::vector<middle::Id>children;
-			middle::getChildren(gameState, pathStepId, children);
-			pathStepId = children[childIndex];
+		std::vector<middle::Id>loadedChildren;
+		middle::getChildren(gameState, loadedId, loadedChildren);
+		middle::Id matchingChildId;
+		if (traversePathOg.size() > 0) {
+			matchingChildId = loadedChildren[traversePathOg.back()];
+		}
+		else {
+			matchingChildId = loadedId;
 		}
 
-		middle::Id pathStepParentId = middle::getParent(gameState, pathStepId);
-		bubble::matchBubbleTransforms(gameState, id, pathStepParentId);
+		bubble::matchBubbleTransforms(gameState, id, matchingChildId);
 
 
 		//middle::deleteShapeRecursive(gameState, pathStepId.index);

@@ -10,6 +10,7 @@
 #include "BubblePowerComponent.h"
 #include "bubble_utils.h"
 #include "BubbleSummationComponent.h"
+#include "bubble_layout.h"
 
 class BubbleScalingSystem : public middle::MiddleGameplaySystem {
 public:
@@ -19,14 +20,7 @@ public:
 	components::CompCache* bubbleCache;
 	components::CompCache* powerCache;
 	components::CompCache* summationCache;
-	const float scaleRatio = 0.93f;
-	const float oneChildScaleRatio = 0.600f;
-	const float smoothFactor = 10;
-	const float powerBaseRatio = 1.5f;
-	const float powerExponentRatio = 0.25f;
-	const float summationIndexRatio = 0.25f;
-	const float summationUpperLimitRatio = 0.25f;
-	const float summationSummandRatio = 0.5f;
+	const float smoothFactor = 0.3f;
 
 	void init(middle::GameState* gameState) override {
 		bubbleCache = middle::newCompCache(gameState, systemName);
@@ -52,75 +46,22 @@ public:
 		summationCache->addType<components::PauseLayoutTag>(components::NOTINTERESTED);
 	}
 
-	void updateScale(middle::GameState* gameState, middle::Id id, float targetWidth) {
-		auto childGlobalR = middle::getComp<components::GlobalRect>(gameState, id);
-		auto childScale = middle::getComp<components::LocalScale>(gameState, id);
-		float scalar = targetWidth / childGlobalR->width;
-		Vector3 targetScale = childScale->scale * scalar;
-		if(gameState->bubbleAlgebraState.postUndoFrames == 0)
-			childScale->scale += (targetScale - childScale->scale) * smoothFactor * gameState->frameTime;
-		else
-			childScale->scale = targetScale;
-	}
 
 	void update(middle::GameState* gameState) override {
 
 		auto globalRIt = bubbleCache->begin<components::GlobalRect>();
 		for (middle::Id id : bubbleCache->relevantIdVector) {
-			auto globalR = *globalRIt;
-
-			std::vector<middle::Id>children;
-			middle::getChildren(gameState, id, children);
-			int childCount = children.size();
-
-			if (childCount == 0) {
-				continue;
-			}
-
-			float ratio = scaleRatio;
-			if (childCount == 1) {
-				ratio = oneChildScaleRatio;
-			}
-
-			const float targetWidth = (globalR->width / childCount) * ratio;
-
-			for (middle::Id childId : children) {
-				updateScale(gameState, childId, targetWidth);
-			}
+			bubble::updateBubbleLayoutScale(gameState, id, smoothFactor);
 		}
 
 		auto powerGlobalRIt = powerCache->begin<components::GlobalRect>();
 		for (middle::Id id : powerCache->relevantIdVector) {
-			auto globalR = *powerGlobalRIt;
-
-			middle::Id baseId, exponentId;
-			bubble::getPowerBaseAndExponent(gameState, id, baseId, exponentId);
-
-			float halfWidth = globalR->width * 0.5f;
-
-			const float targetWidthBase = halfWidth * powerBaseRatio;
-			const float targetWidthExponent = halfWidth * powerExponentRatio;
-
-			updateScale(gameState, baseId, targetWidthBase);
-			updateScale(gameState, exponentId, targetWidthExponent);
+			bubble::updatePowerLayoutScale(gameState, id, smoothFactor);
 		}
 
 		auto summationGlobalRIt = summationCache->begin<components::GlobalRect>();
 		for (middle::Id id : summationCache->relevantIdVector) {
-			auto globalR = *summationGlobalRIt;
-
-			middle::Id indexId, upperLimitId, summandId;
-			bubble::getSummationIndexLimitSummand(gameState, id, indexId, upperLimitId, summandId);
-
-			float width = globalR->width;
-
-			const float targetWidthIndex = width * summationIndexRatio;
-			const float targetWidthUpperLimit = width * summationUpperLimitRatio;
-			const float targetWidthSummand = width * summationSummandRatio;
-
-			updateScale(gameState, indexId, targetWidthIndex);
-			updateScale(gameState, upperLimitId, targetWidthUpperLimit);
-			updateScale(gameState, summandId, targetWidthSummand);
+			bubble::updateSummationLayoutScale(gameState, id, smoothFactor);
 		}
 	}
 };

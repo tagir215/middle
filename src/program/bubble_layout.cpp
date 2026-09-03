@@ -3,8 +3,61 @@
 #include "BubbleSummationComponent.h"
 #include "bubble_utils.h"
 #include "BubblePowerComponent.h"
+#include "GlobalRect.h"
+#include "component_utils.h"
+#include "LocalScale.h"
 
 namespace bubble{
+
+	void updateScale(middle::GameState* gameState, middle::Id id, float scalar, float smoothFactor) {
+		auto childScale = middle::getComp<components::LocalScale>(gameState, id);
+		Vector3 targetScale = Vector3{ scalar,scalar,scalar };
+		if(gameState->bubbleAlgebraState.postUndoFrames == 0)
+			childScale->scale += (targetScale - childScale->scale) * smoothFactor;
+		else
+			childScale->scale = targetScale;
+	}
+
+	void updatePowerLayoutScale(middle::GameState* gameState, middle::Id id, float smoothFactor)
+	{
+		middle::Id baseId, exponentId;
+		bubble::getPowerBaseAndExponent(gameState, id, baseId, exponentId);
+		bubble::updateScale(gameState, baseId, bubble::powerBaseRatio, smoothFactor);
+		bubble::updateScale(gameState, exponentId, bubble::powerExponentRatio, smoothFactor);
+	}
+
+	void updateSummationLayoutScale(middle::GameState* gameState, middle::Id id, float smoothFactor)
+	{
+		middle::Id indexId, upperLimitId, summandId;
+		bubble::getSummationIndexLimitSummand(gameState, id, indexId, upperLimitId, summandId);
+		bubble::updateScale(gameState, indexId, bubble::summationIndexRatio, smoothFactor);
+		bubble::updateScale(gameState, upperLimitId, bubble::summationUpperLimitRatio, smoothFactor);
+		bubble::updateScale(gameState, summandId, bubble::summationSummandRatio, smoothFactor);
+	}
+
+	void updateBubbleLayoutScale(middle::GameState* gameState, middle::Id id, float smoothFactor)
+	{
+		std::vector<middle::Id>children;
+		middle::getChildren(gameState, id, children);
+		int childCount = children.size();
+
+		if (childCount == 0) {
+			return;
+		}
+
+		float ratio = bubble::scaleRatio;
+		if (childCount == 1) {
+			ratio = bubble::oneChildScaleRatio;
+		}
+		else {
+			ratio = ratio / childCount;
+		}
+
+		for (middle::Id childId : children) {
+			bubble::updateScale(gameState, childId, ratio, smoothFactor);
+		}
+	}
+
 
 	const Vector3 getDisplacement(float moveSpeed, const Vector3& targetPos, const Vector3& currentPos, float deltaTime) {
 		float speedDelta = moveSpeed * deltaTime;

@@ -82,7 +82,18 @@ namespace bubble{
 		{0.75f, 0.5f},
 	};
 
+	inline const float scaleRatio = 0.93f;
+	inline const float oneChildScaleRatio = 0.600f;
+	inline const float powerBaseRatio = 0.69f;
+	inline const float powerExponentRatio = 0.15f;
+	inline const float summationIndexRatio = 0.25f;
+	inline const float summationUpperLimitRatio = 0.25f;
+	inline const float summationSummandRatio = 0.5f;
 
+	void updateScale(middle::GameState* gameState, middle::Id id, float scalar, float smoothFactor);
+	void updateSummationLayoutScale(middle::GameState* gameState, middle::Id id, float smoothFactor);
+	void updatePowerLayoutScale(middle::GameState* gameState, middle::Id id, float smoothFactor);
+	void updateBubbleLayoutScale(middle::GameState* gameState, middle::Id id, float smoothFactor);
 	void updateSummationLayout(middle::GameState* gameState, middle::Id id, float width, float moveSpeed);
 	void updatePowerLayout(middle::GameState* gameState, middle::Id id, float width, float moveSpeed);
 	void updateBubbleLayout(middle::GameState* gameState, middle::Id id, float width, float moveSpeed);

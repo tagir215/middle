@@ -86,8 +86,8 @@ class BubbleDynamicLoadingSystem : public middle::MiddleGameplaySystem {
 		// free
 		if (resultPath.size() > 1) {
 			traversePath.push_back(resultPath.front());
-			middle::Id parentId = middle::getParent(gameState, loadPositionId);
-			auto freeParentAction = std::make_shared<equlab::FreeParent>(parentId);
+			middle::Id loadPositionParentId = middle::getParent(gameState, loadPositionId);
+			auto freeParentAction = std::make_shared<equlab::FreeParent>(loadPositionParentId);
 			middle::queueAction(gameState, freeParentAction);
 
 		}
