@@ -46,8 +46,6 @@ namespace bubequ {
 	};
 
 
-
-
 	struct SentenceUnit{
 		std::string text = "";
 		std::string varLabel = "";

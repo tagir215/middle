@@ -105,11 +105,10 @@ public:
 
 			if (ImGui::Button("Save bubequ")) {
 				for (middle::Id& activeId : activeBubbleCache->relevantIdVector) {
-					std::string equstring = bubequ::bubbleToBubequ(gameState, activeId);
 
+					auto root = bubequ::bubbleToBubequ(gameState, activeId);
 					std::unordered_map<std::string, std::string>hashMap;
-					std::string head = bubequ::bubbleToBubequHashes(gameState, activeId, hashMap);
-
+					std::string head = bubequ::bubequToHashes(gameState, root, hashMap);
 					bubequ::saveBubequHead(equationName, head, hashMap);
 				}
 			}
@@ -125,7 +124,6 @@ public:
 					Vector3 camXZPos = gameState->activeCamera.position;
 					camXZPos.y = 0;
 					//auto bubequ = bubequ::loadBubequ(path);
-
 
 					auto bubequ = bubequ::loadBubequHead(name, {}, 400);
 

@@ -19,10 +19,6 @@
 #include "bubequ.h"
 
 namespace bubequ{
-	inline middle::Id bubequToBubble(middle::GameState* gameState, const Vector3& targetPos, std::shared_ptr<bubequ::Scope>& bubequ);
-	inline std::string bubbleToBubequ(middle::GameState* gameState, const middle::Id id);
-	inline std::string bubbleToBubequHashes(middle::GameState* gameState, const middle::Id id, std::unordered_map<std::string, std::string>& resultMap);
-
 
 	inline middle::Id bubequToBubble(middle::GameState* gameState, const Vector3& targetPos, std::shared_ptr<bubequ::Scope>& bubequ)
 	{
@@ -135,105 +131,131 @@ namespace bubequ{
 		return rootId;
 	}
 
-
-	inline std::string bubbleToBubequ(middle::GameState* gameState, const middle::Id id)
-	{
+	inline std::shared_ptr<Scope> bubbleToBubequ(middle::GameState* gameState, const middle::Id id) {
 		auto& shape = middle::getShape(gameState, id.index);
-
-		std::string result;
-
-		result += "(";
-
-		if (middle::getComponent<components::BubbleMultiplyComponent>(shape)) {
-			result += "*";
-		}
-		else if (middle::getComponent<components::BubblePowerComponent>(shape)) {
-			result += "^";
-		}
-		else if (middle::getComponent<components::BubbleSummationComponent>(shape)) {
-			result += "$";
-		}
-		if (middle::getComponent<components::BubbleInequaltyComponent>(shape)) {
-			result += ">";
-		}
-		if (middle::getComponent<components::BubbleEqualsComponent>(shape)) {
-			result += "=";
-		}
-		if (auto func = middle::getComponent<components::BubbleFunctionComponent>(shape)) {
-			result += func->label;
-		}
-
-		if (auto unit = middle::getComponent<components::BubbleUnit>(shape)) {
-			result += std::to_string(unit->value);
-		}
-		else if (auto var = middle::getComponent<components::BubbleVariable>(shape)) {
-			if (var->isNegative) {
-				result += "-";
-			}
-			result += var->label;
-		}
-
-		
-		std::vector<middle::Id>children;
-		middle::getChildren(gameState, id, children);
-		for (middle::Id& childId : children) {
-			result += bubbleToBubequ(gameState, childId);
-		}
-
-		result += ")";
-		return result;
-	}
-
-	inline std::string bubbleToBubequHashes(middle::GameState* gameState, const middle::Id id, std::unordered_map<std::string, std::string>& resultMap) {
-
-		auto& shape = middle::getShape(gameState, id.index);
-
-		std::string bubbleString;
-
-		bubbleString += "(";
-
-		if (middle::getComponent<components::BubbleMultiplyComponent>(shape)) {
-			bubbleString += "*";
-		}
-		else if (middle::getComponent<components::BubblePowerComponent>(shape)) {
-			bubbleString += "^";
-		}
-		else if (middle::getComponent<components::BubbleSummationComponent>(shape)) {
-			bubbleString += "$";
-		}
-		if (middle::getComponent<components::BubbleInequaltyComponent>(shape)) {
-			bubbleString += ">";
-		}
-		if (middle::getComponent<components::BubbleEqualsComponent>(shape)) {
-			bubbleString += "=";
-		}
-		if (auto func = middle::getComponent<components::BubbleFunctionComponent>(shape)) {
-			bubbleString += func->label;
-		}
 
 		std::vector<middle::Id>children;
 		middle::getChildren(gameState, id, children);
 
 		// early return (DOESN'T MAKE HASHES FOR THESE)
-		if (auto unit = middle::getComponent<components::BubbleUnit>(shape)) {
-			bubbleString += std::to_string(unit->value);
-			return bubbleString + ")";
+		if (auto unitBubble = middle::getComponent<components::BubbleUnit>(shape)) {
+			auto unit = std::make_shared<Unit>();
+			unit->type = UnitType::CONSTANT;
+			unit->value = unitBubble->value;
+			return unit;
 		}
 		else if (auto var = middle::getComponent<components::BubbleVariable>(shape)) {
+			auto unit = std::make_shared<Unit>();
+			unit->type = UnitType::VARIABLE;
+			unit->label = var->label;
 			if (var->isNegative) {
-				bubbleString += "-";
+				unit->value = -1;
 			}
-			bubbleString += var->label;
-			return bubbleString + ")";
+			else {
+				unit->value = 1;
+			}
+			return unit;
 		}
 		else if (children.size() == 0) {
-			bubbleString += ")";
-			return bubbleString;
+			auto unit = std::make_shared<Unit>();
+			unit->type = UnitType::ZERO;
+			unit->value = 0;
+			return unit;
 		}
-		
+
+		auto result = std::make_shared<Scope>();
+
+		if (middle::getComponent<components::BubbleMultiplyComponent>(shape)) {
+			auto link = std::make_shared<Link>();
+			link->type = LinkType::MULTIPLICATION;
+			result = link;
+		}
+		else if (middle::getComponent<components::BubblePowerComponent>(shape)) {
+			auto link = std::make_shared<Link>();
+			link->type = LinkType::POWER;
+			result = link;
+		}
+		else if (middle::getComponent<components::BubbleSummationComponent>(shape)) {
+			auto link = std::make_shared<Link>();
+			link->type = LinkType::SUMMATION;
+			result = link;
+		}
+		if (middle::getComponent<components::BubbleInequaltyComponent>(shape)) {
+			auto link = std::make_shared<Link>();
+			link->type = LinkType::GREATER;
+			result = link;
+		}
+		if (middle::getComponent<components::BubbleEqualsComponent>(shape)) {
+			auto link = std::make_shared<Link>();
+			link->type = LinkType::EQUALS;
+			result = link;
+		}
+		if (auto func = middle::getComponent<components::BubbleFunctionComponent>(shape)) {
+			auto link = std::make_shared<Link>();
+			link->type = LinkType::FUNCTION;
+			link->label = func->label;
+			result = link;
+		}
 
 		for (middle::Id& childId : children) {
-			std::string childString = bubbleToBubequHashes(gameState, childId, resultMap);
+			std::shared_ptr<Scope> childBubequ = bubbleToBubequ(gameState, childId);
+			result->children.push_back(childBubequ);
+		}
+
+		return result;
+	}
+
+	inline std::string bubequToHashes(middle::GameState* gameState, const std::shared_ptr<Scope>& scope, std::unordered_map<std::string, std::string>& resultMap) {
+
+		std::string bubbleString;
+
+		bubbleString += "(";
+
+		if (auto unit = dynamic_cast<Unit*>(scope.get())) {
+			// early return (DOESN'T MAKE HASHES FOR THESE)
+			if (unit->type == UnitType::CONSTANT) {
+				bubbleString += std::to_string(unit->value);
+				return bubbleString + ")";
+			}
+			else if (unit->type == UnitType::VARIABLE) {
+				if (unit->value < 0) {
+					bubbleString += "-";
+				}
+				bubbleString += unit->label;
+				return bubbleString + ")";
+			}
+			else if (unit->type == UnitType::ZERO) {
+				bubbleString += ")";
+				return bubbleString;
+			}
+			else{
+				assert(false && "not known type");
+			}
+		}
+
+		if (auto link = dynamic_cast<Link*>(scope.get())) {
+			if (link->type == LinkType::MULTIPLICATION) {
+				bubbleString += "*";
+			}
+			else if (link->type == LinkType::POWER) {
+				bubbleString += "^";
+			}
+			else if (link->type == LinkType::SUMMATION) {
+				bubbleString += "$";
+			}
+			if (link->type == LinkType::GREATER) {
+				bubbleString += ">";
+			}
+			if (link->type == LinkType::EQUALS) {
+				bubbleString += "=";
+			}
+			if (link->type == LinkType::FUNCTION) {
+				bubbleString += link->label;
+			}
+		}
+
+		for (auto child : scope->children) {
+			std::string childString = bubequToHashes(gameState, child, resultMap);
 			if (childString.size() > 0 && childString[0] == '(') {
 				bubbleString += childString;
 			}
@@ -249,4 +271,5 @@ namespace bubequ{
 		resultMap[hash] = bubbleString;
 		return hash;
 	}
+
 }
