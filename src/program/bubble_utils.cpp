@@ -29,6 +29,7 @@
 #include "BubbleFunctionComponent.h"
 #include "GlobalRect.h"
 #include "BubbleSummationComponent.h"
+#include "bubble_layout.h"
 
 namespace bubble {
 	float bubbleAxis = 50;
@@ -1193,17 +1194,49 @@ namespace bubble {
 		float scalar = targetTransform->scale.x / toMatchTransform->scale.x;
 
 		// scale topDog since that will scale all the children and it scales at same ratio
-		middle::Id topDog = bubble::findIdWithCompFromShapeOrItsParents<components::TopDogBubbleTag>(gameState, toMatchId);
-		auto localScale = middle::getComp<components::LocalScale>(gameState, topDog);
+		middle::Id topParent = toMatchId;
+		while (true) {
+			middle::Id parentId = middle::getParent(gameState, topParent);
+			if (parentId.index == middle::UNASSIGNED) {
+				break;
+			}
+			topParent = parentId;
+		}
+
+		auto localScale = middle::getComp<components::LocalScale>(gameState, topParent);
 		localScale->scale.x *= scalar;
 		localScale->scale.y *= scalar;
 		localScale->scale.z *= scalar;
 
 		// after scaling move top dog to match the thing
+		middle::Id toMatchParent = middle::getParent(gameState, toMatchId);
 		Matrix transformAfterScaling = middle::getTransformMatrix(gameState, toMatchId);
 		Vector3 newPosAfterScaling = Vector3Transform({ 0,0,0 }, transformAfterScaling);
+		auto localPos = middle::getComp<components::LocalPosition>(gameState, toMatchId);
 		Vector3 displacement = targetTransform->pos - newPosAfterScaling;
-		middle::moveShape(gameState, topDog.index, Vector3Negate(displacement));
+		middle::moveShape(gameState, topParent.index, Vector3Negate(displacement));
+	}
+
+	void recursiveBubbleLayoutUpdate(middle::GameState* gameState, middle::Id id)
+	{
+		const float moveSpeed = 10000000.0f;
+		if (bubble::isPowerBubble(gameState, id)) {
+			auto rect = middle::getComp<components::Rectangle>(gameState, id);
+			bubble::updatePowerLayout(gameState, id, rect->width, moveSpeed);
+		}
+		else if (bubble::isSummation(gameState, id)) {
+			auto rect = middle::getComp<components::Rectangle>(gameState, id);
+			bubble::updatePowerLayout(gameState, id, rect->width, moveSpeed);
+		}
+		else {
+			auto rect = middle::getComp<components::Rectangle>(gameState, id);
+			bubble::updateBubbleLayout(gameState, id, rect->width, moveSpeed);
+		}
+		std::vector<middle::Id>children;
+		middle::getChildren(gameState, id, children);
+		for (middle::Id childId : children) {
+			recursiveBubbleLayoutUpdate(gameState, childId);
+		}
 	}
 
 

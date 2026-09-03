@@ -80,13 +80,12 @@ class BubbleDynamicLoadingSystem : public middle::MiddleGameplaySystem {
 			}
 		}
 
-		int travelledLength = gameState->bubbleAlgebraState.travelledPathLength;
+		auto& traversePath = gameState->bubbleAlgebraState.traversePath;
+		int travelledLength = traversePath.size();
 
 		// free
-		if (resultPath.size() > travelledLength + 1) {
-			//gameState->bubbleAlgebraState.traversePath = resultPath;
-			auto& traversePath = gameState->bubbleAlgebraState.traversePath;
-			traversePath.insert(traversePath.end(), resultPath.begin(), resultPath.end());
+		if (resultPath.size() > 1) {
+			traversePath.push_back(resultPath.front());
 			middle::Id parentId = middle::getParent(gameState, loadPositionId);
 			auto freeParentAction = std::make_shared<equlab::FreeParent>(parentId);
 			middle::queueAction(gameState, freeParentAction);
@@ -94,9 +93,9 @@ class BubbleDynamicLoadingSystem : public middle::MiddleGameplaySystem {
 		}
 
 		// load
-		else if (resultPath.size() < travelledLength + 1) {
-			//auto loadParentAction = std::make_shared<equlab::LoadParent>(loadPositionId);
-			//middle::queueAction(gameState, loadParentAction);
+		else if (resultPath.size() < 1 && gameState->bubbleAlgebraState.traversePath.size() > 0) {
+			auto loadParentAction = std::make_shared<equlab::LoadParent>(loadPositionId);
+			middle::queueAction(gameState, loadParentAction);
 		}
 
 

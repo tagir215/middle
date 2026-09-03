@@ -9,6 +9,7 @@
 #include "BubblePowerComponent.h"
 #include "bubble_utils.h"
 #include "BubbleSummationComponent.h"
+#include "bubble_layout.h"
 
 class BubbleLayoutSystem : public middle::MiddleGameplaySystem {
 public:
@@ -21,7 +22,7 @@ public:
 	components::CompCache* summationCache;
 	components::CompCache* pausedBubblesCache;
 
-	const float moveSpeed = 5;
+	const float moveSpeed = 150;
 
 	void init(middle::GameState* gameState) override {
 		bubbleCache = middle::newCompCache(gameState, systemName);
@@ -48,84 +49,7 @@ public:
 		pausedBubblesCache->addType<components::PauseLayoutTag>();
 	}
 
-	typedef std::vector<Vector2> BubbleLayout;
-    std::vector<BubbleLayout> layouts =
-    {
-        // 1
-        {{0.5f, 0.5f}},
 
-        // 2
-        {{0.25f, 0.5f},
-        {0.75f, 0.5f}},
-
-        // 3
-        {{0.5f, 0.666f},
-        {0.333f, 0.333f},
-        {0.666f, 0.333f}},
-
-        // 4
-        {{0.333f, 0.666f},
-        {0.666f, 0.666f},
-        {0.333f, 0.333f},
-        {0.666f, 0.333f}},
-
-        // 5 - pentagon
-        {{0.5f, 0.75f},
-        {0.738f, 0.577f},
-        {0.647f, 0.298f},
-        {0.353f, 0.298f},
-        {0.262f, 0.577f}},
-
-        // 6 - dice-style
-		{{0.333f, 0.666f},
-		{0.666f, 0.666f},
-		{0.333f, 0.5f},
-		{0.666f, 0.5f},
-		{0.333f, 0.333f},
-		{0.666f, 0.333f}}, // layout 6
-
-		{{0.2f, 0.666f},
-		{0.4f, 0.666f},
-		{0.6f, 0.666f},
-		{0.8f, 0.666f},
-		{0.3f, 0.333f},
-		{0.5f, 0.333f},
-		{0.7f, 0.333f}}, // layout 7
-
-        // 8 - two rows of four
-		{{0.2f, 0.666f},
-		{0.4f, 0.666f},
-		{0.6f, 0.666f},
-		{0.8f, 0.666f},
-		{0.2f, 0.333f},
-		{0.4f, 0.333f},
-		{0.6f, 0.333f},
-		{0.8f, 0.333f}}, // layout 8
-
-         // 9 - 3x3 grid
-        {{0.333f, 0.666f},
-        {0.5f,   0.666f},
-        {0.666f, 0.666f},
-        {0.333f, 0.5f},
-        {0.5f,   0.5f},
-        {0.666f, 0.5f},
-        {0.333f, 0.333f},
-        {0.5f,   0.333f},
-        {0.666f, 0.333f}},
-    };
-
-	BubbleLayout powerLayout =
-	{
-		{0.45, 0.45},
-		{0.90f, 0.90f}
-	};
-
-	BubbleLayout summationLayout =
-	{
-		{0.25f, 0.333f},
-		{0.25f, 0.666f},
-		{0.75f, 0.5f},
-	};
 
 	void update(middle::GameState* gameState) override {
 
@@ -142,51 +66,7 @@ public:
 		auto rectIt = bubbleCache->begin<components::Rectangle>();
 		for (middle::Id id : bubbleCache->relevantIdVector) {
 			auto rect = *rectIt;
-			std::vector<middle::Id>children;
-			middle::getChildren(gameState, id, children);
-			int childCount = children.size();
-			if (childCount == 0) {
-				continue;
-			}
-
-			float diameter = rect->width;
-			Vector3 leftBottomCorner = Vector3{ -rect->width * 0.5f, 0, -rect->height * 0.5f };
-
-			BubbleLayout layout;
-			if (childCount < 10) {
-				layout = layouts[childCount - 1];
-			}
-			else {
-				int rowChildCount = std::sqrt(childCount);
-				const float padding = 0.2f;
-				float spacing = (1.0f - padding - padding) / rowChildCount;
-				float currentRow = 0;
-				float currentColumn = 0;
-				Vector2 initPos = { padding, padding };
-				for (int i = 0; i < childCount; ++i) {
-					layout.push_back(initPos + Vector2{ spacing * currentColumn, spacing * currentRow });
-					if (currentColumn >= rowChildCount) {
-						currentColumn = 0;
-						++currentRow;
-					}
-					else {
-						++currentColumn;
-					}
-				}
-			}
-
-			for (int i = 0; i < childCount; ++i) {
-				Vector3 layoutPos = { layout[i].x * diameter, 0, layout[i].y * diameter };
-				Vector3 targetPosition = leftBottomCorner + layoutPos;
-				middle::Id childId = children[i];
-				Vector3 currentPos = middle::getLocalPosition(gameState, childId);
-				Vector3 disp = (targetPosition - currentPos) * moveSpeed * gameState->frameTime;
-
-				if(gameState->bubbleAlgebraState.postUndoFrames == 0)
-					middle::setLocalPosition(gameState, childId, currentPos + disp);
-				else
-					middle::setLocalPosition(gameState, childId, targetPosition);
-			}
+			bubble::updateBubbleLayout(gameState, id, rect->width, moveSpeed);
 		}
 
 
@@ -194,53 +74,14 @@ public:
 		auto powerRectIt = powerCache->begin<components::Rectangle>();
 		for (middle::Id id : powerCache->relevantIdVector) {
 			auto rect = *powerRectIt;
-			middle::Id baseId, exponentId;
-			bubble::getPowerBaseAndExponent(gameState, id, baseId, exponentId);
-			float diameter = rect->width;
-			Vector3 leftBottomCorner = Vector3{ -rect->width * 0.5f, 0, -rect->height * 0.5f };
-			Vector2 posBase = powerLayout[components::PowerRole::POWER_ROLE_BASE];
-			Vector2 posExponent = powerLayout[components::PowerRole::POWER_ROLE_EXPONENT];
-
-			Vector3 targetPosBase = leftBottomCorner + Vector3{ posBase.x, 0, posBase.y } * diameter;
-			Vector3 targetPosExponent = leftBottomCorner + Vector3{ posExponent.x, 0, posExponent.y } * diameter;
-
-			Vector3 currentBasePos = middle::getLocalPosition(gameState, baseId);
-			Vector3 currentExponentPos = middle::getLocalPosition(gameState, exponentId);
-
-			Vector3 dispBase = (targetPosBase - currentBasePos) * moveSpeed * gameState->frameTime;
-			Vector3 dispExponent = (targetPosExponent - currentExponentPos) * moveSpeed * gameState->frameTime;
-
-			middle::setLocalPosition(gameState, baseId, currentBasePos + dispBase);
-			middle::setLocalPosition(gameState, exponentId, currentExponentPos + dispExponent);
+			bubble::updatePowerLayout(gameState, id, rect->width, moveSpeed);
 		}
 
 		// summations
 		auto summationRectIt = summationCache->begin<components::Rectangle>();
 		for (middle::Id id : summationCache->relevantIdVector) {
 			auto rect = *summationRectIt;
-			middle::Id indexId, upperLimitId, summandId;
-			bubble::getSummationIndexLimitSummand(gameState, id, indexId, upperLimitId, summandId);
-			float diameter = rect->width;
-			Vector3 leftBottomCorner = Vector3{ -rect->width * 0.5f, 0, -rect->height * 0.5f };
-			Vector2 posIndex = summationLayout[components::SummationRole::INDEX];
-			Vector2 posUpperLimit = summationLayout[components::SummationRole::UPPER_LIMIT];
-			Vector2 posSummand = summationLayout[components::SummationRole::SUMMAND];
-
-			Vector3 targetPosIndex = leftBottomCorner + Vector3{ posIndex.x, 0, posIndex.y } * diameter;
-			Vector3 targetPosUpperLimit = leftBottomCorner + Vector3{ posUpperLimit.x, 0, posUpperLimit.y } * diameter;
-			Vector3 targetPosSummand = leftBottomCorner + Vector3{ posSummand.x, 0, posSummand.y } * diameter;
-
-			Vector3 currentPosIndex = middle::getLocalPosition(gameState, indexId);
-			Vector3 currentPosUpperLimit = middle::getLocalPosition(gameState, upperLimitId);
-			Vector3 currentPosSummand = middle::getLocalPosition(gameState, summandId);
-
-			Vector3 dispIndex = (targetPosIndex - currentPosIndex) * moveSpeed * gameState->frameTime;
-			Vector3 dispUpperLimit = (targetPosUpperLimit - currentPosUpperLimit) * moveSpeed * gameState->frameTime;
-			Vector3 dispSummand = (targetPosSummand - currentPosSummand) * moveSpeed * gameState->frameTime;
-
-			middle::setLocalPosition(gameState, indexId, currentPosIndex + dispIndex);
-			middle::setLocalPosition(gameState, upperLimitId, currentPosUpperLimit + dispUpperLimit);
-			middle::setLocalPosition(gameState, summandId, currentPosSummand + dispSummand);
+			bubble::updateSummationLayout(gameState, id, rect->width, moveSpeed);
 		}
 	}
 };

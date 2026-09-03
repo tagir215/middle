@@ -379,12 +379,30 @@ namespace equlab {
 
 	void LoadParent::execute(middle::GameState* gameState)
 	{
-		auto& traversePath = gameState->bubbleAlgebraState.traversePath;
-		traversePath.pop_back();
-		traversePath.pop_back();
-		auto scope = bubequ::loadBubequHead(gameState->bubbleAlgebraState.activeBubbleName, traversePath, traversePath.size());
-		Vector3 pos = middle::getGlobalPosition(gameState, id.index);
-		middle::Id parent = bubequ::bubequToBubble(gameState, pos + Vector3{ 5000,0,0 }, scope);
+		std::vector<int> traversePath = gameState->bubbleAlgebraState.traversePath;
+		//traversePath.pop_back();
+
+		auto scope = bubequ::loadBubequHead(gameState->bubbleAlgebraState.activeBubbleName, 
+			traversePath, traversePath.size() + 1);
+		middle::Id loadedId = bubequ::bubequToBubble(gameState, Vector3{0,0,0}, scope);
+		bubble::recursiveBubbleLayoutUpdate(gameState, loadedId);
+
+		middle::Id pathStepId = loadedId;
+		for (int childIndex : traversePath) {
+			std::vector<middle::Id>children;
+			middle::getChildren(gameState, pathStepId, children);
+			pathStepId = children[childIndex];
+		}
+
+		middle::Id pathStepParentId = middle::getParent(gameState, pathStepId);
+		bubble::matchBubbleTransforms(gameState, id, pathStepParentId);
+
+
+		//middle::deleteShapeRecursive(gameState, pathStepId.index);
+
+		//middle::executeAction<middle::EditorActionReparent>(gameState, this, pathStepParentId.index, id.index);
+
+		gameState->bubbleAlgebraState.traversePath.pop_back();
 	}
 
 	void LoadParent::undo(middle::GameState* gameState)

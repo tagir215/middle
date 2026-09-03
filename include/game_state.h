@@ -149,7 +149,6 @@ namespace middle {
 		float worldScale = 1;
 		std::string activeBubbleName;
 		std::vector<int>traversePath;
-		int travelledPathLength = 0;
 	};
 
 	struct ModelContainer {
