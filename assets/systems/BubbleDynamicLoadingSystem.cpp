@@ -11,6 +11,7 @@
 #include "bubble_utils.h"
 #include "middle_debug_utils.h"
 #include "bubble_actions.h"
+#include "equlab_actions.h"
 
 class BubbleDynamicLoadingSystem : public middle::MiddleGameplaySystem {
 	components::CompCache* intersectingBubbleCache;
@@ -24,7 +25,8 @@ class BubbleDynamicLoadingSystem : public middle::MiddleGameplaySystem {
 		intersectingBubbleCache->addType<components::IntersectingTag>();
 	}
 	void update(middle::GameState* gameState) override {
-		const float screenWidthInWorldCoords = gameState->nearPlaneAxisX / gameState->nearPlaneDistance * (-gameState->activeCamera.position.y);
+		const float screenWidthInWorldCoords = 
+			gameState->nearPlaneAxisX / gameState->nearPlaneDistance * (-gameState->activeCamera.position.y)  * 0.2f;
 
 		// find current position id
 		middle::Id loadPositionId;
@@ -78,13 +80,29 @@ class BubbleDynamicLoadingSystem : public middle::MiddleGameplaySystem {
 			}
 		}
 
-		if (resultPath.size() > 1) {
-			gameState->bubbleAlgebraState.traversePath = resultPath;
-			auto freeParentAction = std::make_shared<bubbleActions::FreeParent>(loadPositionId);
+		int travelledLength = gameState->bubbleAlgebraState.travelledPathLength;
+
+		// free
+		if (resultPath.size() > travelledLength + 1) {
+			//gameState->bubbleAlgebraState.traversePath = resultPath;
+			auto& traversePath = gameState->bubbleAlgebraState.traversePath;
+			traversePath.insert(traversePath.end(), resultPath.begin(), resultPath.end());
+			middle::Id parentId = middle::getParent(gameState, loadPositionId);
+			auto freeParentAction = std::make_shared<equlab::FreeParent>(parentId);
 			middle::queueAction(gameState, freeParentAction);
+
 		}
 
-		middle::drawImGuiIntVector(gameState, "ff", resultPath);
+		// load
+		else if (resultPath.size() < travelledLength + 1) {
+			//auto loadParentAction = std::make_shared<equlab::LoadParent>(loadPositionId);
+			//middle::queueAction(gameState, loadParentAction);
+		}
+
+
+		middle::drawImGuiIntVector(gameState, "localPath", resultPath);
+
+		middle::drawImGuiIntVector(gameState, "traversePath", gameState->bubbleAlgebraState.traversePath);
 	}
 };
 

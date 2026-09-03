@@ -15,6 +15,7 @@
 #include "BubbleFunctionComponent.h"
 #include "BubbleSummationComponent.h"
 #include "LocalScale.h"
+#include "bubequ_mapping.h"
 
 namespace equlab {
 
@@ -352,6 +353,42 @@ namespace equlab {
 	}
 
 	void ConnectPower::undo(middle::GameState* gameState) {
+		while (actions.size() > 0) {
+			actions.back()->undo(gameState);
+			actions.pop_back();
+		}
+	}
+
+
+	void FreeParent::execute(middle::GameState* gameState)
+	{
+		middle::Id parentId = middle::getParent(gameState, id);
+		middle::executeAction<middle::EditorActionRemoveFromLoop>(gameState, this, id.index);
+		middle::Id topId = bubble::findIdWithCompFromShapeOrItsParents<components::TopDogBubbleTag>(gameState, parentId);
+		middle::executeAction<middle::EditorActionDeleteSingle>(gameState, this, topId);
+	}
+
+	void FreeParent::undo(middle::GameState* gameState)
+	{
+		while (actions.size() > 0) {
+			actions.back()->undo(gameState);
+			actions.pop_back();
+		}
+	}
+
+
+	void LoadParent::execute(middle::GameState* gameState)
+	{
+		auto& traversePath = gameState->bubbleAlgebraState.traversePath;
+		traversePath.pop_back();
+		traversePath.pop_back();
+		auto scope = bubequ::loadBubequHead(gameState->bubbleAlgebraState.activeBubbleName, traversePath, traversePath.size());
+		Vector3 pos = middle::getGlobalPosition(gameState, id.index);
+		middle::Id parent = bubequ::bubequToBubble(gameState, pos + Vector3{ 5000,0,0 }, scope);
+	}
+
+	void LoadParent::undo(middle::GameState* gameState)
+	{
 		while (actions.size() > 0) {
 			actions.back()->undo(gameState);
 			actions.pop_back();

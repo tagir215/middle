@@ -132,6 +132,8 @@ public:
 					middle::queueAction(gameState, registerAction);
 					gameState->bubbleAlgebraState.bubbleActions.push_back(registerAction);
 
+					// todo change
+					gameState->bubbleAlgebraState.activeBubbleName = name;
 				}
 			}
 			ImGui::End();

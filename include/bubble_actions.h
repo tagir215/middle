@@ -336,13 +336,4 @@ namespace bubbleActions{
 		void undo(middle::GameState* gameState) override;
 	};
 
-	class FreeParent : public middle::EditorActionContainer {
-	public:
-		middle::Id id;
-		FreeParent(middle::Id id) {
-			this->id = id;
-		}
-		void execute(middle::GameState* gameState) override;
-		void undo(middle::GameState* gameState) override;
-	};
 }

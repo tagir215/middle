@@ -1185,6 +1185,27 @@ namespace bubble {
 		}
 	}
 
+	void matchBubbleTransforms(middle::GameState* gameState, middle::Id matchingModelId, middle::Id toMatchId)
+	{
+		// find ratio
+		auto targetTransform = middle::getComp<components::GlobalTransform>(gameState, matchingModelId);
+		auto toMatchTransform = middle::getComp<components::GlobalTransform>(gameState, toMatchId);
+		float scalar = targetTransform->scale.x / toMatchTransform->scale.x;
+
+		// scale topDog since that will scale all the children and it scales at same ratio
+		middle::Id topDog = bubble::findIdWithCompFromShapeOrItsParents<components::TopDogBubbleTag>(gameState, toMatchId);
+		auto localScale = middle::getComp<components::LocalScale>(gameState, topDog);
+		localScale->scale.x *= scalar;
+		localScale->scale.y *= scalar;
+		localScale->scale.z *= scalar;
+
+		// after scaling move top dog to match the thing
+		Matrix transformAfterScaling = middle::getTransformMatrix(gameState, toMatchId);
+		Vector3 newPosAfterScaling = Vector3Transform({ 0,0,0 }, transformAfterScaling);
+		Vector3 displacement = targetTransform->pos - newPosAfterScaling;
+		middle::moveShape(gameState, topDog.index, Vector3Negate(displacement));
+	}
+
 
 	middle::Id bubbleToStructure(middle::GameState* gameState, middle::Id bubbleId)
 	{

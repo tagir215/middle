@@ -2065,20 +2065,4 @@ namespace bubbleActions {
 		}
 	}
 
-	void FreeParent::execute(middle::GameState* gameState)
-	{
-		middle::Id parentId = middle::getParent(gameState, id);
-		middle::executeAction<middle::EditorActionRemoveFromLoop>(gameState, this, id.index);
-		middle::Id topId = bubble::findIdWithCompFromShapeOrItsParents<components::TopDogBubbleTag>(gameState, parentId);
-		middle::executeAction<middle::EditorActionDeleteSingle>(gameState, this, topId);
-	}
-
-	void FreeParent::undo(middle::GameState* gameState)
-	{
-		while (actions.size() > 0) {
-			actions.back()->undo(gameState);
-			actions.pop_back();
-		}
-	}
-
 }

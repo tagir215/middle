@@ -147,7 +147,9 @@ namespace middle {
 		bool copyInverted = false;
 		int postUndoFrames = 0;
 		float worldScale = 1;
+		std::string activeBubbleName;
 		std::vector<int>traversePath;
+		int travelledPathLength = 0;
 	};
 
 	struct ModelContainer {
