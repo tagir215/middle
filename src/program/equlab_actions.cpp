@@ -400,10 +400,7 @@ namespace equlab {
 
 		bubble::matchBubbleTransforms(gameState, id, matchingChildId);
 
-
-		//middle::deleteShapeRecursive(gameState, pathStepId.index);
-
-		//middle::executeAction<middle::EditorActionReparent>(gameState, this, pathStepParentId.index, id.index);
+		middle::executeAction<bubbleActions::Replace>(gameState, this, matchingChildId, id);
 
 		gameState->bubbleAlgebraState.traversePath.pop_back();
 	}

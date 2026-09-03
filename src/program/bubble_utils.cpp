@@ -1229,7 +1229,7 @@ namespace bubble {
 		else if (bubble::isSummation(gameState, id)) {
 			bubble::updateSummationLayoutScale(gameState, id, scaleSmoothFactor);
 			auto rect = middle::getComp<components::Rectangle>(gameState, id);
-			bubble::updatePowerLayout(gameState, id, rect->width, moveSpeed);
+			bubble::updateSummationLayout(gameState, id, rect->width, moveSpeed);
 		}
 		else {
 			bubble::updateBubbleLayoutScale(gameState, id, scaleSmoothFactor);
