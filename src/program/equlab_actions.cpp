@@ -383,8 +383,9 @@ namespace equlab {
 		std::vector<int>& traversePathOg = gameState->bubbleAlgebraState.traversePath;
 		traversePath.pop_back();
 
+		const int loadDist = 4000;
 		auto scope = bubequ::loadBubequHead(gameState->bubbleAlgebraState.activeBubbleName, 
-			traversePath, traversePath.size() + 1);
+			traversePath,loadDist);
 		middle::Id loadedId = bubequ::bubequToBubble(gameState, Vector3{0,0,0}, scope);
 		bubble::recursiveBubbleLayoutUpdate(gameState, loadedId);
 
@@ -399,8 +400,7 @@ namespace equlab {
 		}
 
 		bubble::matchBubbleTransforms(gameState, id, matchingChildId);
-
-		middle::executeAction<bubbleActions::Replace>(gameState, this, matchingChildId, id);
+		middle::deleteShapeRecursive(gameState, id.index);
 
 		gameState->bubbleAlgebraState.traversePath.pop_back();
 	}

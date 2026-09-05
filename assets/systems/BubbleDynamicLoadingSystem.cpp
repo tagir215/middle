@@ -12,9 +12,12 @@
 #include "middle_debug_utils.h"
 #include "bubble_actions.h"
 #include "equlab_actions.h"
+#include "ActiveSceneEditableTag.h"
+#include <queue>
 
 class BubbleDynamicLoadingSystem : public middle::MiddleGameplaySystem {
 	components::CompCache* intersectingBubbleCache;
+	components::CompCache* activeCache;
 
 	void init(middle::GameState* gameState) override {
 		intersectingBubbleCache = middle::newCompCache(gameState, systemName);
@@ -23,10 +26,14 @@ class BubbleDynamicLoadingSystem : public middle::MiddleGameplaySystem {
 		intersectingBubbleCache->addType<components::GlobalTransform>();
 		intersectingBubbleCache->addType<components::GlobalRect>();
 		intersectingBubbleCache->addType<components::IntersectingTag>();
+
+		activeCache = middle::newCompCache(gameState, systemName);
+		activeCache->addType<components::ActiveSceneSelectableTag>();
+		activeCache->addType<components::BubbleComponent>();
 	}
 	void update(middle::GameState* gameState) override {
 		const float screenWidthInWorldCoords = 
-			gameState->nearPlaneAxisX / gameState->nearPlaneDistance * (-gameState->activeCamera.position.y)  * 0.2f;
+			gameState->nearPlaneAxisX / gameState->nearPlaneDistance * (-gameState->activeCamera.position.y)  * 2.2f;
 
 		// find current position id
 		middle::Id loadPositionId;
@@ -42,7 +49,12 @@ class BubbleDynamicLoadingSystem : public middle::MiddleGameplaySystem {
 		}
 
 		if (loadPositionId.index == middle::UNASSIGNED) {
-			return;
+			if (activeCache->relevantIdVector.size() == 1) {
+				loadPositionId = activeCache->relevantIdVector[0];
+			}
+			else {
+				return;
+			}
 		}
 
 		// find ids of the path
@@ -65,7 +77,7 @@ class BubbleDynamicLoadingSystem : public middle::MiddleGameplaySystem {
 		}
 
 		// store indexes of children
-		std::vector<int>resultPath;
+		std::queue<int>resultPath;
 		for (int i = 0; i < pathIds.size() - 1; ++i) {
 			middle::Id id = pathIds[i];
 			middle::Id nextId = pathIds[i + 1];
@@ -74,7 +86,7 @@ class BubbleDynamicLoadingSystem : public middle::MiddleGameplaySystem {
 			for (int childIndex = 0; childIndex < children.size(); ++childIndex) {
 				middle::Id childId = children[childIndex];
 				if (childId == nextId) {
-					resultPath.push_back(childIndex);
+					resultPath.push(childIndex);
 					break;
 				}
 			}
@@ -85,7 +97,10 @@ class BubbleDynamicLoadingSystem : public middle::MiddleGameplaySystem {
 
 		// free
 		if (resultPath.size() > 1) {
-			traversePath.push_back(resultPath.front());
+			while (resultPath.size() > 1) {
+				traversePath.push_back(resultPath.front());
+				resultPath.pop();
+			}
 			middle::Id loadPositionParentId = middle::getParent(gameState, loadPositionId);
 			auto freeParentAction = std::make_shared<equlab::FreeParent>(loadPositionParentId);
 			middle::queueAction(gameState, freeParentAction);
@@ -99,7 +114,7 @@ class BubbleDynamicLoadingSystem : public middle::MiddleGameplaySystem {
 		}
 
 
-		middle::drawImGuiIntVector(gameState, "localPath", resultPath);
+		//middle::drawImGuiIntVector(gameState, "localPath", resultPath);
 
 		middle::drawImGuiIntVector(gameState, "traversePath", gameState->bubbleAlgebraState.traversePath);
 	}
