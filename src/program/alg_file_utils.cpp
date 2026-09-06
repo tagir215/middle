@@ -279,7 +279,6 @@ namespace bubequ {
 				return loadBub(toLoadBub->hash, traversePath, loadDepth, ++pathStepIndex, depthIndex);
 			}
 
-
 			// at end return
 			if (depthIndex >= loadDepth || dynamic_cast<Unit*>(scope.get())) {
 				return scope;

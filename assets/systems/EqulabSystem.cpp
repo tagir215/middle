@@ -111,9 +111,9 @@ public:
 					std::shared_ptr<bubequ::Scope> root;
 					if (gameState->bubbleAlgebraState.activeBubbleName != "") {
 						name = gameState->bubbleAlgebraState.activeBubbleName;
+						auto newBranch = bubequ::bubbleToBubequ(gameState, activeId);
 						root = bubequ::loadBubequHead(name, {}, 400);
 						// load root from disc
-						auto newBranch = bubequ::bubbleToBubequ(gameState, activeId);
 						// replace current visible branch on the loaded tree
 						bubequ::replaceBranch(root, newBranch, gameState->bubbleAlgebraState.traversePath);
 					}

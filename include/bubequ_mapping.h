@@ -277,11 +277,11 @@ namespace bubequ{
 			root = newBranch;
 			return;
 		}
-		auto& currentScope = root;
-		for (int i = 0; i < path.size(); ++i) {
+		auto currentScope = root;
+		for (int i = 0; i < path.size() - 1; ++i) {
 			int childIndex = path[i];
 			currentScope = currentScope->children[childIndex];
 		}
-		currentScope = newBranch;
+		currentScope->children[path.back()] = newBranch;
 	}
 }
