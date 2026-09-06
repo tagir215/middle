@@ -379,7 +379,7 @@ namespace equlab {
 
 	void LoadBubbleSection::execute(middle::GameState* gameState)
 	{
-		const int loadDist = 5;
+		const int loadDist = gameState->bubbleAlgebraState.loadDepth;
 
 		auto scope = bubequ::loadBubequHead(gameState->bubbleAlgebraState.activeBubbleName, 
 			traversePath,loadDist);

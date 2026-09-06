@@ -20,6 +20,7 @@
 #include "GlobalTransform.h"
 #include "GlobalRect.h"
 #include "IntersectingTag.h"
+#include "BottomDogBubbleTag.h"
 
 class BubbleIntersectSystem : public middle::MiddleGameplaySystem {
 public:
@@ -36,6 +37,7 @@ public:
 		bubbleCache->addType<components::GlobalRect>();
 		bubbleCache->addType<components::GlobalTransform>();
 		bubbleCache->addType<components::UnIntersectableWindowComponent>(components::NOTINTERESTED);
+		bubbleCache->addType<components::BottomDogBubbleTag>(components::NOTINTERESTED);
 
 		intersectingBubbleCache = middle::newCompCache(gameState, systemName);
 		intersectingBubbleCache->addType<components::BubbleComponent>();
@@ -62,24 +64,6 @@ public:
 			return isPlacedRecursive(gameState, parentId);
 		}
 		return false;
-	}
-
-	void childrenIntersecting(middle::GameState* gameState, middle::Shape& shape) {
-		auto intersectingTag = middle::getComponent<components::IntersectingTag>(shape);
-		// check that not intersecting children as well
-		if (intersectingTag) {
-			intersectingTag->intersectingTop = true;
-			std::vector<middle::Id>children;
-			middle::getAllChildren(gameState, shape.id, children);
-			for (middle::Id childId : children) {
-				auto& child = middle::getShape(gameState, childId.index);
-				auto childIntersectingTag = middle::getComponent<components::IntersectingTag>(child);
-				if (childIntersectingTag) {
-					intersectingTag->intersectingTop = false;
-					break;
-				}
-			}
-		}
 	}
 
 

@@ -140,8 +140,6 @@ public:
 		}
 
 
-		//middle::drawImGuiIntVector(gameState, "localPath", resultPath);
-
 		middle::drawImGuiIntVector(gameState, "traversePath", gameState->bubbleAlgebraState.traversePath);
 	}
 };

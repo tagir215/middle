@@ -55,11 +55,9 @@ public:
 			middle::queueAction(gameState, std::make_shared<middle::CustomAction>(
 				[name,this](middle::GameState* gameState) {
 					saveState(gameState);
-					gameState->bubbleAlgebraState.previousLevelName = gameState->activeSceneName;
 					middle::resetScene(gameState);
 					middle::loadScene(gameState, "../assets/scenes/", name, false);
 					gameState->activeSceneName = name;
-					gameState->bubbleAlgebraState.procedureNames.clear();
 				}));
 			initialized = false;
 	}
@@ -129,46 +127,6 @@ public:
 			auto& shape = middle::getShape(gameState, unInitializedLevelCache->relevantIdVector[i].index);
 
 			middle::attachComponent<components::InitializedTag>(gameState, shape.id);
-
-			if (gameState->bubbleAlgebraState.previousLevelName == "LevelSelect") {
-				continue;
-			}
-
-			if (levelRef->levelName == gameState->bubbleAlgebraState.previousLevelName) {
-
-				if (gameState->bubbleAlgebraState.justCompletedLevel) {
-					auto idRef = middle::getComponent<components::IdRef>(shape);
-					if (idRef && middle::isValidId(gameState, idRef->idRef)) {
-						gameState->bubbleAlgebraState.justCompletedLevel = false;
-						//std::string completedLevelName = gameState->bubbleAlgebraState.previousLevelName;
-						//gameState->bubbleAlgebraState.previousLevelName = "";
-						levelRef->complete = true;
-						saveState(gameState);
-
-						//auto& nextShape = middle::getShape(gameState, idRef->idRef.index);
-						//auto nextLevelRef = middle::getComponent<components::LevelReference>(nextShape);
-						//queueLevelNavigation(gameState, nextLevelRef->levelName);
-						//break;
-					}
-				}
-
-				//if (cameraCache->relevantIdVector.size() > 1) {
-				//	int indx = cameraCache->relevantIdVector[0].index;
-				//	auto action = std::make_shared<middle::CustomAction>([indx](middle::GameState* gameState) {
-				//		middle::deleteShapeRecursive(gameState, indx);
-				//		});
-				//	middle::queueAction(gameState, action);
-				//	return;
-				//}
-
-				auto camIt = cameraCache->begin<components::CameraComponent>();
-				middle::Id cameraId = cameraCache->relevantIdVector[0];
-				Vector3 currPos = middle::getGlobalPosition(gameState, cameraId.index);
-				const Vector3 offset = Vector3{ 0, -350, 0 };
-				Vector3 targetPos = middle::getGlobalPosition(gameState, shape.id.index) + offset;
-				middle::moveShape(gameState, cameraId.index, targetPos - currPos);
-
-			}
 
 		}
 	}

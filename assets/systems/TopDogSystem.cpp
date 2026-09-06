@@ -9,9 +9,12 @@
 #include "BubbleComponent.h"
 #include "bubble_utils.h"
 #include "TextureComponent.h"
+#include "Layer.h"
+#include "BottomDogBubbleTag.h"
 
 class TopDogSystem : public middle::MiddleGameplaySystem {
 	components::CompCache* topDogCache;
+	components::CompCache* bottomDogCache;
 	components::CompCache* bubbleCache;
 	components::CompCache* problemCache;
 	components::CompCache* helperCache;
@@ -24,6 +27,9 @@ class TopDogSystem : public middle::MiddleGameplaySystem {
 
 		bubbleCache = middle::newCompCache(gameState, systemName);
 		bubbleCache->addType<components::BubbleComponent>();
+
+		bottomDogCache = middle::newCompCache(gameState, systemName);
+		bottomDogCache->addType<components::BottomDogBubbleTag>();
 	}
 
 	bool isTopDog(middle::GameState* gameState, middle::Id id) {
@@ -32,6 +38,11 @@ class TopDogSystem : public middle::MiddleGameplaySystem {
 			return true;
 		}
 		return false;
+	}
+
+	bool isBottomDog(middle::GameState* gameState, middle::Id id) {
+		auto layer = middle::getComp<components::Layer>(gameState, id);
+		return layer->layer == gameState->bubbleAlgebraState.loadDepth - 1;
 	}
 
 	void updateTopDogs(middle::GameState* gameState) {
@@ -43,11 +54,19 @@ class TopDogSystem : public middle::MiddleGameplaySystem {
 				middle::queueComponentDeletion<components::TopDogBubbleTag>(gameState, id);
 			}
 		}
+		for (middle::Id id : bottomDogCache->relevantIdVector) {
+			if (!isBottomDog(gameState, id)) {
+				middle::queueComponentDeletion<components::BottomDogBubbleTag>(gameState, id);
+			}
+		}
 
 		for (int i = 0; i < bubbleCache->getSize(); ++i) {
 			middle::Id id = bubbleCache->relevantIdVector[i];
 			if (isTopDog(gameState, id)) {
 				middle::attachComponent<components::TopDogBubbleTag>(gameState, id);
+			}
+			if (isBottomDog(gameState, id)) {
+				middle::attachComponent<components::BottomDogBubbleTag>(gameState, id);
 			}
 		}
 	}

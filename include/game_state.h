@@ -135,13 +135,8 @@ namespace middle {
 	};
 
 	struct BubbleAlgebraState {
-		// todo refactor away
 		middle::Id grabbedId;
-		bool intersectingUI = false;
 		std::vector<std::shared_ptr<middle::EditorActionContainer>>bubbleActions;
-		bool justCompletedLevel = false;
-		std::string previousLevelName;
-		std::vector<std::string>procedureNames;
 		BubbleInsertType currentInsertType;
 		bool copyNegated = false;
 		bool copyInverted = false;
@@ -150,6 +145,7 @@ namespace middle {
 		std::string activeBubbleName;
 		std::vector<int>traversePath;
 		middle::Id backgroundBubbleId;
+		const int loadDepth = 5;
 	};
 
 	struct ModelContainer {
