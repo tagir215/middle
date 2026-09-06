@@ -114,6 +114,8 @@ namespace middle {
 	// get index on the loop
 	int getLoopIndex(GameState* gameState, middle::Id id);
 
+	void assertPos(const Vector3& pos);
+
 	template<typename F>
 	void loopInstances(GameState* gameState, F func) {
 		for (int i = 0; i < gameState->shapes.size(); ++i) {

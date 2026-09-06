@@ -96,7 +96,6 @@ public:
 			for (int childIndex = 0; childIndex < children.size(); ++childIndex) {
 				middle::Id childId = children[childIndex];
 				if (childId == nextId) {
-
 					localPathIndexQueue.push(childIndex);
 					break;
 				}
@@ -108,7 +107,7 @@ public:
 		int travelledLength = traversePath.size();
 
 		// free
-		if (localPathIndexQueue.size() > 1) {
+		if (localPathIndexQueue.size() > 2) {
 
 			int scaleReferenceIndex = localPathIndexQueue.back();
 			middle::Id scaleReferenceId = pathIds.back();
@@ -120,7 +119,7 @@ public:
 
 			if (traversePath.size() > 0) {
 				auto loadParentAction = std::make_shared<equlab::LoadBubbleSection>(
-					scaleReferenceId, scaleReferenceIndex, traversePath);
+					scaleReferenceId, scaleReferenceIndex);
 				middle::queueAction(gameState, loadParentAction);
 			}
 		}
@@ -134,7 +133,7 @@ public:
 			gameState->bubbleAlgebraState.traversePath.pop_back();
 
 			auto loadParentAction = std::make_shared<equlab::LoadBubbleSection>(
-				scaleReferenceId, scaleReferenceIndex, gameState->bubbleAlgebraState.traversePath);
+				scaleReferenceId, scaleReferenceIndex);
 
 			middle::queueAction(gameState, loadParentAction);
 		}

@@ -128,6 +128,10 @@ namespace bubble{
 			return;
 		}
 
+		if (childCount == 3) {
+			int a = 0;
+		}
+
 		float diameter = width;
 		Vector3 leftBottomCorner = Vector3{ -diameter * 0.5f, 0, -diameter * 0.5f };
 

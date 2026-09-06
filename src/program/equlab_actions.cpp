@@ -382,7 +382,7 @@ namespace equlab {
 		const int loadDist = gameState->bubbleAlgebraState.loadDepth;
 
 		auto scope = bubequ::loadBubequHead(gameState->bubbleAlgebraState.activeBubbleName, 
-			traversePath,loadDist);
+			gameState->bubbleAlgebraState.traversePath,loadDist);
 		middle::Id loadedId = bubequ::bubequToBubble(gameState, Vector3{0,0,0}, scope);
 		bubble::recursiveBubbleLayoutScaleUpdate(gameState, loadedId);
 		bubble::recursiveBubbleLayoutUpdate(gameState, loadedId);

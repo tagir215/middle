@@ -276,7 +276,7 @@ namespace bubequ {
 			if (pathStepIndex < traversePath.size()) {
 				int pathDirection = traversePath[pathStepIndex];
 				auto& toLoadBub = scope->children[pathDirection];
-				return loadBub(toLoadBub->hash, traversePath, loadDepth, ++pathStepIndex, depthIndex);
+				return loadBub(toLoadBub->hash, traversePath, loadDepth, pathStepIndex + 1, depthIndex);
 			}
 
 			// at end return
@@ -288,7 +288,7 @@ namespace bubequ {
 			for (int i = 0; i < scope->children.size(); ++i) {
 				auto& child = scope->children[i];
 				if (child->hash != "") {
-					auto newChild = loadBub(child->hash, traversePath, loadDepth, pathStepIndex, ++depthIndex);
+					auto newChild = loadBub(child->hash, traversePath, loadDepth, pathStepIndex, depthIndex + 1);
 					child = newChild;
 				}
 			}

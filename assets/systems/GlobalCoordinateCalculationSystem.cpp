@@ -51,6 +51,7 @@ class GlobalCoordinateCalculationSystem : public middle::MiddleGameplaySystem {
 			auto pos = middle::attachComponent<components::LocalPosition>(gameState, shape.id);
 			if (oldPos) {
 				pos->pos = { oldPos->posX, oldPos->posY, oldPos->posZ };
+				middle::assertPos(pos->pos);
 			}
 			return;
 		}

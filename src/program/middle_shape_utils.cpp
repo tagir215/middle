@@ -146,6 +146,7 @@ namespace middle {
 			posData->pos.z = newPos.x;
 			posData->pos.y = newPos.y;
 			posData->pos.z = newPos.z;
+			assertPos(posData->pos);
 		}
 	}
 
@@ -164,12 +165,14 @@ namespace middle {
 		Vector3 localPos = projectGlobalCoordinateToLocalCoordinate(gameState, targetPos, parentId);
 		auto localPosComp = middle::getComp<components::LocalPosition>(gameState, id);
 		localPosComp->pos = localPos;
+		assertPos(localPos);
 	}
 
 	void setLocalPosition(GameState* gameState, middle::Id id, const Vector3& targetPos)
 	{
 		auto localPosComp = middle::getComp<components::LocalPosition>(gameState, id);
 		localPosComp->pos = targetPos;
+		assertPos(targetPos);
 	}
 
 	bool isGhostShape(int index)
@@ -874,11 +877,21 @@ namespace middle {
 		return -1;
 	}
 
+	void assertPos(const Vector3& pos)
+	{
+		assert(!std::isnan(pos.x));
+		assert(!std::isnan(pos.y));
+		assert(!std::isnan(pos.z));
+	}
+
 	Vector3 projectGlobalCoordinateToLocalCoordinate(GameState* gameState, const Vector3& globalCoord, middle::Id parentId)
 	{
 		Matrix transformM = getTransformMatrix(gameState, parentId);
 		Matrix inverseM = MatrixInvert(transformM);
 		Vector3 localCoord = Vector3Transform(globalCoord, inverseM);
+		if (std::isnan(localCoord.x + localCoord.y + localCoord.z)) {
+			return {0,0,0};
+		}
 		return localCoord;
 	}
 
@@ -894,6 +907,7 @@ namespace middle {
 			Vector3 projLocalPos = middle::projectGlobalCoordinateToLocalCoordinate(gameState, 
 				globalPos, parentId);
 			localPos->pos = projLocalPos;
+			assertPos(projLocalPos);
 
 			Vector3 oldParentScale = getGlobalScale(gameState, oldParentId);
 			Vector3 newParentScale = getGlobalScale(gameState, parentId);

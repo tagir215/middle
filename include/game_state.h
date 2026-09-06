@@ -145,7 +145,7 @@ namespace middle {
 		std::string activeBubbleName;
 		std::vector<int>traversePath;
 		middle::Id backgroundBubbleId;
-		const int loadDepth = 5;
+		const int loadDepth = 10;
 	};
 
 	struct ModelContainer {

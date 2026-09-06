@@ -1402,6 +1402,7 @@ namespace bubble {
 		middle::addComponent<components::GlobalRect>(newBubbleShape);
 		auto position = middle::addComponent<components::LocalPosition>(newBubbleShape);
 		position->pos = targetPos;
+		assertPos(position->pos);
 		middle::addComponent<components::LocalScale>(newBubbleShape);
 		middle::addComponent<components::GlobalTransform>(newBubbleShape);
 		return newBubbleShape;

@@ -210,12 +210,10 @@ namespace equlab {
 	public:
 		middle::Id scaleReferenceId;
 		int scaleReferenceIndex = -1;
-		std::vector<int>traversePath;
 		middle::Id resultId;
-		LoadBubbleSection(middle::Id scaleReferenceId, int scaleReferenceIndex, const std::vector<int>& traversePath) {
+		LoadBubbleSection(middle::Id scaleReferenceId, int scaleReferenceIndex) {
 			this->scaleReferenceId = scaleReferenceId;
 			this->scaleReferenceIndex = scaleReferenceIndex;
-			this->traversePath = traversePath;
 		}
 		void execute(middle::GameState* gameState) override;
 		void undo(middle::GameState* gameState) override;
