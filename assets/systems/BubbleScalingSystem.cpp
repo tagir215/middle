@@ -29,6 +29,7 @@ public:
 		bubbleCache->addType<components::LocalScale>();
 		bubbleCache->addType<components::GlobalTransform>();
 		bubbleCache->addType<components::BubblePowerComponent>(components::NOTINTERESTED);
+		bubbleCache->addType<components::BubbleSummationComponent>(components::NOTINTERESTED);
 		bubbleCache->addType<components::PauseLayoutTag>(components::NOTINTERESTED);
 
 		powerCache = middle::newCompCache(gameState, systemName);
@@ -49,17 +50,14 @@ public:
 
 	void update(middle::GameState* gameState) override {
 
-		auto globalRIt = bubbleCache->begin<components::GlobalRect>();
 		for (middle::Id id : bubbleCache->relevantIdVector) {
 			bubble::updateBubbleLayoutScale(gameState, id, smoothFactor);
 		}
 
-		auto powerGlobalRIt = powerCache->begin<components::GlobalRect>();
 		for (middle::Id id : powerCache->relevantIdVector) {
 			bubble::updatePowerLayoutScale(gameState, id, smoothFactor);
 		}
 
-		auto summationGlobalRIt = summationCache->begin<components::GlobalRect>();
 		for (middle::Id id : summationCache->relevantIdVector) {
 			bubble::updateSummationLayoutScale(gameState, id, smoothFactor);
 		}

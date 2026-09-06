@@ -206,11 +206,16 @@ namespace equlab {
 		void undo(middle::GameState* gameState) override;
 	};
 
-	class LoadParent : public middle::EditorActionContainer {
+	class LoadBubbleSection : public middle::EditorActionContainer {
 	public:
-		middle::Id id;
-		LoadParent(middle::Id id) {
-			this->id = id;
+		middle::Id scaleReferenceId;
+		int scaleReferenceIndex = -1;
+		std::vector<int>traversePath;
+		middle::Id resultId;
+		LoadBubbleSection(middle::Id scaleReferenceId, int scaleReferenceIndex, const std::vector<int>& traversePath) {
+			this->scaleReferenceId = scaleReferenceId;
+			this->scaleReferenceIndex = scaleReferenceIndex;
+			this->traversePath = traversePath;
 		}
 		void execute(middle::GameState* gameState) override;
 		void undo(middle::GameState* gameState) override;

@@ -106,7 +106,22 @@ public:
 			if (ImGui::Button("Save bubequ")) {
 				for (middle::Id& activeId : activeBubbleCache->relevantIdVector) {
 
-					auto root = bubequ::bubbleToBubequ(gameState, activeId);
+					std::string name = equationName;
+
+					std::shared_ptr<bubequ::Scope> root;
+					if (gameState->bubbleAlgebraState.activeBubbleName != "") {
+						name = gameState->bubbleAlgebraState.activeBubbleName;
+						root = bubequ::loadBubequHead(name, {}, 400);
+						// load root from disc
+						auto newBranch = bubequ::bubbleToBubequ(gameState, activeId);
+						// replace current visible branch on the loaded tree
+						bubequ::replaceBranch(root, newBranch, gameState->bubbleAlgebraState.traversePath);
+					}
+					else {
+						root = bubequ::bubbleToBubequ(gameState, activeId);
+					}
+
+					// convert to hashes and save head reference
 					std::unordered_map<std::string, std::string>hashMap;
 					std::string head = bubequ::bubequToHashes(gameState, root, hashMap);
 					bubequ::saveBubequHead(equationName, head, hashMap);

@@ -101,6 +101,9 @@ namespace middle {
 	{
 		auto localScale = middle::getComp<components::LocalScale>(gameState, id);
 		localScale->scale = targetScale;
+		assert(localScale->scale.x >= 0);
+		assert(localScale->scale.y >= 0);
+		assert(localScale->scale.z >= 0);
 	}
 
 	int findHighestUsedIndex(GameState* gameState)

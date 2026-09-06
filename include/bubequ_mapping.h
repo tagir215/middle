@@ -272,4 +272,16 @@ namespace bubequ{
 		return hash;
 	}
 
+	inline void replaceBranch(std::shared_ptr<Scope>& root, const std::shared_ptr<Scope>& newBranch, const BubTraversePath& path) {
+		if (path.size() == 0) {
+			root = newBranch;
+			return;
+		}
+		auto& currentScope = root;
+		for (int i = 0; i < path.size(); ++i) {
+			int childIndex = path[i];
+			currentScope = currentScope->children[childIndex];
+		}
+		currentScope = newBranch;
+	}
 }

@@ -149,6 +149,7 @@ namespace middle {
 		float worldScale = 1;
 		std::string activeBubbleName;
 		std::vector<int>traversePath;
+		middle::Id backgroundBubbleId;
 	};
 
 	struct ModelContainer {

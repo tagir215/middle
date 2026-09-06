@@ -232,10 +232,10 @@ namespace bubequ {
 		outFile.close();
 	}
 
-	void saveBubequHead(const std::string& equName, const std::string& headHash, const std::unordered_map<std::string, std::string>& map)
+	void saveBubequHead(const std::string& headName, const std::string& headHash, const std::unordered_map<std::string, std::string>& map)
 	{
 		// write head ref
-		std::string path = bubblePaths::EQUATION_FOLDER + "/" + equName + ".bubequ";
+		std::string path = bubblePaths::EQUATION_FOLDER + "/" + headName + ".bubequ";
 		std::ofstream outFile(path);
 		if (!outFile.is_open()) {
 			std::cerr << "failed to open to write\n";
@@ -279,8 +279,9 @@ namespace bubequ {
 				return loadBub(toLoadBub->hash, traversePath, loadDepth, ++pathStepIndex, depthIndex);
 			}
 
+
 			// at end return
-			if (traversePath.size() + depthIndex >= loadDepth || dynamic_cast<Unit*>(scope.get())) {
+			if (depthIndex >= loadDepth || dynamic_cast<Unit*>(scope.get())) {
 				return scope;
 			}
 

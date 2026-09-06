@@ -14,8 +14,9 @@ namespace bubble{
 		Vector3 targetScale = Vector3{ scalar,scalar,scalar };
 		if(gameState->bubbleAlgebraState.postUndoFrames == 0)
 			childScale->scale += (targetScale - childScale->scale) * smoothFactor;
-		else
+		else {
 			childScale->scale = targetScale;
+		}
 	}
 
 	void updatePowerLayoutScale(middle::GameState* gameState, middle::Id id, float smoothFactor)

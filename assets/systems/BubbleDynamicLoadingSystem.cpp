@@ -16,8 +16,12 @@
 #include <queue>
 
 class BubbleDynamicLoadingSystem : public middle::MiddleGameplaySystem {
+public:
 	components::CompCache* intersectingBubbleCache;
 	components::CompCache* activeCache;
+	BubbleDynamicLoadingSystem() {
+		systemUpdateType = middle::SystemUpdateType::GAMEPLAY_POSTFRAME;
+	}
 
 	void init(middle::GameState* gameState) override {
 		intersectingBubbleCache = middle::newCompCache(gameState, systemName);
@@ -28,15 +32,24 @@ class BubbleDynamicLoadingSystem : public middle::MiddleGameplaySystem {
 		intersectingBubbleCache->addType<components::IntersectingTag>();
 
 		activeCache = middle::newCompCache(gameState, systemName);
-		activeCache->addType<components::ActiveSceneSelectableTag>();
 		activeCache->addType<components::BubbleComponent>();
+		activeCache->addType<components::ActiveSceneSelectableTag>();
 	}
 	void update(middle::GameState* gameState) override {
+
+		// update background id if not assigned to anything
+		if (gameState->bubbleAlgebraState.backgroundBubbleId.index == middle::UNASSIGNED) {
+			if (activeCache->relevantIdVector.size() == 1) {
+				gameState->bubbleAlgebraState.backgroundBubbleId = activeCache->relevantIdVector[0];
+			}
+		}
+
+
 		const float screenWidthInWorldCoords = 
-			gameState->nearPlaneAxisX / gameState->nearPlaneDistance * (-gameState->activeCamera.position.y)  * 2.2f;
+			gameState->nearPlaneAxisX / gameState->nearPlaneDistance * (-gameState->activeCamera.position.y)  * 0.2f;
 
 		// find current position id
-		middle::Id loadPositionId;
+		middle::Id localPathEndId;
 		float minWidth = std::numeric_limits<float>::max();
 		auto globalRectIt = intersectingBubbleCache->begin<components::GlobalRect>();
 		for (middle::Id id : intersectingBubbleCache->relevantIdVector) {
@@ -44,22 +57,17 @@ class BubbleDynamicLoadingSystem : public middle::MiddleGameplaySystem {
 
 			if (globalRect->width > screenWidthInWorldCoords && globalRect->width < minWidth) {
 				minWidth = globalRect->width;
-				loadPositionId = id;
+				localPathEndId = id;
 			}
 		}
 
-		if (loadPositionId.index == middle::UNASSIGNED) {
-			if (activeCache->relevantIdVector.size() == 1) {
-				loadPositionId = activeCache->relevantIdVector[0];
-			}
-			else {
-				return;
-			}
+		if (localPathEndId.index == middle::UNASSIGNED) {
+			return;
 		}
 
 		// find ids of the path
 		std::stack<middle::Id>pathStack;
-		pathStack.push(loadPositionId);
+		pathStack.push(localPathEndId);
 		while (true) {
 			middle::Id currentId = pathStack.top();
 			middle::Id parentId = middle::getParent(gameState, currentId);
@@ -70,6 +78,7 @@ class BubbleDynamicLoadingSystem : public middle::MiddleGameplaySystem {
 				break;
 			}
 		}
+
 		std::vector<middle::Id>pathIds;
 		while (pathStack.size() > 0) {
 			pathIds.push_back(pathStack.top());
@@ -77,39 +86,56 @@ class BubbleDynamicLoadingSystem : public middle::MiddleGameplaySystem {
 		}
 
 		// store indexes of children
-		std::queue<int>resultPath;
+		std::queue<int>localPathIndexQueue;
 		for (int i = 0; i < pathIds.size() - 1; ++i) {
 			middle::Id id = pathIds[i];
 			middle::Id nextId = pathIds[i + 1];
+
 			std::vector<middle::Id>children;
 			middle::getChildren(gameState, id, children);
 			for (int childIndex = 0; childIndex < children.size(); ++childIndex) {
 				middle::Id childId = children[childIndex];
 				if (childId == nextId) {
-					resultPath.push(childIndex);
+
+					localPathIndexQueue.push(childIndex);
 					break;
 				}
 			}
 		}
 
 		auto& traversePath = gameState->bubbleAlgebraState.traversePath;
+		middle::Id& backgroundId = gameState->bubbleAlgebraState.backgroundBubbleId;
 		int travelledLength = traversePath.size();
 
 		// free
-		if (resultPath.size() > 1) {
-			while (resultPath.size() > 1) {
-				traversePath.push_back(resultPath.front());
-				resultPath.pop();
-			}
-			middle::Id loadPositionParentId = middle::getParent(gameState, loadPositionId);
-			auto freeParentAction = std::make_shared<equlab::FreeParent>(loadPositionParentId);
-			middle::queueAction(gameState, freeParentAction);
+		if (localPathIndexQueue.size() > 1) {
 
+			int scaleReferenceIndex = localPathIndexQueue.back();
+			middle::Id scaleReferenceId = pathIds.back();
+
+			while (localPathIndexQueue.size() > 1) {
+				traversePath.push_back(localPathIndexQueue.front());
+				localPathIndexQueue.pop();
+			}
+
+			if (traversePath.size() > 0) {
+				auto loadParentAction = std::make_shared<equlab::LoadBubbleSection>(
+					scaleReferenceId, scaleReferenceIndex, traversePath);
+				middle::queueAction(gameState, loadParentAction);
+			}
 		}
 
 		// load
-		else if (resultPath.size() < 1 && gameState->bubbleAlgebraState.traversePath.size() > 0) {
-			auto loadParentAction = std::make_shared<equlab::LoadParent>(loadPositionId);
+		else if (localPathIndexQueue.size() < 1 && traversePath.size() > 0) {
+
+			int scaleReferenceIndex = traversePath.back();
+			middle::Id scaleReferenceId = gameState->bubbleAlgebraState.backgroundBubbleId;
+
+			gameState->bubbleAlgebraState.traversePath.pop_back();
+
+			auto loadParentAction = std::make_shared<equlab::LoadBubbleSection>(
+				scaleReferenceId, scaleReferenceIndex, gameState->bubbleAlgebraState.traversePath);
+
 			middle::queueAction(gameState, loadParentAction);
 		}
 

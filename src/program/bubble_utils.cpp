@@ -1217,22 +1217,36 @@ namespace bubble {
 		middle::moveShape(gameState, topParent.index, displacement);
 	}
 
-	void recursiveBubbleLayoutUpdate(middle::GameState* gameState, middle::Id id)
-	{
-		const float moveSpeed = 10000000.0f;
+	void recursiveBubbleLayoutScaleUpdate(middle::GameState* gameState, middle::Id id) {
 		const float scaleSmoothFactor = 1;
 		if (bubble::isPowerBubble(gameState, id)) {
 			bubble::updatePowerLayoutScale(gameState, id, scaleSmoothFactor);
+		}
+		else if (bubble::isSummation(gameState, id)) {
+			bubble::updateSummationLayoutScale(gameState, id, scaleSmoothFactor);
+		}
+		else {
+			bubble::updateBubbleLayoutScale(gameState, id, scaleSmoothFactor);
+		}
+		std::vector<middle::Id>children;
+		middle::getChildren(gameState, id, children);
+		for (middle::Id childId : children) {
+			recursiveBubbleLayoutScaleUpdate(gameState, childId);
+		}
+	}
+
+	void recursiveBubbleLayoutUpdate(middle::GameState* gameState, middle::Id id)
+	{
+		const float moveSpeed = 10000000.0f;
+		if (bubble::isPowerBubble(gameState, id)) {
 			auto rect = middle::getComp<components::Rectangle>(gameState, id);
 			bubble::updatePowerLayout(gameState, id, rect->width, moveSpeed);
 		}
 		else if (bubble::isSummation(gameState, id)) {
-			bubble::updateSummationLayoutScale(gameState, id, scaleSmoothFactor);
 			auto rect = middle::getComp<components::Rectangle>(gameState, id);
 			bubble::updateSummationLayout(gameState, id, rect->width, moveSpeed);
 		}
 		else {
-			bubble::updateBubbleLayoutScale(gameState, id, scaleSmoothFactor);
 			auto rect = middle::getComp<components::Rectangle>(gameState, id);
 			bubble::updateBubbleLayout(gameState, id, rect->width, moveSpeed);
 		}
@@ -1548,7 +1562,7 @@ namespace bubble {
 	}
 
 	bool isSummation(middle::GameState* gameState, middle::Id id) {
-		return middle::getComp<components::BubbleSummationComponent>(gameState, id) != nullptr;
+		return middle::getComp<components::BubbleSummationComponent>(gameState, id);
 	}
 
 	bool isMultiplication(middle::GameState* gameState, middle::Id id) {

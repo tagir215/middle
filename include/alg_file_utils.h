@@ -17,6 +17,6 @@ namespace bubequ {
 	void saveTextFile(const std::string& title, const std::string& text);
 	std::string loadText(const std::string& path);
 	std::vector<std::string>getFilenames(const std::string directoryPath);
-	void saveBubequHead(const std::string& head, const std::string& headHash, const std::unordered_map<std::string, std::string>& map);
+	void saveBubequHead(const std::string& headName, const std::string& headHash, const std::unordered_map<std::string, std::string>& map);
 	std::shared_ptr<Scope> loadBubequHead(const std::string& headName, const BubTraversePath& traversePath, int loadDepth);
 }
