@@ -47,6 +47,7 @@ class BubbleManualScalingSystem : public middle::MiddleGameplaySystem {
 			auto transform = *transformIt;
 
 			Vector3 newPos = Vector3Transform(transform->pos, m);
+			middle::assertPos(newPos);
 
 			scale->scale *= scalar;
 			middle::setLocalPosition(gameState, id, newPos);

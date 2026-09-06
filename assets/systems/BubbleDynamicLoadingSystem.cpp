@@ -46,7 +46,7 @@ public:
 
 
 		const float screenWidthInWorldCoords = 
-			gameState->nearPlaneAxisX / gameState->nearPlaneDistance * (-gameState->activeCamera.position.y)  * 0.2f;
+			gameState->nearPlaneAxisX / gameState->nearPlaneDistance * (-gameState->activeCamera.position.y)  * 2.2f;
 
 		// find current position id
 		middle::Id localPathEndId;
