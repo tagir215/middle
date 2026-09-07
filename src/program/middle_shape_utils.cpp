@@ -1,6 +1,5 @@
 #include "middle_shape_utils.h"
 #include "middle_math.h"
-#include "middle_component_table.h"
 #include "LoopSociety.h"
 #include "Sphere.h"
 #include "Reference.h"
@@ -320,7 +319,7 @@ namespace middle {
 			Component c = pair.second;
 			int typeId = pair.first;
 			// store changed component typeids to trigger cache updates
-			gameState->componentTypeIdSetWithStructuralChanges.insert(typeId);
+			middle::notifyStructuralChanges(gameState, gameState->shapes[index].id, typeId);
 
 			componentListMap[typeId]->shrink(c.componentOffset);
 		}
@@ -362,7 +361,7 @@ namespace middle {
 		middle::Shape& newShape = gameState->shapes[freeIndex];
 		for (auto& pair : newShape.componentMap) {
 			int typeId = pair.first;
-			gameState->componentTypeIdSetWithStructuralChanges.insert(typeId);
+			notifyStructuralChanges(gameState, shape.id, typeId);
 		}
 		return newShape;
 	}
@@ -376,7 +375,7 @@ namespace middle {
 		middle::Shape& newShape = gameState->shapes[index];
 		for (auto& pair : newShape.componentMap) {
 			int typeId = pair.first;
-			gameState->componentTypeIdSetWithStructuralChanges.insert(typeId);
+			notifyStructuralChanges(gameState, shape.id, typeId);
 		}
 		return newShape;
 	}
@@ -390,7 +389,7 @@ namespace middle {
 		middle::Shape& newShape = gameState->shapes[freeIndex];
 		for (auto& pair : newShape.componentMap) {
 			int typeId = pair.first;
-			gameState->componentTypeIdSetWithStructuralChanges.insert(typeId);
+			notifyStructuralChanges(gameState, shape.id, typeId);
 		}
 		return newShape;
 	}
@@ -403,7 +402,7 @@ namespace middle {
 		gameState->shapes[id.index] = shape;
 		for (auto& pair : shape.componentMap) {
 			int typeId = pair.first;
-			gameState->componentTypeIdSetWithStructuralChanges.insert(typeId);
+			notifyStructuralChanges(gameState, id, typeId);
 		}
 		return gameState->shapes[id.index];
 	}
@@ -954,6 +953,15 @@ namespace middle {
 			updateGlobalTransforms(gameState, childId, m, globalT->scale);
 		}
 
+	}
+
+	void notifyStructuralChanges(middle::GameState* gameState, middle::Id id, middle::componentType componentType)
+	{
+		auto& changes = gameState->structuralChangesMap;
+		if (changes.find(componentType) == changes.end()) {
+			changes[componentType] = {};
+		}
+		changes[componentType].push_back(id);
 	}
 
 }

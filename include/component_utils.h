@@ -7,7 +7,7 @@ namespace middle {
 	CompType* attachComponent(middle::GameState* gameState, middle::Id id) {
 		middle::Shape& shape = middle::getShape(gameState, id.index);
 		auto newComp = middle::addComponent<CompType>(shape);
-		gameState->componentTypeIdSetWithStructuralChanges.insert(middle::getTypeId<CompType>());
+		middle::notifyStructuralChanges(gameState, id, middle::getTypeId<CompType>());
 		return newComp;
 	}
 
@@ -26,7 +26,7 @@ namespace middle {
 			}
 			middle::Shape& shape = middle::getShape(gameState, id.index);
 			middle::addComponent<CompType>(shape);
-			gameState->componentTypeIdSetWithStructuralChanges.insert(middle::getTypeId<CompType>());
+			middle::notifyStructuralChanges(gameState, id, middle::getTypeId<CompType>());
 			}));
 	}
 
@@ -39,7 +39,7 @@ namespace middle {
 			middle::Shape& shape = middle::getShape(gameState, id.index);
 			auto newComp = middle::addComponent<CompType>(shape);
 			init(newComp);
-			gameState->componentTypeIdSetWithStructuralChanges.insert(middle::getTypeId<CompType>());
+			middle::notifyStructuralChanges(gameState, id, middle::getTypeId<CompType>());
 			}));
 	}
 
@@ -54,7 +54,7 @@ namespace middle {
 				return;
 			}
 			middle::deleteComponent<CompType>(shape);
-			gameState->componentTypeIdSetWithStructuralChanges.insert(middle::getTypeId<CompType>());
+			middle::notifyStructuralChanges(gameState, id, middle::getTypeId<CompType>());
 			}));
 	}
 

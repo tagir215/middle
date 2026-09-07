@@ -38,6 +38,13 @@ namespace middle {
 		}
 	};
 
+	struct IdHash {
+		std::size_t operator()(const Id& id) const {
+			return std::hash<int>{}(id.index) ^
+				(std::hash<int>{}(id.generation) << 1);
+		}
+	};
+
 	struct Component {
 		// offset where the shapes component is in component vector in middle_component_table (currently)
 		int componentOffset;

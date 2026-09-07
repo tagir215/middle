@@ -22,49 +22,103 @@ public:
 		assert(false);
 	}
 
+
+	std::vector<middle::Id> getRelevantCandidates(middle::GameState* gameState, components::CompCache* cache) {
+		auto& changesMap = gameState->structuralChangesMap;
+		std::vector<middle::Id>result;
+		for (components::CacheCompType& type : cache->typeIdVector) {
+			if (changesMap.find(type.typeId) != changesMap.end()) {
+				auto& ids = changesMap[type.typeId];
+				for (middle::Id id : ids) {
+					if (std::find(result.begin(), result.end(), id) != result.end()) {
+						continue;
+					}
+					result.push_back(id);
+				}
+			}
+		}
+		return result;
+	}
+
 	void updateCache(middle::GameState* gameState, components::CompCache* cache) {
-		cache->relevantIdVector.clear();
-		cache->compOffsetsVector.clear();
-		cache->compOffsetsVector.resize(cache->componentTypeCount);
+
+		if (cache->compOffsetsVector.size() == 0) {
+			cache->compOffsetsVector.resize(cache->componentTypeCount);
+		}
 
 		int systemNameIndex = getSystemNameIndex(gameState, cache->systemName);
 
-		auto& structuralChanges = gameState->componentTypeIdSetWithStructuralChanges;
+		auto candidates = getRelevantCandidates(gameState, cache);
+		for (middle::Id id : candidates) {
 
-		// fill relevant ids and store comp offset for each component for each entity
-		middle::loopInstances(gameState, [gameState, cache, systemNameIndex](int i, middle::Shape& shape) {
-			// skip if not all components found, or if not interseted skip if found
-			for (int compTypeIndex = 0; compTypeIndex < cache->componentTypeCount; ++compTypeIndex) {
-				components::CacheCompType cacheCompType = cache->typeIdVector[compTypeIndex];
-				int typeId = cacheCompType.typeId;
-				if (cacheCompType.desirability == components::INTERESTED) {
-					if (shape.componentMap.find(typeId) == shape.componentMap.end()) {
-						return true;
+
+			bool includeInCache = true;
+
+			bool isValid = middle::isValidId(gameState, id);
+			if (!isValid) {
+				includeInCache = false;
+			}
+
+			if (isValid) {
+				auto& shape = middle::getShape(gameState, id.index);
+				// skip if not all components found, or if not interseted skip if found
+				for (int compTypeIndex = 0; compTypeIndex < cache->componentTypeCount; ++compTypeIndex) {
+					components::CacheCompType cacheCompType = cache->typeIdVector[compTypeIndex];
+					int typeId = cacheCompType.typeId;
+					if (cacheCompType.desirability == components::INTERESTED) {
+						if (shape.componentMap.find(typeId) == shape.componentMap.end()) {
+							includeInCache = false;
+						}
 					}
-				}
-				if (cacheCompType.desirability == components::NOTINTERESTED) {
-					if (shape.componentMap.find(typeId) != shape.componentMap.end()) {
-						return true;
+					if (cacheCompType.desirability == components::NOTINTERESTED) {
+						if (shape.componentMap.find(typeId) != shape.componentMap.end()) {
+							includeInCache = false;
+						}
 					}
 				}
 			}
-			// add the comp offsets and relevant ids
-			for (int compTypeIndex = 0; compTypeIndex < cache->componentTypeCount; ++compTypeIndex) {
-				auto cacheCompType = cache->typeIdVector[compTypeIndex];
-				if (cacheCompType.desirability == components::INTERESTED) {
-					middle::Component& comp = shape.componentMap[cacheCompType.typeId];
-					cache->compOffsetsVector[compTypeIndex].push_back(comp.componentOffset);
+			if (includeInCache) {
+				auto& ids = cache->relevantIdVector;
+				if (std::find(ids.begin(), ids.end(), id) != ids.end()) {
+					continue;
+				}
+				// add id
+				ids.push_back(id);
+				// debug thing
+				auto& shape = middle::getShape(gameState, id.index);
+				shape.affectingSystems.insert(systemNameIndex);
+
+				// add the comp offsets and relevant ids
+				for (int compTypeIndex = 0; compTypeIndex < cache->componentTypeCount; ++compTypeIndex) {
+					auto cacheCompType = cache->typeIdVector[compTypeIndex];
+					if (cacheCompType.desirability == components::INTERESTED) {
+						middle::Component& comp = shape.componentMap[cacheCompType.typeId];
+						cache->compOffsetsVector[compTypeIndex].push_back(comp.componentOffset);
+					}
 				}
 			}
+			else {
+				auto& ids = cache->relevantIdVector;
+				for (int i = 0; i < ids.size(); ++i) {
+					if (ids[i] != id) {
+						continue;
+					}
+					// erase id
+					ids.erase(ids.begin() + i);
+					// erase component
+					for (int compTypeIndex = 0; compTypeIndex < cache->componentTypeCount; ++compTypeIndex) {
+						auto cacheCompType = cache->typeIdVector[compTypeIndex];
+						if (cacheCompType.desirability == components::INTERESTED) {
+							auto& offsets = cache->compOffsetsVector[compTypeIndex];
+							offsets.erase(offsets.begin() + i);
+						}
+					}
+				}
 
-			shape.affectingSystems.insert(systemNameIndex);
-			cache->relevantIdVector.push_back(shape.id);
-			return true;
-			});
-
+			}
+		}
 		cache->needsUpdate = false;
 	}
-
 
 	void update(middle::GameState* gameState) override {
 
@@ -72,7 +126,7 @@ public:
 			return;
 		}
 
-		auto& structuralChanges = gameState->componentTypeIdSetWithStructuralChanges;
+		auto& structuralChanges = gameState->structuralChangesMap;
 		if (structuralChanges.size() > 0) {
 			for (auto& cache : gameState->compCaches) {
 				for (auto cacheTypeId : cache->typeIdVector) {

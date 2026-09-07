@@ -115,6 +115,8 @@ namespace middle {
 	int getLoopIndex(GameState* gameState, middle::Id id);
 	// update global transforms
 	void updateGlobalTransforms(middle::GameState* gameState, middle::Id id, const Matrix& parentM, const Vector3& parentScale);
+	// notify structural changes for cache updates
+	void notifyStructuralChanges(middle::GameState* gameState, middle::Id id, middle::componentType componentType);
 
 	void assertPos(const Vector3& pos);
 

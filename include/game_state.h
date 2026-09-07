@@ -163,6 +163,9 @@ namespace middle {
 		Shader shader;
 	};
 
+	typedef int shapeIndex;
+	typedef int componentType;
+
 	struct GameState {
 	public:
 		float screenWidth;
@@ -230,7 +233,7 @@ namespace middle {
 		std::vector<middle::FieldInfo>fields;
 		BubbleAlgebraState bubbleAlgebraState;
 		std::vector<std::unique_ptr<components::CompCache>>compCaches;
-		std::set<int>componentTypeIdSetWithStructuralChanges = {};
+		std::unordered_map<componentType, std::vector<middle::Id>>structuralChangesMap;
 		std::queue<std::shared_ptr<EditorActionContainer>>actionQueue;
 		std::queue<std::shared_ptr<EditorActionContainer>>undoQueue;
 		std::vector<ModelContainer> loadedModels;

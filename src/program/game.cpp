@@ -240,7 +240,7 @@ extern "C" {
 		auto end = std::chrono::high_resolution_clock::now();
 		auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
 		float ms = duration.count();
-		if (ms > gameState->frameTime * 2000) {
+		if (ms > gameState->frameTime * 1000) {
 			int a = 0;
 		}
 

@@ -290,7 +290,7 @@ namespace middle {
 			Component component;
 			component.componentOffset = componentListMap[componentTypeId]->grow();
 			shape.componentMap[componentTypeId] = component;
-			gameState->componentTypeIdSetWithStructuralChanges.insert(componentTypeId);
+			middle::notifyStructuralChanges(gameState, shape.id, componentTypeId);
 		};
 	}
 
@@ -303,7 +303,7 @@ namespace middle {
 			Component component = shape.componentMap[componentTypeId];
 			componentListMap[componentTypeId]->shrink(component.componentOffset);
 			shape.componentMap.erase(componentTypeId);
-			gameState->componentTypeIdSetWithStructuralChanges.insert(componentTypeId);
+			middle::notifyStructuralChanges(gameState, shape.id, componentTypeId);
 		}
 	}
 
@@ -609,7 +609,7 @@ namespace middle {
 		auto& shape = middle::getShape(gameState, id.index);
 		for (auto pair : shape.componentMap) {
 			int typeId = pair.first;
-			gameState->componentTypeIdSetWithStructuralChanges.insert(typeId);
+			middle::notifyStructuralChanges(gameState, id, typeId);
 		}
 	}
 

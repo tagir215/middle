@@ -487,7 +487,7 @@ namespace middle {
 		serializable->deserialize(buffer, indexOffset);
 		auto& shape = gameState->shapes[index];
 		shape.componentMap[typeId].componentOffset = componentOffset;
-		gameState->componentTypeIdSetWithStructuralChanges.insert(typeId);
+		middle::notifyStructuralChanges(gameState, shape.id, typeId);
 		buffer.clear();
 
 	}
