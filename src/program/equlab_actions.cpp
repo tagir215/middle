@@ -375,6 +375,7 @@ namespace equlab {
 
 	void LoadBubbleSection::execute(middle::GameState* gameState)
 	{
+		auto start = std::chrono::high_resolution_clock::now();
 		const int loadDist = gameState->bubbleAlgebraState.loadDepth;
 		gameState->bubbleAlgebraState.worldScale = 1;
 
@@ -396,6 +397,10 @@ namespace equlab {
 		middle::deleteShapeRecursive(gameState, gameState->bubbleAlgebraState.backgroundBubbleId.index);
 
 		gameState->bubbleAlgebraState.backgroundBubbleId = loadedId;
+
+		auto end = std::chrono::high_resolution_clock::now();
+		auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
+		loadTimeMs = duration.count();
 	}
 
 	void LoadBubbleSection::undo(middle::GameState* gameState)

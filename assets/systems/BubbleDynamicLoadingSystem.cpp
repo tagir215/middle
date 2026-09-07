@@ -136,7 +136,6 @@ public:
 
 			auto loadParentAction = std::make_shared<equlab::LoadBubbleSection>(
 				scaleReferenceId, scaleReferenceIndex);
-
 			middle::queueAction(gameState, loadParentAction);
 		}
 

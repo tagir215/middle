@@ -145,7 +145,7 @@ namespace middle {
 		std::string activeBubbleName;
 		std::vector<int>traversePath;
 		middle::Id backgroundBubbleId;
-		const int loadDepth = 10;
+		const int loadDepth = 20;
 		Vector3 cameraVelocity = { 0,0,0 };
 		float worldScalarRate = 1;
 	};

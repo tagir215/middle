@@ -224,8 +224,6 @@ public:
 		const float stepScale = 1.0f / oneChildScaleRatio;
 		float layerOffset = 0;
 
-		bool isEven = layer % 2 == 0;
-
 		float camDist = gameState->activeCamera.position.y;
 		// todo... is cosntant
 		float axisY = gameState->nearPlaneAxisY / gameState->nearPlaneDistance * -camDist;
@@ -242,7 +240,7 @@ public:
 
 		float s = scaleRatio;
 
-		s = std::powf(s, 0.17f);
+		s = std::powf(s, 0.20f);
 
 		Color result;
 		result.r = color.r * s + background.r * (1 - s);
