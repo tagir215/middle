@@ -11,7 +11,10 @@
 
 using namespace middle;
 
+
 namespace middle{
+	const float slowSystemThreshold = 0.5f;
+	const float slowActionThreshold = 0.4f;
 
 	void sortSystems(std::vector<std::unique_ptr<middle::MiddleGameplaySystem>>& systems) {
 		std::vector<std::unique_ptr<middle::MiddleGameplaySystem>>tempVec;
@@ -28,6 +31,12 @@ namespace middle{
 					systems.push_back(std::move(s));
 				}
 			}
+		}
+	}
+
+	void reviewSystemTime(middle::GameState* gameState, const middle::MiddleGameplaySystem* system) {
+		if (system->updateTime.count() > slowSystemThreshold) {
+			gameState->slowSystems.push_back(system->systemName);
 		}
 	}
 
@@ -81,6 +90,8 @@ namespace middle{
 
 			gameState->activeSystemName = system->systemName;
 			system->recordTimeUpdate(gameState);
+
+			reviewSystemTime(gameState, system.get());
 		}
 	}
 
@@ -115,6 +126,8 @@ namespace middle{
 
 				gameState->activeSystemName = system->systemName;
 				system->recordTimeUpdate(gameState);
+
+				reviewSystemTime(gameState, system.get());
 			}
 			return true;
 			});
@@ -142,6 +155,8 @@ namespace middle{
 
 				gameState->activeSystemName = system->systemName;
 				system->recordTimeUpdate(gameState);
+
+				reviewSystemTime(gameState, system.get());
 			}
 			return true;
 			});
@@ -158,6 +173,11 @@ extern "C" {
 
 	__declspec(dllexport) void UpdateGame(GameState* gameState)
 	{
+		auto start = std::chrono::high_resolution_clock::now();
+
+		gameState->slowSystems.clear();
+		gameState->slowActions.clear();
+
 		if (gameState->closeGame) {
 			closeGame(gameState);
 			return;
@@ -200,13 +220,31 @@ extern "C" {
 		}
 
 		while (gameState->actionQueue.size() > 0) {
+			auto actionStart = std::chrono::high_resolution_clock::now();
+
 			gameState->actionQueue.front()->execute(gameState);
+			std::string caller = gameState->actionQueue.front()->callerSystem;
+
+			auto actionEnd = std::chrono::high_resolution_clock::now();
+			auto actionDuration = std::chrono::duration_cast<std::chrono::milliseconds>(actionEnd - actionStart);
+			float actionMs = actionDuration.count();
+			if (actionMs > slowActionThreshold) {
+				gameState->slowActions.push_back("action from: " + caller + ": " + std::to_string(actionMs));
+			}
 			gameState->actionQueue.pop();
 		}
 		while (gameState->undoQueue.size() > 0) {
 			gameState->undoQueue.front()->undo(gameState);
 			gameState->undoQueue.pop();
 		}
+
+		auto end = std::chrono::high_resolution_clock::now();
+		auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
+		float ms = duration.count();
+		if (ms > gameState->frameTime * 2000) {
+			int a = 0;
+		}
+
 	}
 
 }

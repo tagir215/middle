@@ -17,7 +17,7 @@ public:
 		if (!sys) {
 			return;
 		}
-		auto count = sys->updateTime.count();
+		float count = sys->updateTime.count();
 		if (count <= 0) {
 			return;
 		}
@@ -28,10 +28,16 @@ public:
 	void update(middle::GameState* gameState) override {
 		auto ui = [gameState, this] {
 			ImGui::Begin("profiler");
-			for (auto& sys : gameState->engineRendererSystems) {
-				drawText(sys.get());
+			for (auto& slowSys : gameState->slowSystems) {
+				ImGui::Text(slowSys.c_str());
+			}
+			for (auto& slowAction : gameState->slowActions) {
+				ImGui::Text(slowAction.c_str());
 			}
 
+			for (auto& sys : gameState->engineSystemInitFrame) {
+				drawText(sys.get());
+			}
 			for (auto& sys : gameState->engineSystemsFrameStart) {
 				drawText(sys.get());
 			}
@@ -49,6 +55,9 @@ public:
 			}
 
 			for (auto sys : gameState->externalPostFrameSystems) {
+				drawText(sys.get());
+			}
+			for (auto& sys : gameState->engineRendererSystems) {
 				drawText(sys.get());
 			}
 

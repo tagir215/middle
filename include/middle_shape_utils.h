@@ -113,6 +113,8 @@ namespace middle {
 	Vector3 getGlobalScale(GameState* gameState, middle::Id id);
 	// get index on the loop
 	int getLoopIndex(GameState* gameState, middle::Id id);
+	// update global transforms
+	void updateGlobalTransforms(middle::GameState* gameState, middle::Id id, const Matrix& parentM, const Vector3& parentScale);
 
 	void assertPos(const Vector3& pos);
 

@@ -21,8 +21,8 @@ public:
 	components::CompCache* activeCache;
 
 	void init(middle::GameState* gameState) override {
-		systemUpdateType = middle::SystemUpdateType::GAMEPLAY_POSTFRAME;
-		updatePriority = 2;
+		systemUpdateType = middle::SystemUpdateType::INITFRAME;
+		updatePriority = 0;
 
 		intersectingBubbleCache = middle::newCompCache(gameState, systemName);
 		intersectingBubbleCache->addType<components::BubbleComponent>();

@@ -10,6 +10,7 @@ public:
 	void init(middle::GameState* gameState) override {
 		systemUpdateType = middle::SystemUpdateType::INITFRAME;
 		systemModeType = middle::SystemModeType::ENGINE;
+		updatePriority = 1;
 	}
 
 	int getSystemNameIndex(middle::GameState* gameState, const std::string& name) {
