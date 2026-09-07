@@ -28,13 +28,6 @@ public:
 	void update(middle::GameState* gameState) override {
 		auto ui = [gameState, this] {
 			ImGui::Begin("profiler");
-			for (auto& slowSys : gameState->slowSystems) {
-				ImGui::Text(slowSys.c_str());
-			}
-			for (auto& slowAction : gameState->slowActions) {
-				ImGui::Text(slowAction.c_str());
-			}
-
 			for (auto& sys : gameState->engineSystemInitFrame) {
 				drawText(sys.get());
 			}

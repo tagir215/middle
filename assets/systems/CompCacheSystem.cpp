@@ -29,6 +29,8 @@ public:
 
 		int systemNameIndex = getSystemNameIndex(gameState, cache->systemName);
 
+		auto& structuralChanges = gameState->componentTypeIdSetWithStructuralChanges;
+
 		// fill relevant ids and store comp offset for each component for each entity
 		middle::loopInstances(gameState, [gameState, cache, systemNameIndex](int i, middle::Shape& shape) {
 			// skip if not all components found, or if not interseted skip if found
@@ -79,13 +81,16 @@ public:
 					}
 				}
 			}
-			structuralChanges.clear();
 		}
 
 		for (auto& cache : gameState->compCaches) {
 			if (cache->needsUpdate) {
 				updateCache(gameState, cache.get());
 			}
+		}
+
+		if (structuralChanges.size() > 0) {
+			structuralChanges.clear();
 		}
 	}
 };

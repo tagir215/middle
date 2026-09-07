@@ -13,8 +13,6 @@ using namespace middle;
 
 
 namespace middle{
-	const float slowSystemThreshold = 0.5f;
-	const float slowActionThreshold = 0.4f;
 
 	void sortSystems(std::vector<std::unique_ptr<middle::MiddleGameplaySystem>>& systems) {
 		std::vector<std::unique_ptr<middle::MiddleGameplaySystem>>tempVec;
@@ -35,8 +33,9 @@ namespace middle{
 	}
 
 	void reviewSystemTime(middle::GameState* gameState, const middle::MiddleGameplaySystem* system) {
-		if (system->updateTime.count() > slowSystemThreshold) {
-			gameState->slowSystems.push_back(system->systemName);
+		float timeMs = system->updateTime.count();
+		if (timeMs > slowSystemThreshold) {
+			slowSystems.push_back(system->systemName + ": " + std::to_string(timeMs));
 		}
 	}
 
@@ -175,8 +174,8 @@ extern "C" {
 	{
 		auto start = std::chrono::high_resolution_clock::now();
 
-		gameState->slowSystems.clear();
-		gameState->slowActions.clear();
+		slowSystems.clear();
+		slowActions.clear();
 
 		if (gameState->closeGame) {
 			closeGame(gameState);
@@ -229,7 +228,7 @@ extern "C" {
 			auto actionDuration = std::chrono::duration_cast<std::chrono::milliseconds>(actionEnd - actionStart);
 			float actionMs = actionDuration.count();
 			if (actionMs > slowActionThreshold) {
-				gameState->slowActions.push_back("action from: " + caller + ": " + std::to_string(actionMs));
+				slowActions.push_back("action from: " + caller + ": " + std::to_string(actionMs));
 			}
 			gameState->actionQueue.pop();
 		}

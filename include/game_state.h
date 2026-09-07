@@ -230,7 +230,7 @@ namespace middle {
 		std::vector<middle::FieldInfo>fields;
 		BubbleAlgebraState bubbleAlgebraState;
 		std::vector<std::unique_ptr<components::CompCache>>compCaches;
-		std::set<int>componentTypeIdSetWithStructuralChanges;
+		std::set<int>componentTypeIdSetWithStructuralChanges = {};
 		std::queue<std::shared_ptr<EditorActionContainer>>actionQueue;
 		std::queue<std::shared_ptr<EditorActionContainer>>undoQueue;
 		std::vector<ModelContainer> loadedModels;
@@ -238,9 +238,6 @@ namespace middle {
 		std::unordered_map<std::string, ShaderContainer>shaderMap;
 		std::queue<std::string>modelsToLoadQueue;
 		std::queue<Sound>soundQueue;
-
-		std::vector<std::string>slowSystems;
-		std::vector<std::string>slowActions;
 	};
 
 }

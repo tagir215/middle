@@ -5,7 +5,12 @@
 
 using namespace middle;
 
-extern "C" 
+float slowSystemThreshold = 0.5f;
+float slowActionThreshold = 0.4f;
+std::vector<std::string>slowSystems;
+std::vector<std::string>slowActions;
+
+extern "C"
 {
 	__declspec(dllexport) void UpdateGame(GameState* gameState);
 }
