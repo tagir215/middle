@@ -24,15 +24,14 @@ namespace MouseIntersectDetectionSystem {
 
 	class MouseIntersectDetectionSystem : public middle::MiddleGameplaySystem {
 	public:
-		MouseIntersectDetectionSystem() {
-			systemUpdateType = middle::SystemUpdateType::PREFRAME;
-			systemModeType = middle::SystemModeType::EDITOR;
-		}
-
 		components::CompCache* intersectableCache;
 		components::CompCache* intersectingCache;
 
 		void init(middle::GameState* gameState) {
+			systemUpdateType = middle::SystemUpdateType::PREFRAME;
+			systemModeType = middle::SystemModeType::EDITOR;
+			updatePriority = 1;
+
 			intersectingCache = middle::newCompCache(gameState, systemName);
 			intersectingCache->addType<components::IntersectingTag>();
 			intersectingCache->addType<components::MouseIntersectable>();

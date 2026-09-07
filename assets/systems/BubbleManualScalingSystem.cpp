@@ -17,20 +17,53 @@ class BubbleManualScalingSystem : public middle::MiddleGameplaySystem {
 		topDogCache->addType<components::GlobalTransform>();
 	}
 	void update(middle::GameState* gameState) override {
-		if (gameState->gameInput.mouseWheelMove == 0) {
-			return;
-		}
 
-		const float scaleSpeed = 20.0f;
-		const float scaleDelta = scaleSpeed * gameState->frameTime * -gameState->gameInput.mouseWheelMove;
+		const float scalarAcceleration = 5.2f;
+		const float scalarDeceleration = 5.2f;
+		const float inverseScalarAcceleration = 1.0f / scalarAcceleration;
+		const float inverseScalarDeceleration = 1.0f / scalarDeceleration;
+		const float maxWorldScaleRate = 4;
+		const float inverseMaxWorldScaleRate = 1.0f / maxWorldScaleRate;
 
-		float scalar = 1;
-		if (gameState->gameInput.zoomIn) {
-			scalar = scalar + scaleDelta;
+		float& worldScalarRate = gameState->bubbleAlgebraState.worldScalarRate;
+
+		// decelerate until stop
+		if (!gameState->gameInput.zoomIn && !gameState->gameInput.zoomOut) {
+			float scalarScalar;
+			const float epsilon = 0.0001f;
+			if (worldScalarRate == 1) {
+				return;
+			}
+			else if (worldScalarRate > 1 + epsilon) {
+				scalarScalar = std::powf(inverseScalarDeceleration, gameState->frameTime);
+				worldScalarRate *= scalarScalar;
+			}
+			else if (worldScalarRate < 1 - epsilon) {
+				scalarScalar = std::powf(scalarDeceleration, gameState->frameTime);
+				worldScalarRate *= scalarScalar;
+			}
+			else {
+				worldScalarRate = 1;
+			}
 		}
+		// accelerate zoom in
+		else if (gameState->gameInput.zoomIn) {
+			float scalarScalar = std::powf(scalarAcceleration, gameState->frameTime);
+			worldScalarRate *= scalarScalar;
+			if (worldScalarRate > maxWorldScaleRate) {
+				worldScalarRate = maxWorldScaleRate;
+			}
+		}
+		// accelerate zoom out
 		else {
-			scalar = scalar - scaleDelta;
+			float scalarScalar = std::powf(inverseScalarAcceleration, gameState->frameTime);
+			gameState->bubbleAlgebraState.worldScalarRate *= scalarScalar;
+			if (worldScalarRate < inverseMaxWorldScaleRate) {
+				worldScalarRate = inverseMaxWorldScaleRate;
+			}
 		}
+
+		float scalar = std::powf(gameState->bubbleAlgebraState.worldScalarRate, gameState->frameTime);
 		gameState->bubbleAlgebraState.worldScale *= scalar;
 
 		Vector3 mousePos = gameState->input.mouseXZ_PlanePos;

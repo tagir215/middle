@@ -29,8 +29,8 @@ public:
 			gameState->input.mouseHeld = IsMouseButtonDown(MOUSE_BUTTON_LEFT);
 			gameState->input.mouseClicked = IsMouseButtonPressed(MOUSE_BUTTON_LEFT);
 			gameState->input.mouseReleased = IsMouseButtonReleased(MOUSE_BUTTON_LEFT);
-			gameState->input.zoomIn = GetMouseWheelMoveV().y > 0;
-			gameState->input.zoomOut = GetMouseWheelMoveV().y < 0;
+			//gameState->input.zoomIn = GetMouseWheelMoveV().y > 0;
+			//gameState->input.zoomOut = GetMouseWheelMoveV().y < 0;
 		}
 
 		if (gameState->applicationMode == middle::ApplicationMode::EDITOR_MODE) {
@@ -107,8 +107,8 @@ public:
 
 			if (gameState->inputBlockers.find(middle::InputBlockers::KEYBOARD_BLOCK) == gameState->inputBlockers.end()) {
 				gi.pop = IsKeyPressed(KEY_B);
-				gi.zoomIn = IsKeyDown(KEY_W);
-				gi.zoomOut = IsKeyDown(KEY_S);
+				gi.zoomIn = IsKeyDown(KEY_E);
+				gi.zoomOut = IsKeyDown(KEY_Q);
 				gi.panUp = IsKeyDown(KEY_W);
 				gi.panDown = IsKeyDown(KEY_S);
 				gi.panLeft = IsKeyDown(KEY_A);

@@ -146,6 +146,8 @@ namespace middle {
 		std::vector<int>traversePath;
 		middle::Id backgroundBubbleId;
 		const int loadDepth = 10;
+		Vector3 cameraVelocity = { 0,0,0 };
+		float worldScalarRate = 1;
 	};
 
 	struct ModelContainer {
@@ -183,6 +185,7 @@ namespace middle {
 		// systems
 		std::unordered_map<std::string, std::unique_ptr<MiddleGameplaySystem>> gameplaySystems;
 		std::unordered_map<std::string, std::unique_ptr<MiddleGameplaySystem>> gameplaySystemsPostFrame;
+		std::vector<std::unique_ptr<MiddleGameplaySystem>> engineSystemInitFrame;
 		std::vector<std::unique_ptr<MiddleGameplaySystem>> engineSystemsFrameStart;
 		std::vector<std::unique_ptr<MiddleGameplaySystem>> engineRendererSystems;
 		std::vector<std::shared_ptr<MiddleGameplaySystem>> externalPreFrameSystems;

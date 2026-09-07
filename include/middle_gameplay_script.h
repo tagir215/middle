@@ -7,7 +7,10 @@ namespace middle {
 
 	struct GameState;
 
+	const int updatePriorityMax = 100;
+
 	enum class SystemUpdateType {
+		INITFRAME,
 		PREFRAME,
 		// Imported systems are dynamically placed to scenes, they are updated between pre and post frame
 		GAMEPLAY_MIDFRAME,
@@ -27,6 +30,7 @@ namespace middle {
 	class MiddleGameplaySystem {
 	public:
 		virtual ~MiddleGameplaySystem() = default;
+		int updatePriority = 0;
 		SystemUpdateType systemUpdateType = SystemUpdateType::GAMEPLAY_MIDFRAME;
 		SystemModeType systemModeType = SystemModeType::GAMEPLAY;
 		std::string systemName;

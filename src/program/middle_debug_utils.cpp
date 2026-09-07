@@ -7,6 +7,16 @@ namespace middle {
 
 	}
 
+	void drawImGuiInt(middle::GameState* gameState, const char* label, int i)
+	{
+		auto ui = [gameState, label, i]() {
+			ImGui::Begin(label);
+			ImGui::Text(std::to_string(i).c_str());
+			ImGui::End();
+			};
+		gameState->uiSetups.push_back(ui);
+	}
+
 	void drawImGuiFloat(middle::GameState* gameState, const char* label, float f)
 	{
 		auto ui = [gameState, label, f]() {

@@ -7,14 +7,9 @@ class CompCacheSystem : public middle::MiddleGameplaySystem {
 
 public:
 
-	CompCacheSystem() {
-		systemUpdateType = middle::SystemUpdateType::PREFRAME;
-		systemModeType = middle::SystemModeType::ENGINE;
-	}
-
 	void init(middle::GameState* gameState) override {
-
-
+		systemUpdateType = middle::SystemUpdateType::INITFRAME;
+		systemModeType = middle::SystemModeType::ENGINE;
 	}
 
 	int getSystemNameIndex(middle::GameState* gameState, const std::string& name) {

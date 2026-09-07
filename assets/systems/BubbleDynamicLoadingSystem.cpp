@@ -19,11 +19,11 @@ class BubbleDynamicLoadingSystem : public middle::MiddleGameplaySystem {
 public:
 	components::CompCache* intersectingBubbleCache;
 	components::CompCache* activeCache;
-	BubbleDynamicLoadingSystem() {
-		systemUpdateType = middle::SystemUpdateType::GAMEPLAY_POSTFRAME;
-	}
 
 	void init(middle::GameState* gameState) override {
+		systemUpdateType = middle::SystemUpdateType::GAMEPLAY_POSTFRAME;
+		updatePriority = 2;
+
 		intersectingBubbleCache = middle::newCompCache(gameState, systemName);
 		intersectingBubbleCache->addType<components::BubbleComponent>();
 		intersectingBubbleCache->addType<components::LocalScale>();
@@ -46,7 +46,7 @@ public:
 
 
 		const float screenWidthInWorldCoords = 
-			gameState->nearPlaneAxisX / gameState->nearPlaneDistance * (-gameState->activeCamera.position.y)  * 2.2f;
+			gameState->nearPlaneAxisX / gameState->nearPlaneDistance * (-gameState->activeCamera.position.y)  * 6.2f;
 
 		// find current position id
 		middle::Id localPathEndId;
@@ -62,6 +62,8 @@ public:
 		}
 
 		if (localPathEndId.index == middle::UNASSIGNED) {
+			middle::drawImGuiIntVector(gameState, "traversePathB", gameState->bubbleAlgebraState.traversePath);
+			middle::drawImGuiInt(gameState, "intersecting count", intersectingBubbleCache->relevantIdVector.size());
 			return;
 		}
 
@@ -140,6 +142,7 @@ public:
 
 
 		middle::drawImGuiIntVector(gameState, "traversePath", gameState->bubbleAlgebraState.traversePath);
+		middle::drawImGuiInt(gameState, "intersecting count", intersectingBubbleCache->relevantIdVector.size());
 	}
 };
 

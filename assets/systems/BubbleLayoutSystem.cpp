@@ -13,9 +13,6 @@
 
 class BubbleLayoutSystem : public middle::MiddleGameplaySystem {
 public:
-	BubbleLayoutSystem() {
-		systemUpdateType = middle::SystemUpdateType::GAMEPLAY_POSTFRAME;
-	}
 
 	components::CompCache* bubbleCache;
 	components::CompCache* powerCache;
@@ -25,6 +22,8 @@ public:
 	const float moveSpeed = 150;
 
 	void init(middle::GameState* gameState) override {
+		systemUpdateType = middle::SystemUpdateType::GAMEPLAY_POSTFRAME;
+
 		bubbleCache = middle::newCompCache(gameState, systemName);
 		bubbleCache->addType<components::BubbleComponent>();
 		bubbleCache->addType<components::Rectangle>();

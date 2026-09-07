@@ -13,6 +13,25 @@ using namespace middle;
 
 namespace middle{
 
+	void sortSystems(std::vector<std::unique_ptr<middle::MiddleGameplaySystem>>& systems) {
+		std::vector<std::unique_ptr<middle::MiddleGameplaySystem>>tempVec;
+		for (auto& s : systems) {
+			tempVec.push_back(std::move(s));
+		}
+		systems.clear();
+		for (int i = 0; i < middle::updatePriorityMax; ++i) {
+			for (auto& s : tempVec) {
+				if (!s) {
+					continue;
+				}
+				if (s->updatePriority == i) {
+					systems.push_back(std::move(s));
+				}
+			}
+		}
+	}
+
+
 	void registerSystems(middle::GameState* gameState) {
 		auto& systemMap = middle::getSystemMap();
 
@@ -23,7 +42,10 @@ namespace middle{
 
 			sysptr->init(gameState);
 
-			if (sysptr->systemUpdateType == SystemUpdateType::PREFRAME) {
+			if (sysptr->systemUpdateType == SystemUpdateType::INITFRAME) {
+				gameState->engineSystemInitFrame.push_back(std::move(sysptr));
+			}
+			else if (sysptr->systemUpdateType == SystemUpdateType::PREFRAME) {
 				gameState->engineSystemsFrameStart.push_back(std::move(sysptr));
 			}
 			else if (sysptr->systemUpdateType == SystemUpdateType::GAMEPLAY_MIDFRAME) {
@@ -38,14 +60,15 @@ namespace middle{
 
 		}
 
+		sortSystems(gameState->engineSystemInitFrame);
+		sortSystems(gameState->engineSystemsFrameStart);
+		sortSystems(gameState->engineRendererSystems);
+
 		gameState->systemsRegistered = true;
 	}
 
-
-	void physicsUpdate(GameState* gameState) {
-
-		for (auto& system : gameState->engineSystemsFrameStart) {
-
+	void updateSystems(GameState* gameState, const std::vector<std::unique_ptr<MiddleGameplaySystem>>& systems) {
+		for (auto& system : systems) {
 			if (gameState->applicationMode == ApplicationMode::GAME_MODE
 				&& system->systemModeType == SystemModeType::EDITOR) {
 				continue;
@@ -59,6 +82,11 @@ namespace middle{
 			gameState->activeSystemName = system->systemName;
 			system->recordTimeUpdate(gameState);
 		}
+	}
+
+	void physicsUpdate(GameState* gameState) {
+		updateSystems(gameState, gameState->engineSystemInitFrame);
+		updateSystems(gameState, gameState->engineSystemsFrameStart);
 
 		if (!gameState->loaded) {
 			return;

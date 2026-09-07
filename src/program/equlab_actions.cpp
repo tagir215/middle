@@ -35,8 +35,6 @@ namespace equlab {
 		scaleComp->scale.x = scale;
 		scaleComp->scale.y = scale;
 		scaleComp->scale.z = scale;
-		auto timer = middle::attachComponent<components::UnIntersectableWindowComponent>(gameState, resultId);
-		timer->timeLeft = freshnessTime;
 	}
 	void AddBubble::undo(middle::GameState* gameState) {
 		while (actions.size() > 0) {
@@ -61,8 +59,6 @@ namespace equlab {
 			reparent->execute(gameState);
 			actions.push_back(std::move(reparent));
 		}
-		auto timer = middle::attachComponent<components::UnIntersectableWindowComponent>(gameState, resultId);
-		timer->timeLeft = freshnessTime;
 	}
 
 	void AddUnit::undo(middle::GameState* gameState) {
