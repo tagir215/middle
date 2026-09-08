@@ -242,6 +242,9 @@ namespace middle {
 		std::unordered_map<std::string, ShaderContainer>shaderMap;
 		std::queue<std::string>modelsToLoadQueue;
 		std::queue<Sound>soundQueue;
+
+		std::vector<std::string>slowSystems;
+		std::vector<std::string>slowActions;
 	};
 
 }

@@ -39,6 +39,7 @@
 #include "init_external_systems.h"
 #include <iostream>
 #include "assets_loading.h"
+#include "profiler_helpers.h"
 
 #if defined(_DEBUG)
 static const char* DLL_PATH = "Debug/game.dll";
@@ -58,6 +59,7 @@ typedef decltype(UpdateGame) UpdateGameType;
 static UpdateGameType* updateGamePtr;
 
 std::unique_ptr<GameState> gameState;
+
 
 
 //------------------------------------------------------------------------------------
@@ -141,6 +143,10 @@ int main(void)
 	// Main game loop
 	while (!WindowShouldClose())    // Detect window close button or ESC key
 	{
+		auto start = std::chrono::high_resolution_clock::now();
+		gameState->slowSystems.clear();
+		gameState->slowActions.clear();
+
 		if (gameState->quit) {
 			break;
 		}
@@ -156,6 +162,7 @@ int main(void)
 
 		for (auto sys : gameState->externalPreFrameSystems) {
 			sys->recordTimeUpdate(gameState.get());
+			middleProfiling::reviewSystemTime(gameState.get(), sys.get());
 		}
 
 		gameState->frameTimeAccumulator += GetFrameTime();
@@ -163,9 +170,22 @@ int main(void)
 
 		for (auto sys : gameState->externalPostFrameSystems) {
 			sys->recordTimeUpdate(gameState.get());
+			middleProfiling::reviewSystemTime(gameState.get(), sys.get());
 		}
 
 		playSoundEffects(gameState.get());
+
+		auto end = std::chrono::high_resolution_clock::now();
+		auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
+		float ms = duration.count();
+		//if (ms > gameState->frameTime * 1000) {
+		if (gameState->slowSystems.size() > 1) {
+			std::vector<std::string>strings;
+			strings = gameState->debugInfo;
+			int a = 0;
+		}
+
+		gameState->debugInfo.clear();
 
 		if (gameState->closeGame) {
 			break;

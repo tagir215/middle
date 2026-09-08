@@ -8,6 +8,7 @@
 #include "middle_shape_utils.h"
 #include "engine_system_names.h"
 #include "bubble_paths.h"
+#include "profiler_helpers.h"
 
 using namespace middle;
 
@@ -29,13 +30,6 @@ namespace middle{
 					systems.push_back(std::move(s));
 				}
 			}
-		}
-	}
-
-	void reviewSystemTime(middle::GameState* gameState, const middle::MiddleGameplaySystem* system) {
-		float timeMs = system->updateTime.count();
-		if (timeMs > slowSystemThreshold) {
-			slowSystems.push_back(system->systemName + ": " + std::to_string(timeMs));
 		}
 	}
 
@@ -90,7 +84,7 @@ namespace middle{
 			gameState->activeSystemName = system->systemName;
 			system->recordTimeUpdate(gameState);
 
-			reviewSystemTime(gameState, system.get());
+			middleProfiling::reviewSystemTime(gameState, system.get());
 		}
 	}
 
@@ -126,7 +120,7 @@ namespace middle{
 				gameState->activeSystemName = system->systemName;
 				system->recordTimeUpdate(gameState);
 
-				reviewSystemTime(gameState, system.get());
+				middleProfiling::reviewSystemTime(gameState, system.get());
 			}
 			return true;
 			});
@@ -155,7 +149,7 @@ namespace middle{
 				gameState->activeSystemName = system->systemName;
 				system->recordTimeUpdate(gameState);
 
-				reviewSystemTime(gameState, system.get());
+				middleProfiling::reviewSystemTime(gameState, system.get());
 			}
 			return true;
 			});
@@ -173,7 +167,6 @@ extern "C" {
 
 	__declspec(dllexport) void UpdateGame(GameState* gameState)
 	{
-		auto start = std::chrono::high_resolution_clock::now();
 
 		if (!initialized) {
 			for (auto& shape : gameState->shapes) {
@@ -181,9 +174,6 @@ extern "C" {
 			}
 			initialized = true;
 		}
-
-		slowSystems.clear();
-		slowActions.clear();
 
 		if (gameState->closeGame) {
 			closeGame(gameState);
@@ -235,8 +225,8 @@ extern "C" {
 			auto actionEnd = std::chrono::high_resolution_clock::now();
 			auto actionDuration = std::chrono::duration_cast<std::chrono::milliseconds>(actionEnd - actionStart);
 			float actionMs = actionDuration.count();
-			if (actionMs > slowActionThreshold) {
-				slowActions.push_back("action from: " + caller + ": " + std::to_string(actionMs));
+			if (actionMs > middleProfiling::slowActionThreshold) {
+				gameState->slowActions.push_back("action from: " + caller + ": " + std::to_string(actionMs));
 			}
 			gameState->actionQueue.pop();
 		}
@@ -245,16 +235,6 @@ extern "C" {
 			gameState->undoQueue.pop();
 		}
 
-		auto end = std::chrono::high_resolution_clock::now();
-		auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
-		float ms = duration.count();
-		if (ms > gameState->frameTime * 1000) {
-			std::vector<std::string>strings;
-			strings = gameState->debugInfo;
-			int a = 0;
-		}
-
-		gameState->debugInfo.clear();
 	}
 
 }
