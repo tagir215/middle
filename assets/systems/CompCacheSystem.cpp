@@ -65,13 +65,14 @@ public:
 				for (int compTypeIndex = 0; compTypeIndex < cache->componentTypeCount; ++compTypeIndex) {
 					components::CacheCompType cacheCompType = cache->typeIdVector[compTypeIndex];
 					int typeId = cacheCompType.typeId;
+					auto compInfo = middle::getCompInfo(shape, typeId);
 					if (cacheCompType.desirability == components::INTERESTED) {
-						if (shape.componentMap.find(typeId) == shape.componentMap.end()) {
+						if (compInfo == shape.components.end()) {
 							includeInCache = false;
 						}
 					}
 					if (cacheCompType.desirability == components::NOTINTERESTED) {
-						if (shape.componentMap.find(typeId) != shape.componentMap.end()) {
+						if (compInfo != shape.components.end()) {
 							includeInCache = false;
 						}
 					}
@@ -92,8 +93,8 @@ public:
 				for (int compTypeIndex = 0; compTypeIndex < cache->componentTypeCount; ++compTypeIndex) {
 					auto cacheCompType = cache->typeIdVector[compTypeIndex];
 					if (cacheCompType.desirability == components::INTERESTED) {
-						middle::Component& comp = shape.componentMap[cacheCompType.typeId];
-						cache->compOffsetsVector[compTypeIndex].push_back(comp.componentOffset);
+						auto compInfo = middle::getCompInfo(shape, cacheCompType.typeId);
+						cache->compOffsetsVector[compTypeIndex].push_back(compInfo->componentOffset);
 					}
 				}
 			}
@@ -113,6 +114,7 @@ public:
 							offsets.erase(offsets.begin() + i);
 						}
 					}
+					break;
 				}
 
 			}

@@ -47,12 +47,13 @@ namespace middle {
 
 	struct Component {
 		// offset where the shapes component is in component vector in middle_component_table (currently)
-		int componentOffset;
+		int typeId = UNASSIGNED;
+		int componentOffset = UNASSIGNED;
 	};
 
 	struct Shape {
 		Id id;
-		std::unordered_map<int, Component> componentMap;
+		std::vector<Component>components;
 		std::set<int>affectingSystems;
 	};
 

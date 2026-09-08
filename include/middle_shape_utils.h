@@ -117,6 +117,8 @@ namespace middle {
 	void updateGlobalTransforms(middle::GameState* gameState, middle::Id id, const Matrix& parentM, const Vector3& parentScale);
 	// notify structural changes for cache updates
 	void notifyStructuralChanges(middle::GameState* gameState, middle::Id id, middle::componentType componentType);
+	// check whether typeid of the comp exists and return its info
+	std::vector<Component>::iterator getCompInfo(middle::Shape& shape, int typeId);
 
 	void assertPos(const Vector3& pos);
 

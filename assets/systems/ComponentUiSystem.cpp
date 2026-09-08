@@ -56,14 +56,14 @@ public:
 					gameState->inputBlockers.insert(middle::InputBlockers::KEYBOARD_BLOCK);
 				}
 
-				for (auto& pair : shape.componentMap) {
-					int typeId = pair.first;
-					int componentOffset = pair.second.componentOffset;
+				for (auto& comp : shape.components) {
+					int typeId = comp.typeId;
+					int componentOffset = comp.componentOffset;
 					middle::Serializable* serializable = middle::componentListMap[typeId]->getSerializable(componentOffset);
 					std::string typeData;
 					const char* componentName = middle::componentNameMap[typeId].c_str();
 					ImGui::Separator();
-					ImGui::PushID((char)pair.first);
+					ImGui::PushID((char)typeId);
 					if (ImGui::Button("(o)")) {
 						middle::queueAction(gameState, std::make_shared<middle::EditorActionOpenComponent>(componentName));
 					}
