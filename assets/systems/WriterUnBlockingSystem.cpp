@@ -34,7 +34,7 @@ class WriterUnBlockingSystem : public middle::MiddleGameplaySystem {
 		Vector3 offset = { 0,0,-spacing };
 
 		// CREATE TEXT PANEL
-		middle::Shape textPanelProto;
+		middle::Shape textPanelProto = middle::createShape(gameState);
 		middle::addComponent<components::PuzzleTextPanel>(textPanelProto);
 		middle::addComponent<components::GlobalTransform>(textPanelProto);
 		middle::addComponent<components::LocalPosition>(textPanelProto);
@@ -56,7 +56,7 @@ class WriterUnBlockingSystem : public middle::MiddleGameplaySystem {
 		for (auto& unit : problem->sentenceUnits) {
 
 			// create text shapes
-			middle::Shape textUnitProto;
+			middle::Shape textUnitProto = middle::createShape(gameState);
 			middle::addComponent<components::PuzzleTextUnit>(textUnitProto);
 			auto textComp = middle::addComponent<components::Text>(textUnitProto);
 			textComp->text = unit.text;

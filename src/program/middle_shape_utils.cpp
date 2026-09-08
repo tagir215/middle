@@ -199,12 +199,11 @@ namespace middle {
 	bool isEntityOfType(GameState* gameState, int index, const std::vector<int>& entity)
 	{
 		auto& shape = getShape(gameState, index);
-		if (shape.components.size() != entity.size()) {
+		if (shape.componentTypes.size() != entity.size()) {
 			return false;
 		}
 		for (int componentTypeId : entity) {
-			auto compInfo = middle::getCompInfo(shape, componentTypeId);
-			if (compInfo == shape.components.end()) {
+			if (shape.componentOffsets[componentTypeId] == middle::UNASSIGNED) {
 				return false;
 			}
 		}
@@ -231,7 +230,7 @@ namespace middle {
 	}
 
 	bool isShapeAlive(GameState* gameState, int index) {
-		return gameState->shapes[index].id == gameState->ids[index] && gameState->shapes[index].id.generation >= 0 && gameState->shapes[index].components.size() > 0;
+		return gameState->shapes[index].id == gameState->ids[index] && gameState->shapes[index].id.generation >= 0 && gameState->shapes[index].componentTypes.size() > 0;
 	}
 
 	bool isValidId(GameState* gameState, middle::Id id)
@@ -239,7 +238,7 @@ namespace middle {
 		return id.index != middle::UNASSIGNED
 			&& gameState->ids[id.index] == id
 			&& id == gameState->shapes[id.index].id
-			&& gameState->shapes[id.index].components.size() > 0
+			&& gameState->shapes[id.index].componentTypes.size() > 0
 			&& id.generation >= 0;
 	}
 
@@ -287,7 +286,7 @@ namespace middle {
 		for (middle::Id& childId : children) {
 			if (isShapeAlive(gameState, childId.index)) {
 				auto& childShape = gameState->shapes[childId.index];
-				if (childShape.components.size() == 0) {
+				if (childShape.componentTypes.size() == 0) {
 					continue;
 				}
 				auto childLoop = getComponent<components::LoopSociety>(childShape);
@@ -316,21 +315,22 @@ namespace middle {
 			}
 		}
 
-		for (auto& comp : gameState->shapes[index].components) {
-			int typeId = comp.typeId;
+		auto& shape = gameState->shapes[index];
+		for (int typeId : shape.componentTypes) {
 			// store changed component typeids to trigger cache updates
-			middle::notifyStructuralChanges(gameState, gameState->shapes[index].id, typeId);
-			componentListMap[typeId]->shrink(comp.componentOffset);
+			middle::notifyStructuralChanges(gameState, shape.id, typeId);
+			int offset = middle::getCompOffset(shape, typeId);
+			componentListMap[typeId]->shrink(offset);
 		}
 
 		auto& delShape = gameState->shapes[index];
 		if (deleteComponentsOnly) {
-			delShape.components.clear();
+			delShape.componentTypes.clear();
 		}
 
 		if (!deleteComponentsOnly) {
 			int prevGeneration = gameState->shapes[index].id.generation;
-			gameState->shapes[index] = Shape();
+			gameState->shapes[index] = createShape(gameState);
 			delShape.id.generation = prevGeneration + 1;
 		}
 	}
@@ -358,8 +358,7 @@ namespace middle {
 		gameState->ids[freeIndex] = shape.id;
 		gameState->shapes[freeIndex] = shape;
 		middle::Shape& newShape = gameState->shapes[freeIndex];
-		for (auto& comp : newShape.components) {
-			int typeId = comp.typeId;
+		for (int typeId : newShape.componentTypes) {
 			notifyStructuralChanges(gameState, shape.id, typeId);
 		}
 		return newShape;
@@ -372,8 +371,7 @@ namespace middle {
 		gameState->ids[index] = shape.id;
 		gameState->shapes[index] = shape;
 		middle::Shape& newShape = gameState->shapes[index];
-		for (auto& comp : newShape.components) {
-			int typeId = comp.typeId;
+		for (int typeId : shape.componentTypes) {
 			notifyStructuralChanges(gameState, shape.id, typeId);
 		}
 		return newShape;
@@ -386,28 +384,24 @@ namespace middle {
 		gameState->ids[freeIndex] = shape.id;
 		gameState->shapes[freeIndex] = shape;
 		middle::Shape& newShape = gameState->shapes[freeIndex];
-		for (auto& comp : newShape.components) {
-			int typeId = comp.typeId;
-			notifyStructuralChanges(gameState, shape.id, typeId);
+		middle::Id id = newShape.id;
+		for(int typeId : shape.componentTypes){
+			notifyStructuralChanges(gameState, id, typeId);
 		}
 		return newShape;
 	}
 
 	Shape& insertShape(GameState* gameState, middle::Id& id)
 	{
-		Shape shape;
+		Shape shape = createShape(gameState);
 		shape.id = id;
 		gameState->ids[id.index] = id;
 		gameState->shapes[id.index] = shape;
-		for (auto& comp : shape.components) {
-			int typeId = comp.typeId;
-			notifyStructuralChanges(gameState, id, typeId);
-		}
 		return gameState->shapes[id.index];
 	}
 
 	Shape& addGhostShape(GameState* gameState) {
-		Shape shape;
+		Shape shape = createShape(gameState);
 		int index = findNextFreeGhostIndex(gameState);
 		shape.id.generation = gameState->shapes[index].id.generation + 1;
 		shape.id.index = index;
@@ -463,19 +457,18 @@ namespace middle {
 		else {
 			freeIndex = findFreeIndex(gameState);
 		}
-		Shape newShape;
+		Shape newShape = createShape(gameState);
 
 		// copy components to the new shape
-		for (auto& comp : ogShape.components) {
-
-			int typeId = comp.typeId;
+		for(int typeId : ogShape.componentTypes){
+			int offset = getCompOffset(ogShape, typeId);
 
 			// grow component vector.. add new component for the copy
 			int copyOffset = componentListMap[typeId]->grow();
 
 			// get og serializable to get fields
 			Serializable* ogSerializable =
-				componentListMap[typeId]->getSerializable(comp.componentOffset);
+				componentListMap[typeId]->getSerializable(offset);
 
 			// get fields
 			int ogSize = 0;
@@ -486,9 +479,7 @@ namespace middle {
 			auto copySerializable = componentListMap[typeId]->getSerializable(copyOffset);
 
 			// create component ref for the shape
-			Component copyComponent = comp;
-			copyComponent.componentOffset = copyOffset;
-			newShape.components.push_back(copyComponent);
+			setCompOffset(newShape, typeId, copyOffset);
 
 			int copySize = 0;
 			copySerializable->getFields(copyFields, &copySize);
@@ -561,8 +552,6 @@ namespace middle {
 					assert(true, "not supported");
 				}
 			}
-
-
 		}
 
 		newShape = middle::registerShape(gameState, newShape);
@@ -703,8 +692,7 @@ namespace middle {
 			for (Id& childId : loop->loopMemberIds) {
 				if (isValidId(gameState, childId)) {
 					auto& child = middle::getShape(gameState, childId.index);
-					auto compInfo = middle::getCompInfo(shape, typeId);
-					if (compInfo != shape.components.end()) {
+					if (hasComp(shape, typeId)) {
 						result.push_back(childId);
 					}
 				}
@@ -720,8 +708,7 @@ namespace middle {
 			for (Id& childId : loop->loopMemberIds) {
 				if (isValidId(gameState, childId)) {
 					auto& child = middle::getShape(gameState, childId.index);
-					auto compInfo = middle::getCompInfo(shape, typeId);
-					if (compInfo != shape.components.end()) {
+					if (hasComp(shape, typeId)) {
 						result.push_back(childId);
 					}
 					getAllChildrenWithComp(gameState, childId, result, typeId);
@@ -739,8 +726,7 @@ namespace middle {
 		middle::getChildren(gameState, id, children);
 		for (middle::Id& childId : children) {
 			auto& childShape = middle::getShape(gameState, childId.index);
-			auto compInfo = middle::getCompInfo(childShape, typeId);
-			if (compInfo != childShape.components.end()) {
+			if (hasComp(childShape, typeId)) {
 				return childId;
 			}
 		}
@@ -762,8 +748,7 @@ namespace middle {
 	{
 		middle::Id id;
 		middle::loopInstances(gameState, [gameState, &id, &typeId](int i, middle::Shape& shape) {
-			auto compInfo = middle::getCompInfo(shape, typeId);
-			if (compInfo != shape.components.end()) {
+			if (hasComp(shape, typeId)) {
 				id = shape.id;
 				return false;
 			}
@@ -774,8 +759,7 @@ namespace middle {
 	void findShapesWithComp(GameState* gameState, std::vector<Id>& result, int typeId)
 	{
 		middle::loopInstances(gameState, [gameState, &result, &typeId](int i, middle::Shape& shape) {
-			auto compInfo = middle::getCompInfo(shape, typeId);
-			if (compInfo != shape.components.end()) {
+			if (hasComp(shape, typeId)) {
 				result.push_back(shape.id);
 			}
 			return true;
@@ -966,28 +950,41 @@ namespace middle {
 		changes[componentType].push_back(id);
 	}
 
-	std::vector<Component>::iterator getCompInfo(middle::Shape& shape, int typeId)
+	bool hasComp(middle::Shape& shape, int typeId)
 	{
-		std::vector<Component>& comps = shape.components;
-		for (auto it = comps.begin(); it != comps.end(); ++it) {
-			if (it->typeId == typeId) {
-				return it;
-			}
-		}
-		return comps.end();
+		return shape.componentOffsets[typeId] != middle::UNASSIGNED;
 	}
 
-	void delCompInfo(middle::Shape& shape, int typeId)
+	middle::componentOffset getCompOffset(middle::Shape& shape, int typeId)
 	{
-		std::vector<Component>& comps = shape.components;
-		for (int i = 0; i < comps.size(); ++i) {
-			auto& comp = comps[i];
-			if (comp.typeId == typeId) {
-				comps.erase(comps.begin() + i);
-				return;
+		return shape.componentOffsets[typeId];
+	}
+
+	void setCompOffset(middle::Shape& shape, int typeId, int offset)
+	{
+		assert(!hasComp(shape, typeId));
+		shape.componentOffsets[typeId] = offset;
+		shape.componentTypes.push_back(typeId);
+	}
+
+	void removeComp(middle::Shape& shape, int typeId)
+	{
+		shape.componentOffsets[typeId] = middle::UNASSIGNED;
+		for (int i = 0; i < shape.componentTypes.size(); ++i) {
+			if (shape.componentTypes[i] == typeId) {
+				shape.componentTypes.erase(shape.componentTypes.begin() + i);
+				break;
 			}
 		}
-		assert(false);
+	}
+
+	Shape createShape(middle::GameState* gameState) {
+		Shape shape;
+		shape.componentOffsets.resize(globalTypeCounter);
+		for (int& i : shape.componentOffsets) {
+			i = middle::UNASSIGNED;
+		}
+		return shape;
 	}
 
 }

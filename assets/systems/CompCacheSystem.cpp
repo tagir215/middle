@@ -23,6 +23,7 @@ public:
 	float attachmentTime = 0;
 	float componentCheckTime = 0;
 	float relevantCheckTime = 0;
+	float compInfoTime = 0;
 
 	int getSystemNameIndex(middle::GameState* gameState, const std::string& name) {
 		for (int i = 0; i < gameState->systemNames.size(); ++i) {
@@ -87,15 +88,17 @@ public:
 				for (int compTypeIndex = 0; compTypeIndex < cache->componentTypeCount; ++compTypeIndex) {
 					components::CacheCompType cacheCompType = cache->typeIdVector[compTypeIndex];
 					int typeId = cacheCompType.typeId;
-					auto compInfo = middle::getCompInfo(shape, typeId);
+
+					bool hasComp = middle::hasComp(shape, typeId);
+
 					if (cacheCompType.desirability == components::INTERESTED) {
-						if (compInfo == shape.components.end()) {
+						if (!hasComp) {
 							includeInCache = false;
 							break;
 						}
 					}
 					if (cacheCompType.desirability == components::NOTINTERESTED) {
-						if (compInfo != shape.components.end()) {
+						if (hasComp) {
 							includeInCache = false;
 							break;
 						}
@@ -121,8 +124,9 @@ public:
 				for (int compTypeIndex = 0; compTypeIndex < cache->componentTypeCount; ++compTypeIndex) {
 					auto cacheCompType = cache->typeIdVector[compTypeIndex];
 					if (cacheCompType.desirability == components::INTERESTED) {
-						auto compInfo = middle::getCompInfo(shape, cacheCompType.typeId);
-						cache->compOffsetsVector[compTypeIndex].push_back(compInfo->componentOffset);
+
+						int offset = shape.componentOffsets[cacheCompType.typeId];
+						cache->compOffsetsVector[compTypeIndex].push_back(offset);
 					}
 				}
 				auto end = std::chrono::high_resolution_clock::now();
@@ -191,10 +195,12 @@ public:
 		gameState->debugInfo.push_back("includeTime: " + std::to_string(attachmentTime));
 		gameState->debugInfo.push_back("relevantCheckTime: " + std::to_string(relevantCheckTime));
 		gameState->debugInfo.push_back("compoenntCheckTime: " + std::to_string(componentCheckTime));
+		gameState->debugInfo.push_back("compInfoTime: " + std::to_string(compInfoTime));
 		deletionTime = 0;
 		attachmentTime = 0;
 		relevantCheckTime = 0;
 		componentCheckTime = 0;
+		compInfoTime = 0;
 	}
 };
 

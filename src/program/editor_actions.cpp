@@ -284,13 +284,10 @@ namespace middle {
 		for (int i : selectedIndexes) {
 			auto& shape = gameState->shapes[i];
 			int componentTypeId = componentTypeMap[componentName];
-			auto compInfo = middle::getCompInfo(shape, componentTypeId);
-			if (compInfo == shape.components.end()) {
+			if (hasComp(shape, componentTypeId)) {
 				return;
 			}
-			Component component;
-			component.componentOffset = componentListMap[componentTypeId]->grow();
-			shape.components.push_back(component);
+			middle::setCompOffset(shape, componentTypeId, componentListMap[componentTypeId]->grow());
 			middle::notifyStructuralChanges(gameState, shape.id, componentTypeId);
 		};
 	}
@@ -300,10 +297,10 @@ namespace middle {
 		for (int i : selectedIndexes) {
 			auto& shape = gameState->shapes[i];
 			int componentTypeId = componentTypeMap[componentName];
-			auto compInfo = middle::getCompInfo(shape, componentTypeId);
-			assert(compInfo != shape.components.end());
-			componentListMap[componentTypeId]->shrink(compInfo->componentOffset);
-			shape.components.erase(compInfo);
+			assert(hasComp(shape, componentTypeId));
+			int offset = getCompOffset(shape, componentTypeId);
+			componentListMap[componentTypeId]->shrink(offset);
+			removeComp(shape, componentTypeId);
 			middle::notifyStructuralChanges(gameState, shape.id, componentTypeId);
 		}
 	}
@@ -608,9 +605,9 @@ namespace middle {
 	void EditorActionRegisterId::execute(GameState* gameState)
 	{
 		auto& shape = middle::getShape(gameState, id.index);
-		for (const auto& comp : shape.components) {
-			int typeId = comp.typeId;
-			middle::notifyStructuralChanges(gameState, id, typeId);
+		middle::Id idToRegister = id;
+		for(int typeId : shape.componentTypes){
+			middle::notifyStructuralChanges(gameState, idToRegister, typeId);
 		}
 	}
 

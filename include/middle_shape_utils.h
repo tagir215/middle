@@ -117,8 +117,16 @@ namespace middle {
 	void updateGlobalTransforms(middle::GameState* gameState, middle::Id id, const Matrix& parentM, const Vector3& parentScale);
 	// notify structural changes for cache updates
 	void notifyStructuralChanges(middle::GameState* gameState, middle::Id id, middle::componentType componentType);
-	// check whether typeid of the comp exists and return its info
-	std::vector<Component>::iterator getCompInfo(middle::Shape& shape, int typeId);
+	// check whether has comp
+	bool hasComp(middle::Shape& shape, int typeId);
+	// get offset
+	middle::componentOffset getCompOffset(middle::Shape& shape, int typeId);
+	// set offset... these are new
+	void setCompOffset(middle::Shape& shape, int typeId, int offset);
+	// remove comp
+	void removeComp(middle::Shape& shape, int typeId);
+	// create shape... replace all the old initializations!
+	Shape createShape(middle::GameState* gameState);
 
 	void assertPos(const Vector3& pos);
 

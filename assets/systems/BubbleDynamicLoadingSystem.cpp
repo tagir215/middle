@@ -62,8 +62,8 @@ public:
 		}
 
 		if (localPathEndId.index == middle::UNASSIGNED) {
-			middle::drawImGuiIntVector(gameState, "traversePathB", gameState->bubbleAlgebraState.traversePath);
-			middle::drawImGuiInt(gameState, "intersecting count", intersectingBubbleCache->relevantIdVector.size());
+			//middle::drawImGuiIntVector(gameState, "traversePathB", gameState->bubbleAlgebraState.traversePath);
+			//middle::drawImGuiInt(gameState, "intersecting count", intersectingBubbleCache->relevantIdVector.size());
 			return;
 		}
 
@@ -140,8 +140,8 @@ public:
 		}
 
 
-		middle::drawImGuiIntVector(gameState, "traversePath", gameState->bubbleAlgebraState.traversePath);
-		middle::drawImGuiInt(gameState, "intersecting count", intersectingBubbleCache->relevantIdVector.size());
+		//middle::drawImGuiIntVector(gameState, "traversePath", gameState->bubbleAlgebraState.traversePath);
+		//middle::drawImGuiInt(gameState, "intersecting count", intersectingBubbleCache->relevantIdVector.size());
 	}
 };
 

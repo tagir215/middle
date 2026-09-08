@@ -76,13 +76,12 @@ namespace middle {
 	template<typename T>
 	inline T* getComponent(Shape& shape) {
 		int typeId = getTypeId<T>();
-		auto compInfo = middle::getCompInfo(shape, typeId);
-		if (compInfo == shape.components.end()) {
+		int offset = shape.componentOffsets[typeId];
+		if (offset == middle::UNASSIGNED) {
 			return nullptr;
 		}
-		int componentId = compInfo->componentOffset;
 		ComponentVectorContainer<T>* vectorContainer = getComponentVectorContainer<T>();
-		T& t = vectorContainer->vectorData[componentId];
+		T& t = vectorContainer->vectorData[offset];
 		return &t;
 	}
 
@@ -95,10 +94,7 @@ namespace middle {
 		int nextIndex = vectorContainer->grow();
 		T t;
 		data[nextIndex] = t;
-		Component comp;
-		comp.typeId = typeId;
-		comp.componentOffset = nextIndex;
-		shape.components.push_back(comp);
+		setCompOffset(shape, typeId, nextIndex);
 		return &data[nextIndex];
 	}
 
@@ -106,10 +102,9 @@ namespace middle {
 	inline void deleteComponent(Shape& shape) {
 		int typeId = getTypeId<T>();
 		ComponentVectorContainer<T>* vectorContainer = getComponentVectorContainer<T>();
-		auto compInfo = middle::getCompInfo(shape, typeId);
-		int componentOffset = compInfo->componentOffset;
-		vectorContainer->shrink(componentOffset);
-		shape.components.erase(compInfo);
+		int offset = getCompOffset(shape, typeId);
+		vectorContainer->shrink(offset);
+		removeComp(shape, typeId);
 	}
 
 }

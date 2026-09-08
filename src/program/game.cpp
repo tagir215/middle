@@ -165,14 +165,22 @@ namespace middle{
 		gameState->inputBlockers.clear();
 
 	}
-
 }
+
+static bool initialized = false;
 
 extern "C" {
 
 	__declspec(dllexport) void UpdateGame(GameState* gameState)
 	{
 		auto start = std::chrono::high_resolution_clock::now();
+
+		if (!initialized) {
+			for (auto& shape : gameState->shapes) {
+				shape = middle::createShape(gameState);
+			}
+			initialized = true;
+		}
 
 		slowSystems.clear();
 		slowActions.clear();

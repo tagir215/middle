@@ -56,10 +56,9 @@ public:
 					gameState->inputBlockers.insert(middle::InputBlockers::KEYBOARD_BLOCK);
 				}
 
-				for (auto& comp : shape.components) {
-					int typeId = comp.typeId;
-					int componentOffset = comp.componentOffset;
-					middle::Serializable* serializable = middle::componentListMap[typeId]->getSerializable(componentOffset);
+				for (int typeId : shape.componentTypes) {
+					int offset = middle::getCompOffset(shape, typeId);
+					middle::Serializable* serializable = middle::componentListMap[typeId]->getSerializable(offset);
 					std::string typeData;
 					const char* componentName = middle::componentNameMap[typeId].c_str();
 					ImGui::Separator();
@@ -174,9 +173,8 @@ public:
 					else if (size == 0) {
 						ImGui::Text(componentName);
 					}
+				}
 
-
-				};
 
 				ImGui::Separator();
 

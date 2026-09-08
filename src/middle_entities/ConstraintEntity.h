@@ -8,7 +8,7 @@
 namespace entities{
 
     inline void initConstraint(middle::GameState* gameState, int index, int indexA, int indexB, float targetDistance){
-		middle::Shape shape;
+		middle::Shape shape = middle::createShape(gameState);
 		components::Constraint* constraint = middle::addComponent<components::Constraint>(shape);
 		middle::addComponent<components::MouseSelectable>(shape);
 		middle::addComponent<components::MouseIntersectable>(shape);

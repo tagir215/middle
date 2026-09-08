@@ -45,15 +45,13 @@ namespace middle {
 		}
 	};
 
-	struct Component {
-		// offset where the shapes component is in component vector in middle_component_table (currently)
-		int typeId = UNASSIGNED;
-		int componentOffset = UNASSIGNED;
-	};
+	typedef int componentOffset;
+	typedef int compoenntTypeId;
 
 	struct Shape {
 		Id id;
-		std::vector<Component>components;
+		std::vector<componentOffset>componentOffsets;
+		std::vector<compoenntTypeId>componentTypes;
 		std::set<int>affectingSystems;
 	};
 

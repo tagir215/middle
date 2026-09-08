@@ -13,7 +13,7 @@
 namespace entities{
 
     void initReference(middle::GameState* gameState, int index, std::vector<middle::Id>members, const std::string& folder, const std::string& sceneName){
-		middle::Shape shape;
+		middle::Shape shape = middle::createShape(gameState);
 		components::LocalPosition* pos = middle::addComponent<components::LocalPosition>(shape);
 		middle::addComponent<components::GlobalTransform>(shape);
 		middle::addComponent<components::LocalScale>(shape);

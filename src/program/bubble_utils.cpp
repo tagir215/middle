@@ -1275,7 +1275,7 @@ namespace bubble {
 
 			auto& realBubbleShape = middle::getShape(gameState, realBubbleId.index);
 
-			middle::Shape nodeShapeProto;
+			middle::Shape nodeShapeProto = middle::createShape(gameState);
 			auto node = middle::addComponent<components::AlgebraNode>(nodeShapeProto);
 			auto nodeLoop = middle::addComponent<components::LoopSociety>(nodeShapeProto);
 			node->type = static_cast<int>(getStructureType(gameState, realBubbleId));
@@ -1334,7 +1334,7 @@ namespace bubble {
 
 			auto& realBubbleShape = middle::getShape(gameState, realBubbleStackTopId.index);
 
-			middle::Shape nodeShapeProto;
+			middle::Shape nodeShapeProto = middle::createShape(gameState);
 			auto node = middle::addComponent<components::AlgebraNode>(nodeShapeProto);
 			auto nodeLoop = middle::addComponent<components::LoopSociety>(nodeShapeProto);
 			node->type = static_cast<int>(getStructureType(gameState, realBubbleStackTopId));
@@ -1387,7 +1387,7 @@ namespace bubble {
 
 
 	middle::Shape newBubble(middle::GameState* gameState, const Vector3& targetPos) {
-		middle::Shape newBubbleShape;
+		middle::Shape newBubbleShape = middle::createShape(gameState);
 		middle::addComponent<components::BubbleComponent>(newBubbleShape);
 		middle::addComponent<components::MouseGrabbable>(newBubbleShape);
 		middle::addComponent<components::MouseSelectable>(newBubbleShape);

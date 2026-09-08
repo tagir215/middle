@@ -6,8 +6,12 @@ namespace middle {
 	template<typename CompType>
 	CompType* attachComponent(middle::GameState* gameState, middle::Id id) {
 		middle::Shape& shape = middle::getShape(gameState, id.index);
+		int typeId = middle::getTypeId<CompType>();
+		if (hasComp(shape, typeId)) {
+			return getComp<CompType>(gameState, id);
+		}
 		auto newComp = middle::addComponent<CompType>(shape);
-		middle::notifyStructuralChanges(gameState, id, middle::getTypeId<CompType>());
+		middle::notifyStructuralChanges(gameState, id, typeId);
 		return newComp;
 	}
 
