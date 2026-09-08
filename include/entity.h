@@ -29,11 +29,11 @@ namespace middle {
 	struct Id {
 		int index = UNASSIGNED;
 		int generation = 0;
-		bool operator==(const Id& other) {
+		bool operator==(const Id& other) const {
 			return other.generation == generation && other.index == index;
 		}
 
-		bool operator!=(const Id& other) {
+		bool operator!=(const Id& other) const {
 			return !(*this == other);
 		}
 	};

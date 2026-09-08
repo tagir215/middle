@@ -2,16 +2,27 @@
 #include "game_state.h"
 #include "middle_system_registrar.h"
 #include "middle_shape_utils.h"
+#include <unordered_set>
 
 class CompCacheSystem : public middle::MiddleGameplaySystem {
 
 public:
 
+	uint32_t stamp = 1;
+	std::vector<uint32_t> memo;
+
+
 	void init(middle::GameState* gameState) override {
 		systemUpdateType = middle::SystemUpdateType::INITFRAME;
 		systemModeType = middle::SystemModeType::ENGINE;
 		updatePriority = 1;
+		memo.resize(middle::MAX_SHAPE_COUNT);
 	}
+
+	float deletionTime = 0;
+	float attachmentTime = 0;
+	float componentCheckTime = 0;
+	float relevantCheckTime = 0;
 
 	int getSystemNameIndex(middle::GameState* gameState, const std::string& name) {
 		for (int i = 0; i < gameState->systemNames.size(); ++i) {
@@ -26,17 +37,22 @@ public:
 	std::vector<middle::Id> getRelevantCandidates(middle::GameState* gameState, components::CompCache* cache) {
 		auto& changesMap = gameState->structuralChangesMap;
 		std::vector<middle::Id>result;
-		for (components::CacheCompType& type : cache->typeIdVector) {
-			if (changesMap.find(type.typeId) != changesMap.end()) {
-				auto& ids = changesMap[type.typeId];
-				for (middle::Id id : ids) {
-					if (std::find(result.begin(), result.end(), id) != result.end()) {
-						continue;
-					}
+
+		for (const components::CacheCompType& type : cache->typeIdVector) {
+			auto it = changesMap.find(type.typeId);
+
+			if (it == changesMap.end()) {
+				continue;
+			}
+
+			for (const middle::Id& id : it->second) {
+				if (memo[id.index] != stamp) {
 					result.push_back(id);
+					memo[id.index] = stamp;
 				}
 			}
 		}
+		++stamp;
 		return result;
 	}
 
@@ -48,7 +64,12 @@ public:
 
 		int systemNameIndex = getSystemNameIndex(gameState, cache->systemName);
 
+		auto s = std::chrono::high_resolution_clock::now();
 		auto candidates = getRelevantCandidates(gameState, cache);
+		auto e = std::chrono::high_resolution_clock::now();
+		auto d = std::chrono::duration_cast<std::chrono::microseconds>(e - s);
+		relevantCheckTime += d.count();
+
 		for (middle::Id id : candidates) {
 
 
@@ -60,6 +81,7 @@ public:
 			}
 
 			if (isValid) {
+				auto start = std::chrono::high_resolution_clock::now();
 				auto& shape = middle::getShape(gameState, id.index);
 				// skip if not all components found, or if not interseted skip if found
 				for (int compTypeIndex = 0; compTypeIndex < cache->componentTypeCount; ++compTypeIndex) {
@@ -69,16 +91,22 @@ public:
 					if (cacheCompType.desirability == components::INTERESTED) {
 						if (compInfo == shape.components.end()) {
 							includeInCache = false;
+							break;
 						}
 					}
 					if (cacheCompType.desirability == components::NOTINTERESTED) {
 						if (compInfo != shape.components.end()) {
 							includeInCache = false;
+							break;
 						}
 					}
 				}
+				auto end = std::chrono::high_resolution_clock::now();
+				auto duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start);
+				componentCheckTime += duration.count();
 			}
 			if (includeInCache) {
+				auto start = std::chrono::high_resolution_clock::now();
 				auto& ids = cache->relevantIdVector;
 				if (std::find(ids.begin(), ids.end(), id) != ids.end()) {
 					continue;
@@ -97,8 +125,12 @@ public:
 						cache->compOffsetsVector[compTypeIndex].push_back(compInfo->componentOffset);
 					}
 				}
+				auto end = std::chrono::high_resolution_clock::now();
+				auto duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start);
+				attachmentTime += duration.count();
 			}
 			else {
+				auto start = std::chrono::high_resolution_clock::now();
 				auto& ids = cache->relevantIdVector;
 				for (int i = 0; i < ids.size(); ++i) {
 					if (ids[i] != id) {
@@ -116,7 +148,9 @@ public:
 					}
 					break;
 				}
-
+				auto end = std::chrono::high_resolution_clock::now();
+				auto duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start);
+				deletionTime += duration.count();
 			}
 		}
 		cache->needsUpdate = false;
@@ -127,6 +161,10 @@ public:
 		if (!gameState->loaded) {
 			return;
 		}
+		for (auto& t : memo) {
+			t = 0;
+		}
+		stamp = 1;
 
 		auto& structuralChanges = gameState->structuralChangesMap;
 		if (structuralChanges.size() > 0) {
@@ -148,6 +186,15 @@ public:
 		if (structuralChanges.size() > 0) {
 			structuralChanges.clear();
 		}
+
+		gameState->debugInfo.push_back("deletionTime: " + std::to_string(deletionTime));
+		gameState->debugInfo.push_back("includeTime: " + std::to_string(attachmentTime));
+		gameState->debugInfo.push_back("relevantCheckTime: " + std::to_string(relevantCheckTime));
+		gameState->debugInfo.push_back("compoenntCheckTime: " + std::to_string(componentCheckTime));
+		deletionTime = 0;
+		attachmentTime = 0;
+		relevantCheckTime = 0;
+		componentCheckTime = 0;
 	}
 };
 

@@ -241,9 +241,12 @@ extern "C" {
 		auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
 		float ms = duration.count();
 		if (ms > gameState->frameTime * 1000) {
+			std::vector<std::string>strings;
+			strings = gameState->debugInfo;
 			int a = 0;
 		}
 
+		gameState->debugInfo.clear();
 	}
 
 }

@@ -211,6 +211,7 @@ namespace middle {
 		std::vector<std::string>systemNames;
 		std::vector<std::string>componentNames;
 		std::unordered_map<std::string, Sound>soundMap;
+		std::vector<std::string>debugInfo;
 		EditorInput input;
 		// todo move these
 		GameInput gameInput;
