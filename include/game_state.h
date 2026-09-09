@@ -138,16 +138,17 @@ namespace middle {
 		middle::Id grabbedId;
 		std::vector<std::shared_ptr<middle::EditorActionContainer>>bubbleActions;
 		BubbleInsertType currentInsertType;
-		bool copyNegated = false;
-		bool copyInverted = false;
-		int postUndoFrames = 0;
-		float worldScale = 1;
+		bool copyNegated;
+		bool copyInverted;
+		int postUndoFrames;
+		float worldScale;
 		std::string activeBubbleName;
 		std::vector<int>traversePath;
 		middle::Id backgroundBubbleId;
-		const int loadDepth = 20;
-		Vector3 cameraVelocity = { 0,0,0 };
-		float worldScalarRate = 1;
+		const int loadDepth;
+		Vector3 cameraVelocity;
+		float worldScalarRate;
+		BubbleAlgebraState();
 	};
 
 	struct ModelContainer {
@@ -190,6 +191,7 @@ namespace middle {
 		std::unordered_map<std::string, std::unique_ptr<MiddleGameplaySystem>> gameplaySystemsPostFrame;
 		std::vector<std::unique_ptr<MiddleGameplaySystem>> engineSystemInitFrame;
 		std::vector<std::unique_ptr<MiddleGameplaySystem>> engineSystemsFrameStart;
+		std::vector<std::unique_ptr<MiddleGameplaySystem>> enginePostFrameSystems;
 		std::vector<std::unique_ptr<MiddleGameplaySystem>> engineRendererSystems;
 		std::vector<std::shared_ptr<MiddleGameplaySystem>> externalPreFrameSystems;
 		std::vector<std::shared_ptr<MiddleGameplaySystem>> externalPostFrameSystems;

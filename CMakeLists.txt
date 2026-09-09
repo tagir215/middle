@@ -44,6 +44,7 @@ add_executable(middle
     src/InputSystem.cpp
     src/FileDropSystem.cpp
     src/assets_loading.cpp
+    src/program/game_state.cpp
 )
 target_include_directories(middle PUBLIC ${CMAKE_SOURCE_DIR}/include)
 target_include_directories(middle PUBLIC ${CMAKE_SOURCE_DIR}/assets/components)

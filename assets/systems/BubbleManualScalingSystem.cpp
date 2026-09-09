@@ -5,7 +5,7 @@
 #include "TopDogBubbleTag.h"
 #include "LocalScale.h"
 #include "IntersectingTag.h"
-#include "GlobalTransform.h"
+#include "LocalPosition.h"
 
 class BubbleManualScalingSystem : public middle::MiddleGameplaySystem {
 	components::CompCache* topDogCache;
@@ -14,7 +14,7 @@ class BubbleManualScalingSystem : public middle::MiddleGameplaySystem {
 		topDogCache = middle::newCompCache(gameState, systemName);
 		topDogCache->addType<components::TopDogBubbleTag>();
 		topDogCache->addType<components::LocalScale>();
-		topDogCache->addType<components::GlobalTransform>();
+		topDogCache->addType<components::LocalPosition>();
 	}
 	void update(middle::GameState* gameState) override {
 
@@ -74,12 +74,12 @@ class BubbleManualScalingSystem : public middle::MiddleGameplaySystem {
 		m = MatrixMultiply(m, trans2M);
 
 		auto scaleIt = topDogCache->begin<components::LocalScale>();
-		auto transformIt = topDogCache->begin<components::GlobalTransform>();
+		auto localPosIt = topDogCache->begin<components::LocalPosition>();
 		for (middle::Id id : topDogCache->relevantIdVector) {
 			auto scale = *scaleIt;
-			auto transform = *transformIt;
+			auto localPos = *localPosIt;
 
-			Vector3 newPos = Vector3Transform(transform->pos, m);
+			Vector3 newPos = Vector3Transform(localPos->pos, m);
 			middle::assertPos(newPos);
 
 			scale->scale *= scalar;

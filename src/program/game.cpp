@@ -56,6 +56,9 @@ namespace middle{
 			else if (sysptr->systemUpdateType == SystemUpdateType::GAMEPLAY_POSTFRAME) {
 				gameState->gameplaySystemsPostFrame[name] = std::move(sysptr);
 			}
+			else if (sysptr->systemUpdateType == SystemUpdateType::POSTFRAME) {
+				gameState->enginePostFrameSystems.push_back(std::move(sysptr));
+			}
 			else if (sysptr->systemUpdateType == SystemUpdateType::RENDERING) {
 				gameState->engineRendererSystems.push_back(std::move(sysptr));
 			}
@@ -64,6 +67,7 @@ namespace middle{
 
 		sortSystems(gameState->engineSystemInitFrame);
 		sortSystems(gameState->engineSystemsFrameStart);
+		sortSystems(gameState->enginePostFrameSystems);
 		sortSystems(gameState->engineRendererSystems);
 
 		gameState->systemsRegistered = true;
@@ -154,6 +158,7 @@ namespace middle{
 			return true;
 			});
 
+		updateSystems(gameState, gameState->enginePostFrameSystems);
 
 		// Clear input blockers at the end of physics update
 		gameState->inputBlockers.clear();

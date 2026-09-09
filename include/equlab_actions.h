@@ -211,7 +211,6 @@ namespace equlab {
 		middle::Id scaleReferenceId;
 		int scaleReferenceIndex = -1;
 		middle::Id resultId;
-		float loadTimeMs;
 		LoadBubbleSection(middle::Id scaleReferenceId, int scaleReferenceIndex) {
 			this->scaleReferenceId = scaleReferenceId;
 			this->scaleReferenceIndex = scaleReferenceIndex;

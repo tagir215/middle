@@ -85,12 +85,13 @@ int main(void)
 
 	bubbleAssets::loadAssets(gameState.get());
 
-	SetTargetFPS(60);               // Set our game to run at 60 frames-per-second
+	const int fps = 240;
+	SetTargetFPS(fps);               // Set our game to run at 60 frames-per-second
 	//--------------------------------------------------------------------------------------
 
 	rlImGuiSetup(true);
 
-	const float fixedTimeStep = 1.0f / 60.0f;
+	const float fixedTimeStep = 1.0f / (float)fps;
 	gameState->frameTime = fixedTimeStep;
 
 	if (gameMode) {
@@ -178,8 +179,8 @@ int main(void)
 		auto end = std::chrono::high_resolution_clock::now();
 		auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
 		float ms = duration.count();
+		if(gameState->slowSystems.size() > 1){
 		//if (ms > gameState->frameTime * 1000) {
-		if (gameState->slowSystems.size() > 1) {
 			std::vector<std::string>strings;
 			strings = gameState->debugInfo;
 			int a = 0;

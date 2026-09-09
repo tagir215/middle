@@ -16,6 +16,7 @@
 #include "BubbleSummationComponent.h"
 #include "LocalScale.h"
 #include "bubequ_mapping.h"
+#include "profiler_helpers.h"
 
 namespace equlab {
 
@@ -375,15 +376,21 @@ namespace equlab {
 
 	void LoadBubbleSection::execute(middle::GameState* gameState)
 	{
-		auto start = std::chrono::high_resolution_clock::now();
+		mstart();
 		const int loadDist = gameState->bubbleAlgebraState.loadDepth;
 		gameState->bubbleAlgebraState.worldScale = 1;
 
+		mstart();
 		auto scope = bubequ::loadBubequHead(gameState->bubbleAlgebraState.activeBubbleName, 
 			gameState->bubbleAlgebraState.traversePath,loadDist);
+		mendmicro("load bubequ head");
+		mstart();
 		middle::Id loadedId = bubequ::bubequToBubble(gameState, Vector3{0,0,0}, scope);
+		mendmicro("bubequ to bubble");
+		mstart();
 		bubble::recursiveBubbleLayoutScaleUpdate(gameState, loadedId);
 		bubble::recursiveBubbleLayoutUpdate(gameState, loadedId);
+		mendmicro("bubequ scale and layout");
 
 		resultId = loadedId;
 
@@ -393,14 +400,15 @@ namespace equlab {
 
 		matchingChildId = loadedChildren[scaleReferenceIndex];
 
+		mstart();
 		bubble::matchBubbleTransforms(gameState, scaleReferenceId, matchingChildId);
 		middle::deleteShapeRecursive(gameState, gameState->bubbleAlgebraState.backgroundBubbleId.index);
+		mendmicro("match bubeuqu");
 
 		gameState->bubbleAlgebraState.backgroundBubbleId = loadedId;
 
-		auto end = std::chrono::high_resolution_clock::now();
-		auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
-		loadTimeMs = duration.count();
+		mendmicro("bubequ loading time");
+		mflushmicro(gameState);
 	}
 
 	void LoadBubbleSection::undo(middle::GameState* gameState)

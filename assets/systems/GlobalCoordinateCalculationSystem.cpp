@@ -19,8 +19,8 @@ class GlobalCoordinateCalculationSystem : public middle::MiddleGameplaySystem {
 
 	void init(middle::GameState* gameState) override {
 		systemModeType = middle::SystemModeType::ENGINE;
-		systemUpdateType = middle::SystemUpdateType::PREFRAME;
-		updatePriority = 0;
+		systemUpdateType = middle::SystemUpdateType::POSTFRAME;
+		updatePriority = 10;
 
 		posScaleCache = middle::newCompCache(gameState, systemName);
 		posScaleCache->addType<components::LocalPosition>();
