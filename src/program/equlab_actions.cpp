@@ -393,6 +393,7 @@ namespace equlab {
 		mendmicro("bubequ scale and layout");
 
 		resultId = loadedId;
+		middle::attachComponent<components::TopDogBubbleTag>(gameState, loadedId);
 
 		std::vector<middle::Id>loadedChildren;
 		middle::getChildren(gameState, loadedId, loadedChildren);

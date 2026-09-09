@@ -85,7 +85,7 @@ int main(void)
 
 	bubbleAssets::loadAssets(gameState.get());
 
-	const int fps = 240;
+	const int fps = 60;
 	SetTargetFPS(fps);               // Set our game to run at 60 frames-per-second
 	//--------------------------------------------------------------------------------------
 
