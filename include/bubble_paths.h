@@ -10,6 +10,10 @@ namespace bubblePaths{
 	const std::string SHADERS_FOLDER = "../assets/shaders";
 
 }
+
+namespace bubbleFileVersions {
+	const std::string EQUATION_FILE_VERSION = "ver 3";
+}
  
 namespace bubbleTextureNames {
 	const std::string TEXTURE_BACKGROUND = "background";

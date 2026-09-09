@@ -87,6 +87,7 @@ namespace bubble {
 	// slow but immediate layout update
 	void recursiveBubbleLayoutScaleUpdate(middle::GameState* gameState, middle::Id id);
 	void recursiveBubbleLayoutUpdate(middle::GameState* gameState, middle::Id id);
+	void queueBubbleAction(middle::GameState* gameState, middle::Id id, std::shared_ptr<middle::EditorActionContainer>container);
 
 	template<typename T>
 	middle::Id findIdWithCompFromShapeOrItsParents(middle::GameState* gameState, middle::Id id) {

@@ -25,6 +25,7 @@
 #include "imgui.h"
 #include "BubblePowerComponent.h"
 #include "IntersectingTag.h"
+#include "QueuedForSaveTag.h"
 
 class BubbleModificationSystem : public middle::MiddleGameplaySystem {
 public:
@@ -83,8 +84,7 @@ public:
 			action = std::make_shared<bubbleActions::Substitute>(intersectedShape.id, deletionRefShape.id);
 		}
 
-		middle::queueAction(gameState, action);
-		gameState->bubbleAlgebraState.bubbleActions.push_back(action);
+		bubble::queueBubbleAction(gameState, intersectedShape.id, action);
 	}
 
 	void tryCombine(middle::GameState* gameState, middle::Shape& refParent, middle::Shape& refShape, middle::Shape& intersectedShape) {
@@ -92,27 +92,23 @@ public:
 		// is multiplication connection
 		if (middle::getComponent<components::BubbleMultiplyComponent>(refParent)) {
 			auto multiply = std::make_shared<bubbleActions::ExecuteMultiplication>(refShape.id, intersectedShape.id);
-			middle::queueAction(gameState, multiply);
-			gameState->bubbleAlgebraState.bubbleActions.push_back(multiply);
+			bubble::queueBubbleAction(gameState, intersectedShape.id, multiply);
 			return;
 		}
 		else if (middle::getComponent<components::BubblePowerComponent>(refParent)) {
 			auto doPower = std::make_shared<bubbleActions::ExecutePower>(refShape.id, intersectedShape.id);
-			middle::queueAction(gameState, doPower);
-			gameState->bubbleAlgebraState.bubbleActions.push_back(doPower);
+			bubble::queueBubbleAction(gameState, intersectedShape.id, doPower);
 			return;
 		}
 		else if (bubble::isSummation(gameState, refParent.id)) {
 			auto summation = std::make_shared<bubbleActions::ExpandSummation>(refParent.id);
-			middle::queueAction(gameState, summation);
-			gameState->bubbleAlgebraState.bubbleActions.push_back(summation);
+			bubble::queueBubbleAction(gameState, intersectedShape.id, summation);
 			return;
 		}
 		// else is addition connection
 		else {
 			auto add = std::make_shared<bubbleActions::ExecuteAddition>(refShape.id, intersectedShape.id);
-			middle::queueAction(gameState, add);
-			gameState->bubbleAlgebraState.bubbleActions.push_back(add);
+			bubble::queueBubbleAction(gameState, intersectedShape.id, add);
 			return;
 		}
 	}
@@ -198,8 +194,7 @@ public:
 		}
 
 		if (action) {
-			middle::queueAction(gameState, action);
-			gameState->bubbleAlgebraState.bubbleActions.push_back(action);
+			bubble::queueBubbleAction(gameState, intersectedShape.id, action);
 		}
 		else {
 			queueSound(gameState, bubbleSounds::ERROR_SOUND);
@@ -249,8 +244,7 @@ public:
 			action = std::make_shared<bubbleActions::Cancel>(intersectedShape.id);
 		}
 		if (action) {
-			middle::queueAction(gameState, action);
-			gameState->bubbleAlgebraState.bubbleActions.push_back(action);
+			bubble::queueBubbleAction(gameState, intersectedShape.id, action);
 		}
 		else {
 			queueSound(gameState, bubbleSounds::ERROR_SOUND);
@@ -271,12 +265,10 @@ public:
 
 	void copyAsHelper(middle::GameState* gameState, middle::Id id, const Vector3& targetPos) {
 		auto copyAction = std::make_shared<bubbleActions::CopyAsHelper>(id, targetPos);
-		middle::queueAction(gameState, copyAction);
-		gameState->bubbleAlgebraState.bubbleActions.push_back(copyAction);
+		bubble::queueBubbleAction(gameState, id, copyAction);
 	}
 
 	void update(middle::GameState* gameState) override {
-
 
 		// return if procedure is executing
 		if (procContainerCache->getSize() > 0) {
@@ -463,21 +455,6 @@ public:
 
 
 		int actionCountPostFrame = gameState->bubbleAlgebraState.bubbleActions.size();
-
-		if (levelConfigsCache->getSize() > 0) {
-			if (actionCountPostFrame > actionCountPreFrame) {
-				auto configsIt = levelConfigsCache->begin<components::BubbleAlgebraLevelConfigs>();
-				auto configs = *configsIt;
-				middle::queueAction(gameState, std::make_unique<middle::CustomAction>(
-					[configs](middle::GameState* gameState)
-					{
-						--configs->allowedMoves;
-						if (configs->allowedMoves < 0) {
-							configs->allowedMoves = 0;
-						}
-					}));
-			}
-		}
 	}
 };
 

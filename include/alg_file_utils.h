@@ -2,6 +2,7 @@
 #include "bubequ.h"
 #include <vector>
 #include <unordered_map>
+#include "game_state.h"
  
 namespace bubequ {
 	std::string stripBrackets(const std::string & str);
@@ -17,6 +18,8 @@ namespace bubequ {
 	void saveTextFile(const std::string& title, const std::string& text);
 	std::string loadText(const std::string& path);
 	std::vector<std::string>getFilenames(const std::string directoryPath);
-	void saveBubequHead(const std::string& headName, const std::string& headHash, const std::unordered_map<std::string, std::string>& map);
+	void saveBubble(middle::GameState* gameState, middle::Id id, const std::string& name);
+	void saveBubequHead(const std::string& headName, const std::string& headHash, const std::unordered_map<std::string, std::string>& map, const BubTraversePath& traversePath);
 	std::shared_ptr<Scope> loadBubequHead(const std::string& headName, const BubTraversePath& traversePath, int loadDepth);
+	std::shared_ptr<Scope> loadBubequHead(middle::GameState* gameState, const std::string& headName, int loadDepth, int historyOffset);
 }

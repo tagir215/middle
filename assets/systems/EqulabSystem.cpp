@@ -125,7 +125,7 @@ public:
 					// convert to hashes and save head reference
 					std::unordered_map<std::string, std::string>hashMap;
 					std::string head = bubequ::bubequToHashes(gameState, root, hashMap);
-					bubequ::saveBubequHead(equationName, head, hashMap);
+					bubequ::saveBubequHead(equationName, head, hashMap, gameState->bubbleAlgebraState.traversePath);
 				}
 			}
 
@@ -136,7 +136,7 @@ public:
 			std::vector<std::string>filenames = bubequ::getFilenames(bubblePaths::EQUATION_FOLDER);
 			for (auto& name : filenames) {
 				if (ImGui::Button(name.c_str())) {
-					const std::string path = bubblePaths::EQUATION_FOLDER + "/" + name;
+					const std::string path = bubblePaths::EQUATION_FOLDER + "/" + name + ".bubequ";
 					Vector3 camXZPos = gameState->activeCamera.position;
 					camXZPos.y = 0;
 					//auto bubequ = bubequ::loadBubequ(path);

@@ -232,20 +232,59 @@ namespace bubequ {
 		outFile.close();
 	}
 
-	void saveBubequHead(const std::string& headName, const std::string& headHash, const std::unordered_map<std::string, std::string>& map)
+	void saveBubequHead(const std::string& headName, const std::string& headHash, const std::unordered_map<std::string, std::string>& map, const BubTraversePath& traversePath)
 	{
 		// write head ref
 		std::string path = bubblePaths::EQUATION_FOLDER + "/" + headName + ".bubequ";
+
+		bool fileExists = std::filesystem::exists(path);
+
+		std::vector<std::string>lines;
+
+		if (fileExists) {
+			// read lines
+			std::ifstream istream(path);
+			if (!istream.is_open()) {
+				std::cerr << "failed to open\n";
+			}
+			std::string line;
+			while (std::getline(istream, line)) {
+				lines.push_back(line);
+			}
+			istream.close();
+			assert(checkVersion(lines[0], bubbleFileVersions::EQUATION_FILE_VERSION));
+		}
+
+		if (!fileExists) {
+			lines.push_back("#" + bubbleFileVersions::EQUATION_FILE_VERSION);
+		}
+
+		// line 1 is hash
+		lines.push_back(headHash);
+		// line 2 is traverse path
+		std::string pathLine;
+		for (int i : traversePath) {
+			pathLine += std::to_string(i) + " ";
+		}
+		lines.push_back(pathLine);
+		// line 3 is date and time
+		auto now = std::chrono::system_clock::now();
+		std::time_t end_time = std::chrono::system_clock::to_time_t(now);
+		std::string timeStr = std::ctime(&end_time);
+		// pop \n 
+		timeStr.pop_back();
+		lines.push_back(timeStr);
+
 		std::ofstream outFile(path);
 		if (!outFile.is_open()) {
 			std::cerr << "failed to open to write\n";
 		}
-		// todo move
-		const std::string version = "ver 2";
-		outFile << "#" + version << "\n";
-		outFile << headHash;
+		for (auto& line : lines) {
+			outFile << line << "\n";
+		}
 		outFile.flush();
 		outFile.close();
+
 
 		// write all the bubs
 		for (auto& pair : map) {
@@ -297,29 +336,72 @@ namespace bubequ {
 		throw std::runtime_error("Something wrong with the data");
 	}
 
-	std::shared_ptr<Scope> loadBubequHead(const std::string& headName, const BubTraversePath& traversePath, int loadDepth) {
-		const std::string path = bubblePaths::EQUATION_FOLDER + "/" + headName;
+	BubTraversePath stringToBubPath(const std::string& s) {
+		std::vector<int>result;
+		if (s == "" || s == " ") {
+			return  result;
+		}
+		std::string buffer = "";
+		for (char c : s) {
+			if (c == ' ' || c == '\n') {
+				result.push_back(std::stoi(buffer));
+				continue;
+			}
+			buffer += c;
+		}
+		return result;
+	}
 
+	std::vector<std::string>loadBubequLines(const std::string& headName) {
+		const std::string path = bubblePaths::EQUATION_FOLDER + "/" + headName + ".bubequ";
 		std::ifstream inputFile(path);
 		if (!inputFile.is_open()) {
 			throw std::runtime_error("Failed to open file to open");
 		}
+		std::vector<std::string>lines;
 		std::string line;
 		while (std::getline(inputFile, line)) {
-			if (line.find("#ver") != std::string::npos) {
-				if (!checkVersion(line, "ver 2")) {
-					throw std::runtime_error("bubequ file version not matching");
-				}
-				continue;
-			}
-
-			// line after ver assumed to be hash
-			std::string hash = line;
-			return loadBub(hash, traversePath, loadDepth, 0, 0);
+			lines.push_back(line);
 		}
+		assert(checkVersion(lines[0], bubbleFileVersions::EQUATION_FILE_VERSION));
+		while (lines.back() == "" || lines.back() == " " || lines.back() == "\n") {
+			lines.pop_back();
+		}
+		return lines;
+	}
+
+	// load with inputted traverse path
+	std::shared_ptr<Scope> loadBubequHead(const std::string& headName, const BubTraversePath& traversePath, int loadDepth) {
+		auto lines = loadBubequLines(headName);
+		const int hashIndexOffset = -3;
+		std::string hash = lines[lines.size() + hashIndexOffset];
+		return loadBub(hash, traversePath, loadDepth, 0, 0);
 
 		throw std::runtime_error("Something wrong with the data");
 
+	}
+
+	// load with traverse path found from the file and history offset
+	std::shared_ptr<Scope> loadBubequHead(middle::GameState* gameState, const std::string& headName, int loadDepth, int historyOffset)
+	{
+		auto lines = loadBubequLines(headName);
+		const int hashIndexOffset = -3;
+		const int pathIndexOffset = -2;
+		const int elementSize = 3;
+		int elementOffset = elementSize * historyOffset;
+		// if trying to load older histories than there exist just return the most recent one
+		if (elementOffset > lines.size()) {
+			elementOffset = 0;
+		}
+		int hashOffset = -elementOffset + hashIndexOffset;
+		int pathOffset = -elementOffset + pathIndexOffset;
+		std::string hash = lines[lines.size() + hashOffset];
+		std::string pathString = lines[lines.size() + pathOffset];
+		BubTraversePath loadedPath = stringToBubPath(pathString);
+		gameState->bubbleAlgebraState.traversePath = loadedPath;
+		return loadBub(hash, loadedPath, loadDepth, 0, 0);
+
+		throw std::runtime_error("Something wrong with the data");
 	}
 
 	void saveTextFile(const std::string& path, const std::string& text)
@@ -359,7 +441,7 @@ namespace bubequ {
 		try {
 			for (const auto& entry : std::filesystem::directory_iterator(directoryPath)) {
 				if (std::filesystem::is_regular_file(entry.status())) {
-					files.push_back(entry.path().filename().string());
+					files.push_back(entry.path().filename().stem().string());
 				}
 			}
 		}
@@ -369,4 +451,30 @@ namespace bubequ {
 
 		return files;
 	}
+
+
+	void saveBubble(middle::GameState* gameState, middle::Id id, const std::string& name)
+	{
+		std::string path = bubblePaths::EQUATION_FOLDER + "/" + name + ".bubequ";
+		bool fileExists = std::filesystem::exists(path);
+		auto& traversePath = gameState->bubbleAlgebraState.traversePath;
+
+		std::shared_ptr<bubequ::Scope> root;
+		if (fileExists) {
+			middle::Id backgroundId = gameState->bubbleAlgebraState.backgroundBubbleId;
+			auto newBranch = bubequ::bubbleToBubequ(gameState, backgroundId);
+			root = bubequ::loadBubequHead(name, {}, 400);
+			// load root from disc
+			// replace current visible branch on the loaded tree
+			bubequ::replaceBranch(root, newBranch, traversePath);
+		}
+		else {
+			root = bubequ::bubbleToBubequ(gameState, id);
+		}
+		// convert to hashes and save head reference
+		std::unordered_map<std::string, std::string>hashMap;
+		std::string head = bubequ::bubequToHashes(gameState, root, hashMap);
+		bubequ::saveBubequHead(name, head, hashMap, traversePath);
+	}
+
 }

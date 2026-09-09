@@ -27,6 +27,8 @@ class BubbleManualScalingSystem : public middle::MiddleGameplaySystem {
 
 		float& worldScalarRate = gameState->bubbleAlgebraState.worldScalarRate;
 
+		float mouseWheelMove = gameState->gameInput.mouseWheelMove;
+
 		// decelerate until stop
 		if (!gameState->gameInput.zoomIn && !gameState->gameInput.zoomOut) {
 			float scalarScalar;
