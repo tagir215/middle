@@ -11,6 +11,18 @@
 
 namespace bubequ {
 
+	void saveLines(const std::string& path, const std::vector<std::string>& lines) {
+		std::ofstream outFile(path);
+		if (!outFile.is_open()) {
+			std::cerr << "failed to open to write\n";
+		}
+		for (const auto& s : lines) {
+			outFile << s << "\n";
+		}
+		outFile.flush();
+		outFile.close();
+	}
+
 	const std::string version = "#ver 1";
 
 	inline std::string stripBrackets(const std::string& str) {
@@ -232,7 +244,7 @@ namespace bubequ {
 		outFile.close();
 	}
 
-	void saveBubequHead(const std::string& headName, const std::string& headHash, const std::unordered_map<std::string, std::string>& map, const BubTraversePath& traversePath)
+	void saveBubequHead(const std::string& headName, const std::string& headHash, const std::unordered_map<std::string, std::string>& map, const BubTraversePath& traversePath, const Vector3& position, float localScale)
 	{
 		// write head ref
 		std::string path = bubblePaths::EQUATION_FOLDER + "/" + headName + ".bubequ";
@@ -274,17 +286,12 @@ namespace bubequ {
 		// pop \n 
 		timeStr.pop_back();
 		lines.push_back(timeStr);
+		// line 4 is local position
+		lines.push_back(std::to_string(position.x) + " " + std::to_string(position.y) + " " + std::to_string(position.z));
+		// line 5 is world scale
+		lines.push_back(std::to_string(localScale));
 
-		std::ofstream outFile(path);
-		if (!outFile.is_open()) {
-			std::cerr << "failed to open to write\n";
-		}
-		for (auto& line : lines) {
-			outFile << line << "\n";
-		}
-		outFile.flush();
-		outFile.close();
-
+		saveLines(path, lines);
 
 		// write all the bubs
 		for (auto& pair : map) {
@@ -345,12 +352,36 @@ namespace bubequ {
 		for (char c : s) {
 			if (c == ' ' || c == '\n') {
 				result.push_back(std::stoi(buffer));
+				buffer = "";
 				continue;
 			}
 			buffer += c;
 		}
 		return result;
 	}
+
+	Vector3 stringToVector(const std::string& s) {
+		std::string buffer;
+		float result[3];
+		int index = 0;
+		for (char c : s) {
+			if (c == ' ' || c == '\n') {
+				result[index++] = std::stof(buffer);
+				buffer = "";
+				continue;
+			}
+			buffer += c;
+		}
+		result[index] = std::stof(buffer);
+		return { result[0], result[1], result[2] };
+	}
+
+	const int hashIndexOffset = -5;
+	const int pathIndexOffset = -4;
+	const int timeIndexOffset = -3;
+	const int positionIndexOffset = -2;
+	const int scaleIndexOffset = -1;
+	const int elementSize = 5;
 
 	std::vector<std::string>loadBubequLines(const std::string& headName) {
 		const std::string path = bubblePaths::EQUATION_FOLDER + "/" + headName + ".bubequ";
@@ -373,7 +404,6 @@ namespace bubequ {
 	// load with inputted traverse path
 	std::shared_ptr<Scope> loadBubequHead(const std::string& headName, const BubTraversePath& traversePath, int loadDepth) {
 		auto lines = loadBubequLines(headName);
-		const int hashIndexOffset = -3;
 		std::string hash = lines[lines.size() + hashIndexOffset];
 		return loadBub(hash, traversePath, loadDepth, 0, 0);
 
@@ -381,13 +411,23 @@ namespace bubequ {
 
 	}
 
-	// load with traverse path found from the file and history offset
-	std::shared_ptr<Scope> loadBubequHead(middle::GameState* gameState, const std::string& headName, int loadDepth, int historyOffset)
+	void eraseLastSave(const std::string& headName)
 	{
 		auto lines = loadBubequLines(headName);
-		const int hashIndexOffset = -3;
-		const int pathIndexOffset = -2;
-		const int elementSize = 3;
+		if (lines.size() < elementSize) {
+			return;
+		}
+		for (int i = 0; i < elementSize; ++i) {
+			lines.pop_back();
+		}
+		const std::string path = bubblePaths::EQUATION_FOLDER + "/" + headName + ".bubequ";
+		saveLines(path, lines);
+	}
+
+
+	std::shared_ptr<Scope> loadPreviousSnapshot(const std::string& headName, int historyOffset, int loadDepth, Vector3& loadedPos, float& loadedWorldScale, BubTraversePath& loadedTraversePath)
+	{
+		auto lines = loadBubequLines(headName);
 		int elementOffset = elementSize * historyOffset;
 		// if trying to load older histories than there exist just return the most recent one
 		if (elementOffset > lines.size()) {
@@ -395,11 +435,19 @@ namespace bubequ {
 		}
 		int hashOffset = -elementOffset + hashIndexOffset;
 		int pathOffset = -elementOffset + pathIndexOffset;
+		int posOffset = -elementOffset + positionIndexOffset;
+		int scaleOffset = -elementOffset + scaleIndexOffset;
+
+		// loaded hash
 		std::string hash = lines[lines.size() + hashOffset];
-		std::string pathString = lines[lines.size() + pathOffset];
-		BubTraversePath loadedPath = stringToBubPath(pathString);
-		gameState->bubbleAlgebraState.traversePath = loadedPath;
-		return loadBub(hash, loadedPath, loadDepth, 0, 0);
+		// loaded path
+		loadedTraversePath = stringToBubPath(lines[lines.size() + pathOffset]);
+		// loaded position
+		loadedPos = stringToVector(lines[lines.size() + posOffset]);
+		// loaded scale
+		loadedWorldScale = std::stof(lines[lines.size() + scaleOffset]);
+
+		return loadBub(hash, loadedTraversePath, loadDepth, 0, 0);
 
 		throw std::runtime_error("Something wrong with the data");
 	}
@@ -458,6 +506,9 @@ namespace bubequ {
 		std::string path = bubblePaths::EQUATION_FOLDER + "/" + name + ".bubequ";
 		bool fileExists = std::filesystem::exists(path);
 		auto& traversePath = gameState->bubbleAlgebraState.traversePath;
+		Vector3 localPos = middle::getLocalPosition(gameState, id);
+		Vector3 localScale = middle::getLocalScale(gameState, id);
+		float scale = localScale.x;
 
 		std::shared_ptr<bubequ::Scope> root;
 		if (fileExists) {
@@ -474,7 +525,7 @@ namespace bubequ {
 		// convert to hashes and save head reference
 		std::unordered_map<std::string, std::string>hashMap;
 		std::string head = bubequ::bubequToHashes(gameState, root, hashMap);
-		bubequ::saveBubequHead(name, head, hashMap, traversePath);
+		bubequ::saveBubequHead(name, head, hashMap, traversePath, localPos, scale);
 	}
 
 }

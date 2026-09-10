@@ -17,6 +17,7 @@
 #include "LocalScale.h"
 #include "bubequ_mapping.h"
 #include "profiler_helpers.h"
+#include "bubble_constants.h"
 
 namespace equlab {
 
@@ -418,6 +419,45 @@ namespace equlab {
 			actions.back()->undo(gameState);
 			actions.pop_back();
 		}
+	}
+
+	void UndoAction::execute(middle::GameState* gameState)
+	{
+		const auto& name = gameState->bubbleAlgebraState.activeBubbleName;
+		const int loadDepth = gameState->bubbleAlgebraState.loadDepth;
+		bubequ::BubTraversePath loadedPath;
+		Vector3 loadedPos;
+		float loadedScale;
+		auto bubequ = bubequ::loadPreviousSnapshot(name, 1, loadDepth, loadedPos, loadedScale, loadedPath);
+
+		middle::Id loadedId = bubequ::bubequToBubble(gameState, loadedPos, bubequ);
+		gameState->bubbleAlgebraState.worldScale = 1;
+		gameState->bubbleAlgebraState.traversePath = loadedPath;
+
+		middle::deleteShapeRecursive(gameState, gameState->bubbleAlgebraState.backgroundBubbleId.index);
+		gameState->bubbleAlgebraState.backgroundBubbleId = loadedId;
+		middle::setLocalPosition(gameState, loadedId, loadedPos);
+		middle::setLocalScale(gameState, loadedId, {loadedScale, loadedScale, loadedScale});
+
+		bubble::recursiveBubbleLayoutScaleUpdate(gameState, loadedId);
+		bubble::recursiveBubbleLayoutUpdate(gameState, loadedId);
+
+		bubequ::eraseLastSave(name);
+
+		//middle::Id id = bubequ::bubequToBubble(gameState, )
+		//gameState->bubbleAlgebraState.backgroundBubbleId;
+
+		//if (gameState->bubbleAlgebraState.bubbleActions.size() > 0) {
+		//	gameState->bubbleAlgebraState.bubbleActions.back()->undo(gameState);
+		//	gameState->bubbleAlgebraState.bubbleActions.pop_back();
+		//}
+		gameState->bubbleAlgebraState.postUndoFrames = 2;
+
+		queueSound(gameState, bubbleSounds::UNDO_SOUND);
+	}
+
+	void UndoAction::undo(middle::GameState* gameState)
+	{
 	}
 
 }

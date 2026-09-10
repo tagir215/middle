@@ -218,4 +218,11 @@ namespace equlab {
 		void execute(middle::GameState* gameState) override;
 		void undo(middle::GameState* gameState) override;
 	};
+
+	class UndoAction : public middle::EditorActionContainer {
+	public:
+		UndoAction() {}
+		void execute(middle::GameState* gameState) override;
+		void undo(middle::GameState* gameState) override;
+	};
 }

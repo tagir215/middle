@@ -12,7 +12,7 @@ namespace bubblePaths{
 }
 
 namespace bubbleFileVersions {
-	const std::string EQUATION_FILE_VERSION = "ver 3";
+	const std::string EQUATION_FILE_VERSION = "ver 4";
 }
  
 namespace bubbleTextureNames {

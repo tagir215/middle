@@ -125,7 +125,7 @@ public:
 					// convert to hashes and save head reference
 					std::unordered_map<std::string, std::string>hashMap;
 					std::string head = bubequ::bubequToHashes(gameState, root, hashMap);
-					bubequ::saveBubequHead(equationName, head, hashMap, gameState->bubbleAlgebraState.traversePath);
+					bubequ::saveBubequHead(equationName, head, hashMap, gameState->bubbleAlgebraState.traversePath, {0,0,0}, 1);
 				}
 			}
 

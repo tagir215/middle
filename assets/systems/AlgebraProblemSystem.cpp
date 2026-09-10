@@ -13,6 +13,7 @@
 #include "editor_file_utils.h"
 #include "imgui.h"
 #include "GlobalTransform.h"
+#include "equlab_actions.h"
 
 class AlgebraProblemSystem : public middle::MiddleGameplaySystem {
 public:
@@ -22,16 +23,10 @@ public:
 	}
 
 	void undo(middle::GameState* gameState) {
-
-
 		if (gameState->bubbleAlgebraState.bubbleActions.size() > 0) {
-			middle::queueAction(gameState, std::make_shared<middle::CustomAction>([](middle::GameState* gameState) {
-				gameState->bubbleAlgebraState.bubbleActions.back()->undo(gameState);
-				gameState->bubbleAlgebraState.bubbleActions.pop_back();
-				}));
+			auto action = std::make_shared<equlab::UndoAction>();
+			middle::queueAction(gameState, action);
 		}
-		gameState->bubbleAlgebraState.postUndoFrames = 2;
-		queueSound(gameState, bubbleSounds::UNDO_SOUND);
 	}
 
 	void update(middle::GameState* gameState) override {
