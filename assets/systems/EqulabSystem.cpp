@@ -171,8 +171,7 @@ public:
 			}
 			if (intersectedBubble.index != middle::UNASSIGNED) {
 				auto action = std::make_shared<equlab::AddLabelCharacterToVariable>(intersectedBubble, keyString);
-				middle::queueAction(gameState, action);
-				gameState->bubbleAlgebraState.bubbleActions.push_back(action);
+				bubble::queueBubbleAction(gameState, intersectedBubble, action);
 			}
 		}
 		if (gameState->equlabInput.altHeld && keyString != "") {
@@ -187,8 +186,7 @@ public:
 			}
 			if (intersectedBubble.index != middle::UNASSIGNED) {
 				auto action = std::make_shared<equlab::AddLabelToFunction>(intersectedBubble, keyString);
-				middle::queueAction(gameState, action);
-				gameState->bubbleAlgebraState.bubbleActions.push_back(action);
+				bubble::queueBubbleAction(gameState, intersectedBubble, action);
 			}
 		}
 
@@ -223,58 +221,48 @@ public:
 
 			if (!cantAdd && gameState->equlabInput.oneHeld) {
 				auto action = std::make_shared<equlab::AddBubble>(intersectedBubble, mousePos);
-				middle::queueAction(gameState, action);
-				gameState->bubbleAlgebraState.bubbleActions.push_back(action);
+				bubble::queueBubbleAction(gameState, intersectedBubble, action);
 			}
 			else if (!cantAdd && gameState->equlabInput.twoHeld && intersectedBubble.index != middle::UNASSIGNED) {
 				auto action = std::make_shared<equlab::AddUnit>(intersectedBubble, mousePos);
-				middle::queueAction(gameState, action);
-				gameState->bubbleAlgebraState.bubbleActions.push_back(action);
+				bubble::queueBubbleAction(gameState, intersectedBubble, action);
 			}
 			else if (!cantAdd && gameState->equlabInput.threeHeld) {
 				auto action = std::make_shared<equlab::AddEquals>(targetId, mousePos);
-				middle::queueAction(gameState, action);
-				gameState->bubbleAlgebraState.bubbleActions.push_back(action);
+				bubble::queueBubbleAction(gameState, targetId, action);
 			}
 			else if (gameState->equlabInput.fourHeld) {
 				auto action = std::make_shared<equlab::Negate>(targetId);
-				middle::queueAction(gameState, action);
-				gameState->bubbleAlgebraState.bubbleActions.push_back(action);
+				bubble::queueBubbleAction(gameState, targetId, action);
 			}
 			else if (gameState->equlabInput.fiveHeld && intersectedBubble.index != middle::UNASSIGNED) {
 				auto action = std::make_shared<equlab::Invert>(intersectedBubble);
-				middle::queueAction(gameState, action);
-				gameState->bubbleAlgebraState.bubbleActions.push_back(action);
+				bubble::queueBubbleAction(gameState, intersectedBubble, action);
 			}
 
 			else if (gameState->equlabInput.sixHeld) {
 				auto action = std::make_shared<equlab::Delete>(targetId);
-				middle::queueAction(gameState, action);
-				gameState->bubbleAlgebraState.bubbleActions.push_back(action);
+				bubble::queueBubbleAction(gameState, targetId, action);
 			}
 
 			else if (gameState->equlabInput.sevenHeld) {
 				auto action = std::make_shared<equlab::ToggleEditable>(targetId);
-				middle::queueAction(gameState, action);
-				gameState->bubbleAlgebraState.bubbleActions.push_back(action);
+				bubble::queueBubbleAction(gameState, targetId, action);
 			}
 
 			// indequalties
 			else if (gameState->equlabInput.leftHeld) {
 				auto action = std::make_shared<equlab::AddInequals>(targetId, mousePos, false);
-				middle::queueAction(gameState, action);
-				gameState->bubbleAlgebraState.bubbleActions.push_back(action);
+				bubble::queueBubbleAction(gameState, targetId, action);
 			}
 			else if (gameState->equlabInput.upHeld) {
 				auto action = std::make_shared<equlab::AddInequals>(targetId, mousePos, true);
-				middle::queueAction(gameState, action);
-				gameState->bubbleAlgebraState.bubbleActions.push_back(action);
+				bubble::queueBubbleAction(gameState, targetId, action);
 			}
 			// summation
 			else if (gameState->equlabInput.rightHeld) {
 				auto action = std::make_shared<equlab::AddSummation>(targetId, mousePos);
-				middle::queueAction(gameState, action);
-				gameState->bubbleAlgebraState.bubbleActions.push_back(action);
+				bubble::queueBubbleAction(gameState, targetId, action);
 			}
 
 			else if (gameState->equlabInput.nineHeld) {
@@ -314,16 +302,14 @@ public:
 				middle::Id idA = selectedId;
 				middle::Id idB = intersectedShape;
 				auto connect = std::make_shared<equlab::ConnectMultiplicationLink>(idB, idA);
-				middle::queueAction(gameState, connect);
-				gameState->bubbleAlgebraState.bubbleActions.push_back(connect);
+				bubble::queueBubbleAction(gameState, idB, connect);
 			}
 
 			if (currentSelectType == SelectType::ADD_POWER) {
 				middle::Id idA = selectedId;
 				middle::Id idB = intersectedShape;
 				auto connect = std::make_shared<equlab::ConnectPower>(idA, idB);
-				middle::queueAction(gameState, connect);
-				gameState->bubbleAlgebraState.bubbleActions.push_back(connect);
+				bubble::queueBubbleAction(gameState, idB, connect);
 			}
 
 			middle::queueComponentDeletion<components::SelectedComponent>(gameState, selectedCache->relevantIdVector[0]);

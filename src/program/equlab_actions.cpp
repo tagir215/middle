@@ -429,6 +429,10 @@ namespace equlab {
 		Vector3 loadedPos;
 		float loadedScale;
 		auto bubequ = bubequ::loadPreviousSnapshot(name, 1, loadDepth, loadedPos, loadedScale, loadedPath);
+		if (!bubequ) {
+			cancelled = true;
+			return;
+		}
 
 		middle::Id loadedId = bubequ::bubequToBubble(gameState, loadedPos, bubequ);
 		gameState->bubbleAlgebraState.worldScale = 1;

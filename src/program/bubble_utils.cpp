@@ -1263,9 +1263,11 @@ namespace bubble {
 		middle::queueAction(gameState, action);
 		gameState->bubbleAlgebraState.bubbleActions.push_back(action);
 		// save bubble
-		middle::Id topBubble = bubble::findIdWithCompFromShapeOrItsParents<components::TopDogBubbleTag>
-			(gameState, id);
-		middle::attachComponent<components::QueuedForSaveTag>(gameState, topBubble);
+		middle::Id backgroundId = gameState->bubbleAlgebraState.backgroundBubbleId;
+		if (backgroundId.index == middle::UNASSIGNED) {
+			return;
+		}
+		middle::attachComponent<components::QueuedForSaveTag>(gameState, backgroundId);
 	}
 
 

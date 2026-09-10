@@ -430,8 +430,8 @@ namespace bubequ {
 		auto lines = loadBubequLines(headName);
 		int elementOffset = elementSize * historyOffset;
 		// if trying to load older histories than there exist just return the most recent one
-		if (elementOffset > lines.size()) {
-			elementOffset = 0;
+		if (elementOffset * 2 > lines.size()) {
+			return nullptr;
 		}
 		int hashOffset = -elementOffset + hashIndexOffset;
 		int pathOffset = -elementOffset + pathIndexOffset;
