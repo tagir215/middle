@@ -9,12 +9,17 @@ class CompCacheSystem : public middle::MiddleGameplaySystem {
 public:
 
 	uint32_t stamp = 1;
-	std::vector<uint32_t> memo;
+	struct Memo {
+		uint32_t stamp = 0;
+		int generation = -1;
+	};
+	std::vector<Memo> memo;
 
 
 	void init(middle::GameState* gameState) override {
 		systemUpdateType = middle::SystemUpdateType::INITFRAME;
 		systemModeType = middle::SystemModeType::ENGINE;
+		// run after dynamic loading system
 		updatePriority = 1;
 		memo.resize(middle::MAX_SHAPE_COUNT);
 	}
@@ -47,10 +52,13 @@ public:
 			}
 
 			for (const middle::Id& id : it->second) {
-				if (memo[id.index] != stamp) {
-					result.push_back(id);
-					memo[id.index] = stamp;
+				auto& mem = memo[id.index];
+				if (mem.stamp == stamp && mem.generation == id.generation) {
+					continue;
 				}
+				result.push_back(id);
+				mem.stamp = stamp;
+				mem.generation = id.generation;
 			}
 		}
 		++stamp;
@@ -166,7 +174,7 @@ public:
 			return;
 		}
 		for (auto& t : memo) {
-			t = 0;
+			t = Memo();
 		}
 		stamp = 1;
 

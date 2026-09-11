@@ -22,6 +22,7 @@ public:
 
 	void init(middle::GameState* gameState) override {
 		systemUpdateType = middle::SystemUpdateType::INITFRAME;
+		// run before cache update
 		updatePriority = 0;
 
 		intersectingBubbleCache = middle::newCompCache(gameState, systemName);

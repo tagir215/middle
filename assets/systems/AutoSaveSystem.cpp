@@ -11,7 +11,8 @@ class AutoSaveSystem : public middle::MiddleGameplaySystem {
 
 	void init(middle::GameState* gameState) override {
 		systemUpdateType = middle::SystemUpdateType::INITFRAME;
-		updatePriority = 0;
+		// run after cache update
+		updatePriority = 5;
 
 		cache = middle::newCompCache(gameState, systemName);
 		cache->addType<components::QueuedForSaveTag>();

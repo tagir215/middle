@@ -94,7 +94,7 @@ namespace bubble{
 	void updateSummationLayoutScale(middle::GameState* gameState, middle::Id id, float smoothFactor);
 	void updatePowerLayoutScale(middle::GameState* gameState, middle::Id id, float smoothFactor);
 	void updateBubbleLayoutScale(middle::GameState* gameState, middle::Id id, float smoothFactor);
-	void updateSummationLayout(middle::GameState* gameState, middle::Id id, float width, float moveSpeed);
-	void updatePowerLayout(middle::GameState* gameState, middle::Id id, float width, float moveSpeed);
-	void updateBubbleLayout(middle::GameState* gameState, middle::Id id, float width, float moveSpeed);
+	void updateSummationLayout(middle::GameState* gameState, middle::Id id, float width, float moveRatio);
+	void updatePowerLayout(middle::GameState* gameState, middle::Id id, float width, float moveRatio);
+	void updateBubbleLayout(middle::GameState* gameState, middle::Id id, float width, float moveRatio);
 }

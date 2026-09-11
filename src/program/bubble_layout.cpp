@@ -60,17 +60,12 @@ namespace bubble{
 	}
 
 
-	const Vector3 getDisplacement(float moveSpeed, const Vector3& targetPos, const Vector3& currentPos, float deltaTime) {
-		float speedDelta = moveSpeed * deltaTime;
-		Vector3 disp = (targetPos - currentPos);
-		float dispSq = Vector3LengthSqr(disp);
-		if (dispSq > speedDelta * speedDelta) {
-			disp = Vector3Normalize(disp) * speedDelta;
-		}
+	const Vector3 getDisplacement(float moveRatio, const Vector3& targetPos, const Vector3& currentPos) {
+		Vector3 disp = (targetPos - currentPos) * moveRatio;
 		return disp;
 	}
 
-	void updateSummationLayout(middle::GameState* gameState, middle::Id id, float width, float moveSpeed) {
+	void updateSummationLayout(middle::GameState* gameState, middle::Id id, float width, float moveRatio) {
 		middle::Id indexId, upperLimitId, summandId;
 		bubble::getSummationIndexLimitSummand(gameState, id, indexId, upperLimitId, summandId);
 		float diameter = width;
@@ -87,9 +82,9 @@ namespace bubble{
 		Vector3 currentPosUpperLimit = middle::getLocalPosition(gameState, upperLimitId);
 		Vector3 currentPosSummand = middle::getLocalPosition(gameState, summandId);
 
-		Vector3 dispIndex = getDisplacement(moveSpeed, targetPosIndex, currentPosIndex, gameState->frameTime);
-		Vector3 dispUpperLimit = getDisplacement(moveSpeed, targetPosUpperLimit, currentPosUpperLimit, gameState->frameTime);
-		Vector3 dispSummand = getDisplacement(moveSpeed, targetPosSummand, currentPosSummand, gameState->frameTime);
+		Vector3 dispIndex = getDisplacement(moveRatio, targetPosIndex, currentPosIndex);
+		Vector3 dispUpperLimit = getDisplacement(moveRatio, targetPosUpperLimit, currentPosUpperLimit);
+		Vector3 dispSummand = getDisplacement(moveRatio, targetPosSummand, currentPosSummand);
 
 		middle::setLocalPosition(gameState, indexId, currentPosIndex + dispIndex);
 		middle::setLocalPosition(gameState, upperLimitId, currentPosUpperLimit + dispUpperLimit);
@@ -98,7 +93,7 @@ namespace bubble{
 
 
 
-	void updatePowerLayout(middle::GameState* gameState, middle::Id id, float width, float moveSpeed) {
+	void updatePowerLayout(middle::GameState* gameState, middle::Id id, float width, float moveRatio) {
 		middle::Id baseId, exponentId;
 		bubble::getPowerBaseAndExponent(gameState, id, baseId, exponentId);
 		float diameter = width;
@@ -112,15 +107,15 @@ namespace bubble{
 		Vector3 currentBasePos = middle::getLocalPosition(gameState, baseId);
 		Vector3 currentExponentPos = middle::getLocalPosition(gameState, exponentId);
 
-		Vector3 dispBase = getDisplacement(moveSpeed, targetPosBase, currentBasePos, gameState->frameTime);
-		Vector3 dispExponent = getDisplacement(moveSpeed, targetPosExponent, currentExponentPos, gameState->frameTime);
+		Vector3 dispBase = getDisplacement(moveRatio, targetPosBase, currentBasePos);
+		Vector3 dispExponent = getDisplacement(moveRatio, targetPosExponent, currentExponentPos);
 
 		middle::setLocalPosition(gameState, baseId, currentBasePos + dispBase);
 		middle::setLocalPosition(gameState, exponentId, currentExponentPos + dispExponent);
 	}
 
 
-	void updateBubbleLayout(middle::GameState* gameState, middle::Id id, float width, float moveSpeed) {
+	void updateBubbleLayout(middle::GameState* gameState, middle::Id id, float width, float moveRatio) {
 		std::vector<middle::Id>children;
 		middle::getChildren(gameState, id, children);
 		int childCount = children.size();
@@ -163,7 +158,7 @@ namespace bubble{
 			Vector3 targetPosition = leftBottomCorner + layoutPos;
 			middle::Id childId = children[i];
 			Vector3 currentPos = middle::getLocalPosition(gameState, childId);
-			Vector3 disp = getDisplacement(moveSpeed, targetPosition, currentPos, gameState->frameTime);
+			Vector3 disp = getDisplacement(moveRatio, targetPosition, currentPos);
 
 			if (gameState->bubbleAlgebraState.postUndoFrames == 0)
 				middle::setLocalPosition(gameState, childId, currentPos + disp);

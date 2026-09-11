@@ -19,8 +19,6 @@ public:
 	components::CompCache* summationCache;
 	components::CompCache* pausedBubblesCache;
 
-	const float moveSpeed = 150;
-
 	void init(middle::GameState* gameState) override {
 		systemUpdateType = middle::SystemUpdateType::GAMEPLAY_POSTFRAME;
 
@@ -52,6 +50,9 @@ public:
 
 	void update(middle::GameState* gameState) override {
 
+		const float ratioPerSecond = 0.8f;
+		float moveRatio = std::powf(ratioPerSecond, gameState->frameTime);
+
 		auto pauseTagIt = pausedBubblesCache->begin<components::PauseLayoutTag>();
 		for (middle::Id id : pausedBubblesCache->relevantIdVector) {
 			auto pause = *pauseTagIt;
@@ -64,8 +65,12 @@ public:
 		// bubbles
 		auto rectIt = bubbleCache->begin<components::Rectangle>();
 		for (middle::Id id : bubbleCache->relevantIdVector) {
+			if (id.index == 131) {
+				int a = 0;
+			}
+
 			auto rect = *rectIt;
-			bubble::updateBubbleLayout(gameState, id, rect->width, moveSpeed);
+			bubble::updateBubbleLayout(gameState, id, rect->width, moveRatio);
 		}
 
 
@@ -73,14 +78,14 @@ public:
 		auto powerRectIt = powerCache->begin<components::Rectangle>();
 		for (middle::Id id : powerCache->relevantIdVector) {
 			auto rect = *powerRectIt;
-			bubble::updatePowerLayout(gameState, id, rect->width, moveSpeed);
+			bubble::updatePowerLayout(gameState, id, rect->width, moveRatio);
 		}
 
 		// summations
 		auto summationRectIt = summationCache->begin<components::Rectangle>();
 		for (middle::Id id : summationCache->relevantIdVector) {
 			auto rect = *summationRectIt;
-			bubble::updateSummationLayout(gameState, id, rect->width, moveSpeed);
+			bubble::updateSummationLayout(gameState, id, rect->width, moveRatio);
 		}
 	}
 };

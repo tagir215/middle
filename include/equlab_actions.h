@@ -170,6 +170,33 @@ namespace equlab {
 		void undo(middle::GameState* gameState);
 	};
 
+	class AddMultiplication : public middle::EditorActionContainer {
+	public:
+		middle::Id parentId;
+		Vector3 targetPosition;
+		middle::Id resultId;
+		AddMultiplication(middle::Id parentId, const Vector3& targetPosition) {
+			this->parentId = parentId;
+			this->targetPosition = targetPosition;
+		}
+		void execute(middle::GameState* gameState);
+		void undo(middle::GameState* gameState);
+	};
+
+	class AddPower : public middle::EditorActionContainer {
+	public:
+		middle::Id parentId;
+		middle::Id resultId;
+		Vector3 targetPosition;
+		AddPower(middle::Id parentId, const Vector3& targetPosition) {
+			this->parentId = parentId;
+			this->targetPosition = targetPosition;
+		}
+		void execute(middle::GameState* gameState);
+		void undo(middle::GameState* gameState);
+	};
+
+
 	class ConnectMultiplicationLink : public middle::EditorActionContainer {
 	public:
 		middle::Id bubbleIdA;

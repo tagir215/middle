@@ -113,7 +113,7 @@ public:
 						name = gameState->bubbleAlgebraState.activeBubbleName;
 						middle::Id backgroundId = gameState->bubbleAlgebraState.backgroundBubbleId;
 						auto newBranch = bubequ::bubbleToBubequ(gameState, backgroundId);
-						root = bubequ::loadBubequHead(name, {}, 400);
+						root = bubequ::loadBubequHead(name, {}, gameState->bubbleAlgebraState.loadDepth);
 						// load root from disc
 						// replace current visible branch on the loaded tree
 						bubequ::replaceBranch(root, newBranch, gameState->bubbleAlgebraState.traversePath);
@@ -141,7 +141,7 @@ public:
 					camXZPos.y = 0;
 					//auto bubequ = bubequ::loadBubequ(path);
 
-					auto bubequ = bubequ::loadBubequHead(name, {}, 400);
+					auto bubequ = bubequ::loadBubequHead(name, {}, gameState->bubbleAlgebraState.loadDepth);
 
 					middle::Id id = bubequ::bubequToBubble(gameState, camXZPos, bubequ);
 					auto registerAction = std::make_shared<middle::EditorActionRegisterId>(id);
@@ -266,53 +266,15 @@ public:
 			}
 
 			else if (gameState->equlabInput.nineHeld) {
-				middle::attachComponent<components::SelectedComponent>(gameState, intersectedBubble);
-				currentSelectType = SelectType::ADD_MULTIPLICATION;
+				auto action = std::make_shared<equlab::AddMultiplication>(targetId, mousePos);
+				bubble::queueBubbleAction(gameState, targetId, action);
 			}
 
 			else if (gameState->equlabInput.eightHeld) {
-				middle::attachComponent<components::SelectedComponent>(gameState, intersectedBubble);
-				currentSelectType = SelectType::ADD_POWER;
+				auto action = std::make_shared<equlab::AddPower>(targetId, mousePos);
+				bubble::queueBubbleAction(gameState, targetId, action);
 			}
 
-		}
-		// MOUSE RELEASE ACTIONS	
-		if (gameState->input.mouseReleased && selectedCache->getSize() == 1) {
-
-			middle::Id intersectedShape;
-			auto intersectingIt = intersectableBubbleCache->begin<components::IntersectingTag>();
-			for (int i = 0; i < intersectableBubbleCache->getSize(); ++i) {
-				auto intersecting = *intersectingIt;
-				if (intersecting->intersectingTop) {
-					intersectedShape = intersectableBubbleCache->relevantIdVector[i];
-					break;
-				}
-			}
-
-			middle::Id selectedId = selectedCache->relevantIdVector[0];
-
-			if (intersectedShape.index == middle::UNASSIGNED) {
-				return;
-			}
-			if (intersectedShape == selectedId) {
-				return;
-			}
-
-			if (currentSelectType == SelectType::ADD_MULTIPLICATION) {
-				middle::Id idA = selectedId;
-				middle::Id idB = intersectedShape;
-				auto connect = std::make_shared<equlab::ConnectMultiplicationLink>(idB, idA);
-				bubble::queueBubbleAction(gameState, idB, connect);
-			}
-
-			if (currentSelectType == SelectType::ADD_POWER) {
-				middle::Id idA = selectedId;
-				middle::Id idB = intersectedShape;
-				auto connect = std::make_shared<equlab::ConnectPower>(idA, idB);
-				bubble::queueBubbleAction(gameState, idB, connect);
-			}
-
-			middle::queueComponentDeletion<components::SelectedComponent>(gameState, selectedCache->relevantIdVector[0]);
 		}
 	}
 };

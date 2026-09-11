@@ -279,6 +279,54 @@ namespace equlab {
 	void ToggleEditable::undo(middle::GameState* gameState) {
 	}
 
+	void AddMultiplication::execute(middle::GameState* gameState) {
+		middle::Shape newBubbleProto = bubble::newMultiplication(gameState, targetPosition);
+		auto registerAction = middle::executeAction<middle::EditorActionRegisterShape>
+			(gameState, this, newBubbleProto);
+		resultId = registerAction->newShapeId;
+		if (parentId.index != middle::UNASSIGNED) {
+			middle::executeAction<middle::EditorActionReparent>(gameState, this, parentId.index, resultId.index);
+		}
+		auto scaleComp = middle::getComp<components::LocalScale>(gameState, resultId);
+		float scale = gameState->bubbleAlgebraState.worldScale;
+		scaleComp->scale.x = scale;
+		scaleComp->scale.y = scale;
+		scaleComp->scale.z = scale;
+		AddBubble(resultId, targetPosition).execute(gameState);
+		AddBubble(resultId, targetPosition).execute(gameState);
+	}
+
+	void AddMultiplication::undo(middle::GameState* gameState) {
+		while (actions.size() > 0) {
+			actions.back()->undo(gameState);
+			actions.pop_back();
+		}
+	}
+
+	void AddPower::execute(middle::GameState* gameState) {
+		middle::Shape newBubbleProto = bubble::newPower(gameState, targetPosition);
+		auto registerAction = middle::executeAction<middle::EditorActionRegisterShape>
+			(gameState, this, newBubbleProto);
+		resultId = registerAction->newShapeId;
+		if (parentId.index != middle::UNASSIGNED) {
+			middle::executeAction<middle::EditorActionReparent>(gameState, this, parentId.index, resultId.index);
+		}
+		auto scaleComp = middle::getComp<components::LocalScale>(gameState, resultId);
+		float scale = gameState->bubbleAlgebraState.worldScale;
+		scaleComp->scale.x = scale;
+		scaleComp->scale.y = scale;
+		scaleComp->scale.z = scale;
+		AddBubble(resultId, targetPosition).execute(gameState);
+		AddBubble(resultId, targetPosition).execute(gameState);
+	}
+
+	void AddPower::undo(middle::GameState* gameState){
+		while (actions.size() > 0) {
+			actions.back()->undo(gameState);
+			actions.pop_back();
+		}
+	}
+
 	void ConnectMultiplicationLink::execute(middle::GameState* gameState) {
 
 		auto& shapeA = middle::getShape(gameState, bubbleIdA.index);

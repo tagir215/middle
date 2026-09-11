@@ -1238,18 +1238,18 @@ namespace bubble {
 
 	void recursiveBubbleLayoutUpdate(middle::GameState* gameState, middle::Id id)
 	{
-		const float moveSpeed = 10000000.0f;
+		const float moveRatio = 1;
 		if (bubble::isPowerBubble(gameState, id)) {
 			auto rect = middle::getComp<components::Rectangle>(gameState, id);
-			bubble::updatePowerLayout(gameState, id, rect->width, moveSpeed);
+			bubble::updatePowerLayout(gameState, id, rect->width, moveRatio);
 		}
 		else if (bubble::isSummation(gameState, id)) {
 			auto rect = middle::getComp<components::Rectangle>(gameState, id);
-			bubble::updateSummationLayout(gameState, id, rect->width, moveSpeed);
+			bubble::updateSummationLayout(gameState, id, rect->width, moveRatio);
 		}
 		else {
 			auto rect = middle::getComp<components::Rectangle>(gameState, id);
-			bubble::updateBubbleLayout(gameState, id, rect->width, moveSpeed);
+			bubble::updateBubbleLayout(gameState, id, rect->width, moveRatio);
 		}
 		std::vector<middle::Id>children;
 		middle::getChildren(gameState, id, children);
