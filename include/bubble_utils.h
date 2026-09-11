@@ -37,6 +37,7 @@ namespace bubble {
 	middle::Shape newFunction(middle::GameState* gameState, const std::string& label, const Vector3& targetPos);
 	middle::Shape newSummation(middle::GameState* gameState, const Vector3& targetPos);
 	middle::Shape newTextBubble(middle::GameState* gameState, const Vector3& targetPos);
+	middle::Id newSwapBubble(middle::GameState* gameState, const Vector3& targetPos);
 	middle::Id newSummationWithChildren(middle::GameState* gameState, const Vector3& targetPos);
 	middle::Id newPower(middle::GameState* gameState, middle::Id baseId, middle::Id exponentId, const Vector3& targetPos);
 	middle::Id newBubbleWithIntValue(middle::GameState* gameState, int value, const Vector3& targetPos);
@@ -65,6 +66,7 @@ namespace bubble {
 	bool isPowerBubble(middle::GameState* gameState, middle::Id id);
 	bool isSummation(middle::GameState* gameState, middle::Id id);
 	bool isMultiplication(middle::GameState* gameState, middle::Id id);
+	bool isSwapBubble(middle::GameState* gameState, middle::Id id);
 	bool isUnit(middle::GameState* gameState, middle::Id id);
 	void negate(middle::GameState* gameState, middle::Id id);
 	void invert(middle::GameState* gameState, middle::Id id);

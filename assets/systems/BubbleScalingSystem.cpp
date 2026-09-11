@@ -11,6 +11,7 @@
 #include "bubble_utils.h"
 #include "BubbleSummationComponent.h"
 #include "bubble_layout.h"
+#include "BubbleSwapComponent.h"
 
 class BubbleScalingSystem : public middle::MiddleGameplaySystem {
 public:
@@ -20,6 +21,7 @@ public:
 	components::CompCache* bubbleCache;
 	components::CompCache* powerCache;
 	components::CompCache* summationCache;
+	components::CompCache* swapCache;
 	const float smoothFactor = 0.3f;
 
 	void init(middle::GameState* gameState) override {
@@ -30,6 +32,7 @@ public:
 		bubbleCache->addType<components::GlobalTransform>();
 		bubbleCache->addType<components::BubblePowerComponent>(components::NOTINTERESTED);
 		bubbleCache->addType<components::BubbleSummationComponent>(components::NOTINTERESTED);
+		bubbleCache->addType<components::BubbleSwapComponent>(components::NOTINTERESTED);
 		bubbleCache->addType<components::PauseLayoutTag>(components::NOTINTERESTED);
 
 		powerCache = middle::newCompCache(gameState, systemName);
@@ -45,6 +48,10 @@ public:
 		summationCache->addType<components::GlobalTransform>();
 		summationCache->addType<components::BubbleSummationComponent>();
 		summationCache->addType<components::PauseLayoutTag>(components::NOTINTERESTED);
+
+		swapCache = middle::newCompCache(gameState, systemName);
+		swapCache->addType<components::BubbleSwapComponent>();
+		swapCache->addType<components::PauseLayoutTag>(components::NOTINTERESTED);
 	}
 
 
@@ -60,6 +67,10 @@ public:
 
 		for (middle::Id id : summationCache->relevantIdVector) {
 			bubble::updateSummationLayoutScale(gameState, id, smoothFactor);
+		}
+
+		for (middle::Id id : swapCache->relevantIdVector) {
+			bubble::updateSwapButtonLayoutScale(gameState, id, smoothFactor);
 		}
 	}
 };

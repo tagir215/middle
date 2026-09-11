@@ -59,6 +59,16 @@ namespace bubble{
 		}
 	}
 
+	void updateSwapButtonLayoutScale(middle::GameState* gameState, middle::Id id, float smoothFactor)
+	{
+		std::vector<middle::Id>children;
+		middle::getChildren(gameState, id, children);
+		for (int i = 0; i < children.size(); ++i) {
+			middle::Id childId = children[i];
+			bubble::updateScale(gameState, childId, bubble::swapChildRatio, smoothFactor);
+		}
+	}
+
 
 	const Vector3 getDisplacement(float moveRatio, const Vector3& targetPos, const Vector3& currentPos) {
 		Vector3 disp = (targetPos - currentPos) * moveRatio;
@@ -164,6 +174,18 @@ namespace bubble{
 				middle::setLocalPosition(gameState, childId, currentPos + disp);
 			else
 				middle::setLocalPosition(gameState, childId, targetPosition);
+		}
+	}
+	void updateSwapButtonLayout(middle::GameState* gameState, middle::Id id, float width)
+	{
+		std::vector<middle::Id>children;
+		middle::getChildren(gameState, id, children);
+		Vector3 leftBottomCorner = Vector3{ -width * 0.5f, 0, -width * 0.5f };
+		for (int i = 0; i < children.size(); ++i) {
+			middle::Id childId = children[i];
+			Vector3 pos = { swapLayout[0].x * width, i, swapLayout[0].y * width };
+			Vector3 targetPosition = leftBottomCorner + pos;
+			middle::setLocalPosition(gameState, childId, targetPosition);
 		}
 	}
 }

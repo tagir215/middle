@@ -33,6 +33,8 @@
 #include "QueuedForSaveTag.h"
 #include "BubbleTextComponent.h"
 #include "BubbleTextSizeChangedTag.h"
+#include "BubbleSwapComponent.h"
+#include "RuntimeHiddenTag.h"
 
 namespace bubble {
 	float bubbleAxis = 50;
@@ -1249,6 +1251,10 @@ namespace bubble {
 			auto rect = middle::getComp<components::Rectangle>(gameState, id);
 			bubble::updateSummationLayout(gameState, id, rect->width, moveRatio);
 		}
+		else if (bubble::isSwapBubble(gameState, id)) {
+			auto rect = middle::getComp<components::Rectangle>(gameState, id);
+			bubble::updateSwapButtonLayout(gameState, id, rect->width);
+		}
 		else {
 			auto rect = middle::getComp<components::Rectangle>(gameState, id);
 			bubble::updateBubbleLayout(gameState, id, rect->width, moveRatio);
@@ -1502,6 +1508,28 @@ mollis. Duis eleifend hendrerit ullamcorper.)";
 		return newBubbleShape;
 	}
 
+	middle::Id newSwapBubble(middle::GameState* gameState, const Vector3& targetPos)
+	{
+		middle::Shape bubbleProto = newBubble(gameState, targetPos);
+		middle::addComponent<components::BubbleSwapComponent>(bubbleProto);
+		middle::addComponent<components::Button>(bubbleProto);
+		middle::Shape& swapBubble = middle::registerShape(gameState, bubbleProto);
+
+		middle::Shape textProto = newTextBubble(gameState, targetPos);
+		middle::deleteComponent<components::MouseIntersectable>(textProto);
+		middle::Shape& text = middle::registerShape(gameState, textProto);
+
+		middle::Shape targetProto = newBubble(gameState, targetPos);
+		middle::deleteComponent<components::MouseIntersectable>(targetProto);
+		middle::addComponent<components::RuntimeHiddenTag>(targetProto);
+		middle::Shape& target = middle::registerShape(gameState, targetProto);
+
+		middle::EditorActionReparent(swapBubble.id.index, text.id.index).execute(gameState);
+		middle::EditorActionReparent(swapBubble.id.index, target.id.index).execute(gameState);
+
+		return swapBubble.id;
+	}
+
 	middle::Id newSummationWithChildren(middle::GameState * gameState, const Vector3 & targetPos)
 	{
 		middle::Shape newBubbleShape = newBubble(gameState, targetPos);
@@ -1606,6 +1634,10 @@ mollis. Duis eleifend hendrerit ullamcorper.)";
 	bool isUnit(middle::GameState * gameState, middle::Id id)
 	{
 		return middle::getComp<components::BubbleUnit>(gameState, id);
+	}
+
+	bool isSwapBubble(middle::GameState* gameState, middle::Id id) {
+		return middle::getComp<components::BubbleSwapComponent>(gameState, id);
 	}
 
 

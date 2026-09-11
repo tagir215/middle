@@ -519,4 +519,28 @@ namespace equlab {
 		}
 	}
 
+	void AddSwapBubble::execute(middle::GameState* gameState)
+	{
+		middle::Id newSwapId = bubble::newSwapBubble(gameState, targetPosition);
+		auto registerAction = middle::executeAction<middle::EditorActionRegisterId>
+			(gameState, this, newSwapId);
+		resultId = newSwapId;
+		if (parentId.index != middle::UNASSIGNED) {
+			middle::executeAction<middle::EditorActionReparent>(gameState, this, parentId.index, resultId.index);
+		}
+		auto scaleComp = middle::getComp<components::LocalScale>(gameState, resultId);
+		float scale = gameState->bubbleAlgebraState.worldScale;
+		scaleComp->scale.x = scale;
+		scaleComp->scale.y = scale;
+		scaleComp->scale.z = scale;
+	}
+
+	void AddSwapBubble::undo(middle::GameState* gameState)
+	{
+		while (actions.size() > 0) {
+			actions.back()->undo(gameState);
+			actions.pop_back();
+		}
+	}
+
 }

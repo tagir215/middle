@@ -82,19 +82,29 @@ namespace bubble{
 		{0.75f, 0.5f},
 	};
 
+	inline BubbleLayout swapLayout = {
+		{0.5,0.5f}
+	};
+
 	inline const float scaleRatio = 0.93f;
 	inline const float oneChildScaleRatio = 0.600f;
+
 	inline const float powerBaseRatio = 0.69f;
 	inline const float powerExponentRatio = 0.15f;
+
 	inline const float summationIndexRatio = 0.25f;
 	inline const float summationUpperLimitRatio = 0.25f;
 	inline const float summationSummandRatio = 0.35f;
+
+	inline const float swapChildRatio = 1.0f;
 
 	void updateScale(middle::GameState* gameState, middle::Id id, float scalar, float smoothFactor);
 	void updateSummationLayoutScale(middle::GameState* gameState, middle::Id id, float smoothFactor);
 	void updatePowerLayoutScale(middle::GameState* gameState, middle::Id id, float smoothFactor);
 	void updateBubbleLayoutScale(middle::GameState* gameState, middle::Id id, float smoothFactor);
+	void updateSwapButtonLayoutScale(middle::GameState* gameState, middle::Id id, float smoothFactor);
 	void updateSummationLayout(middle::GameState* gameState, middle::Id id, float width, float moveRatio);
 	void updatePowerLayout(middle::GameState* gameState, middle::Id id, float width, float moveRatio);
 	void updateBubbleLayout(middle::GameState* gameState, middle::Id id, float width, float moveRatio);
+	void updateSwapButtonLayout(middle::GameState* gameState, middle::Id id, float width);
 }

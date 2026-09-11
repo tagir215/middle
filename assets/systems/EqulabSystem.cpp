@@ -91,8 +91,6 @@ public:
 
 	void update(middle::GameState* gameState) override {
 
-
-
 		// UI 
 		auto equlabUi = [gameState, this]() {
 			ImGui::Begin("Bubequ file");
@@ -276,6 +274,10 @@ public:
 			}
 			else if (gameState->equlabInput.downHeld) {
 				auto action = std::make_shared<equlab::AddBubbleText>(targetId, mousePos);
+				bubble::queueBubbleAction(gameState, targetId, action);
+			}
+			else if (gameState->equlabInput.f1Held) {
+				auto action = std::make_shared<equlab::AddSwapBubble>(targetId, mousePos);
 				bubble::queueBubbleAction(gameState, targetId, action);
 			}
 

@@ -236,6 +236,19 @@ namespace equlab {
 		void undo(middle::GameState* gameState) override;
 	};
 
+	class AddSwapBubble : public middle::EditorActionContainer {
+	public:
+		middle::Id parentId;
+		Vector3 targetPosition;
+		middle::Id resultId;
+		AddSwapBubble(middle::Id parentId, const Vector3& targetPosition) {
+			this->parentId = parentId;
+			this->targetPosition = targetPosition;
+		}
+		void execute(middle::GameState* gameState) override;
+		void undo(middle::GameState* gameState) override;
+	};
+
 	class LoadBubbleSection : public middle::EditorActionContainer {
 	public:
 		middle::Id scaleReferenceId;

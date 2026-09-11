@@ -42,6 +42,7 @@
 #include "bubble_paths.h"
 #include "imgui.h"
 #include "BubbleTextComponent.h"
+#include "BubbleSwapComponent.h"
 
 
 class BubbleRenderSetup : public middle::MiddleGameplaySystem {
@@ -70,6 +71,7 @@ public:
 	components::CompCache* functionCache;
 	components::CompCache* summationCache;
 	components::CompCache* textCache;
+	components::CompCache* swapCache;
 
 			const float scaleCorrection = 10.2f;
 
@@ -88,6 +90,7 @@ public:
 		bubbleCache->addType<components::BubbleInequaltyComponent>(components::NOTINTERESTED);
 		bubbleCache->addType<components::BubbleTextComponent>(components::NOTINTERESTED);
 		bubbleCache->addType<components::BubbleVariable>(components::NOTINTERESTED);
+		bubbleCache->addType<components::BubbleSwapComponent>(components::NOTINTERESTED);
 		bubbleCache->addType<components::BubbleUnit>(components::NOTINTERESTED);
 		bubbleCache->addType<components::BubbleEqualsComponent>(components::NOTINTERESTED);
 		bubbleCache->addType<components::RuntimeHiddenTag>(components::NOTINTERESTED);
@@ -166,6 +169,7 @@ public:
 		textCache->addType<components::GlobalTransform>();
 		textCache->addType<components::Rectangle>();
 		textCache->addType<components::Layer>();
+		textCache->addType<components::RuntimeHiddenTag>(components::NOTINTERESTED);
 
 		oPosCache = middle::newCompCache(gameState, systemName);
 		oPosCache->addType<components::Position>(components::NOTINTERESTED);
@@ -671,6 +675,7 @@ public:
 			renderBubbleLabel(gameState, transform, rect->width, u8"\u2211",
 				layer->layer, LabelPos::CENTER, bubbleColors::SUMMATION_TEXT);
 		}
+
 	}
 
 };
