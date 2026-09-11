@@ -66,11 +66,11 @@ class SceneEditorSelectionSystem : public middle::MiddleGameplaySystem {
 					}
 				}
 				if (needUpdate) {
-					middle::queueComponentAttachment<components::ActiveSceneSelectableTag>(gameState, closestId);
+					middle::attachComponent<components::ActiveSceneSelectableTag>(gameState, closestId);
 				}
 			}
 			else if (activeBubbleCache->relevantIdVector.size() == 0) {
-				middle::queueComponentAttachment<components::ActiveSceneSelectableTag>(gameState, closestId);
+				middle::attachComponent<components::ActiveSceneSelectableTag>(gameState, closestId);
 			}
 		}
 

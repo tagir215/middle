@@ -31,6 +31,8 @@
 #include "BubbleSummationComponent.h"
 #include "bubble_layout.h"
 #include "QueuedForSaveTag.h"
+#include "BubbleTextComponent.h"
+#include "BubbleTextSizeChangedTag.h"
 
 namespace bubble {
 	float bubbleAxis = 50;
@@ -1481,6 +1483,22 @@ namespace bubble {
 	middle::Shape newSummation(middle::GameState * gameState, const Vector3 & targetPos) {
 		middle::Shape newBubbleShape = newBubble(gameState, targetPos);
 		middle::addComponent<components::BubbleSummationComponent>(newBubbleShape);
+		return newBubbleShape;
+	}
+
+	middle::Shape newTextBubble(middle::GameState* gameState, const Vector3& targetPos)
+	{
+		middle::Shape newBubbleShape = newBubble(gameState, targetPos);
+		middle::addComponent<components::BubbleTextSizeChangedTag>(newBubbleShape);
+		auto text = middle::addComponent<components::BubbleTextComponent>(newBubbleShape);
+		text->text = R"(Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+Donec quis maximus massa. Donec rutrum quis lacus sit
+amet venenatis. Nam consectetur id magna ut accumsan.
+Nullam vitae dolor consectetur, euismod urna eu, vulputate 
+ante. Donec sollicitudin nulla ante, ut venenatis massa 
+ultrices at. Duis massa magna, porttitor ut velit eget, 
+dapibus feugiat lacus. Cras tristique efficitur odio eget 
+mollis. Duis eleifend hendrerit ullamcorper.)";
 		return newBubbleShape;
 	}
 

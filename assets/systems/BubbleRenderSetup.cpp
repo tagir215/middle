@@ -41,6 +41,7 @@
 #include "BubbleSummationComponent.h"
 #include "bubble_paths.h"
 #include "imgui.h"
+#include "BubbleTextComponent.h"
 
 
 class BubbleRenderSetup : public middle::MiddleGameplaySystem {
@@ -68,6 +69,7 @@ public:
 	components::CompCache* powerCache;
 	components::CompCache* functionCache;
 	components::CompCache* summationCache;
+	components::CompCache* textCache;
 
 			const float scaleCorrection = 10.2f;
 
@@ -84,6 +86,7 @@ public:
 		bubbleCache->addType<components::BubbleFunctionComponent>(components::NOTINTERESTED);
 		bubbleCache->addType<components::BubbleMultiplyComponent>(components::NOTINTERESTED);
 		bubbleCache->addType<components::BubbleInequaltyComponent>(components::NOTINTERESTED);
+		bubbleCache->addType<components::BubbleTextComponent>(components::NOTINTERESTED);
 		bubbleCache->addType<components::BubbleVariable>(components::NOTINTERESTED);
 		bubbleCache->addType<components::BubbleUnit>(components::NOTINTERESTED);
 		bubbleCache->addType<components::BubbleEqualsComponent>(components::NOTINTERESTED);
@@ -158,6 +161,11 @@ public:
 		summationCache->addType<components::Layer>();
 		summationCache->addType<components::Rectangle>();
 		summationCache->addType<components::GlobalTransform>();
+		textCache = middle::newCompCache(gameState, systemName);
+		textCache->addType<components::BubbleTextComponent>();
+		textCache->addType<components::GlobalTransform>();
+		textCache->addType<components::Rectangle>();
+		textCache->addType<components::Layer>();
 
 		oPosCache = middle::newCompCache(gameState, systemName);
 		oPosCache->addType<components::Position>(components::NOTINTERESTED);
@@ -408,6 +416,25 @@ public:
 			gameState->renderData.push_back(unitItem);
 
 			renderBubble(gameState, layer->layer, backgroundColor, transform);
+		}
+
+		auto textIt = textCache->begin<components::BubbleTextComponent>();
+		auto textTransformIt = textCache->begin<components::GlobalTransform>();
+		auto textLayerIt = textCache->begin<components::Layer>();
+		for (middle::Id id : textCache->relevantIdVector){
+			auto text = *textIt;
+			auto layer = *textLayerIt;
+			auto transform = *textTransformIt;
+
+			middle::RenderItem textItem;
+			textItem.type = middle::RenderItemType::TEXT;
+			textItem.layer = layer->layer;
+			setTransform(textItem, transform);
+			textItem.text = text->text;
+			textItem.fontSize = text->fontSize;
+			gameState->renderData.push_back(textItem);
+
+			renderBubble(gameState, layer->layer, bubbleColors::BUBBLE, transform);
 		}
 
 		// render variables

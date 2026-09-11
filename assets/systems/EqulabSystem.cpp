@@ -274,6 +274,10 @@ public:
 				auto action = std::make_shared<equlab::AddPower>(targetId, mousePos);
 				bubble::queueBubbleAction(gameState, targetId, action);
 			}
+			else if (gameState->equlabInput.downHeld) {
+				auto action = std::make_shared<equlab::AddBubbleText>(targetId, mousePos);
+				bubble::queueBubbleAction(gameState, targetId, action);
+			}
 
 		}
 	}

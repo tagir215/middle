@@ -406,23 +406,6 @@ namespace equlab {
 	}
 
 
-	void FreeParent::execute(middle::GameState* gameState)
-	{
-		middle::Id parentId = middle::getParent(gameState, id);
-		middle::executeAction<middle::EditorActionRemoveFromLoop>(gameState, this, id.index);
-		middle::Id topId = bubble::findIdWithCompFromShapeOrItsParents<components::TopDogBubbleTag>(gameState, parentId);
-		middle::executeAction<middle::EditorActionDeleteSingle>(gameState, this, topId);
-	}
-
-	void FreeParent::undo(middle::GameState* gameState)
-	{
-		while (actions.size() > 0) {
-			actions.back()->undo(gameState);
-			actions.pop_back();
-		}
-	}
-
-
 	void LoadBubbleSection::execute(middle::GameState* gameState)
 	{
 		mstart();
@@ -510,6 +493,30 @@ namespace equlab {
 
 	void UndoAction::undo(middle::GameState* gameState)
 	{
+	}
+
+	void AddBubbleText::execute(middle::GameState* gameState)
+	{
+		middle::Shape newBubbleProto = bubble::newTextBubble(gameState, targetPosition);
+		auto registerAction = middle::executeAction<middle::EditorActionRegisterShape>
+			(gameState, this, newBubbleProto);
+		resultId = registerAction->newShapeId;
+		if (parentId.index != middle::UNASSIGNED) {
+			middle::executeAction<middle::EditorActionReparent>(gameState, this, parentId.index, resultId.index);
+		}
+		auto scaleComp = middle::getComp<components::LocalScale>(gameState, resultId);
+		float scale = gameState->bubbleAlgebraState.worldScale;
+		scaleComp->scale.x = scale;
+		scaleComp->scale.y = scale;
+		scaleComp->scale.z = scale;
+	}
+
+	void AddBubbleText::undo(middle::GameState* gameState)
+	{
+		while (actions.size() > 0) {
+			actions.back()->undo(gameState);
+			actions.pop_back();
+		}
 	}
 
 }

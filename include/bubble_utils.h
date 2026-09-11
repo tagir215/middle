@@ -36,6 +36,7 @@ namespace bubble {
 	middle::Shape newPower(middle::GameState* gameState, const Vector3& targetPos);
 	middle::Shape newFunction(middle::GameState* gameState, const std::string& label, const Vector3& targetPos);
 	middle::Shape newSummation(middle::GameState* gameState, const Vector3& targetPos);
+	middle::Shape newTextBubble(middle::GameState* gameState, const Vector3& targetPos);
 	middle::Id newSummationWithChildren(middle::GameState* gameState, const Vector3& targetPos);
 	middle::Id newPower(middle::GameState* gameState, middle::Id baseId, middle::Id exponentId, const Vector3& targetPos);
 	middle::Id newBubbleWithIntValue(middle::GameState* gameState, int value, const Vector3& targetPos);

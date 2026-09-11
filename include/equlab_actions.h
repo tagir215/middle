@@ -223,11 +223,14 @@ namespace equlab {
 		void undo(middle::GameState* gameState);
 	};
 
-	class FreeParent : public middle::EditorActionContainer {
+	class AddBubbleText : public middle::EditorActionContainer {
 	public:
-		middle::Id id;
-		FreeParent(middle::Id id) {
-			this->id = id;
+		middle::Id parentId;
+		Vector3 targetPosition;
+		middle::Id resultId;
+		AddBubbleText(middle::Id parentId, const Vector3& targetPosition) {
+			this->parentId = parentId;
+			this->targetPosition = targetPosition;
 		}
 		void execute(middle::GameState* gameState) override;
 		void undo(middle::GameState* gameState) override;
