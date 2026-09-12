@@ -80,36 +80,6 @@ namespace middle {
 	};
 
 	struct EqulabInput {
-		bool oneHeld = false;
-		bool twoHeld = false;
-		bool threeHeld = false;
-		bool fourHeld = false;
-		bool fiveHeld = false;
-		bool sixHeld = false;
-		bool sevenHeld = false;
-		bool eightHeld = false;
-		bool f1Held = false;
-		bool f2Held = false;
-		bool f3Held = false;
-		bool f4Held = false;
-		bool f5Held = false;
-		bool f6Held = false;
-		bool f7Held = false;
-		bool f8Held = false;
-		bool f9Held = false;
-		bool f10Held = false;
-		bool f11Held = false;
-		bool f12Held = false;
-		bool nineHeld = false;
-		bool zeroHeld = false;
-		bool shiftHeld = false;
-		bool ctrlHeld = false;
-		bool altHeld = false;
-		bool leftHeld = false;
-		bool rightHeld = false;
-		bool upHeld = false;
-		bool downHeld = false;
-
 		bool oneClicked = false;
 		bool twoClicked = false;
 		bool threeClicked = false;
@@ -120,6 +90,26 @@ namespace middle {
 		bool eightClicked = false;
 		bool nineClicked = false;
 		bool zeroClicked = false;
+		bool f1Clicked = false;
+		bool f2Clicked = false;
+		bool f3Clicked = false;
+		bool f4Clicked = false;
+		bool f5Clicked = false;
+		bool f6Clicked = false;
+		bool f7Clicked = false;
+		bool f8Clicked = false;
+		bool f9Clicked = false;
+		bool f10Clicked = false;
+		bool f11Clicked = false;
+		bool f12Clicked = false;
+		bool shiftHeld = false;
+		bool ctrlHeld = false;
+		bool altHeld = false;
+		bool leftHeld = false;
+		bool rightHeld = false;
+		bool upHeld = false;
+		bool downHeld = false;
+
 		bool aClicked = false;
 		bool bClicked = false;
 		bool cClicked = false;
