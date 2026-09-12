@@ -23,6 +23,7 @@
 #include "BubbleFunctionComponent.h"
 #include "PauseLayoutTag.h"
 #include "BubbleSummationComponent.h"
+#include "ModifiedBubbleTag.h"
 
 namespace bubbleActions {
 
@@ -148,6 +149,12 @@ namespace bubbleActions {
 			connectPower->execute(gameState);
 			middle::Id newPowerId = connectPower->resultId;
 			return newPowerId;
+	}
+
+	void notifyBubbleModification(middle::GameState* gameState, middle::Id id)
+	{
+		assert(middle::isValidId(gameState, id));
+		middle::attachComponent<components::ModifiedBubbleTag>(gameState, id);
 	}
 
 	middle::Id createMultiplicationReplacementShape(middle::GameState* gameState, middle::Id shapeToReplaceId, middle::Id replacingShapeId)
@@ -528,6 +535,8 @@ namespace bubbleActions {
 		middle::executeAction<UpdateBubblesMultiplicationIdentity>(gameState, this, mulId);
 
 		queueSound(gameState, bubbleSounds::EXPAND_MULTIPLICATION_SOUND);
+
+		notifyBubbleModification(gameState, resultShapeId);
 	}
 
 	void ExecuteMultiplication::undo(middle::GameState* gameState) {
@@ -580,6 +589,8 @@ namespace bubbleActions {
 		actions.push_back(std::move(replace));
 
 		queueSound(gameState, bubbleSounds::COMBINE_SOUND);
+
+		notifyBubbleModification(gameState, resultShapeId);
 	}
 
 	void ExecuteAddition::undo(middle::GameState* gameState) {
@@ -617,6 +628,8 @@ namespace bubbleActions {
 		middle::executeAction<Replace>(gameState, this, powerId, replacementShapeId);;
 
 		queueSound(gameState, bubbleSounds::EXPAND_POWER_SOUND);
+
+		notifyBubbleModification(gameState, resultShapeId);
 	}
 
 	void ExecutePower::undo(middle::GameState* gameState)
@@ -725,6 +738,8 @@ namespace bubbleActions {
 			auto replace = std::make_unique<Replace>(parentId, varPopReplacementId);
 			replace->execute(gameState);
 			actions.push_back(std::move(replace));
+
+			notifyBubbleModification(gameState, varPopReplacementId);
 		}
 		else if (bubble) {
 			std::vector<middle::Id>children;
@@ -737,9 +752,12 @@ namespace bubbleActions {
 			auto deleteAction = std::make_unique<middle::EditorActionDeleteSingle>(shapeToPop.id);
 			deleteAction->execute(gameState);
 			actions.push_back(std::move(deleteAction));
+
+			notifyBubbleModification(gameState, parentId);
 		}
 
 		queueSound(gameState, bubbleSounds::POP_SOUND);
+
 	}
 
 	void Pop::undo(middle::GameState* gameState) {
@@ -1149,14 +1167,18 @@ namespace bubbleActions {
 		// if parent of container is summsation we link common factor outside of summation
 		middle::Id compressedParentId = middle::getParent(gameState, compressedBubbleId);
 		if (compressedParentId.index != middle::UNASSIGNED && bubble::isSummation(gameState, compressedParentId)) {
-			middle::executeAction<LinkMultiplicationTerm>(gameState, this, compressedParentId, linkingFactorId);
+			auto linkAction = middle::executeAction<LinkMultiplicationTerm>(gameState, this, compressedParentId, linkingFactorId);
+			resultShapeId = linkAction->resultShapeId;
 		}
 		// else we just link to the compressed
 		else {
-			middle::executeAction<LinkMultiplicationTerm>(gameState, this, compressedBubbleId, linkingFactorId);
+			auto linkAction = middle::executeAction<LinkMultiplicationTerm>(gameState, this, compressedBubbleId, linkingFactorId);
+			resultShapeId = linkAction->resultShapeId;
 		}
 
 		queueSound(gameState, bubbleSounds::COMPRESS_SOUND);
+
+		notifyBubbleModification(gameState, resultShapeId);
 	}
 
 	void CompressCommonFactor::undo(middle::GameState* gameState)
@@ -1201,6 +1223,8 @@ namespace bubbleActions {
 		if (replacementShapeId.index != middle::UNASSIGNED) {
 			middle::executeAction<middle::EditorActionRegisterId>(gameState, this, replacementShapeId);
 			middle::executeAction<Replace>(gameState, this, targetId, replacementShapeId);
+			resultShapeId = replacementShapeId;
+			notifyBubbleModification(gameState, resultShapeId);
 		}
 		else {
 			cancelled = true;
@@ -1252,6 +1276,8 @@ namespace bubbleActions {
 		actions.push_back(std::move(link));
 
 		resultShapeId = containerId;
+
+		notifyBubbleModification(gameState, resultShapeId);
 
 		queueSound(gameState, bubbleSounds::MUL_ONE_SOUND);
 	}
@@ -1854,11 +1880,12 @@ namespace bubbleActions {
 			targetLinkReciever = addIntoCopy;
 		}
 
-		auto linkToReciever = std::make_unique<LinkMultiplicationTerm>(targetLinkReciever, bubbleShape.id);
-		linkToReciever->execute(gameState);
-		actions.push_back(std::move(linkToReciever));
+
+		auto linkToReciever = middle::executeAction<LinkMultiplicationTerm>(gameState, this, targetLinkReciever, bubbleShape.id);
 
 		queueSound(gameState, bubbleSounds::ADD_TERM_SOUND);
+
+		notifyBubbleModification(gameState, linkToReciever->resultShapeId);
 	}
 
 	void InsertAsXOverX::undo(middle::GameState* gameState)
@@ -1908,11 +1935,11 @@ namespace bubbleActions {
 			containerId = replacingId;
 		}
 
-		auto reparent = std::make_unique<middle::EditorActionReparent>(containerId.index, bubbleShape.id.index);
-		reparent->execute(gameState);
-		actions.push_back(std::move(reparent));
+		middle::executeAction<middle::EditorActionReparent>(gameState, this, containerId.index, bubbleShape.id.index);
 
 		queueSound(gameState, bubbleSounds::ADD_TERM_SOUND);
+
+		notifyBubbleModification(gameState, containerId);
 	}
 
 	void InsertAsXMinusX::undo(middle::GameState* gameState)
@@ -2055,6 +2082,8 @@ namespace bubbleActions {
 
 		// reparent summand copy 
 		middle::executeAction<middle::EditorActionReparent>(gameState, this, parentAddition.index, summandCopyId.index);
+
+		notifyBubbleModification(gameState, parentId);
 	}
 
 	void ExpandSummation::undo(middle::GameState* gameState)

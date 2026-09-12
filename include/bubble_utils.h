@@ -87,6 +87,7 @@ namespace bubble {
 	void getPowerBaseAndExponent(middle::GameState* gameState, middle::Id powerBubble, middle::Id& resultBaseId, middle::Id& resultExponentId);
 	void getSummationIndexLimitSummand(middle::GameState* gameState, middle::Id summationBubble, middle::Id& resultIndex, middle::Id& resultUpperLimit, middle::Id& resultSummand);
 	void getInequaltyLesserAndGreater(middle::GameState* gameState, middle::Id inequalBubble, middle::Id& resultLesserId, middle::Id& resultGreaterId);
+	void getLogicLeftAndRight(middle::GameState* gameState, middle::Id logicId, middle::Id& resultLeft, middle::Id& resultRight);
 	middle::Id getOtherFromContainerOf2(middle::GameState* gameState, middle::Id id);
 	void matchBubbleTransforms(middle::GameState* gameState, middle::Id matchingModelId, middle::Id toMatchId);
 	// slow but immediate layout update

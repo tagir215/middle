@@ -262,23 +262,18 @@ public:
 				auto action = std::make_shared<equlab::Invert>(intersectedBubble);
 				bubble::queueBubbleAction(gameState, intersectedBubble, action);
 			}
-
 			else if (in.sixClicked) {
 				auto action = std::make_shared<equlab::Delete>(targetId);
 				bubble::queueBubbleAction(gameState, targetId, action);
 			}
-
 			else if (in.sevenClicked) {
 				auto action = std::make_shared<equlab::ToggleEditable>(targetId);
 				bubble::queueBubbleAction(gameState, targetId, action);
 			}
-
-
 			else if (in.nineClicked) {
 				auto action = std::make_shared<equlab::AddMultiplication>(targetId, mousePos);
 				bubble::queueBubbleAction(gameState, targetId, action);
 			}
-
 			else if (in.eightClicked) {
 				auto action = std::make_shared<equlab::AddPower>(targetId, mousePos);
 				bubble::queueBubbleAction(gameState, targetId, action);

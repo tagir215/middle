@@ -1149,6 +1149,9 @@ namespace bubble {
 	{
 		return middle::getComp<components::BubbleFunctionComponent>(gameState, id);
 	}
+	bool isLogicBubble(middle::GameState* gameState, middle::Id id) {
+		return middle::getComp<components::BubbleLogicComponent>(gameState, id);
+	}
 
 	void getPowerBaseAndExponent(middle::GameState* gameState, middle::Id powerBubble, middle::Id& resultBaseId, middle::Id& resultExponentId)
 	{
@@ -1179,6 +1182,16 @@ namespace bubble {
 		assert(inequalChildren.size() == 2);
 		resultLesserId = inequalChildren[components::InequaltyRole::INEQUAL_LESSER];
 		resultGreaterId = inequalChildren[components::InequaltyRole::INEQUAL_GREATER];
+	}
+
+	void getLogicLeftAndRight(middle::GameState* gameState, middle::Id logicId, middle::Id& resultLeft, middle::Id& resultRight)
+	{
+		assert(isLogicBubble(gameState, logicId));
+		std::vector<middle::Id>logicChildren;
+		middle::getChildren(gameState, logicId, logicChildren);
+		assert(logicChildren.size() == 2);
+		resultLeft = logicChildren[components::BubbleLogicRole::LEFT];
+		resultLeft = logicChildren[components::BubbleLogicRole::RIGHT];
 	}
 
 	middle::Id getOtherFromContainerOf2(middle::GameState* gameState, middle::Id id)
@@ -1298,7 +1311,6 @@ namespace bubble {
 			recursiveUnHideBubble(gameState, childId);
 		}
 	}
-
 
 
 	middle::Id bubbleToStructure(middle::GameState * gameState, middle::Id bubbleId)

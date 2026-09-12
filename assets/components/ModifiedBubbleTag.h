@@ -1,14 +1,10 @@
 #pragma once
 #include "registrars.h"
 #include "editor_file_utils.h"
-#define MIDDLEBUBBLELOGICCOMPONENT(X) 
+#define MIDDLEMODIFIEDBUBBLETAG(X) 
 
 namespace components {
-	enum BubbleLogicRole {
-		LEFT,
-		RIGHT
-	};
-	struct BubbleLogicComponent : public middle::Serializable{
+	struct ModifiedBubbleTag : public middle::Serializable{
 
 		void serialize(std::ostream& ostream) override;
 		void deserialize(const std::vector<std::string>& buffer, int indexOffset) override;
@@ -17,7 +13,7 @@ namespace components {
 		template<typename V>
 		void reflect(V& v) {
 #define X(f) v(#f, f);
-			MIDDLEBUBBLELOGICCOMPONENT(X)
+			MIDDLEMODIFIEDBUBBLETAG(X)
 #undef X
 		}
 	};

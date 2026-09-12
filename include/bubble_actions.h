@@ -23,6 +23,7 @@ namespace bubbleActions{
 	middle::Id createMultiplicationReplacementShape(middle::GameState* gameState, middle::Id shapeToReplace, middle::Id replacingShape);
 	middle::Id createAdditionReplacementShape(middle::GameState* gameState, middle::Id shapeToReplace, middle::Id replacingShape);
 	middle::Id createMultiplicationIntoPowerReplacementShape(middle::GameState* gameState, middle::Id shapeToReplace, middle::Id powerBubbleId);
+	void notifyBubbleModification(middle::GameState* gameState, middle::Id id);
 
 	class Cancel : public middle::EditorActionContainer {
 	public:
