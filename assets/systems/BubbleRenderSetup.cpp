@@ -43,6 +43,8 @@
 #include "imgui.h"
 #include "BubbleTextComponent.h"
 #include "BubbleSwapComponent.h"
+#include "BubbleLogicComponent.h"
+#include "BubbleGateComponent.h"
 
 
 class BubbleRenderSetup : public middle::MiddleGameplaySystem {
@@ -55,23 +57,21 @@ public:
 
 	components::CompCache* bubbleCache;
 	components::CompCache* mulCache;
-	components::CompCache* fractionCache;
 	components::CompCache* variableCache;
 	components::CompCache* cuboidCache;
 	components::CompCache* equalsCache;
 	components::CompCache* inequCache;
 	components::CompCache* textureCache;
-	components::CompCache* editThisCache;
 	components::CompCache* inputCache;
-	components::CompCache* procContainerCache;
 	components::CompCache* unitCache;
 	components::CompCache* activeBubbleCache;
-	components::CompCache* oPosCache;
 	components::CompCache* powerCache;
 	components::CompCache* functionCache;
 	components::CompCache* summationCache;
 	components::CompCache* textCache;
 	components::CompCache* swapCache;
+	components::CompCache* logicCache;
+	components::CompCache* gateCache;
 
 			const float scaleCorrection = 10.2f;
 
@@ -88,27 +88,27 @@ public:
 		bubbleCache->addType<components::BubbleFunctionComponent>(components::NOTINTERESTED);
 		bubbleCache->addType<components::BubbleMultiplyComponent>(components::NOTINTERESTED);
 		bubbleCache->addType<components::BubbleInequaltyComponent>(components::NOTINTERESTED);
+		bubbleCache->addType<components::BubbleLogicComponent>(components::NOTINTERESTED);
 		bubbleCache->addType<components::BubbleTextComponent>(components::NOTINTERESTED);
 		bubbleCache->addType<components::BubbleVariable>(components::NOTINTERESTED);
 		bubbleCache->addType<components::BubbleSwapComponent>(components::NOTINTERESTED);
 		bubbleCache->addType<components::BubbleUnit>(components::NOTINTERESTED);
 		bubbleCache->addType<components::BubbleEqualsComponent>(components::NOTINTERESTED);
+		bubbleCache->addType<components::BubbleGateComponent>(components::NOTINTERESTED);
 		bubbleCache->addType<components::RuntimeHiddenTag>(components::NOTINTERESTED);
 		unitCache = middle::newCompCache(gameState, systemName);
 		unitCache->addType<components::BubbleUnit>();
 		unitCache->addType<components::Layer>();
 		unitCache->addType<components::GlobalTransform>();
 		unitCache->addType<components::Rectangle>();
+		unitCache->addType<components::RuntimeHiddenTag>(components::NOTINTERESTED);
 		mulCache = middle::newCompCache(gameState, systemName);
 		mulCache->addType<components::BubbleMultiplyComponent>();
 		mulCache->addType<components::LoopSociety>();
 		mulCache->addType<components::GlobalTransform>();
 		mulCache->addType<components::Rectangle>();
 		mulCache->addType<components::Layer>();
-		fractionCache = middle::newCompCache(gameState, systemName);
-		fractionCache->addType<components::FractionalComponent>();
-		fractionCache->addType<components::LoopSociety>();
-		fractionCache->addType<components::GlobalTransform>();
+		mulCache->addType<components::RuntimeHiddenTag>(components::NOTINTERESTED);
 		variableCache = middle::newCompCache(gameState, systemName);
 		variableCache->addType<components::BubbleComponent>();
 		variableCache->addType<components::Layer>();
@@ -126,63 +126,68 @@ public:
 		equalsCache->addType<components::Layer>();
 		equalsCache->addType<components::Rectangle>();
 		equalsCache->addType<components::GlobalTransform>();
+		equalsCache->addType<components::RuntimeHiddenTag>(components::NOTINTERESTED);
 		inequCache = middle::newCompCache(gameState, systemName);
 		inequCache->addType<components::BubbleInequaltyComponent>();
 		inequCache->addType<components::Layer>();
 		inequCache->addType<components::Rectangle>();
 		inequCache->addType<components::GlobalTransform>();
+		inequCache->addType<components::RuntimeHiddenTag>(components::NOTINTERESTED);
 		textureCache = middle::newCompCache(gameState, systemName);
 		textureCache->addType<components::TextureComponent>();
 		textureCache->addType<components::GlobalTransform>();
 		textureCache->addType<components::RuntimeHiddenTag>(components::NOTINTERESTED);
-		editThisCache = middle::newCompCache(gameState, systemName);
-		editThisCache->addType<components::TextureComponent>();
 		inputCache = middle::newCompCache(gameState, systemName);
 		inputCache->addType<components::InputVariable>();
 		inputCache->addType<components::IntersectingTag>();
 		inputCache->addType<components::ProcedureInputVariable>(components::NOTINTERESTED);
-		procContainerCache = middle::newCompCache(gameState, systemName);
-		procContainerCache->addType<components::ProcedureContainer>();
+		inputCache->addType<components::RuntimeHiddenTag>(components::NOTINTERESTED);
 		activeBubbleCache = middle::newCompCache(gameState, systemName);
 		activeBubbleCache->addType<components::ActiveSceneSelectableTag>();
 		activeBubbleCache->addType<components::GlobalTransform>();
 		activeBubbleCache->addType<components::GlobalRect>();
+		activeBubbleCache->addType<components::RuntimeHiddenTag>(components::NOTINTERESTED);
 		powerCache = middle::newCompCache(gameState, systemName);
 		powerCache->addType<components::BubblePowerComponent>();
 		powerCache->addType<components::Rectangle>();
 		powerCache->addType<components::LoopSociety>();
 		powerCache->addType<components::GlobalTransform>();
 		powerCache->addType<components::Layer>();
+		powerCache->addType<components::RuntimeHiddenTag>(components::NOTINTERESTED);
 		functionCache = middle::newCompCache(gameState, systemName);
 		functionCache->addType<components::BubbleFunctionComponent>();
 		functionCache->addType<components::GlobalTransform>();
 		functionCache->addType<components::Layer>();
 		functionCache->addType<components::Rectangle>();
 		functionCache->addType<components::GlobalRect>();
+		functionCache->addType<components::RuntimeHiddenTag>(components::NOTINTERESTED);
 		summationCache = middle::newCompCache(gameState, systemName);
 		summationCache->addType<components::BubbleSummationComponent>();
 		summationCache->addType<components::Layer>();
 		summationCache->addType<components::Rectangle>();
 		summationCache->addType<components::GlobalTransform>();
+		summationCache->addType<components::RuntimeHiddenTag>(components::NOTINTERESTED);
 		textCache = middle::newCompCache(gameState, systemName);
 		textCache->addType<components::BubbleTextComponent>();
 		textCache->addType<components::GlobalTransform>();
 		textCache->addType<components::Rectangle>();
 		textCache->addType<components::Layer>();
 		textCache->addType<components::RuntimeHiddenTag>(components::NOTINTERESTED);
-
-		oPosCache = middle::newCompCache(gameState, systemName);
-		oPosCache->addType<components::Position>(components::NOTINTERESTED);
+		logicCache = middle::newCompCache(gameState, systemName);
+		logicCache->addType<components::BubbleLogicComponent>();
+		logicCache->addType<components::GlobalTransform>();
+		logicCache->addType<components::Rectangle>();
+		logicCache->addType<components::Layer>();
+		logicCache->addType<components::RuntimeHiddenTag>(components::NOTINTERESTED);
+		gateCache = middle::newCompCache(gameState, systemName);
+		gateCache->addType<components::BubbleGateComponent>();
+		gateCache->addType<components::GlobalTransform>();
+		gateCache->addType<components::Rectangle>();
+		gateCache->addType<components::Layer>();
+		gateCache->addType<components::RuntimeHiddenTag>(components::NOTINTERESTED);
 	}
 	bool debugRendering = false;
 
-
-	void replaceMan(middle::GameState* gameState) {
-		auto ps = oPosCache->begin<components::Position>();
-		for (middle::Id& id : oPosCache->relevantIdVector) {
-			middle::queueComponentDeletion<components::Position>(gameState, id);
-		}
-	}
 
 	int getCircleSlices(components::GlobalTransform* transform) {
 		int slices = (int)(transform->scale.x * 30);
@@ -203,6 +208,11 @@ public:
 		LEFT,
 		CENTER,
 		RIGHT
+	};
+
+	enum class IconPos {
+		CENTER,
+		TOP
 	};
 
 	void renderBubbleLabel(middle::GameState* gameState, components::GlobalTransform* transform, float height, 
@@ -226,6 +236,36 @@ public:
 		text.transform.scale = transform->scale;
 		text.transform.rotation = transform->rotation;
 		gameState->renderData.push_back(text);
+	}
+
+	void renderBubbleIcon(middle::GameState* gameState, components::GlobalTransform* transform, float height, 
+		const std::string& textureName, int layer, IconPos pos) {
+
+		middle::RenderItem icon;
+		icon.type = middle::RenderItemType::BILLBOARD;
+		icon.shader = &gameState->shaderMap[bubbleShaderNames::BUBBLE_SHADER].shader;
+		icon.texture = &gameState->textureMap[textureName].texture;
+		icon.layer = layer;
+		setTransform(icon, transform);
+		icon.transform.scale.x *= scaleCorrection;
+		icon.transform.scale.y *= scaleCorrection;
+		icon.transform.scale.z *= scaleCorrection;
+
+		const float offsetFactor = 0.1f;
+		float offset = height * offsetFactor * transform->scale.z;
+		float axis = height * 0.5f * transform->scale.z;
+
+
+		icon.transform.scale = transform->scale;
+		if (pos == IconPos::TOP)
+			icon.transform.translation = transform->pos + Vector3{ 0,0, axis - offset };
+		else if (pos == IconPos::CENTER) {
+			icon.transform.translation = transform->pos + Vector3{ 0,0,0 };
+			const float centerScaleMultiplier = 4;
+			icon.transform.scale = Vector3Scale(transform->scale, centerScaleMultiplier);
+		}
+		icon.transform.rotation = transform->rotation;
+		gameState->renderData.push_back(icon);
 	}
 
 
@@ -337,12 +377,6 @@ public:
 
 		gameState->editorState.backgroundColor = bubbleColors::BACKGROUND;
 
-		// render bubbbles
-		components::TextureComponent* editThisComp = nullptr;
-		if (editThisCache->getSize() == 1) {
-			auto it = editThisCache->begin<components::TextureComponent>();
-			editThisComp = *it;
-		}
 		auto bubbleIt = bubbleCache->begin<components::BubbleComponent>();
 		auto bubbleRectIt = bubbleCache->begin<components::Rectangle>();
 		auto bubbleLayerIt = bubbleCache->begin<components::Layer>();
@@ -378,6 +412,29 @@ public:
 				layer->layer, LabelPos::CENTER, bubbleColors::MULTIPLICATION_TEXT);
 		}
 
+		auto logicLayerIt = logicCache->begin<components::Layer>();
+		auto logicTransformIt = logicCache->begin<components::GlobalTransform>();
+		auto logicRectIt = logicCache->begin<components::Rectangle>();
+		for (middle::Id id : logicCache->relevantIdVector) {
+			auto layer = *logicLayerIt;
+			auto transform = *logicTransformIt;
+			auto rect = *logicRectIt;
+			Color color = calculateFadedColor(gameState, bubbleColors::LOGIC, transform, layer->layer);
+			renderBubble(gameState, layer->layer, color, transform);
+			renderBubbleIcon(gameState, transform, rect->height, bubbleTextureNames::TEXTURE_AND_GATE, layer->layer + 1, IconPos::TOP);
+		}
+
+		auto gateLayerIt = gateCache->begin<components::Layer>();
+		auto gateTransformIt = gateCache->begin<components::GlobalTransform>();
+		auto gateRectIt = gateCache->begin<components::Rectangle>();
+		for (middle::Id id : gateCache->relevantIdVector) {
+			auto layer = *gateLayerIt;
+			auto transform = *gateTransformIt;
+			auto rect = *gateRectIt;
+			Color color = calculateFadedColor(gameState, bubbleColors::GATE, transform, layer->layer);
+			renderBubble(gameState, layer->layer, color, transform);
+			renderBubbleIcon(gameState, transform, rect->height, bubbleTextureNames::TEXTURE_CLOSED_GATE, layer->layer + 1, IconPos::CENTER);
+		}
 
 		// renderunits
 		auto unitIt = unitCache->begin<components::BubbleUnit>();

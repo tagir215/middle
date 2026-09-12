@@ -31,10 +31,13 @@ public:
 
 		if (gameState->input.mouseReleased) {
 			auto buttonIt = buttonCache->begin<components::Button>();
-			auto intersectableIt = buttonCache->begin<components::IntersectingTag>();
+			auto intersectingIt = buttonCache->begin<components::IntersectingTag>();
 
 			for (int i = 0; i < buttonCache->getSize(); ++i) {
-				auto intersectable = *intersectableIt;
+				auto intersecting = *intersectingIt;
+				if (!intersecting->intersectingTop) {
+					continue;
+				}
 				auto& shape = middle::getShape(gameState, buttonCache->relevantIdVector[i].index);
 				middle::attachComponent<components::MouseClickComponent>(gameState, shape.id);
 				middle::queueSound(gameState, bubbleSounds::CLICK_SOUND);

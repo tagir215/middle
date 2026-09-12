@@ -19,6 +19,7 @@
 #include "BubbleEqualsComponent.h"
 #include "BubbleVariable.h"
 #include "BubbleEqualsVariable.h"
+#include "BubbleManipulatable.h"
 
 class BubbleManipulationSystem : public middle::MiddleGameplaySystem {
 
@@ -31,6 +32,7 @@ public:
 		bubbleCache = middle::newCompCache(gameState, systemName);
 		bubbleCache->addType<components::MouseGrabbable>();
 		bubbleCache->addType<components::BubbleComponent>();
+		bubbleCache->addType<components::BubbleManipulatable>();
 		bubbleCache->addType<components::InventoryItem>(components::NOTINTERESTED);
 	}
 

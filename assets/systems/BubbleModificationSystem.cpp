@@ -26,12 +26,12 @@
 #include "BubblePowerComponent.h"
 #include "IntersectingTag.h"
 #include "QueuedForSaveTag.h"
+#include "BubbleManipulatable.h"
 
 class BubbleModificationSystem : public middle::MiddleGameplaySystem {
 public:
 	components::CompCache* deletionCache;
 	components::CompCache* intersectingCache;
-	components::CompCache* placementCache;
 	components::CompCache* levelConfigsCache;
 	components::CompCache* uiCompCache;
 	components::CompCache* procContainerCache;
@@ -43,12 +43,8 @@ public:
 
 		intersectingCache = middle::newCompCache(gameState, systemName);
 		intersectingCache->addType<components::IntersectingTag>();
+		intersectingCache->addType<components::BubbleManipulatable>();
 		intersectingCache->addType<components::DeleteComponent>(components::NOTINTERESTED);
-
-		placementCache = middle::newCompCache(gameState, systemName);
-		placementCache->addType<components::BubbleComponent>();
-		placementCache->addType<components::PlacementComponent>();
-		placementCache->addType<components::IdRef>();
 
 		levelConfigsCache = middle::newCompCache(gameState, systemName);
 		levelConfigsCache->addType<components::BubbleAlgebraLevelConfigs>();

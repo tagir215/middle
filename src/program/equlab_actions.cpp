@@ -543,4 +543,52 @@ namespace equlab {
 		}
 	}
 
+	void AddLogicBubble::execute(middle::GameState* gameState)
+	{
+		middle::Shape newBubbleProto = bubble::newLogicBubble(gameState, targetPosition);
+		auto registerAction = middle::executeAction<middle::EditorActionRegisterShape>
+			(gameState, this, newBubbleProto);
+		resultId = registerAction->newShapeId;
+		if (parentId.index != middle::UNASSIGNED) {
+			middle::executeAction<middle::EditorActionReparent>(gameState, this, parentId.index, resultId.index);
+		}
+		auto scaleComp = middle::getComp<components::LocalScale>(gameState, resultId);
+		float scale = gameState->bubbleAlgebraState.worldScale;
+		scaleComp->scale.x = scale;
+		scaleComp->scale.y = scale;
+		scaleComp->scale.z = scale;
+	}
+
+	void AddLogicBubble::undo(middle::GameState* gameState)
+	{
+		while (actions.size() > 0) {
+			actions.back()->undo(gameState);
+			actions.pop_back();
+		}
+	}
+
+	void AddGateBubble::execute(middle::GameState* gameState)
+	{
+		middle::Shape newBubbleProto = bubble::newGateBubble(gameState, targetPosition);
+		auto registerAction = middle::executeAction<middle::EditorActionRegisterShape>
+			(gameState, this, newBubbleProto);
+		resultId = registerAction->newShapeId;
+		if (parentId.index != middle::UNASSIGNED) {
+			middle::executeAction<middle::EditorActionReparent>(gameState, this, parentId.index, resultId.index);
+		}
+		auto scaleComp = middle::getComp<components::LocalScale>(gameState, resultId);
+		float scale = gameState->bubbleAlgebraState.worldScale;
+		scaleComp->scale.x = scale;
+		scaleComp->scale.y = scale;
+		scaleComp->scale.z = scale;
+	}
+
+	void AddGateBubble::undo(middle::GameState* gameState)
+	{
+		while (actions.size() > 0) {
+			actions.back()->undo(gameState);
+			actions.pop_back();
+		}
+	}
+
 }

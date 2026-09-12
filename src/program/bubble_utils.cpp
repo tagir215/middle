@@ -35,6 +35,9 @@
 #include "BubbleTextSizeChangedTag.h"
 #include "BubbleSwapComponent.h"
 #include "RuntimeHiddenTag.h"
+#include "BubbleLogicComponent.h"
+#include "BubbleGateComponent.h"
+#include "BubbleManipulatable.h"
 
 namespace bubble {
 	float bubbleAxis = 50;
@@ -1278,6 +1281,24 @@ namespace bubble {
 		middle::attachComponent<components::QueuedForSaveTag>(gameState, backgroundId);
 	}
 
+	void recursiveHideBubble(middle::GameState* gameState, middle::Id id){
+		middle::attachComponent<components::RuntimeHiddenTag>(gameState, id);
+		std::vector<middle::Id>children;
+		middle::getChildren(gameState, id, children);
+		for (middle::Id childId : children) {
+			recursiveHideBubble(gameState, childId);
+		}
+	}
+
+	void recursiveUnHideBubble(middle::GameState* gameState, middle::Id id){
+		middle::queueComponentDeletion<components::RuntimeHiddenTag>(gameState, id);
+		std::vector<middle::Id>children;
+		middle::getChildren(gameState, id, children);
+		for (middle::Id childId : children) {
+			recursiveUnHideBubble(gameState, childId);
+		}
+	}
+
 
 
 	middle::Id bubbleToStructure(middle::GameState * gameState, middle::Id bubbleId)
@@ -1418,6 +1439,7 @@ namespace bubble {
 		middle::addComponent<components::LoopSociety>(newBubbleShape);
 		middle::addComponent<components::PhysicsData>(newBubbleShape);
 		middle::addComponent<components::Layer>(newBubbleShape);
+		middle::addComponent<components::BubbleManipulatable>(newBubbleShape);
 		auto rect = middle::addComponent<components::Rectangle>(newBubbleShape);
 		rect->width = bubbleAxis * 2;
 		rect->height = bubbleAxis * 2;
@@ -1508,19 +1530,33 @@ mollis. Duis eleifend hendrerit ullamcorper.)";
 		return newBubbleShape;
 	}
 
+	middle::Shape newLogicBubble(middle::GameState* gameState, const Vector3& targetPos)
+	{
+		middle::Shape logicProto = newBubble(gameState, targetPos);
+		middle::addComponent<components::BubbleLogicComponent>(logicProto);
+		return logicProto;
+	}
+
+	middle::Shape newGateBubble(middle::GameState* gameState, const Vector3& targetPos)
+	{
+		middle::Shape gateProto = newBubble(gameState, targetPos);
+		middle::addComponent<components::BubbleGateComponent>(gateProto);
+		return gateProto;
+	}
+
 	middle::Id newSwapBubble(middle::GameState* gameState, const Vector3& targetPos)
 	{
 		middle::Shape bubbleProto = newBubble(gameState, targetPos);
 		middle::addComponent<components::BubbleSwapComponent>(bubbleProto);
-		middle::addComponent<components::Button>(bubbleProto);
 		middle::Shape& swapBubble = middle::registerShape(gameState, bubbleProto);
 
 		middle::Shape targetProto = newBubble(gameState, targetPos);
-		middle::deleteComponent<components::MouseIntersectable>(targetProto);
+		middle::deleteComponent<components::BubbleManipulatable>(targetProto);
+		middle::addComponent<components::Button>(targetProto);
 		middle::Shape& target = middle::registerShape(gameState, targetProto);
 
 		middle::Shape textProto = newTextBubble(gameState, targetPos);
-		middle::deleteComponent<components::MouseIntersectable>(textProto);
+		middle::deleteComponent<components::BubbleManipulatable>(textProto);
 		middle::addComponent<components::RuntimeHiddenTag>(textProto);
 		middle::Shape& text = middle::registerShape(gameState, textProto);
 

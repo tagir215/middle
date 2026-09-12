@@ -17,6 +17,8 @@ namespace bubbleFileVersions {
  
 namespace bubbleTextureNames {
 	const std::string TEXTURE_BACKGROUND = "background";
+	const std::string TEXTURE_AND_GATE = "and_icon";
+	const std::string TEXTURE_CLOSED_GATE = "gate_icon";
 }
 
 namespace bubbleShaderNames {

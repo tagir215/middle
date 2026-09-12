@@ -280,6 +280,14 @@ public:
 				auto action = std::make_shared<equlab::AddSwapBubble>(targetId, mousePos);
 				bubble::queueBubbleAction(gameState, targetId, action);
 			}
+			else if (gameState->equlabInput.f2Held) {
+				auto action = std::make_shared<equlab::AddLogicBubble>(targetId, mousePos);
+				bubble::queueBubbleAction(gameState, targetId, action);
+			}
+			else if (gameState->equlabInput.f3Held) {
+				auto action = std::make_shared<equlab::AddGateBubble>(targetId, mousePos);
+				bubble::queueBubbleAction(gameState, targetId, action);
+			}
 
 		}
 	}

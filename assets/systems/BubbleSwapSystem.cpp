@@ -8,6 +8,8 @@
 #include "BubbleSwapComponent.h"
 #include "RuntimeHiddenTag.h"
 #include "IntersectingTag.h"
+#include "LoopSociety.h"
+#include "bubble_utils.h"
 
 class BubbleSwapSystem : public middle::MiddleGameplaySystem {
 	components::CompCache* cache;
@@ -17,22 +19,33 @@ class BubbleSwapSystem : public middle::MiddleGameplaySystem {
 		cache = middle::newCompCache(gameState, systemName);
 		cache->addType<components::BubbleComponent>();
 		cache->addType<components::MouseClickComponent>();
-		cache->addType<components::BubbleSwapComponent>();
+		cache->addType<components::LoopSociety>();
 	}
 	void update(middle::GameState* gameState) override {
-		auto swapIt = cache->begin<components::BubbleSwapComponent>();
+		auto loopIt = cache->begin<components::LoopSociety>();
 		for (middle::Id id : cache->relevantIdVector) {
-			auto swap = *swapIt;
-			int currentIndex = swap->activeIndex;
-			swap->activeIndex = currentIndex == 0 ? 1 : 0;
+			auto loop = *loopIt;
+			middle::Id parentId = loop->parentLoopId;
+			if (!middle::isValidId(gameState, parentId)) {
+				continue;
+			}
+			if (!bubble::isSwapBubble(gameState, parentId)) {
+				continue;
+			}
+			auto swapComp = middle::getComp<components::BubbleSwapComponent>(gameState, parentId);
+			int currentIndex = swapComp->activeIndex;
+			swapComp->activeIndex = currentIndex == 0 ? 1 : 0;
 			int inActiveIndex = currentIndex == 0 ? 0 : 1;
 
 			std::vector<middle::Id>children;
-			middle::getChildren(gameState, id, children);
-			middle::Id activeChildId = children[swap->activeIndex];
+			middle::getChildren(gameState, parentId, children);
+
+			middle::Id activeChildId = children[swapComp->activeIndex];
 			middle::Id inActiveChildId = children[inActiveIndex];
-			middle::queueComponentDeletion<components::RuntimeHiddenTag>(gameState, activeChildId);
-			middle::attachComponent<components::RuntimeHiddenTag>(gameState, inActiveChildId);
+			bubble::recursiveUnHideBubble(gameState, activeChildId);
+			middle::queueComponentDeletion<components::Button>(gameState, activeChildId);
+			bubble::recursiveHideBubble(gameState, inActiveChildId);
+			middle::attachComponent<components::Button>(gameState, inActiveChildId);
 		}
 	}
 };

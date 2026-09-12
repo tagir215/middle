@@ -37,6 +37,8 @@ namespace bubble {
 	middle::Shape newFunction(middle::GameState* gameState, const std::string& label, const Vector3& targetPos);
 	middle::Shape newSummation(middle::GameState* gameState, const Vector3& targetPos);
 	middle::Shape newTextBubble(middle::GameState* gameState, const Vector3& targetPos);
+	middle::Shape newLogicBubble(middle::GameState* gameState, const Vector3& targetPos);
+	middle::Shape newGateBubble(middle::GameState* gameState, const Vector3& targetPos);
 	middle::Id newSwapBubble(middle::GameState* gameState, const Vector3& targetPos);
 	middle::Id newSummationWithChildren(middle::GameState* gameState, const Vector3& targetPos);
 	middle::Id newPower(middle::GameState* gameState, middle::Id baseId, middle::Id exponentId, const Vector3& targetPos);
@@ -91,6 +93,8 @@ namespace bubble {
 	void recursiveBubbleLayoutScaleUpdate(middle::GameState* gameState, middle::Id id);
 	void recursiveBubbleLayoutUpdate(middle::GameState* gameState, middle::Id id);
 	void queueBubbleAction(middle::GameState* gameState, middle::Id id, std::shared_ptr<middle::EditorActionContainer>container);
+	void recursiveHideBubble(middle::GameState* gameState, middle::Id id);
+	void recursiveUnHideBubble(middle::GameState* gameState, middle::Id id);
 
 	template<typename T>
 	middle::Id findIdWithCompFromShapeOrItsParents(middle::GameState* gameState, middle::Id id) {
