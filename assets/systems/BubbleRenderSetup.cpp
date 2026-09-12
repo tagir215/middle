@@ -436,9 +436,11 @@ public:
 			setTransform(textItem, transform);
 			textItem.text = text->text;
 			textItem.fontSize = text->fontSize;
+			textItem.color = bubbleColors::UNIT_TEXT_POSITIVE;
 			gameState->renderData.push_back(textItem);
 
-			renderBubble(gameState, layer->layer, bubbleColors::BUBBLE, transform);
+			Color color = calculateFadedColor(gameState, bubbleColors::BUBBLE, transform, layer->layer);
+			renderBubble(gameState, layer->layer, color, transform);
 		}
 
 		// render variables

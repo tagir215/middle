@@ -183,7 +183,7 @@ namespace bubble{
 		Vector3 leftBottomCorner = Vector3{ -width * 0.5f, 0, -width * 0.5f };
 		for (int i = 0; i < children.size(); ++i) {
 			middle::Id childId = children[i];
-			Vector3 pos = { swapLayout[0].x * width, i, swapLayout[0].y * width };
+			Vector3 pos = { swapLayout[0].x * width, 0, swapLayout[0].y * width };
 			Vector3 targetPosition = leftBottomCorner + pos;
 			middle::setLocalPosition(gameState, childId, targetPosition);
 		}

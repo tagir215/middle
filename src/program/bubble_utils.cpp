@@ -1515,17 +1515,17 @@ mollis. Duis eleifend hendrerit ullamcorper.)";
 		middle::addComponent<components::Button>(bubbleProto);
 		middle::Shape& swapBubble = middle::registerShape(gameState, bubbleProto);
 
-		middle::Shape textProto = newTextBubble(gameState, targetPos);
-		middle::deleteComponent<components::MouseIntersectable>(textProto);
-		middle::Shape& text = middle::registerShape(gameState, textProto);
-
 		middle::Shape targetProto = newBubble(gameState, targetPos);
 		middle::deleteComponent<components::MouseIntersectable>(targetProto);
-		middle::addComponent<components::RuntimeHiddenTag>(targetProto);
 		middle::Shape& target = middle::registerShape(gameState, targetProto);
 
-		middle::EditorActionReparent(swapBubble.id.index, text.id.index).execute(gameState);
+		middle::Shape textProto = newTextBubble(gameState, targetPos);
+		middle::deleteComponent<components::MouseIntersectable>(textProto);
+		middle::addComponent<components::RuntimeHiddenTag>(textProto);
+		middle::Shape& text = middle::registerShape(gameState, textProto);
+
 		middle::EditorActionReparent(swapBubble.id.index, target.id.index).execute(gameState);
+		middle::EditorActionReparent(swapBubble.id.index, text.id.index).execute(gameState);
 
 		return swapBubble.id;
 	}
