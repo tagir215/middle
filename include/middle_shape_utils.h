@@ -109,6 +109,8 @@ namespace middle {
 	Vector3 projectGlobalCoordinateToLocalCoordinate(GameState* gameState, const Vector3& globalCoord, middle::Id shapeId);
 	// project local coordinate to match old global coordinate
 	void updateLocalCoordinateToProjectedGlobalCoordinate(GameState* gameState, middle::Id id, middle::Id oldParentId);
+	// project local scale to mathc old global scale
+	Vector3 projectGlobalScaleToLocalScale(GameState* gameState, middle::Id id, const Vector3& globalScale);
 	// get global scale parents scale multiplied
 	Vector3 getGlobalScale(GameState* gameState, middle::Id id);
 	// get index on the loop

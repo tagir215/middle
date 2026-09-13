@@ -14,6 +14,8 @@
 #include "equlab_actions.h"
 #include "ActiveSceneEditableTag.h"
 #include <queue>
+#include "InViewTag.h"
+#include "Layer.h"
 
 class BubbleDynamicLoadingSystem : public middle::MiddleGameplaySystem {
 public:
@@ -45,9 +47,10 @@ public:
 			}
 		}
 
+		float thisIsImportantScalor = gameState->bubbleAlgebraState.worldScalarRate > 1 ? 1 : 1.3f;
 
-		const float screenWidthInWorldCoords = 
-			gameState->nearPlaneAxisX / gameState->nearPlaneDistance * (-gameState->activeCamera.position.y)  * 6.2f;
+		float screenWidthInWorldCoords = 
+			gameState->nearPlaneAxisX / gameState->nearPlaneDistance * (-gameState->activeCamera.position.y)  * 0.2f;
 
 		// find current position id
 		middle::Id localPathEndId;
@@ -63,85 +66,38 @@ public:
 		}
 
 		if (localPathEndId.index == middle::UNASSIGNED) {
-			//middle::drawImGuiIntVector(gameState, "traversePathB", gameState->bubbleAlgebraState.traversePath);
-			//middle::drawImGuiInt(gameState, "intersecting count", intersectingBubbleCache->relevantIdVector.size());
+			//gameState->bubbleAlgebraState.traversePath.clear();
+			//gameState->bubbleAlgebraState.traversePathIds.clear();
 			return;
 		}
 
-		// find ids of the path
-		std::stack<middle::Id>pathStack;
-		pathStack.push(localPathEndId);
-		while (true) {
-			middle::Id currentId = pathStack.top();
-			middle::Id parentId = middle::getParent(gameState, currentId);
+		std::stack<int>indexes;
+		std::stack<middle::Id>ids;
+		middle::Id end = localPathEndId;
+
+		while (end.index != middle::UNASSIGNED) {
+			middle::Id parentId = middle::getParent(gameState, end);
 			if (parentId.index != middle::UNASSIGNED) {
-				pathStack.push(parentId);
+				indexes.push(middle::getLoopIndex(gameState, end));
+				ids.push(end);
 			}
-			else {
-				break;
-			}
-		}
-
-		std::vector<middle::Id>pathIds;
-		while (pathStack.size() > 0) {
-			pathIds.push_back(pathStack.top());
-			pathStack.pop();
-		}
-
-		// store indexes of children
-		std::queue<int>localPathIndexQueue;
-		for (int i = 0; i < pathIds.size() - 1; ++i) {
-			middle::Id id = pathIds[i];
-			middle::Id nextId = pathIds[i + 1];
-
-			std::vector<middle::Id>children;
-			middle::getChildren(gameState, id, children);
-			for (int childIndex = 0; childIndex < children.size(); ++childIndex) {
-				middle::Id childId = children[childIndex];
-				if (childId == nextId) {
-					localPathIndexQueue.push(childIndex);
-					break;
-				}
-			}
+			end = parentId;
 		}
 
 		auto& traversePath = gameState->bubbleAlgebraState.traversePath;
-		middle::Id& backgroundId = gameState->bubbleAlgebraState.backgroundBubbleId;
-		int travelledLength = traversePath.size();
-
-		// free
-		if (localPathIndexQueue.size() > 2) {
-
-			int scaleReferenceIndex = localPathIndexQueue.back();
-			middle::Id scaleReferenceId = pathIds.back();
-
-			while (localPathIndexQueue.size() > 1) {
-				traversePath.push_back(localPathIndexQueue.front());
-				localPathIndexQueue.pop();
-			}
-
-			if (traversePath.size() > 0) {
-				auto loadParentAction = std::make_shared<equlab::LoadBubbleSection>(
-					scaleReferenceId, scaleReferenceIndex);
-				middle::queueAction(gameState, loadParentAction);
-			}
+		auto& traversePathIds = gameState->bubbleAlgebraState.traversePathIds;
+		std::vector<int>path;
+		std::vector<middle::Id>pathIds;
+		traversePath.clear();
+		traversePathIds.clear();
+		while (indexes.size() > 0) {
+			traversePath.push_back(indexes.top());
+			traversePathIds.push_back(ids.top());
+			indexes.pop();
+			ids.pop();
 		}
 
-		// load
-		else if (localPathIndexQueue.size() < 1 && traversePath.size() > 0) {
-
-			int scaleReferenceIndex = traversePath.back();
-			middle::Id scaleReferenceId = gameState->bubbleAlgebraState.backgroundBubbleId;
-
-			gameState->bubbleAlgebraState.traversePath.pop_back();
-
-			auto loadParentAction = std::make_shared<equlab::LoadBubbleSection>(
-				scaleReferenceId, scaleReferenceIndex);
-			middle::queueAction(gameState, loadParentAction);
-		}
-
-
-		//middle::drawImGuiIntVector(gameState, "traversePath", gameState->bubbleAlgebraState.traversePath);
+		middle::drawImGuiIntVector(gameState, "traversePath", gameState->bubbleAlgebraState.traversePath);
 		//middle::drawImGuiInt(gameState, "intersecting count", intersectingBubbleCache->relevantIdVector.size());
 	}
 };

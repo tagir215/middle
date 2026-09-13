@@ -38,6 +38,8 @@
 #include "BubbleLogicComponent.h"
 #include "BubbleGateComponent.h"
 #include "BubbleManipulatable.h"
+#include "InViewTag.h"
+#include "BubblePathMark.h"
 
 namespace bubble {
 	float bubbleAxis = 50;
@@ -1190,8 +1192,15 @@ namespace bubble {
 		std::vector<middle::Id>logicChildren;
 		middle::getChildren(gameState, logicId, logicChildren);
 		assert(logicChildren.size() == 2);
-		resultLeft = logicChildren[components::BubbleLogicRole::LEFT];
-		resultLeft = logicChildren[components::BubbleLogicRole::RIGHT];
+		middle::Id left = logicChildren[components::BubbleLogicRole::LEFT];
+		if (isSwapBubble(gameState, left)) {
+			std::vector<middle::Id>swapChildren;
+			resultLeft = swapChildren[components::BubbleSwapRole::SOLUTION_BUBBLE];
+		}
+		else {
+			resultLeft = left;
+		}
+		resultRight = logicChildren[components::BubbleLogicRole::RIGHT];
 	}
 
 	middle::Id getOtherFromContainerOf2(middle::GameState* gameState, middle::Id id)
@@ -1449,9 +1458,9 @@ namespace bubble {
 		middle::addComponent<components::MouseIntersectable>(newBubbleShape);
 		middle::addComponent<components::LoopTag>(newBubbleShape);
 		middle::addComponent<components::LoopSociety>(newBubbleShape);
-		middle::addComponent<components::PhysicsData>(newBubbleShape);
 		middle::addComponent<components::Layer>(newBubbleShape);
 		middle::addComponent<components::BubbleManipulatable>(newBubbleShape);
+		middle::addComponent<components::BubblePathMark>(newBubbleShape);
 		auto rect = middle::addComponent<components::Rectangle>(newBubbleShape);
 		rect->width = bubbleAxis * 2;
 		rect->height = bubbleAxis * 2;

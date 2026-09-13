@@ -2,17 +2,18 @@
 #include "game_state.h"
 #include "middle_system_registrar.h"
 #include "component_utils.h"
-#include "TopDogBubbleTag.h"
+#include "TopDogInViewTag.h"
 #include "LocalScale.h"
 #include "IntersectingTag.h"
 #include "LocalPosition.h"
+#include "TopDogBubbleTag.h"
 
 class BubbleManualScalingSystem : public middle::MiddleGameplaySystem {
 	components::CompCache* topDogCache;
 
 	void init(middle::GameState* gameState) override {
 		topDogCache = middle::newCompCache(gameState, systemName);
-		topDogCache->addType<components::TopDogBubbleTag>();
+		topDogCache->addType<components::TopDogInViewTag>();
 		topDogCache->addType<components::LocalScale>();
 		topDogCache->addType<components::LocalPosition>();
 	}

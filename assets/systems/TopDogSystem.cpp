@@ -11,25 +11,32 @@
 #include "TextureComponent.h"
 #include "Layer.h"
 #include "BottomDogBubbleTag.h"
+#include "InViewTag.h"
+#include "TopDogInViewTag.h"
 
 class TopDogSystem : public middle::MiddleGameplaySystem {
 	components::CompCache* topDogCache;
-	components::CompCache* bottomDogCache;
+	components::CompCache* topDogInViewCache;
 	components::CompCache* bubbleCache;
-	components::CompCache* problemCache;
-	components::CompCache* helperCache;
+	components::CompCache* bubblesInViewCache;
 
 	void init(middle::GameState* gameState) override {
-		systemUpdateType = middle::SystemUpdateType::PREFRAME;
+		systemUpdateType = middle::SystemUpdateType::POSTFRAME;
+		// run after visibility system
+		updatePriority = 5;
 
 		topDogCache = middle::newCompCache(gameState, systemName);
 		topDogCache->addType<components::TopDogBubbleTag>();
 
+		topDogInViewCache = middle::newCompCache(gameState, systemName);
+		topDogInViewCache->addType<components::TopDogInViewTag>();
+
 		bubbleCache = middle::newCompCache(gameState, systemName);
 		bubbleCache->addType<components::BubbleComponent>();
 
-		bottomDogCache = middle::newCompCache(gameState, systemName);
-		bottomDogCache->addType<components::BottomDogBubbleTag>();
+		bubblesInViewCache = middle::newCompCache(gameState, systemName);
+		bubblesInViewCache->addType<components::BubbleComponent>();
+		bubblesInViewCache->addType<components::InViewTag>();
 	}
 
 	bool isTopDog(middle::GameState* gameState, middle::Id id) {
@@ -40,9 +47,17 @@ class TopDogSystem : public middle::MiddleGameplaySystem {
 		return false;
 	}
 
-	bool isBottomDog(middle::GameState* gameState, middle::Id id) {
-		auto layer = middle::getComp<components::Layer>(gameState, id);
-		return layer->layer == gameState->bubbleAlgebraState.loadDepth - 1;
+	bool isTopDogInView(middle::GameState* gameState, middle::Id id) {
+		middle::Id parentId = middle::getParent(gameState, id);
+		if (!middle::getComp<components::InViewTag>(gameState, id)) {
+			return false;
+		}
+		if (parentId.index == middle::UNASSIGNED) {
+			return middle::getComp<components::InViewTag>(gameState, id) != nullptr;
+		}
+		else {
+			return middle::getComp<components::InViewTag>(gameState, parentId) == nullptr;
+		}
 	}
 
 	void updateTopDogs(middle::GameState* gameState) {
@@ -54,19 +69,20 @@ class TopDogSystem : public middle::MiddleGameplaySystem {
 				middle::queueComponentDeletion<components::TopDogBubbleTag>(gameState, id);
 			}
 		}
-		for (middle::Id id : bottomDogCache->relevantIdVector) {
-			if (!isBottomDog(gameState, id)) {
-				middle::queueComponentDeletion<components::BottomDogBubbleTag>(gameState, id);
+		for (middle::Id id : topDogInViewCache->relevantIdVector) {
+			if (!isTopDogInView(gameState, id)) {
+				middle::queueComponentDeletion<components::TopDogInViewTag>(gameState, id);
 			}
 		}
 
-		for (int i = 0; i < bubbleCache->getSize(); ++i) {
-			middle::Id id = bubbleCache->relevantIdVector[i];
+		for (middle::Id id : bubbleCache->relevantIdVector) {
 			if (isTopDog(gameState, id)) {
 				middle::attachComponent<components::TopDogBubbleTag>(gameState, id);
 			}
-			if (isBottomDog(gameState, id)) {
-				middle::attachComponent<components::BottomDogBubbleTag>(gameState, id);
+		}
+		for (middle::Id id : bubblesInViewCache->relevantIdVector) {
+			if (isTopDogInView(gameState, id)) {
+				middle::attachComponent<components::TopDogInViewTag>(gameState, id);
 			}
 		}
 	}

@@ -6,7 +6,7 @@ namespace middle {
 		copyInverted(false),
 		postUndoFrames(0),
 		worldScale(1),
-		loadDepth(20),
+		loadDepth(200),
 		cameraVelocity({0,0,0}),
 		worldScalarRate(1)
 	{

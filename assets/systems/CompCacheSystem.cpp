@@ -17,10 +17,8 @@ public:
 
 
 	void init(middle::GameState* gameState) override {
-		systemUpdateType = middle::SystemUpdateType::INITFRAME;
+		systemUpdateType = middle::SystemUpdateType::CACHE;
 		systemModeType = middle::SystemModeType::ENGINE;
-		// run after dynamic loading system
-		updatePriority = 1;
 		memo.resize(middle::MAX_SHAPE_COUNT);
 	}
 

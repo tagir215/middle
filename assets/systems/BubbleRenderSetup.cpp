@@ -45,6 +45,7 @@
 #include "BubbleSwapComponent.h"
 #include "BubbleLogicComponent.h"
 #include "BubbleGateComponent.h"
+#include "InViewTag.h"
 
 
 class BubbleRenderSetup : public middle::MiddleGameplaySystem {
@@ -58,11 +59,8 @@ public:
 	components::CompCache* bubbleCache;
 	components::CompCache* mulCache;
 	components::CompCache* variableCache;
-	components::CompCache* cuboidCache;
 	components::CompCache* equalsCache;
 	components::CompCache* inequCache;
-	components::CompCache* textureCache;
-	components::CompCache* inputCache;
 	components::CompCache* unitCache;
 	components::CompCache* activeBubbleCache;
 	components::CompCache* powerCache;
@@ -78,6 +76,7 @@ public:
 	void init(middle::GameState* gameState) {
 		bubbleCache = middle::newCompCache(gameState, systemName);
 		bubbleCache->addType<components::BubbleComponent>();
+		bubbleCache->addType<components::InViewTag>();
 		bubbleCache->addType<components::Rectangle>();
 		bubbleCache->addType<components::Layer>();
 		bubbleCache->addType<components::LoopSociety>();
@@ -98,12 +97,14 @@ public:
 		bubbleCache->addType<components::RuntimeHiddenTag>(components::NOTINTERESTED);
 		unitCache = middle::newCompCache(gameState, systemName);
 		unitCache->addType<components::BubbleUnit>();
+		unitCache->addType<components::InViewTag>();
 		unitCache->addType<components::Layer>();
 		unitCache->addType<components::GlobalTransform>();
 		unitCache->addType<components::Rectangle>();
 		unitCache->addType<components::RuntimeHiddenTag>(components::NOTINTERESTED);
 		mulCache = middle::newCompCache(gameState, systemName);
 		mulCache->addType<components::BubbleMultiplyComponent>();
+		mulCache->addType<components::InViewTag>();
 		mulCache->addType<components::LoopSociety>();
 		mulCache->addType<components::GlobalTransform>();
 		mulCache->addType<components::Rectangle>();
@@ -111,44 +112,35 @@ public:
 		mulCache->addType<components::RuntimeHiddenTag>(components::NOTINTERESTED);
 		variableCache = middle::newCompCache(gameState, systemName);
 		variableCache->addType<components::BubbleComponent>();
+		variableCache->addType<components::InViewTag>();
 		variableCache->addType<components::Layer>();
 		variableCache->addType<components::BubbleVariable>();
 		variableCache->addType<components::Rectangle>();
 		variableCache->addType<components::GlobalTransform>();
 		variableCache->addType<components::RuntimeHiddenTag>(components::NOTINTERESTED);
-		cuboidCache = middle::newCompCache(gameState, systemName);
-		cuboidCache->addType<components::Cuboid>();
-		cuboidCache->addType<components::GlobalTransform>();
-		cuboidCache->addType<components::TextureComponent>(components::NOTINTERESTED);
-		cuboidCache->addType<components::RuntimeHiddenTag>(components::NOTINTERESTED);
 		equalsCache = middle::newCompCache(gameState, systemName);
 		equalsCache->addType<components::BubbleEqualsComponent>();
+		equalsCache->addType<components::InViewTag>();
 		equalsCache->addType<components::Layer>();
 		equalsCache->addType<components::Rectangle>();
 		equalsCache->addType<components::GlobalTransform>();
 		equalsCache->addType<components::RuntimeHiddenTag>(components::NOTINTERESTED);
 		inequCache = middle::newCompCache(gameState, systemName);
 		inequCache->addType<components::BubbleInequaltyComponent>();
+		inequCache->addType<components::InViewTag>();
 		inequCache->addType<components::Layer>();
 		inequCache->addType<components::Rectangle>();
 		inequCache->addType<components::GlobalTransform>();
 		inequCache->addType<components::RuntimeHiddenTag>(components::NOTINTERESTED);
-		textureCache = middle::newCompCache(gameState, systemName);
-		textureCache->addType<components::TextureComponent>();
-		textureCache->addType<components::GlobalTransform>();
-		textureCache->addType<components::RuntimeHiddenTag>(components::NOTINTERESTED);
-		inputCache = middle::newCompCache(gameState, systemName);
-		inputCache->addType<components::InputVariable>();
-		inputCache->addType<components::IntersectingTag>();
-		inputCache->addType<components::ProcedureInputVariable>(components::NOTINTERESTED);
-		inputCache->addType<components::RuntimeHiddenTag>(components::NOTINTERESTED);
 		activeBubbleCache = middle::newCompCache(gameState, systemName);
 		activeBubbleCache->addType<components::ActiveSceneSelectableTag>();
+		activeBubbleCache->addType<components::InViewTag>();
 		activeBubbleCache->addType<components::GlobalTransform>();
 		activeBubbleCache->addType<components::GlobalRect>();
 		activeBubbleCache->addType<components::RuntimeHiddenTag>(components::NOTINTERESTED);
 		powerCache = middle::newCompCache(gameState, systemName);
 		powerCache->addType<components::BubblePowerComponent>();
+		powerCache->addType<components::InViewTag>();
 		powerCache->addType<components::Rectangle>();
 		powerCache->addType<components::LoopSociety>();
 		powerCache->addType<components::GlobalTransform>();
@@ -156,6 +148,7 @@ public:
 		powerCache->addType<components::RuntimeHiddenTag>(components::NOTINTERESTED);
 		functionCache = middle::newCompCache(gameState, systemName);
 		functionCache->addType<components::BubbleFunctionComponent>();
+		functionCache->addType<components::InViewTag>();
 		functionCache->addType<components::GlobalTransform>();
 		functionCache->addType<components::Layer>();
 		functionCache->addType<components::Rectangle>();
@@ -163,24 +156,28 @@ public:
 		functionCache->addType<components::RuntimeHiddenTag>(components::NOTINTERESTED);
 		summationCache = middle::newCompCache(gameState, systemName);
 		summationCache->addType<components::BubbleSummationComponent>();
+		summationCache->addType<components::InViewTag>();
 		summationCache->addType<components::Layer>();
 		summationCache->addType<components::Rectangle>();
 		summationCache->addType<components::GlobalTransform>();
 		summationCache->addType<components::RuntimeHiddenTag>(components::NOTINTERESTED);
 		textCache = middle::newCompCache(gameState, systemName);
 		textCache->addType<components::BubbleTextComponent>();
+		textCache->addType<components::InViewTag>();
 		textCache->addType<components::GlobalTransform>();
 		textCache->addType<components::Rectangle>();
 		textCache->addType<components::Layer>();
 		textCache->addType<components::RuntimeHiddenTag>(components::NOTINTERESTED);
 		logicCache = middle::newCompCache(gameState, systemName);
 		logicCache->addType<components::BubbleLogicComponent>();
+		logicCache->addType<components::InViewTag>();
 		logicCache->addType<components::GlobalTransform>();
 		logicCache->addType<components::Rectangle>();
 		logicCache->addType<components::Layer>();
 		logicCache->addType<components::RuntimeHiddenTag>(components::NOTINTERESTED);
 		gateCache = middle::newCompCache(gameState, systemName);
 		gateCache->addType<components::BubbleGateComponent>();
+		gateCache->addType<components::InViewTag>();
 		gateCache->addType<components::GlobalTransform>();
 		gateCache->addType<components::Rectangle>();
 		gateCache->addType<components::Layer>();
@@ -214,6 +211,10 @@ public:
 		CENTER,
 		TOP
 	};
+
+	int getLayer(middle::GameState* gameState, components::Layer* layer) const{
+		return layer->layer - gameState->bubbleAlgebraState.traversePath.size();
+	}
 
 	void renderBubbleLabel(middle::GameState* gameState, components::GlobalTransform* transform, float height, 
 		const std::string& label, int layer, LabelPos pos, const Color& color) {
@@ -394,22 +395,22 @@ public:
 			auto intersectable = middle::getComponent<components::IntersectingTag>(shape);
 			bool intersecting = intersectable && intersectable->intersectingTop;
 
-			Color backgroundColor = calculateFadedColor(gameState, bubbleColors::BUBBLE, transform, layer->layer);
+			Color backgroundColor = calculateFadedColor(gameState, bubbleColors::BUBBLE, transform, getLayer(gameState, layer));
 
 			//middle::RenderItem debugRect;
 			//debugRect.type = middle::RenderItemType::RECTANGLE;
 			//setTransform(debugRect, transform);
 			//debugRect.color = BLUE;
-			//debugRect.layer = layer->layer;
+			//debugRect.layer = getLayer(gameState, layer);
 			//debugRect.width = bubble::bubbleAxis * 2;
 			//debugRect.height = bubble::bubbleAxis * 2;
 			//debugRect.length = 0;
 			//gameState->renderData.push_back(debugRect);
 
-			renderBubble(gameState, layer->layer, backgroundColor, transform);
+			renderBubble(gameState, getLayer(gameState, layer), backgroundColor, transform);
 
 			renderBubbleLabel(gameState, transform, rect->height, "+",
-				layer->layer, LabelPos::CENTER, bubbleColors::MULTIPLICATION_TEXT);
+				getLayer(gameState, layer), LabelPos::CENTER, bubbleColors::MULTIPLICATION_TEXT);
 		}
 
 		auto logicLayerIt = logicCache->begin<components::Layer>();
@@ -419,9 +420,9 @@ public:
 			auto layer = *logicLayerIt;
 			auto transform = *logicTransformIt;
 			auto rect = *logicRectIt;
-			Color color = calculateFadedColor(gameState, bubbleColors::LOGIC, transform, layer->layer);
-			renderBubble(gameState, layer->layer, color, transform);
-			renderBubbleIcon(gameState, transform, rect->height, bubbleTextureNames::TEXTURE_AND_GATE, layer->layer + 1, IconPos::TOP);
+			Color color = calculateFadedColor(gameState, bubbleColors::LOGIC, transform, getLayer(gameState, layer));
+			renderBubble(gameState, getLayer(gameState, layer), color, transform);
+			renderBubbleIcon(gameState, transform, rect->height, bubbleTextureNames::TEXTURE_AND_GATE, getLayer(gameState, layer) + 1, IconPos::TOP);
 		}
 
 		auto gateLayerIt = gateCache->begin<components::Layer>();
@@ -431,9 +432,9 @@ public:
 			auto layer = *gateLayerIt;
 			auto transform = *gateTransformIt;
 			auto rect = *gateRectIt;
-			Color color = calculateFadedColor(gameState, bubbleColors::GATE, transform, layer->layer);
-			renderBubble(gameState, layer->layer, color, transform);
-			renderBubbleIcon(gameState, transform, rect->height, bubbleTextureNames::TEXTURE_CLOSED_GATE, layer->layer + 1, IconPos::CENTER);
+			Color color = calculateFadedColor(gameState, bubbleColors::GATE, transform, getLayer(gameState, layer));
+			renderBubble(gameState, getLayer(gameState, layer), color, transform);
+			renderBubbleIcon(gameState, transform, rect->height, bubbleTextureNames::TEXTURE_CLOSED_GATE, getLayer(gameState, layer) + 1, IconPos::CENTER);
 		}
 
 		// renderunits
@@ -454,12 +455,12 @@ public:
 			if (unit->value > 0) {
 				unitItem.text = "1";
 				textColor = bubbleColors::UNIT_TEXT_POSITIVE;
-				backgroundColor = calculateFadedColor(gameState, bubbleColors::POSITIVE_UNIT, transform, layer->layer);
+				backgroundColor = calculateFadedColor(gameState, bubbleColors::POSITIVE_UNIT, transform, getLayer(gameState, layer));
 			}
 			else {
 				unitItem.text = "-1";
 				textColor = bubbleColors::UNIT_TEXT_NEGATIVE;
-				backgroundColor = calculateFadedColor(gameState, bubbleColors::NEGATIVE_UNIT, transform, layer->layer);
+				backgroundColor = calculateFadedColor(gameState, bubbleColors::NEGATIVE_UNIT, transform, getLayer(gameState, layer));
 			}
 			setTransform(unitItem, transform);
 
@@ -476,7 +477,7 @@ public:
 			unitItem.fontSize = bubble::bubbleFontSize;
 			gameState->renderData.push_back(unitItem);
 
-			renderBubble(gameState, layer->layer, backgroundColor, transform);
+			renderBubble(gameState, getLayer(gameState, layer), backgroundColor, transform);
 		}
 
 		auto textIt = textCache->begin<components::BubbleTextComponent>();
@@ -489,15 +490,15 @@ public:
 
 			middle::RenderItem textItem;
 			textItem.type = middle::RenderItemType::TEXT;
-			textItem.layer = layer->layer;
+			textItem.layer = getLayer(gameState, layer);
 			setTransform(textItem, transform);
 			textItem.text = text->text;
 			textItem.fontSize = text->fontSize;
 			textItem.color = bubbleColors::UNIT_TEXT_POSITIVE;
 			gameState->renderData.push_back(textItem);
 
-			Color color = calculateFadedColor(gameState, bubbleColors::BUBBLE, transform, layer->layer);
-			renderBubble(gameState, layer->layer, color, transform);
+			Color color = calculateFadedColor(gameState, bubbleColors::BUBBLE, transform, getLayer(gameState, layer));
+			renderBubble(gameState, getLayer(gameState, layer), color, transform);
 		}
 
 		// render variables
@@ -519,16 +520,16 @@ public:
 			Color colorBackground;
 			if (!variable->isNegative) {
 				colorText = bubbleColors::UNIT_TEXT_POSITIVE;
-				colorBackground = calculateFadedColor(gameState, bubbleColors::POSITIVE_UNIT, transform, layer->layer);
+				colorBackground = calculateFadedColor(gameState, bubbleColors::POSITIVE_UNIT, transform, getLayer(gameState, layer));
 			}
 			else {
 				varText = "-";
 				colorText = bubbleColors::UNIT_TEXT_NEGATIVE;
-				colorBackground = calculateFadedColor(gameState, bubbleColors::NEGATIVE_UNIT, transform, layer->layer);
+				colorBackground = calculateFadedColor(gameState, bubbleColors::NEGATIVE_UNIT, transform, getLayer(gameState, layer));
 			}
 			varText += variable->label;
 
-			renderBubble(gameState, layer->layer, colorBackground, transform);
+			renderBubble(gameState, getLayer(gameState, layer), colorBackground, transform);
 
 			middle::RenderItem variableText;
 			variableText.type = middle::RenderItemType::TEXT;
@@ -554,10 +555,10 @@ public:
 			auto transform = *mulTransformIt;
 			auto layer = *mulLayerIt;
 
-			renderBubble(gameState, layer->layer, calculateFadedColor(gameState, bubbleColors::MULTIPLICATION, transform, layer->layer), transform);
+			renderBubble(gameState, getLayer(gameState, layer), calculateFadedColor(gameState, bubbleColors::MULTIPLICATION, transform, getLayer(gameState, layer)), transform);
 
 			renderBubbleLabel(gameState, transform, rect->height, u8"\u00D7",
-				layer->layer, LabelPos::CENTER, bubbleColors::MULTIPLICATION_TEXT);
+				getLayer(gameState, layer), LabelPos::CENTER, bubbleColors::MULTIPLICATION_TEXT);
 		}
 
 		// renderPowers
@@ -571,27 +572,10 @@ public:
 			auto transform = *powerTransformIt;
 			auto layer = *powerLayerIt;
 
-			renderBubble(gameState, layer->layer, calculateFadedColor(gameState, bubbleColors::POWER, transform, layer->layer), transform);
+			renderBubble(gameState, getLayer(gameState, layer), calculateFadedColor(gameState, bubbleColors::POWER, transform, getLayer(gameState, layer)), transform);
 
 			renderBubbleLabel(gameState, transform, rect->height, "^",
-				layer->layer, LabelPos::CENTER, bubbleColors::POWER_TEXT);
-		}
-
-		auto cuboidIt = cuboidCache->begin<components::Cuboid>();
-		auto cuboidTransformIt = cuboidCache->begin<components::GlobalTransform>();
-		for (int i = 0; i < cuboidCache->getSize(); ++i) {
-			auto cuboid = *cuboidIt;
-			auto transform = *cuboidTransformIt;
-			middle::RenderItem cuboidItem;
-			cuboidItem.type = middle::RenderItemType::CUBOID;
-			cuboidItem.width = cuboid->width;
-			cuboidItem.height = cuboid->height;
-			cuboidItem.length = cuboid->length;
-			cuboidItem.color = bubbleColors::BACKGROUND;
-			// TODO
-			cuboidItem.color.a = 30;
-			cuboidItem.center = transform->pos;
-			gameState->renderData.push_back(cuboidItem);
+				getLayer(gameState, layer), LabelPos::CENTER, bubbleColors::POWER_TEXT);
 		}
 
 		auto equTransformIt = equalsCache->begin<components::GlobalTransform>();
@@ -602,10 +586,10 @@ public:
 			auto rect = *equCircleIt;;
 			auto layer = *equLayerIt;
 
-			renderBubble(gameState, layer->layer, calculateFadedColor(gameState, bubbleColors::EQUALS, transform, layer->layer), transform);
+			renderBubble(gameState, getLayer(gameState, layer), calculateFadedColor(gameState, bubbleColors::EQUALS, transform, getLayer(gameState, layer)), transform);
 
 			renderBubbleLabel(gameState, transform, rect->height, "=",
-				layer->layer, LabelPos::CENTER, bubbleColors::EQUALS_TEXT);
+				getLayer(gameState, layer), LabelPos::CENTER, bubbleColors::EQUALS_TEXT);
 		}
 
 		auto inequTransformIt = inequCache->begin<components::GlobalTransform>();
@@ -617,53 +601,11 @@ public:
 			auto layer = *inequLayerIt;
 
 			renderBubbleLabel(gameState, transform, rect->height, ">",
-				layer->layer, LabelPos::CENTER, bubbleColors::EQUALS_TEXT);
+				getLayer(gameState, layer), LabelPos::CENTER, bubbleColors::EQUALS_TEXT);
 
-			renderBubble(gameState, layer->layer, calculateFadedColor(gameState, bubbleColors::INEQUALS, transform, layer->layer), transform);
+			renderBubble(gameState, getLayer(gameState, layer), calculateFadedColor(gameState, bubbleColors::INEQUALS, transform, getLayer(gameState, layer)), transform);
 		}
 
-
-
-
-		auto textureIt = textureCache->begin<components::TextureComponent>();
-		auto textureTransformIt = textureCache->begin<components::GlobalTransform>();
-		for (int i = 0; i < textureCache->getSize(); ++i) {
-			auto texture = *textureIt;
-			auto transform = *textureTransformIt;
-			auto& shape = middle::getShape(gameState, textureCache->relevantIdVector[i].index);
-			bool isUiItem = middle::getComponent<components::UiComponent>(shape);
-			auto layer = middle::getComponent<components::Layer>(shape);
-
-			if (texture->textureType == middleTextureType::BILLBOARD) {
-				middle::RenderItem textureItem;
-				textureItem.type = middle::RenderItemType::BILLBOARD;
-				textureItem.texture = &texture->texture;
-				textureItem.transform.translation = transform->pos;
-				textureItem.color = WHITE;
-				textureItem.textureScale = texture->scale;
-				textureItem.disableDepthTest = isUiItem;
-				if (layer) {
-					textureItem.layer = layer->layer;
-				}
-				gameState->renderData.push_back(textureItem);
-			}
-
-			else if (texture->textureType == middleTextureType::BACKGROUND) {
-				middle::RenderItem textureItem;
-				textureItem.type = middle::RenderItemType::BACKGROUND;
-				textureItem.texture = &texture->texture;
-				textureItem.transform.translation = transform->pos;
-				textureItem.color = WHITE;
-				textureItem.textureScale = texture->scale;
-				textureItem.disableDepthTest = false;
-				textureItem.width = 10000;
-				textureItem.height = 10000;
-				if (layer) {
-					textureItem.layer = layer->layer;
-				}
-				gameState->renderData.push_back(textureItem);
-			}
-		}
 
 		// cross hair or something
 		middle::RenderItem cameraTarget;
@@ -703,9 +645,9 @@ public:
 			auto layer = *functionLayerIt;
 
 			renderBubbleLabel(gameState, transform, rect->width, func->label + "()",
-				layer->layer, LabelPos::CENTER, bubbleColors::FUNCTION_TEXT);
+				getLayer(gameState, layer), LabelPos::CENTER, bubbleColors::FUNCTION_TEXT);
 
-			renderBubble(gameState, layer->layer, calculateFadedColor(gameState, bubbleColors::FUNCTION, transform, layer->layer), transform);
+			renderBubble(gameState, getLayer(gameState, layer), calculateFadedColor(gameState, bubbleColors::FUNCTION, transform, getLayer(gameState, layer)), transform);
 
 			// render indexes
 			std::vector<middle::Id>children;
@@ -716,7 +658,7 @@ public:
 				auto globalRChild = middle::getComp<components::GlobalRect>(gameState, childId);
 				auto layer = middle::getComp<components::Layer>(gameState, childId);
 				renderBubbleLabel(gameState, transform, rect->width, std::to_string(index++),
-					layer->layer, LabelPos::LEFT, bubbleColors::FUNCTION_TEXT);
+					getLayer(gameState, layer), LabelPos::LEFT, bubbleColors::FUNCTION_TEXT);
 			}
 		}
 
@@ -729,10 +671,10 @@ public:
 			auto rect = *summationRectIt;
 			auto layer = *summationLayerIt;
 
-			renderBubble(gameState, layer->layer, calculateFadedColor(gameState, bubbleColors::SUMMATION, transform, layer->layer), transform);
+			renderBubble(gameState, getLayer(gameState, layer), calculateFadedColor(gameState, bubbleColors::SUMMATION, transform, getLayer(gameState, layer)), transform);
 
 			renderBubbleLabel(gameState, transform, rect->width, u8"\u2211",
-				layer->layer, LabelPos::CENTER, bubbleColors::SUMMATION_TEXT);
+				getLayer(gameState, layer), LabelPos::CENTER, bubbleColors::SUMMATION_TEXT);
 		}
 
 	}

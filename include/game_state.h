@@ -144,6 +144,7 @@ namespace middle {
 		float worldScale;
 		std::string activeBubbleName;
 		std::vector<int>traversePath;
+		std::vector<middle::Id>traversePathIds;
 		middle::Id backgroundBubbleId;
 		const int loadDepth;
 		Vector3 cameraVelocity;
@@ -187,6 +188,7 @@ namespace middle {
 		std::array<Id, MAX_SHAPE_COUNT>ids;
 		std::array<Shape, MAX_SHAPE_COUNT>shapes;
 		// systems
+		std::unique_ptr<MiddleGameplaySystem>componentCacheSystem;
 		std::unordered_map<std::string, std::unique_ptr<MiddleGameplaySystem>> gameplaySystems;
 		std::unordered_map<std::string, std::unique_ptr<MiddleGameplaySystem>> gameplaySystemsPostFrame;
 		std::vector<std::unique_ptr<MiddleGameplaySystem>> engineSystemInitFrame;

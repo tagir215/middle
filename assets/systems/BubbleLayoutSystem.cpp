@@ -11,6 +11,7 @@
 #include "BubbleSummationComponent.h"
 #include "bubble_layout.h"
 #include "BubbleswapComponent.h"
+#include "InViewTag.h"
 
 class BubbleLayoutSystem : public middle::MiddleGameplaySystem {
 public:
@@ -26,6 +27,7 @@ public:
 
 		bubbleCache = middle::newCompCache(gameState, systemName);
 		bubbleCache->addType<components::BubbleComponent>();
+		bubbleCache->addType<components::InViewTag>();
 		bubbleCache->addType<components::Rectangle>();
 		bubbleCache->addType<components::PauseLayoutTag>(components::NOTINTERESTED);
 		bubbleCache->addType<components::BubblePowerComponent>(components::NOTINTERESTED);
@@ -34,18 +36,21 @@ public:
 
 		powerCache = middle::newCompCache(gameState, systemName);
 		powerCache->addType<components::BubbleComponent>();
+		powerCache->addType<components::InViewTag>();
 		powerCache->addType<components::Rectangle>();
 		powerCache->addType<components::BubblePowerComponent>();
 		powerCache->addType<components::PauseLayoutTag>(components::NOTINTERESTED);
 
 		summationCache = middle::newCompCache(gameState, systemName);
 		summationCache->addType<components::BubbleComponent>();
+		summationCache->addType<components::InViewTag>();
 		summationCache->addType<components::Rectangle>();
 		summationCache->addType<components::BubbleSummationComponent>();
 		summationCache->addType<components::PauseLayoutTag>(components::NOTINTERESTED);
 
 		swapCache = middle::newCompCache(gameState, systemName);
 		swapCache->addType<components::BubbleSwapComponent>();
+		swapCache->addType<components::InViewTag>();
 		swapCache->addType<components::Rectangle>();
 		swapCache->addType<components::PauseLayoutTag>(components::NOTINTERESTED);
 
@@ -72,10 +77,6 @@ public:
 		// bubbles
 		auto rectIt = bubbleCache->begin<components::Rectangle>();
 		for (middle::Id id : bubbleCache->relevantIdVector) {
-			if (id.index == 131) {
-				int a = 0;
-			}
-
 			auto rect = *rectIt;
 			bubble::updateBubbleLayout(gameState, id, rect->width, moveRatio);
 		}

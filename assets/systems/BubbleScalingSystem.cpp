@@ -12,6 +12,7 @@
 #include "BubbleSummationComponent.h"
 #include "bubble_layout.h"
 #include "BubbleSwapComponent.h"
+#include "InViewTag.h"
 
 class BubbleScalingSystem : public middle::MiddleGameplaySystem {
 public:
@@ -27,30 +28,27 @@ public:
 	void init(middle::GameState* gameState) override {
 		bubbleCache = middle::newCompCache(gameState, systemName);
 		bubbleCache->addType<components::BubbleComponent>();
-		bubbleCache->addType<components::GlobalRect>();
-		bubbleCache->addType<components::LocalScale>();
-		bubbleCache->addType<components::GlobalTransform>();
+		bubbleCache->addType<components::InViewTag>();
 		bubbleCache->addType<components::BubblePowerComponent>(components::NOTINTERESTED);
 		bubbleCache->addType<components::BubbleSummationComponent>(components::NOTINTERESTED);
 		bubbleCache->addType<components::BubbleSwapComponent>(components::NOTINTERESTED);
 		bubbleCache->addType<components::PauseLayoutTag>(components::NOTINTERESTED);
 
 		powerCache = middle::newCompCache(gameState, systemName);
+		powerCache->addType<components::InViewTag>();
 		powerCache->addType<components::BubbleComponent>();
-		powerCache->addType<components::GlobalRect>();
-		powerCache->addType<components::GlobalTransform>();
 		powerCache->addType<components::BubblePowerComponent>();
 		powerCache->addType<components::PauseLayoutTag>(components::NOTINTERESTED);
 
 		summationCache = middle::newCompCache(gameState, systemName);
 		summationCache->addType<components::BubbleComponent>();
-		summationCache->addType<components::GlobalRect>();
-		summationCache->addType<components::GlobalTransform>();
+		summationCache->addType<components::InViewTag>();
 		summationCache->addType<components::BubbleSummationComponent>();
 		summationCache->addType<components::PauseLayoutTag>(components::NOTINTERESTED);
 
 		swapCache = middle::newCompCache(gameState, systemName);
 		swapCache->addType<components::BubbleSwapComponent>();
+		swapCache->addType<components::InViewTag>();
 		swapCache->addType<components::PauseLayoutTag>(components::NOTINTERESTED);
 	}
 

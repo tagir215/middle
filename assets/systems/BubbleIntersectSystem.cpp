@@ -21,6 +21,7 @@
 #include "GlobalRect.h"
 #include "IntersectingTag.h"
 #include "BottomDogBubbleTag.h"
+#include "InViewTag.h"
 
 class BubbleIntersectSystem : public middle::MiddleGameplaySystem {
 public:
@@ -32,6 +33,7 @@ public:
 	void init(middle::GameState* gameState) {
 		bubbleCache = middle::newCompCache(gameState, systemName);
 		bubbleCache->addType<components::BubbleComponent>();
+		bubbleCache->addType<components::InViewTag>();
 		bubbleCache->addType<components::MouseIntersectable>();
 		bubbleCache->addType<components::Rectangle>();
 		bubbleCache->addType<components::GlobalRect>();

@@ -96,6 +96,10 @@ namespace middle {
 		return localScale->scale;
 	}
 
+	void setGlobalScale(GameState* gameState, middle::Id id, const Vector3& targetScale)
+	{
+	}
+
 	void setLocalScale(GameState* gameState, middle::Id id, const Vector3& targetScale)
 	{
 		auto localScale = middle::getComp<components::LocalScale>(gameState, id);
@@ -880,6 +884,14 @@ namespace middle {
 		return localCoord;
 	}
 
+	Vector3 projectGlobalScaleToLocalScale(GameState* gameState, middle::Id id, const Vector3& globalScale)
+	{
+		Vector3 currentScale = middle::getGlobalScale(gameState, id);
+		Vector3 scalarV = Vector3Divide(globalScale, currentScale);
+		Vector3 localScale = middle::getLocalScale(gameState, id);
+		return Vector3Multiply(localScale, scalarV);
+	}
+
 	void updateLocalCoordinateToProjectedGlobalCoordinate(GameState* gameState, middle::Id id, middle::Id oldParentId)
 	{
 		auto shape = middle::getShape(gameState, id.index);
@@ -900,6 +912,7 @@ namespace middle {
 			localScale->scale *= ratio;
 		}
 	}
+
 
 
 	void updateGlobalTransforms(middle::GameState* gameState, middle::Id id, const Matrix& parentM, const Vector3& parentScale) {

@@ -37,6 +37,8 @@ namespace middle{
 	void registerSystems(middle::GameState* gameState) {
 		auto& systemMap = middle::getSystemMap();
 
+		//gameState->componentCacheSystem = gameState->
+
 		// register gameplay systems
 		for (auto& pair : systemMap) {
 			std::string name = pair.first;
@@ -44,7 +46,10 @@ namespace middle{
 
 			sysptr->init(gameState);
 
-			if (sysptr->systemUpdateType == SystemUpdateType::INITFRAME) {
+			if (sysptr->systemUpdateType == SystemUpdateType::CACHE) {
+				gameState->componentCacheSystem = std::move(sysptr);
+			}
+			else if (sysptr->systemUpdateType == SystemUpdateType::INITFRAME) {
 				gameState->engineSystemInitFrame.push_back(std::move(sysptr));
 			}
 			else if (sysptr->systemUpdateType == SystemUpdateType::PREFRAME) {
@@ -92,9 +97,15 @@ namespace middle{
 		}
 	}
 
+	void cacheUpdate(GameState* gameState) {
+		gameState->componentCacheSystem->recordTimeUpdate(gameState);
+	}
+
 	void physicsUpdate(GameState* gameState) {
 		updateSystems(gameState, gameState->engineSystemInitFrame);
+		cacheUpdate(gameState);
 		updateSystems(gameState, gameState->engineSystemsFrameStart);
+		cacheUpdate(gameState);
 
 		if (!gameState->loaded) {
 			return;
@@ -129,6 +140,8 @@ namespace middle{
 			return true;
 			});
 
+		cacheUpdate(gameState);
+
 		// run gameplay systems post frmae
 		loopInstances(gameState, [gameState](int i, Shape& shape) {
 
@@ -158,7 +171,11 @@ namespace middle{
 			return true;
 			});
 
+		cacheUpdate(gameState);
+
 		updateSystems(gameState, gameState->enginePostFrameSystems);
+
+		cacheUpdate(gameState);
 
 		// Clear input blockers at the end of physics update
 		gameState->inputBlockers.clear();
@@ -205,21 +222,6 @@ extern "C" {
 			physicsUpdate(gameState);
 		}
 
-		for (auto& renderSystem : gameState->engineRendererSystems) {
-
-			if (gameState->applicationMode == ApplicationMode::GAME_MODE
-				&& renderSystem->systemModeType == SystemModeType::EDITOR) {
-				continue;
-			}
-
-			if (gameState->applicationMode == ApplicationMode::EDITOR_MODE
-				&& renderSystem->systemModeType == SystemModeType::GAMEPLAY) {
-				continue;
-			}
-
-			gameState->activeSystemName = renderSystem->systemName;
-			renderSystem->recordTimeUpdate(gameState);
-		}
 
 		while (gameState->actionQueue.size() > 0) {
 			auto actionStart = std::chrono::high_resolution_clock::now();
@@ -239,6 +241,26 @@ extern "C" {
 			gameState->undoQueue.front()->undo(gameState);
 			gameState->undoQueue.pop();
 		}
+
+		cacheUpdate(gameState);
+
+		for (auto& renderSystem : gameState->engineRendererSystems) {
+
+			if (gameState->applicationMode == ApplicationMode::GAME_MODE
+				&& renderSystem->systemModeType == SystemModeType::EDITOR) {
+				continue;
+			}
+
+			if (gameState->applicationMode == ApplicationMode::EDITOR_MODE
+				&& renderSystem->systemModeType == SystemModeType::GAMEPLAY) {
+				continue;
+			}
+
+			gameState->activeSystemName = renderSystem->systemName;
+			renderSystem->recordTimeUpdate(gameState);
+		}
+
+
 
 	}
 

@@ -10,6 +10,7 @@ namespace middle {
 	const int updatePriorityMax = 100;
 
 	enum class SystemUpdateType {
+		CACHE,
 		INITFRAME,
 		PREFRAME,
 		// Imported systems are dynamically placed to scenes, they are updated between pre and post frame
