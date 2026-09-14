@@ -5,6 +5,20 @@
 #include "game_state.h"
  
 namespace bubequ {
+	const inline std::string SYMBOL_MULTIPLICATION = "*";
+	const inline std::string SYMBOL_POWER = "^";
+	const inline std::string SYMBOL_SWAP = "/";
+	const inline std::string SYMBOL_AND_GATE = "&";
+	const inline std::string SYMBOL_CLOSED_GATE = "#0";
+	const inline std::string SYMBOL_OPEN_GATE = "#1";
+	const inline std::string SYMBOL_DUMMY_GATE = "##";
+	const inline std::string SYMBOL_GREATER = ">";
+	const inline std::string SYMBOL_GREATER_OR_EQUAL = ">=";
+	const inline std::string SYMBOL_EQUAL = "=";
+	const inline std::string SYMBOL_SUMMATION = "$";
+	const inline std::string SYMBOL_NEGATIVE = "-";
+	const inline std::string SYMBOL_TEXT = "\"";
+
 	std::string stripBrackets(const std::string & str);
 	std::string getNums(const std::string& str);
 	std::string getLetters(const std::string& str);

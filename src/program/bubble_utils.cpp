@@ -41,6 +41,7 @@
 #include "InViewTag.h"
 #include "BubblePathMark.h"
 #include "NonPhysicalBubbleTag.h"
+#include "NewBubbleTag.h"
 
 namespace bubble {
 	float bubbleAxis = 50;
@@ -1205,6 +1206,18 @@ namespace bubble {
 		resultRight = logicChildren[components::BubbleLogicRole::RIGHT];
 	}
 
+	void getSwapBubbleActiveInActive(middle::GameState* gameState, middle::Id swapId, middle::Id& activeId, middle::Id& inActiveId)
+	{
+		assert(isSwapBubble(gameState, swapId));
+		std::vector<middle::Id>children;
+		middle::getChildren(gameState, swapId, children);
+		assert(children.size() == 2);
+		auto swapComp = middle::getComp<components::BubbleSwapComponent>(gameState, swapId);
+		int inActiveIndex = swapComp->activeIndex == 0 ? 1 : 0;
+		activeId = children[swapComp->activeIndex];
+		inActiveId = children[inActiveIndex];
+	}
+
 	middle::Id getOtherFromContainerOf2(middle::GameState* gameState, middle::Id id)
 	{
 		middle::Id parentId = middle::getParent(gameState, id);
@@ -1463,6 +1476,7 @@ namespace bubble {
 		middle::addComponent<components::Layer>(newBubbleShape);
 		middle::addComponent<components::BubbleManipulatable>(newBubbleShape);
 		middle::addComponent<components::BubblePathMark>(newBubbleShape);
+		middle::addComponent<components::NewBubbleTag>(newBubbleShape);
 		auto rect = middle::addComponent<components::Rectangle>(newBubbleShape);
 		rect->width = bubbleAxis * 2;
 		rect->height = bubbleAxis * 2;
@@ -1567,27 +1581,10 @@ mollis. Duis eleifend hendrerit ullamcorper.)";
 		return gateProto;
 	}
 
-	middle::Id newSwapBubble(middle::GameState* gameState, const Vector3& targetPos)
-	{
+	middle::Shape newSwapBubble(middle::GameState* gameState, const Vector3& targetPos) {
 		middle::Shape bubbleProto = newBubble(gameState, targetPos);
 		middle::addComponent<components::BubbleSwapComponent>(bubbleProto);
-		middle::Shape& swapBubble = middle::registerShape(gameState, bubbleProto);
-
-		middle::Shape textProto = newTextBubble(gameState, targetPos);
-		middle::deleteComponent<components::BubbleManipulatable>(textProto);
-		middle::addComponent<components::Button>(textProto);
-		middle::Shape& text = middle::registerShape(gameState, textProto);
-
-		middle::Shape targetProto = newBubble(gameState, targetPos);
-		middle::addComponent<components::RuntimeHiddenTag>(targetProto);
-		middle::addComponent<components::NonPhysicalBubbleTag>(targetProto);
-		middle::deleteComponent<components::BubbleManipulatable>(targetProto);
-		middle::Shape& target = middle::registerShape(gameState, targetProto);
-
-		middle::EditorActionReparent(swapBubble.id.index, text.id.index).execute(gameState);
-		middle::EditorActionReparent(swapBubble.id.index, target.id.index).execute(gameState);
-
-		return swapBubble.id;
+		return bubbleProto;
 	}
 
 	middle::Id newSummationWithChildren(middle::GameState * gameState, const Vector3 & targetPos)

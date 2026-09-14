@@ -23,7 +23,7 @@ namespace middle{
 			tempVec.push_back(std::move(s));
 		}
 		systems.clear();
-		for (int i = 0; i < middle::updatePriorityMax; ++i) {
+		for (int i = 0; i <= middle::updatePriorityMax; ++i) {
 			for (auto& s : tempVec) {
 				if (!s) {
 					continue;

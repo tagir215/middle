@@ -23,6 +23,7 @@ class BubbleSwapSystem : public middle::MiddleGameplaySystem {
 		cache->addType<components::LoopSociety>();
 	}
 	void update(middle::GameState* gameState) override {
+
 		auto loopIt = cache->begin<components::LoopSociety>();
 		for (middle::Id id : cache->relevantIdVector) {
 			auto loop = *loopIt;

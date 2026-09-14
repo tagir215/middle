@@ -295,7 +295,7 @@ public:
 				bubble::queueBubbleAction(gameState, targetId, action);
 			}
 			else if (in.f4Clicked) {
-				auto action = std::make_shared<equlab::AddGateBubble>(targetId, mousePos, components::BubbleGateStatus::DUMMY);
+				auto action = std::make_shared<equlab::ToggleLogicBubbleStatus>(targetId);
 				bubble::queueBubbleAction(gameState, targetId, action);
 			}
 			// indequalties

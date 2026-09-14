@@ -39,7 +39,7 @@ namespace bubble {
 	middle::Shape newTextBubble(middle::GameState* gameState, const Vector3& targetPos);
 	middle::Shape newLogicBubble(middle::GameState* gameState, const Vector3& targetPos);
 	middle::Shape newGateBubble(middle::GameState* gameState, const Vector3& targetPos);
-	middle::Id newSwapBubble(middle::GameState* gameState, const Vector3& targetPos);
+	middle::Shape newSwapBubble(middle::GameState* gameState, const Vector3& targetPos);
 	middle::Id newSummationWithChildren(middle::GameState* gameState, const Vector3& targetPos);
 	middle::Id newPower(middle::GameState* gameState, middle::Id baseId, middle::Id exponentId, const Vector3& targetPos);
 	middle::Id newBubbleWithIntValue(middle::GameState* gameState, int value, const Vector3& targetPos);
@@ -88,6 +88,7 @@ namespace bubble {
 	void getSummationIndexLimitSummand(middle::GameState* gameState, middle::Id summationBubble, middle::Id& resultIndex, middle::Id& resultUpperLimit, middle::Id& resultSummand);
 	void getInequaltyLesserAndGreater(middle::GameState* gameState, middle::Id inequalBubble, middle::Id& resultLesserId, middle::Id& resultGreaterId);
 	void getLogicLeftAndRight(middle::GameState* gameState, middle::Id logicId, middle::Id& resultLeft, middle::Id& resultRight);
+	void getSwapBubbleActiveInActive(middle::GameState* gameState, middle::Id swapId, middle::Id& activeId, middle::Id& inActiveId);
 	middle::Id getOtherFromContainerOf2(middle::GameState* gameState, middle::Id id);
 	void matchBubbleTransforms(middle::GameState* gameState, middle::Id matchingModelId, middle::Id toMatchId);
 	// slow but immediate layout update

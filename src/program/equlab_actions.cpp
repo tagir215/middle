@@ -521,10 +521,10 @@ namespace equlab {
 
 	void AddSwapBubble::execute(middle::GameState* gameState)
 	{
-		middle::Id newSwapId = bubble::newSwapBubble(gameState, targetPosition);
-		auto registerAction = middle::executeAction<middle::EditorActionRegisterId>
-			(gameState, this, newSwapId);
-		resultId = newSwapId;
+		middle::Shape newSwapProto = bubble::newSwapBubble(gameState, targetPosition);
+		middle::Shape& newSwapShape = middle::registerShape(gameState, newSwapProto);
+		auto registerAction = middle::executeAction<middle::EditorActionRegisterId>(gameState, this, newSwapShape.id);
+		resultId = newSwapShape.id;
 		if (parentId.index != middle::UNASSIGNED) {
 			middle::executeAction<middle::EditorActionReparent>(gameState, this, parentId.index, resultId.index);
 		}
@@ -533,6 +533,18 @@ namespace equlab {
 		scaleComp->scale.x = scale;
 		scaleComp->scale.y = scale;
 		scaleComp->scale.z = scale;
+
+		middle::Shape textProto = bubble::newTextBubble(gameState, targetPosition);
+		middle::Shape& text = middle::registerShape(gameState, textProto);
+
+		middle::Shape targetProto = bubble::newBubble(gameState, targetPosition);
+		//middle::addComponent<components::RuntimeHiddenTag>(targetProto);
+		//middle::addComponent<components::NonPhysicalBubbleTag>(targetProto);
+		//middle::deleteComponent<components::BubbleManipulatable>(targetProto);
+		middle::Shape& target = middle::registerShape(gameState, targetProto);
+
+		middle::EditorActionReparent(newSwapShape.id.index, text.id.index).execute(gameState);
+		middle::EditorActionReparent(newSwapShape.id.index, target.id.index).execute(gameState);
 	}
 
 	void AddSwapBubble::undo(middle::GameState* gameState)
@@ -591,6 +603,43 @@ namespace equlab {
 			actions.back()->undo(gameState);
 			actions.pop_back();
 		}
+	}
+
+	void LinkTextToTextBubble::execute(middle::GameState* gameState)
+	{
+		auto comp = middle::getComp<components::BubbleTextComponent>(gameState, id);
+		prevName = comp->textName;
+		prevText = comp->text;
+		comp->textName = name;
+		comp->text = text;
+	}
+
+	void LinkTextToTextBubble::undo(middle::GameState* gameState)
+	{
+		auto comp = middle::getComp<components::BubbleTextComponent>(gameState, id);
+		comp->textName = prevName;
+		comp->text = prevText;
+	}
+
+
+	void ToggleLogicBubbleStatus::execute(middle::GameState* gameState)
+	{
+		auto comp = middle::getComp<components::BubbleGateComponent>(gameState, id);
+		int nextIndex = comp->status + 1;
+		if (nextIndex > 2) {
+			nextIndex = 0;
+		}
+		comp->status = nextIndex;
+	}
+
+	void ToggleLogicBubbleStatus::undo(middle::GameState* gameState)
+	{
+		auto comp = middle::getComp<components::BubbleGateComponent>(gameState, id);
+		int nextIndex = comp->status - 1;
+		if (nextIndex < 0) {
+			nextIndex = 2;
+		}
+		comp->status = nextIndex;
 	}
 
 }

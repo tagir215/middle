@@ -63,8 +63,15 @@ namespace bubequ {
 			unit->type = UnitType::ZERO;
 			return unit;
 		}
+		if (valueStr[0] == SYMBOL_TEXT[0]) {
+			std::string text = valueStr.substr(1, valueStr.size() - 1);
+			unit->label = text;
+			unit->type = UnitType::TEXT;
+			return unit;
+		}
+
 		unit->value = 1;
-		bool isNegative = valueStr[0] == '-';
+		bool isNegative = valueStr[0] == SYMBOL_NEGATIVE[0];
 		std::string numSubstr = getNums(valueStr);
 		if (numSubstr == "") {
 			unit->value = 1;
@@ -90,14 +97,14 @@ namespace bubequ {
 		auto link = std::make_shared<Link>();
 		char operatorChar = linkStr[0];
 		int substringStart = 1;
-		if (operatorChar == '*') {
+		if (operatorChar == SYMBOL_MULTIPLICATION[0]) {
 			link->type = LinkType::MULTIPLICATION;
 		}
-		else if (operatorChar == '^') {
+		else if (operatorChar == SYMBOL_POWER[0]) {
 			link->type = LinkType::POWER;
 		}
-		else if (operatorChar == '>') {
-			if (linkStr[1] == '=') {
+		else if (operatorChar == SYMBOL_GREATER[0]) {
+			if (linkStr[1] == SYMBOL_GREATER_OR_EQUAL[1]) {
 				link->type = LinkType::GREATER_OR_EQUAL;
 				++substringStart;
 			}
@@ -105,15 +112,34 @@ namespace bubequ {
 				link->type = LinkType::GREATER;
 			}
 		}
-		else if (operatorChar == '=') {
+		else if (operatorChar == SYMBOL_EQUAL[0]) {
 			link->type = LinkType::EQUALS;
 		}
-		else if (operatorChar == '$') {
+		else if (operatorChar == SYMBOL_SUMMATION[0]) {
 			link->type = LinkType::SUMMATION;
 		}
 		else if (std::isalpha(operatorChar)) {
 			link->type = LinkType::FUNCTION;
-			link->label = operatorChar;
+			link->text = operatorChar;
+		}
+		else if (operatorChar == SYMBOL_CLOSED_GATE[0]) {
+			link->type = LinkType::GATE;
+			if (linkStr[1] == SYMBOL_CLOSED_GATE[1]) {
+				link->status = 0;
+			}
+			else if (linkStr[1] == SYMBOL_OPEN_GATE[1]) {
+				link->status = 1;
+			}
+			else if (linkStr[1] == SYMBOL_DUMMY_GATE[1]) {
+				link->status = 2;
+			}
+			++substringStart;
+		}
+		else if (operatorChar == SYMBOL_AND_GATE[0]) {
+			link->type = LinkType::AND_GATE;
+		}
+		else if (operatorChar == SYMBOL_SWAP[0]) {
+			link->type = LinkType::SWAPPER;
 		}
 		else {
 			throw std::runtime_error("file formal error: Not known linktype");
@@ -145,11 +171,16 @@ namespace bubequ {
 			nextChar = scopeStr[1];
 		}
 
-		if (operatorChar == '*' 
-			|| operatorChar == '^' 
-			|| operatorChar == '>'
-			|| operatorChar == '='
-			|| operatorChar == '$'
+		if (operatorChar == SYMBOL_MULTIPLICATION[0]
+			|| operatorChar == SYMBOL_POWER[0]
+			|| operatorChar == SYMBOL_GREATER[0]
+			|| operatorChar == SYMBOL_EQUAL[0]
+			|| operatorChar == SYMBOL_SUMMATION[0]
+			|| operatorChar == SYMBOL_AND_GATE[0]
+			|| operatorChar == SYMBOL_SWAP[0]
+			|| operatorChar == SYMBOL_CLOSED_GATE[0]
+			|| operatorChar == SYMBOL_OPEN_GATE[0]
+			|| operatorChar == SYMBOL_DUMMY_GATE[0]
 			)
 		{
 			return parseLink(scopeStr);

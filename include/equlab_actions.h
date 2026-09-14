@@ -263,6 +263,16 @@ namespace equlab {
 		void undo(middle::GameState* gameState) override;
 	};
 
+	class ToggleLogicBubbleStatus : public middle::EditorActionContainer {
+	public:
+		middle::Id id;
+		ToggleLogicBubbleStatus(middle::Id id) {
+			this->id = id;
+		}
+		void execute(middle::GameState* gameState) override;
+		void undo(middle::GameState* gameState) override;
+	};
+
 	class AddGateBubble : public middle::EditorActionContainer {
 	public:
 		middle::Id parentId;
@@ -291,10 +301,27 @@ namespace equlab {
 		void undo(middle::GameState* gameState) override;
 	};
 
+	class LinkTextToTextBubble : public middle::EditorActionContainer {
+	public:
+		middle::Id id;
+		std::string name;
+		std::string text;
+		std::string prevName;
+		std::string prevText;
+		LinkTextToTextBubble(middle::Id id, const std::string& name, const std::string& text) {
+			this->id = id;
+			this->name = name;
+			this->text = text;
+		}
+		void execute(middle::GameState* gameState) override;
+		void undo(middle::GameState* gameState) override;
+	};
+
 	class UndoAction : public middle::EditorActionContainer {
 	public:
 		UndoAction() {}
 		void execute(middle::GameState* gameState) override;
 		void undo(middle::GameState* gameState) override;
 	};
+
 }

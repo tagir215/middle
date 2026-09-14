@@ -15,6 +15,9 @@ namespace bubequ {
 		GREATER_OR_EQUAL,
 		FUNCTION,
 		SUMMATION,
+		GATE,
+		AND_GATE,
+		SWAPPER,
 	};
 
 	enum class UnitType {
@@ -22,10 +25,12 @@ namespace bubequ {
 		CONSTANT,
 		VARIABLE,
 		ZERO,
+		TEXT,
 	};
 
 	struct Scope {
 		std::string hash;
+		int status;
 		// actual loaded children
 		std::vector<std::shared_ptr<Scope>>children;
 		virtual ~Scope() = default;
@@ -42,7 +47,7 @@ namespace bubequ {
 	};
 	struct Link : public Scope {
 		LinkType type;
-		std::string label;
+		std::string text;
 	};
 
 

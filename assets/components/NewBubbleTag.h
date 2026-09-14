@@ -1,14 +1,10 @@
 #pragma once
 #include "registrars.h"
 #include "editor_file_utils.h"
-#define MIDDLEBUBBLETEXTCOMPONENT(X) \
-	X(textName) 
+#define MIDDLENEWBUBBLETAG(X)
 
 namespace components {
-	struct BubbleTextComponent : public middle::Serializable{
-		std::string textName;
-		std::string text;
-		float fontSize;
+	struct NewBubbleTag : public middle::Serializable{
 
 		void serialize(std::ostream& ostream) override;
 		void deserialize(const std::vector<std::string>& buffer, int indexOffset) override;
@@ -17,7 +13,7 @@ namespace components {
 		template<typename V>
 		void reflect(V& v) {
 #define X(f) v(#f, f);
-			MIDDLEBUBBLETEXTCOMPONENT(X)
+			MIDDLENEWBUBBLETAG(X)
 #undef X
 		}
 	};

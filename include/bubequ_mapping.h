@@ -15,8 +15,13 @@
 #include "BubbleSummationComponent.h"
 #include "BubbleEqualsComponent.h"
 #include "BubbleVariable.h"
+#include "BubbleLogicComponent.h"
+#include "BubbleGateComponent.h"
+#include "BubbleSwapComponent.h"
+#include "BubbleTextComponent.h"
 #include "sha256.h"
 #include "bubequ.h"
+
 
 namespace bubequ{
 
@@ -64,7 +69,10 @@ namespace bubequ{
 						}
 						newNodeId = bubbleShape.id;
 					}
-
+				}
+				else if (unitScope->type == bubequ::UnitType::TEXT) {
+					middle::Shape bubProto = bubble::newTextBubble(gameState, pos);
+					newNodeId = middle::registerShape(gameState, bubProto).id;
 				}
 			}
 			else if (auto linkScope = dynamic_cast<bubequ::Link*>(currentScope)) {
@@ -94,13 +102,30 @@ namespace bubequ{
 					newNodeId = linkShape.id;
 				}
 				else if (linkScope->type == bubequ::LinkType::FUNCTION) {
-					middle::Shape linkProto = bubble::newFunction(gameState, linkScope->label, pos);
+					middle::Shape linkProto = bubble::newFunction(gameState, linkScope->text, pos);
 					middle::Shape& linkShape = middle::registerShape(gameState, linkProto);
 					newNodeId = linkShape.id;
 				}
 				else if (linkScope->type == bubequ::LinkType::SUMMATION) {
 					middle::Shape linkProto = bubble::newSummation(gameState, pos);
 					middle::Shape& linkShape = middle::registerShape(gameState, linkProto);
+					newNodeId = linkShape.id;
+				}
+				else if (linkScope->type == bubequ::LinkType::AND_GATE) {
+					middle::Shape linkProto = bubble::newLogicBubble(gameState, pos);
+					middle::Shape& linkShape = middle::registerShape(gameState, linkProto);
+					newNodeId = linkShape.id;
+				}
+				else if (linkScope->type == bubequ::LinkType::SWAPPER) {
+					middle::Shape linkProto = bubble::newSwapBubble(gameState, pos);
+					middle::Shape& linkShape = middle::registerShape(gameState, linkProto);
+					newNodeId = linkShape.id;
+				}
+				else if (linkScope->type == bubequ::LinkType::GATE) {
+					middle::Shape linkProto = bubble::newGateBubble(gameState, pos);
+					middle::Shape& linkShape = middle::registerShape(gameState, linkProto);
+					auto gateComp = middle::getComponent<components::BubbleGateComponent>(linkProto);
+					gateComp->status = linkScope->status;
 					newNodeId = linkShape.id;
 				}
 			}
@@ -134,6 +159,57 @@ namespace bubequ{
 	inline std::shared_ptr<Scope> bubbleToBubequ(middle::GameState* gameState, const middle::Id id) {
 		auto& shape = middle::getShape(gameState, id.index);
 
+
+		auto result = std::make_shared<Scope>();
+
+		if (middle::getComponent<components::BubbleMultiplyComponent>(shape)) {
+			auto link = std::make_shared<Link>();
+			link->type = LinkType::MULTIPLICATION;
+			result = link;
+		}
+		else if (middle::getComponent<components::BubblePowerComponent>(shape)) {
+			auto link = std::make_shared<Link>();
+			link->type = LinkType::POWER;
+			result = link;
+		}
+		else if (middle::getComponent<components::BubbleSummationComponent>(shape)) {
+			auto link = std::make_shared<Link>();
+			link->type = LinkType::SUMMATION;
+			result = link;
+		}
+		else if (middle::getComponent<components::BubbleInequaltyComponent>(shape)) {
+			auto link = std::make_shared<Link>();
+			link->type = LinkType::GREATER;
+			result = link;
+		}
+		else if (middle::getComponent<components::BubbleEqualsComponent>(shape)) {
+			auto link = std::make_shared<Link>();
+			link->type = LinkType::EQUALS;
+			result = link;
+		}
+		else if (auto func = middle::getComponent<components::BubbleFunctionComponent>(shape)) {
+			auto link = std::make_shared<Link>();
+			link->type = LinkType::FUNCTION;
+			link->text = func->label;
+			result = link;
+		}
+		else if (auto gate = middle::getComponent<components::BubbleGateComponent>(shape)) {
+			auto link = std::make_shared<Link>();
+			link->type = LinkType::GATE;
+			link->status = gate->status;
+			result = link;
+		}
+		else if (middle::getComponent<components::BubbleLogicComponent>(shape)) {
+			auto link = std::make_shared<Link>();
+			link->type = LinkType::AND_GATE;
+			result = link;
+		}
+		else if (middle::getComponent<components::BubbleSwapComponent>(shape)) {
+			auto link = std::make_shared<Link>();
+			link->type = LinkType::SWAPPER;
+			result = link;
+		}
+
 		std::vector<middle::Id>children;
 		middle::getChildren(gameState, id, children);
 
@@ -156,45 +232,17 @@ namespace bubequ{
 			}
 			return unit;
 		}
-		else if (children.size() == 0) {
+		else if (auto text = middle::getComponent<components::BubbleTextComponent>(shape)) {
+			auto unit = std::make_shared<Unit>();
+			unit->type = UnitType::TEXT;
+			unit->label = text->textName;
+			return unit;
+		}
+		else if (result == nullptr && children.size() == 0) {
 			auto unit = std::make_shared<Unit>();
 			unit->type = UnitType::ZERO;
 			unit->value = 0;
 			return unit;
-		}
-
-		auto result = std::make_shared<Scope>();
-
-		if (middle::getComponent<components::BubbleMultiplyComponent>(shape)) {
-			auto link = std::make_shared<Link>();
-			link->type = LinkType::MULTIPLICATION;
-			result = link;
-		}
-		else if (middle::getComponent<components::BubblePowerComponent>(shape)) {
-			auto link = std::make_shared<Link>();
-			link->type = LinkType::POWER;
-			result = link;
-		}
-		else if (middle::getComponent<components::BubbleSummationComponent>(shape)) {
-			auto link = std::make_shared<Link>();
-			link->type = LinkType::SUMMATION;
-			result = link;
-		}
-		if (middle::getComponent<components::BubbleInequaltyComponent>(shape)) {
-			auto link = std::make_shared<Link>();
-			link->type = LinkType::GREATER;
-			result = link;
-		}
-		if (middle::getComponent<components::BubbleEqualsComponent>(shape)) {
-			auto link = std::make_shared<Link>();
-			link->type = LinkType::EQUALS;
-			result = link;
-		}
-		if (auto func = middle::getComponent<components::BubbleFunctionComponent>(shape)) {
-			auto link = std::make_shared<Link>();
-			link->type = LinkType::FUNCTION;
-			link->label = func->label;
-			result = link;
 		}
 
 		for (middle::Id& childId : children) {
@@ -219,13 +267,17 @@ namespace bubequ{
 			}
 			else if (unit->type == UnitType::VARIABLE) {
 				if (unit->value < 0) {
-					bubbleString += "-";
+					bubbleString += SYMBOL_NEGATIVE;
 				}
 				bubbleString += unit->label;
 				return bubbleString + ")";
 			}
 			else if (unit->type == UnitType::ZERO) {
 				bubbleString += ")";
+				return bubbleString;
+			}
+			else if (unit->type == UnitType::TEXT) {
+				bubbleString += "\"" + unit->label + "\")";
 				return bubbleString;
 			}
 			else{
@@ -235,22 +287,36 @@ namespace bubequ{
 
 		if (auto link = dynamic_cast<Link*>(scope.get())) {
 			if (link->type == LinkType::MULTIPLICATION) {
-				bubbleString += "*";
+				bubbleString += SYMBOL_MULTIPLICATION;
 			}
 			else if (link->type == LinkType::POWER) {
-				bubbleString += "^";
+				bubbleString += SYMBOL_POWER;
 			}
 			else if (link->type == LinkType::SUMMATION) {
-				bubbleString += "$";
+				bubbleString += SYMBOL_SUMMATION;
 			}
 			if (link->type == LinkType::GREATER) {
-				bubbleString += ">";
+				bubbleString += SYMBOL_GREATER;
 			}
 			if (link->type == LinkType::EQUALS) {
-				bubbleString += "=";
+				bubbleString += SYMBOL_EQUAL;
 			}
 			if (link->type == LinkType::FUNCTION) {
-				bubbleString += link->label;
+				bubbleString += link->text;
+			}
+			if (link->type == LinkType::AND_GATE) {
+				bubbleString += SYMBOL_AND_GATE;
+			}
+			if (link->type == LinkType::SWAPPER) {
+				bubbleString += SYMBOL_SWAP;
+			}
+			if (link->type == LinkType::GATE) {
+				if (link->status == components::BubbleGateStatus::CLOSED)
+					bubbleString += SYMBOL_CLOSED_GATE;
+				else if (link->status == components::BubbleGateStatus::OPEN)
+					bubbleString += SYMBOL_OPEN_GATE;
+				else if (link->status == components::BubbleGateStatus::DUMMY)
+					bubbleString += SYMBOL_DUMMY_GATE;
 			}
 		}
 
