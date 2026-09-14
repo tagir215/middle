@@ -376,12 +376,20 @@ namespace bubble {
 	bool matchingBubbles(middle::GameState* gameState, middle::Id& idA, middle::Id idB) {
 		auto& shapeA = middle::getShape(gameState, idA.index);
 		auto& shapeB = middle::getShape(gameState, idB.index);
+
+		auto gateA = middle::getComponent<components::BubbleGateComponent>(shapeA);
+		auto gateB = middle::getComponent<components::BubbleGateComponent>(shapeB);
+		if (gateA && gateB) {
+			return true;
+		}
+
 		auto bubbleA = middle::getComponent<components::BubbleComponent>(shapeA);
 		auto bubbleB = middle::getComponent<components::BubbleComponent>(shapeB);
 		auto unitA = middle::getComponent<components::BubbleUnit>(shapeA);
 		auto unitB = middle::getComponent<components::BubbleUnit>(shapeB);
 		auto nodeA = middle::getComponent<components::AlgebraNode>(shapeA);
 		auto nodeB = middle::getComponent<components::AlgebraNode>(shapeB);
+
 		// idB is allowed to be AlgebraNode, but not idA
 		assert(!nodeA);
 		auto typeA = getStructureType(gameState, idA);

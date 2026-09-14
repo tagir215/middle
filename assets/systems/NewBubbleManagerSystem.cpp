@@ -11,6 +11,7 @@
 #include "NonPhysicalBubbleTag.h"
 #include "BubbleGateComponent.h"
 #include "BubbleLockedComponent.h"
+#include "BubbleTextComponent.h"
 
 
 class NewBubbleManagerSystem : public middle::MiddleGameplaySystem {
@@ -28,6 +29,7 @@ class NewBubbleManagerSystem : public middle::MiddleGameplaySystem {
 		newSwapBubbleCache = middle::newCompCache(gameState, systemName);
 		newSwapBubbleCache->addType<components::NewBubbleTag>();
 		newSwapBubbleCache->addType<components::BubbleSwapComponent>();
+
 
 	}
 	void update(middle::GameState* gameState) override {

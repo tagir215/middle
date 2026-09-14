@@ -5,15 +5,24 @@
 #include "Rectangle.h"
 #include "component_utils.h"
 #include "BubbleTextSizeChangedTag.h"
+#include "NewBubbleTag.h"
+#include "alg_file_utils.h"
+#include "bubble_paths.h"
+#include "NeedsUpdateTag.h"
 
 class BubbleTextSystem : public middle::MiddleGameplaySystem {
 	components::CompCache* cache;
+	components::CompCache* newTextBubbleCache;
 
 	void init(middle::GameState* gameState) override {
 		cache = middle::newCompCache(gameState, systemName);
 		cache->addType<components::BubbleTextComponent>();
 		cache->addType<components::Rectangle>();
 		cache->addType<components::BubbleTextSizeChangedTag>();
+
+		newTextBubbleCache = middle::newCompCache(gameState, systemName);
+		newTextBubbleCache->addType<components::NewBubbleTag>();
+		newTextBubbleCache->addType<components::BubbleTextComponent>();
 	}
 
 
@@ -151,6 +160,19 @@ class BubbleTextSystem : public middle::MiddleGameplaySystem {
 
 
 	void update(middle::GameState* gameState) override {
+
+		{
+			// initialize text bubbles
+			auto textIt = newTextBubbleCache->begin<components::BubbleTextComponent>();
+			for (middle::Id id : newTextBubbleCache->relevantIdVector) {
+				auto text = *textIt;
+				std::string fileText = bubequ::loadText(bubblePaths::WORD_PROBLEMS_FOLDER + "/" + text->textName + ".txt");
+				text->text = fileText;
+				middle::attachComponent<components::BubbleTextSizeChangedTag>(gameState, id);
+			}
+		}
+
+
 		auto textIt = cache->begin<components::BubbleTextComponent>();
 		auto rectIt = cache->begin<components::Rectangle>();
 		for (middle::Id id : cache->relevantIdVector) {
@@ -163,6 +185,7 @@ class BubbleTextSystem : public middle::MiddleGameplaySystem {
 			text->fontSize = ratio;
 			middle::queueComponentDeletion<components::BubbleTextSizeChangedTag>(gameState, id);
 		}
+
 	}
 };
 

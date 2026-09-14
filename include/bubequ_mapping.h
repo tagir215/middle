@@ -72,6 +72,8 @@ namespace bubequ{
 				}
 				else if (unitScope->type == bubequ::UnitType::TEXT) {
 					middle::Shape bubProto = bubble::newTextBubble(gameState, pos);
+					auto textComp = middle::getComponent<components::BubbleTextComponent>(bubProto);
+					textComp->textName = unitScope->label;
 					newNodeId = middle::registerShape(gameState, bubProto).id;
 				}
 			}

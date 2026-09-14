@@ -64,7 +64,7 @@ namespace bubequ {
 			return unit;
 		}
 		if (valueStr[0] == SYMBOL_TEXT[0]) {
-			std::string text = valueStr.substr(1, valueStr.size() - 1);
+			std::string text = valueStr.substr(1, valueStr.size() - 2);
 			unit->label = text;
 			unit->type = UnitType::TEXT;
 			return unit;
