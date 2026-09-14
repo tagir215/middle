@@ -9,6 +9,7 @@
 #include "TopDogInViewTag.h"
 #include "TopDogBubbleTag.h"
 #include "BubblePathMark.h"
+#include "IntersectingTag.h"
 
 class BubbleVisibilitySystem : public middle::MiddleGameplaySystem {
 	components::CompCache* visibleCache;
@@ -79,10 +80,18 @@ class BubbleVisibilitySystem : public middle::MiddleGameplaySystem {
 		std::vector<middle::Id>children;
 		middle::getChildren(gameState, id, children);
 		if (children.size() == 0) {
-			assert(false);
+			return;
 		}
 		// random child
 		middle::Id referenceId = children[0];
+		for (middle::Id childId : children) {
+			auto& shape = middle::getShape(gameState, childId.index);
+			bool isIntersecting = middle::hasComp(shape, middle::getTypeId<components::IntersectingTag>());
+			if (isIntersecting) {
+				referenceId = childId;
+				break;
+			}
+		}
 		
 		// childs global transform should stay same after transforming its parent
 		Vector3 referenceGlobalPos = middle::getGlobalPosition(gameState, referenceId.index);

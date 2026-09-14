@@ -51,7 +51,7 @@ public:
 		float thisIsImportantScalor = gameState->bubbleAlgebraState.worldScalarRate > 1 ? 1 : 1.3f;
 
 		float screenWidthInWorldCoords = 
-			gameState->nearPlaneAxisX / gameState->nearPlaneDistance * (-gameState->activeCamera.position.y)  * 0.2f * thisIsImportantScalor;
+			gameState->nearPlaneAxisX / gameState->nearPlaneDistance * (-gameState->activeCamera.position.y)  * 4.2f * thisIsImportantScalor;
 
 		// find current position id
 		middle::Id localPathEndId;
