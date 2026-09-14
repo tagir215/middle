@@ -10,6 +10,8 @@
 #include "TopDogBubbleTag.h"
 #include "BubblePathMark.h"
 #include "IntersectingTag.h"
+#include "NonPhysicalBubbleTag.h"
+#include "RuntimeHiddenTag.h"
 
 class BubbleVisibilitySystem : public middle::MiddleGameplaySystem {
 	components::CompCache* visibleCache;
@@ -31,13 +33,19 @@ class BubbleVisibilitySystem : public middle::MiddleGameplaySystem {
 		visibleCache->addType<components::BubbleComponent>();
 		visibleCache->addType<components::BubblePathMark>();
 		visibleCache->addType<components::Layer>();
+		visibleCache->addType<components::NonPhysicalBubbleTag>(components::NOTINTERESTED);
+		visibleCache->addType<components::RuntimeHiddenTag>(components::NOTINTERESTED);
 		invisibleCache = middle::newCompCache(gameState, systemName);
 		invisibleCache->addType<components::InViewTag>(components::NOTINTERESTED);
 		invisibleCache->addType<components::BubbleComponent>();
 		invisibleCache->addType<components::BubblePathMark>();
 		invisibleCache->addType<components::Layer>();
+		invisibleCache->addType<components::NonPhysicalBubbleTag>(components::NOTINTERESTED);
+		invisibleCache->addType<components::RuntimeHiddenTag>(components::NOTINTERESTED);
 		topDogCache = middle::newCompCache(gameState, systemName);
 		topDogCache->addType<components::TopDogBubbleTag>();
+		topDogCache->addType<components::NonPhysicalBubbleTag>(components::NOTINTERESTED);
+		topDogCache->addType<components::RuntimeHiddenTag>(components::NOTINTERESTED);
 	}
 
 	// update disappearing transform to avoid running out of floating point precision when zooming 

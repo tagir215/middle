@@ -533,6 +533,7 @@ namespace bubbleActions {
 
 		middle::executeAction<middle::EditorActionDeleteSingle>(gameState, this, shapeToCopyId);
 		middle::executeAction<UpdateBubblesMultiplicationIdentity>(gameState, this, mulId);
+		resultShapeId = mulId;
 
 		queueSound(gameState, bubbleSounds::EXPAND_MULTIPLICATION_SOUND);
 

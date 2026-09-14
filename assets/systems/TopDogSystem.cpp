@@ -13,6 +13,7 @@
 #include "BottomDogBubbleTag.h"
 #include "InViewTag.h"
 #include "TopDogInViewTag.h"
+#include "NonPhysicalBubbleTag.h"
 
 class TopDogSystem : public middle::MiddleGameplaySystem {
 	components::CompCache* topDogCache;
@@ -25,16 +26,20 @@ class TopDogSystem : public middle::MiddleGameplaySystem {
 
 		topDogCache = middle::newCompCache(gameState, systemName);
 		topDogCache->addType<components::TopDogBubbleTag>();
+		topDogCache->addType<components::NonPhysicalBubbleTag>(components::NOTINTERESTED);
 
 		topDogInViewCache = middle::newCompCache(gameState, systemName);
 		topDogInViewCache->addType<components::TopDogInViewTag>();
+		topDogInViewCache->addType<components::NonPhysicalBubbleTag>(components::NOTINTERESTED);
 
 		bubbleCache = middle::newCompCache(gameState, systemName);
 		bubbleCache->addType<components::BubbleComponent>();
+		bubbleCache->addType<components::NonPhysicalBubbleTag>(components::NOTINTERESTED);
 
 		bubblesInViewCache = middle::newCompCache(gameState, systemName);
 		bubblesInViewCache->addType<components::BubbleComponent>();
 		bubblesInViewCache->addType<components::InViewTag>();
+		bubblesInViewCache->addType<components::NonPhysicalBubbleTag>(components::NOTINTERESTED);
 	}
 
 	bool isTopDog(middle::GameState* gameState, middle::Id id) {

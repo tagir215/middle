@@ -20,6 +20,7 @@
 #include "BubbleVariable.h"
 #include "BubbleEqualsVariable.h"
 #include "BubbleManipulatable.h"
+#include "NonPhysicalBubbleTag.h"
 
 class BubbleManipulationSystem : public middle::MiddleGameplaySystem {
 
@@ -52,6 +53,14 @@ public:
 		moveShape(gameState, shape.id.index, Vector3Scale(xzVel, gameState->frameTime));
 	}
 
+	void attachNonPhysical(middle::GameState* gameState, middle::Id id) {
+		middle::attachComponent<components::NonPhysicalBubbleTag>(gameState, id);
+		std::vector<middle::Id>children;
+		middle::getChildren(gameState, id, children);
+		for (middle::Id childId : children) {
+			attachNonPhysical(gameState, childId);
+		}
+	}
 
 	void attachComponents(middle::GameState* gameState, middle::Shape& shape, components::MouseGrabbable* grabbable) {
 
@@ -66,6 +75,7 @@ public:
 			auto copyGrabbable = middle::getComponent<components::MouseGrabbable>(copyShape);
 			copyGrabbable->grabbing = true;
 			gameState->bubbleAlgebraState.grabbedId = copyId;
+			attachNonPhysical(gameState, copyId);
 			// set og as reference
 			auto ref = middle::attachComponent<components::IdRef>(gameState, copyShape.id);
 			ref->idRef = shape.id;
@@ -78,7 +88,7 @@ public:
 			grabbable->grabbing = false;
 			gameState->bubbleAlgebraState.grabbedId = middle::Id();
 			auto deleteComp = middle::attachComponent<components::DeleteComponent>(gameState, shape.id);
-			deleteComp->framesUntilDelete = 0;
+			deleteComp->framesUntilDelete = 1;
 		}
 	}
 

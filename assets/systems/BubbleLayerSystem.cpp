@@ -9,54 +9,48 @@
 #include "bubble_utils.h"
 #include "IdRef.h"
 #include "SnapRef.h"
+#include "TopDogBubbleTag.h"
+#include "NonPhysicalBubbleTag.h"
 
 class BubbleLayerSystem : public middle::MiddleGameplaySystem {
 public:
 	BubbleLayerSystem() {
 		systemModeType = middle::SystemModeType::ENGINE;
 	}
-	components::CompCache* bubbleLayerCache;
+	components::CompCache* topDogCache;
 
 	void init(middle::GameState* gameState) override {
-
-		bubbleLayerCache = middle::newCompCache(gameState, systemName);
-		bubbleLayerCache->addType<components::BubbleComponent>();
-		bubbleLayerCache->addType<components::Layer>();
-		bubbleLayerCache->addType<components::IdRef>(components::NOTINTERESTED);
-		bubbleLayerCache->addType<components::SnapRef>(components::NOTINTERESTED);
+		topDogCache = middle::newCompCache(gameState, systemName);
+		topDogCache->addType<components::BubbleComponent>();
+		topDogCache->addType<components::TopDogBubbleTag>();
+		topDogCache->addType<components::NonPhysicalBubbleTag>(components::NOTINTERESTED);
 	}
+
+
 	void update(middle::GameState* gameState) override {
-		auto bubbleLayerIt = bubbleLayerCache->begin<components::Layer>();
-		for (middle::Id& id : bubbleLayerCache->relevantIdVector) {
-			auto layer = *bubbleLayerIt;
-			layer->layer = bubble::findDepth(gameState, id);
-		}
+		for (middle::Id& id : topDogCache->relevantIdVector) {
+			std::stack<middle::Id>idStack;
+			std::stack<int>depthStack;
+			idStack.push(id);
+			depthStack.push(0);
 
-		if (gameState->bubbleAlgebraState.grabbedId.index != middle::UNASSIGNED) {
+			while (idStack.size() > 0) {
+				middle::Id currentId = idStack.top();
+				int depth = depthStack.top();
+				idStack.pop();
+				depthStack.pop();
+				auto layer = middle::getComp<components::Layer>(gameState, currentId);
+				layer->layer = depth;
 
-			middle::Id grabbedId = gameState->bubbleAlgebraState.grabbedId;
-			auto& grabbedShape = middle::getShape(gameState, grabbedId.index);
-			auto idRef = middle::getComponent<components::IdRef>(grabbedShape);
-
-			if (idRef && middle::isValidId(gameState, idRef->idRef)) {
-
-				auto& refShape = middle::getShape(gameState, idRef->idRef.index);
-				int depth = bubble::findDepth(gameState, refShape.id);
-
-				std::vector<middle::Id> children;
-				middle::getAllChildren(gameState, grabbedId, children);
-				int layerOffset = depth;
-
-				for (middle::Id& childId : children) {
-					auto& childShape = middle::getShape(gameState, childId.index);
-					auto layer = middle::getComponent<components::Layer>(childShape);
-					if (layer) {
-						layer->layer += layerOffset;
-					}
+				std::vector<middle::Id>children;
+				middle::getChildren(gameState, currentId, children);
+				for (middle::Id childId : children) {
+					idStack.push(childId);
+					depthStack.push(depth + 1);
 				}
 			}
-
 		}
+
 	}
 };
 

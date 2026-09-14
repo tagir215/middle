@@ -36,7 +36,7 @@ class AutoSaveSystem : public middle::MiddleGameplaySystem {
 
 		for (middle::Id id : cache->relevantIdVector) {
 			middle::queueComponentDeletion<components::QueuedForSaveTag>(gameState, id);
-			bubequ::saveBubble(gameState, id, gameState->bubbleAlgebraState.activeBubbleName);
+			//bubequ::saveBubble(gameState, id, gameState->bubbleAlgebraState.activeBubbleName);
 		}
 	}
 };
