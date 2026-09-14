@@ -128,6 +128,34 @@ namespace middle{
 		}
 	}
 
+	void updateGameplaySystems(middle::GameState* gameState, std::unordered_map<std::string, std::unique_ptr<MiddleGameplaySystem>>& systemMap) {
+		auto sysRefIt = cache->begin<components::SystemReference>();
+		for (middle::Id id : cache->relevantIdVector) {
+			auto sysRef = *sysRefIt;
+
+			auto systemName = sysRef->systemName;
+			auto& system = systemMap[systemName];
+
+			if (!system)
+				continue;
+
+			if (gameState->applicationMode == ApplicationMode::GAME_MODE
+				&& system->systemModeType == SystemModeType::EDITOR) {
+				continue;
+			}
+
+			if (gameState->applicationMode == ApplicationMode::EDITOR_MODE
+				&& system->systemModeType == SystemModeType::GAMEPLAY) {
+				continue;
+			}
+
+			gameState->activeSystemName = system->systemName;
+			system->recordTimeUpdate(gameState);
+
+			middleProfiling::reviewSystemTime(gameState, system.get());
+		}
+	}
+
 	void deterministicUpdate(GameState* gameState) {
 		// init frame
 		updateSystems(gameState, gameState->engineSystemInitFrame);
@@ -145,78 +173,20 @@ namespace middle{
 			return;
 		}
 
-		{
-
-			auto sysRefIt = cache->begin<components::SystemReference>();
-			for (middle::Id id : cache->relevantIdVector) {
-				auto sysRef = *sysRefIt;
-
-				auto systemName = sysRef->systemName;
-				auto& system = gameState->gameplaySystems[systemName];
-
-				if (!system)
-					continue;
-
-				if (gameState->applicationMode == ApplicationMode::GAME_MODE
-					&& system->systemModeType == SystemModeType::EDITOR) {
-					continue;
-				}
-
-				if (gameState->applicationMode == ApplicationMode::EDITOR_MODE
-					&& system->systemModeType == SystemModeType::GAMEPLAY) {
-					continue;
-				}
-
-				gameState->activeSystemName = system->systemName;
-				system->recordTimeUpdate(gameState);
-
-				middleProfiling::reviewSystemTime(gameState, system.get());
-			}
-
-		}
+		// gameplay midframe
+		updateGameplaySystems(gameState, gameState->gameplaySystems);
 
 		processActionQueues(gameState);
 		cacheUpdate(gameState);
 
-
-		{
-
-			auto sysRefIt = cache->begin<components::SystemReference>();
-			for (middle::Id id : cache->relevantIdVector) {
-				auto sysRef = *sysRefIt;
-
-				auto systemName = sysRef->systemName;
-				auto& system = gameState->gameplaySystemsPostFrame[systemName];
-
-				if (!system)
-					continue;
-
-				if (gameState->applicationMode == ApplicationMode::GAME_MODE
-					&& system->systemModeType == SystemModeType::EDITOR) {
-					continue;
-				}
-
-				if (gameState->applicationMode == ApplicationMode::EDITOR_MODE
-					&& system->systemModeType == SystemModeType::GAMEPLAY) {
-					continue;
-				}
-
-				gameState->activeSystemName = system->systemName;
-				system->recordTimeUpdate(gameState);
-
-				middleProfiling::reviewSystemTime(gameState, system.get());
-			}
-
-		}
-
+		// gameplay postframe
+		updateGameplaySystems(gameState, gameState->gameplaySystemsPostFrame);
 
 		processActionQueues(gameState);
 		cacheUpdate(gameState);
 
+		// postframe
 		updateSystems(gameState, gameState->enginePostFrameSystems);
-
-		processActionQueues(gameState);
-		cacheUpdate(gameState);
 
 		// Clear input blockers at the end of physics update
 		gameState->inputBlockers.clear();

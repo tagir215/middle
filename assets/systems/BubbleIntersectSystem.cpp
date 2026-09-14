@@ -31,6 +31,10 @@ public:
 	components::CompCache* unIntersectableBubbleCache;
 
 	void init(middle::GameState* gameState) {
+
+		systemUpdateType = middle::SystemUpdateType::INITFRAME;
+		systemModeType = middle::SystemModeType::GAMEPLAY;
+
 		bubbleCache = middle::newCompCache(gameState, systemName);
 		bubbleCache->addType<components::BubbleComponent>();
 		bubbleCache->addType<components::InViewTag>();

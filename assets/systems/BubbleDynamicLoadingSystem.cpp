@@ -23,9 +23,8 @@ public:
 	components::CompCache* activeCache;
 
 	void init(middle::GameState* gameState) override {
-		systemUpdateType = middle::SystemUpdateType::INITFRAME;
-		// run before cache update
-		updatePriority = 0;
+		systemUpdateType = middle::SystemUpdateType::PREFRAME;
+		// run after topdog system
 
 		intersectingBubbleCache = middle::newCompCache(gameState, systemName);
 		intersectingBubbleCache->addType<components::BubbleComponent>();
@@ -38,6 +37,7 @@ public:
 		activeCache->addType<components::BubbleComponent>();
 		activeCache->addType<components::ActiveSceneSelectableTag>();
 	}
+
 	void update(middle::GameState* gameState) override {
 
 		// update background id if not assigned to anything
@@ -47,10 +47,11 @@ public:
 			}
 		}
 
-		float thisIsImportantScalor = gameState->bubbleAlgebraState.worldScalarRate > 1 ? 1.3f : 1;
+		// prevent pushing and popping stuff into path continuously when at edge of pushing or popping..
+		float thisIsImportantScalor = gameState->bubbleAlgebraState.worldScalarRate > 1 ? 1 : 1.3f;
 
 		float screenWidthInWorldCoords = 
-			gameState->nearPlaneAxisX / gameState->nearPlaneDistance * (-gameState->activeCamera.position.y)  * 0.2f;
+			gameState->nearPlaneAxisX / gameState->nearPlaneDistance * (-gameState->activeCamera.position.y)  * 0.2f * thisIsImportantScalor;
 
 		// find current position id
 		middle::Id localPathEndId;

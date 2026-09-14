@@ -79,9 +79,12 @@ class BubbleVisibilitySystem : public middle::MiddleGameplaySystem {
 		std::vector<middle::Id>children;
 		middle::getChildren(gameState, id, children);
 		if (children.size() == 0) {
-			return;
+			assert(false);
 		}
+		// random child
 		middle::Id referenceId = children[0];
+		
+		// childs global transform should stay same after transforming its parent
 		Vector3 referenceGlobalPos = middle::getGlobalPosition(gameState, referenceId.index);
 		Vector3 referenceGlobalScale = middle::getGlobalScale(gameState, referenceId);
 		bubble::recursiveBubbleLayoutScaleUpdate(gameState, id);
@@ -171,7 +174,7 @@ class BubbleVisibilitySystem : public middle::MiddleGameplaySystem {
 			for (middle::Id id : invisibleCache->relevantIdVector) {
 				auto layer = *layerIt;
 				auto mark = *markIt;
-				if (layer->layer >= firstVisibleLayer && layer->layer <= lastVisibleLayer && mark->stamp == bubbleVisitStamp) {
+				if (layer->layer > firstVisibleLayer && layer->layer <= lastVisibleLayer && mark->stamp == bubbleVisitStamp) {
 					middle::attachComponent<components::InViewTag>(gameState, id);
 				}
 				if (layer->layer == firstVisibleLayer) {
@@ -182,8 +185,6 @@ class BubbleVisibilitySystem : public middle::MiddleGameplaySystem {
 				}
 			}
 		}
-
-
 
 		++bubbleVisitStamp;
 	}

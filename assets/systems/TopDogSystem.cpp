@@ -21,7 +21,7 @@ class TopDogSystem : public middle::MiddleGameplaySystem {
 	components::CompCache* bubblesInViewCache;
 
 	void init(middle::GameState* gameState) override {
-		systemUpdateType = middle::SystemUpdateType::PREFRAME;
+		systemUpdateType = middle::SystemUpdateType::INITFRAME;
 
 		topDogCache = middle::newCompCache(gameState, systemName);
 		topDogCache->addType<components::TopDogBubbleTag>();

@@ -81,7 +81,6 @@ public:
 			bubble::updateBubbleLayout(gameState, id, rect->width, moveRatio);
 		}
 
-
 		// powers
 		auto powerRectIt = powerCache->begin<components::Rectangle>();
 		for (middle::Id id : powerCache->relevantIdVector) {
