@@ -71,6 +71,7 @@ class BubbleVisibilitySystem : public middle::MiddleGameplaySystem {
 			Vector3 parentScale = middle::getLocalScale(gameState, parentId);
 			disappearTransforms(gameState, parentId);
 		}
+		gameState->bubbleAlgebraState.worldScale = 1;
 	}
 
 
@@ -95,6 +96,8 @@ class BubbleVisibilitySystem : public middle::MiddleGameplaySystem {
 		Vector3 displacement = referenceGlobalPos - newGlobalPos;
 		Vector3 localPos = middle::getLocalPosition(gameState, id);
 		middle::setLocalPosition(gameState, id, localPos + displacement);
+
+		gameState->bubbleAlgebraState.worldScale = 1;
 	}
 
 	void markPath(middle::GameState* gameState) {

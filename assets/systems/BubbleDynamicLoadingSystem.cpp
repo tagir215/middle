@@ -47,7 +47,7 @@ public:
 			}
 		}
 
-		float thisIsImportantScalor = gameState->bubbleAlgebraState.worldScalarRate > 1 ? 1 : 1.3f;
+		float thisIsImportantScalor = gameState->bubbleAlgebraState.worldScalarRate > 1 ? 1.3f : 1;
 
 		float screenWidthInWorldCoords = 
 			gameState->nearPlaneAxisX / gameState->nearPlaneDistance * (-gameState->activeCamera.position.y)  * 0.2f;
@@ -66,8 +66,10 @@ public:
 		}
 
 		if (localPathEndId.index == middle::UNASSIGNED) {
-			//gameState->bubbleAlgebraState.traversePath.clear();
-			//gameState->bubbleAlgebraState.traversePathIds.clear();
+			if (gameState->bubbleAlgebraState.traversePath.size() > 0) {
+				gameState->bubbleAlgebraState.traversePath.pop_back();
+				gameState->bubbleAlgebraState.traversePathIds.pop_back();
+			}
 			return;
 		}
 

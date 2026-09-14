@@ -15,6 +15,8 @@ using namespace middle;
 
 namespace middle{
 
+	components::CompCache* cache;
+
 	void sortSystems(std::vector<std::unique_ptr<middle::MiddleGameplaySystem>>& systems) {
 		std::vector<std::unique_ptr<middle::MiddleGameplaySystem>>tempVec;
 		for (auto& s : systems) {
@@ -35,6 +37,10 @@ namespace middle{
 
 
 	void registerSystems(middle::GameState* gameState) {
+
+		cache = middle::newCompCache(gameState, "main loop");
+		cache->addType<components::SystemReference>();
+
 		auto& systemMap = middle::getSystemMap();
 
 		//gameState->componentCacheSystem = gameState->
@@ -101,35 +107,64 @@ namespace middle{
 		gameState->componentCacheSystem->recordTimeUpdate(gameState);
 	}
 
-	void physicsUpdate(GameState* gameState) {
+	void processActionQueues(GameState* gameState) {
+		while (gameState->actionQueue.size() > 0) {
+			auto actionStart = std::chrono::high_resolution_clock::now();
+
+			gameState->actionQueue.front()->execute(gameState);
+			std::string caller = gameState->actionQueue.front()->callerSystem;
+
+			auto actionEnd = std::chrono::high_resolution_clock::now();
+			auto actionDuration = std::chrono::duration_cast<std::chrono::milliseconds>(actionEnd - actionStart);
+			float actionMs = actionDuration.count();
+			if (actionMs > middleProfiling::slowActionThreshold) {
+				gameState->slowActions.push_back("action from: " + caller + ": " + std::to_string(actionMs));
+			}
+			gameState->actionQueue.pop();
+		}
+		while (gameState->undoQueue.size() > 0) {
+			gameState->undoQueue.front()->undo(gameState);
+			gameState->undoQueue.pop();
+		}
+	}
+
+	void deterministicUpdate(GameState* gameState) {
+		// init frame
 		updateSystems(gameState, gameState->engineSystemInitFrame);
+
+		processActionQueues(gameState);
 		cacheUpdate(gameState);
+
+		// preframe
 		updateSystems(gameState, gameState->engineSystemsFrameStart);
+
+		processActionQueues(gameState);
 		cacheUpdate(gameState);
 
 		if (!gameState->loaded) {
 			return;
 		}
 
-		// run gameplay systems
-		loopInstances(gameState, [gameState](int i, Shape& shape) {
+		{
 
-			auto sysRef = getComponent<components::SystemReference>(shape);
-			if (sysRef != nullptr) {
+			auto sysRefIt = cache->begin<components::SystemReference>();
+			for (middle::Id id : cache->relevantIdVector) {
+				auto sysRef = *sysRefIt;
+
 				auto systemName = sysRef->systemName;
 				auto& system = gameState->gameplaySystems[systemName];
 
 				if (!system)
-					return true;
+					continue;
 
 				if (gameState->applicationMode == ApplicationMode::GAME_MODE
 					&& system->systemModeType == SystemModeType::EDITOR) {
-					return true;
+					continue;
 				}
 
 				if (gameState->applicationMode == ApplicationMode::EDITOR_MODE
 					&& system->systemModeType == SystemModeType::GAMEPLAY) {
-					return true;
+					continue;
 				}
 
 				gameState->activeSystemName = system->systemName;
@@ -137,30 +172,33 @@ namespace middle{
 
 				middleProfiling::reviewSystemTime(gameState, system.get());
 			}
-			return true;
-			});
 
+		}
+
+		processActionQueues(gameState);
 		cacheUpdate(gameState);
 
-		// run gameplay systems post frmae
-		loopInstances(gameState, [gameState](int i, Shape& shape) {
 
-			auto sysRef = getComponent<components::SystemReference>(shape);
-			if (sysRef != nullptr) {
+		{
+
+			auto sysRefIt = cache->begin<components::SystemReference>();
+			for (middle::Id id : cache->relevantIdVector) {
+				auto sysRef = *sysRefIt;
+
 				auto systemName = sysRef->systemName;
 				auto& system = gameState->gameplaySystemsPostFrame[systemName];
 
 				if (!system)
-					return true;
+					continue;
 
 				if (gameState->applicationMode == ApplicationMode::GAME_MODE
 					&& system->systemModeType == SystemModeType::EDITOR) {
-					return true;
+					continue;
 				}
 
 				if (gameState->applicationMode == ApplicationMode::EDITOR_MODE
 					&& system->systemModeType == SystemModeType::GAMEPLAY) {
-					return true;
+					continue;
 				}
 
 				gameState->activeSystemName = system->systemName;
@@ -168,13 +206,16 @@ namespace middle{
 
 				middleProfiling::reviewSystemTime(gameState, system.get());
 			}
-			return true;
-			});
 
+		}
+
+
+		processActionQueues(gameState);
 		cacheUpdate(gameState);
 
 		updateSystems(gameState, gameState->enginePostFrameSystems);
 
+		processActionQueues(gameState);
 		cacheUpdate(gameState);
 
 		// Clear input blockers at the end of physics update
@@ -219,29 +260,10 @@ extern "C" {
 			if (gameState->frameTimeAccumulator > gameState->frameTime * 2) {
 				gameState->frameTimeAccumulator = 0;
 			}
-			physicsUpdate(gameState);
+			deterministicUpdate(gameState);
 		}
 
-
-		while (gameState->actionQueue.size() > 0) {
-			auto actionStart = std::chrono::high_resolution_clock::now();
-
-			gameState->actionQueue.front()->execute(gameState);
-			std::string caller = gameState->actionQueue.front()->callerSystem;
-
-			auto actionEnd = std::chrono::high_resolution_clock::now();
-			auto actionDuration = std::chrono::duration_cast<std::chrono::milliseconds>(actionEnd - actionStart);
-			float actionMs = actionDuration.count();
-			if (actionMs > middleProfiling::slowActionThreshold) {
-				gameState->slowActions.push_back("action from: " + caller + ": " + std::to_string(actionMs));
-			}
-			gameState->actionQueue.pop();
-		}
-		while (gameState->undoQueue.size() > 0) {
-			gameState->undoQueue.front()->undo(gameState);
-			gameState->undoQueue.pop();
-		}
-
+		processActionQueues(gameState);
 		cacheUpdate(gameState);
 
 		for (auto& renderSystem : gameState->engineRendererSystems) {

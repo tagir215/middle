@@ -34,7 +34,7 @@ public:
 				return i;
 			}
 		}
-		assert(false);
+		return -1;
 	}
 
 
