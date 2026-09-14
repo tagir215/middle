@@ -1,6 +1,7 @@
 #pragma once
 #include "editor_actions.h"
 #include "bubequ.h"
+#include "BubbleGateComponent.h"
 
 namespace equlab {
 
@@ -266,10 +267,12 @@ namespace equlab {
 	public:
 		middle::Id parentId;
 		Vector3 targetPosition;
+		components::BubbleGateStatus status;
 		middle::Id resultId;
-		AddGateBubble(middle::Id parentId, const Vector3& targetPosition) {
+		AddGateBubble(middle::Id parentId, const Vector3& targetPosition, components::BubbleGateStatus status) {
 			this->parentId = parentId;
 			this->targetPosition = targetPosition;
+			this->status = status;
 		}
 		void execute(middle::GameState* gameState) override;
 		void undo(middle::GameState* gameState) override;

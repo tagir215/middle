@@ -627,6 +627,7 @@ namespace bubbleActions {
 		}
 		middle::executeAction<middle::EditorActionRegisterId>(gameState, this, replacementShapeId);
 		middle::executeAction<Replace>(gameState, this, powerId, replacementShapeId);;
+		resultShapeId = replacementShapeId;
 
 		queueSound(gameState, bubbleSounds::EXPAND_POWER_SOUND);
 

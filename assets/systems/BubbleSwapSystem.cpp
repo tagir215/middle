@@ -10,6 +10,7 @@
 #include "IntersectingTag.h"
 #include "LoopSociety.h"
 #include "bubble_utils.h"
+#include "NonPhysicalBubbleTag.h"
 
 class BubbleSwapSystem : public middle::MiddleGameplaySystem {
 	components::CompCache* cache;
@@ -43,9 +44,12 @@ class BubbleSwapSystem : public middle::MiddleGameplaySystem {
 			middle::Id activeChildId = children[swapComp->activeIndex];
 			middle::Id inActiveChildId = children[inActiveIndex];
 			bubble::recursiveUnHideBubble(gameState, activeChildId);
-			middle::queueComponentDeletion<components::Button>(gameState, activeChildId);
+			middle::attachComponent<components::Button>(gameState, activeChildId);
+			middle::queueComponentDeletion<components::NonPhysicalBubbleTag>(gameState, activeChildId);
+
 			bubble::recursiveHideBubble(gameState, inActiveChildId);
-			middle::attachComponent<components::Button>(gameState, inActiveChildId);
+			middle::queueComponentDeletion<components::Button>(gameState, inActiveChildId);
+			middle::attachComponent<components::NonPhysicalBubbleTag>(gameState, inActiveChildId);
 		}
 	}
 };

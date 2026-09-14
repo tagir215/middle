@@ -428,13 +428,25 @@ public:
 		auto gateLayerIt = gateCache->begin<components::Layer>();
 		auto gateTransformIt = gateCache->begin<components::GlobalTransform>();
 		auto gateRectIt = gateCache->begin<components::Rectangle>();
+		auto gateIt = gateCache->begin<components::BubbleGateComponent>();
 		for (middle::Id id : gateCache->relevantIdVector) {
 			auto layer = *gateLayerIt;
 			auto transform = *gateTransformIt;
 			auto rect = *gateRectIt;
-			Color color = calculateFadedColor(gameState, bubbleColors::GATE, transform, getLayer(gameState, layer));
-			renderBubble(gameState, getLayer(gameState, layer), color, transform);
-			renderBubbleIcon(gameState, transform, rect->height, bubbleTextureNames::TEXTURE_CLOSED_GATE, getLayer(gameState, layer) + 1, IconPos::CENTER);
+			auto gate = *gateIt;
+			Color color;
+			if (gate->status == components::BubbleGateStatus::CLOSED)
+				color = bubbleColors::CLOSED_GATE;
+			else if (gate->status == components::BubbleGateStatus::DUMMY)
+				color = bubbleColors::DUMMY_GATE;
+			else
+				color = bubbleColors::OPEN_GATE;
+			Color fadedColor = calculateFadedColor(gameState, color, transform, layer->layer);
+			renderBubble(gameState, getLayer(gameState, layer), fadedColor, transform);
+
+			if (gate->status != components::BubbleGateStatus::OPEN) {
+				renderBubbleIcon(gameState, transform, rect->height, bubbleTextureNames::TEXTURE_CLOSED_GATE, getLayer(gameState, layer) + 1, IconPos::CENTER);
+			}
 		}
 
 		// renderunits

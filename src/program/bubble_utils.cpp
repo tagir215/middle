@@ -40,6 +40,7 @@
 #include "BubbleManipulatable.h"
 #include "InViewTag.h"
 #include "BubblePathMark.h"
+#include "NonPhysicalBubbleTag.h"
 
 namespace bubble {
 	float bubbleAxis = 50;
@@ -1195,6 +1196,7 @@ namespace bubble {
 		middle::Id left = logicChildren[components::BubbleLogicRole::LEFT];
 		if (isSwapBubble(gameState, left)) {
 			std::vector<middle::Id>swapChildren;
+			middle::getChildren(gameState, left, swapChildren);
 			resultLeft = swapChildren[components::BubbleSwapRole::SOLUTION_BUBBLE];
 		}
 		else {
@@ -1571,18 +1573,19 @@ mollis. Duis eleifend hendrerit ullamcorper.)";
 		middle::addComponent<components::BubbleSwapComponent>(bubbleProto);
 		middle::Shape& swapBubble = middle::registerShape(gameState, bubbleProto);
 
-		middle::Shape targetProto = newBubble(gameState, targetPos);
-		middle::deleteComponent<components::BubbleManipulatable>(targetProto);
-		middle::addComponent<components::Button>(targetProto);
-		middle::Shape& target = middle::registerShape(gameState, targetProto);
-
 		middle::Shape textProto = newTextBubble(gameState, targetPos);
 		middle::deleteComponent<components::BubbleManipulatable>(textProto);
-		middle::addComponent<components::RuntimeHiddenTag>(textProto);
+		middle::addComponent<components::Button>(textProto);
 		middle::Shape& text = middle::registerShape(gameState, textProto);
 
-		middle::EditorActionReparent(swapBubble.id.index, target.id.index).execute(gameState);
+		middle::Shape targetProto = newBubble(gameState, targetPos);
+		middle::addComponent<components::RuntimeHiddenTag>(targetProto);
+		middle::addComponent<components::NonPhysicalBubbleTag>(targetProto);
+		middle::deleteComponent<components::BubbleManipulatable>(targetProto);
+		middle::Shape& target = middle::registerShape(gameState, targetProto);
+
 		middle::EditorActionReparent(swapBubble.id.index, text.id.index).execute(gameState);
+		middle::EditorActionReparent(swapBubble.id.index, target.id.index).execute(gameState);
 
 		return swapBubble.id;
 	}

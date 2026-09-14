@@ -22,6 +22,7 @@
 #include "IntersectingTag.h"
 #include "BottomDogBubbleTag.h"
 #include "InViewTag.h"
+#include "NonPhysicalBubbleTag.h"
 
 class BubbleIntersectSystem : public middle::MiddleGameplaySystem {
 public:

@@ -573,6 +573,8 @@ namespace equlab {
 		auto registerAction = middle::executeAction<middle::EditorActionRegisterShape>
 			(gameState, this, newBubbleProto);
 		resultId = registerAction->newShapeId;
+		auto comp = middle::getComp<components::BubbleGateComponent>(gameState, resultId);
+		comp->status = status;
 		if (parentId.index != middle::UNASSIGNED) {
 			middle::executeAction<middle::EditorActionReparent>(gameState, this, parentId.index, resultId.index);
 		}

@@ -5,7 +5,9 @@ namespace bubbleColors {
 	inline Color BACKGROUND = WHITE;
 	inline Color BUBBLE = { 190,190,190,255 };
 	inline Color LOGIC = { 220,220,220,255 };
-	inline Color GATE = { 220,30,30,255 };
+	inline Color CLOSED_GATE = { 220,30,30,255 };
+	inline Color OPEN_GATE = { 30,200,30,255 };
+	inline Color DUMMY_GATE = BUBBLE;
 	inline Color POSITIVE_UNIT = WHITE;
 	inline Color NEGATIVE_UNIT = BLACK;
 	inline Color UNIT_TEXT_POSITIVE = BLACK;

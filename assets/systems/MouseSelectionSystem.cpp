@@ -9,19 +9,29 @@
 
 namespace MouseSelectionSystem {
 
+
 	class MouseSelectionSystem : public middle::MiddleGameplaySystem {
 	public:
-		MouseSelectionSystem() {
-			systemUpdateType = middle::SystemUpdateType::PREFRAME;
-			systemModeType = middle::SystemModeType::EDITOR;
-		}
 
 		components::CompCache* intersectableCache;
+		components::CompCache* mouseSelectableCache;
 
 		void init(middle::GameState* gameState) {
+			systemUpdateType = middle::SystemUpdateType::PREFRAME;
+			systemModeType = middle::SystemModeType::EDITOR;
+
 			intersectableCache = middle::newCompCache(gameState, systemName);
 			intersectableCache->addType<components::MouseSelectable>();
 		}
+
+		void unselect() {
+			auto selectableIt = intersectableCache->begin<components::MouseSelectable>();
+			for (middle::Id id : intersectableCache->relevantIdVector) {
+				auto selectable = *selectableIt;
+				selectable->selected = false;
+			}
+		}
+
 		void update(middle::GameState* gameState) override {
 
 			if (gameState->input.mouseClicked) {
@@ -30,10 +40,9 @@ namespace MouseSelectionSystem {
 
 			if (gameState->editorState.creationMode == middle::CreationMode::LOOP_MODE) {
 				if (gameState->input.mouseClicked || gameState->editorState.selectCount > 1) {
-					middle::unselect(gameState);
+					unselect();
 				}
 			}
-
 
 			auto selectableIt = intersectableCache->begin<components::MouseSelectable>();
 			for (int i = 0; i < intersectableCache->getSize(); ++i) {
@@ -88,7 +97,7 @@ namespace MouseSelectionSystem {
 
 			// unselect
 			if (gameState->input.mouseReleased && gameState->editorState.selectChangeCountAfterClick == 0) {
-				unselect(gameState);
+				unselect();
 			}
 
 		}

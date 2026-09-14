@@ -18,6 +18,8 @@
 #include "ActiveSceneEditableTag.h"
 #include "IntersectingTag.h"
 #include "bubequ_mapping.h"
+#include "BubbleGateComponent.h"
+#include "NonPhysicalBubbleTag.h"
 
 class EqulabSystem : public middle::MiddleGameplaySystem {
 public:
@@ -40,10 +42,12 @@ public:
 		intersectableBubbleCache = middle::newCompCache(gameState, systemName);
 		intersectableBubbleCache->addType<components::IntersectingTag>();
 		intersectableBubbleCache->addType<components::BubbleComponent>();
+		intersectableBubbleCache->addType<components::NonPhysicalBubbleTag>(components::NOTINTERESTED);
 
 		intersectableUnitCache = middle::newCompCache(gameState, systemName);
 		intersectableUnitCache->addType<components::IntersectingTag>();
 		intersectableUnitCache->addType<components::BubbleUnit>();
+		intersectableUnitCache->addType<components::NonPhysicalBubbleTag>(components::NOTINTERESTED);
 
 		selectedCache = middle::newCompCache(gameState, systemName);
 		selectedCache->addType<components::SelectedComponent>();
@@ -287,11 +291,11 @@ public:
 				bubble::queueBubbleAction(gameState, targetId, action);
 			}
 			else if (in.f3Clicked) {
-				auto action = std::make_shared<equlab::AddGateBubble>(targetId, mousePos);
+				auto action = std::make_shared<equlab::AddGateBubble>(targetId, mousePos, components::BubbleGateStatus::CLOSED);
 				bubble::queueBubbleAction(gameState, targetId, action);
 			}
 			else if (in.f4Clicked) {
-				auto action = std::make_shared<equlab::AddBubbleText>(targetId, mousePos);
+				auto action = std::make_shared<equlab::AddGateBubble>(targetId, mousePos, components::BubbleGateStatus::DUMMY);
 				bubble::queueBubbleAction(gameState, targetId, action);
 			}
 			// indequalties
