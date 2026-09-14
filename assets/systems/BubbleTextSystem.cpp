@@ -180,7 +180,10 @@ class BubbleTextSystem : public middle::MiddleGameplaySystem {
 			auto rect = *rectIt;
 			const float spacing = 1;
 			Vector2 textSize = MeasureTextSize(gameState->globalFont, text->text.c_str(), 1, 1);
-			float ratioX = textSize.x / rect->width;
+			float ratioX = textSize.x;
+			if (textSize.x > 0) {
+				ratioX = rect->width / textSize.x;
+			}
 			float ratio = ratioX;
 			text->fontSize = ratio;
 			middle::queueComponentDeletion<components::BubbleTextSizeChangedTag>(gameState, id);

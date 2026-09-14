@@ -138,8 +138,15 @@ namespace bubequ {
 		else if (operatorChar == SYMBOL_AND_GATE[0]) {
 			link->type = LinkType::AND_GATE;
 		}
-		else if (operatorChar == SYMBOL_SWAP[0]) {
+		else if (operatorChar == SYMBOL_SWAP_ENABLED[0]) {
 			link->type = LinkType::SWAPPER;
+			if (linkStr[1] == SYMBOL_SWAP_DISABLED[1]) {
+				link->status = 0;
+			}
+			else if (linkStr[1] == SYMBOL_SWAP_ENABLED[1]) {
+				link->status = 1;
+			}
+			++substringStart;
 		}
 		else {
 			throw std::runtime_error("file formal error: Not known linktype");
@@ -177,7 +184,8 @@ namespace bubequ {
 			|| operatorChar == SYMBOL_EQUAL[0]
 			|| operatorChar == SYMBOL_SUMMATION[0]
 			|| operatorChar == SYMBOL_AND_GATE[0]
-			|| operatorChar == SYMBOL_SWAP[0]
+			|| operatorChar == SYMBOL_SWAP_ENABLED[0]
+			|| operatorChar == SYMBOL_SWAP_DISABLED[0]
 			|| operatorChar == SYMBOL_CLOSED_GATE[0]
 			|| operatorChar == SYMBOL_OPEN_GATE[0]
 			|| operatorChar == SYMBOL_DUMMY_GATE[0]

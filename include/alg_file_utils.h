@@ -7,7 +7,8 @@
 namespace bubequ {
 	const inline std::string SYMBOL_MULTIPLICATION = "*";
 	const inline std::string SYMBOL_POWER = "^";
-	const inline std::string SYMBOL_SWAP = "/";
+	const inline std::string SYMBOL_SWAP_DISABLED = "/0";
+	const inline std::string SYMBOL_SWAP_ENABLED = "/1";
 	const inline std::string SYMBOL_AND_GATE = "&";
 	const inline std::string SYMBOL_CLOSED_GATE = "#0";
 	const inline std::string SYMBOL_OPEN_GATE = "#1";

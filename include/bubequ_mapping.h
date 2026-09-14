@@ -310,7 +310,10 @@ namespace bubequ{
 				bubbleString += SYMBOL_AND_GATE;
 			}
 			if (link->type == LinkType::SWAPPER) {
-				bubbleString += SYMBOL_SWAP;
+				if(link->status == components::SwapComponentStatus::SWAP_ENABLED)
+					bubbleString += SYMBOL_SWAP_ENABLED;
+				if(link->status == components::SwapComponentStatus::SWAP_DISABLED)
+					bubbleString += SYMBOL_SWAP_DISABLED;
 			}
 			if (link->type == LinkType::GATE) {
 				if (link->status == components::BubbleGateStatus::CLOSED)

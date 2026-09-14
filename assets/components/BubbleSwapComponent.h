@@ -11,8 +11,14 @@ namespace components {
 		SOLUTION_BUBBLE
 	};
 
+	enum SwapComponentStatus {
+		SWAP_DISABLED,
+		SWAP_ENABLED
+	};
+
 	struct BubbleSwapComponent : public middle::Serializable{
 		int activeIndex = 0;
+		SwapComponentStatus status;
 
 		void serialize(std::ostream& ostream) override;
 		void deserialize(const std::vector<std::string>& buffer, int indexOffset) override;
