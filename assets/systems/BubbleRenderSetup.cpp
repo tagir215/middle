@@ -46,6 +46,7 @@
 #include "BubbleLogicComponent.h"
 #include "BubbleGateComponent.h"
 #include "InViewTag.h"
+#include "BubbleLockedComponent.h"
 
 
 class BubbleRenderSetup : public middle::MiddleGameplaySystem {
@@ -95,6 +96,7 @@ public:
 		bubbleCache->addType<components::BubbleEqualsComponent>(components::NOTINTERESTED);
 		bubbleCache->addType<components::BubbleGateComponent>(components::NOTINTERESTED);
 		bubbleCache->addType<components::RuntimeHiddenTag>(components::NOTINTERESTED);
+		bubbleCache->addType<components::BubbleLockedComponent>(components::NOTINTERESTED);
 		unitCache = middle::newCompCache(gameState, systemName);
 		unitCache->addType<components::BubbleUnit>();
 		unitCache->addType<components::InViewTag>();
@@ -102,6 +104,7 @@ public:
 		unitCache->addType<components::GlobalTransform>();
 		unitCache->addType<components::Rectangle>();
 		unitCache->addType<components::RuntimeHiddenTag>(components::NOTINTERESTED);
+		unitCache->addType<components::BubbleLockedComponent>(components::NOTINTERESTED);
 		mulCache = middle::newCompCache(gameState, systemName);
 		mulCache->addType<components::BubbleMultiplyComponent>();
 		mulCache->addType<components::InViewTag>();
@@ -110,6 +113,7 @@ public:
 		mulCache->addType<components::Rectangle>();
 		mulCache->addType<components::Layer>();
 		mulCache->addType<components::RuntimeHiddenTag>(components::NOTINTERESTED);
+		mulCache->addType<components::BubbleLockedComponent>(components::NOTINTERESTED);
 		variableCache = middle::newCompCache(gameState, systemName);
 		variableCache->addType<components::BubbleComponent>();
 		variableCache->addType<components::InViewTag>();
@@ -118,6 +122,7 @@ public:
 		variableCache->addType<components::Rectangle>();
 		variableCache->addType<components::GlobalTransform>();
 		variableCache->addType<components::RuntimeHiddenTag>(components::NOTINTERESTED);
+		variableCache->addType<components::BubbleLockedComponent>(components::NOTINTERESTED);
 		equalsCache = middle::newCompCache(gameState, systemName);
 		equalsCache->addType<components::BubbleEqualsComponent>();
 		equalsCache->addType<components::InViewTag>();
@@ -125,6 +130,7 @@ public:
 		equalsCache->addType<components::Rectangle>();
 		equalsCache->addType<components::GlobalTransform>();
 		equalsCache->addType<components::RuntimeHiddenTag>(components::NOTINTERESTED);
+		equalsCache->addType<components::BubbleLockedComponent>(components::NOTINTERESTED);
 		inequCache = middle::newCompCache(gameState, systemName);
 		inequCache->addType<components::BubbleInequaltyComponent>();
 		inequCache->addType<components::InViewTag>();
@@ -132,12 +138,14 @@ public:
 		inequCache->addType<components::Rectangle>();
 		inequCache->addType<components::GlobalTransform>();
 		inequCache->addType<components::RuntimeHiddenTag>(components::NOTINTERESTED);
+		inequCache->addType<components::BubbleLockedComponent>(components::NOTINTERESTED);
 		activeBubbleCache = middle::newCompCache(gameState, systemName);
 		activeBubbleCache->addType<components::ActiveSceneSelectableTag>();
 		activeBubbleCache->addType<components::InViewTag>();
 		activeBubbleCache->addType<components::GlobalTransform>();
 		activeBubbleCache->addType<components::GlobalRect>();
 		activeBubbleCache->addType<components::RuntimeHiddenTag>(components::NOTINTERESTED);
+		activeBubbleCache->addType<components::BubbleLockedComponent>(components::NOTINTERESTED);
 		powerCache = middle::newCompCache(gameState, systemName);
 		powerCache->addType<components::BubblePowerComponent>();
 		powerCache->addType<components::InViewTag>();
@@ -146,6 +154,7 @@ public:
 		powerCache->addType<components::GlobalTransform>();
 		powerCache->addType<components::Layer>();
 		powerCache->addType<components::RuntimeHiddenTag>(components::NOTINTERESTED);
+		powerCache->addType<components::BubbleLockedComponent>(components::NOTINTERESTED);
 		functionCache = middle::newCompCache(gameState, systemName);
 		functionCache->addType<components::BubbleFunctionComponent>();
 		functionCache->addType<components::InViewTag>();
@@ -154,6 +163,7 @@ public:
 		functionCache->addType<components::Rectangle>();
 		functionCache->addType<components::GlobalRect>();
 		functionCache->addType<components::RuntimeHiddenTag>(components::NOTINTERESTED);
+		functionCache->addType<components::BubbleLockedComponent>(components::NOTINTERESTED);
 		summationCache = middle::newCompCache(gameState, systemName);
 		summationCache->addType<components::BubbleSummationComponent>();
 		summationCache->addType<components::InViewTag>();
@@ -161,6 +171,7 @@ public:
 		summationCache->addType<components::Rectangle>();
 		summationCache->addType<components::GlobalTransform>();
 		summationCache->addType<components::RuntimeHiddenTag>(components::NOTINTERESTED);
+		summationCache->addType<components::BubbleLockedComponent>(components::NOTINTERESTED);
 		textCache = middle::newCompCache(gameState, systemName);
 		textCache->addType<components::BubbleTextComponent>();
 		textCache->addType<components::InViewTag>();
@@ -168,6 +179,7 @@ public:
 		textCache->addType<components::Rectangle>();
 		textCache->addType<components::Layer>();
 		textCache->addType<components::RuntimeHiddenTag>(components::NOTINTERESTED);
+		textCache->addType<components::BubbleLockedComponent>(components::NOTINTERESTED);
 		logicCache = middle::newCompCache(gameState, systemName);
 		logicCache->addType<components::BubbleLogicComponent>();
 		logicCache->addType<components::InViewTag>();
@@ -175,6 +187,7 @@ public:
 		logicCache->addType<components::Rectangle>();
 		logicCache->addType<components::Layer>();
 		logicCache->addType<components::RuntimeHiddenTag>(components::NOTINTERESTED);
+		logicCache->addType<components::BubbleLockedComponent>(components::NOTINTERESTED);
 		gateCache = middle::newCompCache(gameState, systemName);
 		gateCache->addType<components::BubbleGateComponent>();
 		gateCache->addType<components::InViewTag>();
@@ -182,6 +195,7 @@ public:
 		gateCache->addType<components::Rectangle>();
 		gateCache->addType<components::Layer>();
 		gateCache->addType<components::RuntimeHiddenTag>(components::NOTINTERESTED);
+		gateCache->addType<components::BubbleLockedComponent>(components::NOTINTERESTED);
 	}
 	bool debugRendering = false;
 

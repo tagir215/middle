@@ -1318,23 +1318,7 @@ namespace bubble {
 		middle::attachComponent<components::QueuedForSaveTag>(gameState, backgroundId);
 	}
 
-	void recursiveHideBubble(middle::GameState* gameState, middle::Id id){
-		middle::attachComponent<components::RuntimeHiddenTag>(gameState, id);
-		std::vector<middle::Id>children;
-		middle::getChildren(gameState, id, children);
-		for (middle::Id childId : children) {
-			recursiveHideBubble(gameState, childId);
-		}
-	}
 
-	void recursiveUnHideBubble(middle::GameState* gameState, middle::Id id){
-		middle::queueComponentDeletion<components::RuntimeHiddenTag>(gameState, id);
-		std::vector<middle::Id>children;
-		middle::getChildren(gameState, id, children);
-		for (middle::Id childId : children) {
-			recursiveUnHideBubble(gameState, childId);
-		}
-	}
 
 
 	middle::Id bubbleToStructure(middle::GameState * gameState, middle::Id bubbleId)

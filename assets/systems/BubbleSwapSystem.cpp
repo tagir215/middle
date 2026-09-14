@@ -44,11 +44,11 @@ class BubbleSwapSystem : public middle::MiddleGameplaySystem {
 
 			middle::Id activeChildId = children[swapComp->activeIndex];
 			middle::Id inActiveChildId = children[inActiveIndex];
-			bubble::recursiveUnHideBubble(gameState, activeChildId);
+			bubble::recursiveDeleteComponent<components::RuntimeHiddenTag>(gameState, activeChildId);
 			middle::attachComponent<components::Button>(gameState, activeChildId);
 			middle::queueComponentDeletion<components::NonPhysicalBubbleTag>(gameState, activeChildId);
 
-			bubble::recursiveHideBubble(gameState, inActiveChildId);
+			bubble::recursiveAttachComponent<components::RuntimeHiddenTag>(gameState, inActiveChildId);
 			middle::queueComponentDeletion<components::Button>(gameState, inActiveChildId);
 			middle::attachComponent<components::NonPhysicalBubbleTag>(gameState, inActiveChildId);
 		}

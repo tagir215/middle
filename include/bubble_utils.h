@@ -95,8 +95,32 @@ namespace bubble {
 	void recursiveBubbleLayoutScaleUpdate(middle::GameState* gameState, middle::Id id);
 	void recursiveBubbleLayoutUpdate(middle::GameState* gameState, middle::Id id);
 	void queueBubbleAction(middle::GameState* gameState, middle::Id id, std::shared_ptr<middle::EditorActionContainer>container);
-	void recursiveHideBubble(middle::GameState* gameState, middle::Id id);
-	void recursiveUnHideBubble(middle::GameState* gameState, middle::Id id);
+
+	template<typename T>
+	void recursiveAttachComponent(middle::GameState* gameState, middle::Id id){
+		auto& shape = middle::getShape(gameState, id.index);
+		if (!hasComp(shape, middle::getTypeId<T>())) {
+			middle::attachComponent<T>(gameState, id);
+		}
+		std::vector<middle::Id>children;
+		middle::getChildren(gameState, id, children);
+		for (middle::Id childId : children) {
+			recursiveAttachComponent<T>(gameState, childId);
+		}
+	}
+
+	template<typename T>
+	void recursiveDeleteComponent(middle::GameState* gameState, middle::Id id){
+		auto& shape = middle::getShape(gameState, id.index);
+		if (hasComp(shape, middle::getTypeId<T>())) {
+			middle::queueComponentDeletion<T>(gameState, id);
+		}
+		std::vector<middle::Id>children;
+		middle::getChildren(gameState, id, children);
+		for (middle::Id childId : children) {
+			recursiveDeleteComponent<T>(gameState, childId);
+		}
+	}
 
 	template<typename T>
 	middle::Id findIdWithCompFromShapeOrItsParents(middle::GameState* gameState, middle::Id id) {

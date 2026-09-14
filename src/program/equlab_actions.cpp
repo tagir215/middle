@@ -18,6 +18,7 @@
 #include "bubequ_mapping.h"
 #include "profiler_helpers.h"
 #include "bubble_constants.h"
+#include "NeedsUpdateTag.h"
 
 namespace equlab {
 
@@ -630,6 +631,7 @@ namespace equlab {
 			nextIndex = 0;
 		}
 		comp->status = nextIndex;
+		middle::attachComponent<components::NeedsUpdateTag>(gameState, id);
 	}
 
 	void ToggleLogicBubbleStatus::undo(middle::GameState* gameState)
@@ -640,6 +642,7 @@ namespace equlab {
 			nextIndex = 2;
 		}
 		comp->status = nextIndex;
+		middle::attachComponent<components::NeedsUpdateTag>(gameState, id);
 	}
 
 }

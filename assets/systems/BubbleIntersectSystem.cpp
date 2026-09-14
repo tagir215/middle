@@ -23,6 +23,8 @@
 #include "BottomDogBubbleTag.h"
 #include "InViewTag.h"
 #include "NonPhysicalBubbleTag.h"
+#include "BubbleLockedComponent.h"
+#include "BubbleGateComponent.h"
 
 class BubbleIntersectSystem : public middle::MiddleGameplaySystem {
 public:
@@ -45,6 +47,7 @@ public:
 		bubbleCache->addType<components::GlobalTransform>();
 		bubbleCache->addType<components::UnIntersectableWindowComponent>(components::NOTINTERESTED);
 		bubbleCache->addType<components::BottomDogBubbleTag>(components::NOTINTERESTED);
+		bubbleCache->addType<components::BubbleLockedComponent>(components::NOTINTERESTED);
 
 		intersectingBubbleCache = middle::newCompCache(gameState, systemName);
 		intersectingBubbleCache->addType<components::BubbleComponent>();
@@ -54,6 +57,7 @@ public:
 		intersectingBubbleCache->addType<components::GlobalTransform>();
 		intersectingBubbleCache->addType<components::IntersectingTag>();
 		intersectingBubbleCache->addType<components::UnIntersectableWindowComponent>(components::NOTINTERESTED);
+		intersectingBubbleCache->addType<components::BubbleLockedComponent>(components::NOTINTERESTED);
 
 		unIntersectableBubbleCache = middle::newCompCache(gameState, systemName);
 		unIntersectableBubbleCache->addType<components::BubbleComponent>();
