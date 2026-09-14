@@ -12,6 +12,7 @@
 #include "BubbleGateComponent.h"
 #include "BubbleLockedComponent.h"
 #include "BubbleTextComponent.h"
+#include "bubble_utils.h"
 
 
 class NewBubbleManagerSystem : public middle::MiddleGameplaySystem {
@@ -43,12 +44,12 @@ class NewBubbleManagerSystem : public middle::MiddleGameplaySystem {
 			middle::Id activeId, inActiveId;
 			bubble::getSwapBubbleActiveInActive(gameState, id, activeId, inActiveId);
 
-			middle::queueComponentDeletion<components::BubbleManipulatable>(gameState, activeId);
+			bubble::recursiveDeleteComponent<components::BubbleManipulatable>(gameState, activeId);
 			middle::attachComponent<components::Button>(gameState, activeId);
 
-			middle::attachComponent<components::RuntimeHiddenTag>(gameState, inActiveId);
-			middle::attachComponent<components::NonPhysicalBubbleTag>(gameState, inActiveId);
-			middle::queueComponentDeletion<components::BubbleManipulatable>(gameState, inActiveId);
+			bubble::recursiveAttachComponent<components::RuntimeHiddenTag>(gameState, inActiveId);
+			bubble::recursiveAttachComponent<components::NonPhysicalBubbleTag>(gameState, inActiveId);
+			bubble::recursiveDeleteComponent<components::BubbleManipulatable>(gameState, inActiveId);
 		}
 
 	}
