@@ -224,6 +224,7 @@ namespace equlab {
 		middle::Shape& bubA = middle::registerShape(gameState, bubAProto);
 		middle::Shape& bubB = middle::registerShape(gameState, bubBProto);
 		middle::Shape& equals = middle::registerShape(gameState, equalsProto);
+		resultId = equals.id;
 
 		middle::EditorActionReparent(equals.id.index, bubA.id.index).execute(gameState);
 		middle::EditorActionReparent(equals.id.index, bubB.id.index).execute(gameState);
@@ -535,17 +536,11 @@ namespace equlab {
 		scaleComp->scale.y = scale;
 		scaleComp->scale.z = scale;
 
-		middle::Shape textProto = bubble::newTextBubble(gameState, targetPosition);
-		middle::Shape& text = middle::registerShape(gameState, textProto);
+		auto addText = AddBubbleText(newSwapShape.id, targetPosition);
+		addText.execute(gameState);
 
-		middle::Shape targetProto = bubble::newBubble(gameState, targetPosition);
-		//middle::addComponent<components::RuntimeHiddenTag>(targetProto);
-		//middle::addComponent<components::NonPhysicalBubbleTag>(targetProto);
-		//middle::deleteComponent<components::BubbleManipulatable>(targetProto);
-		middle::Shape& target = middle::registerShape(gameState, targetProto);
-
-		middle::EditorActionReparent(newSwapShape.id.index, text.id.index).execute(gameState);
-		middle::EditorActionReparent(newSwapShape.id.index, target.id.index).execute(gameState);
+		auto addEquals = AddEquals(newSwapShape.id, targetPosition);
+		addEquals.execute(gameState);
 	}
 
 	void AddSwapBubble::undo(middle::GameState* gameState)
