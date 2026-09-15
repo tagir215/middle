@@ -4,6 +4,9 @@
 
 The Algebra Rewrite System is designed to let users perform algebraic manipulations interactively. Algebraic objects are currently called **Bubbles**, a name that comes from an earlier visual design where the objects were planned to be bubble-shaped. The visual design has since changed toward rectangular shapes, so this terminology will likely change in the future.
 
+<img width="1782" height="1185" alt="Screenshot 2026-09-15 203511" src="https://github.com/user-attachments/assets/ccfe7920-4504-4ef7-ab23-a3d419d49f98" />
+
+
 ## Algebra Rewrite System
 
 The application represents algebraic expressions as structured objects that can be manipulated directly. The goal is to make algebraic transformations explicit and interactive rather than treating an expression as plain text.
