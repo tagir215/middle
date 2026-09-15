@@ -35,23 +35,8 @@ class BubbleSwapSystem : public middle::MiddleGameplaySystem {
 			if (!bubble::isSwapBubble(gameState, parentId)) {
 				continue;
 			}
-			auto swapComp = middle::getComp<components::BubbleSwapComponent>(gameState, parentId);
-			int currentIndex = swapComp->activeIndex;
-			swapComp->activeIndex = currentIndex == 0 ? 1 : 0;
-			int inActiveIndex = currentIndex == 0 ? 0 : 1;
 
-			std::vector<middle::Id>children;
-			middle::getChildren(gameState, parentId, children);
-
-			middle::Id activeChildId = children[swapComp->activeIndex];
-			middle::Id inActiveChildId = children[inActiveIndex];
-			bubble::recursiveDeleteComponent<components::RuntimeHiddenTag>(gameState, activeChildId);
-			middle::attachComponent<components::Button>(gameState, activeChildId);
-			bubble::recursiveDeleteComponent<components::NonPhysicalBubbleTag>(gameState, activeChildId);
-
-			bubble::recursiveAttachComponent<components::RuntimeHiddenTag>(gameState, inActiveChildId);
-			middle::queueComponentDeletion<components::Button>(gameState, inActiveChildId);
-			bubble::recursiveAttachComponent<components::NonPhysicalBubbleTag>(gameState, inActiveChildId);
+			bubble::swapBubbleSwap(gameState, parentId);
 		}
 
 	}

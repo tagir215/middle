@@ -93,6 +93,7 @@ namespace bubble {
 	void getEqualsSiblingsFromLogicBubble(middle::GameState* gameState, middle::Id logicId, middle::Id& resultLeft, middle::Id& resultRight);
 	void getEqualsLeftAndRight(middle::GameState* gameState, middle::Id equalsId, middle::Id& resultLeft, middle::Id& resultRight);
 	void getSwapBubbleActiveInActive(middle::GameState* gameState, middle::Id swapId, middle::Id& activeId, middle::Id& inActiveId);
+	void swapBubbleSwap(middle::GameState* gameState, middle::Id swapId);
 	middle::Id getOtherFromContainerOf2(middle::GameState* gameState, middle::Id id);
 	void matchBubbleTransforms(middle::GameState* gameState, middle::Id matchingModelId, middle::Id toMatchId);
 	// slow but immediate layout update

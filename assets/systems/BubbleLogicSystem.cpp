@@ -124,12 +124,7 @@ class BubbleLogicSystem : public middle::MiddleGameplaySystem {
 		}
 
 		swapComp->status = components::SwapComponentStatus::SWAP_ENABLED;
-		middle::Id activeId, inActiveId;
-		bubble::getSwapBubbleActiveInActive(gameState, swapId, activeId, inActiveId);
-		// enable clicking by attaching button
-		middle::attachComponent<components::Button>(gameState, activeId);
-		// trigger turn around
-		middle::queueComponentAttachment<components::MouseClickComponent>(gameState, activeId);
+		bubble::swapBubbleSwap(gameState, swapId);
 	}
 
 	void update(middle::GameState* gameState) override {

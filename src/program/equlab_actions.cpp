@@ -19,6 +19,7 @@
 #include "profiler_helpers.h"
 #include "bubble_constants.h"
 #include "NeedsUpdateTag.h"
+#include "Button.h"
 
 namespace equlab {
 
@@ -620,17 +621,32 @@ namespace equlab {
 
 	void ToggleLogicBubbleStatus::execute(middle::GameState* gameState)
 	{
-		auto comp = middle::getComp<components::BubbleGateComponent>(gameState, id);
-		int nextIndex = comp->status + 1;
-		if (nextIndex > 2) {
-			nextIndex = 0;
+		// swap case
+		middle::Id parentId = middle::getParent(gameState, id);
+		if (parentId.index != middle::UNASSIGNED && bubble::isSwapBubble(gameState, parentId)) {
+			bubble::swapBubbleSwap(gameState, parentId);
 		}
-		comp->status = nextIndex;
-		middle::attachComponent<components::NeedsUpdateTag>(gameState, id);
+
+		// gate case
+		if (auto comp = middle::getComp<components::BubbleGateComponent>(gameState, id)) {
+			int nextIndex = comp->status + 1;
+			if (nextIndex > 2) {
+				nextIndex = 0;
+			}
+			comp->status = nextIndex;
+			middle::attachComponent<components::NeedsUpdateTag>(gameState, id);
+		}
 	}
 
 	void ToggleLogicBubbleStatus::undo(middle::GameState* gameState)
 	{
+		// swap case
+		middle::Id parentId = middle::getParent(gameState, id);
+		if (parentId.index != middle::UNASSIGNED && bubble::isSwapBubble(gameState, parentId)) {
+			bubble::swapBubbleSwap(gameState, parentId);
+		}
+
+		// gate case
 		auto comp = middle::getComp<components::BubbleGateComponent>(gameState, id);
 		int nextIndex = comp->status - 1;
 		if (nextIndex < 0) {

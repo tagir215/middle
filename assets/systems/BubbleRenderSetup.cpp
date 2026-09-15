@@ -652,10 +652,8 @@ public:
 
 			renderBubbleLabel(gameState, transform, rect->height, ">",
 				getLayer(gameState, layer), LabelPos::CENTER, bubbleColors::EQUALS_TEXT);
-
 			renderBubble(gameState, getLayer(gameState, layer), calculateFadedColor(gameState, bubbleColors::INEQUALS, transform, getLayer(gameState, layer)), transform);
 		}
-
 
 		// cross hair or something
 		middle::RenderItem cameraTarget;
@@ -680,8 +678,6 @@ public:
 			boundingRect.color = WHITE;
 			gameState->renderData.push_back(boundingRect);
 		}
-
-
 
 		auto functionTransformIt = functionCache->begin<components::GlobalTransform>();
 		auto functionIt = functionCache->begin<components::BubbleFunctionComponent>();
