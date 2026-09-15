@@ -11,10 +11,11 @@
 #include "LoopSociety.h"
 #include "bubble_utils.h"
 #include "NonPhysicalBubbleTag.h"
+#include "NeedsUpdateTag.h"
 
 class BubbleSwapSystem : public middle::MiddleGameplaySystem {
 	components::CompCache* cache;
-	components::CompCache* intersectingCache;
+	components::CompCache* needsUpdateCache;
 
 	void init(middle::GameState* gameState) override {
 		cache = middle::newCompCache(gameState, systemName);
@@ -52,6 +53,7 @@ class BubbleSwapSystem : public middle::MiddleGameplaySystem {
 			middle::queueComponentDeletion<components::Button>(gameState, inActiveChildId);
 			bubble::recursiveAttachComponent<components::NonPhysicalBubbleTag>(gameState, inActiveChildId);
 		}
+
 	}
 };
 

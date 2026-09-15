@@ -9,6 +9,9 @@
 #include "BubbleLogicGateConnection.h"
 #include "BubbleLockedComponent.h"
 #include "NeedsUpdateTag.h"
+#include "BubbleSwapComponent.h"
+#include "MouseClickComponent.h"
+#include "Button.h"
 
 class BubbleLogicSystem : public middle::MiddleGameplaySystem {
 	components::CompCache* modifiedCache;
@@ -73,6 +76,62 @@ class BubbleLogicSystem : public middle::MiddleGameplaySystem {
 		}
 	}
 
+
+	bool commonIsolatedVariableExists(middle::GameState* gameState, middle::Id equalsIdA, middle::Id equalsIdB)
+	{
+		middle::Id leftA, rightA;
+		bubble::getEqualsLeftAndRight(gameState, equalsIdA, leftA, rightA);
+		middle::Id leftB, rightB;
+		bubble::getEqualsLeftAndRight(gameState, equalsIdB, leftB, rightB);
+
+		bool leftAVar = bubble::isVariable(gameState, leftA);
+		bool rightAVar = bubble::isVariable(gameState, rightA);
+		bool leftBVar = bubble::isVariable(gameState, leftB);
+		bool rightBVar = bubble::isVariable(gameState, rightB);
+
+		if (leftAVar) {
+			if (leftBVar && bubble::bubblePropertiesEqual(gameState, leftA, leftB)) {
+				return true;
+			}
+			if (rightBVar && bubble::bubblePropertiesEqual(gameState, leftA, rightB)) {
+				return true;
+			}
+		}
+		if (rightBVar) {
+			if (leftBVar && bubble::bubblePropertiesEqual(gameState, rightA, leftB)) {
+				return true;
+			}
+			if (rightBVar && bubble::bubblePropertiesEqual(gameState, rightB, rightB)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	void setSwapStatusEnabled(middle::GameState* gameState, middle::Id logicId) {
+		middle::Id left, right;
+		bubble::getLogicBubbleLeftAndRight(gameState, logicId, left, right);
+		bool leftIsSwap = bubble::isSwapBubble(gameState, left);
+		bool rightIsSwap = bubble::isSwapBubble(gameState, right);
+		// don't do this kind of weird puzzles
+		assert(!(leftIsSwap && rightIsSwap));
+		assert(leftIsSwap || rightIsSwap);
+		middle::Id swapId = leftIsSwap ? left : right;
+
+		auto swapComp = middle::getComp<components::BubbleSwapComponent>(gameState, swapId);
+		if (swapComp->status == components::SwapComponentStatus::SWAP_ENABLED) {
+			return;
+		}
+
+		swapComp->status = components::SwapComponentStatus::SWAP_ENABLED;
+		middle::Id activeId, inActiveId;
+		bubble::getSwapBubbleActiveInActive(gameState, swapId, activeId, inActiveId);
+		// enable clicking by attaching button
+		middle::attachComponent<components::Button>(gameState, activeId);
+		// trigger turn around
+		middle::queueComponentAttachment<components::MouseClickComponent>(gameState, activeId);
+	}
+
 	void update(middle::GameState* gameState) override {
 
 		{
@@ -101,33 +160,42 @@ class BubbleLogicSystem : public middle::MiddleGameplaySystem {
 		}
 
 		// check if something was modified
-		middle::Id logicBubbleToUpdate;
+		middle::Id logicBubbleToUpdateId;
 		for (middle::Id id : modifiedCache->relevantIdVector) {
 			middle::queueComponentDeletion<components::ModifiedBubbleTag>(gameState, id);
 			middle::Id logicId = bubble::findIdWithCompFromShapeOrItsParents<components::BubbleLogicComponent>(gameState, id);
-			logicBubbleToUpdate = logicId;
+			logicBubbleToUpdateId = logicId;
 			break;
 		}
 
 
 		// check similarity 
-		if (middle::isValidId(gameState, logicBubbleToUpdate)) {
+		if (middle::isValidId(gameState, logicBubbleToUpdateId)) {
 			std::vector<middle::Id>children;
-			middle::getChildren(gameState, logicBubbleToUpdate, children);
+			middle::getChildren(gameState, logicBubbleToUpdateId, children);
 			// logic bubble has not enough children yet
 			if (children.size() < 2) {
 				return;
 			}
 			middle::Id left, right;
-			bubble::getLogicLeftAndRight(gameState, logicBubbleToUpdate, left, right);
-			// if matching open the gate
+			bubble::getEqualsSiblingsFromLogicBubble(gameState, logicBubbleToUpdateId, left, right);
+
+			// if common variable is isolated enable swapping
+			if (bubble::isEqualsBubble(gameState, left) && bubble::isEqualsBubble(gameState, right)) {
+				bool commonIsolation = commonIsolatedVariableExists(gameState, left, right);
+				if (commonIsolation) {
+					setSwapStatusEnabled(gameState, logicBubbleToUpdateId);
+				}
+			}
+
+			// once bubbles match open the gate
 			if (bubble::matchingBubbles(gameState, left, right)) {
 				// find connected gate
 				middle::Id connectedId;
 				auto connectionIt = connectedGateCache->begin<components::BubbleLogicGateConnection>();
 				for (middle::Id gateId : connectedGateCache->relevantIdVector) {
 					auto connection = *connectionIt;
-					if (connection->connectionId == logicBubbleToUpdate) {
+					if (connection->connectionId == logicBubbleToUpdateId) {
 						connectedId = gateId;
 						break;
 					}

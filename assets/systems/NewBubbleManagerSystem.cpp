@@ -40,12 +40,16 @@ class NewBubbleManagerSystem : public middle::MiddleGameplaySystem {
 		}
 
 		// initialize swap bubbles
+		auto swapCompIt = newSwapBubbleCache->begin<components::BubbleSwapComponent>();
 		for (middle::Id id : newSwapBubbleCache->relevantIdVector) {
+			auto swapComp = *swapCompIt;
 			middle::Id activeId, inActiveId;
 			bubble::getSwapBubbleActiveInActive(gameState, id, activeId, inActiveId);
 
 			bubble::recursiveDeleteComponent<components::BubbleManipulatable>(gameState, activeId);
-			middle::attachComponent<components::Button>(gameState, activeId);
+			if (swapComp->status == components::SwapComponentStatus::SWAP_ENABLED) {
+				middle::attachComponent<components::Button>(gameState, activeId);
+			}
 
 			bubble::recursiveAttachComponent<components::RuntimeHiddenTag>(gameState, inActiveId);
 			bubble::recursiveAttachComponent<components::NonPhysicalBubbleTag>(gameState, inActiveId);

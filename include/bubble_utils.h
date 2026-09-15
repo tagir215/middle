@@ -48,6 +48,7 @@ namespace bubble {
 	UnitValue unitValue(middle::GameState* gameState, middle::Id& containerId);
 	int fractionUnitCount(middle::GameState* gameState, middle::Id& fractionId);
 	bool matchingBubbles(middle::GameState* gameState, middle::Id& bubbleA, middle::Id bubbleB);
+	bool bubblePropertiesEqual(middle::GameState* gameState, middle::Id& idA, middle::Id idB);
 	bool matchesStructureWithVariables(middle::GameState* gameState, middle::Id bubbleId, middle::Id algebraNodeId);
 	bool matchesStructureWithVariables(middle::GameState* gameState, middle::Id bubbleId, middle::Id algebraNodeId, std::unordered_map<std::string, middle::Id>& varOverrides);
 	bool matchesStructureBranch(middle::GameState* gameState, middle::Id bubbleStartPointId, middle::Id bubbleRootId, middle::Id structureStartPointId, middle::Id structureRootId);
@@ -67,6 +68,7 @@ namespace bubble {
 	bool isAddition(middle::GameState* gameState, middle::Id id);
 	bool isPowerBubble(middle::GameState* gameState, middle::Id id);
 	bool isSummation(middle::GameState* gameState, middle::Id id);
+	bool isVariable(middle::GameState* gameState, middle::Id id);
 	bool isMultiplication(middle::GameState* gameState, middle::Id id);
 	bool isSwapBubble(middle::GameState* gameState, middle::Id id);
 	bool isUnit(middle::GameState* gameState, middle::Id id);
@@ -87,7 +89,9 @@ namespace bubble {
 	void getPowerBaseAndExponent(middle::GameState* gameState, middle::Id powerBubble, middle::Id& resultBaseId, middle::Id& resultExponentId);
 	void getSummationIndexLimitSummand(middle::GameState* gameState, middle::Id summationBubble, middle::Id& resultIndex, middle::Id& resultUpperLimit, middle::Id& resultSummand);
 	void getInequaltyLesserAndGreater(middle::GameState* gameState, middle::Id inequalBubble, middle::Id& resultLesserId, middle::Id& resultGreaterId);
-	void getLogicLeftAndRight(middle::GameState* gameState, middle::Id logicId, middle::Id& resultLeft, middle::Id& resultRight);
+	void getLogicBubbleLeftAndRight(middle::GameState* gameState, middle::Id logicId, middle::Id& resultLeft, middle::Id& resultRight);
+	void getEqualsSiblingsFromLogicBubble(middle::GameState* gameState, middle::Id logicId, middle::Id& resultLeft, middle::Id& resultRight);
+	void getEqualsLeftAndRight(middle::GameState* gameState, middle::Id equalsId, middle::Id& resultLeft, middle::Id& resultRight);
 	void getSwapBubbleActiveInActive(middle::GameState* gameState, middle::Id swapId, middle::Id& activeId, middle::Id& inActiveId);
 	middle::Id getOtherFromContainerOf2(middle::GameState* gameState, middle::Id id);
 	void matchBubbleTransforms(middle::GameState* gameState, middle::Id matchingModelId, middle::Id toMatchId);

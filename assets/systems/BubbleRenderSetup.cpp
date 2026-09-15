@@ -47,6 +47,7 @@
 #include "BubbleGateComponent.h"
 #include "InViewTag.h"
 #include "BubbleLockedComponent.h"
+#include "BubbleManipulatable.h"
 
 
 class BubbleRenderSetup : public middle::MiddleGameplaySystem {
@@ -61,6 +62,7 @@ public:
 	components::CompCache* mulCache;
 	components::CompCache* variableCache;
 	components::CompCache* equalsCache;
+	components::CompCache* nonManipulatableEqualsCache;
 	components::CompCache* inequCache;
 	components::CompCache* unitCache;
 	components::CompCache* activeBubbleCache;
@@ -123,14 +125,25 @@ public:
 		variableCache->addType<components::GlobalTransform>();
 		variableCache->addType<components::RuntimeHiddenTag>(components::NOTINTERESTED);
 		variableCache->addType<components::BubbleLockedComponent>(components::NOTINTERESTED);
+		nonManipulatableEqualsCache = middle::newCompCache(gameState, systemName);
+		nonManipulatableEqualsCache->addType<components::BubbleEqualsComponent>();
+		nonManipulatableEqualsCache->addType<components::InViewTag>();
+		nonManipulatableEqualsCache->addType<components::Layer>();
+		nonManipulatableEqualsCache->addType<components::Rectangle>();
+		nonManipulatableEqualsCache->addType<components::GlobalTransform>();
+		nonManipulatableEqualsCache->addType<components::RuntimeHiddenTag>(components::NOTINTERESTED);
+		nonManipulatableEqualsCache->addType<components::BubbleManipulatable>(components::NOTINTERESTED);
+		nonManipulatableEqualsCache->addType<components::BubbleLockedComponent>(components::NOTINTERESTED);
 		equalsCache = middle::newCompCache(gameState, systemName);
 		equalsCache->addType<components::BubbleEqualsComponent>();
 		equalsCache->addType<components::InViewTag>();
 		equalsCache->addType<components::Layer>();
 		equalsCache->addType<components::Rectangle>();
 		equalsCache->addType<components::GlobalTransform>();
+		equalsCache->addType<components::BubbleManipulatable>();
 		equalsCache->addType<components::RuntimeHiddenTag>(components::NOTINTERESTED);
 		equalsCache->addType<components::BubbleLockedComponent>(components::NOTINTERESTED);
+
 		inequCache = middle::newCompCache(gameState, systemName);
 		inequCache->addType<components::BubbleInequaltyComponent>();
 		inequCache->addType<components::InViewTag>();
@@ -611,9 +624,20 @@ public:
 			auto transform = *equTransformIt;
 			auto rect = *equCircleIt;;
 			auto layer = *equLayerIt;
-
 			renderBubble(gameState, getLayer(gameState, layer), calculateFadedColor(gameState, bubbleColors::EQUALS, transform, getLayer(gameState, layer)), transform);
+			renderBubbleLabel(gameState, transform, rect->height, "=",
+				getLayer(gameState, layer), LabelPos::CENTER, bubbleColors::EQUALS_TEXT);
+		}
 
+		// dimmer equals that cant be modified...
+		auto nonEquTransformIt = nonManipulatableEqualsCache->begin<components::GlobalTransform>();
+		auto nonEquCircleIt = nonManipulatableEqualsCache->begin<components::Rectangle>();
+		auto nonEquLayerIt = nonManipulatableEqualsCache->begin<components::Layer>();
+		for (middle::Id id : nonManipulatableEqualsCache->relevantIdVector) {
+			auto transform = *nonEquTransformIt;
+			auto rect = *nonEquCircleIt;;
+			auto layer = *nonEquLayerIt;
+			renderBubble(gameState, getLayer(gameState, layer), calculateFadedColor(gameState, bubbleColors::DUMMY_GATE, transform, getLayer(gameState, layer)), transform);
 			renderBubbleLabel(gameState, transform, rect->height, "=",
 				getLayer(gameState, layer), LabelPos::CENTER, bubbleColors::EQUALS_TEXT);
 		}

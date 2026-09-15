@@ -1196,7 +1196,17 @@ namespace bubble {
 		resultGreaterId = inequalChildren[components::InequaltyRole::INEQUAL_GREATER];
 	}
 
-	void getLogicLeftAndRight(middle::GameState* gameState, middle::Id logicId, middle::Id& resultLeft, middle::Id& resultRight)
+	void getLogicBubbleLeftAndRight(middle::GameState* gameState, middle::Id logicId, middle::Id& resultLeft, middle::Id& resultRight)
+	{
+		assert(isLogicBubble(gameState, logicId));
+		std::vector<middle::Id>logicChildren;
+		middle::getChildren(gameState, logicId, logicChildren);
+		assert(logicChildren.size() == 2);
+		resultLeft = logicChildren[components::BubbleLogicRole::LEFT];
+		resultRight = logicChildren[components::BubbleLogicRole::RIGHT];
+	}
+
+	void getEqualsSiblingsFromLogicBubble(middle::GameState* gameState, middle::Id logicId, middle::Id& resultLeft, middle::Id& resultRight)
 	{
 		assert(isLogicBubble(gameState, logicId));
 		std::vector<middle::Id>logicChildren;
@@ -1213,6 +1223,17 @@ namespace bubble {
 		}
 		resultRight = logicChildren[components::BubbleLogicRole::RIGHT];
 	}
+
+	void getEqualsLeftAndRight(middle::GameState* gameState, middle::Id equalsId, middle::Id& resultLeft, middle::Id& resultRight)
+	{
+		assert(isEqualsBubble(gameState, equalsId));
+		std::vector<middle::Id>children;
+		middle::getChildren(gameState, equalsId, children);
+		assert(children.size() == 2);
+		resultLeft = children[components::BubbleEqualsRole::EQUALS_LEFT];
+		resultRight = children[components::BubbleEqualsRole::EQUALS_RIGHT];
+	}
+
 
 	void getSwapBubbleActiveInActive(middle::GameState* gameState, middle::Id swapId, middle::Id& activeId, middle::Id& inActiveId)
 	{
@@ -1673,6 +1694,10 @@ mollis. Duis eleifend hendrerit ullamcorper.)";
 
 	bool isSummation(middle::GameState * gameState, middle::Id id) {
 		return middle::getComp<components::BubbleSummationComponent>(gameState, id);
+	}
+
+	bool isVariable(middle::GameState* gameState, middle::Id id) {
+		return middle::getComp<components::BubbleVariable>(gameState, id);
 	}
 
 	bool isMultiplication(middle::GameState * gameState, middle::Id id) {
