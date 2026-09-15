@@ -324,6 +324,20 @@ namespace bubbleActions{
 		void undo(middle::GameState* gameState) override;
 	};
 
+	class CopyToInventory : public middle::EditorActionContainer {
+	public:
+		middle::Id inventoryId;
+		middle::Id id;
+		middle::Id resultId;
+		CopyToInventory(middle::Id inventoryId, middle::Id id){
+			this->inventoryId = inventoryId;
+			this->id = id;
+		}
+		void execute(middle::GameState* gameState) override;
+		void undo(middle::GameState* gameState) override;
+	};
+
+
 	class CopyAsHelper : public middle::EditorActionContainer {
 	public:
 		middle::Id shapeToCopyId;

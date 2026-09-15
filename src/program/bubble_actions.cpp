@@ -24,6 +24,8 @@
 #include "PauseLayoutTag.h"
 #include "BubbleSummationComponent.h"
 #include "ModifiedBubbleTag.h"
+#include "Inventory.h"
+#include "NonPhysicalBubbleTag.h"
 
 namespace bubbleActions {
 
@@ -1357,15 +1359,12 @@ namespace bubbleActions {
 
 	void NewAdditionTerm::execute(middle::GameState* gameState)
 	{
-		middle::Id topDog = bubble::findIdWithCompFromShapeOrItsParents<components::TopDogBubbleTag>(gameState, shapeToAddIntoId);
-		shapeToAddIntoId = topDog;
-
 		std::vector<middle::Id>shapesToAddIntoIds;
 
-		bool isEquOrInequ = bubble::isEqualsOrInequals(gameState, topDog);
+		bool isEquOrInequ = bubble::isEqualsOrInequals(gameState, shapeToAddIntoId);
 		if (isEquOrInequ) {
 			std::vector<middle::Id>equChildren;
-			middle::getChildren(gameState, topDog, equChildren);
+			middle::getChildren(gameState, shapeToAddIntoId, equChildren);
 			for (middle::Id childId : equChildren) {
 				shapesToAddIntoIds.push_back(childId);
 			}
@@ -1380,6 +1379,8 @@ namespace bubbleActions {
 			middle::executeAction<middle::EditorActionReparent>(gameState, this, shapeToAddInto.index, copyId.index);
 		}
 
+		middle::executeAction<EditorActionDeleteSingle>(gameState, this, newTermId);
+
 		queueSound(gameState, bubbleSounds::ADD_TERM_SOUND);
 	}
 
@@ -1393,15 +1394,12 @@ namespace bubbleActions {
 
 	void NewMultiplicationTerm::execute(middle::GameState* gameState)
 	{
-		middle::Id topDog = bubble::findIdWithCompFromShapeOrItsParents<components::TopDogBubbleTag>(gameState, shapeToAddIntoId);
-		shapeToAddIntoId = topDog;
-
 		std::vector<middle::Id>shapesToAddIntoIds;
 
-		bool isEquOrInequ = bubble::isEqualsOrInequals(gameState, topDog);
+		bool isEquOrInequ = bubble::isEqualsOrInequals(gameState, shapeToAddIntoId);
 		if (isEquOrInequ) {
 			std::vector<middle::Id>equChildren;
-			middle::getChildren(gameState, topDog, equChildren);
+			middle::getChildren(gameState, shapeToAddIntoId, equChildren);
 			for (middle::Id childId : equChildren) {
 				shapesToAddIntoIds.push_back(childId);
 			}
@@ -1416,6 +1414,8 @@ namespace bubbleActions {
 			middle::executeAction<Replace>(gameState, this, shapeToAddInto, replacementShapeId);
 		}
 
+		middle::executeAction<EditorActionDeleteSingle>(gameState, this, newTermId);
+
 		queueSound(gameState, bubbleSounds::ADD_TERM_SOUND);
 	}
 
@@ -1429,15 +1429,12 @@ namespace bubbleActions {
 
 	void NewPowerTerm::execute(middle::GameState* gameState)
 	{
-		middle::Id topDog = bubble::findIdWithCompFromShapeOrItsParents<components::TopDogBubbleTag>(gameState, shapeToAddIntoId);
-		shapeToAddIntoId = topDog;
-
 		std::vector<middle::Id>shapesToAddIntoIds;
 
-		bool isEquOrInequ = bubble::isEqualsOrInequals(gameState, topDog);
+		bool isEquOrInequ = bubble::isEqualsOrInequals(gameState, shapeToAddIntoId);
 		if (isEquOrInequ) {
 			std::vector<middle::Id>equChildren;
-			middle::getChildren(gameState, topDog, equChildren);
+			middle::getChildren(gameState, shapeToAddIntoId, equChildren);
 			for (middle::Id childId : equChildren) {
 				shapesToAddIntoIds.push_back(childId);
 			}
@@ -1450,6 +1447,9 @@ namespace bubbleActions {
 			middle::executeAction<middle::EditorActionRegisterId>(gameState, this, copyId);
 			middle::executeAction<equlab::ConnectPower>(gameState, this, shapeToAddInto, copyId);
 		}
+
+		middle::executeAction<EditorActionDeleteSingle>(gameState, this, newTermId);
+
 		queueSound(gameState, bubbleSounds::ADD_TERM_SOUND);
 	}
 
@@ -1979,6 +1979,32 @@ namespace bubbleActions {
 		middle::deleteShapeRecursive(gameState, copyShapeId.index);
 	}
 
+
+	void CopyToInventory::execute(middle::GameState* gameState)
+	{
+		middle::Id newItem = middle::deepCopyShape(gameState, id.index);
+		middle::executeAction<middle::EditorActionRegisterId>(gameState, this, newItem);
+		bubble::recursiveAttachComponent<components::NonPhysicalBubbleTag>(gameState, newItem);
+
+		auto inventory = middle::getComp<components::Inventory>(gameState, inventoryId);
+		auto loop = middle::getComp<components::LoopSociety>(gameState, inventoryId);
+		int index = inventory->activeIndex;
+		std::vector<middle::Id>& children = loop->loopMemberIds;
+		if (children.size() < inventory->maxSize) {
+			children.resize(inventory->maxSize);
+		}
+		if (children[index].index == middle::UNASSIGNED) {
+			children[index] = newItem;
+		}
+		else {
+			middle::deleteShapeRecursive(gameState, children[index].index);
+			children[index] = newItem;
+		}
+	}
+
+	void CopyToInventory::undo(middle::GameState* gameState)
+	{
+	}
 
 	void UpdateBubblesMultiplicationIdentity::execute(middle::GameState* gameState)
 	{

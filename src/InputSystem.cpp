@@ -106,6 +106,8 @@ public:
 			auto& gi = gameState->gameInput;
 
 			if (gameState->inputBlockers.find(middle::InputBlockers::KEYBOARD_BLOCK) == gameState->inputBlockers.end()) {
+				gi.copy = IsKeyPressed(KEY_F);
+				gi.insertTerm = IsKeyPressed(KEY_T);
 				gi.pop = IsKeyPressed(KEY_B);
 				gi.zoomIn = IsKeyDown(KEY_E);
 				gi.zoomOut = IsKeyDown(KEY_Q);
@@ -117,7 +119,6 @@ public:
 				gi.can = IsKeyPressed(KEY_X);
 				gi.comp = IsKeyPressed(KEY_C);
 				gi.mulOne = IsKeyPressed(KEY_V);
-				gi.proc = IsKeyPressed(KEY_E);
 				gi.undo = IsKeyPressed(KEY_SPACE);
 				gi.one = IsKeyDown(KEY_ONE);
 				gi.two = IsKeyDown(KEY_TWO);

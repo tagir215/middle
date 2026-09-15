@@ -640,4 +640,5 @@ namespace equlab {
 		middle::attachComponent<components::NeedsUpdateTag>(gameState, id);
 	}
 
+
 }

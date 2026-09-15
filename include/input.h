@@ -53,6 +53,8 @@ namespace middle {
 	};
 
 	struct GameInput {
+		bool copy = false;
+		bool insertTerm = false;
 		bool pop = false;
 		bool mulOne = false;
 		bool comp = false;

@@ -7,6 +7,7 @@
 #include "IntersectingTag.h"
 #include "LocalPosition.h"
 #include "TopDogBubbleTag.h"
+#include "NonPhysicalBubbleTag.h"
 
 class BubbleManualScalingSystem : public middle::MiddleGameplaySystem {
 	components::CompCache* topDogCache;
@@ -16,6 +17,7 @@ class BubbleManualScalingSystem : public middle::MiddleGameplaySystem {
 		topDogCache->addType<components::TopDogInViewTag>();
 		topDogCache->addType<components::LocalScale>();
 		topDogCache->addType<components::LocalPosition>();
+		topDogCache->addType<components::NonPhysicalBubbleTag>(components::NOTINTERESTED);
 	}
 	void update(middle::GameState* gameState) override {
 

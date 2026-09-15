@@ -802,17 +802,25 @@ EditorText
 s  SceneEditorUniversalSystem
 __q  22_0
 MouseSelectable
+MouseGrabbable
+MouseIntersectable
+LoopSociety
+q  -1_0
+p  
+SystemReference
+s  BubbleInventorySystem
+EditorText
+s  BubbleInventorySystem
 LocalPosition
 v  
-217.010651
--0.000122
--122.199890
-MouseIntersectable
+216.799805
+0.000061
+-138.073486
 GlobalTransform
 v  
-217.010651
--0.000122
--122.199890
+216.799805
+0.000061
+-138.073486
 v  
 1.000000
 1.000000
@@ -823,19 +831,11 @@ r
 0.000000
 0.000000
 
-MouseGrabbable
-SystemReference
-s  BubbleInventorySystem
-LoopSociety
-q  -1_0
-p  
 LocalScale
 v  
 1.000000
 1.000000
 1.000000
-EditorText
-s  BubbleInventorySystem
 __q  23_0
 MouseSelectable
 LocalPosition
@@ -872,6 +872,42 @@ v
 1.000000
 EditorText
 s  DeletionSystem
+__q  24_0
+Sphere
+f  2.000000
+LocalPosition
+v  
+-13.622169
+0.000000
+-371.200195
+LocalScale
+v  
+1.000000
+1.000000
+1.000000
+GlobalTransform
+v  
+-13.622169
+0.000000
+-371.200195
+v  
+1.000000
+1.000000
+1.000000
+r  
+0.000000
+0.000000
+0.000000
+0.000000
+
+MouseSelectable
+MouseGrabbable
+MouseIntersectable
+LoopSociety
+q  -1_0
+p  
+Inventory
+i  5
 __q  25_0
 MouseSelectable
 LocalPosition
