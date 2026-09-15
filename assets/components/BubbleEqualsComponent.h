@@ -4,6 +4,12 @@
 #define MIDDLEBUBBLEEQUALSCOMPONENT(X)
 
 namespace components {
+
+	enum BubbleEqualsRole {
+		EQUALS_LEFT,
+		EQUALS_RIGHT
+	};
+
 	struct BubbleEqualsComponent : public middle::Serializable{
 
 		void serialize(std::ostream& ostream) override;

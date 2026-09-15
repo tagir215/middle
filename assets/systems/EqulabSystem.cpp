@@ -3,7 +3,6 @@
 #include "middle_system_registrar.h"
 #include "middle_shape_utils.h"
 #include "equlab_actions.h"
-#include "MouseIntersectable.h"
 #include "BubbleComponent.h"
 #include "SelectedComponent.h"
 #include "component_utils.h"
@@ -17,6 +16,10 @@
 #include "TopDogBubbleTag.h"
 #include "bubble_paths.h"
 #include "ActiveSceneEditableTag.h"
+#include "IntersectingTag.h"
+#include "bubequ_mapping.h"
+#include "BubbleGateComponent.h"
+#include "NonPhysicalBubbleTag.h"
 
 class EqulabSystem : public middle::MiddleGameplaySystem {
 public:
@@ -37,12 +40,14 @@ public:
 
 	void init(middle::GameState* gameState) override {
 		intersectableBubbleCache = middle::newCompCache(gameState, systemName);
-		intersectableBubbleCache->addType<components::MouseIntersectable>();
+		intersectableBubbleCache->addType<components::IntersectingTag>();
 		intersectableBubbleCache->addType<components::BubbleComponent>();
+		intersectableBubbleCache->addType<components::NonPhysicalBubbleTag>(components::NOTINTERESTED);
 
 		intersectableUnitCache = middle::newCompCache(gameState, systemName);
-		intersectableUnitCache->addType<components::MouseIntersectable>();
+		intersectableUnitCache->addType<components::IntersectingTag>();
 		intersectableUnitCache->addType<components::BubbleUnit>();
+		intersectableUnitCache->addType<components::NonPhysicalBubbleTag>(components::NOTINTERESTED);
 
 		selectedCache = middle::newCompCache(gameState, systemName);
 		selectedCache->addType<components::SelectedComponent>();
@@ -90,8 +95,6 @@ public:
 
 	void update(middle::GameState* gameState) override {
 
-
-
 		// UI 
 		auto equlabUi = [gameState, this]() {
 			ImGui::Begin("Bubequ file");
@@ -104,28 +107,51 @@ public:
 
 			if (ImGui::Button("Save bubequ")) {
 				for (middle::Id& activeId : activeBubbleCache->relevantIdVector) {
-					std::string equstring = equlab::bubbleToBubequ(gameState, activeId);
-					bubequ::saveBubequ(equationName, equstring);
+
+					std::string name = equationName;
+
+					std::shared_ptr<bubequ::Scope> root;
+					if (gameState->bubbleAlgebraState.activeBubbleName != "") {
+						name = gameState->bubbleAlgebraState.activeBubbleName;
+						middle::Id backgroundId = gameState->bubbleAlgebraState.backgroundBubbleId;
+						auto newBranch = bubequ::bubbleToBubequ(gameState, backgroundId);
+						root = bubequ::loadBubequHead(name, {}, gameState->bubbleAlgebraState.loadDepth);
+						// load root from disc
+						// replace current visible branch on the loaded tree
+						bubequ::replaceBranch(root, newBranch, gameState->bubbleAlgebraState.traversePath);
+					}
+					else {
+						root = bubequ::bubbleToBubequ(gameState, activeId);
+					}
+
+					// convert to hashes and save head reference
+					std::unordered_map<std::string, std::string>hashMap;
+					std::string head = bubequ::bubequToHashes(gameState, root, hashMap);
+					bubequ::saveBubequHead(equationName, head, hashMap, gameState->bubbleAlgebraState.traversePath, {0,0,0}, 1);
 				}
 			}
 
-
 			ImGui::End();
-
 
 
 			ImGui::Begin("bubequ list");
 			std::vector<std::string>filenames = bubequ::getFilenames(bubblePaths::EQUATION_FOLDER);
 			for (auto& name : filenames) {
 				if (ImGui::Button(name.c_str())) {
-					const std::string path = bubblePaths::EQUATION_FOLDER + "/" + name;
+					const std::string path = bubblePaths::EQUATION_FOLDER + "/" + name + ".bubequ";
 					Vector3 camXZPos = gameState->activeCamera.position;
 					camXZPos.y = 0;
-					auto bubequ = bubequ::loadBubequ(path);
-					middle::Id id = equlab::bubequToBubble(gameState, camXZPos, bubequ);
+					//auto bubequ = bubequ::loadBubequ(path);
+
+					auto bubequ = bubequ::loadBubequHead(name, {}, gameState->bubbleAlgebraState.loadDepth);
+
+					middle::Id id = bubequ::bubequToBubble(gameState, camXZPos, bubequ);
 					auto registerAction = std::make_shared<middle::EditorActionRegisterId>(id);
 					middle::queueAction(gameState, registerAction);
 					gameState->bubbleAlgebraState.bubbleActions.push_back(registerAction);
+
+					// todo change
+					gameState->bubbleAlgebraState.activeBubbleName = name;
 				}
 			}
 			ImGui::End();
@@ -134,31 +160,70 @@ public:
 
 
 		// ACTIONS
-		//std::string keyString = keyToString(gameState);
-		//if (keyString != "") {
-		//	middle::Id intersectedBubble;
-		//	auto intersectableBubbleIt = intersectableBubbleCache->begin<components::MouseIntersectable>();
-		//	for (int i = 0; i < intersectableBubbleCache->getSize(); ++i) {
-		//		auto intersectable = *intersectableBubbleIt;
-		//		if (intersectable->intersectingTop) {
-		//			intersectedBubble = intersectableBubbleCache->relevantIdVector[i];
-		//			break;
-		//		}
-		//	}
-		//	if (intersectedBubble.index != middle::UNASSIGNED) {
-		//		auto action = std::make_shared<equlab::AddLabelCharacterToVariable>(intersectedBubble, keyString);
-		//		middle::queueAction(gameState, action);
-		//		gameState->bubbleAlgebraState.bubbleActions.push_back(action);
-		//	}
-		//}
+		std::string keyString = keyToString(gameState);
+		if (gameState->equlabInput.ctrlHeld && keyString != "") {
+			middle::Id intersectedBubble;
+			auto intersectingBubbleIt = intersectableBubbleCache->begin<components::IntersectingTag>();
+			for (int i = 0; i < intersectableBubbleCache->getSize(); ++i) {
+				auto intersecting = *intersectingBubbleIt;
+				if (intersecting->intersectingTop) {
+					intersectedBubble = intersectableBubbleCache->relevantIdVector[i];
+					break;
+				}
+			}
+			if (intersectedBubble.index != middle::UNASSIGNED) {
+				auto action = std::make_shared<equlab::AddLabelCharacterToVariable>(intersectedBubble, keyString);
+				bubble::queueBubbleAction(gameState, intersectedBubble, action);
+			}
+		}
+		if (gameState->equlabInput.altHeld && keyString != "") {
+			middle::Id intersectedBubble;
+			auto intersectingBubbleIt = intersectableBubbleCache->begin<components::IntersectingTag>();
+			for (int i = 0; i < intersectableBubbleCache->getSize(); ++i) {
+				auto intersecting = *intersectingBubbleIt;
+				if (intersecting->intersectingTop) {
+					intersectedBubble = intersectableBubbleCache->relevantIdVector[i];
+					break;
+				}
+			}
+			if (intersectedBubble.index != middle::UNASSIGNED) {
+				auto action = std::make_shared<equlab::AddLabelToFunction>(intersectedBubble, keyString);
+				bubble::queueBubbleAction(gameState, intersectedBubble, action);
+			}
+		}
+
+		auto& in = gameState->equlabInput;
+		bool clicked =
+			in.oneClicked
+			|| in.twoClicked
+			|| in.threeClicked
+			|| in.fourClicked
+			|| in.fiveClicked
+			|| in.sixClicked
+			|| in.sevenClicked
+			|| in.eightClicked
+			|| in.nineClicked
+			|| in.zeroClicked
+			|| in.f1Clicked
+			|| in.f2Clicked
+			|| in.f3Clicked
+			|| in.f4Clicked
+			|| in.f5Clicked
+			|| in.f6Clicked
+			|| in.f7Clicked
+			|| in.f8Clicked
+			|| in.f9Clicked
+			|| in.f10Clicked
+			|| in.f11Clicked
+			|| in.f12Clicked;
 
 		// MOUSE CLICK ACTIONS
-		if (gameState->input.mouseClicked) {
+		if (clicked) {
 
 			middle::Id intersectedBubble;
-			auto intersectableBubbleIt = intersectableBubbleCache->begin<components::MouseIntersectable>();
+			auto intersectingBubbleIt = intersectableBubbleCache->begin<components::IntersectingTag>();
 			for (int i = 0; i < intersectableBubbleCache->getSize(); ++i) {
-				auto intersectable = *intersectableBubbleIt;
+				auto intersectable = *intersectingBubbleIt;
 				if (intersectable->intersectingTop) {
 					intersectedBubble = intersectableBubbleCache->relevantIdVector[i];
 					break;
@@ -178,93 +243,71 @@ public:
 				cantAdd = unitComp || varComp;
 			}
 
-			if (!cantAdd && gameState->equlabInput.oneHeld) {
-				auto action = std::make_shared<equlab::AddBubble>(intersectedBubble, gameState->input.mouseXZ_PlanePos);
-				middle::queueAction(gameState, action);
-				gameState->bubbleAlgebraState.bubbleActions.push_back(action);
+
+			Vector3& mousePos = gameState->input.mouseXZ_PlanePos;
+
+			if (!cantAdd && in.oneClicked) {
+				auto action = std::make_shared<equlab::AddBubble>(intersectedBubble, mousePos);
+				bubble::queueBubbleAction(gameState, intersectedBubble, action);
 			}
-			else if (!cantAdd && gameState->equlabInput.twoHeld && intersectedBubble.index != middle::UNASSIGNED) {
-				auto action = std::make_shared<equlab::AddUnit>(intersectedBubble, gameState->input.mouseXZ_PlanePos);
-				middle::queueAction(gameState, action);
-				gameState->bubbleAlgebraState.bubbleActions.push_back(action);
+			else if (!cantAdd && in.twoClicked && intersectedBubble.index != middle::UNASSIGNED) {
+				auto action = std::make_shared<equlab::AddUnit>(intersectedBubble, mousePos);
+				bubble::queueBubbleAction(gameState, intersectedBubble, action);
 			}
-			else if (!cantAdd && gameState->equlabInput.threeHeld) {
-				auto action = std::make_shared<equlab::AddEquals>(gameState->input.mouseXZ_PlanePos);
-				middle::queueAction(gameState, action);
-				gameState->bubbleAlgebraState.bubbleActions.push_back(action);
+			else if (!cantAdd && in.threeClicked) {
+				auto action = std::make_shared<equlab::AddEquals>(targetId, mousePos);
+				bubble::queueBubbleAction(gameState, targetId, action);
 			}
-			else if (gameState->equlabInput.fourHeld) {
+			else if (in.fourClicked) {
 				auto action = std::make_shared<equlab::Negate>(targetId);
-				middle::queueAction(gameState, action);
-				gameState->bubbleAlgebraState.bubbleActions.push_back(action);
+				bubble::queueBubbleAction(gameState, targetId, action);
 			}
-			else if (gameState->equlabInput.fiveHeld && intersectedBubble.index != middle::UNASSIGNED) {
+			else if (in.fiveClicked && intersectedBubble.index != middle::UNASSIGNED) {
 				auto action = std::make_shared<equlab::Invert>(intersectedBubble);
-				middle::queueAction(gameState, action);
-				gameState->bubbleAlgebraState.bubbleActions.push_back(action);
+				bubble::queueBubbleAction(gameState, intersectedBubble, action);
 			}
-
-			else if (gameState->equlabInput.sixHeld) {
+			else if (in.sixClicked) {
 				auto action = std::make_shared<equlab::Delete>(targetId);
-				middle::queueAction(gameState, action);
-				gameState->bubbleAlgebraState.bubbleActions.push_back(action);
+				bubble::queueBubbleAction(gameState, targetId, action);
 			}
-
-			else if (gameState->equlabInput.sevenHeld) {
+			else if (in.sevenClicked) {
 				auto action = std::make_shared<equlab::ToggleEditable>(targetId);
-				middle::queueAction(gameState, action);
-				gameState->bubbleAlgebraState.bubbleActions.push_back(action);
+				bubble::queueBubbleAction(gameState, targetId, action);
 			}
-
-			else if (gameState->equlabInput.nineHeld) {
-				middle::attachComponent<components::SelectedComponent>(gameState, intersectedBubble);
-				currentSelectType = SelectType::ADD_MULTIPLICATION;
+			else if (in.nineClicked) {
+				auto action = std::make_shared<equlab::AddMultiplication>(targetId, mousePos);
+				bubble::queueBubbleAction(gameState, targetId, action);
 			}
-
-			else if (gameState->equlabInput.eightHeld) {
-				middle::attachComponent<components::SelectedComponent>(gameState, intersectedBubble);
-				currentSelectType = SelectType::ADD_POWER;
+			else if (in.eightClicked) {
+				auto action = std::make_shared<equlab::AddPower>(targetId, mousePos);
+				bubble::queueBubbleAction(gameState, targetId, action);
 			}
-		}
-		// MOUSE RELEASE ACTIONS	
-		if (gameState->input.mouseReleased && selectedCache->getSize() == 1) {
-
-			middle::Id intersectedShape;
-			auto intersectableIt = intersectableBubbleCache->begin<components::MouseIntersectable>();
-			for (int i = 0; i < intersectableBubbleCache->getSize(); ++i) {
-				auto intersectable = *intersectableIt;
-				if (intersectable->intersectingTop) {
-					intersectedShape = intersectableBubbleCache->relevantIdVector[i];
-					break;
-				}
+			else if (in.f1Clicked) {
+				auto action = std::make_shared<equlab::AddSwapBubble>(targetId, mousePos);
+				bubble::queueBubbleAction(gameState, targetId, action);
 			}
-
-			middle::Id selectedId = selectedCache->relevantIdVector[0];
-
-			if (intersectedShape.index == middle::UNASSIGNED) {
-				return;
+			else if (in.f2Clicked) {
+				auto action = std::make_shared<equlab::AddLogicBubble>(targetId, mousePos);
+				bubble::queueBubbleAction(gameState, targetId, action);
 			}
-			if (intersectedShape == selectedId) {
-				return;
+			else if (in.f3Clicked) {
+				auto action = std::make_shared<equlab::AddGateBubble>(targetId, mousePos, components::BubbleGateStatus::CLOSED);
+				bubble::queueBubbleAction(gameState, targetId, action);
 			}
-
-			if (currentSelectType == SelectType::ADD_MULTIPLICATION) {
-				middle::Id idA = selectedId;
-				middle::Id idB = intersectedShape;
-				auto connect = std::make_shared<equlab::ConnectMultiplicationLink>(idB, idA);
-				middle::queueAction(gameState, connect);
-				gameState->bubbleAlgebraState.bubbleActions.push_back(connect);
+			else if (in.f4Clicked) {
+				auto action = std::make_shared<equlab::ToggleLogicBubbleStatus>(targetId);
+				bubble::queueBubbleAction(gameState, targetId, action);
 			}
-
-			if (currentSelectType == SelectType::ADD_POWER) {
-				middle::Id idA = selectedId;
-				middle::Id idB = intersectedShape;
-				auto connect = std::make_shared<equlab::ConnectPowerLink>(idA, idB);
-				middle::queueAction(gameState, connect);
-				gameState->bubbleAlgebraState.bubbleActions.push_back(connect);
+			// indequalties
+			else if (in.f5Clicked) {
+				auto action = std::make_shared<equlab::AddInequals>(targetId, mousePos, false);
+				bubble::queueBubbleAction(gameState, targetId, action);
 			}
-
-			middle::queueComponentDeletion<components::SelectedComponent>(gameState, selectedCache->relevantIdVector[0]);
+			// summation
+			else if (in.f6Clicked) {
+				auto action = std::make_shared<equlab::AddSummation>(targetId, mousePos);
+				bubble::queueBubbleAction(gameState, targetId, action);
+			}
 		}
 	}
 };

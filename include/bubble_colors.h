@@ -2,34 +2,26 @@
 #include "raylib.h"
 
 namespace bubbleColors {
-	inline Color BACKGROUND = {30, 106, 71,255};
-	inline Color POSITIVE_UNIT = {150,150,150,255};
-	inline Color ZERO_UNIT = { 255,255,255,60 };
-	inline Color NEGATIVE_UNIT = { 0,0,255,255 };
-	inline Color BUBBLE_OUTLINE = {0,0,0,0};
-	inline Color BUBBLE_BACKGROUND_EVEN = {0, 0, 0, 255};
-	inline Color BUBBLE_BACKGROUND_UNEVEN = {66, 66, 66, 255};
-	inline Color BUBBLE_BACKGROUND_INVERSE_EVEN = {0, 50, 0, 255};
-	inline Color BUBBLE_BACKGROUND_INVERSE_UNEVEN = {0, 80, 0, 255};
-	inline Color VARIABLE_OUTLINE = {0, 0,0 , 0};
-	inline Color VARIABLE_TEXT = WHITE;
-	inline Color HOVERED_ITEM = {255,255,255,60};
-	inline Color MULTIPLICATION_CONNECTION = RED;
-	inline Color FRACTION_CONNECTION = BLACK;
-	inline Color POSITIVE_POWER = RED;
-	inline Color NEGATIVE_POWER = {0,0,255,255};
-	inline Color TEXT = BLACK;
-	inline Color EQUALS_CONNECTION = BLUE;
-	inline Color PROCEDURE_SELECTED = {0, 255,255,30};
-	inline Color ELEMENT_SELECTED = {0,255,0,60};
-	inline Color UI_BUTTON = BLACK;
-	inline Color UI_BUTTON_BACKGROUND = {0,0,0,0};
-	inline Color UI_BACKGROUND = BLACK;
-	inline Color UI_TEXT = WHITE;
-	inline Color PROCEDURE_RECT = {0,0,50,255};
-	inline Color PROCEDURE_BACKGROUND = {50,50,50,255};
-	inline Color PROCEDURE_SCOPE = {100,100,100,255};
-	inline Color HIGHLIGHT_COLOR = { 0,100,0,200 };
-	inline Color HIGHLIGHT_COLOR_2 = { 0,100,0,100 };
-	inline Color INPUT_HOVER_COLOR = WHITE;
+	inline Color BACKGROUND = WHITE;
+	inline Color BUBBLE = { 190,190,190,255 };
+	inline Color LOGIC = { 220,220,220,255 };
+	inline Color CLOSED_GATE = { 220,30,30,255 };
+	inline Color OPEN_GATE = { 30,200,30,255 };
+	inline Color DUMMY_GATE = {100,100,100,255};
+	inline Color POSITIVE_UNIT = WHITE;
+	inline Color NEGATIVE_UNIT = BLACK;
+	inline Color UNIT_TEXT_POSITIVE = BLACK;
+	inline Color UNIT_TEXT_NEGATIVE = WHITE;
+	inline Color MULTIPLICATION = {58,81,66,255};
+	inline Color MULTIPLICATION_TEXT = BLACK;
+	inline Color POWER = {165,117,163,255};
+	inline Color POWER_TEXT = BLACK;
+	inline Color EQUALS = {171,151,223,255};
+	inline Color EQUALS_TEXT = BLACK;
+	inline Color INEQUALS = {65,32,32,255};
+	inline Color INEQUALS_TEXT = BLACK;
+	inline Color SUMMATION = {246,145,122,244};
+	inline Color SUMMATION_TEXT = BLACK;
+	inline Color FUNCTION = {142,153,227,255};
+	inline Color FUNCTION_TEXT = BLACK;
 }

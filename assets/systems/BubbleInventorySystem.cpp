@@ -4,7 +4,6 @@
 #include "middle_shape_utils.h"
 #include "Inventory.h"
 #include "BubbleComponent.h"
-#include "MouseIntersectable.h"
 #include "MouseGrabbable.h"
 #include "editor_actions.h"
 #include "LoopSociety.h"
@@ -25,164 +24,113 @@
 #include "Layer.h"
 #include "InsertableBubble.h"
 #include "imgui.h"
+#include "IntersectingTag.h"
+#include "bubble_utils.h"
+#include "LocalPosition.h"
+#include "bubble_colors.h"
 
 
 class BubbleInventorySystem : public middle::MiddleGameplaySystem {
 public:
-
-	components::CompCache* inventoryCache;
-	components::CompCache* inventoryItemCache;
-	components::CompCache* grabbableCache;
-	components::CompCache* uiComponentlessBubbleInventoryItemCache;
-	components::CompCache* snapReflessBubbleInventoryItemCache;
-	components::CompCache* uiButtonsCache;
-	components::CompCache* activeCheckBoxesCache;
-	components::CompCache* inventorySlotCache;
-	components::CompCache* insertableCache;
+	components::CompCache* cache;
 
 	void init(middle::GameState* gameState) {
-		inventoryCache = middle::newCompCache(gameState, systemName);
-		inventoryCache->addType<components::Inventory>();
-		inventoryCache->addType<components::LoopSociety>();
-		inventoryItemCache = middle::newCompCache(gameState, systemName);
-		inventoryItemCache->addType<components::InventoryItem>();
-		grabbableCache = middle::newCompCache(gameState, systemName);
-		grabbableCache->addType<components::InventoryItem>();
-		grabbableCache->addType<components::MouseGrabbable>();
-		uiComponentlessBubbleInventoryItemCache = middle::newCompCache(gameState, systemName);
-		uiComponentlessBubbleInventoryItemCache->addType<components::InventoryItem>();
-		uiComponentlessBubbleInventoryItemCache->addType<components::BubbleComponent>();
-		uiComponentlessBubbleInventoryItemCache->addType<components::UiComponent>(components::NOTINTERESTED);
-		snapReflessBubbleInventoryItemCache = middle::newCompCache(gameState, systemName);
-		snapReflessBubbleInventoryItemCache->addType<components::InventoryItem>();
-		snapReflessBubbleInventoryItemCache->addType<components::BubbleComponent>();
-		snapReflessBubbleInventoryItemCache->addType<components::SnapRef>(components::NOTINTERESTED);
-		snapReflessBubbleInventoryItemCache->addType<components::PlacementComponent>(components::NOTINTERESTED);
-		uiButtonsCache = middle::newCompCache(gameState, systemName);
-		uiButtonsCache->addType<components::Button>();
-		uiButtonsCache->addType<components::UiComponent>();
-		uiButtonsCache->addType<components::MouseClickComponent>();
-		activeCheckBoxesCache = middle::newCompCache(gameState, systemName);
-		activeCheckBoxesCache->addType<components::ActiveCheckBoxTag>();
-		inventorySlotCache = middle::newCompCache(gameState, systemName);
-		inventorySlotCache->addType<components::InventorySlot>();
-		insertableCache = middle::newCompCache(gameState, systemName);
-		insertableCache->addType<components::InsertableBubble>();
+		systemUpdateType = middle::SystemUpdateType::GAMEPLAY_POSTFRAME;
+		cache = middle::newCompCache(gameState, systemName);
+		cache->addType<components::Inventory>();
+		cache->addType<components::LoopSociety>();
+		cache->addType<components::LocalPosition>();
 	}
 
 
 	void update(middle::GameState* gameState) override {
+		const float bubbleScaleRatioWithScreenHeight = 0.1f;
+		const float distanceFromNearPlane = 900;
+		const float screenAxisY = gameState->nearPlaneAxisY / gameState->nearPlaneDistance * distanceFromNearPlane;
+		const float spacing = bubble::bubbleAxis * 0.4f;
+		const float scale = 1;
+		const Vector3 itemScale = {scale,scale,scale};
 
-		auto inventoryIt = inventoryCache->begin<components::Inventory>();
-		for (int i = 0; i < inventoryCache->getSize(); ++i) {
-			auto inventory = *inventoryIt;
+		auto invIt = cache->begin<components::Inventory>();
+		auto invPos = cache->begin<components::LocalPosition>();
+		auto loopIt = cache->begin<components::LoopSociety>();
+		for (middle::Id inventoryId : cache->relevantIdVector) {
+			auto localPos = *invPos;
+			localPos->pos = { 0,0,0 };
 
-			std::vector < middle::Id>children;
-			middle::getChildren(gameState, inventoryCache->relevantIdVector[i], children);
-			for (int i = 0; i < children.size(); ++i) {
-				middle::Id childId = children[i];
-				auto& child = middle::getShape(gameState, childId.index);
-				auto intersectable = middle::getComponent<components::MouseIntersectable>(child);
-				auto grabbable = middle::getComponent<components::MouseGrabbable>(child);
-				if (!grabbable) {
-					continue;
+			auto inv = *invIt;
+			auto loop = *loopIt;
+			const float itemWidth = bubble::bubbleAxis * itemScale.x * 2;
+			const float inventoryWidth = itemWidth * inv->maxSize + (inv->maxSize -1) * spacing * itemScale.x;
+
+			Vector3 cameraPos = gameState->activeCamera.position;
+			Vector3 center = { cameraPos.x, cameraPos.y + distanceFromNearPlane, cameraPos.z -screenAxisY * 0.8f };
+
+			Vector3 left = center - Vector3{inventoryWidth * 0.5f - itemWidth * 0.5f, 0, 0};
+			Vector3 advance = Vector3{ inventoryWidth / inv->maxSize, 0,0 };
+			Vector3 currentPos = left;
+			
+			for (int i = 0; i < inv->maxSize; ++i) {
+				if (loop->loopMemberIds.size() > i && loop->loopMemberIds[i].index != middle::UNASSIGNED) {
+					middle::Id childId = loop->loopMemberIds[i];
+					middle::setLocalPosition(gameState, childId, currentPos);
+					middle::setLocalScale(gameState, childId, itemScale);
 				}
-				if (intersectable->intersectingTop && gameState->input.mouseClicked) {
-					middle::Id copyId = middle::deepCopyShape(gameState, childId.index, middle::UNASSIGNED);
-					auto& copyShape = middle::getShape(gameState, copyId.index);
-					auto grabbable = middle::getComponent<components::MouseGrabbable>(copyShape);
-					grabbable->grabbing = true;
-					auto removeLoop = middle::EditorActionRemoveFromLoop(copyId.index);
-					removeLoop.execute(gameState);
-					gameState->bubbleAlgebraState.grabbedId = copyId;
-					auto ref = middle::attachComponent<components::IdRef>(gameState, copyShape.id);
-					auto placement = middle::attachComponent<components::PlacementComponent>(gameState, copyShape.id);
-					placement->grabbing = true;
-					ref->idRef = childId;
-					middle::queueComponentDeletion<components::MouseIntersectable>(gameState, copyShape.id);
-					middle::queueComponentDeletion<components::SnapRef>(gameState, copyShape.id);
+
+				middle::RenderItem item;
+				const float marginScalar = 1.1f;
+				item.type = middle::RenderItemType::RECTANGLE;
+				item.transform.translation = currentPos;
+				item.transform.scale = itemScale;
+				item.transform.rotation = { 0,0,0,0 };
+				item.layer = 0;
+				item.width = bubble::bubbleAxis * 2 * marginScalar;
+				item.height = item.width;
+				item.length = 0;
+				item.color = bubbleColors::DUMMY_GATE;
+				if (i == inv->activeIndex) {
+					item.color = BLUE;
 				}
+				gameState->renderData.push_back(item);
+
+				currentPos += advance;
 			}
+
+			auto ui = [gameState, inv]() {
+				int size = inv->maxSize;
+				ImGui::Begin("inventory");
+				if (size > 0) {
+					ImGui::SliderInt("active item", &inv->activeIndex, 0, size - 1);
+				}
+				ImGui::Separator();
+				ImGui::Checkbox("invert", &inv->invert);
+				ImGui::SameLine();
+				ImGui::Checkbox("negate", &inv->negate);
+
+				ImGui::Separator();
+				if (ImGui::RadioButton("Add", inv->insertType == components::INSERT_ADD))
+					inv->insertType = components::INSERT_ADD;
+				ImGui::SameLine();
+				if(ImGui::RadioButton("Multiply", inv->insertType == components::INSERT_MULTIPLY))
+					inv->insertType = components::INSERT_MULTIPLY;
+				ImGui::SameLine();
+				if(ImGui::RadioButton("Power", inv->insertType == components::INSERT_POWER))
+					inv->insertType = components::INSERT_POWER;
+
+				ImGui::Separator();
+				if (ImGui::RadioButton("X/X", inv->invariantType == components::X_OVER_X))
+					inv->invariantType = components::X_OVER_X;
+				ImGui::SameLine();
+				if(ImGui::RadioButton("X-X", inv->invariantType == components::X_MINUS_X))
+					inv->invariantType = components::X_MINUS_X;
+
+				if (ImGui::IsWindowHovered() || ImGui::IsAnyItemHovered()) {
+					gameState->inputBlockers.insert(middle::InputBlockers::MOUSE_BLOCK);
+				}
+				ImGui::End();
+				};
+			gameState->uiSetups.push_back(ui);
 		}
-
-
-		// attach ui components to bubbles that are in the inventory
-		auto uiComponentlessIt = uiComponentlessBubbleInventoryItemCache->begin<components::BubbleComponent>();
-		for (int i = 0; i < uiComponentlessBubbleInventoryItemCache->getSize(); ++i) {
-			middle::Id id = uiComponentlessBubbleInventoryItemCache->relevantIdVector[i];
-			middle::queueComponentAttachment<components::UiComponent>(gameState, id);
-			std::vector<middle::Id>children;
-			middle::getAllChildren(gameState, id, children);
-			for (middle::Id& child : children) {
-				auto& childShape = middle::getShape(gameState, child.index);
-				auto comp = middle::getComponent<components::UiComponent>(childShape);
-				if (!comp) {
-					middle::queueComponentAttachment<components::UiComponent>(gameState, child);
-				}
-			}
-		}
-
-		auto bubbleItemIt = snapReflessBubbleInventoryItemCache->begin<components::InventoryItem>();
-		for (int i = 0; i < snapReflessBubbleInventoryItemCache->getSize(); ++i) {
-			auto invItem = *bubbleItemIt;
-			middle::Id parentInventoryId = middle::getParent(gameState, snapReflessBubbleInventoryItemCache->relevantIdVector[i]);
-			if (parentInventoryId.index == middle::UNASSIGNED) {
-				continue;
-			}
-			std::vector<middle::Id>children;
-			middle::getChildren(gameState, parentInventoryId, children);
-			bool attachedRefs = false;
-			if (attachedRefs) {
-				break;
-			}
-		}
-
-		static int selectedInsertType = 0;
-		static bool copyNegated = false;
-		static bool copyInverted = false;
-		auto insertTypeUi = [gameState]() {
-			ImGui::Begin("Insert Method");
-			ImGui::RadioButton("Add outer", &selectedInsertType, 0);
-			ImGui::RadioButton("Multiply outer", &selectedInsertType, 1);
-			ImGui::RadioButton("Power outer", &selectedInsertType, 2);
-			ImGui::RadioButton("Insert as x-x", &selectedInsertType, 3);
-			ImGui::RadioButton("Insert as x/x", &selectedInsertType, 4);
-			ImGui::End();
-
-			ImGui::Begin("Copy Method");
-			ImGui::Checkbox("Copy Negated", &copyNegated);
-			ImGui::Checkbox("Copy Inverted", &copyInverted);
-			ImGui::End();
-			};
-
-		gameState->uiSetups.push_back(insertTypeUi);
-
-		gameState->bubbleAlgebraState.currentInsertType = static_cast<middle::BubbleInsertType>(selectedInsertType);
-		gameState->bubbleAlgebraState.copyNegated = copyNegated;
-		gameState->bubbleAlgebraState.copyInverted = copyInverted;
-
-		if (gameState->bubbleAlgebraState.grabbedId.index != middle::UNASSIGNED) {
-			auto grabbableIt = grabbableCache->begin<components::MouseGrabbable>();
-			auto inventoryItemIt = grabbableCache->begin<components::InventoryItem>();
-			for (int i = 0; i < grabbableCache->getSize(); ++i) {
-				auto grabbable = *grabbableIt;
-				auto inventoryItem = *inventoryItemIt;
-				auto& shape = middle::getShape(gameState, grabbableCache->relevantIdVector[i].index);
-
-				// item moving
-				if (grabbable->grabbing) {
-					moveShape(gameState, shape.id.index, gameState->input.mouseXZ_PlanePos - middle::getGlobalPosition(gameState, shape.id.index));
-				}
-
-				if (grabbable->grabbing && !gameState->input.mouseHeld) {
-					auto delComp = middle::attachComponent<components::DeleteComponent>(gameState, shape.id);
-					delComp->framesUntilDelete = 0;
-					gameState->bubbleAlgebraState.grabbedId = middle::Id();
-				}
-
-			}
-		}
-
 	}
 
 

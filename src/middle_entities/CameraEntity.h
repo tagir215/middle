@@ -16,7 +16,7 @@
 namespace entities{
 
     void initCamera(middle::GameState* gameState, int index, const Vector3& position, const Vector3& up, const Vector3& target, float fovy, int projection){
-		middle::Shape shape;
+		middle::Shape shape = middle::createShape(gameState);
 		components::Sphere* sphere = middle::addComponent<components::Sphere>(shape);
 		components::LocalPosition* pos = middle::addComponent<components::LocalPosition>(shape);
 		middle::addComponent<components::LocalScale>(shape);

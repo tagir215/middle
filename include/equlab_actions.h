@@ -1,6 +1,7 @@
 #pragma once
 #include "editor_actions.h"
 #include "bubequ.h"
+#include "BubbleGateComponent.h"
 
 namespace equlab {
 
@@ -9,7 +10,6 @@ namespace equlab {
 		middle::Id parentId;
 		middle::Id resultId;
 		Vector3 targetPosition;
-		std::vector<std::unique_ptr<middle::EditorActionContainer>> actions;
 		AddBubble(middle::Id parentId, const Vector3& targetPosition) {
 			this->parentId = parentId;
 			this->targetPosition = targetPosition;
@@ -23,7 +23,6 @@ namespace equlab {
 		middle::Id parentId;
 		middle::Id resultId;
 		Vector3 targetPosition;
-		std::vector<std::unique_ptr<middle::EditorActionContainer>> actions;
 		AddUnit(middle::Id parentId, const Vector3& targetPosition) {
 			this->parentId = parentId;
 			this->targetPosition = targetPosition;
@@ -37,7 +36,6 @@ namespace equlab {
 		middle::Id id;
 		middle::Id resultId;
 		Vector3 targetPosition;
-		std::vector<std::unique_ptr<middle::EditorActionContainer>> actions;
 		Negate(middle::Id id) {
 			this->id = id;
 		}
@@ -50,7 +48,6 @@ namespace equlab {
 		middle::Id id;
 		middle::Id resultId;
 		Vector3 targetPosition;
-		std::vector<std::unique_ptr<middle::EditorActionContainer>> actions;
 		Invert(middle::Id id) {
 			this->id = id;
 		}
@@ -63,8 +60,6 @@ namespace equlab {
 		middle::Id id;
 		middle::Id resultId;
 		std::string label;
-		Vector3 targetPosition;
-		std::vector<std::unique_ptr<middle::EditorActionContainer>> actions;
 		AddLabelCharacterToVariable(middle::Id id, const std::string& label) {
 			this->id = id;
 			this->label = label;
@@ -73,6 +68,18 @@ namespace equlab {
 		void undo(middle::GameState* gameState);
 	};
 
+	class AddLabelToFunction : public middle::EditorActionContainer {
+	public:
+		middle::Id id;
+		middle::Id resultId;
+		std::string label;
+		AddLabelToFunction(middle::Id id, const std::string& label) {
+			this->id = id;
+			this->label = label;
+		}
+		void execute(middle::GameState* gameState);
+		void undo(middle::GameState* gameState);
+	};
 
 	class AddVariable : public middle::EditorActionContainer {
 	public:
@@ -80,7 +87,6 @@ namespace equlab {
 		middle::Id resultId;
 		std::string label;
 		Vector3 targetPosition;
-		std::vector<std::unique_ptr<middle::EditorActionContainer>> actions;
 		AddVariable(middle::Id parentId, const std::string& label, const Vector3& targetPosition) {
 			this->parentId = parentId;
 			this->targetPosition = targetPosition;
@@ -95,20 +101,47 @@ namespace equlab {
 	public:
 		middle::Id resultId;
 		Vector3 targetPos;
-		std::vector<std::unique_ptr<middle::EditorActionContainer>> actions;
-		AddEquals(const Vector3& targetPos) {
+		middle::Id parentId;
+		AddEquals(middle::Id parentId, const Vector3& targetPos) {
+			this->parentId = parentId;
 			this->targetPos = targetPos;
 		}
 		void execute(middle::GameState* gameState);
 		void undo(middle::GameState* gameState);
 	};
 
+	class AddInequals : public middle::EditorActionContainer {
+	public:
+		middle::Id resultId;
+		bool equalOr;
+		middle::Id parentId;
+		Vector3 targetPos;
+		AddInequals(middle::Id parentId, const Vector3& targetPos, bool equalOr) {
+			this->parentId = parentId;
+			this->targetPos = targetPos;
+			this->equalOr = equalOr;
+		}
+		void execute(middle::GameState* gameState);
+		void undo(middle::GameState* gameState);
+	};
+
+	class AddSummation : public middle::EditorActionContainer {
+	public:
+		middle::Id resultId;
+		middle::Id parentId;
+		Vector3 targetPos;
+		AddSummation(middle::Id parentId, const Vector3& targetPos) {
+			this->parentId = parentId;
+			this->targetPos = targetPos;
+		}
+		void execute(middle::GameState* gameState);
+		void undo(middle::GameState* gameState);
+	};
 
 	class Move : public middle::EditorActionContainer {
 	public:
 		middle::Id id;
 		Vector3 targetPosition;
-		std::vector<std::unique_ptr<middle::EditorActionContainer>> actions;
 		Move(middle::Id id, const Vector3& targetPosition) {
 			this->id = id;
 			this->targetPosition = targetPosition;
@@ -120,7 +153,6 @@ namespace equlab {
 	class Delete : public middle::EditorActionContainer {
 	public:
 		middle::Id id;
-		std::vector<std::unique_ptr<middle::EditorActionContainer>> actions;
 		Delete(middle::Id id) {
 			this->id = id;
 		}
@@ -139,12 +171,38 @@ namespace equlab {
 		void undo(middle::GameState* gameState);
 	};
 
+	class AddMultiplication : public middle::EditorActionContainer {
+	public:
+		middle::Id parentId;
+		Vector3 targetPosition;
+		middle::Id resultId;
+		AddMultiplication(middle::Id parentId, const Vector3& targetPosition) {
+			this->parentId = parentId;
+			this->targetPosition = targetPosition;
+		}
+		void execute(middle::GameState* gameState);
+		void undo(middle::GameState* gameState);
+	};
+
+	class AddPower : public middle::EditorActionContainer {
+	public:
+		middle::Id parentId;
+		middle::Id resultId;
+		Vector3 targetPosition;
+		AddPower(middle::Id parentId, const Vector3& targetPosition) {
+			this->parentId = parentId;
+			this->targetPosition = targetPosition;
+		}
+		void execute(middle::GameState* gameState);
+		void undo(middle::GameState* gameState);
+	};
+
+
 	class ConnectMultiplicationLink : public middle::EditorActionContainer {
 	public:
 		middle::Id bubbleIdA;
 		middle::Id bubbleIdB;
 		middle::Id resultId;
-		std::vector<std::unique_ptr<middle::EditorActionContainer>> actions;
 		ConnectMultiplicationLink(middle::Id bubbleIdA, middle::Id bubbleIdB) {
 			this->bubbleIdA = bubbleIdA;
 			this->bubbleIdB = bubbleIdB;
@@ -153,20 +211,117 @@ namespace equlab {
 		void undo(middle::GameState* gameState);
 	};
 
-	class ConnectPowerLink : public middle::EditorActionContainer {
+	class ConnectPower : public middle::EditorActionContainer {
 	public:
-		middle::Id bubbleIdA;
-		middle::Id bubbleIdB;
+		middle::Id baseId;
+		middle::Id exponentId;
 		middle::Id resultId;
-		std::vector<std::unique_ptr<middle::EditorActionContainer>> actions;
-		ConnectPowerLink(middle::Id bubbleIdA, middle::Id bubbleIdB) {
-			this->bubbleIdA = bubbleIdA;
-			this->bubbleIdB = bubbleIdB;
+		ConnectPower(middle::Id bubbleIdA, middle::Id bubbleIdB) {
+			this->baseId = bubbleIdA;
+			this->exponentId = bubbleIdB;
 		}
 		void execute(middle::GameState* gameState);
 		void undo(middle::GameState* gameState);
 	};
 
-	middle::Id bubequToBubble(middle::GameState* gameState, const Vector3& targetPos, std::shared_ptr<bubequ::Scope>& bubequ);
-	std::string bubbleToBubequ(middle::GameState* gameState, middle::Id id);
+	class AddBubbleText : public middle::EditorActionContainer {
+	public:
+		middle::Id parentId;
+		Vector3 targetPosition;
+		middle::Id resultId;
+		AddBubbleText(middle::Id parentId, const Vector3& targetPosition) {
+			this->parentId = parentId;
+			this->targetPosition = targetPosition;
+		}
+		void execute(middle::GameState* gameState) override;
+		void undo(middle::GameState* gameState) override;
+	};
+
+	class AddSwapBubble : public middle::EditorActionContainer {
+	public:
+		middle::Id parentId;
+		Vector3 targetPosition;
+		middle::Id resultId;
+		AddSwapBubble(middle::Id parentId, const Vector3& targetPosition) {
+			this->parentId = parentId;
+			this->targetPosition = targetPosition;
+		}
+		void execute(middle::GameState* gameState) override;
+		void undo(middle::GameState* gameState) override;
+	};
+
+	class AddLogicBubble : public middle::EditorActionContainer {
+	public:
+		middle::Id parentId;
+		Vector3 targetPosition;
+		middle::Id resultId;
+		AddLogicBubble(middle::Id parentId, const Vector3& targetPosition) {
+			this->parentId = parentId;
+			this->targetPosition = targetPosition;
+		}
+		void execute(middle::GameState* gameState) override;
+		void undo(middle::GameState* gameState) override;
+	};
+
+	class ToggleLogicBubbleStatus : public middle::EditorActionContainer {
+	public:
+		middle::Id id;
+		ToggleLogicBubbleStatus(middle::Id id) {
+			this->id = id;
+		}
+		void execute(middle::GameState* gameState) override;
+		void undo(middle::GameState* gameState) override;
+	};
+
+	class AddGateBubble : public middle::EditorActionContainer {
+	public:
+		middle::Id parentId;
+		Vector3 targetPosition;
+		components::BubbleGateStatus status;
+		middle::Id resultId;
+		AddGateBubble(middle::Id parentId, const Vector3& targetPosition, components::BubbleGateStatus status) {
+			this->parentId = parentId;
+			this->targetPosition = targetPosition;
+			this->status = status;
+		}
+		void execute(middle::GameState* gameState) override;
+		void undo(middle::GameState* gameState) override;
+	};
+
+	class LoadBubbleSection : public middle::EditorActionContainer {
+	public:
+		middle::Id scaleReferenceId;
+		int scaleReferenceIndex = -1;
+		middle::Id resultId;
+		LoadBubbleSection(middle::Id scaleReferenceId, int scaleReferenceIndex) {
+			this->scaleReferenceId = scaleReferenceId;
+			this->scaleReferenceIndex = scaleReferenceIndex;
+		}
+		void execute(middle::GameState* gameState) override;
+		void undo(middle::GameState* gameState) override;
+	};
+
+	class LinkTextToTextBubble : public middle::EditorActionContainer {
+	public:
+		middle::Id id;
+		std::string name;
+		std::string text;
+		std::string prevName;
+		std::string prevText;
+		LinkTextToTextBubble(middle::Id id, const std::string& name, const std::string& text) {
+			this->id = id;
+			this->name = name;
+			this->text = text;
+		}
+		void execute(middle::GameState* gameState) override;
+		void undo(middle::GameState* gameState) override;
+	};
+
+	class UndoAction : public middle::EditorActionContainer {
+	public:
+		UndoAction() {}
+		void execute(middle::GameState* gameState) override;
+		void undo(middle::GameState* gameState) override;
+	};
+
 }

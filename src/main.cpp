@@ -1,4 +1,4 @@
-/*******************************************************************************************
+﻿/*******************************************************************************************
 *
 *   raylib [core] example - Basic window
 *
@@ -33,18 +33,21 @@
 #include <raymath.h>
 #include <rlImGui.h>
 #include "editor_actions.h"
-#include "middle_gameplay_script_map.h"
 #include "middle_math.h"
 #include "game.h"
 #include "sound_helper.h"
+#include "init_external_systems.h"
+#include <iostream>
+#include "assets_loading.h"
+#include "profiler_helpers.h"
 
 #if defined(_DEBUG)
 static const char* DLL_PATH = "Debug/game.dll";
-static const char* TEMP_PATH = "Debug/game.load.dll";
+static const char* TEMP_DLL_NAME = "Debug/game.load";
 bool gameMode = false;
 #else
 static const char* DLL_PATH = "Release/game.dll";
-static const char* TEMP_PATH = "Release/game.load.dll";
+static const char* TEMP_DLL_NAME = "Release/game.load";
 bool gameMode = true;
 #endif
 
@@ -55,7 +58,8 @@ void ReloadGameDLL();
 typedef decltype(UpdateGame) UpdateGameType;
 static UpdateGameType* updateGamePtr;
 
-GameState* gameState;
+std::unique_ptr<GameState> gameState;
+
 
 
 //------------------------------------------------------------------------------------
@@ -75,15 +79,19 @@ int main(void)
 	//set_window_always_on_top(GetWindowHandle());
 	HideCursor();
 
-	gameState = new GameState();
+
+	gameState = std::make_unique<GameState>();
 	gameState->worldM = MatrixIdentity();
 
-	SetTargetFPS(60);               // Set our game to run at 60 frames-per-second
+	bubbleAssets::loadAssets(gameState.get());
+
+	const int fps = 60;
+	SetTargetFPS(fps);               // Set our game to run at 60 frames-per-second
 	//--------------------------------------------------------------------------------------
 
 	rlImGuiSetup(true);
 
-	const float fixedTimeStep = 1.0f / 60.0f;
+	const float fixedTimeStep = 1.0f / (float)fps;
 	gameState->frameTime = fixedTimeStep;
 
 	if (gameMode) {
@@ -101,13 +109,9 @@ int main(void)
 
 	ShowCursor();
 
+	initExternalSystems(gameState.get());
 
-	auto& systemMap = getSystemMap();
 
-	// these are called in middle project
-	auto inputSystem = std::move(systemMap["InputSystem"]);
-	auto renderSystem = std::move(systemMap["RendererSystem"]);
-	auto fileDropSystem = std::move(systemMap["FileDropSystem"]);
 
 	gameState->workingDir = GetWorkingDirectory();
 
@@ -115,25 +119,35 @@ int main(void)
 
 	// load font TODO move somewhere
 	int codepoints[] = {
-		32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47,
-		48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63,
-		64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79,
-		80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95,
-		96, 97, 98, 99, 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111,
-		112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123, 124, 125, 126,
-		196, 214, 228, 246 
+		// Basic ASCII (32 to 126) for standard numbers and text
+		32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49,
+		50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67,
+		68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85,
+		86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99, 100, 101, 102,
+		103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116,
+		117, 118, 119, 120, 121, 122, 123, 124, 125, 126,
+
+		// Custom Math Codepoints
+		0x00D7,   // Multiplication sign (×)
+		0x22C5,   // Dot operator (⋅)
+		0x2211,    // Summation operator (∑)
 	};
-	gameState->globalFont = LoadFontEx("../assets/fonts/shareit-font/Shareit-LVpOG.ttf", gameState->fontUnitFactor, codepoints, 100);
+	int codepointCount = sizeof(codepoints) / sizeof(codepoints[0]);
+	gameState->globalFont = LoadFontEx("../assets/fonts/math-sans/NotoSansMath-Regular.ttf", gameState->fontUnitFactor, codepoints, codepointCount);
 	GenTextureMipmaps(&gameState->globalFont.texture);
 	SetTextureFilter(gameState->globalFont.texture, TEXTURE_FILTER_TRILINEAR);
 
 	InitAudioDevice();
-	loadSoundEffects(gameState);
+	loadSoundEffects(gameState.get());
 
 
 	// Main game loop
 	while (!WindowShouldClose())    // Detect window close button or ESC key
 	{
+		auto start = std::chrono::high_resolution_clock::now();
+		gameState->slowSystems.clear();
+		gameState->slowActions.clear();
+
 		if (gameState->quit) {
 			break;
 		}
@@ -147,17 +161,32 @@ int main(void)
 		gameState->screenWidth = GetScreenWidth();
 		gameState->screenHeight = GetScreenHeight();
 
-
-		fileDropSystem->update(gameState);
-
-		inputSystem->update(gameState);
+		for (auto sys : gameState->externalPreFrameSystems) {
+			sys->recordTimeUpdate(gameState.get());
+			middleProfiling::reviewSystemTime(gameState.get(), sys.get());
+		}
 
 		gameState->frameTimeAccumulator += GetFrameTime();
-		UpdateGame(gameState);
+		UpdateGame(gameState.get());
 
-		renderSystem->update(gameState);
+		for (auto sys : gameState->externalPostFrameSystems) {
+			sys->recordTimeUpdate(gameState.get());
+			middleProfiling::reviewSystemTime(gameState.get(), sys.get());
+		}
 
-		playSoundEffects(gameState);
+		playSoundEffects(gameState.get());
+
+		auto end = std::chrono::high_resolution_clock::now();
+		auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
+		float ms = duration.count();
+		if(gameState->slowSystems.size() > 1){
+		//if (ms > gameState->frameTime * 1000) {
+			std::vector<std::string>strings;
+			strings = gameState->debugInfo;
+			int a = 0;
+		}
+
+		gameState->debugInfo.clear();
 
 		if (gameState->closeGame) {
 			break;
@@ -166,15 +195,13 @@ int main(void)
 	}
 
 	gameState->closeGame = true;
-	UpdateGame(gameState);
+	UpdateGame(gameState.get());
 
 	CloseAudioDevice();
 	// De-Initialization
 	//--------------------------------------------------------------------------------------
 	CloseWindow();        // Close window and OpenGL context
 	//--------------------------------------------------------------------------------------
-
-	delete gameState;
 
 	return 0;
 }
@@ -191,6 +218,8 @@ void ReloadGameDLL()
 	static std::filesystem::file_time_type lastWriteTime;
 	auto writeTime = std::filesystem::last_write_time(DLL_PATH);
 
+	static int loadIndex = 0;
+
 	if (writeTime != lastWriteTime) {
 
 		if (gameDLL) {
@@ -203,15 +232,30 @@ void ReloadGameDLL()
 			std::this_thread::sleep_for(std::chrono::milliseconds(100));
 		}
 
-		if (std::filesystem::exists(TEMP_PATH)) {
-			std::filesystem::remove(TEMP_PATH);
+		std::string loadPath = std::string(TEMP_DLL_NAME) + std::to_string(loadIndex) + ".dll";
+		++loadIndex;
+
+		if (std::filesystem::exists(loadPath)) {
+			std::filesystem::remove(loadPath);
 		}
 
-		while (!std::filesystem::copy_file(DLL_PATH, TEMP_PATH)) {
-			std::this_thread::sleep_for(std::chrono::milliseconds(10));
-		}
+		std::error_code ec;
+		bool copied = std::filesystem::copy_file(
+			DLL_PATH,
+			loadPath,
+			std::filesystem::copy_options::overwrite_existing,
+			ec
+		);
 
-		gameDLL = platform_load_dynamic_library("game.load.dll");
+		if (!copied) {
+			std::cout << "Failed to copy DLL\n";
+			std::cout << "source: " << DLL_PATH << '\n';
+			std::cout << "dest:   " << loadPath << '\n';
+			std::cout << "error:  " << ec.message() << '\n';
+			std::cout << "code:   " << ec.value() << '\n';
+			return;
+		}
+		gameDLL = platform_load_dynamic_library(loadPath.data());
 
 		gameState->reload = true;
 		gameState->systemsRegistered = false;

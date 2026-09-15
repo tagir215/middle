@@ -53,6 +53,8 @@ namespace middle {
 	};
 
 	struct GameInput {
+		bool copy = false;
+		bool insertTerm = false;
 		bool pop = false;
 		bool mulOne = false;
 		bool comp = false;
@@ -80,18 +82,6 @@ namespace middle {
 	};
 
 	struct EqulabInput {
-		bool oneHeld = false;
-		bool twoHeld = false;
-		bool threeHeld = false;
-		bool fourHeld = false;
-		bool fiveHeld = false;
-		bool sixHeld = false;
-		bool sevenHeld = false;
-		bool eightHeld = false;
-		bool nineHeld = false;
-		bool zeroHeld = false;
-		bool shiftHeld = false;
-
 		bool oneClicked = false;
 		bool twoClicked = false;
 		bool threeClicked = false;
@@ -102,6 +92,26 @@ namespace middle {
 		bool eightClicked = false;
 		bool nineClicked = false;
 		bool zeroClicked = false;
+		bool f1Clicked = false;
+		bool f2Clicked = false;
+		bool f3Clicked = false;
+		bool f4Clicked = false;
+		bool f5Clicked = false;
+		bool f6Clicked = false;
+		bool f7Clicked = false;
+		bool f8Clicked = false;
+		bool f9Clicked = false;
+		bool f10Clicked = false;
+		bool f11Clicked = false;
+		bool f12Clicked = false;
+		bool shiftHeld = false;
+		bool ctrlHeld = false;
+		bool altHeld = false;
+		bool leftHeld = false;
+		bool rightHeld = false;
+		bool upHeld = false;
+		bool downHeld = false;
+
 		bool aClicked = false;
 		bool bClicked = false;
 		bool cClicked = false;

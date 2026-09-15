@@ -19,7 +19,8 @@
 #include "BubbleEqualsComponent.h"
 #include "BubbleVariable.h"
 #include "BubbleEqualsVariable.h"
-#include "ExponentComponent.h"
+#include "BubbleManipulatable.h"
+#include "NonPhysicalBubbleTag.h"
 
 class BubbleManipulationSystem : public middle::MiddleGameplaySystem {
 
@@ -32,6 +33,7 @@ public:
 		bubbleCache = middle::newCompCache(gameState, systemName);
 		bubbleCache->addType<components::MouseGrabbable>();
 		bubbleCache->addType<components::BubbleComponent>();
+		bubbleCache->addType<components::BubbleManipulatable>();
 		bubbleCache->addType<components::InventoryItem>(components::NOTINTERESTED);
 	}
 
@@ -51,56 +53,12 @@ public:
 		moveShape(gameState, shape.id.index, Vector3Scale(xzVel, gameState->frameTime));
 	}
 
-	// attach bubble equals variable component to indicate this grabbed bubble equals to a variable
-	void handleEqualsToVariableCase(middle::GameState* gameState, middle::Id parentId, middle::Id grabbedCopyId) {
-
-		// check if the parent is equals comp
-		auto& parentShape = middle::getShape(gameState, parentId.index);
-		if (!middle::getComponent<components::BubbleEqualsComponent>(parentShape)) {
-			return;
-		}
-
-		std::vector<middle::Id> siblings;
-		middle::getChildren(gameState, parentShape.id, siblings);
-
-		auto& grabbedShape = middle::getShape(gameState, grabbedCopyId.index);
-		auto ref = middle::getComponent<components::IdRef>(grabbedShape);
-		middle::Id grabbedRefId = ref->idRef;
-
-		// GRABBED VARIABLE CASE
-		auto grabbedVar = middle::getComponent<components::BubbleVariable>(grabbedShape);
-		if (grabbedVar) {
-			auto bubbleEqualsVar = middle::attachComponent<components::BubbleEqualsVariable>(gameState, grabbedCopyId);
-			for (middle::Id& siblingId : siblings) {
-				if (siblingId != grabbedRefId) {
-					bubbleEqualsVar->matchingIdRef = siblingId;
-				}
-			}
-			bubbleEqualsVar->wantsToReplaceBubble = true;
-			return;
-		}
-
-		// GRABBED BUBBLE CASE
-		for (middle::Id& id : siblings) {
-			if (id == grabbedRefId) {
-				continue;
-			}
-			// other children should be variable, for this to work
-			auto& childOfOther = middle::getShape(gameState, id.index);
-			auto expComp = middle::getComponent<components::ExponentComponent>(childOfOther);
-			// can't be in exponent for this to work
-			if (expComp) {
-				return;
-			}
-
-			auto varComp = middle::getComponent<components::BubbleVariable>(childOfOther);
-			if (!varComp) {
-				return;
-			}
-
-			auto bubbleEqualsVar = middle::attachComponent<components::BubbleEqualsVariable>(gameState, grabbedCopyId);
-			bubbleEqualsVar->variableLabel = varComp->label;
-			bubbleEqualsVar->wantsToReplaceVariable = true;
+	void attachNonPhysical(middle::GameState* gameState, middle::Id id) {
+		middle::attachComponent<components::NonPhysicalBubbleTag>(gameState, id);
+		std::vector<middle::Id>children;
+		middle::getChildren(gameState, id, children);
+		for (middle::Id childId : children) {
+			attachNonPhysical(gameState, childId);
 		}
 	}
 
@@ -117,15 +75,11 @@ public:
 			auto copyGrabbable = middle::getComponent<components::MouseGrabbable>(copyShape);
 			copyGrabbable->grabbing = true;
 			gameState->bubbleAlgebraState.grabbedId = copyId;
+			attachNonPhysical(gameState, copyId);
 			// set og as reference
 			auto ref = middle::attachComponent<components::IdRef>(gameState, copyShape.id);
 			ref->idRef = shape.id;
 			assert(ref->idRef.index != middle::UNASSIGNED);
-
-			middle::Id& parentId = middle::getParent(gameState, shape.id);
-			if (parentId.index != middle::UNASSIGNED) {
-				handleEqualsToVariableCase(gameState, parentId, copyId);
-			}
 		}
 
 
@@ -134,7 +88,7 @@ public:
 			grabbable->grabbing = false;
 			gameState->bubbleAlgebraState.grabbedId = middle::Id();
 			auto deleteComp = middle::attachComponent<components::DeleteComponent>(gameState, shape.id);
-			deleteComp->framesUntilDelete = 0;
+			deleteComp->framesUntilDelete = 1;
 		}
 	}
 

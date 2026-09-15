@@ -29,8 +29,8 @@ public:
 			gameState->input.mouseHeld = IsMouseButtonDown(MOUSE_BUTTON_LEFT);
 			gameState->input.mouseClicked = IsMouseButtonPressed(MOUSE_BUTTON_LEFT);
 			gameState->input.mouseReleased = IsMouseButtonReleased(MOUSE_BUTTON_LEFT);
-			gameState->input.zoomIn = GetMouseWheelMoveV().y > 0;
-			gameState->input.zoomOut = GetMouseWheelMoveV().y < 0;
+			//gameState->input.zoomIn = GetMouseWheelMoveV().y > 0;
+			//gameState->input.zoomOut = GetMouseWheelMoveV().y < 0;
 		}
 
 		if (gameState->applicationMode == middle::ApplicationMode::EDITOR_MODE) {
@@ -106,9 +106,11 @@ public:
 			auto& gi = gameState->gameInput;
 
 			if (gameState->inputBlockers.find(middle::InputBlockers::KEYBOARD_BLOCK) == gameState->inputBlockers.end()) {
+				gi.copy = IsKeyPressed(KEY_F);
+				gi.insertTerm = IsKeyPressed(KEY_T);
 				gi.pop = IsKeyPressed(KEY_B);
-				gi.zoomIn = IsKeyDown(KEY_W);
-				gi.zoomOut = IsKeyDown(KEY_S);
+				gi.zoomIn = IsKeyDown(KEY_E);
+				gi.zoomOut = IsKeyDown(KEY_Q);
 				gi.panUp = IsKeyDown(KEY_W);
 				gi.panDown = IsKeyDown(KEY_S);
 				gi.panLeft = IsKeyDown(KEY_A);
@@ -117,7 +119,6 @@ public:
 				gi.can = IsKeyPressed(KEY_X);
 				gi.comp = IsKeyPressed(KEY_C);
 				gi.mulOne = IsKeyPressed(KEY_V);
-				gi.proc = IsKeyPressed(KEY_E);
 				gi.undo = IsKeyPressed(KEY_SPACE);
 				gi.one = IsKeyDown(KEY_ONE);
 				gi.two = IsKeyDown(KEY_TWO);
@@ -138,17 +139,35 @@ public:
 			if (gameState->inputBlockers.find(middle::InputBlockers::KEYBOARD_BLOCK) == gameState->inputBlockers.end()) {
 				gameState->equlabInput = middle::EqulabInput();
 				auto& ei = gameState->equlabInput;
-				ei.oneHeld = IsKeyDown(KEY_ONE);
-				ei.twoHeld = IsKeyDown(KEY_TWO);
-				ei.threeHeld = IsKeyDown(KEY_THREE);
-				ei.fourHeld = IsKeyDown(KEY_FOUR);
-				ei.fiveHeld = IsKeyDown(KEY_FIVE);
-				ei.sixHeld = IsKeyDown(KEY_SIX);
-				ei.sevenHeld = IsKeyDown(KEY_SEVEN);
-				ei.eightHeld = IsKeyDown(KEY_EIGHT);
-				ei.nineHeld = IsKeyDown(KEY_NINE);
-				ei.zeroHeld = IsKeyDown(KEY_ZERO);
+				ei.oneClicked = IsKeyPressed(KEY_ONE);
+				ei.twoClicked = IsKeyPressed(KEY_TWO);
+				ei.threeClicked = IsKeyPressed(KEY_THREE);
+				ei.fourClicked = IsKeyPressed(KEY_FOUR);
+				ei.fiveClicked = IsKeyPressed(KEY_FIVE);
+				ei.sixClicked = IsKeyPressed(KEY_SIX);
+				ei.sevenClicked = IsKeyPressed(KEY_SEVEN);
+				ei.eightClicked = IsKeyPressed(KEY_EIGHT);
+				ei.nineClicked = IsKeyPressed(KEY_NINE);
+				ei.zeroClicked = IsKeyPressed(KEY_ZERO);
+				ei.f1Clicked = IsKeyPressed(KEY_F1);
+				ei.f2Clicked = IsKeyPressed(KEY_F2);
+				ei.f3Clicked = IsKeyPressed(KEY_F3);
+				ei.f4Clicked = IsKeyPressed(KEY_F4);
+				ei.f5Clicked = IsKeyPressed(KEY_F5);
+				ei.f6Clicked = IsKeyPressed(KEY_F6);
+				ei.f7Clicked = IsKeyPressed(KEY_F7);
+				ei.f8Clicked = IsKeyPressed(KEY_F8);
+				ei.f9Clicked = IsKeyPressed(KEY_F9);
+				ei.f10Clicked = IsKeyPressed(KEY_F10);
+				ei.f11Clicked = IsKeyPressed(KEY_F11);
+				ei.f12Clicked = IsKeyPressed(KEY_F12);
+				ei.leftHeld = IsKeyDown(KEY_LEFT);
+				ei.rightHeld = IsKeyDown(KEY_RIGHT);
+				ei.upHeld = IsKeyDown(KEY_UP);
+				ei.downHeld = IsKeyDown(KEY_DOWN);
 				ei.shiftHeld = IsKeyDown(KEY_LEFT_SHIFT) || IsKeyDown(KEY_RIGHT_SHIFT);
+				ei.ctrlHeld = IsKeyDown(KEY_LEFT_CONTROL) || IsKeyDown(KEY_RIGHT_CONTROL);
+				ei.altHeld = IsKeyDown(KEY_LEFT_ALT) || IsKeyDown(KEY_RIGHT_ALT);
 				ei.oneClicked = IsKeyPressed(KEY_ONE);
 				ei.twoClicked = IsKeyPressed(KEY_TWO);
 				ei.threeClicked = IsKeyPressed(KEY_THREE);
@@ -208,8 +227,14 @@ public:
 		gameState->input.mouseNormalizedPos.y = (float)relativeY / (float)cameraPosX;
 		gameState->aspectRatio = gameState->screenWidth / gameState->screenHeight;
 		float angle = gameState->activeCamera.fovy * DEG2RAD * 0.5f;
+
+		// todo move {
 		float nearAxisY = tan(angle) * gameState->nearPlaneDistance;
 		float nearAxisX = nearAxisY * gameState->aspectRatio;
+		gameState->nearPlaneAxisY = nearAxisY;
+		gameState->nearPlaneAxisX = nearAxisX;
+		// }
+
 		float nearPlanePos2dX = nearAxisX * gameState->input.mouseNormalizedPos.x;
 		float nearPlanePos2dY = nearAxisX * gameState->input.mouseNormalizedPos.y;
 

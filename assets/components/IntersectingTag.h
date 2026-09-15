@@ -1,10 +1,12 @@
 #pragma once
 #include "registrars.h"
 #include "editor_file_utils.h"
-#define MIDDLEINTERSECTINGTAG(X) 
+#define MIDDLEINTERSECTINGTAG(X)
 
 namespace components {
 	struct IntersectingTag : public middle::Serializable{
+		bool intersectingTop = false;
+		int framesIntersected = 0;
 
 		void serialize(std::ostream& ostream) override;
 		void deserialize(const std::vector<std::string>& buffer, int indexOffset) override;

@@ -5,7 +5,7 @@
 
 using namespace middle;
 
-extern "C" 
+extern "C"
 {
 	__declspec(dllexport) void UpdateGame(GameState* gameState);
 }

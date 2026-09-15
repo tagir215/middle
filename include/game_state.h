@@ -22,6 +22,7 @@ namespace middle {
 
 	struct GameState;
 
+
 	enum class CreationMode {
 		SELECT_MODE,
 		SPHERE_MODE,
@@ -51,9 +52,11 @@ namespace middle {
 		virtual ~EditorActionContainer() = default;
 		virtual void execute(GameState* gameState) = 0;
 		virtual void undo(GameState* gameState) = 0;
+		std::vector < std::unique_ptr<EditorActionContainer>>actions;
 		bool cancelled = false;
+		// for debugging only
+		std::string callerSystem;
 	};
-
 
 	struct EditorState {
 		CreationMode creationMode;
@@ -99,20 +102,22 @@ namespace middle {
 		Vector3 textOffset = { 0,0,0 };
 		Transform transform;
 		int layer = 0;
+		int slices = 20;
 		float radius;
 		float ringRadius;
 		float startAngle;
 		float endAngle;
 		int segments;
-		float length;
-		float width;
-		float height;
+		float length = 0;
+		float width = 0;
+		float height = 0;
 		float textureScale = 10;
 		int fontSize = 10;
 		bool disableDepthTest = false;
 		std::string text = "";
-		Model* model;
-		Texture2D* texture;
+		Model* model = nullptr;
+		Texture2D* texture = nullptr;
+		Shader* shader = nullptr;
 
 		RenderItem() {
 			transform.translation = { 0,0,0 };
@@ -130,16 +135,21 @@ namespace middle {
 	};
 
 	struct BubbleAlgebraState {
-		// todo refactor away
 		middle::Id grabbedId;
-		bool intersectingUI = false;
 		std::vector<std::shared_ptr<middle::EditorActionContainer>>bubbleActions;
-		bool justCompletedLevel = false;
-		std::string previousLevelName;
-		std::vector<std::string>procedureNames;
 		BubbleInsertType currentInsertType;
-		bool copyNegated = false;
-		bool copyInverted = false;
+		bool copyNegated;
+		bool copyInverted;
+		int postUndoFrames;
+		float worldScale;
+		std::string activeBubbleName;
+		std::vector<int>traversePath;
+		std::vector<middle::Id>traversePathIds;
+		middle::Id backgroundBubbleId;
+		const int loadDepth;
+		Vector3 cameraVelocity;
+		float worldScalarRate;
+		BubbleAlgebraState();
 	};
 
 	struct ModelContainer {
@@ -148,9 +158,15 @@ namespace middle {
 	};
 
 	struct TextureContainer {
-		std::string filename = "";
 		Texture2D texture;
 	};
+
+	struct ShaderContainer {
+		Shader shader;
+	};
+
+	typedef int shapeIndex;
+	typedef int componentType;
 
 	struct GameState {
 	public:
@@ -161,6 +177,8 @@ namespace middle {
 		float frameTimeAccumulator = 0;
 		const double nearPlaneDistance = 10;
 		const double farPlaneDistance = 4000;
+		float nearPlaneAxisX = 0;
+		float nearPlaneAxisY = 0;
 		bool systemsRegistered = false;
 		bool releaseBuild = false;
 		ApplicationMode applicationMode = ApplicationMode::EDITOR_MODE;
@@ -170,10 +188,15 @@ namespace middle {
 		std::array<Id, MAX_SHAPE_COUNT>ids;
 		std::array<Shape, MAX_SHAPE_COUNT>shapes;
 		// systems
+		std::unique_ptr<MiddleGameplaySystem>componentCacheSystem;
 		std::unordered_map<std::string, std::unique_ptr<MiddleGameplaySystem>> gameplaySystems;
 		std::unordered_map<std::string, std::unique_ptr<MiddleGameplaySystem>> gameplaySystemsPostFrame;
+		std::vector<std::unique_ptr<MiddleGameplaySystem>> engineSystemInitFrame;
 		std::vector<std::unique_ptr<MiddleGameplaySystem>> engineSystemsFrameStart;
+		std::vector<std::unique_ptr<MiddleGameplaySystem>> enginePostFrameSystems;
 		std::vector<std::unique_ptr<MiddleGameplaySystem>> engineRendererSystems;
+		std::vector<std::shared_ptr<MiddleGameplaySystem>> externalPreFrameSystems;
+		std::vector<std::shared_ptr<MiddleGameplaySystem>> externalPostFrameSystems;
 		std::vector<middle::Id>newShapeList;
 
 		std::array<Vector3, MAX_VERTEX_COUNT> vertexArray;
@@ -183,6 +206,7 @@ namespace middle {
 		Matrix screenOrientorM;
 		Vector3 mouseIntersectTopPosition;
 		std::string activeSceneName = "";
+		std::string activeSystemName = "";
 		int vertexIndex = 0;
 		int loopIndex = 0;
 		int uniqueComponentCount = 0;
@@ -191,6 +215,7 @@ namespace middle {
 		std::vector<std::string>systemNames;
 		std::vector<std::string>componentNames;
 		std::unordered_map<std::string, Sound>soundMap;
+		std::vector<std::string>debugInfo;
 		EditorInput input;
 		// todo move these
 		GameInput gameInput;
@@ -213,14 +238,17 @@ namespace middle {
 		std::vector<middle::FieldInfo>fields;
 		BubbleAlgebraState bubbleAlgebraState;
 		std::vector<std::unique_ptr<components::CompCache>>compCaches;
-		std::set<int>componentTypeIdSetWithStructuralChanges;
+		std::unordered_map<componentType, std::vector<middle::Id>>structuralChangesMap;
 		std::queue<std::shared_ptr<EditorActionContainer>>actionQueue;
 		std::queue<std::shared_ptr<EditorActionContainer>>undoQueue;
 		std::vector<ModelContainer> loadedModels;
-		std::unordered_map<std::string, TextureContainer>loadedTextureMap;
+		std::unordered_map<std::string, TextureContainer>textureMap;
+		std::unordered_map<std::string, ShaderContainer>shaderMap;
 		std::queue<std::string>modelsToLoadQueue;
-		std::queue<std::string>texturesToLoadQueue;
 		std::queue<Sound>soundQueue;
+
+		std::vector<std::string>slowSystems;
+		std::vector<std::string>slowActions;
 	};
 
 }

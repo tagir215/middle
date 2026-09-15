@@ -7,11 +7,28 @@
 #include <cstdlib>
 #include <thread>
 #include "rlgl.h"
+#include "profiler_helpers.h"
 
 namespace RendererSystem {
 
 	static std::string scriptName = "RendererSystem";
 	const float layerGap = -1.0f;
+
+	void DrawCustomCircle3D(Vector3 center, float radius, Vector3 rotationAxis, float rotationAngle, int segments, Color color) {
+		// Custom implementation using rlgl for variable segment counts
+		rlPushMatrix();
+		rlTranslatef(center.x, center.y, center.z);
+		rlRotatef(rotationAngle, rotationAxis.x, rotationAxis.y, rotationAxis.z);
+		rlBegin(RL_LINES);
+		for (int i = 0; i < 360; i += 360 / segments) {
+			rlColor4ub(color.r, color.g, color.b, color.a);
+			// Calculate vertices for line segments based on input 'segments'
+			rlVertex3f(sinf(DEG2RAD * i) * radius, cosf(DEG2RAD * i) * radius, 0.0f);
+			rlVertex3f(sinf(DEG2RAD * (i + 360 / segments)) * radius, cosf(DEG2RAD * (i + 360 / segments)) * radius, 0.0f);
+		}
+		rlEnd();
+		rlPopMatrix();
+	}
 
 	Matrix transformMatrix(Transform& transform, int layer) {
 		Matrix S = MatrixScale(transform.scale.x, transform.scale.y, transform.scale.z);
@@ -66,10 +83,13 @@ namespace RendererSystem {
 
 	void draw3D(middle::GameState* gameState, bool disabledDepthTest, int layerPass = 0) {
 
+		mstart();
 		if (gameState->applicationMode == middle::ApplicationMode::EDITOR_MODE) {
 			// center indicator
 			DrawCube({ 0,5,0 }, 5, 5, 5, BLACK);
 		}
+		mendmicro("drawCube");
+
 
 		rlSetClipPlanes(gameState->nearPlaneDistance, gameState->farPlaneDistance);
 
@@ -86,12 +106,15 @@ namespace RendererSystem {
 				continue;
 			}
 
+			mstart();
 			if (item.type == middle::RenderItemType::SPHERE) {
 				Vector3 pos = item.center;
 				DrawSphereEx(item.center, item.radius, 5, 5, item.color);
 			}
+			mendmicro("draw sphere");
 
 
+			mstart();
 			if (item.type == middle::RenderItemType::RECTANGLE) {
 				Matrix M = transformMatrix(item.transform, item.layer);
 				rlPushMatrix();
@@ -106,7 +129,9 @@ namespace RendererSystem {
 				}
 				rlPopMatrix();
 			}
+			mendmicro("draw rectangle");
 
+			mstart();
 			if (item.type == middle::RenderItemType::CYLINDER) {
 				Matrix M = transformMatrix(item.transform, item.layer);
 				rlPushMatrix();
@@ -115,11 +140,15 @@ namespace RendererSystem {
 				DrawCylinder(pos, item.radius, item.ringRadius, item.length, 23, item.color);
 				rlPopMatrix();
 			}
+			mendmicro("draw cylingder");
 
+			mstart();
 			if (item.type == middle::RenderItemType::MODEL) {
 				DrawModel(*item.model, item.center, 1, item.color);
 			}
+			mendmicro("draw model");
 
+			mstart();
 			if (item.type == middle::RenderItemType::VECTOR) {
 				Matrix M = transformMatrix(item.transform, item.layer);
 				rlPushMatrix();
@@ -141,25 +170,31 @@ namespace RendererSystem {
 				rlPopMatrix();
 
 			}
+			mendmicro("draw vector");
 
+			mstart();
 			if (item.type == middle::RenderItemType::LINE) {
 				Vector3 posA = item.linePointA + Vector3{ 0, item.layer * layerGap, 0 };
 				Vector3 posB = item.linePointB + Vector3{ 0, item.layer * layerGap, 0 };
 				DrawLine3D(posA, posB, item.color);
 			}
+			mendmicro("draw line");
 
+			mstart();
 			if (item.type == middle::CIRCLE) {
 				Matrix M = transformMatrix(item.transform, item.layer);
 				rlPushMatrix();
 				rlLoadIdentity();
 				rlMultMatrixf(MatrixToFloatV(M).v);
-				DrawCircle3D(item.center, item.radius, { 1,0,0 }, 90, item.color);
+				DrawCustomCircle3D(item.center, item.radius, { 1,0,0 }, 90, item.slices, item.color);
 				if (item.backgroundColor.a != 0) {
-					DrawCylinder(item.center, item.radius, item.radius, 0.000000001f, 20, item.backgroundColor);
+					DrawCylinder(item.center, item.radius, item.radius, 0.000000001f, item.slices, item.backgroundColor);
 				}
 				rlPopMatrix();
 			}
+			mendmicro("draw circle");
 
+			mstart();
 			if (item.type == middle::CIRCLE_SECTOR) {
 				if (item.segments > 0) {
 					Vector3 lastPos;
@@ -189,7 +224,9 @@ namespace RendererSystem {
 					}
 				}
 			}
+			mendmicro("draw circle sector");
 
+			mstart();
 			if (item.type == middle::CUBOID) {
 				Matrix M = transformMatrix(item.transform, item.layer);
 				rlPushMatrix();
@@ -199,7 +236,9 @@ namespace RendererSystem {
 				DrawCube(pos, item.width, item.height, item.length, item.color);
 				rlPopMatrix();
 			}
+			mendmicro("draw cuboid");
 
+			mstart();
 			if (item.type == middle::BILLBOARD) {
 				// billboard default angle is toward y,  
 				item.transform.rotation = QuaternionFromVector3ToVector3({ 0,-1,0 }, { 0, 0, -1 });
@@ -212,11 +251,17 @@ namespace RendererSystem {
 					DrawCube(pos, 4, 4, 4, BLACK);
 				}
 				else {
+					if(item.shader)
+						BeginShaderMode(*item.shader);
 					DrawBillboard(gameState->activeCamera, *item.texture, pos, item.textureScale, item.color);
+					if(item.shader)
+						EndShaderMode();
 				}
 				rlPopMatrix();
 			}
+			mendmicro("draw billboward");
 
+			mstart();
 			if (item.type == middle::BACKGROUND) {
 				// billboard default angle is toward y,  
 				item.transform.rotation = QuaternionFromVector3ToVector3({ 0,-1,0 }, { 0, 0, -1 });
@@ -238,9 +283,9 @@ namespace RendererSystem {
 				}
 				rlPopMatrix();
 			}
+			mendmicro("draw background");
 
 		}
-
 
 		EndMode3D();
 	}
@@ -253,14 +298,16 @@ namespace RendererSystem {
 			}
 
 			if (item.type == middle::RenderItemType::TEXT) {
-				Vector2 pos = GetWorldToScreen(item.transform.translation + item.textOffset, gameState->activeCamera);
 				const int spacing = 1;
-				// todo idk why aspect ratio? seemed to fix text scaling but don't trust 
-				float distFactor = gameState->aspectRatio / Vector3Distance(gameState->activeCamera.position, item.center);
+				float distFactor = 1 / Vector3Distance(gameState->activeCamera.position, item.transform.translation);
 				float fontFactor = gameState->fontUnitFactor * distFactor;
 				float scaledFontSize = item.fontSize * item.transform.scale.x * fontFactor;
+				Vector2 rect = MeasureTextEx(gameState->globalFont, item.text.c_str(), scaledFontSize, spacing);
+				Vector2 offset = { -rect.x * 0.5f, -rect.y * 0.5f };
 
-				DrawTextEx(gameState->globalFont, item.text.c_str(), pos, scaledFontSize, spacing, item.color);
+				Vector2 pos = GetWorldToScreen(item.transform.translation, gameState->activeCamera);
+
+				DrawTextEx(gameState->globalFont, item.text.c_str(), pos + offset, scaledFontSize, spacing, item.color);
 			}
 
 		}
@@ -272,6 +319,7 @@ namespace RendererSystem {
 
 		}
 		void update(middle::GameState* gameState) override {
+			mstart();
 
 			BeginDrawing();
 
@@ -280,10 +328,13 @@ namespace RendererSystem {
 
 			Camera camera = gameState->activeCamera;
 
+			mstart();
 			BeginMode3D(camera);
 			draw3D(gameState, false);
 			EndMode3D();
+			mendmicro("draw3D");
 
+			mstart();
 			drawText(gameState, false);
 
 			int maxLayers = 7;
@@ -316,10 +367,17 @@ namespace RendererSystem {
 			else {
 				gameState->uiSetups.clear();
 			}
+			mendmicro("draw texts");
 
+			mstart();
 			EndDrawing();
+			mendmicro("end drawing time");
 
 			gameState->renderData.clear();
+
+			mendmicro("rendrere update");
+
+			mflushmicro(gameState);
 		}
 	};
 

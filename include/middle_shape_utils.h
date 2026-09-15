@@ -15,8 +15,16 @@ namespace middle {
 	void dragShape(GameState* gameState, int index, Vector3 linearVel);
 	// move shape and its chidlren
 	void moveShape(GameState* gameState, int index, const Vector3& displacement);
+	// set local pos in a way so it has this global pos
+	void setGlobalPosition(GameState* gameState, middle::Id id, const Vector3& targetPos);
+	// set local pos
+	void setLocalPosition(GameState* gameState, middle::Id id, const Vector3& targetPos);
 	// find container of containers containers
 	int findHighestLevelContainer(GameState* gameState, int index);
+	// local scale
+	Vector3 getLocalScale(GameState* gameState, middle::Id id);
+	// set local scale
+	void setLocalScale(GameState* gameState, middle::Id id, const Vector3& targetScale);
 	// loop the shape instances
 	int findHighestUsedIndex(GameState* gameState);
 	// find next usable ghost index
@@ -33,6 +41,8 @@ namespace middle {
 	bool isValidId(GameState* gameState, middle::Id id);
 	// get pos quickly
 	Vector3 getGlobalPosition(GameState* gameState, int index);
+	// get pos quickly very
+	Vector3 getLocalPosition(GameState* gameState, middle::Id id);
 	// get shape instance
 	Shape& getShape(GameState* gameState, int index);
 	// delete shape , updates generational indexes
@@ -99,8 +109,28 @@ namespace middle {
 	Vector3 projectGlobalCoordinateToLocalCoordinate(GameState* gameState, const Vector3& globalCoord, middle::Id shapeId);
 	// project local coordinate to match old global coordinate
 	void updateLocalCoordinateToProjectedGlobalCoordinate(GameState* gameState, middle::Id id, middle::Id oldParentId);
+	// project local scale to mathc old global scale
+	Vector3 projectGlobalScaleToLocalScale(GameState* gameState, middle::Id id, const Vector3& globalScale);
 	// get global scale parents scale multiplied
 	Vector3 getGlobalScale(GameState* gameState, middle::Id id);
+	// get index on the loop
+	int getLoopIndex(GameState* gameState, middle::Id id);
+	// update global transforms
+	void updateGlobalTransforms(middle::GameState* gameState, middle::Id id, const Matrix& parentM, const Vector3& parentScale);
+	// notify structural changes for cache updates
+	void notifyStructuralChanges(middle::GameState* gameState, middle::Id id, middle::componentType componentType);
+	// check whether has comp
+	bool hasComp(middle::Shape& shape, int typeId);
+	// get offset
+	middle::componentOffset getCompOffset(middle::Shape& shape, int typeId);
+	// set offset... these are new
+	void setCompOffset(middle::Shape& shape, int typeId, int offset);
+	// remove comp
+	void removeComp(middle::Shape& shape, int typeId);
+	// create shape... replace all the old initializations!
+	Shape createShape(middle::GameState* gameState);
+
+	void assertPos(const Vector3& pos);
 
 	template<typename F>
 	void loopInstances(GameState* gameState, F func) {

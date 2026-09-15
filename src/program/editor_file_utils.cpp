@@ -350,8 +350,9 @@ namespace middle {
 		// references are special. for references skip children to save storage 
 		bool skipChildren = middle::getComponent<components::Reference>(shape);
 
-		for (auto& pair : shape.componentMap) {
-			std::string componentName = componentNameMap[pair.first];
+		for (int typeId : shape.componentTypes) {
+			int offset = getCompOffset(shape, typeId);
+			std::string componentName = componentNameMap[typeId];
 
 			const std::string initializedThing = "InitializedTag";
 			if (componentName == initializedThing) {
@@ -359,13 +360,11 @@ namespace middle {
 			}
 
 			outFile << componentName << "\n";
-			int componentTypeId = pair.first;
-			Component component = pair.second;
-			Serializable* serializable = componentListMap[componentTypeId]->getSerializable(component.componentOffset);
+			Serializable* serializable = componentListMap[typeId]->getSerializable(offset);
 
 			// skip children for reference types to save storage memory
 			if (skipChildren) {
-				bool isLoopComp = middle::getTypeId<components::LoopSociety>() == pair.first;
+				bool isLoopComp = middle::getTypeId<components::LoopSociety>() == typeId;
 				if (isLoopComp) continue;
 			}
 
@@ -391,7 +390,7 @@ namespace middle {
 
 			auto& shape = gameState->shapes[i];
 			// skip empty shapes
-			if (shape.componentMap.size() == 0) {
+			if (shape.componentTypes.size() == 0) {
 				continue;
 			}
 			std::string idString = fieldToString(shape.id);
@@ -486,8 +485,8 @@ namespace middle {
 		Serializable* serializable = componentListMap[typeId]->getSerializable(componentOffset);
 		serializable->deserialize(buffer, indexOffset);
 		auto& shape = gameState->shapes[index];
-		shape.componentMap[typeId].componentOffset = componentOffset;
-		gameState->componentTypeIdSetWithStructuralChanges.insert(typeId);
+		middle::setCompOffset(shape, typeId, componentOffset);
+		middle::notifyStructuralChanges(gameState, shape.id, typeId);
 		buffer.clear();
 
 	}

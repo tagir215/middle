@@ -19,6 +19,7 @@ public:
 
 	void update(middle::GameState* gameState) override {
 
+
 		auto cameraIt = compCache->begin<components::CameraComponent>();
 
 		int size = compCache->getSize();
@@ -38,7 +39,8 @@ public:
 				}
 			}
 			float mouseWheelMove = gameState->gameInput.mouseWheelMove;
-			const float wheelMouseMultiplier = 70;
+			//const float wheelMouseMultiplier = 70;
+			const float wheelMouseMultiplier = 0;
 			camera->speedY += mouseWheelMove * wheelMouseMultiplier;
 			camera->speedX = 0;
 			camera->speedZ = 0;
@@ -57,11 +59,15 @@ public:
 
 			const float centerOffsetX = 200;
 			const float centerOffsetZ = 0;
-			const float xzCamAxis = 1400;
+			const float xzCamAxis = 1000400;
 			const float minX = -xzCamAxis + centerOffsetX;
 			const float maxX = xzCamAxis + centerOffsetX;
 			const float minZ = -xzCamAxis + centerOffsetZ;
 			const float maxZ = xzCamAxis + centerOffsetZ;
+
+			if (gameState->equlabInput.ctrlHeld) {
+				panSpeed = 0;
+			}
 
 			if (gameState->gameInput.panLeft && oldPos.x > minX) {
 				camera->speedX = -panSpeed;

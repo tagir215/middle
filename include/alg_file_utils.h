@@ -1,21 +1,41 @@
 #pragma once
 #include "bubequ.h"
 #include <vector>
+#include <unordered_map>
+#include "game_state.h"
  
 namespace bubequ {
-	bool checkVersion(const std::string& line);
-	std::vector<std::string> split(const std::string& s);
-	std::string stripBrackets(const std::string& str);
+	const inline std::string SYMBOL_MULTIPLICATION = "*";
+	const inline std::string SYMBOL_POWER = "^";
+	const inline std::string SYMBOL_SWAP_DISABLED = "/0";
+	const inline std::string SYMBOL_SWAP_ENABLED = "/1";
+	const inline std::string SYMBOL_AND_GATE = "&";
+	const inline std::string SYMBOL_CLOSED_GATE = "#0";
+	const inline std::string SYMBOL_OPEN_GATE = "#1";
+	const inline std::string SYMBOL_DUMMY_GATE = "##";
+	const inline std::string SYMBOL_GREATER = ">";
+	const inline std::string SYMBOL_GREATER_OR_EQUAL = ">=";
+	const inline std::string SYMBOL_EQUAL = "=";
+	const inline std::string SYMBOL_SUMMATION = "$";
+	const inline std::string SYMBOL_NEGATIVE = "-";
+	const inline std::string SYMBOL_TEXT = "\"";
+
+	std::string stripBrackets(const std::string & str);
 	std::string getNums(const std::string& str);
 	std::string getLetters(const std::string& str);
+	std::shared_ptr<Scope> parseScope(const std::string& line);
 	std::shared_ptr<Unit> parseUnit(const std::string& valueStr);
-	std::shared_ptr<Link>parseLink(const std::string& linkStr);
-	std::shared_ptr<Scope>parseScope(const std::string& line);
+	std::shared_ptr<Link> parseLink(const std::string& linkStr);
+	bool checkVersion(const std::string& line, const std::string ver);
+	std::vector<std::string> splitChildren(const std::string& s);
 	std::shared_ptr<Scope>loadBubequ(const std::string& path);
 	void saveBubequ(const std::string& equname, const std::string& bubequ);
 	void saveTextFile(const std::string& title, const std::string& text);
 	std::string loadText(const std::string& path);
-	WordProblem loadWordProblem(const std::string& path);
-	WordProblemMobjs loadWordProblemMobjs(const std::string& path);
 	std::vector<std::string>getFilenames(const std::string directoryPath);
+	void saveBubble(middle::GameState* gameState, middle::Id id, const std::string& name);
+	void saveBubequHead(const std::string& headName, const std::string& headHash, const std::unordered_map<std::string, std::string>& map, const BubTraversePath& traversePath, const Vector3& position, float localScale);
+	std::shared_ptr<Scope> loadBubequHead(const std::string& headName, const BubTraversePath& traversePath, int loadDepth);
+	std::shared_ptr<Scope> loadPreviousSnapshot(const std::string& headName, int historyOffset, int loadDepth, Vector3& loadedPos, float& loadedWorldScale, BubTraversePath& loadedTraversePath);
+	void eraseLastSave(const std::string& headName);
 }

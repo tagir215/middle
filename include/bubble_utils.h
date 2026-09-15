@@ -5,11 +5,8 @@
 using namespace middle;
 
 namespace bubble {
-
-	extern float unitRadius;
-	extern float variableRadius;
-	extern float variableTextFontSize;
-	extern float minTopDogRadius;
+	extern float bubbleAxis;
+	extern float bubbleFontSize;
 
 	bool pointIntersectBubble(middle::GameState* gameState, middle::Shape& bubble, const Vector3& point);
 	// get left right top bottom of a rect containing rect children 
@@ -29,21 +26,29 @@ namespace bubble {
 	struct BubbleValue {
 		float scale = 0;
 	};
-	middle::Id inverseBubble(middle::GameState* gameState, middle::Id& id);
 	middle::Id topLevelBubble(middle::GameState* gameState);
 	middle::Shape newBubble(middle::GameState* gameState, const Vector3& targetPos);
 	middle::Shape newUnit(middle::GameState* gameState, const Vector3& targetPos, bool isNegative = false);
 	middle::Shape newVariable(middle::GameState* gameState, const std::string& label, const Vector3& targetPos, bool isNegative = false);
-	middle::Shape newExponent(middle::GameState* gameState, const Vector3& targetPos);
 	middle::Shape newEquals(middle::GameState* gameState, const Vector3& targetPos);
+	middle::Shape newInequals(middle::GameState* gameState, const Vector3& targetPos, bool equalOr);
 	middle::Shape newMultiplication(middle::GameState* gameState, const Vector3& targetPos);
 	middle::Shape newPower(middle::GameState* gameState, const Vector3& targetPos);
+	middle::Shape newFunction(middle::GameState* gameState, const std::string& label, const Vector3& targetPos);
+	middle::Shape newSummation(middle::GameState* gameState, const Vector3& targetPos);
+	middle::Shape newTextBubble(middle::GameState* gameState, const Vector3& targetPos);
+	middle::Shape newLogicBubble(middle::GameState* gameState, const Vector3& targetPos);
+	middle::Shape newGateBubble(middle::GameState* gameState, const Vector3& targetPos);
+	middle::Shape newSwapBubble(middle::GameState* gameState, const Vector3& targetPos);
+	middle::Id newSummationWithChildren(middle::GameState* gameState, const Vector3& targetPos);
+	middle::Id newPower(middle::GameState* gameState, middle::Id baseId, middle::Id exponentId, const Vector3& targetPos);
 	middle::Id newBubbleWithIntValue(middle::GameState* gameState, int value, const Vector3& targetPos);
 	bool isIntersecting(middle::GameState* gameState, middle::Shape& shape);
 	bool unitEquals(middle::GameState* gameState, middle::Id& idA, middle::Id& idB);
 	UnitValue unitValue(middle::GameState* gameState, middle::Id& containerId);
 	int fractionUnitCount(middle::GameState* gameState, middle::Id& fractionId);
 	bool matchingBubbles(middle::GameState* gameState, middle::Id& bubbleA, middle::Id bubbleB);
+	bool bubblePropertiesEqual(middle::GameState* gameState, middle::Id& idA, middle::Id idB);
 	bool matchesStructureWithVariables(middle::GameState* gameState, middle::Id bubbleId, middle::Id algebraNodeId);
 	bool matchesStructureWithVariables(middle::GameState* gameState, middle::Id bubbleId, middle::Id algebraNodeId, std::unordered_map<std::string, middle::Id>& varOverrides);
 	bool matchesStructureBranch(middle::GameState* gameState, middle::Id bubbleStartPointId, middle::Id bubbleRootId, middle::Id structureStartPointId, middle::Id structureRootId);
@@ -60,7 +65,13 @@ namespace bubble {
 	void findMatchingPairBubbles(middle::GameState* gameState, middle::Id bubbleRootId, middle::Id nodeStartPointAId, middle::Id nodeStartPointBId, middle::Id nodeRootId, std::unordered_map<std::string, middle::Id>& varOverrides, middle::Id& resultIdA, middle::Id& resultIdB);
 	middle::Id findMatchingFromSibling(middle::GameState* gameState, middle::Id nodeId, middle::Id siblingId, std::unordered_map<std::string, middle::Id>& varOverrides);
 	middle::Id containerize(middle::GameState* gameState, middle::Id id);
-	bool additiveInverses(middle::GameState* gameState, middle::Id idA, middle::Id idB);
+	bool isAddition(middle::GameState* gameState, middle::Id id);
+	bool isPowerBubble(middle::GameState* gameState, middle::Id id);
+	bool isSummation(middle::GameState* gameState, middle::Id id);
+	bool isVariable(middle::GameState* gameState, middle::Id id);
+	bool isMultiplication(middle::GameState* gameState, middle::Id id);
+	bool isSwapBubble(middle::GameState* gameState, middle::Id id);
+	bool isUnit(middle::GameState* gameState, middle::Id id);
 	void negate(middle::GameState* gameState, middle::Id id);
 	void invert(middle::GameState* gameState, middle::Id id);
 	middle::Id bubbleToStructure(middle::GameState* gameState, middle::Id bubbleId);
@@ -70,9 +81,54 @@ namespace bubble {
 	int findBubbleDepth(middle::GameState* gameState, middle::Id id);
 	bool isBubbleWithValueOne(middle::GameState* gameState, middle::Id id);
 	bool isBubbleWithValueOneNegative(middle::GameState* gameState, middle::Id id);
+	bool isBubbleZero(middle::GameState* gameState, middle::Id id);
+	bool isEqualsOrInequals(middle::GameState* gameState, middle::Id id);
+	bool isEqualsBubble(middle::GameState* gameState, middle::Id id);
+	bool isInequalBubble(middle::GameState* gameState, middle::Id id);
+	bool isFunctionBubble(middle::GameState* gameState, middle::Id id);
+	void getPowerBaseAndExponent(middle::GameState* gameState, middle::Id powerBubble, middle::Id& resultBaseId, middle::Id& resultExponentId);
+	void getSummationIndexLimitSummand(middle::GameState* gameState, middle::Id summationBubble, middle::Id& resultIndex, middle::Id& resultUpperLimit, middle::Id& resultSummand);
+	void getInequaltyLesserAndGreater(middle::GameState* gameState, middle::Id inequalBubble, middle::Id& resultLesserId, middle::Id& resultGreaterId);
+	void getLogicBubbleLeftAndRight(middle::GameState* gameState, middle::Id logicId, middle::Id& resultLeft, middle::Id& resultRight);
+	void getEqualsSiblingsFromLogicBubble(middle::GameState* gameState, middle::Id logicId, middle::Id& resultLeft, middle::Id& resultRight);
+	void getEqualsLeftAndRight(middle::GameState* gameState, middle::Id equalsId, middle::Id& resultLeft, middle::Id& resultRight);
+	void getSwapBubbleActiveInActive(middle::GameState* gameState, middle::Id swapId, middle::Id& activeId, middle::Id& inActiveId);
+	void swapBubbleSwap(middle::GameState* gameState, middle::Id swapId);
+	middle::Id getOtherFromContainerOf2(middle::GameState* gameState, middle::Id id);
+	void matchBubbleTransforms(middle::GameState* gameState, middle::Id matchingModelId, middle::Id toMatchId);
+	// slow but immediate layout update
+	void recursiveBubbleLayoutScaleUpdate(middle::GameState* gameState, middle::Id id);
+	void recursiveBubbleLayoutUpdate(middle::GameState* gameState, middle::Id id);
+	void queueBubbleAction(middle::GameState* gameState, middle::Id id, std::shared_ptr<middle::EditorActionContainer>container);
 
 	template<typename T>
-	middle::Id findCompFromParents(middle::GameState* gameState, middle::Id id) {
+	void recursiveAttachComponent(middle::GameState* gameState, middle::Id id){
+		auto& shape = middle::getShape(gameState, id.index);
+		if (!hasComp(shape, middle::getTypeId<T>())) {
+			middle::attachComponent<T>(gameState, id);
+		}
+		std::vector<middle::Id>children;
+		middle::getChildren(gameState, id, children);
+		for (middle::Id childId : children) {
+			recursiveAttachComponent<T>(gameState, childId);
+		}
+	}
+
+	template<typename T>
+	void recursiveDeleteComponent(middle::GameState* gameState, middle::Id id){
+		auto& shape = middle::getShape(gameState, id.index);
+		if (hasComp(shape, middle::getTypeId<T>())) {
+			middle::queueComponentDeletion<T>(gameState, id);
+		}
+		std::vector<middle::Id>children;
+		middle::getChildren(gameState, id, children);
+		for (middle::Id childId : children) {
+			recursiveDeleteComponent<T>(gameState, childId);
+		}
+	}
+
+	template<typename T>
+	middle::Id findIdWithCompFromShapeOrItsParents(middle::GameState* gameState, middle::Id id) {
 		std::stack < middle::Id> parents;
 		parents.push(id);
 		while (parents.size() > 0) {

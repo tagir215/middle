@@ -284,13 +284,11 @@ namespace middle {
 		for (int i : selectedIndexes) {
 			auto& shape = gameState->shapes[i];
 			int componentTypeId = componentTypeMap[componentName];
-			if (shape.componentMap.find(componentTypeId) != shape.componentMap.end()) {
+			if (hasComp(shape, componentTypeId)) {
 				return;
 			}
-			Component component;
-			component.componentOffset = componentListMap[componentTypeId]->grow();
-			shape.componentMap[componentTypeId] = component;
-			gameState->componentTypeIdSetWithStructuralChanges.insert(componentTypeId);
+			middle::setCompOffset(shape, componentTypeId, componentListMap[componentTypeId]->grow());
+			middle::notifyStructuralChanges(gameState, shape.id, componentTypeId);
 		};
 	}
 
@@ -299,11 +297,11 @@ namespace middle {
 		for (int i : selectedIndexes) {
 			auto& shape = gameState->shapes[i];
 			int componentTypeId = componentTypeMap[componentName];
-			assert(shape.componentMap.find(componentTypeId) != shape.componentMap.end());
-			Component component = shape.componentMap[componentTypeId];
-			componentListMap[componentTypeId]->shrink(component.componentOffset);
-			shape.componentMap.erase(componentTypeId);
-			gameState->componentTypeIdSetWithStructuralChanges.insert(componentTypeId);
+			assert(hasComp(shape, componentTypeId));
+			int offset = getCompOffset(shape, componentTypeId);
+			componentListMap[componentTypeId]->shrink(offset);
+			removeComp(shape, componentTypeId);
+			middle::notifyStructuralChanges(gameState, shape.id, componentTypeId);
 		}
 	}
 
@@ -607,9 +605,9 @@ namespace middle {
 	void EditorActionRegisterId::execute(GameState* gameState)
 	{
 		auto& shape = middle::getShape(gameState, id.index);
-		for (auto pair : shape.componentMap) {
-			int typeId = pair.first;
-			gameState->componentTypeIdSetWithStructuralChanges.insert(typeId);
+		middle::Id idToRegister = id;
+		for(int typeId : shape.componentTypes){
+			middle::notifyStructuralChanges(gameState, idToRegister, typeId);
 		}
 	}
 
@@ -640,15 +638,15 @@ namespace middle {
 
 	void MultiAction::execute(GameState* gameState)
 	{
-		for (auto action : actions) {
+		for (auto action : actionList) {
 			action->execute(gameState);
 		}
 	}
 
 	void MultiAction::undo(GameState* gameState)
 	{
-		for (int i = actions.size() - 1; i >= 0; --i) {
-			actions[i]->undo(gameState);
+		for (int i = actionList.size() - 1; i >= 0; --i) {
+			actionList[i]->undo(gameState);
 		}
 	}
 

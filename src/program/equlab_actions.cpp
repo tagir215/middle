@@ -9,26 +9,36 @@
 #include "alg_file_utils.h"
 #include <queue>
 #include "UnIntersectableWindowComponent.h"
-#include "HelperBubbleEquation.h"
 #include "TopDogBubbleTag.h"
+#include "BubblePowerComponent.h"
+#include "BubbleInequaltyComponent.h"
+#include "BubbleFunctionComponent.h"
+#include "BubbleSummationComponent.h"
+#include "LocalScale.h"
+#include "bubequ_mapping.h"
+#include "profiler_helpers.h"
+#include "bubble_constants.h"
+#include "NeedsUpdateTag.h"
+#include "Button.h"
 
 namespace equlab {
 
-	const float freshnessTime = 0.3f;
+	const float freshnessTime = 0.8f;
 
 	void AddBubble::execute(middle::GameState* gameState) {
 		middle::Shape newBubbleProto = bubble::newBubble(gameState, targetPosition);
-		auto registerAction = std::make_unique<middle::EditorActionRegisterShape>(newBubbleProto);
-		registerAction->execute(gameState);
+		auto registerAction = middle::executeAction<middle::EditorActionRegisterShape>
+			(gameState, this, newBubbleProto);
 		resultId = registerAction->newShapeId;
-		actions.push_back(std::move(registerAction));
 		if (parentId.index != middle::UNASSIGNED) {
-			auto reparent = std::make_unique<middle::EditorActionReparent>(parentId.index, resultId.index);
-			reparent->execute(gameState);
-			actions.push_back(std::move(reparent));
+			middle::executeAction<middle::EditorActionReparent>(gameState, this, parentId.index, resultId.index);
 		}
-		auto timer = middle::attachComponent<components::UnIntersectableWindowComponent>(gameState, resultId);
-		timer->timeLeft = freshnessTime;
+		auto scaleComp = middle::getComp<components::LocalScale>(gameState, resultId);
+		float scale = gameState->bubbleAlgebraState.worldScale;
+
+		scaleComp->scale.x = scale;
+		scaleComp->scale.y = scale;
+		scaleComp->scale.z = scale;
 	}
 	void AddBubble::undo(middle::GameState* gameState) {
 		while (actions.size() > 0) {
@@ -38,6 +48,11 @@ namespace equlab {
 	}
 
 	void AddUnit::execute(middle::GameState* gameState) {
+		if (parentId.index == middle::UNASSIGNED) {
+			cancelled = true;
+			return;
+		}
+
 		middle::Shape newUnitProto = bubble::newUnit(gameState, targetPosition);
 		auto registerAction = std::make_unique<middle::EditorActionRegisterShape>(newUnitProto);
 		registerAction->execute(gameState);
@@ -48,8 +63,6 @@ namespace equlab {
 			reparent->execute(gameState);
 			actions.push_back(std::move(reparent));
 		}
-		auto timer = middle::attachComponent<components::UnIntersectableWindowComponent>(gameState, resultId);
-		timer->timeLeft = freshnessTime;
 	}
 
 	void AddUnit::undo(middle::GameState* gameState) {
@@ -102,11 +115,10 @@ namespace equlab {
 		}
 	}
 
+
 	void AddLabelCharacterToVariable::execute(middle::GameState* gameState) {
 		auto& shape = middle::getShape(gameState, id.index);
-
 		auto comp = middle::getComponent<components::BubbleVariable>(shape);
-
 
 		// if no comp create new bubble variable
 		if (!comp) {
@@ -119,39 +131,12 @@ namespace equlab {
 			else {
 				middle::Id targetId = id;
 				std::string targetLabel = this->label;
-				auto customAction = std::make_unique<CustomActionWithUndo>(
-					[targetId, targetLabel](middle::GameState* gameState) {
-						auto newComp = middle::attachComponent<components::BubbleVariable>(gameState, targetId);
-						newComp->label = targetLabel;
-					},
-					[targetId](middle::GameState* gameState) {
-						middle::queueComponentDeletion<components::BubbleVariable>(gameState, targetId);
-					});
-				customAction->execute(gameState);
-				actions.push_back(std::move(customAction));
+				auto action = middle::executeAction<middle::AttachComponentAction<components::BubbleVariable>>(gameState, this, targetId);
+				action->resultComp->label = targetLabel;
 			}
 		}
-
-		// if is already comp add character to end of current lable name
 		else {
-			middle::Id targetId = id;
-			std::string targetLabel = this->label;
-			auto customAction = std::make_unique<CustomActionWithUndo>(
-				[targetId, targetLabel](middle::GameState* gameState) {
-					auto& targetShape = middle::getShape(gameState, targetId.index);
-					auto comp = middle::getComponent<components::BubbleVariable>(targetShape);
-					comp->label += targetLabel;
-				},
-				[targetId, targetLabel](middle::GameState* gameState) {
-					auto& targetShape = middle::getShape(gameState, targetId.index);
-					auto comp = middle::getComponent<components::BubbleVariable>(targetShape);
-					int targetSize = targetLabel.size();
-					int labelSize = comp->label.size();
-					assert(targetSize < labelSize);
-					comp->label.erase(labelSize - targetSize, targetSize);
-				});
-			customAction->execute(gameState);
-			actions.push_back(std::move(customAction));
+			cancelled = true;
 		}
 	}
 	void AddLabelCharacterToVariable::undo(middle::GameState* gameState) {
@@ -161,7 +146,37 @@ namespace equlab {
 		}
 	}
 
+	void AddLabelToFunction::execute(middle::GameState* gameState) {
+		auto& shape = middle::getShape(gameState, id.index);
+		auto comp = middle::getComponent<components::BubbleVariable>(shape);
 
+		// if no comp create new function
+		if (!comp) {
+			std::vector<middle::Id>children;
+			middle::getChildren(gameState, id, children);
+			if (children.size() > 0) {
+				cancelled = true;
+				return;
+			}
+			else {
+				middle::Id targetId = id;
+				std::string targetLabel = this->label;
+				auto attach = middle::executeAction
+					<middle::AttachComponentAction<components::BubbleFunctionComponent>>
+					(gameState, this, targetId);
+				attach->resultComp->label = targetLabel;
+			}
+		}
+		else {
+			cancelled = true;
+		}
+	}
+	void AddLabelToFunction::undo(middle::GameState* gameState) {
+		while (actions.size() > 0) {
+			actions.back()->undo(gameState);
+			actions.pop_back();
+		}
+	}
 
 	void Delete::execute(middle::GameState* gameState) {
 		middle::Id parentId = middle::getParent(gameState, id);
@@ -171,7 +186,7 @@ namespace equlab {
 			auto opComp = middle::getComponent<components::BubbleMultiplyComponent>(parentShape);
 			// if op comp unlink instead of delete
 			if (opComp) {
-				auto unlink = std::make_unique<bubbleActions::UnlinkMultiplicationTerm>(parentId, id);
+				auto unlink = std::make_unique<bubbleActions::UnlinkMultiplicationTerm>(id);
 				unlink->execute(gameState);
 				actions.push_back(std::move(unlink));
 				return;
@@ -210,13 +225,13 @@ namespace equlab {
 		middle::Shape& bubA = middle::registerShape(gameState, bubAProto);
 		middle::Shape& bubB = middle::registerShape(gameState, bubBProto);
 		middle::Shape& equals = middle::registerShape(gameState, equalsProto);
+		resultId = equals.id;
 
 		middle::EditorActionReparent(equals.id.index, bubA.id.index).execute(gameState);
 		middle::EditorActionReparent(equals.id.index, bubB.id.index).execute(gameState);
 
-		auto registerAction = std::make_unique<middle::EditorActionRegisterId>(equals.id);
-		registerAction->execute(gameState);
-		actions.push_back(std::move(registerAction));
+		middle::executeAction<middle::EditorActionRegisterId>(gameState, this, equals.id);
+		middle::executeAction<middle::EditorActionReparent>(gameState, this, parentId.index, equals.id.index);
 	}
 
 	void AddEquals::undo(middle::GameState* gameState) {
@@ -226,14 +241,93 @@ namespace equlab {
 		}
 	}
 
+	void AddInequals::execute(middle::GameState* gameState) {
+		middle::Shape bubAProto = bubble::newBubble(gameState, targetPos + Vector3{-1,0,0});
+		middle::Shape bubBProto = bubble::newBubble(gameState, targetPos + Vector3{1,0,0});
+		middle::Shape inequalsProto = bubble::newInequals(gameState, targetPos, equalOr);
+		middle::Shape& bubA = middle::registerShape(gameState, bubAProto);
+		middle::Shape& bubB = middle::registerShape(gameState, bubBProto);
+		middle::Shape& inequalsShape = middle::registerShape(gameState, inequalsProto);
+
+		middle::EditorActionReparent(inequalsShape.id.index, bubA.id.index).execute(gameState);
+		middle::EditorActionReparent(inequalsShape.id.index, bubB.id.index).execute(gameState);
+
+		middle::executeAction<middle::EditorActionRegisterId>(gameState, this, inequalsShape.id);
+		middle::executeAction<middle::EditorActionReparent>(gameState, this, parentId.index, inequalsShape.id.index);
+	}
+
+	void AddInequals::undo(middle::GameState* gameState) {
+		while (actions.size() > 0) {
+			actions.back()->undo(gameState);
+			actions.pop_back();
+		}
+	}
+
+	void AddSummation::execute(middle::GameState* gameState) {
+		middle::Id newSum = bubble::newSummationWithChildren(gameState, targetPos);
+		middle::executeAction<middle::EditorActionRegisterId>(gameState, this, newSum);
+		middle::executeAction<middle::EditorActionReparent>(gameState, this, parentId.index, newSum.index);
+	}
+
+	void AddSummation::undo(middle::GameState* gameState) {
+		while (actions.size() > 0) {
+			actions.back()->undo(gameState);
+			actions.pop_back();
+		}
+	}
+
 	void ToggleEditable::execute(middle::GameState* gameState) {
-		int topLevelIndex = middle::findHighestLevelContainer(gameState, id.index);
-		topLevelId = gameState->ids[topLevelIndex];
-		middle::attachComponent<components::HelperBubbleEquation>(gameState, topLevelId);
 	}
 
 	void ToggleEditable::undo(middle::GameState* gameState) {
-		middle::queueComponentDeletion<components::HelperBubbleEquation>(gameState, topLevelId);
+	}
+
+	void AddMultiplication::execute(middle::GameState* gameState) {
+		middle::Shape newBubbleProto = bubble::newMultiplication(gameState, targetPosition);
+		auto registerAction = middle::executeAction<middle::EditorActionRegisterShape>
+			(gameState, this, newBubbleProto);
+		resultId = registerAction->newShapeId;
+		if (parentId.index != middle::UNASSIGNED) {
+			middle::executeAction<middle::EditorActionReparent>(gameState, this, parentId.index, resultId.index);
+		}
+		auto scaleComp = middle::getComp<components::LocalScale>(gameState, resultId);
+		float scale = gameState->bubbleAlgebraState.worldScale;
+		scaleComp->scale.x = scale;
+		scaleComp->scale.y = scale;
+		scaleComp->scale.z = scale;
+		AddBubble(resultId, targetPosition).execute(gameState);
+		AddBubble(resultId, targetPosition).execute(gameState);
+	}
+
+	void AddMultiplication::undo(middle::GameState* gameState) {
+		while (actions.size() > 0) {
+			actions.back()->undo(gameState);
+			actions.pop_back();
+		}
+	}
+
+	void AddPower::execute(middle::GameState* gameState) {
+		middle::Shape newBubbleProto = bubble::newPower(gameState, targetPosition);
+		auto registerAction = middle::executeAction<middle::EditorActionRegisterShape>
+			(gameState, this, newBubbleProto);
+		resultId = registerAction->newShapeId;
+		if (parentId.index != middle::UNASSIGNED) {
+			middle::executeAction<middle::EditorActionReparent>(gameState, this, parentId.index, resultId.index);
+		}
+		auto scaleComp = middle::getComp<components::LocalScale>(gameState, resultId);
+		float scale = gameState->bubbleAlgebraState.worldScale;
+		scaleComp->scale.x = scale;
+		scaleComp->scale.y = scale;
+		scaleComp->scale.z = scale;
+		AddBubble(resultId, targetPosition).execute(gameState);
+		AddBubble(resultId, targetPosition).execute(gameState);
+	}
+
+	void AddPower::undo(middle::GameState* gameState){
+		while (actions.size() > 0) {
+			actions.back()->undo(gameState);
+			actions.pop_back();
+		}
 	}
 
 	void ConnectMultiplicationLink::execute(middle::GameState* gameState) {
@@ -246,27 +340,33 @@ namespace equlab {
 		}
 		middle::Id parentIdA = middle::getParent(gameState, bubbleIdA);
 		middle::Id parentIdB = middle::getParent(gameState, bubbleIdB);
-
-		// check if b is in a multiplication
-		// if they are remove first from the operation and connect each child seperatedly
-		// we don't have to check for a because a can work as a reciever even if its in multiplciation
-		bool parentBIsMul = false;
-		if (parentIdB.index != middle::UNASSIGNED) {
-			auto& parentShapeB = middle::getShape(gameState, parentIdB.index);
-			parentBIsMul = middle::getComponent<components::BubbleMultiplyComponent>(parentShapeB);
-		}
-		if (parentBIsMul) {
-			auto unlink = std::make_unique<bubbleActions::UnlinkMultiplicationTerm>(parentIdB, bubbleIdB);
-			unlink->execute(gameState);
-			actions.push_back(std::move(unlink));
+		if (parentIdA != parentIdB) {
+			cancelled = true;
+			return;
 		}
 
-		// connect idB or if they were in operation then all the op children
-		auto connectAction = std::make_unique<bubbleActions::LinkMultiplicationTerm>(bubbleIdA, bubbleIdB);
-		connectAction->execute(gameState);
-		resultId = connectAction->resultShapeId;
-		auto& resultShape = middle::getShape(gameState, resultId.index);
-		actions.push_back(std::move(connectAction));
+		// create replacement
+		int oldIndexA = middle::getLoopIndex(gameState, bubbleIdA);
+		int oldIndexB = middle::getLoopIndex(gameState, bubbleIdB);
+		middle::Id mulCopyId = middle::deepCopyShapeGlobalCoordinates(gameState, parentIdA);
+		std::vector<middle::Id>children;
+		middle::getChildren(gameState, mulCopyId, children);
+		middle::Id copyIdA = children[oldIndexA];
+		middle::Id copyIdB = children[oldIndexB];
+		int childrenSize = children.size();
+		middle::EditorActionRemoveFromLoop(copyIdA.index).execute(gameState);
+		middle::EditorActionRemoveFromLoop(copyIdB.index).execute(gameState);
+		if (childrenSize < 4) {
+			middle::queueComponentDeletion<components::BubbleMultiplyComponent>(gameState, mulCopyId);
+		}
+		auto connectAction = bubbleActions::LinkMultiplicationTerm(copyIdA, copyIdB);
+		connectAction.execute(gameState);
+		middle::EditorActionReparent(mulCopyId.index, connectAction.resultShapeId.index).execute(gameState);
+		resultId = mulCopyId;
+		middle::executeAction<middle::EditorActionRegisterId>(gameState, this, mulCopyId);
+
+		// replace
+		middle::executeAction<bubbleActions::Replace>(gameState, this, parentIdA, mulCopyId);
 	}
 	void ConnectMultiplicationLink::undo(middle::GameState* gameState) {
 		while (actions.size() > 0) {
@@ -275,176 +375,286 @@ namespace equlab {
 		}
 	}
 
-	void ConnectPowerLink::execute(middle::GameState* gameState) {
-		if (!canConnect(gameState, bubbleIdA, bubbleIdB)) {
-			cancelled = true;
-			return;
-		}
-		Vector3 bubbAPos = middle::getGlobalPosition(gameState, bubbleIdA.index);
-		Vector3 bubbBPos = middle::getGlobalPosition(gameState, bubbleIdB.index);
-		Vector3 targetPos = (bubbAPos + bubbBPos) * 0.5f;
+	void ConnectPower::execute(middle::GameState* gameState) {
+		middle::Id oldParentId = middle::getParent(gameState, baseId);
 
-		middle::Shape powerProto = bubble::newPower(gameState, targetPos);
-		middle::Shape& powerShape = middle::registerShape(gameState, powerProto);
+		Vector3 targetPos = (middle::getGlobalPosition(gameState, baseId.index)
+			+ middle::getGlobalPosition(gameState, exponentId.index)) * 0.5f;
 
-		middle::Id oldParentId = middle::getParent(gameState, bubbleIdA);
-
-		auto registerAction = std::make_unique<middle::EditorActionRegisterId>(powerShape.id);
+		middle::Shape newPowerProto = bubble::newPower(gameState, targetPos);
+		middle::Shape& newPower = middle::registerShape(gameState, newPowerProto);
+		auto registerAction = std::make_unique<middle::EditorActionRegisterId>(newPower.id);
 		registerAction->execute(gameState);
 		actions.push_back(std::move(registerAction));
 
-		if (oldParentId.index != middle::UNASSIGNED) {
-			auto reparentC = std::make_unique<middle::EditorActionReparent>(oldParentId.index, powerShape.id.index);
-			reparentC->execute(gameState);
-			actions.push_back(std::move(reparentC));
-		}
-
-		auto reparentA = std::make_unique<middle::EditorActionReparent>(powerShape.id.index, bubbleIdA.index);
+		auto reparentA = std::make_unique<middle::EditorActionReparent>(newPower.id.index, baseId.index);
 		reparentA->execute(gameState);
 		actions.push_back(std::move(reparentA));
-
-		auto reparentB = std::make_unique<middle::EditorActionReparent>(powerShape.id.index, bubbleIdB.index);
+		auto reparentB = std::make_unique<middle::EditorActionReparent>(newPower.id.index, exponentId.index);
 		reparentB->execute(gameState);
 		actions.push_back(std::move(reparentB));
 
+		auto reparentC = std::make_unique<middle::EditorActionReparent>(oldParentId.index, newPower.id.index);
+		reparentC->execute(gameState);
+		actions.push_back(std::move(reparentC));
 
-		resultId = powerShape.id;
+		resultId = newPower.id;
 	}
-	void ConnectPowerLink::undo(middle::GameState* gameState) {
+
+	void ConnectPower::undo(middle::GameState* gameState) {
 		while (actions.size() > 0) {
 			actions.back()->undo(gameState);
 			actions.pop_back();
 		}
 	}
 
-	float rf() {
-		return (std::rand() % 100 + 1) * 0.01f;
-	}
-	Vector3 randOffset() {
-		return Vector3{ rf(), rf(), rf() };
-	}
 
-	middle::Id bubequToBubble(middle::GameState* gameState, const Vector3& targetPos, std::shared_ptr<bubequ::Scope>& bubequ)
+	void LoadBubbleSection::execute(middle::GameState* gameState)
 	{
-		std::queue<bubequ::Scope*>scopeQueue;
-		std::queue<middle::Id>parentQueue;
-		scopeQueue.push(bubequ.get());
-		parentQueue.push(middle::Id());
+		mstart();
+		const int loadDist = gameState->bubbleAlgebraState.loadDepth;
+		gameState->bubbleAlgebraState.worldScale = 1;
 
-		middle::Id rootId;
+		mstart();
+		auto scope = bubequ::loadBubequHead(gameState->bubbleAlgebraState.activeBubbleName, 
+			gameState->bubbleAlgebraState.traversePath,loadDist);
+		mendmicro("load bubequ head");
+		mstart();
+		middle::Id loadedId = bubequ::bubequToBubble(gameState, Vector3{0,0,0}, scope);
+		mendmicro("bubequ to bubble");
+		mstart();
+		bubble::recursiveBubbleLayoutScaleUpdate(gameState, loadedId);
+		bubble::recursiveBubbleLayoutUpdate(gameState, loadedId);
+		mendmicro("bubequ scale and layout");
 
-		while (scopeQueue.size() > 0) {
-			bubequ::Scope* currentScope = scopeQueue.front();
-			middle::Id currentParentId = parentQueue.front();
-			scopeQueue.pop();
-			parentQueue.pop();
-			Vector3 randOff = randOffset();
-			Vector3 pos = targetPos + randOff;
+		resultId = loadedId;
+		middle::attachComponent<components::TopDogBubbleTag>(gameState, loadedId);
 
-			middle::Id newNodeId;
+		std::vector<middle::Id>loadedChildren;
+		middle::getChildren(gameState, loadedId, loadedChildren);
+		middle::Id matchingChildId;
 
-			if (auto unitScope = dynamic_cast<bubequ::Unit*>(currentScope)) {
-				if (unitScope->type == bubequ::UnitType::CONSTANT) {
-					newNodeId = bubble::newBubbleWithIntValue(gameState, unitScope->value, pos);
-				}
-				else if (unitScope->type == bubequ::UnitType::VARIABLE) {
-					int s = std::abs(unitScope->value);
-					bool isNegative = unitScope->value < 0;
-					if (s == 1) {
-						middle::Shape varProto = bubble::newVariable(gameState, unitScope->label, pos, isNegative);
-						middle::Shape& varShape = middle::registerShape(gameState, varProto);
-						newNodeId = varShape.id;
-					}
-					else {
-						middle::Shape bubbleProto = bubble::newBubble(gameState, pos);
-						middle::Shape& bubbleShape = middle::registerShape(gameState, bubbleProto);
-						for (int i = 0; i < s; ++i) {
-							middle::Shape varProto = bubble::newVariable(gameState, unitScope->label, pos, isNegative);
-							middle::Shape& varShape = middle::registerShape(gameState, varProto);
-							middle::EditorActionReparent(bubbleShape.id.index, varShape.id.index).execute(gameState);
-						}
-						newNodeId = bubbleShape.id;
-					}
+		matchingChildId = loadedChildren[scaleReferenceIndex];
 
-				}
-			}
-			else if (auto linkScope = dynamic_cast<bubequ::Link*>(currentScope)) {
-				if (linkScope->type == bubequ::LinkType::MULTIPLICATION) {
-					middle::Shape linkProto = bubble::newMultiplication(gameState, pos);
-					middle::Shape& linkShape = middle::registerShape(gameState, linkProto);
-					newNodeId = linkShape.id;
-				}
-				else if (linkScope->type == bubequ::LinkType::EQUALS) {
-					middle::Shape linkProto = bubble::newEquals(gameState, pos);
-					middle::Shape& linkShape = middle::registerShape(gameState, linkProto);
-					newNodeId = linkShape.id;
-				}
-				else if (linkScope->type == bubequ::LinkType::POWER) {
-					middle::Shape linkProto = bubble::newPower(gameState, pos);
-					middle::Shape& linkShape = middle::registerShape(gameState, linkProto);
-					newNodeId = linkShape.id;
-				}
-			}
-			else {
-				auto addBub = equlab::AddBubble(currentParentId, pos);
-				addBub.execute(gameState);
-				middle::Id bubbleId = addBub.resultId;
-				newNodeId = bubbleId;
-			}
+		mstart();
+		bubble::matchBubbleTransforms(gameState, scaleReferenceId, matchingChildId);
+		middle::deleteShapeRecursive(gameState, gameState->bubbleAlgebraState.backgroundBubbleId.index);
+		mendmicro("match bubeuqu");
 
-			if (currentParentId.index != middle::UNASSIGNED) {
-				middle::EditorActionReparent(currentParentId.index, newNodeId.index).execute(gameState);
-			}
-			if (rootId.index == middle::UNASSIGNED) {
-				rootId = newNodeId;
-			}
-			for (auto& scope : currentScope->children) {
-				scopeQueue.push(scope.get());
-				parentQueue.push(newNodeId);
-			}
-		}
+		gameState->bubbleAlgebraState.backgroundBubbleId = loadedId;
 
-		return rootId;
+		mendmicro("bubequ loading time");
+		mflushmicro(gameState);
 	}
 
-
-	std::string bubbleToBubequ(middle::GameState* gameState, middle::Id id)
+	void LoadBubbleSection::undo(middle::GameState* gameState)
 	{
-		auto& shape = middle::getShape(gameState, id.index);
-
-		std::string result;
-
-		result += "(";
-
-		auto op = middle::getComponent<components::BubbleMultiplyComponent>(shape);
-		if (op && op->operationType == components::OperationType::MULTIPLICATION) {
-			result += "*";
+		while (actions.size() > 0) {
+			actions.back()->undo(gameState);
+			actions.pop_back();
 		}
-		else if (op && op->operationType == components::OperationType::POWER) {
-			result += "^";
-		}
-		else if (middle::getComponent<components::BubbleEqualsComponent>(shape)) {
-			result += "=";
-		}
-
-		if (auto unit = middle::getComponent<components::BubbleUnit>(shape)) {
-			result += std::to_string(unit->value);
-		}
-		else if (auto var = middle::getComponent<components::BubbleVariable>(shape)) {
-			if (var->isNegative) {
-				result += "-";
-			}
-			result += var->label;
-		}
-
-		std::vector<middle::Id>children;
-		middle::getChildren(gameState, id, children);
-		for (middle::Id& childId : children) {
-			result += bubbleToBubequ(gameState, childId);
-		}
-
-		result += ")";
-		return result;
 	}
+
+	void UndoAction::execute(middle::GameState* gameState)
+	{
+		//const auto& name = gameState->bubbleAlgebraState.activeBubbleName;
+		//const int loadDepth = gameState->bubbleAlgebraState.loadDepth;
+		//bubequ::BubTraversePath loadedPath;
+		//Vector3 loadedPos;
+		//float loadedScale;
+		//auto bubequ = bubequ::loadPreviousSnapshot(name, 1, loadDepth, loadedPos, loadedScale, loadedPath);
+		//if (!bubequ) {
+		//	cancelled = true;
+		//	return;
+		//}
+
+		//middle::Id loadedId = bubequ::bubequToBubble(gameState, loadedPos, bubequ);
+		//gameState->bubbleAlgebraState.worldScale = 1;
+		//gameState->bubbleAlgebraState.traversePath = loadedPath;
+
+		//middle::deleteShapeRecursive(gameState, gameState->bubbleAlgebraState.backgroundBubbleId.index);
+		//gameState->bubbleAlgebraState.backgroundBubbleId = loadedId;
+		//middle::setLocalPosition(gameState, loadedId, loadedPos);
+		//middle::setLocalScale(gameState, loadedId, {loadedScale, loadedScale, loadedScale});
+
+		//bubble::recursiveBubbleLayoutScaleUpdate(gameState, loadedId);
+		//bubble::recursiveBubbleLayoutUpdate(gameState, loadedId);
+
+		//bubequ::eraseLastSave(name);
+
+		//middle::Id id = bubequ::bubequToBubble(gameState, )
+		//gameState->bubbleAlgebraState.backgroundBubbleId;
+
+		if (gameState->bubbleAlgebraState.bubbleActions.size() > 0) {
+			gameState->bubbleAlgebraState.bubbleActions.back()->undo(gameState);
+			gameState->bubbleAlgebraState.bubbleActions.pop_back();
+		}
+		gameState->bubbleAlgebraState.postUndoFrames = 2;
+
+		queueSound(gameState, bubbleSounds::UNDO_SOUND);
+	}
+
+	void UndoAction::undo(middle::GameState* gameState)
+	{
+	}
+
+	void AddBubbleText::execute(middle::GameState* gameState)
+	{
+		middle::Shape newBubbleProto = bubble::newTextBubble(gameState, targetPosition);
+		auto registerAction = middle::executeAction<middle::EditorActionRegisterShape>
+			(gameState, this, newBubbleProto);
+		resultId = registerAction->newShapeId;
+		if (parentId.index != middle::UNASSIGNED) {
+			middle::executeAction<middle::EditorActionReparent>(gameState, this, parentId.index, resultId.index);
+		}
+		auto scaleComp = middle::getComp<components::LocalScale>(gameState, resultId);
+		float scale = gameState->bubbleAlgebraState.worldScale;
+		scaleComp->scale.x = scale;
+		scaleComp->scale.y = scale;
+		scaleComp->scale.z = scale;
+	}
+
+	void AddBubbleText::undo(middle::GameState* gameState)
+	{
+		while (actions.size() > 0) {
+			actions.back()->undo(gameState);
+			actions.pop_back();
+		}
+	}
+
+	void AddSwapBubble::execute(middle::GameState* gameState)
+	{
+		middle::Shape newSwapProto = bubble::newSwapBubble(gameState, targetPosition);
+		middle::Shape& newSwapShape = middle::registerShape(gameState, newSwapProto);
+		auto registerAction = middle::executeAction<middle::EditorActionRegisterId>(gameState, this, newSwapShape.id);
+		resultId = newSwapShape.id;
+		if (parentId.index != middle::UNASSIGNED) {
+			middle::executeAction<middle::EditorActionReparent>(gameState, this, parentId.index, resultId.index);
+		}
+		auto scaleComp = middle::getComp<components::LocalScale>(gameState, resultId);
+		float scale = gameState->bubbleAlgebraState.worldScale;
+		scaleComp->scale.x = scale;
+		scaleComp->scale.y = scale;
+		scaleComp->scale.z = scale;
+
+		auto addText = AddBubbleText(newSwapShape.id, targetPosition);
+		addText.execute(gameState);
+
+		auto addEquals = AddEquals(newSwapShape.id, targetPosition);
+		addEquals.execute(gameState);
+	}
+
+	void AddSwapBubble::undo(middle::GameState* gameState)
+	{
+		while (actions.size() > 0) {
+			actions.back()->undo(gameState);
+			actions.pop_back();
+		}
+	}
+
+	void AddLogicBubble::execute(middle::GameState* gameState)
+	{
+		middle::Shape newBubbleProto = bubble::newLogicBubble(gameState, targetPosition);
+		auto registerAction = middle::executeAction<middle::EditorActionRegisterShape>
+			(gameState, this, newBubbleProto);
+		resultId = registerAction->newShapeId;
+		if (parentId.index != middle::UNASSIGNED) {
+			middle::executeAction<middle::EditorActionReparent>(gameState, this, parentId.index, resultId.index);
+		}
+		auto scaleComp = middle::getComp<components::LocalScale>(gameState, resultId);
+		float scale = gameState->bubbleAlgebraState.worldScale;
+		scaleComp->scale.x = scale;
+		scaleComp->scale.y = scale;
+		scaleComp->scale.z = scale;
+	}
+
+	void AddLogicBubble::undo(middle::GameState* gameState)
+	{
+		while (actions.size() > 0) {
+			actions.back()->undo(gameState);
+			actions.pop_back();
+		}
+	}
+
+	void AddGateBubble::execute(middle::GameState* gameState)
+	{
+		middle::Shape newBubbleProto = bubble::newGateBubble(gameState, targetPosition);
+		auto registerAction = middle::executeAction<middle::EditorActionRegisterShape>
+			(gameState, this, newBubbleProto);
+		resultId = registerAction->newShapeId;
+		auto comp = middle::getComp<components::BubbleGateComponent>(gameState, resultId);
+		comp->status = status;
+		if (parentId.index != middle::UNASSIGNED) {
+			middle::executeAction<middle::EditorActionReparent>(gameState, this, parentId.index, resultId.index);
+		}
+		auto scaleComp = middle::getComp<components::LocalScale>(gameState, resultId);
+		float scale = gameState->bubbleAlgebraState.worldScale;
+		scaleComp->scale.x = scale;
+		scaleComp->scale.y = scale;
+		scaleComp->scale.z = scale;
+	}
+
+	void AddGateBubble::undo(middle::GameState* gameState)
+	{
+		while (actions.size() > 0) {
+			actions.back()->undo(gameState);
+			actions.pop_back();
+		}
+	}
+
+	void LinkTextToTextBubble::execute(middle::GameState* gameState)
+	{
+		auto comp = middle::getComp<components::BubbleTextComponent>(gameState, id);
+		prevName = comp->textName;
+		prevText = comp->text;
+		comp->textName = name;
+		comp->text = text;
+	}
+
+	void LinkTextToTextBubble::undo(middle::GameState* gameState)
+	{
+		auto comp = middle::getComp<components::BubbleTextComponent>(gameState, id);
+		comp->textName = prevName;
+		comp->text = prevText;
+	}
+
+
+	void ToggleLogicBubbleStatus::execute(middle::GameState* gameState)
+	{
+		// swap case
+		middle::Id parentId = middle::getParent(gameState, id);
+		if (parentId.index != middle::UNASSIGNED && bubble::isSwapBubble(gameState, parentId)) {
+			bubble::swapBubbleSwap(gameState, parentId);
+		}
+
+		// gate case
+		if (auto comp = middle::getComp<components::BubbleGateComponent>(gameState, id)) {
+			int nextIndex = comp->status + 1;
+			if (nextIndex > 2) {
+				nextIndex = 0;
+			}
+			comp->status = nextIndex;
+			middle::attachComponent<components::NeedsUpdateTag>(gameState, id);
+		}
+	}
+
+	void ToggleLogicBubbleStatus::undo(middle::GameState* gameState)
+	{
+		// swap case
+		middle::Id parentId = middle::getParent(gameState, id);
+		if (parentId.index != middle::UNASSIGNED && bubble::isSwapBubble(gameState, parentId)) {
+			bubble::swapBubbleSwap(gameState, parentId);
+		}
+
+		// gate case
+		auto comp = middle::getComp<components::BubbleGateComponent>(gameState, id);
+		int nextIndex = comp->status - 1;
+		if (nextIndex < 0) {
+			nextIndex = 2;
+		}
+		comp->status = nextIndex;
+		middle::attachComponent<components::NeedsUpdateTag>(gameState, id);
+	}
+
 
 }

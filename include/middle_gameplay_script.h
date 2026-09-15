@@ -1,16 +1,22 @@
 #pragma once
 #include <memory>
 #include <string>
+#include <chrono>
 
 namespace middle {
 
-	class GameState;
+	struct GameState;
+
+	const int updatePriorityMax = 100;
 
 	enum class SystemUpdateType {
+		CACHE,
+		INITFRAME,
 		PREFRAME,
 		// Imported systems are dynamically placed to scenes, they are updated between pre and post frame
 		GAMEPLAY_MIDFRAME,
 		GAMEPLAY_POSTFRAME,
+		POSTFRAME,
 		RENDERING,
 	};
 
@@ -26,11 +32,20 @@ namespace middle {
 	class MiddleGameplaySystem {
 	public:
 		virtual ~MiddleGameplaySystem() = default;
+		int updatePriority = 0;
 		SystemUpdateType systemUpdateType = SystemUpdateType::GAMEPLAY_MIDFRAME;
 		SystemModeType systemModeType = SystemModeType::GAMEPLAY;
 		std::string systemName;
+		std::chrono::milliseconds updateTime;
+
 		virtual void init(GameState* gameState) = 0;
 		virtual void update(GameState* gameState) = 0;
+		virtual void recordTimeUpdate(GameState* gameState) {
+			auto start = std::chrono::high_resolution_clock::now();
+			update(gameState);
+			auto end = std::chrono::high_resolution_clock::now();
+			updateTime = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
+		}
 	};
 
 }

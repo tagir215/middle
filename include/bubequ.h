@@ -10,19 +10,35 @@ namespace bubequ {
 		NONE, 
 		MULTIPLICATION,
 		POWER,
-		EQUALS
+		EQUALS,
+		GREATER,
+		GREATER_OR_EQUAL,
+		FUNCTION,
+		SUMMATION,
+		GATE,
+		AND_GATE,
+		SWAPPER,
 	};
 
 	enum class UnitType {
 		NONE,
 		CONSTANT,
-		VARIABLE
+		VARIABLE,
+		ZERO,
+		TEXT,
 	};
 
 	struct Scope {
+		std::string hash;
+		int status;
+		// actual loaded children
 		std::vector<std::shared_ptr<Scope>>children;
 		virtual ~Scope() = default;
 	};
+
+	// path from root to node
+	typedef std::vector<int> BubTraversePath;
+
 
 	struct Unit : public Scope{
 		UnitType type;
@@ -31,9 +47,8 @@ namespace bubequ {
 	};
 	struct Link : public Scope {
 		LinkType type;
+		std::string text;
 	};
-
-
 
 
 	struct SentenceUnit{

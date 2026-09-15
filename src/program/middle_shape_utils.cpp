@@ -1,13 +1,12 @@
 #include "middle_shape_utils.h"
 #include "middle_math.h"
-#include "middle_component_table.h"
 #include "LoopSociety.h"
 #include "Sphere.h"
 #include "Reference.h"
 #include "Constraint.h"
 #include "PhysicsData.h"
 #include "MouseSelectable.h"
-#include "MouseIntersectable.h"
+#include "IntersectingTag.h"
 #include "JointEntity.h"
 #include "LoopEntity.h"
 #include "ComponentRefParent.h"
@@ -17,6 +16,7 @@
 #include "GlobalTransform.h"
 #include "LocalPosition.h"
 #include <stack>
+#include "component_utils.h"
 
 namespace middle {
 
@@ -90,6 +90,25 @@ namespace middle {
 		return findHighestLevelContainer(gameState, parentId.index);
 	}
 
+	Vector3 getLocalScale(GameState* gameState, middle::Id id)
+	{
+		auto localScale = middle::getComp<components::LocalScale>(gameState, id);
+		return localScale->scale;
+	}
+
+	void setGlobalScale(GameState* gameState, middle::Id id, const Vector3& targetScale)
+	{
+	}
+
+	void setLocalScale(GameState* gameState, middle::Id id, const Vector3& targetScale)
+	{
+		auto localScale = middle::getComp<components::LocalScale>(gameState, id);
+		localScale->scale = targetScale;
+		assert(localScale->scale.x >= 0);
+		assert(localScale->scale.y >= 0);
+		assert(localScale->scale.z >= 0);
+	}
+
 	int findHighestUsedIndex(GameState* gameState)
 	{
 		int highestI = 0;
@@ -130,6 +149,7 @@ namespace middle {
 			posData->pos.z = newPos.x;
 			posData->pos.y = newPos.y;
 			posData->pos.z = newPos.z;
+			assertPos(posData->pos);
 		}
 	}
 
@@ -140,6 +160,22 @@ namespace middle {
 		if (pos) {
 			pos->pos += displacement;
 		}
+	}
+
+	void setGlobalPosition(GameState* gameState, middle::Id id, const Vector3& targetPos)
+	{
+		middle::Id parentId = middle::getParent(gameState, id);
+		Vector3 localPos = projectGlobalCoordinateToLocalCoordinate(gameState, targetPos, parentId);
+		auto localPosComp = middle::getComp<components::LocalPosition>(gameState, id);
+		localPosComp->pos = localPos;
+		assertPos(localPos);
+	}
+
+	void setLocalPosition(GameState* gameState, middle::Id id, const Vector3& targetPos)
+	{
+		auto localPosComp = middle::getComp<components::LocalPosition>(gameState, id);
+		localPosComp->pos = targetPos;
+		assertPos(targetPos);
 	}
 
 	bool isGhostShape(int index)
@@ -167,11 +203,11 @@ namespace middle {
 	bool isEntityOfType(GameState* gameState, int index, const std::vector<int>& entity)
 	{
 		auto& shape = getShape(gameState, index);
-		if (shape.componentMap.size() != entity.size()) {
+		if (shape.componentTypes.size() != entity.size()) {
 			return false;
 		}
 		for (int componentTypeId : entity) {
-			if (shape.componentMap.find(componentTypeId) == shape.componentMap.end()) {
+			if (shape.componentOffsets[componentTypeId] == middle::UNASSIGNED) {
 				return false;
 			}
 		}
@@ -190,15 +226,15 @@ namespace middle {
 	bool isMouseIntersectingShape(GameState* gameState, int index)
 	{
 		auto& shape = gameState->shapes[index];
-		auto intersectable = getComponent<components::MouseIntersectable>(shape);
+		auto intersectable = getComponent<components::IntersectingTag>(shape);
 		if (intersectable) {
-			return intersectable->intersecting;
+			return true;
 		}
 		return false;
 	}
 
 	bool isShapeAlive(GameState* gameState, int index) {
-		return gameState->shapes[index].id == gameState->ids[index] && gameState->shapes[index].id.generation >= 0 && gameState->shapes[index].componentMap.size() > 0;
+		return gameState->shapes[index].id == gameState->ids[index] && gameState->shapes[index].id.generation >= 0 && gameState->shapes[index].componentTypes.size() > 0;
 	}
 
 	bool isValidId(GameState* gameState, middle::Id id)
@@ -206,7 +242,7 @@ namespace middle {
 		return id.index != middle::UNASSIGNED
 			&& gameState->ids[id.index] == id
 			&& id == gameState->shapes[id.index].id
-			&& gameState->shapes[id.index].componentMap.size() > 0
+			&& gameState->shapes[id.index].componentTypes.size() > 0
 			&& id.generation >= 0;
 	}
 
@@ -222,6 +258,15 @@ namespace middle {
 		}
 		Vector3 pos = Vector3Transform(localPos->pos, m);
 		return pos;
+	}
+
+	Vector3 getLocalPosition(GameState* gameState, middle::Id id)
+	{
+		auto localPos = getComp<components::LocalPosition>(gameState, id);
+		if (!localPos) {
+			assert(false);
+		}
+		return localPos->pos;
 	}
 
 	Shape& getShape(GameState* gameState, int index)
@@ -245,7 +290,7 @@ namespace middle {
 		for (middle::Id& childId : children) {
 			if (isShapeAlive(gameState, childId.index)) {
 				auto& childShape = gameState->shapes[childId.index];
-				if (childShape.componentMap.size() == 0) {
+				if (childShape.componentTypes.size() == 0) {
 					continue;
 				}
 				auto childLoop = getComponent<components::LoopSociety>(childShape);
@@ -274,23 +319,22 @@ namespace middle {
 			}
 		}
 
-		for (auto& pair : gameState->shapes[index].componentMap) {
-			Component c = pair.second;
-			int typeId = pair.first;
+		auto& shape = gameState->shapes[index];
+		for (int typeId : shape.componentTypes) {
 			// store changed component typeids to trigger cache updates
-			gameState->componentTypeIdSetWithStructuralChanges.insert(typeId);
-
-			componentListMap[typeId]->shrink(c.componentOffset);
+			middle::notifyStructuralChanges(gameState, shape.id, typeId);
+			int offset = middle::getCompOffset(shape, typeId);
+			componentListMap[typeId]->shrink(offset);
 		}
 
 		auto& delShape = gameState->shapes[index];
 		if (deleteComponentsOnly) {
-			delShape.componentMap.clear();
+			delShape.componentTypes.clear();
 		}
 
 		if (!deleteComponentsOnly) {
 			int prevGeneration = gameState->shapes[index].id.generation;
-			gameState->shapes[index] = Shape();
+			gameState->shapes[index] = createShape(gameState);
 			delShape.id.generation = prevGeneration + 1;
 		}
 	}
@@ -318,9 +362,8 @@ namespace middle {
 		gameState->ids[freeIndex] = shape.id;
 		gameState->shapes[freeIndex] = shape;
 		middle::Shape& newShape = gameState->shapes[freeIndex];
-		for (auto& pair : newShape.componentMap) {
-			int typeId = pair.first;
-			gameState->componentTypeIdSetWithStructuralChanges.insert(typeId);
+		for (int typeId : newShape.componentTypes) {
+			notifyStructuralChanges(gameState, shape.id, typeId);
 		}
 		return newShape;
 	}
@@ -332,9 +375,8 @@ namespace middle {
 		gameState->ids[index] = shape.id;
 		gameState->shapes[index] = shape;
 		middle::Shape& newShape = gameState->shapes[index];
-		for (auto& pair : newShape.componentMap) {
-			int typeId = pair.first;
-			gameState->componentTypeIdSetWithStructuralChanges.insert(typeId);
+		for (int typeId : shape.componentTypes) {
+			notifyStructuralChanges(gameState, shape.id, typeId);
 		}
 		return newShape;
 	}
@@ -346,28 +388,24 @@ namespace middle {
 		gameState->ids[freeIndex] = shape.id;
 		gameState->shapes[freeIndex] = shape;
 		middle::Shape& newShape = gameState->shapes[freeIndex];
-		for (auto& pair : newShape.componentMap) {
-			int typeId = pair.first;
-			gameState->componentTypeIdSetWithStructuralChanges.insert(typeId);
+		middle::Id id = newShape.id;
+		for(int typeId : shape.componentTypes){
+			notifyStructuralChanges(gameState, id, typeId);
 		}
 		return newShape;
 	}
 
 	Shape& insertShape(GameState* gameState, middle::Id& id)
 	{
-		Shape shape;
+		Shape shape = createShape(gameState);
 		shape.id = id;
 		gameState->ids[id.index] = id;
 		gameState->shapes[id.index] = shape;
-		for (auto& pair : shape.componentMap) {
-			int typeId = pair.first;
-			gameState->componentTypeIdSetWithStructuralChanges.insert(typeId);
-		}
 		return gameState->shapes[id.index];
 	}
 
 	Shape& addGhostShape(GameState* gameState) {
-		Shape shape;
+		Shape shape = createShape(gameState);
 		int index = findNextFreeGhostIndex(gameState);
 		shape.id.generation = gameState->shapes[index].id.generation + 1;
 		shape.id.index = index;
@@ -423,20 +461,18 @@ namespace middle {
 		else {
 			freeIndex = findFreeIndex(gameState);
 		}
-		Shape newShape;
+		Shape newShape = createShape(gameState);
 
 		// copy components to the new shape
-		for (auto& pair : ogShape.componentMap) {
-
-			int typeId = pair.first;
-			Component component = pair.second;
+		for(int typeId : ogShape.componentTypes){
+			int offset = getCompOffset(ogShape, typeId);
 
 			// grow component vector.. add new component for the copy
 			int copyOffset = componentListMap[typeId]->grow();
 
 			// get og serializable to get fields
 			Serializable* ogSerializable =
-				componentListMap[typeId]->getSerializable(component.componentOffset);
+				componentListMap[typeId]->getSerializable(offset);
 
 			// get fields
 			int ogSize = 0;
@@ -447,10 +483,7 @@ namespace middle {
 			auto copySerializable = componentListMap[typeId]->getSerializable(copyOffset);
 
 			// create component ref for the shape
-			Component copyComponent;
-			copyComponent.componentOffset = copyOffset;
-			newShape.componentMap[typeId] = copyComponent;
-
+			setCompOffset(newShape, typeId, copyOffset);
 
 			int copySize = 0;
 			copySerializable->getFields(copyFields, &copySize);
@@ -523,8 +556,6 @@ namespace middle {
 					assert(true, "not supported");
 				}
 			}
-
-
 		}
 
 		newShape = middle::registerShape(gameState, newShape);
@@ -665,7 +696,7 @@ namespace middle {
 			for (Id& childId : loop->loopMemberIds) {
 				if (isValidId(gameState, childId)) {
 					auto& child = middle::getShape(gameState, childId.index);
-					if (child.componentMap.find(typeId) != child.componentMap.end()) {
+					if (hasComp(shape, typeId)) {
 						result.push_back(childId);
 					}
 				}
@@ -681,7 +712,7 @@ namespace middle {
 			for (Id& childId : loop->loopMemberIds) {
 				if (isValidId(gameState, childId)) {
 					auto& child = middle::getShape(gameState, childId.index);
-					if (child.componentMap.find(typeId) != child.componentMap.end()) {
+					if (hasComp(shape, typeId)) {
 						result.push_back(childId);
 					}
 					getAllChildrenWithComp(gameState, childId, result, typeId);
@@ -699,7 +730,7 @@ namespace middle {
 		middle::getChildren(gameState, id, children);
 		for (middle::Id& childId : children) {
 			auto& childShape = middle::getShape(gameState, childId.index);
-			if (childShape.componentMap.find(typeId) != childShape.componentMap.end()) {
+			if (hasComp(childShape, typeId)) {
 				return childId;
 			}
 		}
@@ -721,7 +752,7 @@ namespace middle {
 	{
 		middle::Id id;
 		middle::loopInstances(gameState, [gameState, &id, &typeId](int i, middle::Shape& shape) {
-			if (shape.componentMap.find(typeId) != shape.componentMap.end()) {
+			if (hasComp(shape, typeId)) {
 				id = shape.id;
 				return false;
 			}
@@ -732,7 +763,7 @@ namespace middle {
 	void findShapesWithComp(GameState* gameState, std::vector<Id>& result, int typeId)
 	{
 		middle::loopInstances(gameState, [gameState, &result, &typeId](int i, middle::Shape& shape) {
-			if (shape.componentMap.find(typeId) != shape.componentMap.end()) {
+			if (hasComp(shape, typeId)) {
 				result.push_back(shape.id);
 			}
 			return true;
@@ -759,6 +790,7 @@ namespace middle {
 
 	void queueAction(GameState* gameState, std::shared_ptr<EditorActionContainer> container)
 	{
+		container->callerSystem = gameState->activeSystemName;
 		gameState->actionQueue.push(container);
 	}
 
@@ -821,12 +853,43 @@ namespace middle {
 		return result;
 	}
 
+	int getLoopIndex(GameState* gameState, middle::Id id)
+	{
+		middle::Id parentId = middle::getParent(gameState, id);
+		std::vector<middle::Id>children;
+		middle::getChildren(gameState, parentId, children);
+		for (int i = 0; i < children.size(); ++i) {
+			if (children[i] == id) {
+				return i;
+			}
+		}
+		return -1;
+	}
+
+	void assertPos(const Vector3& pos)
+	{
+		assert(!std::isnan(pos.x));
+		assert(!std::isnan(pos.y));
+		assert(!std::isnan(pos.z));
+	}
+
 	Vector3 projectGlobalCoordinateToLocalCoordinate(GameState* gameState, const Vector3& globalCoord, middle::Id parentId)
 	{
 		Matrix transformM = getTransformMatrix(gameState, parentId);
 		Matrix inverseM = MatrixInvert(transformM);
 		Vector3 localCoord = Vector3Transform(globalCoord, inverseM);
+		if (std::isnan(localCoord.x + localCoord.y + localCoord.z)) {
+			return {0,0,0};
+		}
 		return localCoord;
+	}
+
+	Vector3 projectGlobalScaleToLocalScale(GameState* gameState, middle::Id id, const Vector3& globalScale)
+	{
+		Vector3 currentScale = middle::getGlobalScale(gameState, id);
+		Vector3 scalarV = Vector3Divide(globalScale, currentScale);
+		Vector3 localScale = middle::getLocalScale(gameState, id);
+		return Vector3Multiply(localScale, scalarV);
 	}
 
 	void updateLocalCoordinateToProjectedGlobalCoordinate(GameState* gameState, middle::Id id, middle::Id oldParentId)
@@ -841,12 +904,100 @@ namespace middle {
 			Vector3 projLocalPos = middle::projectGlobalCoordinateToLocalCoordinate(gameState, 
 				globalPos, parentId);
 			localPos->pos = projLocalPos;
+			assertPos(projLocalPos);
 
 			Vector3 oldParentScale = getGlobalScale(gameState, oldParentId);
 			Vector3 newParentScale = getGlobalScale(gameState, parentId);
 			Vector3 ratio = oldParentScale / newParentScale;
 			localScale->scale *= ratio;
 		}
+	}
+
+
+
+	void updateGlobalTransforms(middle::GameState* gameState, middle::Id id, const Matrix& parentM, const Vector3& parentScale) {
+		auto& shape = middle::getShape(gameState, id.index);
+		auto scaleComp = middle::getComponent<components::LocalScale>(shape);
+		auto posComp = middle::getComponent<components::LocalPosition>(shape);
+		if (!scaleComp) {
+			middle::attachComponent<components::LocalScale>(gameState, shape.id);
+			return;
+		}
+		if (!posComp) {
+			auto pos = middle::attachComponent<components::LocalPosition>(gameState, shape.id);
+			return;
+		}
+		if (!middle::getComponent<components::GlobalTransform>(shape)) {
+			middle::attachComponent<components::GlobalTransform>(gameState, id);
+			return;
+		}
+		const Vector3& scale = scaleComp->scale;
+		const Vector3& pos = posComp->pos;
+		Matrix scaleM = MatrixScale(scale.x, scale.y, scale.z);
+		Matrix translateM = MatrixTranslate(pos.x, pos.y, pos.z);
+
+		Matrix m = parentM;
+		Matrix localM = MatrixMultiply(scaleM, translateM);
+		m = MatrixMultiply(localM, m);
+
+		auto globalT = middle::getComponent<components::GlobalTransform>(shape);
+		const Quaternion assumedRotation = { 0,0,0,0 };
+		globalT->pos = Vector3Transform(Vector3{ 0,0,0 }, m);
+		globalT->scale = scaleComp->scale * parentScale;
+		globalT->rotation = assumedRotation;
+
+		std::vector<middle::Id>children;
+		middle::getChildren(gameState, id, children);
+		for (middle::Id childId : children) {
+			updateGlobalTransforms(gameState, childId, m, globalT->scale);
+		}
+
+	}
+
+	void notifyStructuralChanges(middle::GameState* gameState, middle::Id id, middle::componentType componentType)
+	{
+		auto& changes = gameState->structuralChangesMap;
+		if (changes.find(componentType) == changes.end()) {
+			changes[componentType] = {};
+		}
+		changes[componentType].push_back(id);
+	}
+
+	bool hasComp(middle::Shape& shape, int typeId)
+	{
+		return shape.componentOffsets[typeId] != middle::UNASSIGNED;
+	}
+
+	middle::componentOffset getCompOffset(middle::Shape& shape, int typeId)
+	{
+		return shape.componentOffsets[typeId];
+	}
+
+	void setCompOffset(middle::Shape& shape, int typeId, int offset)
+	{
+		assert(!hasComp(shape, typeId));
+		shape.componentOffsets[typeId] = offset;
+		shape.componentTypes.push_back(typeId);
+	}
+
+	void removeComp(middle::Shape& shape, int typeId)
+	{
+		shape.componentOffsets[typeId] = middle::UNASSIGNED;
+		for (int i = 0; i < shape.componentTypes.size(); ++i) {
+			if (shape.componentTypes[i] == typeId) {
+				shape.componentTypes.erase(shape.componentTypes.begin() + i);
+				break;
+			}
+		}
+	}
+
+	Shape createShape(middle::GameState* gameState) {
+		Shape shape;
+		shape.componentOffsets.resize(globalTypeCounter);
+		for (int& i : shape.componentOffsets) {
+			i = middle::UNASSIGNED;
+		}
+		return shape;
 	}
 
 }

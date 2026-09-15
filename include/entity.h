@@ -29,23 +29,29 @@ namespace middle {
 	struct Id {
 		int index = UNASSIGNED;
 		int generation = 0;
-		bool operator==(const Id& other) {
+		bool operator==(const Id& other) const {
 			return other.generation == generation && other.index == index;
 		}
 
-		bool operator!=(const Id& other) {
+		bool operator!=(const Id& other) const {
 			return !(*this == other);
 		}
 	};
 
-	struct Component {
-		// offset where the shapes component is in component vector in middle_component_table (currently)
-		int componentOffset;
+	struct IdHash {
+		std::size_t operator()(const Id& id) const {
+			return std::hash<int>{}(id.index) ^
+				(std::hash<int>{}(id.generation) << 1);
+		}
 	};
+
+	typedef int componentOffset;
+	typedef int compoenntTypeId;
 
 	struct Shape {
 		Id id;
-		std::unordered_map<int, Component> componentMap;
+		std::vector<componentOffset>componentOffsets;
+		std::vector<compoenntTypeId>componentTypes;
 		std::set<int>affectingSystems;
 	};
 

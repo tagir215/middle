@@ -184,7 +184,7 @@ class PuzzleTextSystem : public middle::MiddleGameplaySystem {
 					cursorPos.z -= textSize.y;
 				}
 
-				Vector3 targetPos = cursorPos - Vector3{ text->offsetX, 0, 0 };
+				Vector3 targetPos = cursorPos - Vector3{ text->offsetX ,0,text->offsetZ};
 
 				middle::moveShape(gameState, id.index, targetPos - middle::getGlobalPosition(gameState, id.index));
 
