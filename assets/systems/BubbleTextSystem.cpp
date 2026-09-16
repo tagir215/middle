@@ -8,6 +8,7 @@
 #include "NewBubbleTag.h"
 #include "alg_file_utils.h"
 #include "bubble_paths.h"
+#include "config.h"
 #include "NeedsUpdateTag.h"
 
 class BubbleTextSystem : public middle::MiddleGameplaySystem {
@@ -166,7 +167,7 @@ class BubbleTextSystem : public middle::MiddleGameplaySystem {
 			auto textIt = newTextBubbleCache->begin<components::BubbleTextComponent>();
 			for (middle::Id id : newTextBubbleCache->relevantIdVector) {
 				auto text = *textIt;
-				std::string fileText = bubequ::loadText(bubblePaths::WORD_PROBLEMS_FOLDER + "/" + text->textName + ".txt");
+				std::string fileText = bubequ::loadText(std::string(bubblePaths::WORD_PROBLEMS_FOLDER) + "/" + text->textName + ".txt");
 				text->text = fileText;
 				middle::attachComponent<components::BubbleTextSizeChangedTag>(gameState, id);
 			}

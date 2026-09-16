@@ -22,6 +22,7 @@
 #include "bubequ_mapping.h"
 #include "IntersectingTag.h"
 #include "bubble_actions.h"
+#include "config.h"
 
 
 class WriterUnBlockingSystem : public middle::MiddleGameplaySystem {
@@ -51,7 +52,7 @@ class WriterUnBlockingSystem : public middle::MiddleGameplaySystem {
 				gameState->inputBlockers.insert(middle::InputBlockers::MOUSE_BLOCK);
 			}
 			if (ImGui::Button("Save Text")) {
-				std::string path = bubblePaths::WORD_PROBLEMS_FOLDER + "/" + title + ".txt";
+				std::string path = std::string(bubblePaths::WORD_PROBLEMS_FOLDER) + "/" + title + ".txt";
 				bubequ::saveTextFile(path, textProblem);
 			}
 			ImGui::End();

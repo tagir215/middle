@@ -8,6 +8,7 @@
 #include <cassert>
 #include "sha256.h"
 #include "bubequ_mapping.h"
+#include "config.h"
 
 namespace bubequ {
 
@@ -271,7 +272,7 @@ namespace bubequ {
 
 	void saveBubequ(const std::string& equname, const std::string& bubequ)
 	{
-		std::string path = bubblePaths::EQUATION_FOLDER + "/" + equname + ".bubequ";
+		std::string path = std::string(bubblePaths::EQUATION_FOLDER) + "/" + equname + ".bubequ";
 		std::ofstream outFile(path);
 		if (!outFile.is_open()) {
 			std::cerr << "failed to open to write\n";
@@ -286,7 +287,7 @@ namespace bubequ {
 	void saveBubequHead(const std::string& headName, const std::string& headHash, const std::unordered_map<std::string, std::string>& map, const BubTraversePath& traversePath, const Vector3& position, float localScale)
 	{
 		// write head ref
-		std::string path = bubblePaths::EQUATION_FOLDER + "/" + headName + ".bubequ";
+		std::string path = std::string(bubblePaths::EQUATION_FOLDER) + "/" + headName + ".bubequ";
 
 		bool fileExists = std::filesystem::exists(path);
 
@@ -336,7 +337,7 @@ namespace bubequ {
 		for (auto& pair : map) {
 			const std::string hash = pair.first;
 			const std::string content = pair.second;
-			std::string bubPath = bubblePaths::BUBBLE_TREE_FOLDER + "/" + hash;
+			std::string bubPath = std::string(bubblePaths::BUBBLE_TREE_FOLDER) + "/" + hash;
 			std::ofstream bubOutFile(bubPath);
 			if (!bubOutFile.is_open()) {
 				std::cerr << "failed to open to write\n";
@@ -348,7 +349,7 @@ namespace bubequ {
 	}
 
 	std::shared_ptr<bubequ::Scope> loadBub(const std::string& bubHash, const BubTraversePath& traversePath, int loadDepth, int pathStepIndex, int depthIndex) {
-		const std::string path = bubblePaths::BUBBLE_TREE_FOLDER + "/" + bubHash;
+		const std::string path = std::string(bubblePaths::BUBBLE_TREE_FOLDER) + "/" + bubHash;
 		std::ifstream inputFile(path);
 		if (!inputFile.is_open()) {
 			throw std::runtime_error("Failed to open file to open");
@@ -423,7 +424,7 @@ namespace bubequ {
 	const int elementSize = 5;
 
 	std::vector<std::string>loadBubequLines(const std::string& headName) {
-		const std::string path = bubblePaths::EQUATION_FOLDER + "/" + headName + ".bubequ";
+		const std::string path = std::string(bubblePaths::EQUATION_FOLDER) + "/" + headName + ".bubequ";
 		std::ifstream inputFile(path);
 		if (!inputFile.is_open()) {
 			throw std::runtime_error("Failed to open file to open");
@@ -459,7 +460,7 @@ namespace bubequ {
 		for (int i = 0; i < elementSize; ++i) {
 			lines.pop_back();
 		}
-		const std::string path = bubblePaths::EQUATION_FOLDER + "/" + headName + ".bubequ";
+		const std::string path = std::string(bubblePaths::EQUATION_FOLDER) + "/" + headName + ".bubequ";
 		saveLines(path, lines);
 	}
 
@@ -542,7 +543,7 @@ namespace bubequ {
 
 	void saveBubble(middle::GameState* gameState, middle::Id id, const std::string& name)
 	{
-		std::string path = bubblePaths::EQUATION_FOLDER + "/" + name + ".bubequ";
+		std::string path = std::string(bubblePaths::EQUATION_FOLDER) + "/" + name + ".bubequ";
 		bool fileExists = std::filesystem::exists(path);
 		auto& traversePath = gameState->bubbleAlgebraState.traversePath;
 		Vector3 localPos = middle::getLocalPosition(gameState, id);

@@ -13,6 +13,7 @@
 #include "MouseIntersectable.h"
 #include "engine_system_names.h"
 #include "middle_paths.h"
+#include "config.h"
 
 class EditorSystem : public middle::MiddleGameplaySystem {
 public:
@@ -75,7 +76,7 @@ public:
 			reset(gameState);
 			importEngineSystemReferences(gameState);
 			if (gameState->sceneNames.size() > 0) {
-				loadScene(gameState, middlePaths::SCENES_FOLDER, gameState->activeSceneName, false);
+				loadScene(gameState, std::string(middlePaths::SCENES_FOLDER), gameState->activeSceneName, false);
 			}
 			gameState->reload = false;
 		}
