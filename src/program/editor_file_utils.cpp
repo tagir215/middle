@@ -11,6 +11,7 @@
 #include "LoopSociety.h"
 #include "ReferenceEntity.h"
 #include <stack>
+#include "middle_paths.h"
 
 namespace middle {
 

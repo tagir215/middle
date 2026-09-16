@@ -9,6 +9,7 @@
 #include "engine_system_names.h"
 #include "bubble_paths.h"
 #include "profiler_helpers.h"
+#include "middle_paths.h"
 
 using namespace middle;
 
@@ -216,7 +217,7 @@ extern "C" {
 		// TODO HARDCODED
 		if (gameState->reset) {
 			resetScene(gameState);
-			loadScene(gameState, bubblePaths::SCENES_FOLDER, gameState->activeSceneName, false);
+			loadScene(gameState, middlePaths::SCENES_FOLDER, gameState->activeSceneName, false);
 			gameState->reset = false;
 		}
 
