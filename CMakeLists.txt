@@ -33,7 +33,7 @@ set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
 
 
 # globbing
-file(GLOB SOURCES "${CMAKE_SOURCE_DIR}/src/program/*.cpp")
+file(GLOB SOURCES "${CMAKE_SOURCE_DIR}/game/src/*.cpp")
 file(GLOB HEADERS "${CMAKE_SOURCE_DIR}/include/*.h")
 file(GLOB SYSTEM_SOURCES "${SYSTEMS_DIR}/*.cpp")
 file(GLOB COMPONENT_HEADERS "${MIDDLE_COMPONENTS_DIR}/*.h")
@@ -63,7 +63,8 @@ add_executable(middle
     middle/middleSystems/InputSystem.cpp
     middle/middleSystems/FileDropSystem.cpp
     middle/src/assets_loading.cpp
-    src/program/game_state.cpp
+    ## todo
+    game/src/game_state.cpp
 )
 target_include_directories(middle PUBLIC ${CMAKE_SOURCE_DIR}/include)
 target_include_directories(middle PUBLIC ${MIDDLE_COMPONENTS_DIR})
