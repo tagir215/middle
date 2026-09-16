@@ -18,7 +18,7 @@ file(GLOB HEADERS "${CMAKE_SOURCE_DIR}/include/*.h")
 file(GLOB SYSTEMS_SOURCES "${CMAKE_SOURCE_DIR}/assets/systems/*.cpp")
 file(GLOB COMPONENT_HEADERS "${CMAKE_SOURCE_DIR}/assets/components/*.h")
 file(GLOB COMPONENT_SOURCES "${CMAKE_SOURCE_DIR}/assets/components/*.cpp")
-file(GLOB ENTITIES_HEADERS "${CMAKE_SOURCE_DIR}/src/middle_entities/*.h")
+file(GLOB ENTITIES_HEADERS "${CMAKE_SOURCE_DIR}/middle/middleEntities/*.h")
 
 # library game, hot reloadable I guess
 add_library(game SHARED 
@@ -31,8 +31,7 @@ add_library(game SHARED
 )
 target_include_directories(game PUBLIC ${CMAKE_SOURCE_DIR}/include)
 target_include_directories(game PUBLIC ${CMAKE_SOURCE_DIR}/assets/components)
-target_include_directories(game PUBLIC ${CMAKE_SOURCE_DIR}/src/middle_components)
-target_include_directories(game PUBLIC ${CMAKE_SOURCE_DIR}/src/middle_entities)
+target_include_directories(game PUBLIC ${CMAKE_SOURCE_DIR}/middle/middleEntities)
 target_include_directories(game PUBLIC ${CMAKE_SOURCE_DIR}/lib/raylib-5.5_win64_msvc16/include)
 
 # middle executable?, not hot reloadable, though not sure
@@ -48,7 +47,6 @@ add_executable(middle
 )
 target_include_directories(middle PUBLIC ${CMAKE_SOURCE_DIR}/include)
 target_include_directories(middle PUBLIC ${CMAKE_SOURCE_DIR}/assets/components)
-target_include_directories(middle PUBLIC ${CMAKE_SOURCE_DIR}/src/middle_components)
 
 add_subdirectory(${CMAKE_SOURCE_DIR}/lib/descart_physics)
 add_subdirectory(${CMAKE_SOURCE_DIR}/lib/rlImGui-main)
@@ -74,3 +72,6 @@ add_custom_command(TARGET middle POST_BUILD
     $<TARGET_FILE_DIR:middle>
 )
 
+configure_file(config.h.in "${CMAKE_SOURCE_DIR}/config.h")
+target_include_directories(middle PRIVATE "${CMAKE_SOURCE_DIR}")
+target_include_directories(game PRIVATE "${CMAKE_SOURCE_DIR}")
