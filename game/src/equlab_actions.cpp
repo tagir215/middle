@@ -20,6 +20,7 @@
 #include "bubble_constants.h"
 #include "NeedsUpdateTag.h"
 #include "Button.h"
+#include "BubbleTextSizeChangedTag.h"
 
 namespace equlab {
 
@@ -609,6 +610,7 @@ namespace equlab {
 		prevText = comp->text;
 		comp->textName = name;
 		comp->text = text;
+		middle::attachComponent<components::BubbleTextSizeChangedTag>(gameState, id);
 	}
 
 	void LinkTextToTextBubble::undo(middle::GameState* gameState)
@@ -616,6 +618,7 @@ namespace equlab {
 		auto comp = middle::getComp<components::BubbleTextComponent>(gameState, id);
 		comp->textName = prevName;
 		comp->text = prevText;
+		middle::attachComponent<components::BubbleTextSizeChangedTag>(gameState, id);
 	}
 
 

@@ -298,7 +298,7 @@ namespace RendererSystem {
 			}
 
 			if (item.type == middle::RenderItemType::TEXT) {
-				const int spacing = 1;
+				const int spacing = 0;
 				float yDistance = std::abs(gameState->activeCamera.position.y - item.transform.translation.y);
 				//float distFactor = 1 / Vector3Distance(gameState->activeCamera.position, item.transform.translation);
 				float distFactor = 1 / yDistance;
@@ -322,6 +322,7 @@ namespace RendererSystem {
 		}
 		void update(middle::GameState* gameState) override {
 			mstart();
+
 
 			BeginDrawing();
 
@@ -347,6 +348,8 @@ namespace RendererSystem {
 				rlEnableDepthTest();
 				EndMode3D();
 			}
+
+			SetTextLineSpacing(0);
 
 			drawText(gameState, true);
 

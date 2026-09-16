@@ -10,6 +10,8 @@
 #include "bubble_paths.h"
 #include "config.h"
 #include "NeedsUpdateTag.h"
+#include "GlobalTransform.h"
+
 
 class BubbleTextSystem : public middle::MiddleGameplaySystem {
 	components::CompCache* cache;
@@ -20,6 +22,8 @@ class BubbleTextSystem : public middle::MiddleGameplaySystem {
 		cache->addType<components::BubbleTextComponent>();
 		cache->addType<components::Rectangle>();
 		cache->addType<components::BubbleTextSizeChangedTag>();
+		cache->addType<components::GlobalTransform>();
+		cache->addType<components::NewBubbleTag>(components::NOTINTERESTED);
 
 		newTextBubbleCache = middle::newCompCache(gameState, systemName);
 		newTextBubbleCache->addType<components::NewBubbleTag>();
@@ -111,7 +115,8 @@ class BubbleTextSystem : public middle::MiddleGameplaySystem {
 	}
 
 
-	Vector2 MeasureTextSize(Font font, const char* text, float fontSize, float spacing)
+	// Measure string size for Font
+	Vector2 MeasureTextEx(Font font, const char* text, float fontSize, float spacing = 0)
 	{
 		Vector2 textSize = { 0 };
 
@@ -140,11 +145,20 @@ class BubbleTextSystem : public middle::MiddleGameplaySystem {
 
 			i += codepointByteCount;
 
-			if (font.glyphs[index].advanceX > 0) {
-				textWidth += font.glyphs[index].advanceX;
+			if (letter != '\n')
+			{
+				if (font.glyphs[index].advanceX > 0) textWidth += font.glyphs[index].advanceX;
+				else textWidth += (font.recs[index].width + font.glyphs[index].offsetX);
 			}
-			else {
-				textWidth += (font.recs[index].width + font.glyphs[index].offsetX);
+			else
+			{
+				if (tempTextWidth < textWidth) tempTextWidth = textWidth;
+				byteCounter = 0;
+				textWidth = 0;
+
+				// NOTE: Line spacing is a global variable, use SetTextLineSpacing() to setup
+				float textLineSpacing = 0;
+				textHeight += (fontSize + textLineSpacing);
 			}
 
 			if (tempByteCounter < byteCounter) tempByteCounter = byteCounter;
@@ -157,7 +171,6 @@ class BubbleTextSystem : public middle::MiddleGameplaySystem {
 
 		return textSize;
 	}
-
 
 
 	void update(middle::GameState* gameState) override {
@@ -179,13 +192,20 @@ class BubbleTextSystem : public middle::MiddleGameplaySystem {
 		for (middle::Id id : cache->relevantIdVector) {
 			auto text = *textIt;
 			auto rect = *rectIt;
-			const float spacing = 1;
-			Vector2 textSize = MeasureTextSize(gameState->globalFont, text->text.c_str(), 1, 1);
-			float ratioX = textSize.x;
-			if (textSize.x > 0) {
-				ratioX = rect->width / textSize.x;
+			// make sure Renderer is measuring text with linespacing 0 and spacing 0... 
+			Vector2 textSize = MeasureTextEx(gameState->globalFont, text->text.c_str(), 1);
+
+			float cameraDist = std::abs(gameState->activeCamera.position.y);
+			float textSizeX = textSize.x;
+
+			float ratioX = textSizeX;
+
+
+			if (textSizeX > 0) {
+				ratioX = rect->width / textSizeX;
 			}
 			float ratio = ratioX;
+			//ratio = 20;
 			text->fontSize = ratio;
 			middle::queueComponentDeletion<components::BubbleTextSizeChangedTag>(gameState, id);
 		}
