@@ -3,11 +3,11 @@ project(middle VERSION 1 LANGUAGES CXX)
 set(CMAKE_CXX_STANDARD 17)
 
 #middle paths
-set(MIDDLE_COMPONENTS_DIR "${CMAKE_SOURCE_DIR}/assets/components")
+set(MIDDLE_COMPONENTS_DIR "${CMAKE_SOURCE_DIR}/game/components")
 set(COMPONENT_TEMPLATE_HEADER "${CMAKE_SOURCE_DIR}/middle/editorData/component_template.h")
 set(COMPONENT_TEMPLATE_SOURCE "${CMAKE_SOURCE_DIR}/middle/editorData/component_template.cpp")
 set(SYSTEM_TEMPLATE_SOURCE "${CMAKE_SOURCE_DIR}/middle/editorData/system_template.cpp")
-set(SYSTEMS_DIR "${CMAKE_SOURCE_DIR}/assets/systems")
+set(SYSTEMS_DIR "${CMAKE_SOURCE_DIR}/game/systems")
 set(MIDDLE_SCENE_FILE_EXTENSION ".midsc")
 set(ASSETS_DIR "${CMAKE_SOURCE_DIR}/assets")
 set(SCENES_DIR "${ASSETS_DIR}/scenes")
@@ -35,7 +35,7 @@ set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
 # globbing
 file(GLOB SOURCES "${CMAKE_SOURCE_DIR}/src/program/*.cpp")
 file(GLOB HEADERS "${CMAKE_SOURCE_DIR}/include/*.h")
-file(GLOB SYSTEMS_SOURCES "${CMAKE_SOURCE_DIR}/assets/systems/*.cpp")
+file(GLOB SYSTEM_SOURCES "${SYSTEMS_DIR}/*.cpp")
 file(GLOB COMPONENT_HEADERS "${MIDDLE_COMPONENTS_DIR}/*.h")
 file(GLOB COMPONENT_SOURCES "${MIDDLE_COMPONENTS_DIR}/*.cpp")
 file(GLOB ENTITIES_HEADERS "${CMAKE_SOURCE_DIR}/middle/middleEntities/*.h")
@@ -44,13 +44,13 @@ file(GLOB ENTITIES_HEADERS "${CMAKE_SOURCE_DIR}/middle/middleEntities/*.h")
 add_library(game SHARED 
     ${SOURCES} 
     ${HEADERS} 
-    ${SYSTEMS_SOURCES} 
+    ${SYSTEM_SOURCES} 
     ${COMPONENT_HEADERS} 
     ${COMPONENT_SOURCES} 
     ${ENTITIES_HEADERS}
 )
 target_include_directories(game PUBLIC ${CMAKE_SOURCE_DIR}/include)
-target_include_directories(game PUBLIC ${CMAKE_SOURCE_DIR}/assets/components)
+target_include_directories(game PUBLIC ${MIDDLE_COMPONENTS_DIR})
 target_include_directories(game PUBLIC ${CMAKE_SOURCE_DIR}/middle/middleEntities)
 target_include_directories(game PUBLIC ${CMAKE_SOURCE_DIR}/lib/raylib-5.5_win64_msvc16/include)
 
@@ -66,7 +66,7 @@ add_executable(middle
     src/program/game_state.cpp
 )
 target_include_directories(middle PUBLIC ${CMAKE_SOURCE_DIR}/include)
-target_include_directories(middle PUBLIC ${CMAKE_SOURCE_DIR}/assets/components)
+target_include_directories(middle PUBLIC ${MIDDLE_COMPONENTS_DIR})
 
 add_subdirectory(${CMAKE_SOURCE_DIR}/lib/descart_physics)
 add_subdirectory(${CMAKE_SOURCE_DIR}/lib/rlImGui-main)

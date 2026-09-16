@@ -1,11 +1,11 @@
 #pragma once
 
 namespace middlePaths{
-	constexpr const char* COMPONENT_FOLDER = "C:/Users/tagir/middle/assets/components";
+	constexpr const char* COMPONENT_FOLDER = "C:/Users/tagir/middle/game/components";
 	constexpr const char* COMPONENT_TEMPLATE_HEADER = "C:/Users/tagir/middle/middle/editorData/component_template.h";
 	constexpr const char* COMPONENT_TEMPLATE_SOURCE = "C:/Users/tagir/middle/middle/editorData/component_template.cpp";
 	constexpr const char* SYSTEM_TEMPLATE = "C:/Users/tagir/middle/middle/editorData/system_template.cpp";
-	constexpr const char* SYSTEMS_FOLDER = "C:/Users/tagir/middle/assets/systems";
+	constexpr const char* SYSTEMS_FOLDER = "C:/Users/tagir/middle/game/systems";
 
 	constexpr const char* ASSETS = "C:/Users/tagir/middle/assets";
 	constexpr const char* SCENES_FOLDER = "C:/Users/tagir/middle/assets/scenes";
