@@ -2,6 +2,26 @@ cmake_minimum_required(VERSION 3.31.4)
 project(middle VERSION 1 LANGUAGES CXX)
 set(CMAKE_CXX_STANDARD 17)
 
+#middle paths
+set(MIDDLE_COMPONENTS_DIR "${CMAKE_SOURCE_DIR}/assets/components")
+set(COMPONENT_TEMPLATE_HEADER "${CMAKE_SOURCE_DIR}/middle/editorData/component_template.h")
+set(COMPONENT_TEMPLATE_SOURCE "${CMAKE_SOURCE_DIR}/middle/editorData/component_template.cpp")
+set(SYSTEM_TEMPLATE_SOURCE "${CMAKE_SOURCE_DIR}/middle/editorData/system_template.cpp")
+set(SYSTEMS_DIR "${CMAKE_SOURCE_DIR}/assets/systems")
+set(MIDDLE_SCENE_FILE_EXTENSION ".midsc")
+set(ASSETS_DIR "${CMAKE_SOURCE_DIR}/assets")
+set(SCENES_DIR "${ASSETS_DIR}/scenes")
+set(TEXTURES_DIR "${ASSETS_DIR}/textures")
+set(SHADERS_DIR "${ASSETS_DIR}/shaders")
+set(TEMP_DIR "${CMAKE_SOURCE_DIR}/middle/temp")
+set(EDITOR_STATE_FILE "${CMAKE_SOURCE_DIR}/middle/editorData/editor_state${MIDDLE_SCENE_FILE_EXTENSION}")
+
+#bubble paths
+set(EQUATION_DIR "${ASSETS_DIR}/equations")
+set(BUBBLE_TREE_DIR "${ASSETS_DIR}/bubbleTree")
+set(WORD_PROBLEMS_DIR "${ASSETS_DIR}/wordProblems")
+
+
 add_library(raylib STATIC IMPORTED)
 set_target_properties(raylib PROPERTIES
     IMPORTED_LOCATION "${CMAKE_SOURCE_DIR}/lib/raylib-5.5_win64_msvc16/lib/raylib.lib"
@@ -16,9 +36,9 @@ set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
 file(GLOB SOURCES "${CMAKE_SOURCE_DIR}/src/program/*.cpp")
 file(GLOB HEADERS "${CMAKE_SOURCE_DIR}/include/*.h")
 file(GLOB SYSTEMS_SOURCES "${CMAKE_SOURCE_DIR}/assets/systems/*.cpp")
-file(GLOB COMPONENT_HEADERS "${CMAKE_SOURCE_DIR}/assets/components/*.h")
-file(GLOB COMPONENT_SOURCES "${CMAKE_SOURCE_DIR}/assets/components/*.cpp")
-file(GLOB ENTITIES_HEADERS "${CMAKE_SOURCE_DIR}/src/middle_entities/*.h")
+file(GLOB COMPONENT_HEADERS "${MIDDLE_COMPONENTS_DIR}/*.h")
+file(GLOB COMPONENT_SOURCES "${MIDDLE_COMPONENTS_DIR}/*.cpp")
+file(GLOB ENTITIES_HEADERS "${CMAKE_SOURCE_DIR}/middle/middleEntities/*.h")
 
 # library game, hot reloadable I guess
 add_library(game SHARED 
@@ -31,24 +51,22 @@ add_library(game SHARED
 )
 target_include_directories(game PUBLIC ${CMAKE_SOURCE_DIR}/include)
 target_include_directories(game PUBLIC ${CMAKE_SOURCE_DIR}/assets/components)
-target_include_directories(game PUBLIC ${CMAKE_SOURCE_DIR}/src/middle_components)
-target_include_directories(game PUBLIC ${CMAKE_SOURCE_DIR}/src/middle_entities)
+target_include_directories(game PUBLIC ${CMAKE_SOURCE_DIR}/middle/middleEntities)
 target_include_directories(game PUBLIC ${CMAKE_SOURCE_DIR}/lib/raylib-5.5_win64_msvc16/include)
 
 # middle executable?, not hot reloadable, though not sure
 add_executable(middle 
-    src/main.cpp 
-    src/win32_platform.cpp 
-    src/middle_imgui.cpp 
-    src/Renderer.cpp
-    src/InputSystem.cpp
-    src/FileDropSystem.cpp
-    src/assets_loading.cpp
+    middle/src/main.cpp 
+    middle/src/win32_platform.cpp 
+    middle/src/middle_imgui.cpp 
+    middle/middleSystems/Renderer.cpp
+    middle/middleSystems/InputSystem.cpp
+    middle/middleSystems/FileDropSystem.cpp
+    middle/src/assets_loading.cpp
     src/program/game_state.cpp
 )
 target_include_directories(middle PUBLIC ${CMAKE_SOURCE_DIR}/include)
 target_include_directories(middle PUBLIC ${CMAKE_SOURCE_DIR}/assets/components)
-target_include_directories(middle PUBLIC ${CMAKE_SOURCE_DIR}/src/middle_components)
 
 add_subdirectory(${CMAKE_SOURCE_DIR}/lib/descart_physics)
 add_subdirectory(${CMAKE_SOURCE_DIR}/lib/rlImGui-main)
@@ -74,3 +92,6 @@ add_custom_command(TARGET middle POST_BUILD
     $<TARGET_FILE_DIR:middle>
 )
 
+configure_file(config.h.in "${CMAKE_SOURCE_DIR}/config.h")
+target_include_directories(middle PRIVATE "${CMAKE_SOURCE_DIR}")
+target_include_directories(game PRIVATE "${CMAKE_SOURCE_DIR}")

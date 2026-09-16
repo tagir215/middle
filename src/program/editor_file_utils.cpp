@@ -11,6 +11,8 @@
 #include "LoopSociety.h"
 #include "ReferenceEntity.h"
 #include <stack>
+#include "config.h"
+#include "middle_paths.h"
 
 namespace middle {
 
@@ -251,14 +253,14 @@ namespace middle {
 
 	void saveTempShape(GameState* gameState, Id& idToSave)
 	{
-		std::string folder = "../src/editor_data/temp/";
+		std::string folder = std::string(middlePaths::TEMP_FOLDER) + "/";
 		std::string name = "s" + std::to_string(idToSave.index) + "_" + std::to_string(idToSave.generation);
 		saveShape(gameState, idToSave, folder, name);
 	}
 
 	middle::Id loadTempShape(GameState* gameState, Id& idToLoad)
 	{
-		std::string folder = "../src/editor_data/temp/";
+		std::string folder = std::string(middlePaths::TEMP_FOLDER) + "/";
 		std::string name = "s" + std::to_string(idToLoad.index) + "_" + std::to_string(idToLoad.generation);
 		return loadShape(gameState, folder, name, false);
 	}
@@ -316,17 +318,10 @@ namespace middle {
 		std::vector<std::string>& sceneNames = gameState->sceneNames;
 		sceneNames.clear();
 
-		std::string folder = "../assets/scenes/";
+		std::string folder = std::string(middlePaths::SCENES_FOLDER) + "/";
 		for (const auto& entry : fs::directory_iterator(folder)) {
-			if (entry.path().extension() == ".midsc") {
+			if (entry.path().extension() == std::string(middlePaths::MIDSC_FILE_EXTENSION)) {
 				sceneNames.push_back(entry.path().stem().string());
-			}
-		}
-		std::vector<std::string>& shapeNames = gameState->shapeNames;
-		std::string folder2 = "../assets/shapes/";
-		for (const auto& entry : fs::directory_iterator(folder2)) {
-			if (entry.path().extension() == ".midsc") {
-				shapeNames.push_back(entry.path().stem().string());
 			}
 		}
 	}
@@ -373,7 +368,7 @@ namespace middle {
 	}
 
 	void saveScene(GameState* gameState, const std::string& sceneName) {
-		std::string filename = "../assets/scenes/" + sceneName + ".midsc";
+		std::string filename = std::string(middlePaths::SCENES_FOLDER) + "/" + sceneName + middlePaths::MIDSC_FILE_EXTENSION;
 		std::ofstream outFile(filename);
 		if (!outFile.is_open()) {
 			std::cerr << "failed to open to write\n";
@@ -406,7 +401,7 @@ namespace middle {
 	void saveShape(GameState* gameState, Id& idToSave, const std::string& folder, const std::string& shapeName)
 	{
 		auto& shapeToSave = getShape(gameState, idToSave.index);
-		std::string path = folder + shapeName + ".midsc";
+		std::string path = folder + shapeName + middlePaths::MIDSC_FILE_EXTENSION;
 		std::ofstream outFile(path);
 		if (!outFile.is_open()) {
 			std::cerr << "failed to open to write\n";
@@ -443,7 +438,7 @@ namespace middle {
 
 	void saveEditorState(GameState* gameState)
 	{
-		std::string filename = "../src/editor_data/editor_state.midsc";
+		std::string filename = middlePaths::EDITOR_STATE;
 		std::ofstream outFile(filename);
 		if (!outFile.is_open()) {
 			std::cerr << "failed to open to write\n";
@@ -693,7 +688,7 @@ namespace middle {
 	}
 
 	void loadEditorState(GameState* gameState) {
-		std::string filename = "../src/editor_data/editor_state.midsc";
+		std::string filename = middlePaths::EDITOR_STATE;
 
 		std::ifstream inputFile(filename);
 		if (!inputFile.is_open()) {
@@ -781,23 +776,20 @@ namespace middle {
 
 	void newSystemFile(GameState* gameState, const std::string& systemName)
 	{
-		const std::string templateFilename = "../src/editor_data/system_template.cpp";
-		const std::string filename = "../assets/systems/" + systemName + ".cpp";
+		const std::string filename = std::string(middlePaths::SYSTEMS_FOLDER) + "/" + systemName + ".cpp";
 		const std::string placeholder = "/*systemName*/";
 
-		generateFileFromTemplate(filename, templateFilename, systemName, placeholder);
+		generateFileFromTemplate(filename, std::string(middlePaths::SYSTEM_TEMPLATE), systemName, placeholder);
 	}
 
 	void newComponentFile(GameState* gameState, const std::string& componentName)
 	{
-		const std::string templateFilenameHeader = "../src/editor_data/component_template.h";
-		const std::string templateFilenameSource = "../src/editor_data/component_template.cpp";
-		const std::string filenameHeader = "../assets/components/" + componentName + ".h";
-		const std::string filenameSource = "../assets/components/" + componentName + ".cpp";
+		const std::string filenameHeader = std::string(middlePaths::COMPONENT_FOLDER) + "/" + componentName + ".h";
+		const std::string filenameSource = std::string(middlePaths::COMPONENT_FOLDER) + "/" + componentName + ".cpp";
 		const std::string placeholder = "/*componentName*/";
 
-		generateFileFromTemplate(filenameHeader, templateFilenameHeader, componentName, placeholder);
-		generateFileFromTemplate(filenameSource, templateFilenameSource, componentName, placeholder);
+		generateFileFromTemplate(filenameHeader, std::string(middlePaths::COMPONENT_TEMPLATE_HEADER), componentName, placeholder);
+		generateFileFromTemplate(filenameSource, std::string(middlePaths::COMPONENT_TEMPLATE_SOURCE), componentName, placeholder);
 	}
 
 

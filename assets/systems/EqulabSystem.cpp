@@ -20,6 +20,7 @@
 #include "bubequ_mapping.h"
 #include "BubbleGateComponent.h"
 #include "NonPhysicalBubbleTag.h"
+#include "config.h"
 
 class EqulabSystem : public middle::MiddleGameplaySystem {
 public:
@@ -135,10 +136,10 @@ public:
 
 
 			ImGui::Begin("bubequ list");
-			std::vector<std::string>filenames = bubequ::getFilenames(bubblePaths::EQUATION_FOLDER);
+			std::vector<std::string>filenames = bubequ::getFilenames(std::string(bubblePaths::EQUATION_FOLDER));
 			for (auto& name : filenames) {
 				if (ImGui::Button(name.c_str())) {
-					const std::string path = bubblePaths::EQUATION_FOLDER + "/" + name + ".bubequ";
+					const std::string path = std::string(bubblePaths::EQUATION_FOLDER) + "/" + name + ".bubequ";
 					Vector3 camXZPos = gameState->activeCamera.position;
 					camXZPos.y = 0;
 					//auto bubequ = bubequ::loadBubequ(path);

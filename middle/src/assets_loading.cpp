@@ -3,6 +3,7 @@
 #include "bubble_paths.h"
 #include <iostream>
 #include "raylib.h"
+#include "config.h"
 
 namespace bubbleAssets {
 
@@ -29,7 +30,7 @@ namespace bubbleAssets {
 		// load textures
 		std::vector<std::string>texturePaths;
 		std::vector<std::string>filenames;
-		const std::string textureFolderPath = bubblePaths::TEXTURES_FOLDER;
+		const std::string textureFolderPath = std::string(middlePaths::TEXTURES_FOLDER);
 		getPathsAndNames(textureFolderPath, texturePaths, filenames);
 
 		for (int i = 0; i<texturePaths.size(); ++i){
@@ -44,7 +45,7 @@ namespace bubbleAssets {
 		// load shaders
 		std::vector<std::string> shaderPaths;
 		std::vector<std::string> shaderNames;
-		const std::string shaderFolderPath = bubblePaths::SHADERS_FOLDER;
+		const std::string shaderFolderPath = std::string(middlePaths::SHADERS_FOLDER);
 		getPathsAndNames(shaderFolderPath, shaderPaths, shaderNames);
 
 		for (int i = 0; i < shaderPaths.size(); ++i) {

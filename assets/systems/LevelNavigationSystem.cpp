@@ -14,6 +14,7 @@
 #include "Button.h"
 #include "imgui.h"
 #include "GlobalTransform.h"
+#include "config.h"
 
 
 class LevelNavigationSystem : public middle::MiddleGameplaySystem {
@@ -56,7 +57,7 @@ public:
 				[name,this](middle::GameState* gameState) {
 					saveState(gameState);
 					middle::resetScene(gameState);
-					middle::loadScene(gameState, "../assets/scenes/", name, false);
+					middle::loadScene(gameState, std::string(middlePaths::SCENES_FOLDER), name, false);
 					gameState->activeSceneName = name;
 				}));
 			initialized = false;
