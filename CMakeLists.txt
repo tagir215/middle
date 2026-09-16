@@ -40,7 +40,7 @@ file(GLOB COMPONENT_HEADERS "${MIDDLE_COMPONENTS_DIR}/*.h")
 file(GLOB COMPONENT_SOURCES "${MIDDLE_COMPONENTS_DIR}/*.cpp")
 file(GLOB ENTITIES_HEADERS "${CMAKE_SOURCE_DIR}/middle/middleEntities/*.h")
 
-# library game, hot reloadable I guess
+# library game, 
 add_library(game SHARED 
     ${SOURCES} 
     ${HEADERS} 
@@ -54,7 +54,7 @@ target_include_directories(game PUBLIC ${CMAKE_SOURCE_DIR}/assets/components)
 target_include_directories(game PUBLIC ${CMAKE_SOURCE_DIR}/middle/middleEntities)
 target_include_directories(game PUBLIC ${CMAKE_SOURCE_DIR}/lib/raylib-5.5_win64_msvc16/include)
 
-# middle executable?, not hot reloadable, though not sure
+# middle executable 
 add_executable(middle 
     middle/src/main.cpp 
     middle/src/win32_platform.cpp 
