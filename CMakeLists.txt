@@ -37,13 +37,13 @@ target_include_directories(game PUBLIC ${CMAKE_SOURCE_DIR}/lib/raylib-5.5_win64_
 
 # middle executable?, not hot reloadable, though not sure
 add_executable(middle 
-    src/main.cpp 
-    src/win32_platform.cpp 
-    src/middle_imgui.cpp 
-    src/Renderer.cpp
-    src/InputSystem.cpp
-    src/FileDropSystem.cpp
-    src/assets_loading.cpp
+    middle/src/main.cpp 
+    middle/src/win32_platform.cpp 
+    middle/src/middle_imgui.cpp 
+    middle/middleSystems/Renderer.cpp
+    middle/middleSystems/InputSystem.cpp
+    middle/middleSystems/FileDropSystem.cpp
+    middle/src/assets_loading.cpp
     src/program/game_state.cpp
 )
 target_include_directories(middle PUBLIC ${CMAKE_SOURCE_DIR}/include)

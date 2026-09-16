@@ -322,13 +322,6 @@ namespace middle {
 				sceneNames.push_back(entry.path().stem().string());
 			}
 		}
-		std::vector<std::string>& shapeNames = gameState->shapeNames;
-		std::string folder2 = "../assets/shapes/";
-		for (const auto& entry : fs::directory_iterator(folder2)) {
-			if (entry.path().extension() == ".midsc") {
-				shapeNames.push_back(entry.path().stem().string());
-			}
-		}
 	}
 
 	void loadSystemNames(GameState* gameState)
