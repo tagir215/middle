@@ -299,7 +299,9 @@ namespace RendererSystem {
 
 			if (item.type == middle::RenderItemType::TEXT) {
 				const int spacing = 1;
-				float distFactor = 1 / Vector3Distance(gameState->activeCamera.position, item.transform.translation);
+				float yDistance = std::abs(gameState->activeCamera.position.y - item.transform.translation.y);
+				//float distFactor = 1 / Vector3Distance(gameState->activeCamera.position, item.transform.translation);
+				float distFactor = 1 / yDistance;
 				float fontFactor = gameState->fontUnitFactor * distFactor;
 				float scaledFontSize = item.fontSize * item.transform.scale.x * fontFactor;
 				Vector2 rect = MeasureTextEx(gameState->globalFont, item.text.c_str(), scaledFontSize, spacing);

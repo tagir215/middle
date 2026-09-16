@@ -1320,6 +1320,9 @@ namespace bubble {
 		else if (bubble::isSummation(gameState, id)) {
 			bubble::updateSummationLayoutScale(gameState, id, scaleSmoothFactor);
 		}
+		else if (bubble::isSwapBubble(gameState, id)) {
+			bubble::updateSwapButtonLayoutScale(gameState, id, scaleSmoothFactor);
+		}
 		else {
 			bubble::updateBubbleLayoutScale(gameState, id, scaleSmoothFactor);
 		}
