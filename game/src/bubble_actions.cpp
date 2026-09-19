@@ -1828,7 +1828,7 @@ namespace bubbleActions {
 
 		auto linkToReciever = middle::executeAction<LinkMultiplicationTerm>(gameState, this, targetLinkReciever, bubbleShape.id);
 
-		results.push_back(shapeToAddIntoId);
+		results.push_back(linkToReciever->results.back());
 
 		queueSound(gameState, bubbleSounds::ADD_TERM_SOUND);
 
