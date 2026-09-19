@@ -50,8 +50,9 @@ public:
 		// prevent pushing and popping stuff into path continuously when at edge of pushing or popping..
 		float thisIsImportantScalor = gameState->bubbleAlgebraState.worldScalarRate > 1 ? 1 : 1.3f;
 
+		const float disappearingBubbleHideFactor = 20.2f;
 		float screenWidthInWorldCoords = 
-			gameState->nearPlaneAxisX / gameState->nearPlaneDistance * (-gameState->activeCamera.position.y)  * 4.2f * thisIsImportantScalor;
+			gameState->nearPlaneAxisX / gameState->nearPlaneDistance * (-gameState->activeCamera.position.y)  * disappearingBubbleHideFactor * thisIsImportantScalor;
 
 		// find current position id
 		middle::Id localPathEndId;

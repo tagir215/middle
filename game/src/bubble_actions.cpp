@@ -3,7 +3,6 @@
 #include "bubble_actions.h"
 #include <string>
 #include <stack>
-#include "component_utils.h"
 #include "BubbleRef.h"
 #include "Circle.h"
 #include "BubbleEqualsComponent.h"
@@ -23,7 +22,6 @@
 #include "BubbleFunctionComponent.h"
 #include "PauseLayoutTag.h"
 #include "BubbleSummationComponent.h"
-#include "ModifiedBubbleTag.h"
 #include "Inventory.h"
 #include "NonPhysicalBubbleTag.h"
 
@@ -153,11 +151,6 @@ namespace bubbleActions {
 			return newPowerId;
 	}
 
-	void notifyBubbleModification(middle::GameState* gameState, middle::Id id)
-	{
-		assert(middle::isValidId(gameState, id));
-		middle::attachComponent<components::ModifiedBubbleTag>(gameState, id);
-	}
 
 	middle::Id createMultiplicationReplacementShape(middle::GameState* gameState, middle::Id shapeToReplaceId, middle::Id replacingShapeId)
 	{

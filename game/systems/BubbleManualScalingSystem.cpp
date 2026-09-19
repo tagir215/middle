@@ -8,6 +8,7 @@
 #include "LocalPosition.h"
 #include "TopDogBubbleTag.h"
 #include "NonPhysicalBubbleTag.h"
+#include "middle_debug_utils.h"
 
 class BubbleManualScalingSystem : public middle::MiddleGameplaySystem {
 	components::CompCache* topDogCache;
@@ -19,21 +20,68 @@ class BubbleManualScalingSystem : public middle::MiddleGameplaySystem {
 		topDogCache->addType<components::LocalPosition>();
 		topDogCache->addType<components::NonPhysicalBubbleTag>(components::NOTINTERESTED);
 	}
+
+	float prevMouseWheelMove = 0;
+	const float mouseWheelMoveMinTimeSeconds = 0.05f;
+	std::stack<float>wheelMoveTimeStack;
+
 	void update(middle::GameState* gameState) override {
 
-		const float scalarAcceleration = 5.2f;
-		const float scalarDeceleration = 5.2f;
+		const float scalarAcceleration = 10000000000;
+		const float scalarDeceleration = 1000000000000;
 		const float inverseScalarAcceleration = 1.0f / scalarAcceleration;
 		const float inverseScalarDeceleration = 1.0f / scalarDeceleration;
-		const float maxWorldScaleRate = 4;
+		const float maxWorldScaleRate = 6000;
 		const float inverseMaxWorldScaleRate = 1.0f / maxWorldScaleRate;
 
 		float& worldScalarRate = gameState->bubbleAlgebraState.worldScalarRate;
-
 		float mouseWheelMove = gameState->gameInput.mouseWheelMove;
 
+
+		middle::drawImGuiFloat(gameState, "mousewheelmove", mouseWheelMove);
+
+
+		float acceleration = scalarAcceleration;
+		float inverseAcceleration = inverseScalarAcceleration;
+
+		if (mouseWheelMove == 0) {
+
+			if (wheelMoveTimeStack.size() > 0) {
+				if (wheelMoveTimeStack.top() < mouseWheelMoveMinTimeSeconds) {
+					mouseWheelMove = prevMouseWheelMove;
+					wheelMoveTimeStack.top() += gameState->frameTime;
+				}
+				else {
+					wheelMoveTimeStack.pop();
+				}
+			}
+			else {
+				prevMouseWheelMove = 0;
+			}
+		}
+		else {
+			prevMouseWheelMove = mouseWheelMove;
+			wheelMoveTimeStack.push(0);
+		}
+
+		// accelerate zoom in
+		if (gameState->gameInput.zoomIn || mouseWheelMove > 0) {
+			float scalarScalar = std::powf(acceleration, gameState->frameTime);
+			worldScalarRate *= scalarScalar;
+			if (worldScalarRate > maxWorldScaleRate) {
+				worldScalarRate = maxWorldScaleRate;
+			}
+		}
+		// accelerate zoom out
+		else if (gameState->gameInput.zoomOut || mouseWheelMove < 0) {
+			float scalarScalar = std::powf(inverseAcceleration, gameState->frameTime);
+			worldScalarRate *= scalarScalar;
+			if (worldScalarRate < inverseMaxWorldScaleRate) {
+				worldScalarRate = inverseMaxWorldScaleRate;
+			}
+		}
 		// decelerate until stop
-		if (!gameState->gameInput.zoomIn && !gameState->gameInput.zoomOut) {
+		else {
 			float scalarScalar;
 			const float epsilon = 0.0001f;
 			if (worldScalarRate == 1) {
@@ -41,30 +89,26 @@ class BubbleManualScalingSystem : public middle::MiddleGameplaySystem {
 			}
 			else if (worldScalarRate > 1 + epsilon) {
 				scalarScalar = std::powf(inverseScalarDeceleration, gameState->frameTime);
-				worldScalarRate *= scalarScalar;
+				float newRate = worldScalarRate * scalarScalar;
+				if (worldScalarRate < 1 && newRate > 1 || worldScalarRate > 1 && newRate < 1) {
+					worldScalarRate = 1;
+				}
+				else {
+					worldScalarRate = newRate;
+				}
 			}
 			else if (worldScalarRate < 1 - epsilon) {
 				scalarScalar = std::powf(scalarDeceleration, gameState->frameTime);
-				worldScalarRate *= scalarScalar;
+				float newRate = worldScalarRate * scalarScalar;
+				if (worldScalarRate < 1 && newRate > 1 || worldScalarRate > 1 && newRate < 1) {
+					worldScalarRate = 1;
+				}
+				else {
+					worldScalarRate = newRate;
+				}
 			}
 			else {
 				worldScalarRate = 1;
-			}
-		}
-		// accelerate zoom in
-		else if (gameState->gameInput.zoomIn) {
-			float scalarScalar = std::powf(scalarAcceleration, gameState->frameTime);
-			worldScalarRate *= scalarScalar;
-			if (worldScalarRate > maxWorldScaleRate) {
-				worldScalarRate = maxWorldScaleRate;
-			}
-		}
-		// accelerate zoom out
-		else {
-			float scalarScalar = std::powf(inverseScalarAcceleration, gameState->frameTime);
-			gameState->bubbleAlgebraState.worldScalarRate *= scalarScalar;
-			if (worldScalarRate < inverseMaxWorldScaleRate) {
-				worldScalarRate = inverseMaxWorldScaleRate;
 			}
 		}
 

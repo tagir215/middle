@@ -64,6 +64,7 @@ public:
 
 		const float ratioPerSecond = 0.8f;
 		float moveRatio = std::powf(ratioPerSecond, gameState->frameTime);
+		moveRatio = 0.2f;
 
 		auto pauseTagIt = pausedBubblesCache->begin<components::PauseLayoutTag>();
 		for (middle::Id id : pausedBubblesCache->relevantIdVector) {

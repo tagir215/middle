@@ -15,6 +15,8 @@
 #include "Text.h"
 #include "InputVariable.h"
 #include "AlgebraNode.h"
+#include "component_utils.h"
+#include "ModifiedBubbleTag.h"
 
 namespace bubbleActions{
 
@@ -23,9 +25,19 @@ namespace bubbleActions{
 	middle::Id createMultiplicationReplacementShape(middle::GameState* gameState, middle::Id shapeToReplace, middle::Id replacingShape);
 	middle::Id createAdditionReplacementShape(middle::GameState* gameState, middle::Id shapeToReplace, middle::Id replacingShape);
 	middle::Id createMultiplicationIntoPowerReplacementShape(middle::GameState* gameState, middle::Id shapeToReplace, middle::Id powerBubbleId);
-	void notifyBubbleModification(middle::GameState* gameState, middle::Id id);
 
-	class Cancel : public middle::EditorActionContainer {
+	class BubbleAction : public middle::EditorActionContainer {
+	public:
+		middle::Id resultId;
+
+		void notifyBubbleModification(middle::GameState* gameState, middle::Id id)
+		{
+			assert(middle::isValidId(gameState, id));
+			middle::attachComponent<components::ModifiedBubbleTag>(gameState, id);
+		}
+	};
+
+	class Cancel : public BubbleAction {
 	public:
 		middle::Id id;
 		middle::Id resultId;
@@ -36,18 +48,18 @@ namespace bubbleActions{
 		void undo(middle::GameState* gameState) override;
 	};
 
-	class Simplify : public middle::EditorActionContainer {
+	class Simplify : public BubbleAction {
 	public:
 		middle::Id id;
 		middle::Id resultId;
-		Simplify(middle::Id id){
+		Simplify(middle::Id id) {
 			this->id = id;
 		}
 		void execute(middle::GameState* gameState) override;
 		void undo(middle::GameState* gameState) override;
 	};
 
-	class Bubblify : public middle::EditorActionContainer{
+	class Bubblify : public BubbleAction {
 	public:
 		middle::Id id;
 		middle::Id resultId;
@@ -58,7 +70,7 @@ namespace bubbleActions{
 		void undo(middle::GameState* gameState) override;
 	};
 
-	class UpdateVariable : public middle::EditorActionContainer {
+	class UpdateVariable : public BubbleAction {
 	public:
 		std::string label;
 		std::function<middle::Id()>newUnitRefProvider;
@@ -68,7 +80,7 @@ namespace bubbleActions{
 		void undo(middle::GameState* gameState) override;
 	};
 
-	class LinkMultiplicationTerm : public middle::EditorActionContainer {
+	class LinkMultiplicationTerm : public BubbleAction {
 	public:
 		middle::Id recieverShapeId;
 		middle::Id linkingShapeId;
@@ -78,7 +90,7 @@ namespace bubbleActions{
 		void undo(middle::GameState* gameState) override;
 	};
 
-	class UnlinkMultiplicationTerm : public middle::EditorActionContainer {
+	class UnlinkMultiplicationTerm : public BubbleAction {
 	public:
 		middle::Id unlinkingShapeId;
 		middle::Id resultUnlinkedMulId;
@@ -90,7 +102,7 @@ namespace bubbleActions{
 		void undo(middle::GameState* gameState) override;
 	};
 
-	class MulOne : public middle::EditorActionContainer {
+	class MulOne : public BubbleAction {
 	public:
 		middle::Id recieverShapeId;
 		middle::Id resultShapeId;
@@ -99,7 +111,7 @@ namespace bubbleActions{
 		void undo(middle::GameState* gameState) override;
 	};
 
-	class MulNegativeOne : public middle::EditorActionContainer {
+	class MulNegativeOne : public BubbleAction {
 	public:
 		middle::Id recieverShapeId;
 		middle::Id resultShapeId;
@@ -117,7 +129,7 @@ namespace bubbleActions{
 		middle::Id idB;
 	};
 
-	class UpdateBubblesMultiplicationIdentity : public middle::EditorActionContainer {
+	class UpdateBubblesMultiplicationIdentity : public BubbleAction {
 	public:
 		middle::Id mulId;
 		bool removedMulComp = false;
@@ -128,7 +140,7 @@ namespace bubbleActions{
 		void undo(middle::GameState* gameState) override;
 	};
 
-	class ExecuteMultiplication : public middle::EditorActionContainer {
+	class ExecuteMultiplication : public BubbleAction {
 	public:
 		middle::Id shapeToCopyId;
 		middle::Id shapeToCopyIntoId;
@@ -138,7 +150,7 @@ namespace bubbleActions{
 		void undo(middle::GameState* gameState) override;
 	};
 
-	class ExpandSummation : public middle::EditorActionContainer {
+	class ExpandSummation : public BubbleAction {
 	public:
 		middle::Id summationId;
 		middle::Id resultShapeId;
@@ -147,7 +159,7 @@ namespace bubbleActions{
 		void undo(middle::GameState* gameState) override;
 	};
 
-	class ExecuteAddition : public middle::EditorActionContainer {
+	class ExecuteAddition : public BubbleAction {
 	public:
 		middle::Id shapeToAddId;
 		middle::Id shapeToAddIntoId;
@@ -157,7 +169,7 @@ namespace bubbleActions{
 		void undo(middle::GameState* gameState) override;
 	};
 
-	class ExecutePower : public middle::EditorActionContainer {
+	class ExecutePower : public BubbleAction {
 	public:
 		middle::Id idA;
 		middle::Id idB;
@@ -171,7 +183,7 @@ namespace bubbleActions{
 	};
 
 
-	class Pop : public middle::EditorActionContainer {
+	class Pop : public BubbleAction {
 	public:
 		middle::Id id;
 		Pop(middle::Id id);
@@ -179,7 +191,7 @@ namespace bubbleActions{
 		void undo(middle::GameState* gameState) override;
 	};
 
-	class Replace : public middle::EditorActionContainer {
+	class Replace : public BubbleAction {
 	public:
 		middle::Id shapeToReplaceId;
 		middle::Id replacingShapeId;
@@ -188,7 +200,7 @@ namespace bubbleActions{
 		void undo(middle::GameState* gameState) override;
 	};
 
-	class Break : public middle::EditorActionContainer {
+	class Break : public BubbleAction {
 	public:
 		middle::Id unitShapeId;
 		middle::Id resultShapeId;
@@ -199,7 +211,7 @@ namespace bubbleActions{
 	};
 
 
-	class CompressCommonFactor : public middle::EditorActionContainer {
+	class CompressCommonFactor : public BubbleAction {
 	public:
 		middle::Id commonFactorId;
 		middle::Id resultShapeId;
@@ -208,7 +220,7 @@ namespace bubbleActions{
 		void undo(middle::GameState* gameState) override;
 	};
 
-	class CompressPowers : public middle::EditorActionContainer {
+	class CompressPowers : public BubbleAction {
 	public:
 		middle::Id commonFactorId;
 		middle::Id resultShapeId;
@@ -217,7 +229,7 @@ namespace bubbleActions{
 		void undo(middle::GameState* gameState) override;
 	};
 
-	class NewAdditionTerm : public middle::EditorActionContainer {
+	class NewAdditionTerm : public BubbleAction {
 	public:
 		middle::Id shapeToAddIntoId;
 		middle::Id newTermId;
@@ -231,7 +243,7 @@ namespace bubbleActions{
 		void undo(middle::GameState* gameState) override;
 	};
 
-	class NewMultiplicationTerm : public middle::EditorActionContainer {
+	class NewMultiplicationTerm : public BubbleAction {
 	public:
 		middle::Id shapeToAddIntoId;
 		middle::Id newTermId;
@@ -245,7 +257,7 @@ namespace bubbleActions{
 		void undo(middle::GameState* gameState) override;
 	};
 
-	class NewPowerTerm : public middle::EditorActionContainer {
+	class NewPowerTerm : public BubbleAction {
 	public:
 		middle::Id shapeToAddIntoId;
 		middle::Id newTermId;
@@ -259,7 +271,7 @@ namespace bubbleActions{
 		void undo(middle::GameState* gameState) override;
 	};
 
-	class InsertAsXOverX : public middle::EditorActionContainer {
+	class InsertAsXOverX : public BubbleAction {
 	public:
 		middle::Id shapeToAddIntoId;
 		middle::Id newTermId;
@@ -273,7 +285,7 @@ namespace bubbleActions{
 		void undo(middle::GameState* gameState) override;
 	};
 
-	class InsertAsXMinusX : public middle::EditorActionContainer {
+	class InsertAsXMinusX : public BubbleAction {
 	public:
 		middle::Id shapeToAddIntoId;
 		middle::Id newTermId;
@@ -287,7 +299,7 @@ namespace bubbleActions{
 		void undo(middle::GameState* gameState) override;
 	};
 
-	class StartProcedure : public middle::EditorActionContainer {
+	class StartProcedure : public BubbleAction {
 	public:
 		middle::Id procContainer;
 		middle::Id input;
@@ -300,7 +312,7 @@ namespace bubbleActions{
 	};
 
 
-	class Substitute : public middle::EditorActionContainer {
+	class Substitute : public BubbleAction {
 	public:
 		middle::Id shapeToReplaceId;
 		middle::Id shapeToInsertId;
@@ -312,7 +324,7 @@ namespace bubbleActions{
 		void undo(middle::GameState* gameState) override;
 	};
 
-	class SubstituteFunction : public middle::EditorActionContainer {
+	class SubstituteFunction : public BubbleAction {
 	public:
 		middle::Id functionToReplaceId;
 		middle::Id functionBodyId;
@@ -324,12 +336,12 @@ namespace bubbleActions{
 		void undo(middle::GameState* gameState) override;
 	};
 
-	class CopyToInventory : public middle::EditorActionContainer {
+	class CopyToInventory : public BubbleAction {
 	public:
 		middle::Id inventoryId;
 		middle::Id id;
 		middle::Id resultId;
-		CopyToInventory(middle::Id inventoryId, middle::Id id){
+		CopyToInventory(middle::Id inventoryId, middle::Id id) {
 			this->inventoryId = inventoryId;
 			this->id = id;
 		}
@@ -338,7 +350,7 @@ namespace bubbleActions{
 	};
 
 
-	class CopyAsHelper : public middle::EditorActionContainer {
+	class CopyAsHelper : public BubbleAction {
 	public:
 		middle::Id shapeToCopyId;
 		Vector3 targetPosition;
