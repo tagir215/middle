@@ -25,22 +25,27 @@ namespace bubbleActions{
 	middle::Id createMultiplicationReplacementShape(middle::GameState* gameState, middle::Id shapeToReplace, middle::Id replacingShape);
 	middle::Id createAdditionReplacementShape(middle::GameState* gameState, middle::Id shapeToReplace, middle::Id replacingShape);
 	middle::Id createMultiplicationIntoPowerReplacementShape(middle::GameState* gameState, middle::Id shapeToReplace, middle::Id powerBubbleId);
+	void notifyBubbleModification(middle::GameState* gameState, middle::Id resultId);
+
 
 	class BubbleAction : public middle::EditorActionContainer {
 	public:
 		middle::Id resultId;
+	};
 
-		void notifyBubbleModification(middle::GameState* gameState, middle::Id id)
-		{
-			assert(middle::isValidId(gameState, id));
-			middle::attachComponent<components::ModifiedBubbleTag>(gameState, id);
+	class NotifyModificationAction : public middle::EditorActionContainer {
+	public:
+		std::shared_ptr<BubbleAction>action;
+		NotifyModificationAction(std::shared_ptr<BubbleAction> bubbleAction) {
+			this->action = bubbleAction;
 		}
+		void execute(middle::GameState* gameState) override;
+		void undo(middle::GameState* gameState) override;
 	};
 
 	class Cancel : public BubbleAction {
 	public:
 		middle::Id id;
-		middle::Id resultId;
 		Cancel(middle::Id id) {
 			this->id = id;
 		}
@@ -51,7 +56,6 @@ namespace bubbleActions{
 	class Simplify : public BubbleAction {
 	public:
 		middle::Id id;
-		middle::Id resultId;
 		Simplify(middle::Id id) {
 			this->id = id;
 		}
@@ -62,7 +66,6 @@ namespace bubbleActions{
 	class Bubblify : public BubbleAction {
 	public:
 		middle::Id id;
-		middle::Id resultId;
 		Bubblify(middle::Id id) {
 			this->id = id;
 		}
@@ -84,7 +87,6 @@ namespace bubbleActions{
 	public:
 		middle::Id recieverShapeId;
 		middle::Id linkingShapeId;
-		middle::Id resultShapeId;
 		LinkMultiplicationTerm(middle::Id reciverShapeId, middle::Id linkikngShapeId);
 		void execute(middle::GameState* gameState) override;
 		void undo(middle::GameState* gameState) override;
@@ -105,7 +107,6 @@ namespace bubbleActions{
 	class MulOne : public BubbleAction {
 	public:
 		middle::Id recieverShapeId;
-		middle::Id resultShapeId;
 		MulOne(middle::Id recieverShapeId);
 		void execute(middle::GameState* gameState) override;
 		void undo(middle::GameState* gameState) override;
@@ -114,7 +115,6 @@ namespace bubbleActions{
 	class MulNegativeOne : public BubbleAction {
 	public:
 		middle::Id recieverShapeId;
-		middle::Id resultShapeId;
 		MulNegativeOne(middle::Id recieverShapeId) {
 			this->recieverShapeId = recieverShapeId;
 		}
@@ -144,7 +144,6 @@ namespace bubbleActions{
 	public:
 		middle::Id shapeToCopyId;
 		middle::Id shapeToCopyIntoId;
-		middle::Id resultShapeId;
 		ExecuteMultiplication(middle::Id shapeToCopyId, middle::Id shapeToCopyIntoId);
 		void execute(middle::GameState* gameState) override;
 		void undo(middle::GameState* gameState) override;
@@ -153,7 +152,6 @@ namespace bubbleActions{
 	class ExpandSummation : public BubbleAction {
 	public:
 		middle::Id summationId;
-		middle::Id resultShapeId;
 		ExpandSummation(middle::Id summationId);
 		void execute(middle::GameState* gameState) override;
 		void undo(middle::GameState* gameState) override;
@@ -163,7 +161,6 @@ namespace bubbleActions{
 	public:
 		middle::Id shapeToAddId;
 		middle::Id shapeToAddIntoId;
-		middle::Id resultShapeId;
 		ExecuteAddition(middle::Id shapeToAddId, middle::Id shapeToAddIntoId);
 		void execute(middle::GameState* gameState) override;
 		void undo(middle::GameState* gameState) override;
@@ -173,7 +170,6 @@ namespace bubbleActions{
 	public:
 		middle::Id idA;
 		middle::Id idB;
-		middle::Id resultShapeId;
 		ExecutePower(middle::Id idA, middle::Id idB) {
 			this->idA = idA;
 			this->idB = idB;
@@ -200,21 +196,9 @@ namespace bubbleActions{
 		void undo(middle::GameState* gameState) override;
 	};
 
-	class Break : public BubbleAction {
-	public:
-		middle::Id unitShapeId;
-		middle::Id resultShapeId;
-		int dividend;
-		Break(middle::Id containerShape, int dividend);
-		void execute(middle::GameState* gameState) override;
-		void undo(middle::GameState* gameState) override;
-	};
-
-
 	class CompressCommonFactor : public BubbleAction {
 	public:
 		middle::Id commonFactorId;
-		middle::Id resultShapeId;
 		CompressCommonFactor(middle::Id containerShape);
 		void execute(middle::GameState* gameState) override;
 		void undo(middle::GameState* gameState) override;
@@ -223,7 +207,6 @@ namespace bubbleActions{
 	class CompressPowers : public BubbleAction {
 	public:
 		middle::Id commonFactorId;
-		middle::Id resultShapeId;
 		CompressPowers(middle::Id commonExponentId);
 		void execute(middle::GameState* gameState) override;
 		void undo(middle::GameState* gameState) override;
@@ -340,7 +323,6 @@ namespace bubbleActions{
 	public:
 		middle::Id inventoryId;
 		middle::Id id;
-		middle::Id resultId;
 		CopyToInventory(middle::Id inventoryId, middle::Id id) {
 			this->inventoryId = inventoryId;
 			this->id = id;

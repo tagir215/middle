@@ -77,7 +77,7 @@ public:
 		}
 
 		middle::Id otherFunc = bubble::getOtherFromContainerOf2(gameState, deletionRefShape.id);
-		std::shared_ptr<middle::EditorActionContainer>action;
+		std::shared_ptr<bubbleActions::BubbleAction>action;
 		if (otherFunc.index != middle::UNASSIGNED) {
 			action = std::make_shared<bubbleActions::SubstituteFunction>(intersectedShape.id, deletionRefShape.id);
 		}
@@ -138,37 +138,27 @@ public:
 	}
 
 	void insertOperation(middle::GameState* gameState, int actionType, middle::Id intersectingId) {
-		std::shared_ptr<middle::EditorActionContainer>action;
+		std::shared_ptr<bubbleActions::BubbleAction>action;
 
 		if (actionType == bubbleInventoryItemType::NEW_ADDITION_TERM) {
 			middle::Id copyId = copyOfInsertItem(gameState);
-			auto registerAction = std::make_shared<middle::EditorActionRegisterId>(copyId);
-			auto newTermAction = std::make_shared<bubbleActions::NewAdditionTerm>(intersectingId, copyId, gameState->input.mouseXZ_PlanePos);
-			action = std::make_shared<middle::MultiAction>(std::vector<std::shared_ptr<middle::EditorActionContainer>>{ registerAction,newTermAction });
+			action = std::make_shared<bubbleActions::NewAdditionTerm>(intersectingId, copyId, gameState->input.mouseXZ_PlanePos);
 		}
 		else if (actionType == bubbleInventoryItemType::NEW_MULTIPLICATION_TERM) {
 			middle::Id copyId = copyOfInsertItem(gameState);
-			auto registerAction = std::make_shared<middle::EditorActionRegisterId>(copyId);
-			auto newTermAction = std::make_shared<bubbleActions::NewMultiplicationTerm>(intersectingId, copyId, gameState->input.mouseXZ_PlanePos);
-			action = std::make_shared<middle::MultiAction>(std::vector<std::shared_ptr<middle::EditorActionContainer>>{ registerAction,newTermAction });
+			action = std::make_shared<bubbleActions::NewMultiplicationTerm>(intersectingId, copyId, gameState->input.mouseXZ_PlanePos);
 		}
 		else if (actionType == bubbleInventoryItemType::NEW_POWER_TERM) {
 			middle::Id copyId = copyOfInsertItem(gameState);
-			auto registerAction = std::make_shared<middle::EditorActionRegisterId>(copyId);
-			auto newTermAction = std::make_shared<bubbleActions::NewPowerTerm>(intersectingId, copyId, gameState->input.mouseXZ_PlanePos);
-			action = std::make_shared<middle::MultiAction>(std::vector<std::shared_ptr<middle::EditorActionContainer>>{ registerAction,newTermAction });
+			action = std::make_shared<bubbleActions::NewPowerTerm>(intersectingId, copyId, gameState->input.mouseXZ_PlanePos);
 		}
 		else if (actionType == bubbleInventoryItemType::INSERT_X_OVER_X) {
 			middle::Id copyId = copyOfInsertItem(gameState);
-			auto registerAction = std::make_shared<middle::EditorActionRegisterId>(copyId);
-			auto insertAction = std::make_shared<bubbleActions::InsertAsXOverX>(intersectingId, copyId, gameState->input.mouseXZ_PlanePos);
-			action = std::make_shared<middle::MultiAction>(std::vector<std::shared_ptr<middle::EditorActionContainer>>{ registerAction,insertAction });
+			action = std::make_shared<bubbleActions::InsertAsXOverX>(intersectingId, copyId, gameState->input.mouseXZ_PlanePos);
 		}
 		else if (actionType == bubbleInventoryItemType::INSERT_X_MINUS_X) {
 			middle::Id copyId = copyOfInsertItem(gameState);
-			auto registerAction = std::make_shared<middle::EditorActionRegisterId>(copyId);
-			auto insertAction = std::make_shared<bubbleActions::InsertAsXMinusX>(intersectingId, copyId, gameState->input.mouseXZ_PlanePos);
-			action = std::make_shared<middle::MultiAction>(std::vector<std::shared_ptr<middle::EditorActionContainer>>{ registerAction,insertAction });
+			action = std::make_shared<bubbleActions::InsertAsXMinusX>(intersectingId, copyId, gameState->input.mouseXZ_PlanePos);
 		}
 
 		if (action) {
@@ -180,7 +170,7 @@ public:
 	}
 
 	void microOperation(middle::GameState* gameState, int actionType, middle::Id& refId, middle::Shape& intersectedShape) {
-		std::shared_ptr<middle::EditorActionContainer>action;
+		std::shared_ptr<bubbleActions::BubbleAction>action;
 
 		// pop as long as not multiplication
 		if (actionType == bubbleInventoryItemType::POP) {

@@ -1359,19 +1359,19 @@ namespace bubble {
 		}
 	}
 
-	void queueBubbleAction(middle::GameState* gameState, middle::Id id, std::shared_ptr<middle::EditorActionContainer> action)
+	void queueBubbleAction(middle::GameState* gameState, middle::Id id, std::shared_ptr<bubbleActions::BubbleAction> action)
 	{
 		middle::queueAction(gameState, action);
 		gameState->bubbleAlgebraState.bubbleActions.push_back(action);
-		// save bubble
-		middle::Id backgroundId = gameState->bubbleAlgebraState.backgroundBubbleId;
-		if (backgroundId.index == middle::UNASSIGNED) {
-			return;
-		}
-		middle::attachComponent<components::QueuedForSaveTag>(gameState, backgroundId);
+		auto notifyAction = std::make_shared<bubbleActions::NotifyModificationAction>(action);
+		middle::queueAction(gameState, notifyAction);
 	}
 
 
+	void queueEqulabAction(middle::GameState* gameState, middle::Id id, std::shared_ptr<middle::EditorActionContainer>container) {
+		middle::queueAction(gameState, container);
+		gameState->bubbleAlgebraState.bubbleActions.push_back(container);
+	}
 
 
 	middle::Id bubbleToStructure(middle::GameState* gameState, middle::Id bubbleId)

@@ -63,7 +63,7 @@ class WriterUnBlockingSystem : public middle::MiddleGameplaySystem {
 		if (gameState->equlabInput.f9Clicked) {
 			for (middle::Id id : textCache->relevantIdVector) {
 				auto action = std::make_shared<equlab::LinkTextToTextBubble>(id, title, textProblem);
-				bubble::queueBubbleAction(gameState, id, action);
+				bubble::queueEqulabAction(gameState, id, action);
 			}
 		}
 	}

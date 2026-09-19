@@ -2,6 +2,7 @@
 #include "LoopSociety.h"
 #include "game_state.h"
 #include "AlgebraNode.h"
+#include "bubble_actions.h"
 using namespace middle;
 
 namespace bubble {
@@ -99,7 +100,8 @@ namespace bubble {
 	// slow but immediate layout update
 	void recursiveBubbleLayoutScaleUpdate(middle::GameState* gameState, middle::Id id);
 	void recursiveBubbleLayoutUpdate(middle::GameState* gameState, middle::Id id);
-	void queueBubbleAction(middle::GameState* gameState, middle::Id id, std::shared_ptr<middle::EditorActionContainer>container);
+	void queueBubbleAction(middle::GameState* gameState, middle::Id id, std::shared_ptr<bubbleActions::BubbleAction>container);
+	void queueEqulabAction(middle::GameState* gameState, middle::Id id, std::shared_ptr<middle::EditorActionContainer>container);
 
 	template<typename T>
 	void recursiveAttachComponent(middle::GameState* gameState, middle::Id id){

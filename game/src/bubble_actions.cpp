@@ -73,7 +73,7 @@ namespace bubbleActions {
 			else if (bubble) {
 				auto mulOneAction = MulOne(targetId);
 				mulOneAction.execute(gameState);
-				middle::Id one = mulOneAction.resultShapeId;
+				middle::Id one = mulOneAction.resultId;
 				bubble::negate(gameState, one);
 			}
 		}
@@ -203,7 +203,7 @@ namespace bubbleActions {
 			}
 			auto linkAction = LinkMultiplicationTerm(recieverId, replacingCopyId);
 			linkAction.execute(gameState);
-			return linkAction.resultShapeId;
+			return linkAction.resultId;
 		}
 		return middle::Id();
 	}
@@ -410,7 +410,7 @@ namespace bubbleActions {
 		auto& newExponent = middle::registerShape(gameState, newExponentProto);
 		auto link = LinkMultiplicationTerm(copyInnerExponent, copyOuterExponent);
 		link.execute(gameState);
-		middle::Id newMulId = link.resultShapeId;
+		middle::Id newMulId = link.resultId;
 		EditorActionReparent(newExponent.id.index, newMulId.index).execute(gameState);
 
 		middle::Id copyInnerBaseId = middle::deepCopyShapeGlobalCoordinates(gameState, innerBaseId);
@@ -454,6 +454,23 @@ namespace bubbleActions {
 		auto connectPower = equlab::ConnectPower(newMul.id, exponentCopyId);
 		connectPower.execute(gameState);
 		return connectPower.resultId;
+	}
+
+	void NotifyModificationAction::execute(middle::GameState* gameState)
+	{
+		middle::Id resultId = action->resultId;
+		assert(middle::isValidId(gameState, resultId));
+		middle::attachComponent<components::ModifiedBubbleTag>(gameState, resultId);
+	}
+
+	void NotifyModificationAction::undo(middle::GameState* gameState)
+	{
+		if (action->cancelled) {
+			return;
+		}
+		middle::Id resultId = action->resultId;
+		assert(middle::isValidId(gameState, resultId));
+		middle::queueComponentDeletion<components::ModifiedBubbleTag>(gameState, resultId);
 	}
 
 
@@ -528,11 +545,10 @@ namespace bubbleActions {
 
 		middle::executeAction<middle::EditorActionDeleteSingle>(gameState, this, shapeToCopyId);
 		middle::executeAction<UpdateBubblesMultiplicationIdentity>(gameState, this, mulId);
-		resultShapeId = mulId;
+		resultId = mulId;
 
 		queueSound(gameState, bubbleSounds::EXPAND_MULTIPLICATION_SOUND);
 
-		notifyBubbleModification(gameState, resultShapeId);
 	}
 
 	void ExecuteMultiplication::undo(middle::GameState* gameState) {
@@ -571,22 +587,13 @@ namespace bubbleActions {
 		middle::Shape& copyShapeB = middle::getShape(gameState, idB.index);
 
 		// NORMAL AVERAGE BASIC CASE
-		resultShapeId = createAdditionReplacementShape(gameState, idA, idB);
-		auto registerAction = std::make_unique<middle::EditorActionRegisterId>(resultShapeId);
-		registerAction->execute(gameState);
-		actions.push_back(std::move(registerAction));
-
-		auto deleteAction = std::make_unique<middle::EditorActionDeleteSingle>(shapeToAddId);
-		deleteAction->execute(gameState);
-		actions.push_back(std::move(deleteAction));
-
-		auto replace = std::make_unique<Replace>(shapeToAddIntoId, resultShapeId);
-		replace->execute(gameState);
-		actions.push_back(std::move(replace));
+		resultId = createAdditionReplacementShape(gameState, idA, idB);
+		middle::executeAction<middle::EditorActionRegisterId>(gameState, this, resultId);
+		middle::executeAction<middle::EditorActionDeleteSingle>(gameState, this, shapeToAddId);
+		middle::executeAction<Replace>(gameState, this, shapeToAddIntoId, resultId);
 
 		queueSound(gameState, bubbleSounds::COMBINE_SOUND);
 
-		notifyBubbleModification(gameState, resultShapeId);
 	}
 
 	void ExecuteAddition::undo(middle::GameState* gameState) {
@@ -622,11 +629,9 @@ namespace bubbleActions {
 		}
 		middle::executeAction<middle::EditorActionRegisterId>(gameState, this, replacementShapeId);
 		middle::executeAction<Replace>(gameState, this, powerId, replacementShapeId);;
-		resultShapeId = replacementShapeId;
+		resultId = replacementShapeId;
 
 		queueSound(gameState, bubbleSounds::EXPAND_POWER_SOUND);
-
-		notifyBubbleModification(gameState, resultShapeId);
 	}
 
 	void ExecutePower::undo(middle::GameState* gameState)
@@ -736,7 +741,7 @@ namespace bubbleActions {
 			replace->execute(gameState);
 			actions.push_back(std::move(replace));
 
-			notifyBubbleModification(gameState, varPopReplacementId);
+			resultId = varPopReplacementId;
 		}
 		else if (bubble) {
 			std::vector<middle::Id>children;
@@ -750,7 +755,7 @@ namespace bubbleActions {
 			deleteAction->execute(gameState);
 			actions.push_back(std::move(deleteAction));
 
-			notifyBubbleModification(gameState, parentId);
+			resultId = id;
 		}
 
 		queueSound(gameState, bubbleSounds::POP_SOUND);
@@ -818,7 +823,7 @@ namespace bubbleActions {
 			auto powComp = middle::getComponent<components::BubblePowerComponent>(parent);
 			if (mulComp) {
 				middle::executeAction<EditorActionReparent>(gameState, this, parent.id.index, linkingShapeId.index);;
-				resultShapeId = parent.id;
+				resultId = parent.id;
 				return;
 			}
 		}
@@ -838,7 +843,7 @@ namespace bubbleActions {
 
 		middle::executeAction<Replace>(gameState, this, recieverShapeId, mulShape.id);
 
-		resultShapeId = mulShape.id;
+		resultId = mulShape.id;
 	}
 
 	void LinkMultiplicationTerm::undo(middle::GameState* gameState)
@@ -889,62 +894,6 @@ namespace bubbleActions {
 		}
 	}
 
-
-
-	Break::Break(middle::Id containerShape, int dividend)
-	{
-		this->unitShapeId = containerShape;
-		this->dividend = dividend;
-	}
-	void Break::execute(middle::GameState* gameState)
-	{
-		auto& unitShape = middle::getShape(gameState, unitShapeId.index);
-		auto unit = middle::getComponent<components::BubbleUnit>(unitShape);
-		auto variable = middle::getComponent<components::BubbleVariable>(unitShape);
-		if (!unit || variable) {
-			cancelled = true;
-			return;
-		}
-
-		// create and register inverse bubble
-		Vector3 targetPos = middle::getGlobalPosition(gameState, unitShape.id.index);
-		middle::Shape containerBubbleProto = bubble::newBubble(gameState, targetPos);
-		auto registerAction = std::make_unique<middle::EditorActionRegisterShape>(containerBubbleProto);
-		registerAction->execute(gameState);
-		middle::Id newContainerId = registerAction->newShapeId;
-		actions.push_back(std::move(registerAction));
-
-		for (int i = 0; i < dividend; ++i) {
-
-			// create and register inverse bubble
-			Vector3 targetPos = middle::getGlobalPosition(gameState, unitShape.id.index);
-			middle::Shape containerBubbleProto = bubble::newBubble(gameState, targetPos + Vector3{ 1.0f * i, 0,0 });
-			middle::Shape& containerBubble = middle::registerShape(gameState, containerBubbleProto);
-			auto bubble = middle::getComponent<components::BubbleComponent>(containerBubble);
-
-			// create units 
-			for (int j = 0; j < dividend; ++j) {
-				middle::Id& copyId = middle::deepCopyShapeGlobalCoordinates(gameState, unitShape.id);
-				middle::EditorActionReparent(containerBubble.id.index, copyId.index).execute(gameState);
-			}
-
-			middle::EditorActionReparent(newContainerId.index, containerBubble.id.index).execute(gameState);
-		}
-
-		auto replace = std::make_unique<Replace>(unitShapeId, newContainerId);
-		replace->execute(gameState);
-		actions.push_back(std::move(replace));
-
-		resultShapeId = newContainerId;
-	}
-
-	void Break::undo(middle::GameState* gameState)
-	{
-		while (actions.size() > 0) {
-			actions.back()->undo(gameState);
-			actions.pop_back();
-		}
-	}
 
 	CompressCommonFactor::CompressCommonFactor(middle::Id containerShape)
 	{
@@ -1165,17 +1114,16 @@ namespace bubbleActions {
 		middle::Id compressedParentId = middle::getParent(gameState, compressedBubbleId);
 		if (compressedParentId.index != middle::UNASSIGNED && bubble::isSummation(gameState, compressedParentId)) {
 			auto linkAction = middle::executeAction<LinkMultiplicationTerm>(gameState, this, compressedParentId, linkingFactorId);
-			resultShapeId = linkAction->resultShapeId;
+			resultId = linkAction->resultId;
 		}
 		// else we just link to the compressed
 		else {
 			auto linkAction = middle::executeAction<LinkMultiplicationTerm>(gameState, this, compressedBubbleId, linkingFactorId);
-			resultShapeId = linkAction->resultShapeId;
+			resultId = linkAction->resultId;
 		}
 
 		queueSound(gameState, bubbleSounds::COMPRESS_SOUND);
 
-		notifyBubbleModification(gameState, resultShapeId);
 	}
 
 	void CompressCommonFactor::undo(middle::GameState* gameState)
@@ -1220,8 +1168,7 @@ namespace bubbleActions {
 		if (replacementShapeId.index != middle::UNASSIGNED) {
 			middle::executeAction<middle::EditorActionRegisterId>(gameState, this, replacementShapeId);
 			middle::executeAction<Replace>(gameState, this, targetId, replacementShapeId);
-			resultShapeId = replacementShapeId;
-			notifyBubbleModification(gameState, resultShapeId);
+			resultId = replacementShapeId;
 		}
 		else {
 			cancelled = true;
@@ -1272,9 +1219,8 @@ namespace bubbleActions {
 		link->execute(gameState);
 		actions.push_back(std::move(link));
 
-		resultShapeId = containerId;
+		resultId = containerId;
 
-		notifyBubbleModification(gameState, resultShapeId);
 
 		queueSound(gameState, bubbleSounds::MUL_ONE_SOUND);
 	}
@@ -1352,6 +1298,8 @@ namespace bubbleActions {
 
 	void NewAdditionTerm::execute(middle::GameState* gameState)
 	{
+		middle::executeAction <middle::EditorActionRegisterId>(gameState, this, newTermId);
+
 		std::vector<middle::Id>shapesToAddIntoIds;
 
 		bool isEquOrInequ = bubble::isEqualsOrInequals(gameState, shapeToAddIntoId);
@@ -1387,6 +1335,8 @@ namespace bubbleActions {
 
 	void NewMultiplicationTerm::execute(middle::GameState* gameState)
 	{
+		middle::executeAction <middle::EditorActionRegisterId>(gameState, this, newTermId);
+
 		std::vector<middle::Id>shapesToAddIntoIds;
 
 		bool isEquOrInequ = bubble::isEqualsOrInequals(gameState, shapeToAddIntoId);
@@ -1422,6 +1372,8 @@ namespace bubbleActions {
 
 	void NewPowerTerm::execute(middle::GameState* gameState)
 	{
+		middle::executeAction <middle::EditorActionRegisterId>(gameState, this, newTermId);
+
 		std::vector<middle::Id>shapesToAddIntoIds;
 
 		bool isEquOrInequ = bubble::isEqualsOrInequals(gameState, shapeToAddIntoId);
@@ -1659,6 +1611,8 @@ namespace bubbleActions {
 		replaceAction->execute(gameState);
 		actions.push_back(std::move(replaceAction));
 
+		resultId = parentId;
+
 		queueSound(gameState, bubbleSounds::CANCEL_SOUND);
 
 		if (parentId.index != middle::UNASSIGNED) {
@@ -1833,6 +1787,7 @@ namespace bubbleActions {
 
 	void InsertAsXOverX::execute(middle::GameState* gameState)
 	{
+		middle::executeAction <middle::EditorActionRegisterId>(gameState, this, newTermId);
 
 		Vector3 currPos = middle::getGlobalPosition(gameState, newTermId.index);
 		middle::moveShape(gameState, newTermId.index, targetPos - currPos);
@@ -1842,7 +1797,7 @@ namespace bubbleActions {
 
 		auto linkAction = LinkMultiplicationTerm(newTermId, inverseId);
 		linkAction.execute(gameState);
-		middle::Id mulId = linkAction.resultShapeId;
+		middle::Id mulId = linkAction.resultId;
 
 		// container Bubble
 		middle::Shape bubbleProto = bubble::newBubble(gameState, targetPos);
@@ -1880,7 +1835,6 @@ namespace bubbleActions {
 
 		queueSound(gameState, bubbleSounds::ADD_TERM_SOUND);
 
-		notifyBubbleModification(gameState, linkToReciever->resultShapeId);
 	}
 
 	void InsertAsXOverX::undo(middle::GameState* gameState)
@@ -1893,6 +1847,8 @@ namespace bubbleActions {
 
 	void InsertAsXMinusX::execute(middle::GameState* gameState)
 	{
+		middle::executeAction <middle::EditorActionRegisterId>(gameState, this, newTermId);
+
 		auto& shapeToAddInto = middle::getShape(gameState, shapeToAddIntoId.index);
 
 		Vector3 currppos = middle::getGlobalPosition(gameState, newTermId.index);
@@ -1934,7 +1890,6 @@ namespace bubbleActions {
 
 		queueSound(gameState, bubbleSounds::ADD_TERM_SOUND);
 
-		notifyBubbleModification(gameState, containerId);
 	}
 
 	void InsertAsXMinusX::undo(middle::GameState* gameState)
@@ -2104,7 +2059,6 @@ namespace bubbleActions {
 		// reparent summand copy 
 		middle::executeAction<middle::EditorActionReparent>(gameState, this, parentAddition.index, summandCopyId.index);
 
-		notifyBubbleModification(gameState, parentId);
 	}
 
 	void ExpandSummation::undo(middle::GameState* gameState)
