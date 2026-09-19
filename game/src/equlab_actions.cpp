@@ -362,7 +362,7 @@ namespace equlab {
 		}
 		auto connectAction = bubbleActions::LinkMultiplicationTerm(copyIdA, copyIdB);
 		connectAction.execute(gameState);
-		middle::EditorActionReparent(mulCopyId.index, connectAction.resultId.index).execute(gameState);
+		middle::EditorActionReparent(mulCopyId.index, connectAction.results.back().index).execute(gameState);
 		resultId = mulCopyId;
 		middle::executeAction<middle::EditorActionRegisterId>(gameState, this, mulCopyId);
 

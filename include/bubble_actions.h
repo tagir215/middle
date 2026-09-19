@@ -30,7 +30,7 @@ namespace bubbleActions{
 
 	class BubbleAction : public middle::EditorActionContainer {
 	public:
-		middle::Id resultId;
+		std::vector<middle::Id>results;
 	};
 
 	class NotifyModificationAction : public middle::EditorActionContainer {
