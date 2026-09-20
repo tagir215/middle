@@ -30,7 +30,8 @@ namespace bubbleActions{
 
 	class BubbleAction : public middle::EditorActionContainer {
 	public:
-		std::vector<middle::Id>results;
+		std::vector<middle::Id>inputs;
+		std::vector<middle::Id>outputs;
 	};
 
 	class NotifyModificationAction : public middle::EditorActionContainer {
@@ -45,9 +46,11 @@ namespace bubbleActions{
 
 	class Cancel : public BubbleAction {
 	public:
-		middle::Id id;
+		enum InputRoles {
+			ID_TO_CANCEL
+		};
 		Cancel(middle::Id id) {
-			this->id = id;
+			this->inputs.push_back(id);
 		}
 		void execute(middle::GameState* gameState) override;
 		void undo(middle::GameState* gameState) override;
@@ -55,9 +58,11 @@ namespace bubbleActions{
 
 	class Simplify : public BubbleAction {
 	public:
-		middle::Id id;
+		enum InputRoles {
+			ID_TO_SIMPLIFY
+		};
 		Simplify(middle::Id id) {
-			this->id = id;
+			inputs.push_back(id);
 		}
 		void execute(middle::GameState* gameState) override;
 		void undo(middle::GameState* gameState) override;
@@ -65,28 +70,26 @@ namespace bubbleActions{
 
 	class Bubblify : public BubbleAction {
 	public:
-		middle::Id id;
+		enum InputRoles {
+			ID_TO_BUBBLIFY
+		};
 		Bubblify(middle::Id id) {
-			this->id = id;
+			inputs.push_back(id);
 		}
-		void execute(middle::GameState* gameState) override;
-		void undo(middle::GameState* gameState) override;
-	};
-
-	class UpdateVariable : public BubbleAction {
-	public:
-		std::string label;
-		std::function<middle::Id()>newUnitRefProvider;
-		middle::Id oldUnitRef;
-		UpdateVariable(std::string label, std::function<middle::Id()> newUnitrefProvider);
 		void execute(middle::GameState* gameState) override;
 		void undo(middle::GameState* gameState) override;
 	};
 
 	class LinkMultiplicationTerm : public BubbleAction {
 	public:
-		middle::Id recieverShapeId;
-		middle::Id linkingShapeId;
+		enum InputRoles {
+			ID_RECIEVER,
+			ID_LINKING
+		};
+		enum OutputRoles {
+			ID_RESULT_MULTIPLICATION
+		};
+		
 		LinkMultiplicationTerm(middle::Id reciverShapeId, middle::Id linkikngShapeId);
 		void execute(middle::GameState* gameState) override;
 		void undo(middle::GameState* gameState) override;
@@ -94,11 +97,15 @@ namespace bubbleActions{
 
 	class UnlinkMultiplicationTerm : public BubbleAction {
 	public:
-		middle::Id unlinkingShapeId;
-		middle::Id resultUnlinkedMulId;
-		middle::Id resultUnlinkedId;
+		enum InputRoles {
+			ID_TO_UNLINK
+		};
+		enum OutputRoles {
+			ID_UNLINKED_MUL,
+			ID_UNLINKED_SHAPE
+		};
 		UnlinkMultiplicationTerm(middle::Id unlinkingShapeId) {
-			this->unlinkingShapeId = unlinkingShapeId;
+			inputs.push_back(unlinkingShapeId);
 		}
 		void execute(middle::GameState* gameState) override;
 		void undo(middle::GameState* gameState) override;
@@ -106,7 +113,12 @@ namespace bubbleActions{
 
 	class MulOne : public BubbleAction {
 	public:
-		middle::Id recieverShapeId;
+		enum InputRoles {
+			ID_RECIEVER
+		};
+		enum OutputRoles {
+			ID_RESULT_MULTIPLICATION
+		};
 		MulOne(middle::Id recieverShapeId);
 		void execute(middle::GameState* gameState) override;
 		void undo(middle::GameState* gameState) override;
@@ -114,14 +126,18 @@ namespace bubbleActions{
 
 	class MulNegativeOne : public BubbleAction {
 	public:
-		middle::Id recieverShapeId;
+		enum InputRoles {
+			ID_RECIEVER
+		};
+		enum OutputRoles {
+			ID_RESULT_MULTIPLICATION
+		};
 		MulNegativeOne(middle::Id recieverShapeId) {
-			this->recieverShapeId = recieverShapeId;
+			inputs.push_back(recieverShapeId);
 		}
 		void execute(middle::GameState* gameState) override;
 		void undo(middle::GameState* gameState) override;
 	};
-
 
 	struct MultiplyPair {
 		middle::Id parentId;
@@ -131,10 +147,13 @@ namespace bubbleActions{
 
 	class UpdateBubblesMultiplicationIdentity : public BubbleAction {
 	public:
-		middle::Id mulId;
+		enum InputRoles {
+			ID_MUL
+		};
 		bool removedMulComp = false;
 		UpdateBubblesMultiplicationIdentity(middle::Id mulId) {
-			this->mulId = mulId;
+			inputs.push_back(mulId);
+
 		}
 		void execute(middle::GameState* gameState) override;
 		void undo(middle::GameState* gameState) override;
@@ -142,8 +161,13 @@ namespace bubbleActions{
 
 	class ExecuteMultiplication : public BubbleAction {
 	public:
-		middle::Id shapeToCopyId;
-		middle::Id shapeToCopyIntoId;
+		enum InputRoles {
+			ID_TO_COPY,
+			ID_TO_COPY_INTO
+		};
+		enum OutputRoles {
+			ID_RESULT_ADDITION
+		};
 		ExecuteMultiplication(middle::Id shapeToCopyId, middle::Id shapeToCopyIntoId);
 		void execute(middle::GameState* gameState) override;
 		void undo(middle::GameState* gameState) override;
@@ -151,7 +175,12 @@ namespace bubbleActions{
 
 	class ExpandSummation : public BubbleAction {
 	public:
-		middle::Id summationId;
+		enum InputRoles {
+			ID_SUMMATION
+		};
+		enum OutputRoles {
+			ID_RESULT_ADDITION
+		};
 		ExpandSummation(middle::Id summationId);
 		void execute(middle::GameState* gameState) override;
 		void undo(middle::GameState* gameState) override;
@@ -159,8 +188,13 @@ namespace bubbleActions{
 
 	class ExecuteAddition : public BubbleAction {
 	public:
-		middle::Id shapeToAddId;
-		middle::Id shapeToAddIntoId;
+		enum InputRoles {
+			ID_TO_ADD,
+			ID_TO_ADD_INTO
+		};
+		enum OutputRoles {
+			ID_RESULT_ADDITION
+		};
 		ExecuteAddition(middle::Id shapeToAddId, middle::Id shapeToAddIntoId);
 		void execute(middle::GameState* gameState) override;
 		void undo(middle::GameState* gameState) override;
@@ -168,11 +202,16 @@ namespace bubbleActions{
 
 	class ExecutePower : public BubbleAction {
 	public:
-		middle::Id idA;
-		middle::Id idB;
+		enum InputRoles {
+			ID_A,
+			ID_B
+		};
+		enum OutputRoles {
+			ID_RESULT_MULTIPLICATION
+		};
 		ExecutePower(middle::Id idA, middle::Id idB) {
-			this->idA = idA;
-			this->idB = idB;
+			inputs.push_back(idA);
+			inputs.push_back(idB);
 		}
 		void execute(middle::GameState* gameState) override;
 		void undo(middle::GameState* gameState) override;
@@ -181,7 +220,12 @@ namespace bubbleActions{
 
 	class Pop : public BubbleAction {
 	public:
-		middle::Id id;
+		enum InputRoles {
+			ID_TO_POP
+		};
+		enum OutputRoles {
+			ID_RESULT_PARENT_OF_POPPED
+		};
 		Pop(middle::Id id);
 		void execute(middle::GameState* gameState) override;
 		void undo(middle::GameState* gameState) override;
@@ -189,8 +233,13 @@ namespace bubbleActions{
 
 	class Replace : public BubbleAction {
 	public:
-		middle::Id shapeToReplaceId;
-		middle::Id replacingShapeId;
+		enum InputRoles {
+			ID_TO_REPLACE,
+			ID_REPLACING
+		};
+		enum OutputRoles {
+			ID_RESULT_REPLACEMENT
+		};
 		Replace(middle::Id shapeToReplace, middle::Id replacingShape);
 		void execute(middle::GameState* gameState) override;
 		void undo(middle::GameState* gameState) override;
@@ -198,7 +247,12 @@ namespace bubbleActions{
 
 	class CompressCommonFactor : public BubbleAction {
 	public:
-		middle::Id commonFactorId;
+		enum InputRoles {
+			ID_COMMON_FACTOR
+		};
+		enum OutputRoles {
+			ID_RESULT_COMPRESSED
+		};
 		CompressCommonFactor(middle::Id containerShape);
 		void execute(middle::GameState* gameState) override;
 		void undo(middle::GameState* gameState) override;
@@ -206,7 +260,12 @@ namespace bubbleActions{
 
 	class CompressPowers : public BubbleAction {
 	public:
-		middle::Id commonFactorId;
+		enum InputRoles {
+			ID_COMMON_FACTOR
+		};
+		enum OutputRoles {
+			ID_RESULT_COMPRESSED
+		};
 		CompressPowers(middle::Id commonExponentId);
 		void execute(middle::GameState* gameState) override;
 		void undo(middle::GameState* gameState) override;
@@ -214,12 +273,17 @@ namespace bubbleActions{
 
 	class NewAdditionTerm : public BubbleAction {
 	public:
-		middle::Id shapeToAddIntoId;
-		middle::Id newTermId;
+		enum InputRoles {
+			ID_TO_ADD_INTO,
+			ID_NEW_TERM
+		};
+		enum OutputRoles {
+			ID_RESULT_CONTAINER
+		};
 		Vector3 targetPosition;
 		NewAdditionTerm(middle::Id& shapeToAddIntoId, middle::Id& newTermId, const Vector3& targetPosition) {
-			this->shapeToAddIntoId = shapeToAddIntoId;
-			this->newTermId = newTermId;
+			inputs.push_back(shapeToAddIntoId);
+			inputs.push_back(newTermId);
 			this->targetPosition = targetPosition;
 		}
 		void execute(middle::GameState* gameState) override;
@@ -228,12 +292,17 @@ namespace bubbleActions{
 
 	class NewMultiplicationTerm : public BubbleAction {
 	public:
-		middle::Id shapeToAddIntoId;
-		middle::Id newTermId;
+		enum InputRoles {
+			ID_TO_ADD_INTO,
+			ID_NEW_TERM
+		};
+		enum OutputRoles {
+			ID_RESULT_CONTAINER
+		};
 		Vector3 targetPosition;
 		NewMultiplicationTerm(middle::Id& shapeToAddIntoId, middle::Id& newTermId, const Vector3& targetPosition) {
-			this->shapeToAddIntoId = shapeToAddIntoId;
-			this->newTermId = newTermId;
+			inputs.push_back(shapeToAddIntoId);
+			inputs.push_back(newTermId);
 			this->targetPosition = targetPosition;
 		}
 		void execute(middle::GameState* gameState) override;
@@ -242,12 +311,17 @@ namespace bubbleActions{
 
 	class NewPowerTerm : public BubbleAction {
 	public:
-		middle::Id shapeToAddIntoId;
-		middle::Id newTermId;
+		enum InputRoles {
+			ID_TO_ADD_INTO,
+			ID_NEW_TERM
+		};
+		enum OutputRoles {
+			ID_RESULT_CONTAINER
+		};
 		Vector3 targetPosition;
 		NewPowerTerm(middle::Id& shapeToAddIntoId, middle::Id& newTermId, const Vector3& targetPosition) {
-			this->shapeToAddIntoId = shapeToAddIntoId;
-			this->newTermId = newTermId;
+			inputs.push_back(shapeToAddIntoId);
+			inputs.push_back(newTermId);
 			this->targetPosition = targetPosition;
 		}
 		void execute(middle::GameState* gameState) override;
@@ -256,12 +330,17 @@ namespace bubbleActions{
 
 	class InsertAsXOverX : public BubbleAction {
 	public:
-		middle::Id shapeToAddIntoId;
-		middle::Id newTermId;
+		enum InputRoles {
+			ID_TO_ADD_INTO,
+			ID_NEW_TERM
+		};
+		enum OutputRoles {
+			ID_RESULT_CONTAINER
+		};
 		Vector3 targetPos;
 		InsertAsXOverX(middle::Id shapeToAddIntoId, middle::Id newTermId, const Vector3& targetPosition) {
-			this->shapeToAddIntoId = shapeToAddIntoId;
-			this->newTermId = newTermId;
+			inputs.push_back(shapeToAddIntoId);
+			inputs.push_back(newTermId);
 			this->targetPos = targetPosition;
 		}
 		void execute(middle::GameState* gameState) override;
@@ -270,38 +349,35 @@ namespace bubbleActions{
 
 	class InsertAsXMinusX : public BubbleAction {
 	public:
-		middle::Id shapeToAddIntoId;
-		middle::Id newTermId;
+		enum InputRoles {
+			ID_TO_ADD_INTO,
+			ID_NEW_TERM
+		};
+		enum OutputRoles {
+			ID_RESULT_CONTAINER
+		};
 		Vector3 targetPos;
 		InsertAsXMinusX(middle::Id shapeToAddIntoId, middle::Id newTermId, const Vector3& targetPosition) {
-			this->shapeToAddIntoId = shapeToAddIntoId;
-			this->newTermId = newTermId;
+			inputs.push_back(shapeToAddIntoId);
+			inputs.push_back(newTermId);
 			this->targetPos = targetPosition;
 		}
 		void execute(middle::GameState* gameState) override;
 		void undo(middle::GameState* gameState) override;
 	};
 
-	class StartProcedure : public BubbleAction {
-	public:
-		middle::Id procContainer;
-		middle::Id input;
-		StartProcedure(middle::Id procContainerId, middle::Id inputId) {
-			this->procContainer = procContainerId;
-			this->input = inputId;
-		}
-		void execute(middle::GameState* gameState) override;
-		void undo(middle::GameState* gameState) override;
-	};
-
-
 	class Substitute : public BubbleAction {
 	public:
-		middle::Id shapeToReplaceId;
-		middle::Id shapeToInsertId;
+		enum InputRoles {
+			ID_TO_SUBSTITUTE,
+			ID_SUBSTITUTE
+		};
+		enum OutputRoles {
+			ID_RESULT_SUBSTITUTE
+		};
 		Substitute(middle::Id shapeToReplaceId, middle::Id shapeToInsertId) {
-			this->shapeToReplaceId = shapeToReplaceId;
-			this->shapeToInsertId = shapeToInsertId;
+			inputs.push_back(shapeToReplaceId);
+			inputs.push_back(shapeToInsertId);
 		}
 		void execute(middle::GameState* gameState) override;
 		void undo(middle::GameState* gameState) override;
@@ -309,11 +385,16 @@ namespace bubbleActions{
 
 	class SubstituteFunction : public BubbleAction {
 	public:
-		middle::Id functionToReplaceId;
-		middle::Id functionBodyId;
+		enum InputRoles {
+			ID_TO_SUBSTITUTE,
+			ID_FUNCTION_BODY
+		};
+		enum OutputRoles {
+			ID_RESULT_SUBSTITUTE
+		};
 		SubstituteFunction(middle::Id functionToReplaceId, middle::Id functionBodyId) {
-			this->functionToReplaceId = functionToReplaceId;
-			this->functionBodyId = functionBodyId;
+			inputs.push_back(functionToReplaceId);
+			inputs.push_back(functionBodyId);
 		}
 		void execute(middle::GameState* gameState) override;
 		void undo(middle::GameState* gameState) override;
@@ -321,11 +402,16 @@ namespace bubbleActions{
 
 	class CopyToInventory : public BubbleAction {
 	public:
-		middle::Id inventoryId;
-		middle::Id id;
+		enum InputRoles {
+			ID_INVENTORY,
+			ID_TO_COPY
+		};
+		enum OutputRoles {
+			ID_RESULT_COPY
+		};
 		CopyToInventory(middle::Id inventoryId, middle::Id id) {
-			this->inventoryId = inventoryId;
-			this->id = id;
+			inputs.push_back(inventoryId);
+			inputs.push_back(id);
 		}
 		void execute(middle::GameState* gameState) override;
 		void undo(middle::GameState* gameState) override;
@@ -334,11 +420,16 @@ namespace bubbleActions{
 
 	class CopyAsHelper : public BubbleAction {
 	public:
-		middle::Id shapeToCopyId;
+		enum InputRoles {
+			ID_TO_COPY,
+		};
+		enum OutputRoles {
+			ID_RESULT_COPY_HELPER
+		};
 		Vector3 targetPosition;
 		middle::Id copyShapeId;
 		CopyAsHelper(middle::Id shapeToCopyId, const Vector3& targetPosition) {
-			this->shapeToCopyId = shapeToCopyId;
+			inputs.push_back(shapeToCopyId);
 			this->targetPosition = targetPosition;
 		}
 		void execute(middle::GameState* gameState) override;

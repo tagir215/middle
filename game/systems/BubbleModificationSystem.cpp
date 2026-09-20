@@ -28,6 +28,7 @@
 #include "QueuedForSaveTag.h"
 #include "BubbleManipulatable.h"
 #include "Inventory.h"
+#include "bubble_animations.h"
 
 class BubbleModificationSystem : public middle::MiddleGameplaySystem {
 public:
@@ -108,6 +109,7 @@ public:
 		}
 		// else is addition connection
 		else {
+			//auto add = std::make_shared<bubbleAnimations::BubbleAnimationWrapper<bubbleActions::ExecuteAddition>>();
 			auto add = std::make_shared<bubbleActions::ExecuteAddition>(refShape.id, intersectedShape.id);
 			bubble::queueBubbleAction(gameState, intersectedShape.id, add);
 			return;
@@ -186,10 +188,7 @@ public:
 		}
 
 		else if (actionType == bubbleInventoryItemType::PROCEDURE) {
-			if (procContainerCache->getSize() == 1) {
-				middle::Id procContainerId = procContainerCache->relevantIdVector[0];
-				action = std::make_shared<bubbleActions::StartProcedure>(procContainerId, intersectedShape.id);
-			}
+			assert(false);
 		}
 		else if (actionType == bubbleInventoryItemType::MUL_ONE) {
 			action = std::make_shared<bubbleActions::MulOne>(intersectedShape.id);
