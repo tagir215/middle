@@ -1359,6 +1359,17 @@ namespace bubble {
 		}
 	}
 
+
+	void queueBubbleAction(middle::GameState* gameState, middle::Id id, 
+		std::shared_ptr<bubbleAnimations::BubbleAnimation> animation)
+	{
+		auto wrapper = std::make_shared<bubbleAnimations::BubbleAnimationWrapper>(animation);
+		middle::queueAction(gameState, wrapper);
+		gameState->bubbleAlgebraState.bubbleActions.push_back(wrapper);
+		auto notifyAction = std::make_shared<bubbleActions::NotifyModificationAction>(animation->action);
+		middle::queueAction(gameState, notifyAction);
+	}
+
 	void queueBubbleAction(middle::GameState* gameState, middle::Id id, std::shared_ptr<bubbleActions::BubbleAction> action)
 	{
 		middle::queueAction(gameState, action);

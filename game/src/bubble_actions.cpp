@@ -463,9 +463,10 @@ namespace bubbleActions {
 		if (action->cancelled) {
 			return;
 		}
-		middle::Id resultId = action->outputs.back();
-		assert(middle::isValidId(gameState, resultId));
-		middle::attachComponent<components::ModifiedBubbleTag>(gameState, resultId);
+		for (middle::Id id : action->outputs) {
+			assert(middle::isValidId(gameState, id));
+			middle::attachComponent<components::ModifiedBubbleTag>(gameState, id);
+		}
 	}
 
 	void NotifyModificationAction::undo(middle::GameState* gameState)

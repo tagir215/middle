@@ -21,6 +21,7 @@
 #include "CameraEntity.h"
 #include "HiddenTag.h"
 #include "component_utils.h"
+#include "config.h"
 
 namespace middle {
 
@@ -106,7 +107,8 @@ namespace middle {
 	}
 
 	void EditorActionBuild::execute(GameState* gameState) {
-		std::string command = "python ../src/editor_scripts/build_project.py";
+		// TODO
+		std::string command = "python ../middle/editor_scripts/build_project.py";
 		system(command.c_str());
 	}
 
@@ -203,7 +205,7 @@ namespace middle {
 	void EditorActionOpenSystem::execute(GameState* gameState)
 	{
 		std::string name = systemName;
-		shell_open_file("../assets/systems/" + systemName + ".cpp");
+		shell_open_file(std::string(middlePaths::SYSTEMS_FOLDER) + "/" + systemName + ".cpp");
 	}
 
 	void EditorActionOpenSystem::undo(GameState* gameState)
@@ -216,9 +218,10 @@ namespace middle {
 			newSystemFile(gameState, systemName);
 		}
 
-		shell_open_file("../assets/systems/" + systemName + ".cpp");
+		shell_open_file(std::string(middlePaths::SYSTEMS_FOLDER) + "/" + systemName + ".cpp");
 
-		std::string command = "python ../src/editor_scripts/build_project.py";
+		// TODO
+		std::string command = "python ../middle/editor_scripts/build_project.py";
 		system(command.c_str());
 
 
@@ -267,9 +270,10 @@ namespace middle {
 			newComponentFile(gameState, componentName);
 		}
 
-		shell_open_file("../assets/components/" + componentName + ".cpp");
+		shell_open_file(std::string(middlePaths::COMPONENT_FOLDER) + "/" + componentName + ".cpp");
 
-		std::string command = "python ../src/editor_scripts/build_project.py";
+		//TODO
+		std::string command = "python ../middle/editor_scripts/build_project.py";
 		system(command.c_str());
 
 		gameState->closeGame = true;
@@ -320,7 +324,7 @@ namespace middle {
 
 	void EditorActionOpenComponent::execute(GameState* gameState)
 	{
-		shell_open_file("../assets/components/" + componentName + ".h");
+		shell_open_file(std::string(middlePaths::COMPONENT_FOLDER) + "/" + componentName + ".h");
 		unselect(gameState);
 	}
 

@@ -109,9 +109,9 @@ public:
 		}
 		// else is addition connection
 		else {
-			//auto add = std::make_shared<bubbleAnimations::BubbleAnimationWrapper<bubbleActions::ExecuteAddition>>();
 			auto add = std::make_shared<bubbleActions::ExecuteAddition>(refShape.id, intersectedShape.id);
-			bubble::queueBubbleAction(gameState, intersectedShape.id, add);
+			auto addAnimation = std::make_shared<bubbleAnimations::AdditionAnimation>(add);
+			bubble::queueBubbleAction(gameState, intersectedShape.id, addAnimation);
 			return;
 		}
 	}

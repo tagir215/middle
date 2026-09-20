@@ -108,6 +108,19 @@ namespace middle{
 		gameState->componentCacheSystem->recordTimeUpdate(gameState);
 	}
 
+	void processAnimations(GameState* gameState) {
+		auto& animations = gameState->animations;
+		for (auto& animation : animations) {
+			animation->progressAnimation(gameState);
+		}
+		for (int i = animations.size() - 1; i >= 0; --i) {
+			auto& animation = animations[i];
+			if (animation->progress > animation->duration) {
+				animations.erase(animations.begin() + i);
+			}
+		}
+	}
+
 	void processActionQueues(GameState* gameState) {
 		while (gameState->actionQueue.size() > 0) {
 			auto actionStart = std::chrono::high_resolution_clock::now();
@@ -182,6 +195,9 @@ namespace middle{
 
 		// gameplay postframe
 		updateGameplaySystems(gameState, gameState->gameplaySystemsPostFrame);
+
+		// animations
+		processAnimations(gameState);
 
 		processActionQueues(gameState);
 		cacheUpdate(gameState);

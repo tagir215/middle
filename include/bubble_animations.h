@@ -5,85 +5,64 @@
 namespace bubbleAnimations {
 
 	struct AnimationTransform {
-		Vector3 position;
-		Vector3 scale;
-		Quaternion rotation;
+		Vector3 position = { 0,0,0 };
+		Vector3 scale = { 1,1,1 };
+		Quaternion rotation{ 0,0,0,0 };
 	};
 
 	typedef std::vector<AnimationTransform> AnimationTransforms;
+
+	using ActionPtr = std::shared_ptr<bubbleActions::BubbleAction>;
 	
-	class Animation {
-	public:
-		float progress = 0;
-		float duration = 0;
 
-		AnimationTransforms beginState;
-		AnimationTransforms endState;
-		void addBeginState(middle::GameState* gameState, const AnimationTransforms& state);
-		void addEndState(middle::GameState* gameState, const AnimationTransforms& state);
-		virtual void update(middle::GameState* gameState, AnimationTransforms& state) = 0;
-
-		void setDuration(float duration) {
-			this->duration = duration;
-		}
-		void progressAnimation(middle::GameState* gameState, std::vector<AnimationTransform>& state) {
-			if (progress < duration) {
-				progress += gameState->frameTime;
-				update(gameState, state);
-			}
-		}
-		virtual ~Animation() = default;
-	};
-
-	struct BubbleAnimationMap {
-		std::vector<middle::Id>ids;
-		AnimationTransforms animationState;
-	};
-
-
-	template<typename ActionType>
-	class BubbleAnimationWrapper : public middle::EditorActionContainer {
-	public:
-		using ActionPtr = std::shared_ptr<ActionType>;
-		using MappingFunc = std::function<void(middle::GameState*, ActionPtr, AnimationTransforms&)>;
-
-		MappingFunc createBeginFrame;
-		MappingFunc createEndFrame;
+	struct BubbleAnimation : public middle::Animation {
 		ActionPtr action;
+		AnimationTransforms prevFrame;
+		std::vector<AnimationTransforms>animationKeyFrames;
+		virtual AnimationTransforms captureBefore(middle::GameState* gameState) = 0;
+		virtual AnimationTransforms captureCurrent(middle::GameState* gameState) = 0;
+		virtual void start(middle::GameState* gamestate) = 0;
+	};
 
-		AnimationTransforms beginState;
-		AnimationTransforms currentState;
-		AnimationTransforms endState;
+	using AnimationPtr = std::shared_ptr<BubbleAnimation>;
 
-		BubbleAnimationWrapper(ActionPtr action, MappingFunc createBeginFrame, MappingFunc createEndFrame) {
-			this->action = action;
-			this->createBeginFrame = createBeginFrame;
-			this->createEndFrame = createEndFrame;
+	class BubbleAnimationWrapper : public bubbleActions::BubbleAction {
+	public:
+
+		AnimationPtr animation;
+		BubbleAnimationWrapper(AnimationPtr animationPtr) {
+			this->animation = animationPtr;
 		}
 
 		void execute(middle::GameState* gameState) override {
-			createBeginFrame(gameState, action, beginState);
-			action->execute(gameState);
-			createEndFrame(gameState, action, endState);
+			animation->animationKeyFrames.push_back(animation->captureBefore(gameState));
+			animation->action->execute(gameState);
+			animation->start(gameState);
+			gameState->animations.push_back(animation);
 		}
 		void undo(middle::GameState* gameState) override {
-			createBeginFrame(gameState, action, beginState);
-			action->undo(gameState);
-			createEndFrame(gameState, action, endState);
+			animation->action->undo(gameState);
 		}
 	};
 
-	class AdditionAnimation : public Animation {
+	class AdditionAnimation : public BubbleAnimation {
 	public:
-
-		enum roles {
+		enum Roles {
 			ELEMENT_A,
 			ELEMENT_B,
 			NEW_CONTAINER
 		};
 
-		AdditionAnimation() {}
-		void update(middle::GameState* gameState, AnimationTransforms& state) override;
+		AnimationTransforms captureBefore(middle::GameState* gameState) override;
+		AnimationTransforms captureCurrent(middle::GameState* gameState) override;
+		void start(middle::GameState* gameState) override;
+
+		AdditionAnimation(ActionPtr action) {
+			this->action = action;
+			duration = 0.5f;
+		}
+
+		void update(middle::GameState* gameState) override;
 	};
 
 }

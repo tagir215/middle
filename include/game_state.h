@@ -58,6 +58,7 @@ namespace middle {
 		std::string callerSystem;
 	};
 
+
 	struct EditorState {
 		CreationMode creationMode;
 		Camera3D camera;
@@ -132,6 +133,15 @@ namespace middle {
 		POWER_OUTER,
 		ADD_X_MINUS_X,
 		MULTIPLY_X_OVER_X,
+	};
+
+	struct Animation {
+		float progress = 0;
+		float duration = 0;
+		virtual void update(middle::GameState* gameState) = 0;
+		void setDuration(float duration);
+		void progressAnimation(middle::GameState* gameState);
+		virtual ~Animation() = default;
 	};
 
 	struct BubbleAlgebraState {
@@ -246,6 +256,7 @@ namespace middle {
 		std::unordered_map<std::string, ShaderContainer>shaderMap;
 		std::queue<std::string>modelsToLoadQueue;
 		std::queue<Sound>soundQueue;
+		std::vector<std::shared_ptr<Animation>>animations;
 
 		std::vector<std::string>slowSystems;
 		std::vector<std::string>slowActions;

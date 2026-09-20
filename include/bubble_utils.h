@@ -3,6 +3,8 @@
 #include "game_state.h"
 #include "AlgebraNode.h"
 #include "bubble_actions.h"
+#include "bubble_animations.h"
+
 using namespace middle;
 
 namespace bubble {
@@ -102,6 +104,8 @@ namespace bubble {
 	void recursiveBubbleLayoutUpdate(middle::GameState* gameState, middle::Id id);
 	void queueBubbleAction(middle::GameState* gameState, middle::Id id, std::shared_ptr<bubbleActions::BubbleAction>container);
 	void queueEqulabAction(middle::GameState* gameState, middle::Id id, std::shared_ptr<middle::EditorActionContainer>container);
+	void queueBubbleAction(middle::GameState* gameState, middle::Id id, std::shared_ptr<bubbleAnimations::BubbleAnimation> animation);
+
 
 	template<typename T>
 	void recursiveAttachComponent(middle::GameState* gameState, middle::Id id){

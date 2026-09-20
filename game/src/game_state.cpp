@@ -11,5 +11,15 @@ namespace middle {
 		worldScalarRate(1)
 	{
 	}
+
+	void Animation::setDuration(float duration) {
+		this->duration = duration;
+	}
+	void Animation::progressAnimation(middle::GameState* gameState) {
+		if (progress < duration) {
+			progress += gameState->frameTime;
+			update(gameState);
+		}
+	}
 }
 
