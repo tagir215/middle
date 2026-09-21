@@ -17,13 +17,15 @@ namespace middle {
 	}
 	void Animation::progressAnimation(middle::GameState* gameState) {
 		if (!reverseMode) {
-			if (progress < duration) {
+			if (progress <= duration) {
+				prevProgress = progress;
 				progress += gameState->frameTime;
 				update(gameState);
 			}
 		}
 		else {
 			if (progress >= 0) {
+				prevProgress = progress;
 				progress -= gameState->frameTime;
 				update(gameState);
 			}

@@ -8,11 +8,23 @@ namespace animationActions {
 		middle::Id id;
 		Vector3 startPos;
 		Vector3 targetPos;
-		float duration;
 		LinearTranslation(middle::Id id, const Vector3& targetPos, float duration) {
 			this->id = id;
 			this->targetPos = targetPos;
 			this->duration = duration;
+		}
+		void start(middle::GameState* gameState);
+		void update(middle::GameState* gameState);
+	};
+
+	class Teleport : public middle::Animation {
+	public:
+		middle::Id id;
+		Vector3 targetPos;
+		Vector3 startPos;
+		Teleport(middle::Id id, const Vector3& targetPos) {
+			this->id = id;
+			this->targetPos = targetPos;
 		}
 		void start(middle::GameState* gameState);
 		void update(middle::GameState* gameState);

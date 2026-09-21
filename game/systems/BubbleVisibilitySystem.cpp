@@ -12,6 +12,7 @@
 #include "IntersectingTag.h"
 #include "NonPhysicalBubbleTag.h"
 #include "RuntimeHiddenTag.h"
+#include "PauseLayoutTag.h"
 
 class BubbleVisibilitySystem : public middle::MiddleGameplaySystem {
 	components::CompCache* visibleCache;

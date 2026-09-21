@@ -7,7 +7,7 @@
 
 namespace components {
 	struct Layer : public middle::Serializable{
-		int layer = 0;
+		int layer = middle::UNASSIGNED;
 		void serialize(std::ostream& ostream) override;
 		void deserialize(const std::vector<std::string>& buffer, int indexOffset) override;
 		void getFields(std::vector<middle::FieldInfo>& fields, int* size) override;

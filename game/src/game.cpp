@@ -110,7 +110,8 @@ namespace middle{
 
 	void processAnimations(GameState* gameState) {
 		auto& animations = gameState->animations;
-		for (auto& animation : animations) {
+		for (int i = 0; i < animations.size(); ++i) {
+			auto& animation = animations[i];
 			animation->progressAnimation(gameState);
 		}
 		for (int i = animations.size() - 1; i >= 0; --i) {
@@ -196,11 +197,11 @@ namespace middle{
 		// gameplay postframe
 		updateGameplaySystems(gameState, gameState->gameplaySystemsPostFrame);
 
-		// animations
-		processAnimations(gameState);
-
 		processActionQueues(gameState);
 		cacheUpdate(gameState);
+
+		// animations
+		processAnimations(gameState);
 
 		// postframe
 		updateSystems(gameState, gameState->enginePostFrameSystems);

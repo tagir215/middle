@@ -137,6 +137,7 @@ namespace middle {
 
 	struct Animation : public std::enable_shared_from_this<Animation> {
 		float progress = 0;
+		float prevProgress = 0;
 		float duration = 0;
 		bool reverseMode = false;
 		virtual void update(middle::GameState* gameState) = 0;

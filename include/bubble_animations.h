@@ -19,11 +19,28 @@ namespace bubbleAnimations {
 		ActionPtr action;
 		AnimationTransforms prevFrame;
 		std::vector<AnimationTransforms>animationKeyFrames;
+		std::vector<middle::Id> actorIds;
+		std::vector<std::shared_ptr<Animation>>embeddedAnimations;
 		virtual AnimationTransforms captureBefore(middle::GameState* gameState) = 0;
-		virtual AnimationTransforms captureCurrent(middle::GameState* gameState) = 0;
+		virtual void assignActors(middle::GameState* gameState) = 0;
+
+		template<class T, class... Args>
+		void addChildAnimation(middle::GameState* gameState, BubbleAnimation* bubbleAnimation, Args&&... args) {
+			auto animation = std::make_shared<T>(std::forward<Args>(args)...);
+			animation->start(gameState);
+			bubbleAnimation->embeddedAnimations.push_back(animation);
+		}
+
+		void playChildAnimations(middle::GameState* gameState) {
+			for (auto& animation : embeddedAnimations) {
+				animation->progressAnimation(gameState);
+			}
+		}
 	};
 
+
 	using AnimationPtr = std::shared_ptr<BubbleAnimation>;
+
 
 	class BubbleAnimationWrapper : public bubbleActions::BubbleAction {
 	public:
@@ -36,6 +53,7 @@ namespace bubbleAnimations {
 		void execute(middle::GameState* gameState) override {
 			animation->animationKeyFrames.push_back(animation->captureBefore(gameState));
 			animation->action->execute(gameState);
+			animation->assignActors(gameState);
 			animation->start(gameState);
 		}
 		void undo(middle::GameState* gameState) override {
@@ -52,12 +70,11 @@ namespace bubbleAnimations {
 		};
 
 		AnimationTransforms captureBefore(middle::GameState* gameState) override;
-		AnimationTransforms captureCurrent(middle::GameState* gameState) override;
+		void assignActors(middle::GameState* gameState) override;
 		void start(middle::GameState* gameState) override;
 
 		AdditionAnimation(ActionPtr action) {
 			this->action = action;
-			duration = 0.2f;
 		}
 
 		void update(middle::GameState* gameState) override;
