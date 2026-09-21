@@ -158,7 +158,7 @@ class PuzzleTextSystem : public middle::MiddleGameplaySystem {
 		for (middle::Id& panelId : puzzlePanelCache->relevantIdVector) {
 			auto panelRect = *rectIt;
 			panelWidth = panelRect->width;
-			panelPos = middle::getGlobalPosition(gameState, panelId.index);
+			panelPos = middle::getGlobalPosition(gameState, panelId);
 
 			std::vector<middle::Id>textUnits;
 			middle::getChildren(gameState, panelId, textUnits);
@@ -186,7 +186,7 @@ class PuzzleTextSystem : public middle::MiddleGameplaySystem {
 
 				Vector3 targetPos = cursorPos - Vector3{ text->offsetX ,0,text->offsetZ};
 
-				middle::moveShape(gameState, id.index, targetPos - middle::getGlobalPosition(gameState, id.index));
+				middle::moveShape(gameState, id.index, targetPos - middle::getGlobalPosition(gameState, id));
 
 				const float spaceBetweenWords = 5;
 				cursorPos += Vector3{ textSize.x + spaceBetweenWords, 0,0 };

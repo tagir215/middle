@@ -436,7 +436,7 @@ public:
 
 
 			if (intersectCount == 0) {
-				copyAsHelper(gameState, ref->idRef, middle::getGlobalPosition(gameState, shapeForDeletion.id.index));
+				copyAsHelper(gameState, ref->idRef, middle::getGlobalPosition(gameState, shapeForDeletion.id));
 			}
 		}
 

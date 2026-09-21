@@ -35,7 +35,7 @@ class SceneEditorSelectionSystem : public middle::MiddleGameplaySystem {
 				continue;
 			}
 			else {
-				center = middle::getGlobalPosition(gameState, id.index);
+				center = middle::getGlobalPosition(gameState, id);
 				targetId = id;
 			}
 
@@ -47,7 +47,7 @@ class SceneEditorSelectionSystem : public middle::MiddleGameplaySystem {
 		}
 		// FIND CLOSEST FROM SCENE OBJECTS
 		for (middle::Id& id : sceneObjCache->relevantIdVector) {
-			Vector3 pos = middle::getGlobalPosition(gameState, id.index);
+			Vector3 pos = middle::getGlobalPosition(gameState, id);
 			float distSqr = Vector3DistanceSqr(pos, gameState->activeCamera.position);
 			if (distSqr < minDistance) {
 				minDistance = distSqr;

@@ -37,28 +37,6 @@ namespace middle {
 	}
 
 	void EditorActionNewConstraint::execute(GameState* gameState) {
-		auto& shapes = gameState->shapes;
-
-		Shape& shapeA = getShape(gameState, indexA);
-		Shape& shapeB = getShape(gameState, indexB);
-
-		if (constraintExistsAt(gameState, shapeA.id, shapeB.id) != UNASSIGNED) {
-			return;
-		}
-
-		newIndex = findFreeIndex(gameState);
-
-		if (indexA != indexB) {
-			auto& shapeA = shapes[indexA];
-			auto& shapeB = shapes[indexB];
-			auto posA = getGlobalPosition(gameState, indexA);
-			auto posB = getGlobalPosition(gameState, indexB);
-			float distBetween = Vector3Distance(posA, posB);
-			entities::initConstraint(gameState, newIndex, indexA, indexB, distBetween);
-
-			// auto unselect
-			unselect(gameState);
-		}
 
 	}
 
@@ -137,7 +115,7 @@ namespace middle {
 			Vector3 centroid = { 0,0,0 };
 			for (int i = 0; i < ids.size(); ++i) {
 				auto& shape = getShape(gameState, ids[i].index);
-				Vector3 pos = middle::getGlobalPosition(gameState, shape.id.index);
+				Vector3 pos = middle::getGlobalPosition(gameState, shape.id);
 				centroid += pos;
 			}
 			centroid *= 1.0f / ids.size();
@@ -546,7 +524,7 @@ namespace middle {
 
 		for (int i = 0; i < selectedShapes.size(); ++i) {
 			auto& shape = getShape(gameState, selectedShapes[i]);
-			oldPositions[i] = middle::getGlobalPosition(gameState, shape.id.index);
+			oldPositions[i] = middle::getGlobalPosition(gameState, shape.id);
 		}
 
 		for (int i = 0; i < newPositions.size(); ++i) {
@@ -559,7 +537,7 @@ namespace middle {
 	{
 		for (int i = 0; i < selectedShapes.size(); ++i) {
 			auto& shape = getShape(gameState, selectedShapes[i]);
-			Vector3 currentPos = middle::getGlobalPosition(gameState, shape.id.index);
+			Vector3 currentPos = middle::getGlobalPosition(gameState, shape.id);
 			Vector3 displacement = currentPos - oldPositions[i];
 			middle::moveShape(gameState, selectedShapes[i], Vector3Negate(displacement));
 		}

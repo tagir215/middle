@@ -135,10 +135,12 @@ namespace middle {
 		MULTIPLY_X_OVER_X,
 	};
 
-	struct Animation {
+	struct Animation : public std::enable_shared_from_this<Animation> {
 		float progress = 0;
 		float duration = 0;
+		bool reverseMode = false;
 		virtual void update(middle::GameState* gameState) = 0;
+		virtual void start(middle::GameState* gameState) = 0;
 		void setDuration(float duration);
 		void progressAnimation(middle::GameState* gameState);
 		virtual ~Animation() = default;

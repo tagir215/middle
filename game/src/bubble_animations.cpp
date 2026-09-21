@@ -13,8 +13,8 @@ namespace bubbleAnimations {
 		using e = bubbleActions::ExecuteAddition;
 		middle::Id idA = action->inputs[e::ID_TO_ADD];
 		middle::Id idB = action->inputs[e::ID_TO_ADD_INTO];
-		state[ELEMENT_A].position = middle::getGlobalPosition(gameState, idA.index);
-		state[ELEMENT_B].position = middle::getGlobalPosition(gameState, idB.index);
+		state[ELEMENT_A].position = middle::getGlobalPosition(gameState, idA);
+		state[ELEMENT_B].position = middle::getGlobalPosition(gameState, idB);
 		state[NEW_CONTAINER].position = { 0,0,0 };
 		return state;
 	}
@@ -31,9 +31,9 @@ namespace bubbleAnimations {
 		middle::Id idA = children[e::ID_TO_ADD];
 		middle::Id idB = children[e::ID_TO_ADD_INTO];
 
-		state[ELEMENT_A].position = middle::getGlobalPosition(gameState, idA.index);
-		state[ELEMENT_B].position = middle::getGlobalPosition(gameState, idB.index);
-		state[NEW_CONTAINER].position = middle::getGlobalPosition(gameState, containerId.index);
+		state[ELEMENT_A].position = middle::getGlobalPosition(gameState, idA);
+		state[ELEMENT_B].position = middle::getGlobalPosition(gameState, idB);
+		state[NEW_CONTAINER].position = middle::getGlobalPosition(gameState, containerId);
 		return state;
 	}
 
@@ -45,61 +45,38 @@ namespace bubbleAnimations {
 		pause1->timeLeft = duration;
 		auto pause2 = middle::attachComponent<components::PauseLayoutTag>(gameState, action->outputs.back());
 		pause2->timeLeft = duration;
+		gameState->animations.push_back(shared_from_this());
 	}
 
 	void AdditionAnimation::update(middle::GameState* gameState)
 	{
 		const float t = progress / duration;
 
-		const float phase1 = 0.5f;
-
 		Vector3 newContainerPos;
 		Vector3 newPosA;
 		Vector3 newPosB;
 
-
-		if (t >= phase1 && animationKeyFrames.size() == 1) {
-			animationKeyFrames.push_back(prevFrame);
-		}
-
 		auto& prevKeyFrame = animationKeyFrames.back();
 
-		if (t < phase1) {
-			const float ySeparation = 50;
-			const Vector3& cameraPos = gameState->activeCamera.position;
-			const Vector3 targetPosContainer = { cameraPos.x, -ySeparation, cameraPos.z };
-			newContainerPos = targetPosContainer;
-			auto rect = middle::getComp<components::Rectangle>(gameState, action->outputs.back());
-			Vector3 scale = middle::getGlobalScale(gameState, action->outputs.back());
-			float width = rect->width * scale.x;
+		Vector3 initPosA = animationKeyFrames[0][ELEMENT_A].position;
+		Vector3 initPosB = animationKeyFrames[0][ELEMENT_B].position;
+		const float ySeparation = 50;
+		const Vector3 targetPosContainer = (initPosA + initPosB) * 0.5f + Vector3{ 0, -ySeparation, 0 };
+		newContainerPos = targetPosContainer;
 
-			Vector3 startPosA = prevKeyFrame[ELEMENT_A].position;
-			Vector3 startPosB = prevKeyFrame[ELEMENT_B].position;
-			const Vector3 targetPosA = targetPosContainer + Vector3{ -width,0,0 };
-			const Vector3 targetPosB = targetPosContainer + Vector3{ width,0,0 };
 
-			const float phase1Ratio = t / phase1;
-			newPosA = startPosA + (targetPosA - startPosA) * phase1Ratio;
-			newPosB = startPosB + (targetPosB - startPosB) * phase1Ratio;
-		}
-		else {
-			const float ySeparation = 50;
-			const Vector3& cameraPos = gameState->activeCamera.position;
-			const Vector3 targetPosContainer = { cameraPos.x, -ySeparation, cameraPos.z };
-			newContainerPos = targetPosContainer;
-			auto rect = middle::getComp<components::Rectangle>(gameState, action->outputs.back());
-			Vector3 scale = middle::getGlobalScale(gameState, action->outputs.back());
-			float width = rect->width * scale.x;
+		auto rect = middle::getComp<components::Rectangle>(gameState, action->outputs.back());
+		Vector3 scale = middle::getGlobalScale(gameState, action->outputs.back());
+		float width = rect->width * scale.x;
 
-			Vector3 startPosA = prevKeyFrame[ELEMENT_A].position;
-			Vector3 startPosB = prevKeyFrame[ELEMENT_B].position;
-			const Vector3 targetPosA = targetPosContainer + Vector3{ -width * 0.2f,0,0 };
-			const Vector3 targetPosB = targetPosContainer + Vector3{ width * 0.2f,0,0 };
+		const Vector3 startPosA = targetPosContainer + Vector3{ -width,0,0 };
+		const Vector3 startPosB = targetPosContainer + Vector3{ width,0,0 };
 
-			const float phase2Ratio = (t - phase1) / (1-phase1);
-			newPosA = startPosA + (targetPosA - startPosA) * phase2Ratio;
-			newPosB = startPosB + (targetPosB - startPosB) * phase2Ratio;
-		}
+		const Vector3 targetPosA = targetPosContainer + Vector3{ -width * 0.2f,0,0 };
+		const Vector3 targetPosB = targetPosContainer + Vector3{ width * 0.2f,0,0 };
+
+		newPosA = startPosA + (targetPosA - startPosA) * t;
+		newPosB = startPosB + (targetPosB - startPosB) * t;
 
 
 
@@ -114,7 +91,6 @@ namespace bubbleAnimations {
 		middle::setGlobalPosition(gameState, resultId, newContainerPos);
 		middle::setGlobalPosition(gameState, newIdA, newPosA);
 		middle::setGlobalPosition(gameState, newIdB, newPosB);
-
 
 		prevFrame = captureCurrent(gameState);
 	}

@@ -379,8 +379,8 @@ namespace equlab {
 	void ConnectPower::execute(middle::GameState* gameState) {
 		middle::Id oldParentId = middle::getParent(gameState, baseId);
 
-		Vector3 targetPos = (middle::getGlobalPosition(gameState, baseId.index)
-			+ middle::getGlobalPosition(gameState, exponentId.index)) * 0.5f;
+		Vector3 targetPos = (middle::getGlobalPosition(gameState, baseId)
+			+ middle::getGlobalPosition(gameState, exponentId)) * 0.5f;
 
 		middle::Shape newPowerProto = bubble::newPower(gameState, targetPos);
 		middle::Shape& newPower = middle::registerShape(gameState, newPowerProto);

@@ -95,7 +95,7 @@ namespace bubbleActions {
 		auto& shape = middle::getShape(gameState, id.index);
 		assert(middle::getComponent<components::BubbleComponent>(shape));
 		middle::Id copyId = middle::deepCopyShapeGlobalCoordinates(gameState, id);
-		Vector3 targetPos = middle::getGlobalPosition(gameState, id.index) + Vector3{1,0,0};
+		Vector3 targetPos = middle::getGlobalPosition(gameState, id) + Vector3{1,0,0};
 		// create exponent with value -1
 		middle::Shape exponentProto = bubble::newUnit(gameState, targetPos, true);
 		middle::Shape& exponentShape = middle::registerShape(gameState, exponentProto);
@@ -117,8 +117,7 @@ namespace bubbleActions {
 
 		// NEW CONTAINING BUBBLE CASE
 		if ((unitA && unitB) || (bubbleA && bubbleB)) {
-			Vector3 targetPos = (middle::getGlobalPosition(gameState, idA.index) + middle::getGlobalPosition(gameState, idB.index)) * 0.5f;
-			auto regAction = middle::EditorActionRegisterShape(bubble::newBubble(gameState, targetPos));
+			Vector3 targetPos = (middle::getGlobalPosition(gameState, idA) + middle::getGlobalPosition(gameState, idB)) * 0.5f; auto regAction = middle::EditorActionRegisterShape(bubble::newBubble(gameState, targetPos));
 			regAction.execute(gameState);
 			replacementId = regAction.newShapeId;
 
@@ -159,7 +158,7 @@ namespace bubbleActions {
 		auto& shapeToReplace = middle::getShape(gameState, shapeToReplaceId.index);
 		auto& replacingShape = middle::getShape(gameState, replacingShapeId.index);
 
-		Vector3 targetPos = middle::getGlobalPosition(gameState, shapeToReplace.id.index);
+		Vector3 targetPos = middle::getGlobalPosition(gameState, shapeToReplace.id);
 
 		auto bubbleComp = middle::getComponent<components::BubbleComponent>(shapeToReplace);
 		auto mulComp = middle::getComponent<components::BubbleMultiplyComponent>(shapeToReplace);
@@ -244,7 +243,7 @@ namespace bubbleActions {
 						exponentChildId = bubble::containerize(gameState, exponentChildId);
 					}
 					// create a new power for the term
-					middle::Id newPowerId = bubble::newPower(gameState, baseCopyId, exponentChildId, middle::getGlobalPosition(gameState, exponentChildId.index));
+					middle::Id newPowerId = bubble::newPower(gameState, baseCopyId, exponentChildId, middle::getGlobalPosition(gameState, exponentChildId));
 					linkingId = newPowerId;
 				}
 
@@ -269,7 +268,7 @@ namespace bubbleActions {
 		}
 		// replacement shape is bubble with value 0
 		else if (bubble::isBubbleZero(gameState, exponentId)) {
-			Vector3 targetPosition = middle::getGlobalPosition(gameState, exponentId.index);
+			Vector3 targetPosition = middle::getGlobalPosition(gameState, exponentId);
 			middle::Shape newUnitProto = bubble::newUnit(gameState, targetPosition);
 			middle::Shape& newUnit = middle::registerShape(gameState, newUnitProto);
 			replacementShapeId = newUnit.id;
@@ -279,7 +278,7 @@ namespace bubbleActions {
 		}
 
 		Vector3 oldScale = middle::getLocalScale(gameState, exponentId);
-		Vector3 oldPos = middle::getGlobalPosition(gameState, exponentId.index);
+		Vector3 oldPos = middle::getGlobalPosition(gameState, exponentId);
 		replacementShapeId = bubble::containerize(gameState, replacementShapeId);
 		middle::setLocalScale(gameState, replacementShapeId, oldScale);
 		middle::setGlobalPosition(gameState, replacementShapeId, oldPos);
@@ -362,7 +361,7 @@ namespace bubbleActions {
 
 		middle::Id copyBaseId = middle::deepCopyShapeGlobalCoordinates(gameState, commonBaseId);
 
-		middle::Shape bubbleProto = bubble::newBubble(gameState, middle::getGlobalPosition(gameState, commonBaseId.index));
+		middle::Shape bubbleProto = bubble::newBubble(gameState, middle::getGlobalPosition(gameState, commonBaseId));
 		middle::Shape& newExponent = middle::registerShape(gameState, bubbleProto);
 		for (middle::Id exponentId : exponentIds) {
 			middle::Id copyExponentId = middle::deepCopyShapeGlobalCoordinates(gameState, exponentId);
@@ -383,7 +382,7 @@ namespace bubbleActions {
 				return middle::Id();
 			}
 		}
-		middle::Id newExponentId = bubble::newBubbleWithIntValue(gameState, children.size(), middle::getGlobalPosition(gameState, commonFactorId.index));
+		middle::Id newExponentId = bubble::newBubbleWithIntValue(gameState, children.size(), middle::getGlobalPosition(gameState, commonFactorId));
 		middle::Id commonCopyId = middle::deepCopyShapeGlobalCoordinates(gameState, commonFactorId);
 		auto connectPower = equlab::ConnectPower(commonCopyId, newExponentId);
 		connectPower.execute(gameState);
@@ -408,7 +407,7 @@ namespace bubbleActions {
 		middle::Id copyInnerExponent = middle::deepCopyShapeGlobalCoordinates(gameState, innerExponentId);
 		middle::Id copyOuterExponent = middle::deepCopyShapeGlobalCoordinates(gameState, outerExponentId);
 
-		middle::Shape newExponentProto = bubble::newBubble(gameState, middle::getGlobalPosition(gameState, outerExponentId.index));
+		middle::Shape newExponentProto = bubble::newBubble(gameState, middle::getGlobalPosition(gameState, outerExponentId));
 		auto& newExponent = middle::registerShape(gameState, newExponentProto);
 		auto link = LinkMultiplicationTerm(copyInnerExponent, copyOuterExponent);
 		link.execute(gameState);
@@ -446,7 +445,7 @@ namespace bubbleActions {
 			baseIds.push_back(baseId);
 		}
 		// connect common exponent copy to base ids
-		middle::Shape newMulProto = bubble::newMultiplication(gameState, middle::getGlobalPosition(gameState, parentParentId.index));
+		middle::Shape newMulProto = bubble::newMultiplication(gameState, middle::getGlobalPosition(gameState, parentParentId));
 		middle::Shape& newMul = middle::registerShape(gameState, newMulProto);
 		for (middle::Id baseId : baseIds) {
 			middle::Id copyId = middle::deepCopyShapeGlobalCoordinates(gameState, baseId);
@@ -746,7 +745,7 @@ namespace bubbleActions {
 
 		// if popping variable or unit (as only child), we need to replace the parent instead. to retain var or unit identity
 		if (variable || unit || power || mul) {
-			Vector3 targetPos = middle::getGlobalPosition(gameState, parentId.index);
+			Vector3 targetPos = middle::getGlobalPosition(gameState, parentId);
 
 			middle::Id varPopReplacementId = popReplacement(gameState, parentId, shapeToPop.id);
 			auto registerAction = std::make_unique <middle::EditorActionRegisterId>(varPopReplacementId);
@@ -847,8 +846,8 @@ namespace bubbleActions {
 		}
 
 		// else create new mul
-		Vector3 targetPos = (middle::getGlobalPosition(gameState, recieverShapeId.index)
-			+ middle::getGlobalPosition(gameState, linkingShapeId.index)) * 0.5f;
+		Vector3 targetPos = (middle::getGlobalPosition(gameState, recieverShapeId)
+			+ middle::getGlobalPosition(gameState, linkingShapeId)) * 0.5f;
 
 		middle::Shape mulProto = bubble::newMultiplication(gameState, targetPos);
 		middle::Shape& mulShape = middle::registerShape(gameState, mulProto);
@@ -1054,7 +1053,7 @@ namespace bubbleActions {
 			return middle::Id();
 		}
 
-		Vector3 targetPos = middle::getGlobalPosition(gameState, compressTargetId.index);
+		Vector3 targetPos = middle::getGlobalPosition(gameState, compressTargetId);
 		middle::Shape containerProto = bubble::newBubble(gameState, targetPos);
 		middle::Shape& container = middle::registerShape(gameState, containerProto);
 
@@ -1233,7 +1232,7 @@ namespace bubbleActions {
 			cancelled = true;
 			return;
 		}
-		Vector3 targetPos = middle::getGlobalPosition(gameState, recieverShapeId.index);
+		Vector3 targetPos = middle::getGlobalPosition(gameState, recieverShapeId);
 		middle::Shape newUnitProto = bubble::newUnit(gameState, targetPos);
 		middle::Shape& newUnit = middle::registerShape(gameState, newUnitProto);
 		middle::Id containerId = bubble::containerize(gameState, newUnit.id);
@@ -1263,7 +1262,7 @@ namespace bubbleActions {
 	void MulNegativeOne::execute(middle::GameState* gameState)
 	{
 		middle::Id recieverShapeId = inputs[ID_RECIEVER];
-		Vector3 pos = middle::getGlobalPosition(gameState, recieverShapeId.index);
+		Vector3 pos = middle::getGlobalPosition(gameState, recieverShapeId);
 		middle::Shape bubbleProto = bubble::newMultiplication(gameState, pos);
 		middle::Shape& mul = middle::registerShape(gameState, bubbleProto);
 		middle::Id unit1 = bubble::newBubbleWithIntValue(gameState, -1, pos);
@@ -1424,7 +1423,7 @@ namespace bubbleActions {
 	void Bubblify::execute(middle::GameState* gameState)
 	{
 		middle::Id id = inputs[ID_TO_BUBBLIFY];
-		Vector3 targetPos = middle::getGlobalPosition(gameState, id.index);
+		Vector3 targetPos = middle::getGlobalPosition(gameState, id);
 		middle::Id parentId;
 		middle::Id targetId;
 		if (parentIsBubble(gameState, id)) {
@@ -1475,7 +1474,7 @@ namespace bubbleActions {
 
 		const float epsilon = 1e-4f;
 		if (std::abs(value.scale) < epsilon) {
-			Vector3 targetPos = middle::getGlobalPosition(gameState, bubbleId.index);
+			Vector3 targetPos = middle::getGlobalPosition(gameState, bubbleId);
 			auto bubbleProto = bubble::newBubble(gameState, targetPos);
 			auto& result = middle::registerShape(gameState, bubbleProto);
 			return result.id;
@@ -1498,7 +1497,7 @@ namespace bubbleActions {
 		}
 
 		if (valueIsOne) {
-			Vector3 targetPos = middle::getGlobalPosition(gameState, bubbleId.index);
+			Vector3 targetPos = middle::getGlobalPosition(gameState, bubbleId);
 			middle::Shape unitProto = bubble::newUnit(gameState, targetPos);
 			middle::Shape bubbleProto = bubble::newBubble(gameState, targetPos);
 			middle::Shape& unitShape = middle::registerShape(gameState, unitProto);
@@ -1726,8 +1725,8 @@ namespace bubbleActions {
 		// replace body variables with matching labels
 		middle::Id copyBodyId = middle::deepCopyShapeGlobalCoordinates(gameState, functionBodyId);
 
-		Vector3 targetPos = middle::getGlobalPosition(gameState, functionToReplaceId.index);
-		Vector3 currPos = middle::getGlobalPosition(gameState, copyBodyId.index);
+		Vector3 targetPos = middle::getGlobalPosition(gameState, functionToReplaceId);
+		Vector3 currPos = middle::getGlobalPosition(gameState, copyBodyId);
 		middle::moveShape(gameState, copyBodyId.index, targetPos - currPos);
 
 		std::vector<middle::Id>bodyChildren;
@@ -1766,7 +1765,7 @@ namespace bubbleActions {
 
 		middle::executeAction <middle::EditorActionRegisterId>(gameState, this, newTermId);
 
-		Vector3 currPos = middle::getGlobalPosition(gameState, newTermId.index);
+		Vector3 currPos = middle::getGlobalPosition(gameState, newTermId);
 		middle::moveShape(gameState, newTermId.index, targetPos - currPos);
 
 		middle::Id inverseId = bubbleActions::createInverseReplacementShape(gameState, newTermId);
@@ -1791,7 +1790,7 @@ namespace bubbleActions {
 		auto& shapeToAddInto = middle::getShape(gameState, shapeToAddIntoId.index);
 		auto topDog = middle::getComponent<components::TopDogBubbleTag>(shapeToAddInto);
 		if (topDog) {
-			auto newContainerProto = bubble::newBubble(gameState, middle::getGlobalPosition(gameState, shapeToAddInto.id.index));
+			auto newContainerProto = bubble::newBubble(gameState, middle::getGlobalPosition(gameState, shapeToAddInto.id));
 			auto& newContainerShape = middle::registerShape(gameState, newContainerProto);
 			middle::Id addIntoCopy = middle::deepCopyShapeGlobalCoordinates(gameState, shapeToAddInto.id);
 			middle::EditorActionReparent(newContainerShape.id.index, addIntoCopy.index).execute(gameState);
@@ -1833,7 +1832,7 @@ namespace bubbleActions {
 
 		auto& shapeToAddInto = middle::getShape(gameState, shapeToAddIntoId.index);
 
-		Vector3 currppos = middle::getGlobalPosition(gameState, newTermId.index);
+		Vector3 currppos = middle::getGlobalPosition(gameState, newTermId);
 		middle::moveShape(gameState, newTermId.index, targetPos - currppos);
 		middle::Id inverseFriend = createNegatedReplacementShape(gameState, newTermId);
 		middle::moveShape(gameState, inverseFriend.index, { 1,0,0 });
@@ -1899,7 +1898,7 @@ namespace bubbleActions {
 			middle::deleteShapeRecursive(gameState, copyShapeId.index);
 			copyShapeId = invertedShapeId;
 		}
-		middle::moveShape(gameState, copyShapeId.index, targetPosition - middle::getGlobalPosition(gameState, copyShapeId.index));
+		middle::moveShape(gameState, copyShapeId.index, targetPosition - middle::getGlobalPosition(gameState, copyShapeId));
 		auto insertable = middle::attachComponent<components::InsertableBubble>(gameState, copyShapeId);
 		auto& copyShape = middle::getShape(gameState, copyShapeId.index);
 		auto loop = middle::getComponent<components::LoopSociety>(copyShape);
@@ -1980,7 +1979,7 @@ namespace bubbleActions {
 		assert(indexChildren.size() == 2);
 		middle::Id indexValueId = indexChildren[components::SummationIndexRole::INDEX_VALUE];
 
-		Vector3 targetPos = middle::getGlobalPosition(gameState, summationId.index);
+		Vector3 targetPos = middle::getGlobalPosition(gameState, summationId);
 
 		// generating should return empty map for both index and upper limit...
 		// if not we return since there are unknown variables

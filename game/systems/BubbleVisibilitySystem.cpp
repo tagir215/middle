@@ -57,7 +57,7 @@ class BubbleVisibilitySystem : public middle::MiddleGameplaySystem {
 
 		for (int i = 0; i < children.size(); ++i) {
 			middle::Id childId = children[i];
-			positions[i] = middle::getGlobalPosition(gameState, childId.index);
+			positions[i] = middle::getGlobalPosition(gameState, childId);
 			scales[i] = middle::getGlobalScale(gameState, childId);
 		}
 		// set disappearing bubbles position to neutral
@@ -102,7 +102,7 @@ class BubbleVisibilitySystem : public middle::MiddleGameplaySystem {
 		}
 		
 		// childs global transform should stay same after transforming its parent
-		Vector3 referenceGlobalPos = middle::getGlobalPosition(gameState, referenceId.index);
+		Vector3 referenceGlobalPos = middle::getGlobalPosition(gameState, referenceId);
 		Vector3 referenceGlobalScale = middle::getGlobalScale(gameState, referenceId);
 		bubble::recursiveBubbleLayoutScaleUpdate(gameState, id);
 		bubble::recursiveBubbleLayoutUpdate(gameState, id);
@@ -112,7 +112,7 @@ class BubbleVisibilitySystem : public middle::MiddleGameplaySystem {
 		Vector3 localScale = middle::getLocalScale(gameState, id);
 		middle::setLocalScale(gameState, id, Vector3Multiply(localScale, ratio));
 
-		Vector3 newGlobalPos = middle::getGlobalPosition(gameState, referenceId.index);
+		Vector3 newGlobalPos = middle::getGlobalPosition(gameState, referenceId);
 		Vector3 displacement = referenceGlobalPos - newGlobalPos;
 		Vector3 localPos = middle::getLocalPosition(gameState, id);
 		middle::setLocalPosition(gameState, id, localPos + displacement);

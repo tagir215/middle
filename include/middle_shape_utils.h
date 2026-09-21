@@ -40,7 +40,7 @@ namespace middle {
 	// is id generation correct?  and is alive
 	bool isValidId(GameState* gameState, middle::Id id);
 	// get pos quickly
-	Vector3 getGlobalPosition(GameState* gameState, int index);
+	Vector3 getGlobalPosition(GameState* gameState, middle::Id id);
 	// get pos quickly very
 	Vector3 getLocalPosition(GameState* gameState, middle::Id id);
 	// get shape instance

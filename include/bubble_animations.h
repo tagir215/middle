@@ -21,7 +21,6 @@ namespace bubbleAnimations {
 		std::vector<AnimationTransforms>animationKeyFrames;
 		virtual AnimationTransforms captureBefore(middle::GameState* gameState) = 0;
 		virtual AnimationTransforms captureCurrent(middle::GameState* gameState) = 0;
-		virtual void start(middle::GameState* gamestate) = 0;
 	};
 
 	using AnimationPtr = std::shared_ptr<BubbleAnimation>;
@@ -38,7 +37,6 @@ namespace bubbleAnimations {
 			animation->animationKeyFrames.push_back(animation->captureBefore(gameState));
 			animation->action->execute(gameState);
 			animation->start(gameState);
-			gameState->animations.push_back(animation);
 		}
 		void undo(middle::GameState* gameState) override {
 			animation->action->undo(gameState);
@@ -59,7 +57,7 @@ namespace bubbleAnimations {
 
 		AdditionAnimation(ActionPtr action) {
 			this->action = action;
-			duration = 0.5f;
+			duration = 0.2f;
 		}
 
 		void update(middle::GameState* gameState) override;

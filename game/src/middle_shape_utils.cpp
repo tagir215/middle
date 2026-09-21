@@ -247,9 +247,9 @@ namespace middle {
 	}
 
 
-	Vector3 getGlobalPosition(GameState* gameState, int index)
+	Vector3 getGlobalPosition(GameState* gameState, middle::Id id)
 	{
-		auto& shape = getShape(gameState, index);
+		auto& shape = getShape(gameState, id.index);
 		middle::Id parentId = middle::getParent(gameState, shape.id);
 		Matrix m = getTransformMatrix(gameState, parentId);
 		auto localPos = getComponent<components::LocalPosition>(shape);
@@ -622,7 +622,7 @@ namespace middle {
 	{
 		auto& shape = getShape(gameState, shapeId.index);
 		auto rect = getComponent<components::Rectangle>(shape);
-		Vector3 position = getGlobalPosition(gameState, shapeId.index);
+		Vector3 position = getGlobalPosition(gameState, shapeId);
 		Vector3 s = getTotalScale(gameState, shapeId);
 		std::vector<Vector3> vertices;
 		vertices.resize(4);
