@@ -1,10 +1,8 @@
 #pragma once
-#include "raylib.h"
 #include "input.h"
 #include <array>
 #include <list>
 #include "descart_physics.h"
-#include <raymath.h>
 #include "middle_gameplay_script.h"
 #include "middle_gameplay_script_map.h"
 #include "entity.h"
@@ -15,6 +13,7 @@
 #include <queue>
 #include <stack>
 #include <set>
+#include "middle_math.h"
 
 using namespace descart;
 
