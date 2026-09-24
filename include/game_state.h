@@ -52,7 +52,14 @@ namespace middle {
 
 	struct EditorState {
 		CreationMode creationMode;
-		midPrimitive::Camera3D camera;
+		midPrimitive::Camera3D camera = 
+		{
+			{0,-100,0},
+			{0,0,0},
+			{0,0,1},
+			45,
+			0 // RAYLIB CAMERA_PERSPECTIVE
+		};
 		bool initialized = false;
 		bool doOneStep = false;
 		bool showAllInfo = false;
@@ -154,7 +161,6 @@ namespace middle {
 		std::vector<midPrimitive::Sound>sounds;
 		std::vector<std::string>debugInfo;
 
-		const char* workingDir;
 		std::vector<middle::FieldInfo>fields;
 		BubbleAlgebraState bubbleAlgebraState;
 		std::vector<std::unique_ptr<components::CompCache>>compCaches;

@@ -38,22 +38,13 @@ static UpdateGameType* updateGamePtr;
 class MiddleRaylibEngine {
 
 public:
-	void start() {
+	RayState rayState;
 
-		// Initialization
-		//--------------------------------------------------------------------------------------
-		// todo 
-		const int screenWidth = 1800;
-		const int screenHeight = 1200;
-		InitWindow(screenWidth, screenHeight, "raylib [core] example - basic window");
-		SetWindowPosition(500, 80);
+	void init() {
 		const int fps = 60;
-		SetTargetFPS(fps);               // Set our game to run at 60 frames-per-second
+		SetTargetFPS(fps);               
 		rlImGuiSetup(true);
 
-		//--------------------------------------------------------------------------------------
-
-		RayState rayState;
 		gameState = std::make_unique<middle::GameState>();
 		bubbleAssets::loadAssets(gameState.get());
 		const float fixedTimeStep = 1.0f / (float)fps;
@@ -62,14 +53,6 @@ public:
 			gameState->middleState.applicationMode = middle::ApplicationMode::GAME_MODE;
 			gameState->middleState.releaseBuild = true;
 		}
-		gameState->editorState.camera = {
-			{0,-100,0},
-			{0,0,0},
-			{0,0,1},
-			45,
-			CAMERA_PERSPECTIVE
-		};
-		gameState->workingDir = GetWorkingDirectory();
 		gameState->middleState.startGame = true;
 
 
@@ -94,13 +77,11 @@ public:
 		GenTextureMipmaps(&rayState.globalFont.texture);
 		SetTextureFilter(rayState.globalFont.texture, TEXTURE_FILTER_TRILINEAR);
 
-
-
-		InitAudioDevice();
 		std::unordered_map<std::string, Sound>soundMap;
 		middleSoundHelpers::loadSoundEffects(soundMap, gameState.get());
+	}
 
-
+	void start() {
 		// Main game loop
 		while (!WindowShouldClose())    // Detect window close button or ESC key
 		{
@@ -130,11 +111,6 @@ public:
 		gameState->middleState.closeGame = true;
 		UpdateGame(gameState.get());
 
-		CloseAudioDevice();
-		// De-Initialization
-		//--------------------------------------------------------------------------------------
-		CloseWindow();        // Close window and OpenGL context
-		//--------------------------------------------------------------------------------------
 	}
 
 };

@@ -34,7 +34,22 @@
 //------------------------------------------------------------------------------------
 int main(void)
 {
+	// Initialization
+	//--------------------------------------------------------------------------------------
+	const int screenWidth = 1800;
+	const int screenHeight = 1200;
+	InitWindow(screenWidth, screenHeight, "middle: lightweight gameplay development engine");
+	SetWindowPosition(500, 80);
+	InitAudioDevice();
+
 	MiddleRaylibEngine engine;
+	engine.init();
 	engine.start();
+
+	CloseAudioDevice();
+	//--------------------------------------------------------------------------------------
+	CloseWindow();        // Close window and OpenGL context
+	//--------------------------------------------------------------------------------------
+
 	return 0;
 }
