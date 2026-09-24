@@ -31,7 +31,7 @@ public:
 
 		auto systemRefIt = systemRefCache->begin<components::SystemReference>();
 		auto systemIntersectableIt = systemRefCache->begin<components::IntersectingTag>();
-		if (gameState->input.navigateToFileClick) {
+		if (gameState->middleState.input.navigateToFileClick) {
 			for (int i = 0; i < systemRefCache->getSize(); ++i) {
 				auto systemRef = *systemRefIt;
 				auto intersectable = *systemIntersectableIt;

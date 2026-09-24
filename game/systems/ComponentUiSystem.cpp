@@ -53,7 +53,7 @@ public:
 				ImGui::Text(idText.c_str());
 
 				if (ImGui::IsWindowHovered()) {
-					gameState->inputBlockers.insert(middle::InputBlockers::KEYBOARD_BLOCK);
+					middle::insertInputBlock(gameState, middle::InputBlockers::KEYBOARD_BLOCK);
 				}
 
 				for (int typeId : shape.componentTypes) {

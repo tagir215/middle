@@ -131,6 +131,8 @@ namespace middle {
 	void queueForRender(middle::GameState* gameState, middle::RenderItem item);
 	// add to ui list
 	void queueUi(middle::GameState* gameState, std::function<void()>ui);
+	// add block to block blockable blocking needing inputs
+	void insertInputBlock(middle::GameState* gameState, middle::InputBlockers block);
 	// get Active camera pos
 	midPrimitive::Camera3D getActiveCam(middle::GameState* gameState);
 

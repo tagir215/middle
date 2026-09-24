@@ -144,23 +144,23 @@ public:
 
 		if (actionType == bubbleInventoryItemType::NEW_ADDITION_TERM) {
 			middle::Id copyId = copyOfInsertItem(gameState);
-			action = std::make_shared<bubbleActions::NewAdditionTerm>(intersectingId, copyId, gameState->input.mouseXZ_PlanePos);
+			action = std::make_shared<bubbleActions::NewAdditionTerm>(intersectingId, copyId, gameState->middleState.input.mouseXZ_PlanePos);
 		}
 		else if (actionType == bubbleInventoryItemType::NEW_MULTIPLICATION_TERM) {
 			middle::Id copyId = copyOfInsertItem(gameState);
-			action = std::make_shared<bubbleActions::NewMultiplicationTerm>(intersectingId, copyId, gameState->input.mouseXZ_PlanePos);
+			action = std::make_shared<bubbleActions::NewMultiplicationTerm>(intersectingId, copyId, gameState->middleState.input.mouseXZ_PlanePos);
 		}
 		else if (actionType == bubbleInventoryItemType::NEW_POWER_TERM) {
 			middle::Id copyId = copyOfInsertItem(gameState);
-			action = std::make_shared<bubbleActions::NewPowerTerm>(intersectingId, copyId, gameState->input.mouseXZ_PlanePos);
+			action = std::make_shared<bubbleActions::NewPowerTerm>(intersectingId, copyId, gameState->middleState.input.mouseXZ_PlanePos);
 		}
 		else if (actionType == bubbleInventoryItemType::INSERT_X_OVER_X) {
 			middle::Id copyId = copyOfInsertItem(gameState);
-			action = std::make_shared<bubbleActions::InsertAsXOverX>(intersectingId, copyId, gameState->input.mouseXZ_PlanePos);
+			action = std::make_shared<bubbleActions::InsertAsXOverX>(intersectingId, copyId, gameState->middleState.input.mouseXZ_PlanePos);
 		}
 		else if (actionType == bubbleInventoryItemType::INSERT_X_MINUS_X) {
 			middle::Id copyId = copyOfInsertItem(gameState);
-			action = std::make_shared<bubbleActions::InsertAsXMinusX>(intersectingId, copyId, gameState->input.mouseXZ_PlanePos);
+			action = std::make_shared<bubbleActions::InsertAsXMinusX>(intersectingId, copyId, gameState->middleState.input.mouseXZ_PlanePos);
 		}
 
 		if (action) {
@@ -274,7 +274,7 @@ public:
 		int actionCountPreFrame = gameState->bubbleAlgebraState.bubbleActions.size();
 
 
-		auto& inp = gameState->gameInput;
+		auto& inp = gameState->middleState.gameInput;
 		bool hotKeyPressed = inp.copy || inp.insertTerm || inp.pop || inp.comp || inp.mulOne || inp.proc || inp.can
 			|| inp.two
 			|| inp.three
@@ -293,14 +293,14 @@ public:
 					middle::Shape& intersectingShape = middle::getShape(gameState, intersectingCache->relevantIdVector[i].index);
 
 					// copy is not undoable bubble action for now
-					if (gameState->gameInput.copy) {
+					if (gameState->middleState.gameInput.copy) {
 						if (inventoryCache->relevantIdVector.size() == 1) {
 							middle::queueAction(gameState, std::make_shared<bubbleActions::CopyToInventory>(inventoryCache->relevantIdVector[0], intersectingShape.id));
 						}
 					}
 
 					// insert
-					if (gameState->gameInput.insertTerm) {
+					if (gameState->middleState.gameInput.insertTerm) {
 						if (inventoryCache->relevantIdVector.size() == 1) {
 							middle::Id invId = inventoryCache->relevantIdVector[0];
 							auto inv = middle::getComp<components::Inventory>(gameState, invId);
@@ -326,39 +326,39 @@ public:
 					}
 
 
-					if (gameState->gameInput.pop) {
-						if (!gameState->gameInput.shiftHeld) {
+					if (gameState->middleState.gameInput.pop) {
+						if (!gameState->middleState.gameInput.shiftHeld) {
 							microOperation(gameState, bubbleInventoryItemType::POP, middle::Id(), intersectingShape);
 						}
 						else {
 							microOperation(gameState, bubbleInventoryItemType::BUBBLIFY, middle::Id(), intersectingShape);
 						}
 					}
-					if (gameState->gameInput.comp) {
-						if (!gameState->gameInput.shiftHeld) {
+					if (gameState->middleState.gameInput.comp) {
+						if (!gameState->middleState.gameInput.shiftHeld) {
 							microOperation(gameState, bubbleInventoryItemType::COMPRESS_MULTIPLICATION, middle::Id(), intersectingShape);
 						}
 						else {
 							microOperation(gameState, bubbleInventoryItemType::COMPRESS_EXPONENT, middle::Id(), intersectingShape);
 						}
 					}
-					if (gameState->gameInput.mulOne) {
-						if (!gameState->gameInput.shiftHeld) {
+					if (gameState->middleState.gameInput.mulOne) {
+						if (!gameState->middleState.gameInput.shiftHeld) {
 							microOperation(gameState, bubbleInventoryItemType::MUL_ONE, middle::Id(), intersectingShape);
 						}
 						else {
 							microOperation(gameState, bubbleInventoryItemType::MUL_NEGATIVE_ONE, middle::Id(), intersectingShape);
 						}
 					}
-					if (gameState->gameInput.can) {
-						if (!gameState->gameInput.shiftHeld) {
+					if (gameState->middleState.gameInput.can) {
+						if (!gameState->middleState.gameInput.shiftHeld) {
 							microOperation(gameState, bubbleInventoryItemType::CANCEL, middle::Id(), intersectingShape);
 						}
 						else {
 							microOperation(gameState, bubbleInventoryItemType::SIMPLIFY, middle::Id(), intersectingShape);
 						}
 					}
-					if (gameState->gameInput.proc) {
+					if (gameState->middleState.gameInput.proc) {
 						microOperation(gameState, bubbleInventoryItemType::PROCEDURE, middle::Id(), intersectingShape);
 					}
 				}

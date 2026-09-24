@@ -3,6 +3,7 @@
 #include <string>
 #include "middle_primitives.h"
 #include <functional>
+#include "input.h"
 
 namespace middle {
 
@@ -65,14 +66,35 @@ namespace middle {
 	};
 
 	struct MiddleState {
+		bool paused = false;
+		bool closeGame = false;
+		bool startGame = false;
+		bool reload = true;
+		bool reset = false;
+		bool loaded = false;
+		bool quit = false;
+		bool releaseBuild = false;
+
 		float aspectRatio;
+		float screenWidth;
+		float screenHeight;
+		float frameTime;
+		float frameTimeAccumulator = 0;
+		float nearPlaneAxisX = 0;
+		float nearPlaneAxisY = 0;
+		const double nearPlaneDistance = 10;
+		const double farPlaneDistance = 4000;
+
 		std::vector<middle::RenderItem> renderData;
 		std::vector<std::function<void()>>uiSetups;
 		midPrimitive::Color backgroundColor = { 188, 144, 181, 255 };
 		midPrimitive::Camera activeCamera;
-		const double nearPlaneDistance = 10;
-		const double farPlaneDistance = 4000;
 		ApplicationMode applicationMode;
+
+		EditorInput input;
+		GameInput gameInput;
+		EqulabInput equlabInput;
+		std::set<InputBlockers> inputBlockers;
 	};
 
 }

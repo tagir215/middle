@@ -63,7 +63,7 @@ public:
 	}
 
 	std::string keyToString(middle::GameState* gameState) {
-		auto& in = gameState->equlabInput;
+		auto& in = gameState->middleState.equlabInput;
 		if (in.aClicked) return "a";
 		if (in.bClicked) return "b";
 		if (in.cClicked) return "c";
@@ -102,8 +102,8 @@ public:
 			static char equationName[128] = "";
 			ImGui::InputText("Equation name", equationName, IM_ARRAYSIZE(equationName));
 			if (ImGui::IsItemFocused()) {
-				gameState->inputBlockers.insert(middle::InputBlockers::KEYBOARD_BLOCK);
-				gameState->inputBlockers.insert(middle::InputBlockers::MOUSE_BLOCK);
+				middle::insertInputBlock(gameState, middle::InputBlockers::KEYBOARD_BLOCK);
+				middle::insertInputBlock(gameState, middle::InputBlockers::MOUSE_BLOCK);
 			}
 
 			if (ImGui::Button("Save bubequ")) {
@@ -162,7 +162,7 @@ public:
 
 		// ACTIONS
 		std::string keyString = keyToString(gameState);
-		if (gameState->equlabInput.ctrlHeld && keyString != "") {
+		if (gameState->middleState.equlabInput.ctrlHeld && keyString != "") {
 			middle::Id intersectedBubble;
 			auto intersectingBubbleIt = intersectableBubbleCache->begin<components::IntersectingTag>();
 			for (int i = 0; i < intersectableBubbleCache->getSize(); ++i) {
@@ -177,7 +177,7 @@ public:
 				bubble::queueEqulabAction(gameState, intersectedBubble, action);
 			}
 		}
-		if (gameState->equlabInput.altHeld && keyString != "") {
+		if (gameState->middleState.equlabInput.altHeld && keyString != "") {
 			middle::Id intersectedBubble;
 			auto intersectingBubbleIt = intersectableBubbleCache->begin<components::IntersectingTag>();
 			for (int i = 0; i < intersectableBubbleCache->getSize(); ++i) {
@@ -193,7 +193,7 @@ public:
 			}
 		}
 
-		auto& in = gameState->equlabInput;
+		auto& in = gameState->middleState.equlabInput;
 		bool clicked =
 			in.oneClicked
 			|| in.twoClicked
@@ -245,7 +245,7 @@ public:
 			}
 
 
-			midMath::Vector3& mousePos = gameState->input.mouseXZ_PlanePos;
+			midMath::Vector3& mousePos = gameState->middleState.input.mouseXZ_PlanePos;
 
 			if (!cantAdd && in.oneClicked) {
 				auto action = std::make_shared<equlab::AddBubble>(intersectedBubble, mousePos);

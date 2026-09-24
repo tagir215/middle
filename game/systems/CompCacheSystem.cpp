@@ -168,7 +168,7 @@ public:
 
 	void update(middle::GameState* gameState) override {
 
-		if (!gameState->loaded) {
+		if (!gameState->middleState.loaded) {
 			return;
 		}
 		for (auto& t : memo) {

@@ -35,7 +35,7 @@ class BubbleManualScalingSystem : public middle::MiddleGameplaySystem {
 		const float inverseMaxWorldScaleRate = 1.0f / maxWorldScaleRate;
 
 		float& worldScalarRate = gameState->bubbleAlgebraState.worldScalarRate;
-		float mouseWheelMove = gameState->gameInput.mouseWheelMove;
+		float mouseWheelMove = gameState->middleState.gameInput.mouseWheelMove;
 
 
 		middle::drawImGuiFloat(gameState, "mousewheelmove", mouseWheelMove);
@@ -49,7 +49,7 @@ class BubbleManualScalingSystem : public middle::MiddleGameplaySystem {
 			if (wheelMoveTimeStack.size() > 0) {
 				if (wheelMoveTimeStack.top() < mouseWheelMoveMinTimeSeconds) {
 					mouseWheelMove = prevMouseWheelMove;
-					wheelMoveTimeStack.top() += gameState->frameTime;
+					wheelMoveTimeStack.top() += gameState->middleState.frameTime;
 				}
 				else {
 					wheelMoveTimeStack.pop();
@@ -65,16 +65,16 @@ class BubbleManualScalingSystem : public middle::MiddleGameplaySystem {
 		}
 
 		// accelerate zoom in
-		if (gameState->gameInput.zoomIn || mouseWheelMove > 0) {
-			float scalarScalar = std::powf(acceleration, gameState->frameTime);
+		if (gameState->middleState.gameInput.zoomIn || mouseWheelMove > 0) {
+			float scalarScalar = std::powf(acceleration, gameState->middleState.frameTime);
 			worldScalarRate *= scalarScalar;
 			if (worldScalarRate > maxWorldScaleRate) {
 				worldScalarRate = maxWorldScaleRate;
 			}
 		}
 		// accelerate zoom out
-		else if (gameState->gameInput.zoomOut || mouseWheelMove < 0) {
-			float scalarScalar = std::powf(inverseAcceleration, gameState->frameTime);
+		else if (gameState->middleState.gameInput.zoomOut || mouseWheelMove < 0) {
+			float scalarScalar = std::powf(inverseAcceleration, gameState->middleState.frameTime);
 			worldScalarRate *= scalarScalar;
 			if (worldScalarRate < inverseMaxWorldScaleRate) {
 				worldScalarRate = inverseMaxWorldScaleRate;
@@ -88,7 +88,7 @@ class BubbleManualScalingSystem : public middle::MiddleGameplaySystem {
 				return;
 			}
 			else if (worldScalarRate > 1 + epsilon) {
-				scalarScalar = std::powf(inverseScalarDeceleration, gameState->frameTime);
+				scalarScalar = std::powf(inverseScalarDeceleration, gameState->middleState.frameTime);
 				float newRate = worldScalarRate * scalarScalar;
 				if (worldScalarRate < 1 && newRate > 1 || worldScalarRate > 1 && newRate < 1) {
 					worldScalarRate = 1;
@@ -98,7 +98,7 @@ class BubbleManualScalingSystem : public middle::MiddleGameplaySystem {
 				}
 			}
 			else if (worldScalarRate < 1 - epsilon) {
-				scalarScalar = std::powf(scalarDeceleration, gameState->frameTime);
+				scalarScalar = std::powf(scalarDeceleration, gameState->middleState.frameTime);
 				float newRate = worldScalarRate * scalarScalar;
 				if (worldScalarRate < 1 && newRate > 1 || worldScalarRate > 1 && newRate < 1) {
 					worldScalarRate = 1;
@@ -112,10 +112,10 @@ class BubbleManualScalingSystem : public middle::MiddleGameplaySystem {
 			}
 		}
 
-		float scalar = std::powf(gameState->bubbleAlgebraState.worldScalarRate, gameState->frameTime);
+		float scalar = std::powf(gameState->bubbleAlgebraState.worldScalarRate, gameState->middleState.frameTime);
 		gameState->bubbleAlgebraState.worldScale *= scalar;
 
-		midMath::Vector3 mousePos = gameState->input.mouseXZ_PlanePos;
+		midMath::Vector3 mousePos = gameState->middleState.input.mouseXZ_PlanePos;
 		midMath::Matrix transM = midMath::MatrixTranslate(-mousePos.x, -mousePos.y, -mousePos.z);
 		midMath::Matrix scaleM = midMath::MatrixScale(scalar, 0, scalar);
 		midMath::Matrix trans2M = midMath::MatrixTranslate(mousePos.x, mousePos.y, mousePos.z);

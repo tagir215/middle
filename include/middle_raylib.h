@@ -57,10 +57,10 @@ public:
 		gameState = std::make_unique<middle::GameState>();
 		bubbleAssets::loadAssets(gameState.get());
 		const float fixedTimeStep = 1.0f / (float)fps;
-		gameState->frameTime = fixedTimeStep;
+		gameState->middleState.frameTime = fixedTimeStep;
 		if (gameMode) {
 			gameState->middleState.applicationMode = middle::ApplicationMode::GAME_MODE;
-			gameState->releaseBuild = true;
+			gameState->middleState.releaseBuild = true;
 		}
 		gameState->editorState.camera = {
 			{0,-100,0},
@@ -70,7 +70,7 @@ public:
 			CAMERA_PERSPECTIVE
 		};
 		gameState->workingDir = GetWorkingDirectory();
-		gameState->startGame = true;
+		gameState->middleState.startGame = true;
 
 
 		// load font TODO move somewhere
@@ -110,24 +110,24 @@ public:
 			//----------------------------------------------------------------------------------
 			ReloadGameDLL();
 
-			gameState->screenWidth = GetScreenWidth();
-			gameState->screenHeight = GetScreenHeight();
+			gameState->middleState.screenWidth = GetScreenWidth();
+			gameState->middleState.screenHeight = GetScreenHeight();
 
-			InputSystem::update(gameState.get());
+			InputSystem::update(&gameState->middleState);
 
-			gameState->frameTimeAccumulator += GetFrameTime();
+			gameState->middleState.frameTimeAccumulator += GetFrameTime();
 			UpdateGame(gameState.get());
 
 			renderer::RendererSystem::update(&gameState->middleState, rayState.globalFont, false);
 
 			gameState->debugInfo.clear();
 
-			if (gameState->closeGame) {
+			if (gameState->middleState.closeGame) {
 				break;
 			}
 		}
 
-		gameState->closeGame = true;
+		gameState->middleState.closeGame = true;
 		UpdateGame(gameState.get());
 
 		CloseAudioDevice();
@@ -193,7 +193,7 @@ void ReloadGameDLL()
 		}
 		gameDLL = platform_load_dynamic_library(loadPath.data());
 
-		gameState->reload = true;
+		gameState->middleState.reload = true;
 		gameState->systemsRegistered = false;
 
 		updateGamePtr = (UpdateGameType*)platform_load_dynamic_function(gameDLL, "UpdateGame");

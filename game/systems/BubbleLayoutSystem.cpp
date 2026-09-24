@@ -63,7 +63,7 @@ public:
 	void update(middle::GameState* gameState) override {
 
 		const float ratioPerSecond = 0.8f;
-		float moveRatio = std::powf(ratioPerSecond, gameState->frameTime);
+		float moveRatio = std::powf(ratioPerSecond, gameState->middleState.frameTime);
 		moveRatio = 0.2f;
 
 		auto pauseTagIt = pausedBubblesCache->begin<components::PauseLayoutTag>();
@@ -72,7 +72,7 @@ public:
 			if (pause->timeLeft <= 0) {
 				middle::queueComponentDeletion<components::PauseLayoutTag>(gameState, id);
 			}
-			pause->timeLeft -= gameState->frameTime;
+			pause->timeLeft -= gameState->middleState.frameTime;
 		}
 
 		// bubbles

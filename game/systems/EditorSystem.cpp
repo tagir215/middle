@@ -56,29 +56,29 @@ public:
 
 	void update(middle::GameState* gameState) override {
 
-		if (gameState->startGame) {
+		if (gameState->middleState.startGame) {
 			if (gameState->middleState.applicationMode == middle::ApplicationMode::EDITOR_MODE) {
 				middle::loadEditorState(gameState);
 			}
 			loadSceneAndShapeNames(gameState);
 			loadSystemNames(gameState);
 			loadComponentNames(gameState);
-			gameState->startGame = false;
+			gameState->middleState.startGame = false;
 
 			middle::queueAction(gameState, std::make_shared<middle::CustomAction>(
-				[](middle::GameState* gameState) { gameState->loaded = true; })
+				[](middle::GameState* gameState) { gameState->middleState.loaded = true; })
 			);
 		}
 
 
 		// update
-		if (gameState->reload) {
+		if (gameState->middleState.reload) {
 			reset(gameState);
 			importEngineSystemReferences(gameState);
 			if (gameState->sceneNames.size() > 0) {
 				loadScene(gameState, std::string(middlePaths::SCENES_FOLDER), gameState->activeSceneName, false);
 			}
-			gameState->reload = false;
+			gameState->middleState.reload = false;
 		}
 
 

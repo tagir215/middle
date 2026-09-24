@@ -108,7 +108,7 @@ namespace middle {
 
 		// set position to mouse pos
 		if (memberIndexes.size() == 0) {
-			entities::initLoop(gameState, newIndex, ids, gameState->input.mouseXZ_PlanePos);
+			entities::initLoop(gameState, newIndex, ids, gameState->middleState.input.mouseXZ_PlanePos);
 		}
 		// set position to centroid
 		else {
@@ -140,7 +140,7 @@ namespace middle {
 	void EditorActionLoadScene::execute(GameState* gameState)
 	{
 		middle::resetScene(gameState);
-		gameState->reload = true;
+		gameState->middleState.reload = true;
 
 		gameState->activeSceneName = sceneName;
 		gameState->loopIndex = 0;
@@ -159,8 +159,8 @@ namespace middle {
 		gameState->sceneNames.push_back(sceneName);
 		int index = gameState->sceneNames.size() - 1;
 		gameState->activeSceneName = sceneName;
-		gameState->reload = true;
-		gameState->reset = true;
+		gameState->middleState.reload = true;
+		gameState->middleState.reset = true;
 		saveScene(gameState, sceneName);
 	}
 
@@ -203,7 +203,7 @@ namespace middle {
 		system(command.c_str());
 
 
-		gameState->closeGame = true;
+		gameState->middleState.closeGame = true;
 	}
 
 	void EditorActionNewSystem::undo(GameState* gameState)
@@ -254,7 +254,7 @@ namespace middle {
 		std::string command = "python ../middle/editor_scripts/build_project.py";
 		system(command.c_str());
 
-		gameState->closeGame = true;
+		gameState->middleState.closeGame = true;
 	}
 
 	void EditorActionNewComponent::undo(GameState* gameState)

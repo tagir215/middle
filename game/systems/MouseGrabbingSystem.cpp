@@ -39,17 +39,19 @@ namespace MouseGrabbingSystem {
 			midMath::Vector3 pos = middle::getGlobalPosition(gameState, shape.id);
 			auto grid = middle::getComponent<components::GridElement>(shape);
 
+			auto& input = gameState->middleState.input;
+
 			if (!grid) {
 				midMath::Vector3 cameraPos = gameState->editorState.camera.position;
 				float objYDistance = std::abs(pos.y - cameraPos.y);
 				float yDistance = std::abs(cameraPos.y);
 				if (yDistance == 0)
 					yDistance = 0.001f;
-				midMath::Vector3 xzVel = Vector3Scale(gameState->input.mouseXZ_PlaneVelocity * gameState->frameTime, objYDistance / yDistance);
+				midMath::Vector3 xzVel = midMath::Vector3Scale(input.mouseXZ_PlaneVelocity * gameState->middleState.frameTime, objYDistance / yDistance);
 				middle::moveShape(gameState, shape.id.index, xzVel);
 			}
 			else {
-				midMath::Vector3 targetPos = gameState->input.mouseXZ_PlanePos;
+				midMath::Vector3 targetPos = input.mouseXZ_PlanePos;
 				middle::moveShape(gameState, shape.id.index, targetPos - pos);
 			}
 		}
@@ -76,9 +78,10 @@ namespace MouseGrabbingSystem {
 		}
 
 		void update(middle::GameState* gameState) override {
+			auto& input = gameState->middleState.input;
 
 			// setup editor action for movement
-			if (gameState->editorState.selectCount > 0 && gameState->input.grabDown && !gameState->editorState.grabbing) {
+			if (gameState->editorState.selectCount > 0 && gameState->middleState.input.grabDown && !gameState->editorState.grabbing) {
 				middle::queueEditorAction(gameState, std::make_shared<middle::EditorActionMove>(middle::getSelectedShapes(gameState)));
 				gameState->editorState.grabbing = true;
 				return;
@@ -91,10 +94,10 @@ namespace MouseGrabbingSystem {
 				auto grabbable = *grabbableIt;
 				auto selectable = *selectableIt;
 
-				if (grabbable && selectable->selected && gameState->input.grabDown) {
+				if (grabbable && selectable->selected && input.grabDown) {
 					grabbable->grabbing = true;
 				}
-				else if (grabbable && !gameState->input.grabDown) {
+				else if (grabbable && !input.grabDown) {
 					grabbable->grabbing = false;
 				}
 
@@ -107,7 +110,7 @@ namespace MouseGrabbingSystem {
 			for (int i = 0; i < placableCache->getSize(); ++i) {
 				auto placable = *placableIt;
 				auto& shape = middle::getShape(gameState, placableCache->relevantIdVector[i].index);
-				if (gameState->input.mouseClicked) {
+				if (input.mouseClicked) {
 					middle::queueComponentDeletion<components::PlacementComponent>(gameState, shape.id);
 					std::vector<middle::Id>members;
 					middle::getAllChildren(gameState, shape.id, members);
@@ -122,7 +125,7 @@ namespace MouseGrabbingSystem {
 				}
 			}
 
-			if (gameState->input.grabReleased && gameState->editorState.grabbing) {
+			if (input.grabReleased && gameState->editorState.grabbing) {
 				releasing(gameState);
 			}
 

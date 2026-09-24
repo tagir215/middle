@@ -179,7 +179,7 @@ namespace middle{
 		processActionQueues(gameState);
 		cacheUpdate(gameState);
 
-		if (!gameState->loaded) {
+		if (!gameState->middleState.loaded) {
 			return;
 		}
 
@@ -202,7 +202,7 @@ namespace middle{
 		updateSystems(gameState, gameState->enginePostFrameSystems);
 
 		// Clear input blockers at the end of physics update
-		gameState->inputBlockers.clear();
+		gameState->middleState.inputBlockers.clear();
 
 	}
 }
@@ -221,27 +221,28 @@ extern "C" {
 			initialized = true;
 		}
 
-		if (gameState->closeGame) {
+		if (gameState->middleState.closeGame) {
 			closeGame(gameState);
 			return;
 		}
 
 		// TODO HARDCODED
-		if (gameState->reset) {
+		if (gameState->middleState.reset) {
 			resetScene(gameState);
 			loadScene(gameState, std::string(middlePaths::SCENES_FOLDER), gameState->activeSceneName, false);
-			gameState->reset = false;
+			gameState->middleState.reset = false;
 		}
 
 		if (!gameState->systemsRegistered) {
 			registerSystems(gameState);
 		}
 
-		if (gameState->frameTimeAccumulator >= gameState->frameTime)
+		float frameTime = gameState->middleState.frameTime;
+		if (gameState->middleState.frameTimeAccumulator >= frameTime)
 		{
-			gameState->frameTimeAccumulator -= gameState->frameTime;
-			if (gameState->frameTimeAccumulator > gameState->frameTime * 2) {
-				gameState->frameTimeAccumulator = 0;
+			gameState->middleState.frameTimeAccumulator -= frameTime;;
+			if (gameState->middleState.frameTimeAccumulator > frameTime * 2) {
+				gameState->middleState.frameTimeAccumulator = 0;
 			}
 			deterministicUpdate(gameState);
 		}

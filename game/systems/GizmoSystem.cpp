@@ -20,8 +20,8 @@ public:
 	}
 
 	bool broadTest(middle::GameState* gameState, const midMath::Vector3& spherePos, float radius) {
-		midMath::Vector3 rayStart = gameState->input.mouseNearPlanePos;
-		midMath::Vector3 rayEnd = rayStart + midMath::Vector3Scale(gameState->input.mouseDir, 10000);
+		midMath::Vector3 rayStart = gameState->middleState.input.mouseNearPlanePos;
+		midMath::Vector3 rayEnd = rayStart + midMath::Vector3Scale(gameState->middleState.input.mouseDir, 10000);
 		midMath::Vector3 intersectPos;
 		return midMath::RayCastLineSphere(spherePos, radius, rayStart, rayEnd, intersectPos);
 	}
@@ -34,8 +34,8 @@ public:
 	};
 
 	AxisTestResult axisTest(middle::GameState* gameState, const midMath::Vector3& spherePos, float radius) {
-		midMath::Vector3 rayStart = gameState->input.mouseNearPlanePos;
-		midMath::Vector3 rayDir = gameState->input.mouseDir;
+		midMath::Vector3 rayStart = gameState->middleState.input.mouseNearPlanePos;
+		midMath::Vector3 rayDir = gameState->middleState.input.mouseDir;
 		midMath::Vector3 collisionPosX = midMath::RayCastLinePlane(spherePos, { 0,1,0 }, rayStart, rayDir);
 		midMath::Vector3 collisionPosY = midMath::RayCastLinePlane(spherePos, { 0,0,1 }, rayStart, rayDir);
 		midMath::Vector3 collisionPosZ = midMath::RayCastLinePlane(spherePos, { 1,0,0 }, rayStart, rayDir);

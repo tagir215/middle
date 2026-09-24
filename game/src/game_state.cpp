@@ -19,14 +19,14 @@ namespace middle {
 		if (!reverseMode) {
 			if (progress <= duration) {
 				prevProgress = progress;
-				progress += gameState->frameTime;
+				progress += gameState->middleState.frameTime;
 				update(gameState);
 			}
 		}
 		else {
 			if (progress >= 0) {
 				prevProgress = progress;
-				progress -= gameState->frameTime;
+				progress -= gameState->middleState.frameTime;
 				update(gameState);
 			}
 		}

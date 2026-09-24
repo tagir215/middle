@@ -67,13 +67,13 @@ public:
 				};
 
 			if (ImGui::IsWindowHovered(ImGuiHoveredFlags_AnyWindow)) {
-				gameState->inputBlockers.insert(middle::InputBlockers::MOUSE_BLOCK);
+				middle::insertInputBlock(gameState, middle::InputBlockers::MOUSE_BLOCK);
 			}
 
 			ImGui::Begin("Control");
-			if (!gameState->paused) {
+			if (!gameState->middleState.paused) {
 				if (ImGui::Button("pause")) {
-					gameState->paused = true;
+					gameState->middleState.paused = true;
 				}
 				if (ImGui::Button("undo")) {
 					if (gameState->editorState.actionHistory.size() > 0) {
@@ -96,7 +96,7 @@ public:
 			}
 			else {
 				if (ImGui::Button("continue")) {
-					gameState->paused = false;
+					gameState->middleState.paused = false;
 					gameState->editorState.stepDir = 1;
 				}
 				if (ImGui::Button("next step")) {
@@ -109,7 +109,7 @@ public:
 				}
 			}
 			if (ImGui::Button("reset")) {
-				gameState->reset = true;
+				gameState->middleState.reset = true;
 			}
 			if (configs) {
 				if (ImGui::Button("increase grid")) {
@@ -125,18 +125,19 @@ public:
 				gameState->middleState.applicationMode = middle::ApplicationMode::GAME_MODE;
 			}
 			ImGui::End();
+			auto& input = gameState->middleState.input;
 			ImGui::Begin("GameState");
 			ImGuiDisplayVector3("camera position", gameState->editorState.camera.position);
 			ImGuiDisplayVector3("camera up", gameState->editorState.camera.up);
 			ImGuiDisplayVector3("camera target", gameState->editorState.camera.target);
-			ImGuiDisplayVector2("mousePos", gameState->input.mousePos);
-			ImGuiDisplayVector3("mouse near plane pos", gameState->input.mouseNearPlanePos);
-			ImGuiDisplayVector2("mouse normalized pos", gameState->input.mouseNormalizedPos);
-			ImGuiDisplayVector3("mouse dir", gameState->input.mouseDir);
-			ImGuiDisplayVector3("mouse xz pos", gameState->input.mouseXZ_PlanePos);
-			ImGuiDisplayVector3("mouse xz vel", gameState->input.mouseXZ_PlaneVelocity);
-			ImGuiDisplayInt("screen width", gameState->screenWidth);
-			ImGuiDisplayInt("screen height", gameState->screenHeight);
+			ImGuiDisplayVector2("mousePos", input.mousePos);
+			ImGuiDisplayVector3("mouse near plane pos", input.mouseNearPlanePos);
+			ImGuiDisplayVector2("mouse normalized pos", input.mouseNormalizedPos);
+			ImGuiDisplayVector3("mouse dir", input.mouseDir);
+			ImGuiDisplayVector3("mouse xz pos", input.mouseXZ_PlanePos);
+			ImGuiDisplayVector3("mouse xz vel", input.mouseXZ_PlaneVelocity);
+			ImGuiDisplayInt("screen width", gameState->middleState.screenWidth);
+			ImGuiDisplayInt("screen height", gameState->middleState.screenHeight);
 			ImGui::End();
 
 			ImGui::Begin("Editor");
@@ -145,9 +146,6 @@ public:
 			int currentItem = static_cast<int>(gameState->editorState.creationMode);
 			ImGui::Combo("Select things to add", &currentItem, items, IM_ARRAYSIZE(items));
 			gameState->editorState.creationMode = static_cast<middle::CreationMode>(currentItem);
-
-			auto end = gameState->inputBlockers.end();
-			auto& blockers = gameState->inputBlockers;
 
 
 			if (ImGui::Button("DELETE OBJECT")) {
@@ -235,7 +233,7 @@ public:
 			// Popup for entering new scene name
 			static char newSceneName[128] = ""; // buffer for scene name input
 			if (ImGui::BeginPopup("New Scene Popup")) {
-				gameState->inputBlockers.insert(middle::InputBlockers::KEYBOARD_BLOCK);
+				middle::insertInputBlock(gameState, middle::InputBlockers::KEYBOARD_BLOCK);
 
 				ImGui::Text("Enter new scene name:");
 				ImGui::InputText("##newSceneName", newSceneName, IM_ARRAYSIZE(newSceneName));
@@ -315,7 +313,7 @@ public:
 
 
 			if (ImGui::BeginPopup("Component Selector")) {
-				gameState->inputBlockers.insert(middle::InputBlockers::MOUSE_BLOCK);
+				middle::insertInputBlock(gameState, middle::InputBlockers::MOUSE_BLOCK);
 				for (auto& name : gameState->componentNames) {
 					if (ImGui::Button(name.c_str())) {
 						middle::queueEditorAction(gameState, std::make_shared<middle::EditorActionImportComponent>(name, middle::getSelectedShapes(gameState)));
@@ -334,7 +332,7 @@ public:
 			// Popup for entering new scene name
 			static char newScriptName[128] = ""; // buffer for scene name input
 			if (ImGui::BeginPopup("New Script Popup")) {
-				gameState->inputBlockers.insert(middle::InputBlockers::KEYBOARD_BLOCK);
+				middle::insertInputBlock(gameState, middle::InputBlockers::KEYBOARD_BLOCK);
 
 				ImGui::Text("Enter new initSystem name:");
 				ImGui::InputText("##newScriptName", newScriptName, IM_ARRAYSIZE(newScriptName));
@@ -373,7 +371,6 @@ public:
 			ImGui::End();
 
 			};
-
 
 		middle::queueUi(gameState, ui);
 	}

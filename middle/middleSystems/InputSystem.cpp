@@ -6,7 +6,7 @@
 
 class InputSystem {
 public:
-	static void update(middle::GameState* gameState)  {
+	static void update(middle::MiddleState* middleState)  {
 
 		midMath::Matrix scalorM = midMath::MatrixScale(1, -1, 1);
 		midMath::Matrix translatorM = midMath::MatrixTranslate(0, GetScreenHeight(), 0);
@@ -15,24 +15,24 @@ public:
 		// INPUTS
 		midMath::Vector3 mousePos = { GetMouseX(), GetMouseY(), 0 };
 		midMath::Vector3 invertedMouse = midMath::Vector3Transform(mousePos, screenOrientorM);
-		gameState->input.mousePos.x = invertedMouse.x;
-		gameState->input.mousePos.y = invertedMouse.y;
+		middleState->input.mousePos.x = invertedMouse.x;
+		middleState->input.mousePos.y = invertedMouse.y;
 
-		gameState->input.mouseHeld = false;
-		gameState->input.mouseClicked = false;
-		gameState->input.mouseReleased = false;
+		middleState->input.mouseHeld = false;
+		middleState->input.mouseClicked = false;
+		middleState->input.mouseReleased = false;
 
-		if (gameState->inputBlockers.find(middle::InputBlockers::MOUSE_BLOCK) == gameState->inputBlockers.end()) {
-			gameState->input.mouseHeld = IsMouseButtonDown(MOUSE_BUTTON_LEFT);
-			gameState->input.mouseClicked = IsMouseButtonPressed(MOUSE_BUTTON_LEFT);
-			gameState->input.mouseReleased = IsMouseButtonReleased(MOUSE_BUTTON_LEFT);
-			//gameState->input.zoomIn = GetMouseWheelMoveV().y > 0;
-			//gameState->input.zoomOut = GetMouseWheelMoveV().y < 0;
+		if (middleState->inputBlockers.find(middle::InputBlockers::MOUSE_BLOCK) == middleState->inputBlockers.end()) {
+			middleState->input.mouseHeld = IsMouseButtonDown(MOUSE_BUTTON_LEFT);
+			middleState->input.mouseClicked = IsMouseButtonPressed(MOUSE_BUTTON_LEFT);
+			middleState->input.mouseReleased = IsMouseButtonReleased(MOUSE_BUTTON_LEFT);
+			//middleState->input.zoomIn = GetMouseWheelMoveV().y > 0;
+			//middleState->input.zoomOut = GetMouseWheelMoveV().y < 0;
 		}
 
-		if (gameState->middleState.applicationMode == middle::ApplicationMode::EDITOR_MODE) {
-			//gameState->input = middle::EditorInput();
-			auto& ip = gameState->input;
+		if (middleState->applicationMode == middle::ApplicationMode::EDITOR_MODE) {
+			//middleState->input = middle::EditorInput();
+			auto& ip = middleState->input;
 
 			ip.w = false;
 			ip.a = false;
@@ -64,7 +64,7 @@ public:
 			ip.reparentClick = false;
 			ip.seaprateFromParentClick = false;
 
-			if (gameState->inputBlockers.find(middle::InputBlockers::KEYBOARD_BLOCK) == gameState->inputBlockers.end()) {
+			if (middleState->inputBlockers.find(middle::InputBlockers::KEYBOARD_BLOCK) == middleState->inputBlockers.end()) {
 				ip.w = IsKeyDown(KEY_W);
 				ip.s = IsKeyDown(KEY_S);
 				ip.a = IsKeyDown(KEY_A);
@@ -92,17 +92,17 @@ public:
 				ip.saveClick = IsKeyPressed(KEY_P);
 				ip.navigateToFileClick = IsKeyPressed(KEY_SPACE);
 				ip.focus = IsKeyPressed(KEY_F);
-				ip.newThing = gameState->input.mouseClicked;
+				ip.newThing = middleState->input.mouseClicked;
 				ip.reparentClick = IsKeyPressed(KEY_E);
 				ip.seaprateFromParentClick = IsKeyPressed(KEY_R);
 			}
 		}
 
-		if (gameState->middleState.applicationMode == middle::ApplicationMode::GAME_MODE) {
-			gameState->gameInput = middle::GameInput();
-			auto& gi = gameState->gameInput;
+		if (middleState->applicationMode == middle::ApplicationMode::GAME_MODE) {
+			middleState->gameInput = middle::GameInput();
+			auto& gi = middleState->gameInput;
 
-			if (gameState->inputBlockers.find(middle::InputBlockers::KEYBOARD_BLOCK) == gameState->inputBlockers.end()) {
+			if (middleState->inputBlockers.find(middle::InputBlockers::KEYBOARD_BLOCK) == middleState->inputBlockers.end()) {
 				gi.copy = IsKeyPressed(KEY_F);
 				gi.insertTerm = IsKeyPressed(KEY_T);
 				gi.pop = IsKeyPressed(KEY_B);
@@ -130,12 +130,12 @@ public:
 				gi.shiftHeld = IsKeyDown(KEY_LEFT_SHIFT) || IsKeyDown(KEY_RIGHT_SHIFT);
 			}
 
-			gameState->gameInput.mouseWheelMove = GetMouseWheelMove();
+			middleState->gameInput.mouseWheelMove = GetMouseWheelMove();
 
 
-			if (gameState->inputBlockers.find(middle::InputBlockers::KEYBOARD_BLOCK) == gameState->inputBlockers.end()) {
-				gameState->equlabInput = middle::EqulabInput();
-				auto& ei = gameState->equlabInput;
+			if (middleState->inputBlockers.find(middle::InputBlockers::KEYBOARD_BLOCK) == middleState->inputBlockers.end()) {
+				middleState->equlabInput = middle::EqulabInput();
+				auto& ei = middleState->equlabInput;
 				ei.oneClicked = IsKeyPressed(KEY_ONE);
 				ei.twoClicked = IsKeyPressed(KEY_TWO);
 				ei.threeClicked = IsKeyPressed(KEY_THREE);
@@ -214,45 +214,45 @@ public:
 
 		// TODO MOVE THESE
 		// CAMERA POSITION UPDATE
-		int cameraPosX = gameState->screenWidth / 2;
-		int cameraPosY = gameState->screenHeight / 2;
+		int cameraPosX = middleState->screenWidth / 2;
+		int cameraPosY = middleState->screenHeight / 2;
 
 		// MOUSE POSITION UPDATE
-		int relativeX = gameState->input.mousePos.x - cameraPosX;
-		int relativeY = gameState->input.mousePos.y - cameraPosY;
-		gameState->input.mouseNormalizedPos.x = (float)relativeX / (float)cameraPosX;
-		gameState->input.mouseNormalizedPos.y = (float)relativeY / (float)cameraPosX;
-		gameState->middleState.aspectRatio = gameState->screenWidth / gameState->screenHeight;
-		float angle = gameState->middleState.activeCamera.fovy * DEG2RAD * 0.5f;
+		int relativeX = middleState->input.mousePos.x - cameraPosX;
+		int relativeY = middleState->input.mousePos.y - cameraPosY;
+		middleState->input.mouseNormalizedPos.x = (float)relativeX / (float)cameraPosX;
+		middleState->input.mouseNormalizedPos.y = (float)relativeY / (float)cameraPosX;
+		middleState->aspectRatio = middleState->screenWidth / middleState->screenHeight;
+		float angle = middleState->activeCamera.fovy * DEG2RAD * 0.5f;
 
 		// todo move {
-		float nearAxisY = tan(angle) * gameState->middleState.nearPlaneDistance;
-		float nearAxisX = nearAxisY * gameState->middleState.aspectRatio;
-		gameState->nearPlaneAxisY = nearAxisY;
-		gameState->nearPlaneAxisX = nearAxisX;
+		float nearAxisY = tan(angle) * middleState->nearPlaneDistance;
+		float nearAxisX = nearAxisY * middleState->aspectRatio;
+		middleState->nearPlaneAxisY = nearAxisY;
+		middleState->nearPlaneAxisX = nearAxisX;
 		// }
 
-		float nearPlanePos2dX = nearAxisX * gameState->input.mouseNormalizedPos.x;
-		float nearPlanePos2dY = nearAxisX * gameState->input.mouseNormalizedPos.y;
+		float nearPlanePos2dX = nearAxisX * middleState->input.mouseNormalizedPos.x;
+		float nearPlanePos2dY = nearAxisX * middleState->input.mouseNormalizedPos.y;
 
-		auto& camera = toRCam(gameState->middleState.activeCamera);
+		auto& camera = toRCam(middleState->activeCamera);
 		Vector3 cameraDir = Vector3Normalize(camera.target - camera.position);
 		Vector3 cameraRight = Vector3Normalize(Vector3CrossProduct(cameraDir, camera.up));
 		Vector3 cameraUp = Vector3CrossProduct(cameraRight, cameraDir);
 		Vector3 nearPlanePos = camera.position
-			+ cameraDir * gameState->middleState.nearPlaneDistance
+			+ cameraDir * middleState->nearPlaneDistance
 			+ cameraRight * nearPlanePos2dX
 			+ cameraUp * nearPlanePos2dY;
-		midMath::Vector3 mouseDir = midMath::Vector3Normalize(gameState->input.mouseNearPlanePos - gameState->middleState.activeCamera.position);
-		gameState->input.mouseNearPlanePos = { nearPlanePos.x, nearPlanePos.y, nearPlanePos.z };
-		gameState->input.mouseDir = { mouseDir.x, mouseDir.y, mouseDir.z };
+		midMath::Vector3 mouseDir = midMath::Vector3Normalize(middleState->input.mouseNearPlanePos - middleState->activeCamera.position);
+		middleState->input.mouseNearPlanePos = { nearPlanePos.x, nearPlanePos.y, nearPlanePos.z };
+		middleState->input.mouseDir = { mouseDir.x, mouseDir.y, mouseDir.z };
 
 		midMath::Vector3 xzPlanePos = { 0,0,0 };
 		midMath::Vector3 xzPlaneNormal = { 0,-1,0 };
-		midMath::Vector3 previousXZ_PlanePos = gameState->input.mouseXZ_PlanePos;
-		midMath::Vector3 nextXZ_PlanePos = midMath::RayCastLinePlane(xzPlanePos, xzPlaneNormal, gameState->input.mouseNearPlanePos, gameState->input.mouseDir);
-		gameState->input.mouseXZ_PlanePos = nextXZ_PlanePos;
-		gameState->input.mouseXZ_PlaneVelocity = (nextXZ_PlanePos - previousXZ_PlanePos) / gameState->frameTime;
+		midMath::Vector3 previousXZ_PlanePos = middleState->input.mouseXZ_PlanePos;
+		midMath::Vector3 nextXZ_PlanePos = midMath::RayCastLinePlane(xzPlanePos, xzPlaneNormal, middleState->input.mouseNearPlanePos, middleState->input.mouseDir);
+		middleState->input.mouseXZ_PlanePos = nextXZ_PlanePos;
+		middleState->input.mouseXZ_PlaneVelocity = (nextXZ_PlanePos - previousXZ_PlanePos) / middleState->frameTime;
 	}
 };
 

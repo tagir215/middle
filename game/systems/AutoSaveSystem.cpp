@@ -24,8 +24,8 @@ class AutoSaveSystem : public middle::MiddleGameplaySystem {
 			static char activeBubbleName[128] = "";
 			ImGui::InputText("Equation name", activeBubbleName, IM_ARRAYSIZE(activeBubbleName));
 			if (ImGui::IsItemFocused()) {
-				gameState->inputBlockers.insert(middle::InputBlockers::KEYBOARD_BLOCK);
-				gameState->inputBlockers.insert(middle::InputBlockers::MOUSE_BLOCK);
+				middle::insertInputBlock(gameState, middle::InputBlockers::KEYBOARD_BLOCK);
+				middle::insertInputBlock(gameState, middle::InputBlockers::MOUSE_BLOCK);
 				gameState->bubbleAlgebraState.activeBubbleName = activeBubbleName;
 			}
 

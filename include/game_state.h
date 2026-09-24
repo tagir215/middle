@@ -1,5 +1,4 @@
 #pragma once
-#include "input.h"
 #include <array>
 #include <list>
 #include "middle_gameplay_script.h"
@@ -124,14 +123,7 @@ namespace middle {
 
 	struct GameState {
 	public:
-		float screenWidth;
-		float screenHeight;
-		float frameTime;
-		float frameTimeAccumulator = 0;
-		float nearPlaneAxisX = 0;
-		float nearPlaneAxisY = 0;
 		bool systemsRegistered = false;
-		bool releaseBuild = false;
 		MiddleState middleState;
 		EditorState editorState;
 		// shapes
@@ -161,18 +153,6 @@ namespace middle {
 		std::vector<std::string>componentNames;
 		std::vector<midPrimitive::Sound>sounds;
 		std::vector<std::string>debugInfo;
-		EditorInput input;
-		// todo move these
-		GameInput gameInput;
-		EqulabInput equlabInput;
-		std::set<InputBlockers> inputBlockers;
-		bool paused = false;
-		bool closeGame = false;
-		bool startGame = false;
-		bool reload = true;
-		bool reset = false;
-		bool loaded = false;
-		bool quit = false;
 
 		const char* workingDir;
 		std::vector<middle::FieldInfo>fields;

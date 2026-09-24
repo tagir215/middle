@@ -306,7 +306,7 @@ public:
 
 		float camDist = gameState->middleState.activeCamera.position.y;
 		// todo... is cosntant
-		float axisY = gameState->nearPlaneAxisY / gameState->middleState.nearPlaneDistance * -camDist;
+		float axisY = gameState->middleState.nearPlaneAxisY / gameState->middleState.nearPlaneDistance * -camDist;
 
 		const float firstStepScale = axisY / bubble::bubbleAxis;
 

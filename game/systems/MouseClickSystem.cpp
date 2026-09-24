@@ -29,7 +29,7 @@ public:
 			middle::queueComponentDeletion<components::MouseClickComponent>(gameState, shape.id);
 		}
 
-		if (gameState->input.mouseReleased) {
+		if (gameState->middleState.input.mouseReleased) {
 			auto buttonIt = buttonCache->begin<components::Button>();
 			auto intersectingIt = buttonCache->begin<components::IntersectingTag>();
 

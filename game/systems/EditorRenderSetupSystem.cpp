@@ -151,7 +151,7 @@ public:
 				continue;
 			// draw grid
 			const midPrimitive::Color CartesianColor = {255,255,255,255};
-			midMath::Vector3 mouseXz = gameState->input.mouseXZ_PlanePos;
+			midMath::Vector3 mouseXz = gameState->middleState.input.mouseXZ_PlanePos;
 			midMath::Vector3 mouseGridPos = midMath::gridPosition(mouseXz, editorConfigs->gridSize);
 
 			const float visibleGridRadius = editorConfigs->gridSize * editorConfigs->visibleGridPointRadiusCount;

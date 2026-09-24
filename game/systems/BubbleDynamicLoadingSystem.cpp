@@ -52,7 +52,7 @@ public:
 
 		const float disappearingBubbleHideFactor = 20.2f;
 		float screenWidthInWorldCoords = 
-			gameState->nearPlaneAxisX / gameState->middleState.nearPlaneDistance * (-gameState->middleState.activeCamera.position.y)  * disappearingBubbleHideFactor * thisIsImportantScalor;
+			gameState->middleState.nearPlaneAxisX / gameState->middleState.nearPlaneDistance * (-gameState->middleState.activeCamera.position.y)  * disappearingBubbleHideFactor * thisIsImportantScalor;
 
 		// find current position id
 		middle::Id localPathEndId;

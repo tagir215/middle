@@ -35,7 +35,7 @@ public:
 			--gameState->bubbleAlgebraState.postUndoFrames;
 		}
 
-		if (gameState->gameInput.undo) {
+		if (gameState->middleState.gameInput.undo) {
 			undo(gameState);
 		}
 

@@ -982,6 +982,10 @@ namespace middle {
 	{
 		gameState->middleState.uiSetups.push_back(ui);
 	}
+	void insertInputBlock(middle::GameState* gameState, middle::InputBlockers block)
+	{
+		gameState->middleState.inputBlockers.insert(block);
+	}
 	midPrimitive::Camera3D getActiveCam(middle::GameState* gameState)
 	{
 		return gameState->middleState.activeCamera;

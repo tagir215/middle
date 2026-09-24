@@ -34,12 +34,12 @@ namespace MouseSelectionSystem {
 
 		void update(middle::GameState* gameState) override {
 
-			if (gameState->input.mouseClicked) {
+			if (gameState->middleState.input.mouseClicked) {
 				gameState->editorState.selectChangeCountAfterClick = 0;
 			}
 
 			if (gameState->editorState.creationMode == middle::CreationMode::LOOP_MODE) {
-				if (gameState->input.mouseClicked || gameState->editorState.selectCount > 1) {
+				if (gameState->middleState.input.mouseClicked || gameState->editorState.selectCount > 1) {
 					unselect();
 				}
 			}
@@ -60,19 +60,19 @@ namespace MouseSelectionSystem {
 				}
 
 				// when holding down, don't immediatedly toggle once when starting intersect
-				if (intersecting && intersecting->framesIntersected < 2 && intersecting->intersectingTop && gameState->input.mouseHeld) {
+				if (intersecting && intersecting->framesIntersected < 2 && intersecting->intersectingTop && gameState->middleState.input.mouseHeld) {
 					selectable->selected = !selectable->selected;
 					++gameState->editorState.selectChangeCountAfterClick;
 				}
 
 				// toggle selection when clicking
-				if (intersecting && intersecting->intersectingTop && gameState->input.mouseClicked) {
+				if (intersecting && intersecting->intersectingTop && gameState->middleState.input.mouseClicked) {
 					selectable->selected = !selectable->selected;
 					++gameState->editorState.selectChangeCountAfterClick;
 				}
 
 				// grabbing activates selected if there's no selections yet, except can't grab constraints
-				if (intersecting && intersecting->intersectingTop && gameState->input.grabDown && gameState->editorState.selectCount == 0) {
+				if (intersecting && intersecting->intersectingTop && gameState->middleState.input.grabDown && gameState->editorState.selectCount == 0) {
 					auto constraint = middle::getComponent<components::Constraint>(shape);
 					if (!constraint) {
 						selectable->selected = true;
@@ -96,7 +96,7 @@ namespace MouseSelectionSystem {
 			}
 
 			// unselect
-			if (gameState->input.mouseReleased && gameState->editorState.selectChangeCountAfterClick == 0) {
+			if (gameState->middleState.input.mouseReleased && gameState->editorState.selectChangeCountAfterClick == 0) {
 				unselect();
 			}
 

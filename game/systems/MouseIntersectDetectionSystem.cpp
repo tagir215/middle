@@ -65,7 +65,7 @@ namespace MouseIntersectDetectionSystem {
 
 			midMath::Vector3 intersectPos;
 			bool isIntersecting = midMath::RayCastLineSphere(pos, radius, gameState->middleState.activeCamera.position,
-				gameState->middleState.activeCamera.position + gameState->input.mouseDir, intersectPos);
+				gameState->middleState.activeCamera.position + gameState->middleState.input.mouseDir, intersectPos);
 
 			return isIntersecting;
 		}
