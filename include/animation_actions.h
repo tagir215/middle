@@ -6,9 +6,9 @@ namespace animationActions {
 	class LinearTranslation : public middle::Animation {
 	public:
 		middle::Id id;
-		Vector3 startPos;
-		Vector3 targetPos;
-		LinearTranslation(middle::Id id, const Vector3& targetPos, float duration) {
+		midMath::Vector3 startPos;
+		midMath::Vector3 targetPos;
+		LinearTranslation(middle::Id id, const midMath::Vector3& targetPos, float duration) {
 			this->id = id;
 			this->targetPos = targetPos;
 			this->duration = duration;
@@ -20,9 +20,9 @@ namespace animationActions {
 	class Teleport : public middle::Animation {
 	public:
 		middle::Id id;
-		Vector3 targetPos;
-		Vector3 startPos;
-		Teleport(middle::Id id, const Vector3& targetPos) {
+		midMath::Vector3 targetPos;
+		midMath::Vector3 startPos;
+		Teleport(middle::Id id, const midMath::Vector3& targetPos) {
 			this->id = id;
 			this->targetPos = targetPos;
 		}

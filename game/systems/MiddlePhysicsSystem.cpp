@@ -4,7 +4,6 @@
 #include "middle_shape_utils.h"
 #include "Constraint.h"
 #include "PhysicsData.h"
-#include "descart_loop.h"
 #include "LocalPosition.h"
 
 class MiddlePhysicsSystem : public middle::MiddleGameplaySystem {

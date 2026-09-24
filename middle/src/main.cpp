@@ -24,22 +24,21 @@
 *
 ********************************************************************************************/
 
+#pragma once
 #include "platform.h"
-#include "raylib.h"
 #include <chrono>
 #include <filesystem>
 #include <thread>
-#include "game_state.h"
-#include <raymath.h>
 #include <rlImGui.h>
-#include "editor_actions.h"
-#include "middle_math.h"
+#include "game_state.h"
 #include "game.h"
 #include "sound_helper.h"
 #include "init_external_systems.h"
 #include <iostream>
 #include "assets_loading.h"
 #include "profiler_helpers.h"
+#include "middle/middleSystems/InputSystem.cpp"
+#include "middle/middleSystems/Renderer.cpp"
 
 #if defined(_DEBUG)
 static const char* DLL_PATH = "Debug/game.dll";
@@ -51,15 +50,20 @@ static const char* TEMP_DLL_NAME = "Release/game.load";
 bool gameMode = true;
 #endif
 
-void UpdateGame(GameState* gameState);
+void UpdateGame(middle::GameState* gameState);
 void ReloadGameDLL();
 
 
 typedef decltype(UpdateGame) UpdateGameType;
 static UpdateGameType* updateGamePtr;
 
-std::unique_ptr<GameState> gameState;
+std::unique_ptr<middle::GameState> gameState;
 
+
+struct RayState{
+	Font globalFont;
+	std::unordered_map<std::string, Sound>soundMap;
+};
 
 
 //------------------------------------------------------------------------------------
@@ -79,9 +83,9 @@ int main(void)
 	//set_window_always_on_top(GetWindowHandle());
 	HideCursor();
 
+	RayState rayState;
 
-	gameState = std::make_unique<GameState>();
-	gameState->worldM = MatrixIdentity();
+	gameState = std::make_unique<middle::GameState>();
 
 	bubbleAssets::loadAssets(gameState.get());
 
@@ -95,7 +99,7 @@ int main(void)
 	gameState->frameTime = fixedTimeStep;
 
 	if (gameMode) {
-		gameState->applicationMode = middle::ApplicationMode::GAME_MODE;
+		gameState->middleState.applicationMode = middle::ApplicationMode::GAME_MODE;
 		gameState->releaseBuild = true;
 	}
 
@@ -108,8 +112,6 @@ int main(void)
 	};
 
 	ShowCursor();
-
-	initExternalSystems(gameState.get());
 
 
 
@@ -133,12 +135,14 @@ int main(void)
 		0x2211,    // Summation operator (∑)
 	};
 	int codepointCount = sizeof(codepoints) / sizeof(codepoints[0]);
-	gameState->globalFont = LoadFontEx("../assets/fonts/math-sans/NotoSansMath-Regular.ttf", gameState->fontUnitFactor, codepoints, codepointCount);
-	GenTextureMipmaps(&gameState->globalFont.texture);
-	SetTextureFilter(gameState->globalFont.texture, TEXTURE_FILTER_TRILINEAR);
+	const int fontUnitFactor = 1024;
+	rayState.globalFont = LoadFontEx("../assets/fonts/math-sans/NotoSansMath-Regular.ttf", fontUnitFactor, codepoints, codepointCount);
+	GenTextureMipmaps(&rayState.globalFont.texture);
+	SetTextureFilter(rayState.globalFont.texture, TEXTURE_FILTER_TRILINEAR);
 
 	InitAudioDevice();
-	loadSoundEffects(gameState.get());
+	std::unordered_map<std::string, Sound>soundMap;
+	middleSoundHelpers::loadSoundEffects(soundMap, gameState.get());
 
 
 	// Main game loop
@@ -161,20 +165,15 @@ int main(void)
 		gameState->screenWidth = GetScreenWidth();
 		gameState->screenHeight = GetScreenHeight();
 
-		for (auto sys : gameState->externalPreFrameSystems) {
-			sys->recordTimeUpdate(gameState.get());
-			middleProfiling::reviewSystemTime(gameState.get(), sys.get());
-		}
+		InputSystem::update(gameState.get());
 
 		gameState->frameTimeAccumulator += GetFrameTime();
 		UpdateGame(gameState.get());
 
-		for (auto sys : gameState->externalPostFrameSystems) {
-			sys->recordTimeUpdate(gameState.get());
-			middleProfiling::reviewSystemTime(gameState.get(), sys.get());
-		}
+		renderer::RendererSystem::update(&gameState->middleState, rayState.globalFont, false);
 
-		playSoundEffects(gameState.get());
+		std::vector<Sound>sounds;
+		middleSoundHelpers::playSoundEffects(sounds);
 
 		auto end = std::chrono::high_resolution_clock::now();
 		auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
@@ -206,7 +205,7 @@ int main(void)
 	return 0;
 }
 
-void UpdateGame(GameState* gameState)
+void UpdateGame(middle::GameState* gameState)
 {
 	updateGamePtr(gameState);
 }

@@ -10,10 +10,11 @@
 #include "LocalScale.h"
 #include "GlobalTransform.h"
 #include "EditorText.h"
+#include "middle_math.h"
 
 namespace entities{
 
-    inline void initSystem(middle::GameState* gameState, int index, const Vector3& position, const std::string& systemName){
+    inline void initSystem(middle::GameState* gameState, int index, const midMath::Vector3& position, const std::string& systemName){
 		middle::Shape shape = middle::createShape(gameState);
 		middle::addComponent<components::MouseSelectable>(shape);
 		middle::addComponent<components::MouseGrabbable>(shape);

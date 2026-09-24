@@ -22,10 +22,9 @@
 #include "sha256.h"
 #include "bubequ.h"
 
-
 namespace bubequ{
 
-	inline middle::Id bubequToBubble(middle::GameState* gameState, const Vector3& targetPos, std::shared_ptr<bubequ::Scope>& bubequ)
+	inline middle::Id bubequToBubble(middle::GameState* gameState, const midMath::Vector3& targetPos, std::shared_ptr<bubequ::Scope>& bubequ)
 	{
 		std::queue<bubequ::Scope*>scopeQueue;
 		std::queue<middle::Id>parentQueue;
@@ -39,7 +38,7 @@ namespace bubequ{
 			middle::Id currentParentId = parentQueue.front();
 			scopeQueue.pop();
 			parentQueue.pop();
-			Vector3 pos = targetPos;
+			midMath::Vector3 pos = targetPos;
 
 			middle::Id newNodeId;
 

@@ -111,20 +111,20 @@ public:
 
 		replaceMan(gameState);
 
-		Color systemColor = GREEN;
-		Color selectionBoxColor = { WHITE.r, WHITE.g, WHITE.b, 40 };
-		Color hoveredColor = middle::HOVERED_THING_COLOR;
-		Color backgroundColor = middle::BACKGROUND_COLOR;
-		Color jointColor = middle::JOINT_COLOR;
-		Color constraintColor = middle::CONSTRAINT_COLOR;
-		Color referenceColor = middle::REFERENCE_INDICATOR_COLOR;
-		Color loopColor = middle::LOOP_INDICATOR_COLOR;
-		Color loopItemColor = WHITE;
-		Color configColor = ORANGE;
-		Color cameraColor = BLUE;
+		midPrimitive::Color systemColor = { 0,255,0,255 };
+		midPrimitive::Color selectionBoxColor = { 255,255,255, 40 };
+		midPrimitive::Color hoveredColor = middle::HOVERED_THING_COLOR;
+		midPrimitive::Color backgroundColor = middle::BACKGROUND_COLOR;
+		midPrimitive::Color jointColor = middle::JOINT_COLOR;
+		midPrimitive::Color constraintColor = middle::CONSTRAINT_COLOR;
+		midPrimitive::Color referenceColor = middle::REFERENCE_INDICATOR_COLOR;
+		midPrimitive::Color loopColor = middle::LOOP_INDICATOR_COLOR;
+		midPrimitive::Color loopItemColor = { 255,255,255,255 };
+		midPrimitive::Color configColor = {255,0,255,255};
+		midPrimitive::Color cameraColor = {0,0,255,255};
 
 		if (gameState->editorState.creationMode == middle::CreationMode::LOOP_MODE) {
-			backgroundColor = GRAY;
+			backgroundColor = { 100,100,100,255 };
 			//textColor = GRAY;
 			//systemColor = GRAY;
 		}
@@ -139,7 +139,7 @@ public:
 			sphereItem.center = transform->pos;
 			sphereItem.color = { 150,150,150,255 };
 			sphereItem.disableDepthTest = true;
-			gameState->renderData.push_back(sphereItem);
+			middle::queueForRender(gameState, sphereItem);
 		}
 
 		// drawing grid
@@ -150,9 +150,9 @@ public:
 			if (editorConfigs->gridSize == 0)
 				continue;
 			// draw grid
-			const Color CartesianColor = WHITE;
-			Vector3 mouseXz = gameState->input.mouseXZ_PlanePos;
-			Vector3 mouseGridPos = middle::gridPosition(mouseXz, editorConfigs->gridSize);
+			const midPrimitive::Color CartesianColor = {255,255,255,255};
+			midMath::Vector3 mouseXz = gameState->input.mouseXZ_PlanePos;
+			midMath::Vector3 mouseGridPos = midMath::gridPosition(mouseXz, editorConfigs->gridSize);
 
 			const float visibleGridRadius = editorConfigs->gridSize * editorConfigs->visibleGridPointRadiusCount;
 			float visibleGridRadiusSq = visibleGridRadius * visibleGridRadius;
@@ -171,7 +171,7 @@ public:
 						gridSphere.color = CartesianColor;
 						gridSphere.color.a = (1.0f - ratio) * 255;
 						gridSphere.radius = editorConfigs->gridSize * 0.05f;
-						gameState->renderData.push_back(gridSphere);
+						middle::queueForRender(gameState, gridSphere);
 					}
 				}
 			}
@@ -192,7 +192,7 @@ public:
 			if (intersecting) {
 				configSphere.color = hoveredColor;
 			}
-			gameState->renderData.push_back(configSphere);
+			middle::queueForRender(gameState, configSphere);
 		}
 
 
@@ -209,7 +209,7 @@ public:
 			if (intersecting) {
 				sphereItem.color = hoveredColor;
 			}
-			gameState->renderData.push_back(sphereItem);
+			middle::queueForRender(gameState, sphereItem);
 		}
 
 
@@ -226,7 +226,7 @@ public:
 			if (intersecting) {
 				lineItem.color = hoveredColor;
 			}
-			gameState->renderData.push_back(lineItem);
+			middle::queueForRender(gameState, lineItem);
 		}
 
 		if (gameState->editorState.creationMode == middle::CreationMode::LOOP_MODE) {
@@ -237,23 +237,22 @@ public:
 				middle::getChildren(gameState, hierarchyCache->relevantIdVector[i], children);
 				middle::Id parentId = middle::getParent(gameState, hierarchyCache->relevantIdVector[i]);
 				for (middle::Id& id : children) {
-					Vector3 childPos = middle::getGlobalPosition(gameState, id);
+					midMath::Vector3 childPos = middle::getGlobalPosition(gameState, id);
 					middle::RenderItem childItem;
 					childItem.type = middle::RenderItemType::TEXT;
 					childItem.color = loopItemColor;
 					childItem.center = childPos;
 					childItem.text = "child";
-					gameState->renderData.push_back(childItem);
-
+					middle::queueForRender(gameState, childItem);
 				}
 				if (parentId.index != middle::UNASSIGNED) {
-					Vector3 parentPos = middle::getGlobalPosition(gameState, parentId);
+					midMath::Vector3 parentPos = middle::getGlobalPosition(gameState, parentId);
 					middle::RenderItem parentItem;
 					parentItem.type = middle::RenderItemType::TEXT;
 					parentItem.color = loopItemColor;
 					parentItem.center = parentPos;
 					parentItem.text = "parent";
-					gameState->renderData.push_back(parentItem);
+					middle::queueForRender(gameState, parentItem);
 				}
 			}
 		}
@@ -273,7 +272,7 @@ public:
 			if (intersecting) {
 				refItem.color = hoveredColor;
 			}
-			gameState->renderData.push_back(refItem);
+			middle::queueForRender(gameState, refItem);
 		}
 
 		auto systemGlobalTransformIt = systemRefCache->begin<components::GlobalTransform>();
@@ -289,7 +288,7 @@ public:
 			if (intersecting) {
 				systemItem.color = hoveredColor;
 			}
-			gameState->renderData.push_back(systemItem);
+			middle::queueForRender(gameState, systemItem);
 		}
 
 		for (int i = 0; i < loopTagCache->getSize(); ++i) {
@@ -305,7 +304,7 @@ public:
 			if (intersecting) {
 				loopItem.color = hoveredColor;
 			}
-			gameState->renderData.push_back(loopItem);
+			middle::queueForRender(gameState, loopItem);
 		}
 
 
@@ -332,7 +331,7 @@ public:
 			selectItem.color = selectionBoxColor;
 			selectItem.disableDepthTest = true;
 			selectItem.layer = 6;
-			gameState->renderData.push_back(selectItem);
+			middle::queueForRender(gameState, selectItem);
 		}
 
 		auto selectableLineIt = selectableLineCache->begin<components::MouseSelectable>();
@@ -344,26 +343,26 @@ public:
 				continue;
 			}
 
-			Vector3 linePointA = middle::getGlobalPosition(gameState, constraint->idA);
-			Vector3 linePointB = middle::getGlobalPosition(gameState, constraint->idB);
+			midMath::Vector3 linePointA = middle::getGlobalPosition(gameState, constraint->idA);
+			midMath::Vector3 linePointB = middle::getGlobalPosition(gameState, constraint->idB);
 
 			middle::RenderItem selectItem;
 			selectItem.type = middle::RenderItemType::RECTANGLE;
 			selectItem.center = { 0,0,0 };
-			float height = Vector3Distance(linePointA, linePointB);
-			Vector3 lineDir = Vector3Normalize(linePointB - linePointA);
+			float height = midMath::Vector3Distance(linePointA, linePointB);
+			midMath::Vector3 lineDir = midMath::Vector3Normalize(linePointB - linePointA);
 			selectItem.width = 1;
 			selectItem.height = height;
 			selectItem.length = 1;
 			selectItem.color = selectionBoxColor;
 			selectItem.transform.scale = { 1,1,1 };
-			selectItem.transform.rotation = QuaternionFromVector3ToVector3({ 0,0,1 }, lineDir);
-			selectItem.transform.translation = Vector3Scale(linePointA + linePointB, 0.5f);
-			gameState->renderData.push_back(selectItem);
+			selectItem.transform.rotation = midMath::QuaternionFromVector3ToVector3({ 0,0,1 }, lineDir);
+			selectItem.transform.translation = midMath::Vector3Scale(linePointA + linePointB, 0.5f);
+			middle::queueForRender(gameState, selectItem);
 		}
 
 		const float editorTextSize = 10;
-		const Color editorTextColor = WHITE;
+		const midPrimitive::Color editorTextColor = {255,255,255,255};
 
 		auto textIt = textCache->begin<components::EditorText>();
 		auto textGlobalTransformIt = textCache->begin<components::GlobalTransform>();
@@ -379,7 +378,7 @@ public:
 			textItem.text = text->text;
 			textItem.fontSize = editorTextSize;
 			textItem.color = editorTextColor;
-			gameState->renderData.push_back(textItem);
+			middle::queueForRender(gameState, textItem);
 		}
 
 	}

@@ -140,7 +140,7 @@ public:
 			for (auto& name : filenames) {
 				if (ImGui::Button(name.c_str())) {
 					const std::string path = std::string(bubblePaths::EQUATION_FOLDER) + "/" + name + ".bubequ";
-					Vector3 camXZPos = gameState->activeCamera.position;
+					midMath::Vector3 camXZPos = middle::getActiveCam(gameState).position;
 					camXZPos.y = 0;
 					//auto bubequ = bubequ::loadBubequ(path);
 
@@ -157,7 +157,7 @@ public:
 			}
 			ImGui::End();
 			};
-		gameState->uiSetups.push_back(equlabUi);
+		middle::queueUi(gameState, equlabUi);
 
 
 		// ACTIONS
@@ -245,7 +245,7 @@ public:
 			}
 
 
-			Vector3& mousePos = gameState->input.mouseXZ_PlanePos;
+			midMath::Vector3& mousePos = gameState->input.mouseXZ_PlanePos;
 
 			if (!cantAdd && in.oneClicked) {
 				auto action = std::make_shared<equlab::AddBubble>(intersectedBubble, mousePos);

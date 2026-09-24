@@ -7,7 +7,7 @@
 namespace components {
 	struct ModelComponent : public middle::Serializable{
 		std::string path;
-		Model model;
+		midPrimitive::Model model;
 		bool initialized = false;
 
 		void serialize(std::ostream& ostream) override;

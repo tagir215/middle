@@ -38,18 +38,18 @@ public:
 	}
 
 	void move(middle::GameState* gameState, middle::Shape& shape) {
-		Vector3 pos;
+		midMath::Vector3 pos;
 		auto transform = middle::getComponent<components::GlobalTransform>(shape);
 		if (transform) {
 			pos = transform->pos;
 		}
 
-		Vector3 cameraPos = gameState->editorState.camera.position;
+		midMath::Vector3 cameraPos = gameState->editorState.camera.position;
 		float objYDistance = std::abs(pos.y - cameraPos.y);
 		float yDistance = std::abs(cameraPos.y);
 		if (yDistance == 0)
 			yDistance = 0.001f;
-		Vector3 xzVel = Vector3Scale(gameState->input.mouseXZ_PlaneVelocity, objYDistance / yDistance);
+		midMath::Vector3 xzVel = Vector3Scale(gameState->input.mouseXZ_PlaneVelocity, objYDistance / yDistance);
 		moveShape(gameState, shape.id.index, Vector3Scale(xzVel, gameState->frameTime));
 	}
 

@@ -1,5 +1,5 @@
 #pragma once
-#include "raylib.h"
+#include "middle_math.h"
 
 namespace middle {
 
@@ -10,12 +10,13 @@ namespace middle {
 	};
 
 	struct EditorInput {
-		Vector2 mousePos;
-		Vector2 mouseNormalizedPos;
-		Vector3 mouseNearPlanePos;
-		Vector3 mouseXZ_PlanePos;
-		Vector3 mouseXZ_PlaneVelocity;
-		Vector3 mouseDir;
+		midMath::Vector2 mousePos;
+		midMath::Vector2 mouseNormalizedPos;
+		midMath::Vector3 mouseNearPlanePos;
+		midMath::Vector3 mouseXZ_PlanePos;
+		midMath::Vector3 mouseXZ_PlaneVelocity;
+		midMath::Vector3 mouseDir;
+		midMath::Matrix screenOrientorM;
 		bool mouseClicked = false;
 		bool mouseReleased = false;
 		bool mouseHeld = false;

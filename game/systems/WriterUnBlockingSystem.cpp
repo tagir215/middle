@@ -58,7 +58,7 @@ class WriterUnBlockingSystem : public middle::MiddleGameplaySystem {
 			ImGui::End();
 
 			};
-		gameState->uiSetups.push_back(writingUi);
+		middle::queueUi(gameState, writingUi);
 
 		if (gameState->equlabInput.f9Clicked) {
 			for (middle::Id id : textCache->relevantIdVector) {

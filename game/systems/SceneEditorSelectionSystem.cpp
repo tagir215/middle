@@ -30,7 +30,7 @@ class SceneEditorSelectionSystem : public middle::MiddleGameplaySystem {
 		for (middle::Id& id : topDogCache->relevantIdVector) {
 			middle::Id parentId = middle::getParent(gameState, id);
 			middle::Id targetId;
-			Vector3 center;
+			midMath::Vector3 center;
 			if (parentId.index != middle::UNASSIGNED) {
 				continue;
 			}
@@ -39,7 +39,7 @@ class SceneEditorSelectionSystem : public middle::MiddleGameplaySystem {
 				targetId = id;
 			}
 
-			float distSqr = Vector3DistanceSqr(center, gameState->activeCamera.position);
+			float distSqr = Vector3DistanceSqr(center, gameState->middleState.activeCamera.position);
 			if (distSqr < minDistance) {
 				minDistance = distSqr;
 				closestId = targetId;
@@ -47,8 +47,8 @@ class SceneEditorSelectionSystem : public middle::MiddleGameplaySystem {
 		}
 		// FIND CLOSEST FROM SCENE OBJECTS
 		for (middle::Id& id : sceneObjCache->relevantIdVector) {
-			Vector3 pos = middle::getGlobalPosition(gameState, id);
-			float distSqr = Vector3DistanceSqr(pos, gameState->activeCamera.position);
+			midMath::Vector3 pos = middle::getGlobalPosition(gameState, id);
+			float distSqr = Vector3DistanceSqr(pos, gameState->middleState.activeCamera.position);
 			if (distSqr < minDistance) {
 				minDistance = distSqr;
 				closestId = id;

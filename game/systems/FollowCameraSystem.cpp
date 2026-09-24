@@ -21,8 +21,8 @@ public:
 		auto uiIt = uiCache->begin<components::UiNode>();
 		for (int i = 0; i < uiCache->getSize(); ++i) {
 			auto& shape = middle::getShape(gameState, uiCache->relevantIdVector[i].index);
-			Vector3 cameraPos = gameState->activeCamera.position;
-			Vector3 pos = middle::getGlobalPosition(gameState, shape.id);
+			midMath::Vector3 cameraPos = middle::getActiveCam(gameState).position;
+			midMath::Vector3 pos = middle::getGlobalPosition(gameState, shape.id);
 			middle::moveShape(gameState, shape.id.index, cameraPos - pos);
 		}
 	}

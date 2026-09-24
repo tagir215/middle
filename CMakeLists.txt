@@ -52,7 +52,6 @@ add_library(game SHARED
 target_include_directories(game PUBLIC ${CMAKE_SOURCE_DIR}/include)
 target_include_directories(game PUBLIC ${MIDDLE_COMPONENTS_DIR})
 target_include_directories(game PUBLIC ${CMAKE_SOURCE_DIR}/middle/middleEntities)
-target_include_directories(game PUBLIC ${CMAKE_SOURCE_DIR}/lib/raylib-5.5_win64_msvc16/include)
 
 # middle executable?, not hot reloadable, though not sure
 add_executable(middle 
@@ -64,19 +63,20 @@ add_executable(middle
     middle/middleSystems/FileDropSystem.cpp
     middle/src/assets_loading.cpp
     ## todo
+    include/middle_state.h
     game/src/game_state.cpp
 )
 target_include_directories(middle PUBLIC ${CMAKE_SOURCE_DIR}/include)
 target_include_directories(middle PUBLIC ${MIDDLE_COMPONENTS_DIR})
+target_include_directories(middle PUBLIC ${CMAKE_SOURCE_DIR}/middle/middleSystems)
 
-add_subdirectory(${CMAKE_SOURCE_DIR}/lib/descart_physics)
 add_subdirectory(${CMAKE_SOURCE_DIR}/lib/rlImGui-main)
 add_subdirectory(${CMAKE_SOURCE_DIR}/lib/imgui-master)
 
 target_include_directories(rlImGui PUBLIC ${CMAKE_SOURCE_DIR}/lib/raylib-5.5_win64_msvc16/include)
 
-target_link_libraries(game PUBLIC descart_physics imgui_shared)
-target_link_libraries(middle PUBLIC descart_physics raylib rlImGui)
+target_link_libraries(game PUBLIC imgui_shared)
+target_link_libraries(middle PUBLIC raylib rlImGui)
 target_link_libraries(rlImGui PUBLIC raylib winmm)
 
 

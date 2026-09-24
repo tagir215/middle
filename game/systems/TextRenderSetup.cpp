@@ -42,7 +42,7 @@ class TextRenderSetup : public middle::MiddleGameplaySystem {
 			textItem.textOffset.x = text->offsetX;
 			textItem.textOffset.y = text->offsetY;
 			textItem.textOffset.z = text->offsetZ;
-			gameState->renderData.push_back(textItem);
+			middle::queueForRender(gameState, textItem);
 		}
 	}
 };

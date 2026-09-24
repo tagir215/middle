@@ -47,8 +47,8 @@ public:
 			auto position = *posIt;
 			middle::Id id = cachoB->relevantIdVector[i];
 
-			Vector3 pos = middle::getGlobalPosition(gameState, id);
-			Vector3 targetPos = middle::gridPosition(pos, editorConfigs->gridSize);
+			midMath::Vector3 pos = middle::getGlobalPosition(gameState, id);
+			midMath::Vector3 targetPos = midMath::gridPosition(pos, editorConfigs->gridSize);
 			middle::moveShape(gameState, id.index, targetPos - pos);
 		}
 

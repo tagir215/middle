@@ -6,7 +6,7 @@
 
 namespace components {
 	struct Rotation : public middle::Serializable{
-		Quaternion rotation;
+		midMath::Quaternion rotation;
 
 		void serialize(std::ostream& ostream) override;
 		void deserialize(const std::vector<std::string>& buffer, int indexOffset) override;
@@ -23,5 +23,5 @@ namespace components {
 }
 
 namespace middle {
-	const Vector3 ROTATION_FORWARD = { 0,1,0 };
+	const midMath::Vector3 ROTATION_FORWARD = { 0,1,0 };
 }

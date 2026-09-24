@@ -3,11 +3,9 @@
 #include "game_state.h"
 #include "middle_shape_utils.h"
 
-using namespace middle;
-
 extern "C"
 {
-	__declspec(dllexport) void UpdateGame(GameState* gameState);
+	__declspec(dllexport) void UpdateGame(middle::GameState* gameState);
 }
 
-void closeGame(GameState* gameState);
+void closeGame(middle::GameState* gameState);

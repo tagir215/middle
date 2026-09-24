@@ -37,7 +37,12 @@ namespace bubbleAssets {
 			const std::string& path = texturePaths[i];
 			const std::string& name = filenames[i];
 			middle::TextureContainer container;
-			container.texture = LoadTexture(path.c_str());
+			Texture texture = LoadTexture(path.c_str());
+			container.texture.id = texture.id;
+			container.texture.format = texture.format;
+			container.texture.width = texture.width;
+			container.texture.height = texture.height;
+			container.texture.mipmaps = texture.mipmaps;
 			gameState->textureMap[name] = container;
 		}
 
@@ -53,7 +58,8 @@ namespace bubbleAssets {
 			auto& name = shaderNames[i];
 			Shader shader = LoadShader(0, path.c_str());
 			middle::ShaderContainer container;
-			container.shader = shader;
+			container.shader.id = shader.id;
+			container.shader.locs = shader.locs;
 			gameState->shaderMap[name] = container;
 		}
 	}

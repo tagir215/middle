@@ -2,7 +2,6 @@
 #include "input.h"
 #include <array>
 #include <list>
-#include "descart_physics.h"
 #include "middle_gameplay_script.h"
 #include "middle_gameplay_script_map.h"
 #include "entity.h"
@@ -14,8 +13,8 @@
 #include <stack>
 #include <set>
 #include "middle_math.h"
+#include "middle_state.h"
 
-using namespace descart;
 
 namespace middle {
 
@@ -30,15 +29,9 @@ namespace middle {
 		LOOP_MODE,
 	};
 
-	enum class ApplicationMode {
-		EDITOR_MODE,
-		GAME_MODE,
-	};
-
-
 	struct CollisionData {
-		Vector3 normal;
-		Vector3 collisionPoint;
+		midMath::Vector3 normal;
+		midMath::Vector3 collisionPoint;
 		int indexA;
 		int indexB;
 		float toi;
@@ -60,7 +53,7 @@ namespace middle {
 
 	struct EditorState {
 		CreationMode creationMode;
-		Camera3D camera;
+		midPrimitive::Camera3D camera;
 		bool initialized = false;
 		bool doOneStep = false;
 		bool showAllInfo = false;
@@ -68,63 +61,12 @@ namespace middle {
 		int intersectCount = 0;
 		int selectCount = 0;
 		int selectChangeCountAfterClick = 0;
-		Color backgroundColor = BACKGROUND_COLOR;
+		midPrimitive::Color backgroundColor = BACKGROUND_COLOR;
 		int historySinkDepth = 0;
 		std::vector<std::shared_ptr<EditorActionContainer>>actionHistory;
 		bool grabbing = false;
 	};
 
-	enum RenderItemType {
-		SPHERE,
-		LINE,
-		RECTANGLE,
-		CIRCLE,
-		TEXT,
-		MODEL,
-		VECTOR,
-		CIRCLE_SECTOR,
-		CONE,
-		RING,
-		CYLINDER,
-		CUBOID,
-		BILLBOARD,
-		BACKGROUND,
-	};
-
-	struct RenderItem {
-		RenderItemType type;
-		Color color;
-		Color backgroundColor = {0,0,0,0};
-		Vector3 center = {0,0,0};
-		Vector3 scale = {1,1,1};
-		Vector3 linePointA;
-		Vector3 linePointB;
-		Vector3 textOffset = { 0,0,0 };
-		Transform transform;
-		int layer = 0;
-		int slices = 20;
-		float radius;
-		float ringRadius;
-		float startAngle;
-		float endAngle;
-		int segments;
-		float length = 0;
-		float width = 0;
-		float height = 0;
-		float textureScale = 10;
-		int fontSize = 10;
-		bool disableDepthTest = false;
-		std::string text = "";
-		Model* model = nullptr;
-		Texture2D* texture = nullptr;
-		Shader* shader = nullptr;
-
-		RenderItem() {
-			transform.translation = { 0,0,0 };
-			transform.rotation = { 0,0,0 };
-			transform.scale = { 1,1,1 };
-		}
-	};
 
 	enum BubbleInsertType {
 		ADD_OUTER,
@@ -159,22 +101,22 @@ namespace middle {
 		std::vector<middle::Id>traversePathIds;
 		middle::Id backgroundBubbleId;
 		const int loadDepth;
-		Vector3 cameraVelocity;
+		midMath::Vector3 cameraVelocity;
 		float worldScalarRate;
 		BubbleAlgebraState();
 	};
 
 	struct ModelContainer {
 		std::string path = "";
-		Model model;
+		midPrimitive::Model model;
 	};
 
 	struct TextureContainer {
-		Texture2D texture;
+		midPrimitive::Texture2D texture;
 	};
 
 	struct ShaderContainer {
-		Shader shader;
+		midPrimitive::Shader shader;
 	};
 
 	typedef int shapeIndex;
@@ -184,18 +126,14 @@ namespace middle {
 	public:
 		float screenWidth;
 		float screenHeight;
-		float aspectRatio;
 		float frameTime;
 		float frameTimeAccumulator = 0;
-		const double nearPlaneDistance = 10;
-		const double farPlaneDistance = 4000;
 		float nearPlaneAxisX = 0;
 		float nearPlaneAxisY = 0;
 		bool systemsRegistered = false;
 		bool releaseBuild = false;
-		ApplicationMode applicationMode = ApplicationMode::EDITOR_MODE;
+		MiddleState middleState;
 		EditorState editorState;
-		Camera activeCamera;
 		// shapes
 		std::array<Id, MAX_SHAPE_COUNT>ids;
 		std::array<Shape, MAX_SHAPE_COUNT>shapes;
@@ -207,16 +145,11 @@ namespace middle {
 		std::vector<std::unique_ptr<MiddleGameplaySystem>> engineSystemsFrameStart;
 		std::vector<std::unique_ptr<MiddleGameplaySystem>> enginePostFrameSystems;
 		std::vector<std::unique_ptr<MiddleGameplaySystem>> engineRendererSystems;
-		std::vector<std::shared_ptr<MiddleGameplaySystem>> externalPreFrameSystems;
-		std::vector<std::shared_ptr<MiddleGameplaySystem>> externalPostFrameSystems;
 		std::vector<middle::Id>newShapeList;
 
-		std::array<Vector3, MAX_VERTEX_COUNT> vertexArray;
-		Matrix worldM;
-		Vector2 mouseDragPos;
-		Matrix oldWorldM;
-		Matrix screenOrientorM;
-		Vector3 mouseIntersectTopPosition;
+		std::array<midMath::Vector3, MAX_VERTEX_COUNT> vertexArray;
+		midMath::Vector2 mouseDragPos;
+		midMath::Vector3 mouseIntersectTopPosition;
 		std::string activeSceneName = "";
 		std::string activeSystemName = "";
 		int vertexIndex = 0;
@@ -226,7 +159,7 @@ namespace middle {
 		std::vector<std::string>shapeNames;
 		std::vector<std::string>systemNames;
 		std::vector<std::string>componentNames;
-		std::unordered_map<std::string, Sound>soundMap;
+		std::vector<midPrimitive::Sound>sounds;
 		std::vector<std::string>debugInfo;
 		EditorInput input;
 		// todo move these
@@ -240,13 +173,8 @@ namespace middle {
 		bool reset = false;
 		bool loaded = false;
 		bool quit = false;
-		int fontUnitFactor = 1024;
-		Font globalFont;
 
 		const char* workingDir;
-		std::vector<RenderItem>renderData;
-		std::vector<PhysicsBody>physicsBodies;
-		std::vector<std::function<void()>>uiSetups;
 		std::vector<middle::FieldInfo>fields;
 		BubbleAlgebraState bubbleAlgebraState;
 		std::vector<std::unique_ptr<components::CompCache>>compCaches;
@@ -257,7 +185,7 @@ namespace middle {
 		std::unordered_map<std::string, TextureContainer>textureMap;
 		std::unordered_map<std::string, ShaderContainer>shaderMap;
 		std::queue<std::string>modelsToLoadQueue;
-		std::queue<Sound>soundQueue;
+		std::queue<midPrimitive::Sound>soundQueue;
 		std::vector<std::shared_ptr<Animation>>animations;
 
 		std::vector<std::string>slowSystems;

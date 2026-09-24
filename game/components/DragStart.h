@@ -6,14 +6,14 @@
 
 namespace components {
 	struct DragStart : public middle::Serializable{
-		Vector3 dragStartPos;
-		Vector3 gizmoPos;
-		Vector3 axis;
+		midMath::Vector3 dragStartPos;
+		midMath::Vector3 gizmoPos;
+		midMath::Vector3 axis;
 		int axisId;
 
-		Quaternion initRotation;
-		Vector3 initPosition;
-		Vector3 initScale;
+		midMath::Quaternion initRotation;
+		midMath::Vector3 initPosition;
+		midMath::Vector3 initScale;
 
 		void serialize(std::ostream& ostream) override;
 		void deserialize(const std::vector<std::string>& buffer, int indexOffset) override;

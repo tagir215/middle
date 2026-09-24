@@ -1,7 +1,10 @@
 #pragma once
-#include "raylib.h"
+#include "middle_primitives.h"
+using Color = midPrimitive::Color;
 
 namespace bubbleColors {
+	inline Color WHITE = { 255,255,255,255 };
+	inline Color BLACK = { 0,0,0,255 };
 	inline Color BACKGROUND = WHITE;
 	inline Color BUBBLE = { 190,190,190,255 };
 	inline Color LOGIC = { 220,220,220,255 };

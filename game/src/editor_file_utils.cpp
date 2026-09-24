@@ -55,16 +55,16 @@ namespace middle {
 		else if (field.type() == typeid(bool)) {
 			return FieldType::Bool;
 		}
-		else if (field.type() == typeid(Vector3)) {
+		else if (field.type() == typeid(midMath::Vector3)) {
 			return FieldType::Vector3;
 		}
-		else if (field.type() == typeid(Vector2)) {
+		else if (field.type() == typeid(midMath::Vector2)) {
 			return FieldType::Vector2;
 		}
-		else if (field.type() == typeid(Quaternion)) {
+		else if (field.type() == typeid(midMath::Quaternion)) {
 			return FieldType::Quaternion;
 		}
-		else if (field.type() == typeid(Color)) {
+		else if (field.type() == typeid(midPrimitive::Color)) {
 			return FieldType::Color;
 		}
 		else if (field.type() == typeid(Id)) {
@@ -77,7 +77,7 @@ namespace middle {
 		assert(false, "no we are not supporting this");
 	}
 
-	std::string Vector3ToString(const Vector3& v) {
+	std::string Vector3ToString(const midMath::Vector3& v) {
 		std::string result = "\n";
 		result += std::to_string(v.x) + "\n";
 		result += std::to_string(v.y) + "\n";
@@ -85,14 +85,14 @@ namespace middle {
 		return result;
 	}
 
-	std::string Vector2ToString(const Vector2& v) {
+	std::string Vector2ToString(const midMath::Vector2& v) {
 		std::string result = "\n";
 		result += std::to_string(v.x) + "\n";
 		result += std::to_string(v.y);
 		return result;
 	}
 
-	std::string QuaternionToString(const Quaternion& q) {
+	std::string QuaternionToString(const midMath::Quaternion& q) {
 		std::string result = "\n";
 		result += std::to_string(q.x) + "\n";
 		result += std::to_string(q.y) + "\n";
@@ -101,7 +101,7 @@ namespace middle {
 		return result;
 	}
 
-	std::string ColorToString(const Color& c) {
+	std::string ColorToString(const midPrimitive::Color& c) {
 		std::string result = "\n";
 		result += std::to_string(c.r) + "\n";
 		result += std::to_string(c.g) + "\n";
@@ -111,7 +111,7 @@ namespace middle {
 	}
 
 	// DEPRECATED
-	std::string coordToLines(const Vector3& position) {
+	std::string coordToLines(const midMath::Vector3& position) {
 		auto x = "f  " + std::to_string(position.x) + "\n";
 		auto y = "f  " + std::to_string(position.y) + "\n";
 		auto z = "f  " + std::to_string(position.z) + "\n";
@@ -135,13 +135,13 @@ namespace middle {
 		case FieldType::Bool:
 			return result + std::to_string(std::any_cast<bool>(field)) + '\n';
 		case FieldType::Vector3:
-			return result + Vector3ToString(std::any_cast<Vector3>(field)) + '\n';
+			return result + Vector3ToString(std::any_cast<midMath::Vector3>(field)) + '\n';
 		case FieldType::Vector2:
-			return result + Vector2ToString(std::any_cast<Vector2>(field)) + '\n';
+			return result + Vector2ToString(std::any_cast<midMath::Vector2>(field)) + '\n';
 		case FieldType::Quaternion:
-			return result + QuaternionToString(std::any_cast<Quaternion>(field)) + '\n';
+			return result + QuaternionToString(std::any_cast<midMath::Quaternion>(field)) + '\n';
 		case FieldType::Color:
-			return result + ColorToString(std::any_cast<Color>(field)) + '\n';
+			return result + ColorToString(std::any_cast<midPrimitive::Color>(field)) + '\n';
 		case FieldType::Id: {
 			middle::Id id = std::any_cast<Id>(field);
 			return result + std::to_string(id.index) + '_' + std::to_string(id.generation) + '\n';
@@ -192,7 +192,7 @@ namespace middle {
 		}
 		case static_cast<char>(FieldType::Vector3): {
 			std::vector<std::string> values = split(valueStr, '\n');
-			Vector3* vptr = static_cast<Vector3*>(field);
+			midMath::Vector3* vptr = static_cast<midMath::Vector3*>(field);
 			vptr->x = std::stof(values[0]);
 			vptr->y = std::stof(values[1]);
 			vptr->z = std::stof(values[2]);
@@ -200,14 +200,14 @@ namespace middle {
 		}
 		case static_cast<char>(FieldType::Vector2): {
 			std::vector<std::string> values = split(valueStr, '\n');
-			Vector2* vptr = static_cast<Vector2*>(field);
+			midMath::Vector2* vptr = static_cast<midMath::Vector2*>(field);
 			vptr->x = std::stof(values[0]);
 			vptr->y = std::stof(values[1]);
 			return;
 		}
 		case static_cast<char>(FieldType::Quaternion): {
 			std::vector<std::string> values = split(valueStr, '\n');
-			Quaternion* vptr = static_cast<Quaternion*>(field);
+			midMath::Quaternion* vptr = static_cast<midMath::Quaternion*>(field);
 			vptr->x = std::stof(values[0]);
 			vptr->y = std::stof(values[1]);
 			vptr->z = std::stof(values[2]);
@@ -216,7 +216,7 @@ namespace middle {
 		}
 		case static_cast<char>(FieldType::Color): {
 			std::vector<std::string> values = split(valueStr, '\n');
-			Color* vptr = static_cast<Color*>(field);
+			midPrimitive::Color* vptr = static_cast<midPrimitive::Color*>(field);
 			vptr->r = std::stof(values[0]);
 			vptr->g = std::stof(values[1]);
 			vptr->b = std::stof(values[2]);
@@ -430,7 +430,7 @@ namespace middle {
 
 	}
 
-	middle::Id loadShape(GameState* gameState, const std::string& folder, const std::string& sceneName, bool import, const Vector3& pos) {
+	middle::Id loadShape(GameState* gameState, const std::string& folder, const std::string& sceneName, bool import, const midMath::Vector3& pos) {
 		int freeIndex = findFreeIndex(gameState);
 		return loadScene(gameState, folder, sceneName, import, pos, freeIndex);
 	}
@@ -462,7 +462,7 @@ namespace middle {
 		if (referenceComponent) {
 
 			auto posComponent = getComponent<components::LocalPosition>(shape);
-			Vector3 pos = { 0,0,0 };
+			midMath::Vector3 pos = { 0,0,0 };
 			if (posComponent) {
 				pos = posComponent->pos;
 			// reset to zero, because load scene will again set the position, while also moving its children
@@ -489,7 +489,7 @@ namespace middle {
 	void flushFieldBuffer(GameState* gameState, std::vector<std::string>& buffer, const std::string& field) {
 		if (field == "#editorCameraPos") {
 			assert(buffer.size() == 3);
-			Vector3 pos;
+			midMath::Vector3 pos;
 			fillField(&pos.x, buffer[0]);
 			fillField(&pos.y, buffer[1]);
 			fillField(&pos.z, buffer[2]);
@@ -512,7 +512,7 @@ namespace middle {
 			|| typeC == static_cast<char>(FieldType::Color);
 	}
 
-	middle::Id loadScene(GameState* gameState, const std::string& folder, const std::string& sceneName, bool import, const Vector3& pos, int sceneReferenceIndex) {
+	middle::Id loadScene(GameState* gameState, const std::string& folder, const std::string& sceneName, bool import, const midMath::Vector3& pos, int sceneReferenceIndex) {
 
 		std::string path = folder + "/" + sceneName + ".midsc";
 
@@ -656,7 +656,7 @@ namespace middle {
 			}
 
 			// move imported scene where it wants to be
-			Vector3 displacement = pos;
+			midMath::Vector3 displacement = pos;
 			std::vector<middle::Id>children;
 			middle::Id sceneReferenceId = gameState->ids[sceneReferenceIndex];
 			middle::getChildren(gameState, sceneReferenceId, children);
@@ -792,9 +792,10 @@ namespace middle {
 		generateFileFromTemplate(filenameSource, std::string(middlePaths::COMPONENT_TEMPLATE_SOURCE), componentName, placeholder);
 	}
 
-
 	void queueSound(GameState* gameState, const std::string& soundName) {
-		gameState->soundQueue.push(gameState->soundMap[soundName]);
+		midPrimitive::Sound sound;
+		sound.name = soundName;
+		gameState->sounds.push_back(sound);
 	}
 }
 

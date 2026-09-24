@@ -256,14 +256,14 @@ public:
 		text.fontSize = labelFontSize;
 		text.layer = layer + 1;
 		if(pos == LabelPos::LEFT)
-			text.transform.translation = transform->pos + Vector3{ -axis + offset,0, axis - offset };
+			text.transform.translation = transform->pos + midMath::Vector3{ -axis + offset,0, axis - offset };
 		else if (pos == LabelPos::CENTER)
-			text.transform.translation = transform->pos + Vector3{ 0,0, axis - offset };
+			text.transform.translation = transform->pos + midMath::Vector3{ 0,0, axis - offset };
 		else if (pos == LabelPos::RIGHT)
-			text.transform.translation = transform->pos + Vector3{ axis + offset, axis - offset };
+			text.transform.translation = transform->pos + midMath::Vector3{ axis + offset, axis - offset };
 		text.transform.scale = transform->scale;
 		text.transform.rotation = transform->rotation;
-		gameState->renderData.push_back(text);
+		middle::queueForRender(gameState, text);
 	}
 
 	void renderBubbleIcon(middle::GameState* gameState, components::GlobalTransform* transform, float height, 
@@ -286,14 +286,14 @@ public:
 
 		icon.transform.scale = transform->scale;
 		if (pos == IconPos::TOP)
-			icon.transform.translation = transform->pos + Vector3{ 0,0, axis - offset };
+			icon.transform.translation = transform->pos + midMath::Vector3{ 0,0, axis - offset };
 		else if (pos == IconPos::CENTER) {
-			icon.transform.translation = transform->pos + Vector3{ 0,0,0 };
+			icon.transform.translation = transform->pos + midMath::Vector3{ 0,0,0 };
 			const float centerScaleMultiplier = 4;
 			icon.transform.scale = Vector3Scale(transform->scale, centerScaleMultiplier);
 		}
 		icon.transform.rotation = transform->rotation;
-		gameState->renderData.push_back(icon);
+		middle::queueForRender(gameState, icon);
 	}
 
 
@@ -304,9 +304,9 @@ public:
 		const float stepScale = 1.0f / oneChildScaleRatio;
 		float layerOffset = 0;
 
-		float camDist = gameState->activeCamera.position.y;
+		float camDist = gameState->middleState.activeCamera.position.y;
 		// todo... is cosntant
-		float axisY = gameState->nearPlaneAxisY / gameState->nearPlaneDistance * -camDist;
+		float axisY = gameState->nearPlaneAxisY / gameState->middleState.nearPlaneDistance * -camDist;
 
 		const float firstStepScale = axisY / bubble::bubbleAxis;
 
@@ -397,7 +397,7 @@ public:
 		texture.transform.scale.y *= scaleCorrection;
 		texture.transform.scale.z *= scaleCorrection;
 		texture.color = color;
-		gameState->renderData.push_back(texture);
+		middle::queueForRender(gameState, texture);
 	}
 
 
@@ -409,6 +409,7 @@ public:
 		auto bubbleRectIt = bubbleCache->begin<components::Rectangle>();
 		auto bubbleLayerIt = bubbleCache->begin<components::Layer>();
 		auto bubbleTransform = bubbleCache->begin<components::GlobalTransform>();
+
 		for (int i = 0; i < bubbleCache->getSize(); ++i) {
 			auto bubble = *bubbleIt;
 			auto rect = *bubbleRectIt;
@@ -514,7 +515,7 @@ public:
 			unitItem.textOffset.x = -rect->width * 0.42f;
 			unitItem.textOffset.z = rect->height * 1.5f;
 			unitItem.fontSize = bubble::bubbleFontSize;
-			gameState->renderData.push_back(unitItem);
+			middle::queueForRender(gameState, unitItem);
 
 			renderBubble(gameState, getLayer(gameState, layer), backgroundColor, transform);
 		}
@@ -534,7 +535,7 @@ public:
 			textItem.text = text->text;
 			textItem.fontSize = text->fontSize;
 			textItem.color = bubbleColors::UNIT_TEXT_POSITIVE;
-			gameState->renderData.push_back(textItem);
+			middle::queueForRender(gameState, textItem);
 
 			Color color = calculateFadedColor(gameState, bubbleColors::BUBBLE, transform, getLayer(gameState, layer));
 			renderBubble(gameState, getLayer(gameState, layer), color, transform);
@@ -578,7 +579,7 @@ public:
 			variableText.textOffset.x = -rect->width * 0.42f;
 			variableText.textOffset.z = rect->height * 1.5f;
 			variableText.fontSize = bubble::bubbleFontSize;
-			gameState->renderData.push_back(variableText);
+			middle::queueForRender(gameState, variableText);
 
 		}
 
@@ -659,9 +660,9 @@ public:
 		middle::RenderItem cameraTarget;
 		cameraTarget.type = middle::RenderItemType::CIRCLE;
 		cameraTarget.radius = 1;
-		cameraTarget.center = gameState->activeCamera.position + Vector3{ 0,100,0 };
-		cameraTarget.color = WHITE;
-		gameState->renderData.push_back(cameraTarget);
+		cameraTarget.center = gameState->middleState.activeCamera.position + midMath::Vector3{ 0,100,0 };
+		cameraTarget.color = bubbleColors::WHITE;
+		middle::queueForRender(gameState, cameraTarget);
 
 		// render activity bounding box
 		auto activeRIt = activeBubbleCache->begin<components::GlobalRect>();
@@ -675,8 +676,8 @@ public:
 			boundingRect.width = globalR->width + margin;
 			boundingRect.height = globalR->height + margin;
 			boundingRect.center = transform->pos;
-			boundingRect.color = WHITE;
-			gameState->renderData.push_back(boundingRect);
+			boundingRect.color = bubbleColors::WHITE;
+			middle::queueForRender(gameState, boundingRect);
 		}
 
 		auto functionTransformIt = functionCache->begin<components::GlobalTransform>();

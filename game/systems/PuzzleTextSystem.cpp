@@ -15,7 +15,7 @@ class PuzzleTextSystem : public middle::MiddleGameplaySystem {
 
 	// Get index position for a unicode character on font
 	// NOTE: If codepoint is not found in the font it fallbacks to '?'
-	int GetGlyphIndex(Font font, int codepoint)
+	int GetGlyphIndex(midPrimitive::Font font, int codepoint)
 	{
 		int index = 0;
 
@@ -97,9 +97,9 @@ class PuzzleTextSystem : public middle::MiddleGameplaySystem {
 	}
 
 
-	Vector2 PuzzleMeasureTextEx(Font font, const char* text, float fontSize, float spacing)
+	midMath::Vector2 PuzzleMeasureTextEx(midPrimitive::Font font, const char* text, float fontSize, float spacing)
 	{
-		Vector2 textSize = { 0 };
+		midMath::Vector2 textSize = { 0 };
 
 		if ((font.texture.id == 0) || (text == NULL) || (text[0] == '\0')) return textSize; // Security check
 
@@ -152,46 +152,6 @@ class PuzzleTextSystem : public middle::MiddleGameplaySystem {
 	}
 	void update(middle::GameState* gameState) override {
 
-		float panelWidth;
-		auto rectIt = puzzlePanelCache->begin<components::Rectangle>();
-		Vector3 panelPos;
-		for (middle::Id& panelId : puzzlePanelCache->relevantIdVector) {
-			auto panelRect = *rectIt;
-			panelWidth = panelRect->width;
-			panelPos = middle::getGlobalPosition(gameState, panelId);
-
-			std::vector<middle::Id>textUnits;
-			middle::getChildren(gameState, panelId, textUnits);
-
-			Vector3 cursorPos = panelPos;
-			float spacing = 1;
-
-			for (middle::Id id : textUnits) {
-				auto& unitShape = middle::getShape(gameState, id.index);
-				auto unit = middle::getComponent<components::PuzzleTextUnit>(unitShape);
-				auto text = middle::getComponent<components::Text>(unitShape);
-				auto rect = middle::getComponent<components::Rectangle>(unitShape);
-
-				Vector2 textSize = PuzzleMeasureTextEx(gameState->globalFont, text->text.c_str(), text->fontSize, spacing);
-				rect->width = textSize.x;
-				rect->height = textSize.y;
-
-				text->offsetX = -textSize.x * 0.5f;
-				text->offsetZ = textSize.y * 0.5f;
-
-				if (cursorPos.x + textSize.x > panelPos.x + panelWidth) {
-					cursorPos.x = panelPos.x;
-					cursorPos.z -= textSize.y;
-				}
-
-				Vector3 targetPos = cursorPos - Vector3{ text->offsetX ,0,text->offsetZ};
-
-				middle::moveShape(gameState, id.index, targetPos - middle::getGlobalPosition(gameState, id));
-
-				const float spaceBetweenWords = 5;
-				cursorPos += Vector3{ textSize.x + spaceBetweenWords, 0,0 };
-			}
-		}
 	}
 };
 

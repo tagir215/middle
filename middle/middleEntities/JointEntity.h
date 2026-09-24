@@ -13,7 +13,7 @@
 
 namespace entities{
 
-    inline void initJoint(middle::GameState* gameState, int index, const Vector3& position){
+    inline void initJoint(middle::GameState* gameState, int index, const midMath::Vector3& position){
 		middle::Shape shape = middle::createShape(gameState);
 		components::Sphere* sphere = middle::addComponent<components::Sphere>(shape);
 		components::LocalPosition* pos = middle::addComponent<components::LocalPosition>(shape);

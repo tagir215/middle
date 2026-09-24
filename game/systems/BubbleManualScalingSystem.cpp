@@ -115,12 +115,12 @@ class BubbleManualScalingSystem : public middle::MiddleGameplaySystem {
 		float scalar = std::powf(gameState->bubbleAlgebraState.worldScalarRate, gameState->frameTime);
 		gameState->bubbleAlgebraState.worldScale *= scalar;
 
-		Vector3 mousePos = gameState->input.mouseXZ_PlanePos;
-		Matrix transM = MatrixTranslate(-mousePos.x, -mousePos.y, -mousePos.z);
-		Matrix scaleM = MatrixScale(scalar, 0, scalar);
-		Matrix trans2M = MatrixTranslate(mousePos.x, mousePos.y, mousePos.z);
-		Matrix m = MatrixMultiply(transM, scaleM);
-		m = MatrixMultiply(m, trans2M);
+		midMath::Vector3 mousePos = gameState->input.mouseXZ_PlanePos;
+		midMath::Matrix transM = midMath::MatrixTranslate(-mousePos.x, -mousePos.y, -mousePos.z);
+		midMath::Matrix scaleM = midMath::MatrixScale(scalar, 0, scalar);
+		midMath::Matrix trans2M = midMath::MatrixTranslate(mousePos.x, mousePos.y, mousePos.z);
+		midMath::Matrix m = MatrixMultiply(transM, scaleM);
+		m = midMath::MatrixMultiply(m, trans2M);
 
 		auto scaleIt = topDogCache->begin<components::LocalScale>();
 		auto localPosIt = topDogCache->begin<components::LocalPosition>();
@@ -128,7 +128,7 @@ class BubbleManualScalingSystem : public middle::MiddleGameplaySystem {
 			auto scale = *scaleIt;
 			auto localPos = *localPosIt;
 
-			Vector3 newPos = Vector3Transform(localPos->pos, m);
+			midMath::Vector3 newPos = Vector3Transform(localPos->pos, m);
 			middle::assertPos(newPos);
 
 			scale->scale *= scalar;

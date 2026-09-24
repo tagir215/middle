@@ -48,8 +48,7 @@ public:
 			ImGui::End();
 			};
 
-		gameState->uiSetups.push_back(undoUi);
-
+		middle::queueUi(gameState, undoUi);
 
 	}
 

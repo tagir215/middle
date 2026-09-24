@@ -1,20 +1,23 @@
 #pragma once
-#include "game_state.h"
+#include "raylib.h"
+#include <raymath.h>
 #include "middle_system_registrar.h"
-#include "raymath.h"
 #include "rlImGui.h"
 #include "imgui.h"
 #include <cstdlib>
 #include <thread>
 #include "rlgl.h"
-#include "profiler_helpers.h"
+#include "middle_math.h"
+#include "middle_state.h"
+#include "middle_math_maping_helper.h"
 
-namespace RendererSystem {
+const int fontUnitFactor = 1024;
 
-	static std::string scriptName = "RendererSystem";
+namespace renderer {
+
 	const float layerGap = -1.0f;
 
-	void DrawCustomCircle3D(Vector3 center, float radius, Vector3 rotationAxis, float rotationAngle, int segments, Color color) {
+	static void DrawCustomCircle3D(Vector3 center, float radius, Vector3 rotationAxis, float rotationAngle, int segments, Color color) {
 		// Custom implementation using rlgl for variable segment counts
 		rlPushMatrix();
 		rlTranslatef(center.x, center.y, center.z);
@@ -30,7 +33,7 @@ namespace RendererSystem {
 		rlPopMatrix();
 	}
 
-	Matrix transformMatrix(Transform& transform, int layer) {
+	static Matrix transformMatrix(Transform& transform, int layer) {
 		Matrix S = MatrixScale(transform.scale.x, transform.scale.y, transform.scale.z);
 		Matrix R = QuaternionToMatrix(transform.rotation);
 		Matrix T = MatrixTranslate(transform.translation.x, transform.translation.y + layer * layerGap, transform.translation.z);
@@ -38,63 +41,43 @@ namespace RendererSystem {
 		return M;
 	}
 
-	std::vector<Vector3> getRectVertices(const Vector3& pos, const Vector3& scale, float width, float height)
+	static std::vector<Vector3> getRectVertices(const midMath::Vector3& pos, const midMath::Vector3& scale, float width, float height)
 	{
-		Vector3 s = scale;
+		Vector3 s = toRVec(scale);
 		std::vector<Vector3> vertices;
 		vertices.resize(4);
 		vertices[0] = { -width * 0.5f * s.x, 0, height * 0.5f * s.z };
 		vertices[1] = { -width * 0.5f * s.x, 0, -height * 0.5f * s.z };
 		vertices[2] = { width * 0.5f * s.x, 0, -height * 0.5f * s.z };
 		vertices[3] = { width * 0.5f * s.x, 0, height * 0.5f * s.z };
-		vertices[0] += pos;
-		vertices[1] += pos;
-		vertices[2] += pos;
-		vertices[3] += pos;
+		Vector3 rpos = toRVec(pos);
+		vertices[0] += rpos;
+		vertices[1] += rpos;
+		vertices[2] += rpos;
+		vertices[3] += rpos;
 		return vertices;
 	}
 
-	void drawRect(middle::GameState* gameState, const std::vector<Vector3>& vertices, const Color& color) {
-		middle::RenderItem line1;
-		line1.type = middle::RenderItemType::LINE;
-		line1.linePointA = vertices[0];
-		line1.linePointB = vertices[1];
-		line1.color = color;
-		DrawLine3D(line1.linePointA, line1.linePointB, line1.color);
-		middle::RenderItem line2;
-		line2.type = middle::RenderItemType::LINE;
-		line2.linePointA = vertices[1];
-		line2.linePointB = vertices[2];
-		line2.color = color;
-		DrawLine3D(line2.linePointA, line2.linePointB, line2.color);
-		middle::RenderItem line3;
-		line3.type = middle::RenderItemType::LINE;
-		line3.linePointA = vertices[2];
-		line3.linePointB = vertices[3];
-		line3.color = color;
-		DrawLine3D(line3.linePointA, line3.linePointB, line3.color);
-		middle::RenderItem line4;
-		line4.type = middle::RenderItemType::LINE;
-		line4.linePointA = vertices[3];
-		line4.linePointB = vertices[0];
-		line4.color = color;
-		DrawLine3D(line4.linePointA, line4.linePointB, line4.color);
+	static void drawRect(middle::MiddleState* middleState, const std::vector<Vector3>& vertices, const midPrimitive::Color& color) {
+		Color rcolor = toRColor(color);
+		DrawLine3D(vertices[0], vertices[1], rcolor);
+		DrawLine3D(vertices[1], vertices[2], rcolor);
+		DrawLine3D(vertices[2], vertices[3], rcolor);
+		DrawLine3D(vertices[3], vertices[0], rcolor);
 	}
 
-	void draw3D(middle::GameState* gameState, bool disabledDepthTest, int layerPass = 0) {
+	static void draw3D(middle::MiddleState* middleState, bool disabledDepthTest, const Camera& camera, int layerPass = 0) {
 
-		mstart();
-		if (gameState->applicationMode == middle::ApplicationMode::EDITOR_MODE) {
+		if (middleState->applicationMode == middle::ApplicationMode::EDITOR_MODE) {
 			// center indicator
 			DrawCube({ 0,5,0 }, 5, 5, 5, BLACK);
 		}
-		mendmicro("drawCube");
 
 
-		rlSetClipPlanes(gameState->nearPlaneDistance, gameState->farPlaneDistance);
+		rlSetClipPlanes(middleState->nearPlaneDistance, middleState->farPlaneDistance);
 
-		for (int i = 0; i < gameState->renderData.size(); ++i) {
-			middle::RenderItem item = gameState->renderData[i];
+		for (int i = 0; i < middleState->renderData.size(); ++i) {
+			middle::RenderItem item = middleState->renderData[i];
 
 			if (disabledDepthTest && !item.disableDepthTest) {
 				continue;
@@ -106,95 +89,55 @@ namespace RendererSystem {
 				continue;
 			}
 
-			mstart();
 			if (item.type == middle::RenderItemType::SPHERE) {
-				Vector3 pos = item.center;
-				DrawSphereEx(item.center, item.radius, 5, 5, item.color);
+				Vector3 pos = toRVec(item.center);
+				DrawSphereEx(pos, item.radius, 5, 5, toRColor(item.color));
 			}
-			mendmicro("draw sphere");
 
 
-			mstart();
 			if (item.type == middle::RenderItemType::RECTANGLE) {
-				Matrix M = transformMatrix(item.transform, item.layer);
+				Matrix M = transformMatrix(toRTransform(item.transform), item.layer);
 				rlPushMatrix();
 				rlMultMatrixf(MatrixToFloatV(M).v);
-				Vector3 pos = item.center;
+				Vector3 pos = toRVec(item.center);
 				pos.y += item.layer * layerGap;
 				if (item.color.a != 0) {
-					drawRect(gameState, getRectVertices(item.center, item.scale, item.width, item.height), item.color);
+					std::vector<Vector3>vertices = getRectVertices(item.center, item.scale, item.width, item.height);
+					drawRect(middleState, vertices, item.color);
 				}
 				if (item.backgroundColor.a != 0) {
-					DrawCube(item.center, item.width, item.length, item.height, item.backgroundColor);
+					DrawCube(toRVec(item.center), item.width, item.length, item.height, toRColor(item.backgroundColor));
 				}
 				rlPopMatrix();
 			}
-			mendmicro("draw rectangle");
 
-			mstart();
 			if (item.type == middle::RenderItemType::CYLINDER) {
-				Matrix M = transformMatrix(item.transform, item.layer);
+				Matrix M = transformMatrix(toRTransform(item.transform), item.layer);
 				rlPushMatrix();
 				rlMultMatrixf(MatrixToFloatV(M).v);
-				Vector3 pos = item.center;
-				DrawCylinder(pos, item.radius, item.ringRadius, item.length, 23, item.color);
+				Vector3 pos = toRVec(item.center);
+				DrawCylinder(pos, item.radius, item.ringRadius, item.length, 23, toRColor(item.color));
 				rlPopMatrix();
 			}
-			mendmicro("draw cylingder");
 
-			mstart();
-			if (item.type == middle::RenderItemType::MODEL) {
-				DrawModel(*item.model, item.center, 1, item.color);
-			}
-			mendmicro("draw model");
-
-			mstart();
-			if (item.type == middle::RenderItemType::VECTOR) {
-				Matrix M = transformMatrix(item.transform, item.layer);
-				rlPushMatrix();
-				rlLoadIdentity();
-				rlMultMatrixf(MatrixToFloatV(M).v);
-				DrawCylinder(item.center, item.radius, item.radius, item.length, 23, item.color);
-				rlPopMatrix();
-
-				Vector3 rotationForward = { 0,1,0 };
-				Vector3 dir = Vector3RotateByQuaternion(rotationForward, item.transform.rotation);
-				//DrawSphere(conePos, 3, BLUE);
-				Vector3 conePos = item.transform.translation + Vector3Scale(dir, item.length);
-				item.transform.translation = conePos;
-				M = transformMatrix(item.transform, item.layer);
-
-				rlPushMatrix();
-				rlMultMatrixf(MatrixToFloatV(M).v);
-				DrawCylinder(item.center, 0, item.radius * 2, 10, 23, item.color);
-				rlPopMatrix();
-
-			}
-			mendmicro("draw vector");
-
-			mstart();
 			if (item.type == middle::RenderItemType::LINE) {
-				Vector3 posA = item.linePointA + Vector3{ 0, item.layer * layerGap, 0 };
-				Vector3 posB = item.linePointB + Vector3{ 0, item.layer * layerGap, 0 };
-				DrawLine3D(posA, posB, item.color);
+				Vector3 posA = toRVec(item.linePointA) + Vector3{ 0, item.layer * layerGap, 0 };
+				Vector3 posB = toRVec(item.linePointB) + Vector3{ 0, item.layer * layerGap, 0 };
+				DrawLine3D(posA, posB, toRColor(item.color));
 			}
-			mendmicro("draw line");
 
-			mstart();
 			if (item.type == middle::CIRCLE) {
-				Matrix M = transformMatrix(item.transform, item.layer);
+				Matrix M = transformMatrix(toRTransform(item.transform), item.layer);
 				rlPushMatrix();
 				rlLoadIdentity();
 				rlMultMatrixf(MatrixToFloatV(M).v);
-				DrawCustomCircle3D(item.center, item.radius, { 1,0,0 }, 90, item.slices, item.color);
+				DrawCustomCircle3D(toRVec(item.center), item.radius, { 1,0,0 }, 90, item.slices, toRColor(item.color));
 				if (item.backgroundColor.a != 0) {
-					DrawCylinder(item.center, item.radius, item.radius, 0.000000001f, item.slices, item.backgroundColor);
+					DrawCylinder(toRVec(item.center), item.radius, item.radius, 0.000000001f, item.slices, toRColor(item.backgroundColor));
 				}
 				rlPopMatrix();
 			}
-			mendmicro("draw circle");
 
-			mstart();
 			if (item.type == middle::CIRCLE_SECTOR) {
 				if (item.segments > 0) {
 					Vector3 lastPos;
@@ -203,7 +146,7 @@ namespace RendererSystem {
 						float angle = item.startAngle + deltaAngle * i;
 						Vector3 v = { 1,0,0 };
 						Vector3 vr = Vector3RotateByAxisAngle(v, { 0,-1,0 }, angle);
-						Vector3 pos = item.center + Vector3Scale(vr, item.radius);
+						Vector3 pos = toRVec(item.center) + Vector3Scale(vr, item.radius);
 						if (i > 0) {
 							Transform transform;
 							Vector3 dir = Vector3Normalize(Vector3Subtract(lastPos, pos));
@@ -212,64 +155,60 @@ namespace RendererSystem {
 							transform.scale = { 1,1,1 };
 							float length = Vector3Distance(lastPos, pos);
 							Matrix M = transformMatrix(transform, item.layer);
-							DrawLine3D(lastPos, pos, item.color);
+							DrawLine3D(lastPos, pos, toRColor(item.color));
 							rlPushMatrix();
 							rlLoadIdentity();
 							rlMultMatrixf(MatrixToFloatV(M).v);
 							int slices = 10;
-							DrawCylinder({ 0,0,0 }, item.ringRadius, item.ringRadius, length, slices, item.color);
+							DrawCylinder({ 0,0,0 }, item.ringRadius, item.ringRadius, length, slices, toRColor(item.color));
 							rlPopMatrix();
 						}
 						lastPos = pos;
 					}
 				}
 			}
-			mendmicro("draw circle sector");
 
-			mstart();
 			if (item.type == middle::CUBOID) {
-				Matrix M = transformMatrix(item.transform, item.layer);
+				Matrix M = transformMatrix(toRTransform(item.transform), item.layer);
 				rlPushMatrix();
 				rlLoadIdentity();
 				rlMultMatrixf(MatrixToFloatV(M).v);
-				Vector3 pos = item.center;
-				DrawCube(pos, item.width, item.height, item.length, item.color);
+				Vector3 pos = toRVec(item.center);
+				DrawCube(pos, item.width, item.height, item.length, toRColor(item.color));
 				rlPopMatrix();
 			}
-			mendmicro("draw cuboid");
 
-			mstart();
 			if (item.type == middle::BILLBOARD) {
 				// billboard default angle is toward y,  
-				item.transform.rotation = QuaternionFromVector3ToVector3({ 0,-1,0 }, { 0, 0, -1 });
-				Matrix M = transformMatrix(item.transform, item.layer);
+				Quaternion rotation = QuaternionFromVector3ToVector3({ 0,-1,0 }, { 0, 0, -1 });
+				item.transform.rotation = { rotation.x, rotation.y, rotation.z, rotation.w };
+				Matrix M = transformMatrix(toRTransform(item.transform), item.layer);
 				rlPushMatrix();
 				rlLoadIdentity();
 				rlMultMatrixf(MatrixToFloatV(M).v);
-				Vector3 pos = item.center;
+				Vector3 pos = toRVec(item.center);
 				if (item.texture == nullptr) {
 					DrawCube(pos, 4, 4, 4, BLACK);
 				}
 				else {
-					if(item.shader)
-						BeginShaderMode(*item.shader);
-					DrawBillboard(gameState->activeCamera, *item.texture, pos, item.textureScale, item.color);
-					if(item.shader)
+					if (item.shader)
+						BeginShaderMode(toRShader(*item.shader));
+					DrawBillboard(camera, toRTexture(*item.texture), pos, item.textureScale, toRColor(item.color));
+					if (item.shader)
 						EndShaderMode();
 				}
 				rlPopMatrix();
 			}
-			mendmicro("draw billboward");
 
-			mstart();
 			if (item.type == middle::BACKGROUND) {
 				// billboard default angle is toward y,  
-				item.transform.rotation = QuaternionFromVector3ToVector3({ 0,-1,0 }, { 0, 0, -1 });
-				Matrix M = transformMatrix(item.transform, item.layer);
+				Quaternion rot = QuaternionFromVector3ToVector3({ 0,-1,0 }, { 0, 0, -1 });
+				item.transform.rotation = { rot.x, rot.y, rot.z, rot.w };
+				Matrix M = transformMatrix(toRTransform(item.transform), item.layer);
 				rlPushMatrix();
 				rlLoadIdentity();
 				rlMultMatrixf(MatrixToFloatV(M).v);
-				Vector3 pos = item.center;
+				Vector3 pos = toRVec(item.center);
 				Rectangle backgroundRect = { 0,0, item.width, item.height };
 				Vector3 up = { 0,1,0 };
 				Vector2 scale = { item.textureScale, item.textureScale };
@@ -279,113 +218,92 @@ namespace RendererSystem {
 					DrawCube(pos, 4, 4, 4, BLACK);
 				}
 				else {
-					DrawBillboardPro(gameState->activeCamera, *item.texture, backgroundRect, pos, up, scale, origin, rotation, item.color);
+					DrawBillboardPro(camera, toRTexture(*item.texture), backgroundRect, pos, up, scale, origin, rotation, toRColor(item.color));
 				}
 				rlPopMatrix();
 			}
-			mendmicro("draw background");
 
 		}
 
 		EndMode3D();
 	}
 
-	void drawText(middle::GameState* gameState, bool uiText) {
-		for (int i = 0; i < gameState->renderData.size(); ++i) {
-			middle::RenderItem item = gameState->renderData[i];
+	static void drawText(middle::MiddleState* middleState, bool uiText, const Font& font, const Camera& camera) {
+		for (int i = 0; i < middleState->renderData.size(); ++i) {
+			middle::RenderItem& item = middleState->renderData[i];
 			if (item.disableDepthTest != uiText) {
 				continue;
 			}
 
 			if (item.type == middle::RenderItemType::TEXT) {
 				const int spacing = 0;
-				float yDistance = std::abs(gameState->activeCamera.position.y - item.transform.translation.y);
+				float yDistance = std::abs(middleState->activeCamera.position.y - item.transform.translation.y);
 				//float distFactor = 1 / Vector3Distance(gameState->activeCamera.position, item.transform.translation);
 				float distFactor = 1 / yDistance;
-				float fontFactor = gameState->fontUnitFactor * distFactor;
+				float fontFactor = fontUnitFactor * distFactor;
 				float scaledFontSize = item.fontSize * item.transform.scale.x * fontFactor;
-				Vector2 rect = MeasureTextEx(gameState->globalFont, item.text.c_str(), scaledFontSize, spacing);
+				Vector2 rect = MeasureTextEx(font, item.text.c_str(), scaledFontSize, spacing);
 				Vector2 offset = { -rect.x * 0.5f, -rect.y * 0.5f };
 
-				Vector2 pos = GetWorldToScreen(item.transform.translation, gameState->activeCamera);
+				Vector2 pos = GetWorldToScreen(toRVec(item.transform.translation), camera);
 
-				DrawTextEx(gameState->globalFont, item.text.c_str(), pos + offset, scaledFontSize, spacing, item.color);
+				DrawTextEx(font, item.text.c_str(), pos + offset, scaledFontSize, spacing, toRColor(item.color));
 			}
 
 		}
 	}
 
-	class RendererSystem : public middle::MiddleGameplaySystem {
+	class RendererSystem {
 	public:
-		void init(middle::GameState* gameState) {
-
-		}
-		void update(middle::GameState* gameState) override {
-			mstart();
-
+		static void update(middle::MiddleState* middleState, const Font& font, bool releaseBuild)  {
 
 			BeginDrawing();
 
 			// 89, 135, 168
-			ClearBackground(gameState->editorState.backgroundColor);
+			ClearBackground(toRColor(middleState->backgroundColor));
 
-			Camera camera = gameState->activeCamera;
+			Camera camera = toRCam(middleState->activeCamera);
 
-			mstart();
 			BeginMode3D(camera);
-			draw3D(gameState, false);
+			draw3D(middleState, false, camera);
 			EndMode3D();
-			mendmicro("draw3D");
 
-			mstart();
-			drawText(gameState, false);
+			drawText(middleState, false, font, camera);
 
 			int maxLayers = 7;
 			for (int i = -1; i < maxLayers; ++i) {
 				BeginMode3D(camera);
 				rlDisableDepthTest();
-				draw3D(gameState, true, i);
+				draw3D(middleState, true, camera, i);
 				rlEnableDepthTest();
 				EndMode3D();
 			}
 
 			SetTextLineSpacing(0);
 
-			drawText(gameState, true);
+			drawText(middleState, true, font, camera);
 
 			Vector3 center = { 0,0,0 };
 			Vector2 center2d = GetWorldToScreen(center, camera);
-			if (gameState->sceneNames.size() > 0 && gameState->applicationMode == middle::ApplicationMode::EDITOR_MODE) {
-				DrawText(gameState->activeSceneName.c_str(), center2d.x, center2d.y, 1, WHITE);
-			}
 
-			if (!gameState->releaseBuild) {
+			if (!releaseBuild) {
 				rlImGuiBegin();
 
-				while (gameState->uiSetups.size() > 0) {
-					gameState->uiSetups.back()();
-					gameState->uiSetups.pop_back();
+				while (middleState->uiSetups.size() > 0) {
+					middleState->uiSetups.back()();
+					middleState->uiSetups.pop_back();
 				}
 
 				rlImGuiEnd();
 			}
 			else {
-				gameState->uiSetups.clear();
+				middleState->uiSetups.clear();
 			}
-			mendmicro("draw texts");
 
-			mstart();
 			EndDrawing();
-			mendmicro("end drawing time");
 
-			gameState->renderData.clear();
-
-			mendmicro("rendrere update");
-
-			mflushmicro(gameState);
+			middleState->renderData.clear();
 		}
 	};
-
-	static middle::SystemRegistrar<RendererSystem> reg(scriptName);
 
 }

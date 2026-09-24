@@ -53,8 +53,8 @@ class BubbleVisibilitySystem : public middle::MiddleGameplaySystem {
 	void disappearTransforms(middle::GameState* gameState, middle::Id id) const{
 		std::vector<middle::Id>children;
 		middle::getChildren(gameState, id, children);
-		std::vector<Vector3>positions(children.size());
-		std::vector<Vector3>scales(children.size());
+		std::vector<midMath::Vector3>positions(children.size());
+		std::vector<midMath::Vector3>scales(children.size());
 
 		for (int i = 0; i < children.size(); ++i) {
 			middle::Id childId = children[i];
@@ -62,8 +62,8 @@ class BubbleVisibilitySystem : public middle::MiddleGameplaySystem {
 			scales[i] = middle::getGlobalScale(gameState, childId);
 		}
 		// set disappearing bubbles position to neutral
-		Vector3 localScale = middle::getLocalScale(gameState, id);
-		Vector3 localPos = middle::getLocalPosition(gameState, id);
+		midMath::Vector3 localScale = middle::getLocalScale(gameState, id);
+		midMath::Vector3 localPos = middle::getLocalPosition(gameState, id);
 		middle::setLocalPosition(gameState, id, { 0,0,0 });
 		middle::setLocalScale(gameState, id, { 1,1,1 });
 
@@ -77,8 +77,8 @@ class BubbleVisibilitySystem : public middle::MiddleGameplaySystem {
 		// shouldn't be called,, but for safety
 		middle::Id parentId = middle::getParent(gameState, id);
 		if (parentId.index != middle::UNASSIGNED) {
-			Vector3 parentPos = middle::getLocalPosition(gameState, parentId);
-			Vector3 parentScale = middle::getLocalScale(gameState, parentId);
+			midMath::Vector3 parentPos = middle::getLocalPosition(gameState, parentId);
+			midMath::Vector3 parentScale = middle::getLocalScale(gameState, parentId);
 			disappearTransforms(gameState, parentId);
 		}
 		gameState->bubbleAlgebraState.worldScale = 1;
@@ -103,19 +103,19 @@ class BubbleVisibilitySystem : public middle::MiddleGameplaySystem {
 		}
 		
 		// childs global transform should stay same after transforming its parent
-		Vector3 referenceGlobalPos = middle::getGlobalPosition(gameState, referenceId);
-		Vector3 referenceGlobalScale = middle::getGlobalScale(gameState, referenceId);
+		midMath::Vector3 referenceGlobalPos = middle::getGlobalPosition(gameState, referenceId);
+		midMath::Vector3 referenceGlobalScale = middle::getGlobalScale(gameState, referenceId);
 		bubble::recursiveBubbleLayoutScaleUpdate(gameState, id);
 		bubble::recursiveBubbleLayoutUpdate(gameState, id);
 
-		Vector3 newGlobalScale = middle::getGlobalScale(gameState, referenceId);
-		Vector3 ratio = Vector3Divide(referenceGlobalScale, newGlobalScale);
-		Vector3 localScale = middle::getLocalScale(gameState, id);
-		middle::setLocalScale(gameState, id, Vector3Multiply(localScale, ratio));
+		midMath::Vector3 newGlobalScale = middle::getGlobalScale(gameState, referenceId);
+		midMath::Vector3 ratio = midMath::Vector3Divide(referenceGlobalScale, newGlobalScale);
+		midMath::Vector3 localScale = middle::getLocalScale(gameState, id);
+		middle::setLocalScale(gameState, id, midMath::Vector3Multiply(localScale, ratio));
 
-		Vector3 newGlobalPos = middle::getGlobalPosition(gameState, referenceId);
-		Vector3 displacement = referenceGlobalPos - newGlobalPos;
-		Vector3 localPos = middle::getLocalPosition(gameState, id);
+		midMath::Vector3 newGlobalPos = middle::getGlobalPosition(gameState, referenceId);
+		midMath::Vector3 displacement = referenceGlobalPos - newGlobalPos;
+		midMath::Vector3 localPos = middle::getLocalPosition(gameState, id);
 		middle::setLocalPosition(gameState, id, localPos + displacement);
 
 		gameState->bubbleAlgebraState.worldScale = 1;

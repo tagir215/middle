@@ -90,17 +90,17 @@ namespace middle {
 		return findHighestLevelContainer(gameState, parentId.index);
 	}
 
-	Vector3 getLocalScale(GameState* gameState, middle::Id id)
+	midMath::Vector3 getLocalScale(GameState* gameState, middle::Id id)
 	{
 		auto localScale = middle::getComp<components::LocalScale>(gameState, id);
 		return localScale->scale;
 	}
 
-	void setGlobalScale(GameState* gameState, middle::Id id, const Vector3& targetScale)
+	void setGlobalScale(GameState* gameState, middle::Id id, const midMath::Vector3& targetScale)
 	{
 	}
 
-	void setLocalScale(GameState* gameState, middle::Id id, const Vector3& targetScale)
+	void setLocalScale(GameState* gameState, middle::Id id, const midMath::Vector3& targetScale)
 	{
 		auto localScale = middle::getComp<components::LocalScale>(gameState, id);
 		localScale->scale = targetScale;
@@ -126,34 +126,8 @@ namespace middle {
 		return highestUsed > GHOST_INDEX_OFFSET ? highestUsed : GHOST_INDEX_OFFSET;
 	}
 
-	void dragShape(GameState* gameState, int index, Vector3 linearVelocity) {
-		Shape& shape = getShape(gameState, index);
-		std::vector<middle::Id>children;
-		middle::getChildren(gameState, shape.id, children);
-		for (int i = 0; i < children.size(); ++i) {
-			Id memberId = children[i];
-			dragShape(gameState, memberId.index, linearVelocity);
-		}
 
-		Vec linearVel = DescVec(linearVelocity);
-		auto pData = getComponent<components::PhysicsData>(shape);
-		auto posData = getComponent<components::LocalPosition>(shape);
-		if (pData != nullptr) {
-			pData->velX = linearVel.x;
-			pData->velY = linearVel.y;
-			pData->velZ = linearVel.z;
-		}
-		else if (posData) {
-			Vec currPos = DescVec(posData->pos);
-			Vec newPos = AddV(currPos, ScaleV(linearVel, gameState->frameTime));
-			posData->pos.z = newPos.x;
-			posData->pos.y = newPos.y;
-			posData->pos.z = newPos.z;
-			assertPos(posData->pos);
-		}
-	}
-
-	void moveShape(GameState* gameState, int index, const Vector3& displacement)
+	void moveShape(GameState* gameState, int index, const midMath::Vector3& displacement)
 	{
 		Shape& shape = gameState->shapes[index];
 		auto pos = middle::getComponent<components::LocalPosition>(shape);
@@ -162,16 +136,16 @@ namespace middle {
 		}
 	}
 
-	void setGlobalPosition(GameState* gameState, middle::Id id, const Vector3& targetPos)
+	void setGlobalPosition(GameState* gameState, middle::Id id, const midMath::Vector3& targetPos)
 	{
 		middle::Id parentId = middle::getParent(gameState, id);
-		Vector3 localPos = projectGlobalCoordinateToLocalCoordinate(gameState, targetPos, parentId);
+		midMath::Vector3 localPos = projectGlobalCoordinateToLocalCoordinate(gameState, targetPos, parentId);
 		auto localPosComp = middle::getComp<components::LocalPosition>(gameState, id);
 		localPosComp->pos = localPos;
 		assertPos(localPos);
 	}
 
-	void setLocalPosition(GameState* gameState, middle::Id id, const Vector3& targetPos)
+	void setLocalPosition(GameState* gameState, middle::Id id, const midMath::Vector3& targetPos)
 	{
 		auto localPosComp = middle::getComp<components::LocalPosition>(gameState, id);
 		localPosComp->pos = targetPos;
@@ -247,20 +221,20 @@ namespace middle {
 	}
 
 
-	Vector3 getGlobalPosition(GameState* gameState, middle::Id id)
+	midMath::Vector3 getGlobalPosition(GameState* gameState, middle::Id id)
 	{
 		auto& shape = getShape(gameState, id.index);
 		middle::Id parentId = middle::getParent(gameState, shape.id);
-		Matrix m = getTransformMatrix(gameState, parentId);
+		midMath::Matrix m = middle::getTransformMatrix(gameState, parentId);
 		auto localPos = getComponent<components::LocalPosition>(shape);
 		if (!localPos) {
 			assert(false);
 		}
-		Vector3 pos = Vector3Transform(localPos->pos, m);
+		midMath::Vector3 pos = midMath::Vector3Transform(localPos->pos, m);
 		return pos;
 	}
 
-	Vector3 getLocalPosition(GameState* gameState, middle::Id id)
+	midMath::Vector3 getLocalPosition(GameState* gameState, middle::Id id)
 	{
 		auto localPos = getComp<components::LocalPosition>(gameState, id);
 		if (!localPos) {
@@ -414,9 +388,9 @@ namespace middle {
 		return gameState->shapes[index];
 	}
 
-	void moveCameraXZ(Camera3D& initCamera, const Vector3& pos)
+	void moveCameraXZ(midPrimitive::Camera3D& initCamera, const midMath::Vector3& pos)
 	{
-		Vector3 displacement = pos - initCamera.position;
+		midMath::Vector3 displacement = pos - initCamera.position;
 		initCamera.position += displacement;
 		initCamera.target += displacement;
 	}
@@ -533,23 +507,23 @@ namespace middle {
 					break;
 				}
 				case FieldType::Quaternion: {
-					Quaternion* valueptr = static_cast<Quaternion*>(copyField.value);
-					*valueptr = *static_cast<Quaternion*>(ogField.value);
+					midMath::Quaternion* valueptr = static_cast<midMath::Quaternion*>(copyField.value);
+					*valueptr = *static_cast<midMath::Quaternion*>(ogField.value);
 					break;
 				}
 				case FieldType::Vector3: {
-					Vector3* valueptr = static_cast<Vector3*>(copyField.value);
-					*valueptr = *static_cast<Vector3*>(ogField.value);
+					midMath::Vector3* valueptr = static_cast<midMath::Vector3*>(copyField.value);
+					*valueptr = *static_cast<midMath::Vector3*>(ogField.value);
 					break;
 				}
 				case FieldType::Vector2: {
-					Vector2* valueptr = static_cast<Vector2*>(copyField.value);
-					*valueptr = *static_cast<Vector2*>(ogField.value);
+					midMath::Vector2* valueptr = static_cast<midMath::Vector2*>(copyField.value);
+					*valueptr = *static_cast<midMath::Vector2*>(ogField.value);
 					break;
 				}
 				case FieldType::Color: {
-					Color* valueptr = static_cast<Color*>(copyField.value);
-					*valueptr = *static_cast<Color*>(ogField.value);
+					midPrimitive::Color* valueptr = static_cast<midPrimitive::Color*>(copyField.value);
+					*valueptr = *static_cast<midPrimitive::Color*>(ogField.value);
 					break;
 				}
 				default:
@@ -618,13 +592,13 @@ namespace middle {
 		return copyId;
 	}
 
-	std::vector<Vector3> getRectVertices(GameState* gameState, const Id& shapeId)
+	std::vector<midMath::Vector3> getRectVertices(GameState* gameState, const Id& shapeId)
 	{
 		auto& shape = getShape(gameState, shapeId.index);
 		auto rect = getComponent<components::Rectangle>(shape);
-		Vector3 position = getGlobalPosition(gameState, shapeId);
-		Vector3 s = getTotalScale(gameState, shapeId);
-		std::vector<Vector3> vertices;
+		midMath::Vector3 position = getGlobalPosition(gameState, shapeId);
+		midMath::Vector3 s = getTotalScale(gameState, shapeId);
+		std::vector<midMath::Vector3> vertices;
 		vertices.resize(4);
 		vertices[0] = { -rect->width * 0.5f * s.x, 0, rect->height * 0.5f * s.z };
 		vertices[1] = { -rect->width * 0.5f * s.x, 0, -rect->height * 0.5f * s.z };
@@ -636,7 +610,7 @@ namespace middle {
 		vertices[3] += position;
 		return vertices;
 	}
-	Vector3 getTotalScale(GameState* gameState, const Id& shapeId)
+	midMath::Vector3 getTotalScale(GameState* gameState, const Id& shapeId)
 	{
 		auto& shape = getShape(gameState, shapeId.index);
 		auto scale = middle::getComponent<components::Scale>(shape);
@@ -804,9 +778,9 @@ namespace middle {
 		gameState->editorState.actionHistory.push_back(container);
 	}
 
-	Matrix getTransformMatrix(GameState* gameState, middle::Id id) {
+	midMath::Matrix getTransformMatrix(GameState* gameState, middle::Id id) {
 		if (id.index == middle::UNASSIGNED) {
-			return MatrixIdentity();
+			return midMath::MatrixIdentity();
 		}
 
 		std::stack<middle::Id>parentStack;
@@ -818,23 +792,23 @@ namespace middle {
 			}
 			parentStack.push(parentId);
 		}
-		Matrix transform = MatrixIdentity();
+		midMath::Matrix transform = midMath::MatrixIdentity();
 		while (parentStack.size() > 0) {
 			middle::Id id = parentStack.top();
 			parentStack.pop();
 			auto& shape = middle::getShape(gameState, id.index);
 			auto localPos = middle::getComponent<components::LocalPosition>(shape);
 			auto localScale = middle::getComponent<components::LocalScale>(shape);
-			Matrix translateM = MatrixTranslate(localPos->pos.x, localPos->pos.y, localPos->pos.z);
-			Matrix scaleM = MatrixScale(localScale->scale.x, localScale->scale.y, localScale->scale.z);
-			Matrix localM = MatrixMultiply(scaleM, translateM);
-			transform = MatrixMultiply(localM, transform);
+			midMath::Matrix translateM = midMath::MatrixTranslate(localPos->pos.x, localPos->pos.y, localPos->pos.z);
+			midMath::Matrix scaleM = midMath::MatrixScale(localScale->scale.x, localScale->scale.y, localScale->scale.z);
+			midMath::Matrix localM = midMath::MatrixMultiply(scaleM, translateM);
+			transform = midMath::MatrixMultiply(localM, transform);
 		}
 		return transform;
 	}
 
-	Vector3 getGlobalScale(GameState* gameState, middle::Id id) {
-		Vector3 result = { 1,1,1 };
+	midMath::Vector3 getGlobalScale(GameState* gameState, middle::Id id) {
+		midMath::Vector3 result = { 1,1,1 };
 		if (id.index == middle::UNASSIGNED) {
 			return result;
 		}
@@ -866,30 +840,30 @@ namespace middle {
 		return -1;
 	}
 
-	void assertPos(const Vector3& pos)
+	void assertPos(const midMath::Vector3& pos)
 	{
 		assert(!std::isnan(pos.x));
 		assert(!std::isnan(pos.y));
 		assert(!std::isnan(pos.z));
 	}
 
-	Vector3 projectGlobalCoordinateToLocalCoordinate(GameState* gameState, const Vector3& globalCoord, middle::Id parentId)
+	midMath::Vector3 projectGlobalCoordinateToLocalCoordinate(GameState* gameState, const midMath::Vector3& globalCoord, middle::Id parentId)
 	{
-		Matrix transformM = getTransformMatrix(gameState, parentId);
-		Matrix inverseM = MatrixInvert(transformM);
-		Vector3 localCoord = Vector3Transform(globalCoord, inverseM);
+		midMath::Matrix transformM = getTransformMatrix(gameState, parentId);
+		midMath::Matrix inverseM = midMath::MatrixInvert(transformM);
+		midMath::Vector3 localCoord = midMath::Vector3Transform(globalCoord, inverseM);
 		if (std::isnan(localCoord.x + localCoord.y + localCoord.z)) {
 			return {0,0,0};
 		}
 		return localCoord;
 	}
 
-	Vector3 projectGlobalScaleToLocalScale(GameState* gameState, middle::Id id, const Vector3& globalScale)
+	midMath::Vector3 projectGlobalScaleToLocalScale(GameState* gameState, middle::Id id, const midMath::Vector3& globalScale)
 	{
-		Vector3 currentScale = middle::getGlobalScale(gameState, id);
-		Vector3 scalarV = Vector3Divide(globalScale, currentScale);
-		Vector3 localScale = middle::getLocalScale(gameState, id);
-		return Vector3Multiply(localScale, scalarV);
+		midMath::Vector3 currentScale = middle::getGlobalScale(gameState, id);
+		midMath::Vector3 scalarV = midMath::Vector3Divide(globalScale, currentScale);
+		midMath::Vector3 localScale = middle::getLocalScale(gameState, id);
+		return midMath::Vector3Multiply(localScale, scalarV);
 	}
 
 	void updateLocalCoordinateToProjectedGlobalCoordinate(GameState* gameState, middle::Id id, middle::Id oldParentId)
@@ -898,24 +872,24 @@ namespace middle {
 		auto localPos = middle::getComponent<components::LocalPosition>(shape);
 		auto localScale = middle::getComponent<components::LocalScale>(shape);
 		if (localPos && localScale) {
-			Matrix oldTransform = getTransformMatrix(gameState, oldParentId);
-			Vector3 globalPos = Vector3Transform(localPos->pos, oldTransform);
+			midMath::Matrix oldTransform = getTransformMatrix(gameState, oldParentId);
+			midMath::Vector3 globalPos = midMath::Vector3Transform(localPos->pos, oldTransform);
 			middle::Id parentId = middle::getParent(gameState, id);
-			Vector3 projLocalPos = middle::projectGlobalCoordinateToLocalCoordinate(gameState, 
+			midMath::Vector3 projLocalPos = middle::projectGlobalCoordinateToLocalCoordinate(gameState, 
 				globalPos, parentId);
 			localPos->pos = projLocalPos;
 			assertPos(projLocalPos);
 
-			Vector3 oldParentScale = getGlobalScale(gameState, oldParentId);
-			Vector3 newParentScale = getGlobalScale(gameState, parentId);
-			Vector3 ratio = oldParentScale / newParentScale;
+			midMath::Vector3 oldParentScale = getGlobalScale(gameState, oldParentId);
+			midMath::Vector3 newParentScale = getGlobalScale(gameState, parentId);
+			midMath::Vector3 ratio = oldParentScale / newParentScale;
 			localScale->scale *= ratio;
 		}
 	}
 
 
 
-	void updateGlobalTransforms(middle::GameState* gameState, middle::Id id, const Matrix& parentM, const Vector3& parentScale) {
+	void updateGlobalTransforms(middle::GameState* gameState, middle::Id id, const midMath::Matrix& parentM, const midMath::Vector3& parentScale) {
 		auto& shape = middle::getShape(gameState, id.index);
 		auto scaleComp = middle::getComponent<components::LocalScale>(shape);
 		auto posComp = middle::getComponent<components::LocalPosition>(shape);
@@ -931,18 +905,18 @@ namespace middle {
 			middle::attachComponent<components::GlobalTransform>(gameState, id);
 			return;
 		}
-		const Vector3& scale = scaleComp->scale;
-		const Vector3& pos = posComp->pos;
-		Matrix scaleM = MatrixScale(scale.x, scale.y, scale.z);
-		Matrix translateM = MatrixTranslate(pos.x, pos.y, pos.z);
+		const midMath::Vector3& scale = scaleComp->scale;
+		const midMath::Vector3& pos = posComp->pos;
+		midMath::Matrix scaleM = midMath::MatrixScale(scale.x, scale.y, scale.z);
+		midMath::Matrix translateM = midMath::MatrixTranslate(pos.x, pos.y, pos.z);
 
-		Matrix m = parentM;
-		Matrix localM = MatrixMultiply(scaleM, translateM);
-		m = MatrixMultiply(localM, m);
+		midMath::Matrix m = parentM;
+		midMath::Matrix localM = midMath::MatrixMultiply(scaleM, translateM);
+		m = midMath::MatrixMultiply(localM, m);
 
 		auto globalT = middle::getComponent<components::GlobalTransform>(shape);
-		const Quaternion assumedRotation = { 0,0,0,0 };
-		globalT->pos = Vector3Transform(Vector3{ 0,0,0 }, m);
+		const midMath::Quaternion assumedRotation = { 0,0,0,0 };
+		globalT->pos = midMath::Vector3Transform(midMath::Vector3{ 0,0,0 }, m);
 		globalT->scale = scaleComp->scale * parentScale;
 		globalT->rotation = assumedRotation;
 
@@ -1000,4 +974,16 @@ namespace middle {
 		return shape;
 	}
 
+	void queueForRender(middle::GameState* gameState, middle::RenderItem item)
+	{
+		gameState->middleState.renderData.push_back(item);
+	}
+	void queueUi(middle::GameState* gameState, std::function<void()> ui)
+	{
+		gameState->middleState.uiSetups.push_back(ui);
+	}
+	midPrimitive::Camera3D getActiveCam(middle::GameState* gameState)
+	{
+		return gameState->middleState.activeCamera;
+	}
 }

@@ -9,8 +9,8 @@ namespace equlab {
 	public:
 		middle::Id parentId;
 		middle::Id resultId;
-		Vector3 targetPosition;
-		AddBubble(middle::Id parentId, const Vector3& targetPosition) {
+		midMath::Vector3 targetPosition;
+		AddBubble(middle::Id parentId, const midMath::Vector3& targetPosition) {
 			this->parentId = parentId;
 			this->targetPosition = targetPosition;
 		}
@@ -22,8 +22,8 @@ namespace equlab {
 	public:
 		middle::Id parentId;
 		middle::Id resultId;
-		Vector3 targetPosition;
-		AddUnit(middle::Id parentId, const Vector3& targetPosition) {
+		midMath::Vector3 targetPosition;
+		AddUnit(middle::Id parentId, const midMath::Vector3& targetPosition) {
 			this->parentId = parentId;
 			this->targetPosition = targetPosition;
 		}
@@ -35,7 +35,7 @@ namespace equlab {
 	public:
 		middle::Id id;
 		middle::Id resultId;
-		Vector3 targetPosition;
+		midMath::Vector3 targetPosition;
 		Negate(middle::Id id) {
 			this->id = id;
 		}
@@ -47,7 +47,7 @@ namespace equlab {
 	public:
 		middle::Id id;
 		middle::Id resultId;
-		Vector3 targetPosition;
+		midMath::Vector3 targetPosition;
 		Invert(middle::Id id) {
 			this->id = id;
 		}
@@ -86,8 +86,8 @@ namespace equlab {
 		middle::Id parentId;
 		middle::Id resultId;
 		std::string label;
-		Vector3 targetPosition;
-		AddVariable(middle::Id parentId, const std::string& label, const Vector3& targetPosition) {
+		midMath::Vector3 targetPosition;
+		AddVariable(middle::Id parentId, const std::string& label, const midMath::Vector3& targetPosition) {
 			this->parentId = parentId;
 			this->targetPosition = targetPosition;
 			this->label = label;
@@ -100,9 +100,9 @@ namespace equlab {
 	class AddEquals : public middle::EditorActionContainer {
 	public:
 		middle::Id resultId;
-		Vector3 targetPos;
+		midMath::Vector3 targetPos;
 		middle::Id parentId;
-		AddEquals(middle::Id parentId, const Vector3& targetPos) {
+		AddEquals(middle::Id parentId, const midMath::Vector3& targetPos) {
 			this->parentId = parentId;
 			this->targetPos = targetPos;
 		}
@@ -115,8 +115,8 @@ namespace equlab {
 		middle::Id resultId;
 		bool equalOr;
 		middle::Id parentId;
-		Vector3 targetPos;
-		AddInequals(middle::Id parentId, const Vector3& targetPos, bool equalOr) {
+		midMath::Vector3 targetPos;
+		AddInequals(middle::Id parentId, const midMath::Vector3& targetPos, bool equalOr) {
 			this->parentId = parentId;
 			this->targetPos = targetPos;
 			this->equalOr = equalOr;
@@ -129,8 +129,8 @@ namespace equlab {
 	public:
 		middle::Id resultId;
 		middle::Id parentId;
-		Vector3 targetPos;
-		AddSummation(middle::Id parentId, const Vector3& targetPos) {
+		midMath::Vector3 targetPos;
+		AddSummation(middle::Id parentId, const midMath::Vector3& targetPos) {
 			this->parentId = parentId;
 			this->targetPos = targetPos;
 		}
@@ -141,8 +141,8 @@ namespace equlab {
 	class Move : public middle::EditorActionContainer {
 	public:
 		middle::Id id;
-		Vector3 targetPosition;
-		Move(middle::Id id, const Vector3& targetPosition) {
+		midMath::Vector3 targetPosition;
+		Move(middle::Id id, const midMath::Vector3& targetPosition) {
 			this->id = id;
 			this->targetPosition = targetPosition;
 		}
@@ -174,9 +174,9 @@ namespace equlab {
 	class AddMultiplication : public middle::EditorActionContainer {
 	public:
 		middle::Id parentId;
-		Vector3 targetPosition;
+		midMath::Vector3 targetPosition;
 		middle::Id resultId;
-		AddMultiplication(middle::Id parentId, const Vector3& targetPosition) {
+		AddMultiplication(middle::Id parentId, const midMath::Vector3& targetPosition) {
 			this->parentId = parentId;
 			this->targetPosition = targetPosition;
 		}
@@ -188,8 +188,8 @@ namespace equlab {
 	public:
 		middle::Id parentId;
 		middle::Id resultId;
-		Vector3 targetPosition;
-		AddPower(middle::Id parentId, const Vector3& targetPosition) {
+		midMath::Vector3 targetPosition;
+		AddPower(middle::Id parentId, const midMath::Vector3& targetPosition) {
 			this->parentId = parentId;
 			this->targetPosition = targetPosition;
 		}
@@ -227,9 +227,9 @@ namespace equlab {
 	class AddBubbleText : public middle::EditorActionContainer {
 	public:
 		middle::Id parentId;
-		Vector3 targetPosition;
+		midMath::Vector3 targetPosition;
 		middle::Id resultId;
-		AddBubbleText(middle::Id parentId, const Vector3& targetPosition) {
+		AddBubbleText(middle::Id parentId, const midMath::Vector3& targetPosition) {
 			this->parentId = parentId;
 			this->targetPosition = targetPosition;
 		}
@@ -240,9 +240,9 @@ namespace equlab {
 	class AddSwapBubble : public middle::EditorActionContainer {
 	public:
 		middle::Id parentId;
-		Vector3 targetPosition;
+		midMath::Vector3 targetPosition;
 		middle::Id resultId;
-		AddSwapBubble(middle::Id parentId, const Vector3& targetPosition) {
+		AddSwapBubble(middle::Id parentId, const midMath::Vector3& targetPosition) {
 			this->parentId = parentId;
 			this->targetPosition = targetPosition;
 		}
@@ -253,9 +253,9 @@ namespace equlab {
 	class AddLogicBubble : public middle::EditorActionContainer {
 	public:
 		middle::Id parentId;
-		Vector3 targetPosition;
+		midMath::Vector3 targetPosition;
 		middle::Id resultId;
-		AddLogicBubble(middle::Id parentId, const Vector3& targetPosition) {
+		AddLogicBubble(middle::Id parentId, const midMath::Vector3& targetPosition) {
 			this->parentId = parentId;
 			this->targetPosition = targetPosition;
 		}
@@ -276,10 +276,10 @@ namespace equlab {
 	class AddGateBubble : public middle::EditorActionContainer {
 	public:
 		middle::Id parentId;
-		Vector3 targetPosition;
+		midMath::Vector3 targetPosition;
 		components::BubbleGateStatus status;
 		middle::Id resultId;
-		AddGateBubble(middle::Id parentId, const Vector3& targetPosition, components::BubbleGateStatus status) {
+		AddGateBubble(middle::Id parentId, const midMath::Vector3& targetPosition, components::BubbleGateStatus status) {
 			this->parentId = parentId;
 			this->targetPosition = targetPosition;
 			this->status = status;

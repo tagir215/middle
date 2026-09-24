@@ -2,6 +2,7 @@
 #include "game_state.h"
 #include "middle_system_registrar.h"
 #include "imgui.h"
+#include "middle_shape_utils.h"
 
 class SystemProfilerUiSystem : public middle::MiddleGameplaySystem {
 public:
@@ -42,21 +43,13 @@ public:
 			for (auto& pair : gameState->gameplaySystemsPostFrame) {
 				drawText(pair.second.get());
 			}
-
-			for (auto sys : gameState->externalPreFrameSystems) {
-				drawText(sys.get());
-			}
-
-			for (auto sys : gameState->externalPostFrameSystems) {
-				drawText(sys.get());
-			}
 			for (auto& sys : gameState->engineRendererSystems) {
 				drawText(sys.get());
 			}
 
 			ImGui::End();
 			};
-		gameState->uiSetups.push_back(ui);
+		middle::queueUi(gameState, ui);
 	}
 };
 

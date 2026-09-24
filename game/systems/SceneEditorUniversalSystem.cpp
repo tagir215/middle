@@ -24,7 +24,7 @@ class SceneEditorUniversalSystem : public middle::MiddleGameplaySystem {
 			}
 			ImGui::End();
 			};
-		gameState->uiSetups.push_back(ui);
+		middle::queueUi(gameState, ui);
 
 	}
 };

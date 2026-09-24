@@ -72,7 +72,7 @@ public:
 			}
 			ImGui::End();
 			};
-		gameState->uiSetups.push_back(backButtonUi);
+		middle::queueUi(gameState, backButtonUi);
 
 		auto clickedLevelIt = clickedCache->begin<components::LevelReference>();
 		for (int i = 0; i < clickedCache->getSize(); ++i) {
@@ -109,11 +109,11 @@ public:
 				completeInd.ringRadius = circle->radius;
 				const float offsetY = 0.5f;
 				completeInd.transform.translation = transform->pos;
-				completeInd.color = GREEN;
+				completeInd.color = { 0,255,0,255 };
 				completeInd.color.a = 40;
 				completeInd.length = 0.1f;
 				completeInd.center = { 0,0,0 };
-				gameState->renderData.push_back(completeInd);
+				middle::queueForRender(gameState, completeInd);
 			}
 
 		}

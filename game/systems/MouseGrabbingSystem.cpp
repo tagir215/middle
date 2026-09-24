@@ -36,20 +36,20 @@ namespace MouseGrabbingSystem {
 		}
 
 		void dragging(middle::GameState* gameState, middle::Shape& shape) {
-			Vector3 pos = middle::getGlobalPosition(gameState, shape.id);
+			midMath::Vector3 pos = middle::getGlobalPosition(gameState, shape.id);
 			auto grid = middle::getComponent<components::GridElement>(shape);
 
 			if (!grid) {
-				Vector3 cameraPos = gameState->editorState.camera.position;
+				midMath::Vector3 cameraPos = gameState->editorState.camera.position;
 				float objYDistance = std::abs(pos.y - cameraPos.y);
 				float yDistance = std::abs(cameraPos.y);
 				if (yDistance == 0)
 					yDistance = 0.001f;
-				Vector3 xzVel = Vector3Scale(gameState->input.mouseXZ_PlaneVelocity * gameState->frameTime, objYDistance / yDistance);
+				midMath::Vector3 xzVel = Vector3Scale(gameState->input.mouseXZ_PlaneVelocity * gameState->frameTime, objYDistance / yDistance);
 				middle::moveShape(gameState, shape.id.index, xzVel);
 			}
 			else {
-				Vector3 targetPos = gameState->input.mouseXZ_PlanePos;
+				midMath::Vector3 targetPos = gameState->input.mouseXZ_PlanePos;
 				middle::moveShape(gameState, shape.id.index, targetPos - pos);
 			}
 		}

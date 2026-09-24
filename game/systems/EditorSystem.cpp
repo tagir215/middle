@@ -42,14 +42,14 @@ public:
 		float angleBetween = PI / systemCount;
 		float initAngle = PI * 0.1f;
 		float yCoord = 200;
-		std::vector<Vector3> positions;
+		std::vector<midMath::Vector3> positions;
 		const float r = 200;
 		positions.resize(systemCount);
 		for (int i = 0; i < systemCount; ++i) {
 			float angle = initAngle + angleBetween * i;
 			float x = std::cosf(angle) * r;
 			float z = std::sinf(angle) * r;
-			Vector3 pos = { x,yCoord,z };
+			midMath::Vector3 pos = { x,yCoord,z };
 			entities::initSystem(gameState, index + i, pos, systemNames[i]);
 		}
 	}
@@ -57,7 +57,7 @@ public:
 	void update(middle::GameState* gameState) override {
 
 		if (gameState->startGame) {
-			if (gameState->applicationMode == middle::ApplicationMode::EDITOR_MODE) {
+			if (gameState->middleState.applicationMode == middle::ApplicationMode::EDITOR_MODE) {
 				middle::loadEditorState(gameState);
 			}
 			loadSceneAndShapeNames(gameState);

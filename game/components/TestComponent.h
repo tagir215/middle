@@ -7,7 +7,7 @@
 
 namespace components {
 	struct TestComponent : public middle::Serializable{
-		Vector3 vec;
+		midMath::Vector3 vec;
 
 		void serialize(std::ostream& ostream) override;
 		void deserialize(const std::vector<std::string>& buffer, int indexOffset) override;

@@ -95,8 +95,8 @@ public:
 		for (middle::Id id : intersectingBubbleCache->relevantIdVector) {
 			auto transform = *intersectingTransformIt;
 			auto globalR = *intersectingGlobalRectIt;
-			Vector3 pos = transform->pos;
-			Vector3 mousePos = middle::RayCastLinePlane(pos, { 0,1,0 }, gameState->activeCamera.position, gameState->input.mouseDir);
+			midMath::Vector3 pos = transform->pos;
+			midMath::Vector3 mousePos = midMath::RayCastLinePlane(pos, { 0,1,0 }, gameState->middleState.activeCamera.position, gameState->input.mouseDir);
 			bool intersecting = mousePos.x > pos.x - globalR->width * 0.5f
 				&& mousePos.x < pos.x + globalR->width * 0.5f
 				&& mousePos.z > pos.z - globalR->height * 0.5f 
@@ -115,12 +115,12 @@ public:
 			auto transform = *bubbleTransformIt;
 			auto globalR = *bubbleGlobalRadiusIt;
 
-			Vector3 pos = transform->pos;
+			midMath::Vector3 pos = transform->pos;
 			auto tag = middle::getComp<components::IntersectingTag>(gameState, id);
 			bool intersecting = tag != nullptr;
 
 			if (!intersecting) {
-				Vector3 mousePos = middle::RayCastLinePlane(pos, { 0,1,0 }, gameState->activeCamera.position, gameState->input.mouseDir);
+				midMath::Vector3 mousePos = midMath::RayCastLinePlane(pos, { 0,1,0 }, gameState->middleState.activeCamera.position, gameState->input.mouseDir);
 				intersecting = mousePos.x > pos.x - globalR->width * 0.5f
 					&& mousePos.x < pos.x + globalR->width * 0.5f
 					&& mousePos.z > pos.z - globalR->height * 0.5f

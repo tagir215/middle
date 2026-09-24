@@ -58,12 +58,12 @@ namespace bubbleAnimations {
 		prevFrame = animationKeyFrames.back();
 		// frame 1
 		if (prevT == 0) {
-			Vector3 initPosA = prevKeyFrame[ELEMENT_A].position;
-			Vector3 initPosB = prevKeyFrame[ELEMENT_B].position;
-			Vector3 initScaleB = prevKeyFrame[ELEMENT_B].scale;
-			const Vector3 targetPosContainer = initPosB;
-			const Vector3 targetScaleContainer = initScaleB;
-			const Vector3 ySeparation = { 0,-5,0 };
+			midMath::Vector3 initPosA = prevKeyFrame[ELEMENT_A].position;
+			midMath::Vector3 initPosB = prevKeyFrame[ELEMENT_B].position;
+			midMath::Vector3 initScaleB = prevKeyFrame[ELEMENT_B].scale;
+			const midMath::Vector3 targetPosContainer = initPosB;
+			const midMath::Vector3 targetScaleContainer = initScaleB;
+			const midMath::Vector3 ySeparation = { 0,-5,0 };
 
 			float time = duration * phase1;
 			middle::setGlobalPosition(gameState, actorIds[NEW_CONTAINER], targetPosContainer + ySeparation);

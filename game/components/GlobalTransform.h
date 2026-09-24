@@ -8,9 +8,9 @@
 
 namespace components {
 	struct GlobalTransform : public middle::Serializable{
-		Vector3 pos = { 0,0,0 };
-		Vector3 scale = { 1,1,1 };
-		Quaternion rotation = {0,0,0,0};
+		midMath::Vector3 pos = { 0,0,0 };
+		midMath::Vector3 scale = { 1,1,1 };
+		midMath::Quaternion rotation = {0,0,0,0};
 
 		void serialize(std::ostream& ostream) override;
 		void deserialize(const std::vector<std::string>& buffer, int indexOffset) override;

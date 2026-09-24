@@ -227,11 +227,11 @@ public:
 			ImGui::Text(updatedString.c_str());
 			ImGui::End();
 			};
-		gameState->uiSetups.push_back(stepsLeft);
+		middle::queueUi(gameState, stepsLeft);
 	}
 
 
-	void copyAsHelper(middle::GameState* gameState, middle::Id id, const Vector3& targetPos) {
+	void copyAsHelper(middle::GameState* gameState, middle::Id id, const midMath::Vector3& targetPos) {
 		auto copyAction = std::make_shared<bubbleActions::CopyAsHelper>(id, targetPos);
 		bubble::queueBubbleAction(gameState, id, copyAction);
 	}

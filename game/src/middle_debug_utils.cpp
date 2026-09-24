@@ -1,5 +1,6 @@
 #include "middle_debug_utils.h"
 #include "imgui.h"
+#include "middle_shape_utils.h"
 
 namespace middle {
 
@@ -14,7 +15,7 @@ namespace middle {
 			ImGui::Text(std::to_string(i).c_str());
 			ImGui::End();
 			};
-		gameState->uiSetups.push_back(ui);
+		middle::queueUi(gameState, ui);
 	}
 
 	void drawImGuiFloat(middle::GameState* gameState, const char* label, float f)
@@ -24,7 +25,7 @@ namespace middle {
 			ImGui::Text(std::to_string(f).c_str());
 			ImGui::End();
 			};
-		gameState->uiSetups.push_back(ui);
+		middle::queueUi(gameState, ui);
 	}
 
 	void drawImGuiIntVector(middle::GameState* gameState, const char* label, const std::vector<int>& vector)
@@ -36,6 +37,6 @@ namespace middle {
 			}
 			ImGui::End();
 			};
-		gameState->uiSetups.push_back(ui);
+		middle::queueUi(gameState, ui);
 	}
 }

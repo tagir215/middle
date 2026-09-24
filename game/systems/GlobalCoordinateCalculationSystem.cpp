@@ -47,7 +47,7 @@ class GlobalCoordinateCalculationSystem : public middle::MiddleGameplaySystem {
 		}
 
 		for (middle::Id id : topLevelIds) {
-			middle::updateGlobalTransforms(gameState, id, MatrixIdentity(), Vector3{1,1,1});
+			middle::updateGlobalTransforms(gameState, id, midMath::MatrixIdentity(), midMath::Vector3{1,1,1});
 		}
 
 		// updated global radiuses

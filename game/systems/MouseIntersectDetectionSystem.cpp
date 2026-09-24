@@ -19,7 +19,6 @@
 #include "IntersectingTag.h"
 #include "GlobalRadius.h"
 #include "component_utils.h"
-
 namespace MouseIntersectDetectionSystem {
 
 	class MouseIntersectDetectionSystem : public middle::MiddleGameplaySystem {
@@ -42,7 +41,7 @@ namespace MouseIntersectDetectionSystem {
 			intersectableCache->addType<components::IntersectingTag>(components::NOTINTERESTED);
 		}
 
-		bool isIntersecting(middle::GameState* gameState, middle::Id id, const Vector3& pos) {
+		bool isIntersecting(middle::GameState* gameState, middle::Id id, const midMath::Vector3& pos) {
 			auto& shape = middle::getShape(gameState, id.index);
 			auto sphere = middle::getComponent<components::Sphere>(shape);
 			auto reference = middle::getComponent<components::Reference>(shape);
@@ -64,9 +63,9 @@ namespace MouseIntersectDetectionSystem {
 				radius = middle::DEF_RADIUS_LOOP_INDICATOR;
 			}
 
-			Vector3 intersectPos;
-			bool isIntersecting = middle::RayCastLineSphere(pos, radius, gameState->activeCamera.position,
-				gameState->activeCamera.position + gameState->input.mouseDir, intersectPos);
+			midMath::Vector3 intersectPos;
+			bool isIntersecting = midMath::RayCastLineSphere(pos, radius, gameState->middleState.activeCamera.position,
+				gameState->middleState.activeCamera.position + gameState->input.mouseDir, intersectPos);
 
 			return isIntersecting;
 		}
@@ -76,7 +75,7 @@ namespace MouseIntersectDetectionSystem {
 			auto intersectingTransformIt = intersectingCache->begin<components::GlobalTransform>();
 			for (middle::Id id : intersectingCache->relevantIdVector) {
 				auto transform = *intersectingTransformIt;
-				Vector3 pos = transform->pos;
+				midMath::Vector3 pos = transform->pos;
 
 				if (!isIntersecting(gameState, id, pos)) {
 					middle::queueComponentDeletion<components::IntersectingTag>(gameState, id);
@@ -93,7 +92,7 @@ namespace MouseIntersectDetectionSystem {
 			auto intersectableTransformIt = intersectableCache->begin<components::GlobalTransform>();
 			for (middle::Id id : intersectableCache->relevantIdVector) {
 				auto transform = *intersectableTransformIt;
-				Vector3 pos = transform->pos;
+				midMath::Vector3 pos = transform->pos;
 
 				if (isIntersecting(gameState, id, pos)) {
 					middle::attachComponent<components::IntersectingTag>(gameState, id);

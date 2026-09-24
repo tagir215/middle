@@ -5,18 +5,16 @@
 #include "bubble_actions.h"
 #include "bubble_animations.h"
 
-using namespace middle;
-
 namespace bubble {
 	extern float bubbleAxis;
 	extern float bubbleFontSize;
 
-	bool pointIntersectBubble(middle::GameState* gameState, middle::Shape& bubble, const Vector3& point);
+	bool pointIntersectBubble(middle::GameState* gameState, middle::Shape& bubble, const midMath::Vector3& point);
 	// get left right top bottom of a rect containing rect children 
-	void loopRectBoundingBox(GameState* gameState, const Id& shapeId, float* leftX, float* rightX, float* bottomZ, float* topZ);
-	void loopChildrenOnlyRectBoundingBox(GameState* gameState, const Id& shapeId, float* leftX, float* rightX, float* bottomZ, float* topZ);
-	void loopRectBoundingBoxInternal(GameState* gameState, const Id& shapeId, float* leftX, float* rightX, float* bottomZ, float* topZ);
-	void bubbleRectBoundingBox(GameState* gameState, const Id& shapeId, float* leftX, float* rightX, float* bottomZ, float* topZ);
+	void loopRectBoundingBox(middle::GameState* gameState, const middle::Id& shapeId, float* leftX, float* rightX, float* bottomZ, float* topZ);
+	void loopChildrenOnlyRectBoundingBox(middle::GameState* gameState, const middle::Id& shapeId, float* leftX, float* rightX, float* bottomZ, float* topZ);
+	void loopRectBoundingBoxInternal(middle::GameState* gameState, const middle::Id& shapeId, float* leftX, float* rightX, float* bottomZ, float* topZ);
+	void bubbleRectBoundingBox(middle::GameState* gameState, const middle::Id& shapeId, float* leftX, float* rightX, float* bottomZ, float* topZ);
 	bool buttonClicked(middle::GameState* gameState, middle::Shape& shape, int function);
 	std::vector<middle::Id>getNodes(middle::GameState* gameState, middle::Id id);
 	std::vector<middle::Id>getConstraints(middle::GameState* gameState, middle::Id id);
@@ -30,22 +28,22 @@ namespace bubble {
 		float scale = 0;
 	};
 	middle::Id topLevelBubble(middle::GameState* gameState);
-	middle::Shape newBubble(middle::GameState* gameState, const Vector3& targetPos);
-	middle::Shape newUnit(middle::GameState* gameState, const Vector3& targetPos, bool isNegative = false);
-	middle::Shape newVariable(middle::GameState* gameState, const std::string& label, const Vector3& targetPos, bool isNegative = false);
-	middle::Shape newEquals(middle::GameState* gameState, const Vector3& targetPos);
-	middle::Shape newInequals(middle::GameState* gameState, const Vector3& targetPos, bool equalOr);
-	middle::Shape newMultiplication(middle::GameState* gameState, const Vector3& targetPos);
-	middle::Shape newPower(middle::GameState* gameState, const Vector3& targetPos);
-	middle::Shape newFunction(middle::GameState* gameState, const std::string& label, const Vector3& targetPos);
-	middle::Shape newSummation(middle::GameState* gameState, const Vector3& targetPos);
-	middle::Shape newTextBubble(middle::GameState* gameState, const Vector3& targetPos);
-	middle::Shape newLogicBubble(middle::GameState* gameState, const Vector3& targetPos);
-	middle::Shape newGateBubble(middle::GameState* gameState, const Vector3& targetPos);
-	middle::Shape newSwapBubble(middle::GameState* gameState, const Vector3& targetPos);
-	middle::Id newSummationWithChildren(middle::GameState* gameState, const Vector3& targetPos);
-	middle::Id newPower(middle::GameState* gameState, middle::Id baseId, middle::Id exponentId, const Vector3& targetPos);
-	middle::Id newBubbleWithIntValue(middle::GameState* gameState, int value, const Vector3& targetPos);
+	middle::Shape newBubble(middle::GameState* gameState, const midMath::Vector3& targetPos);
+	middle::Shape newUnit(middle::GameState* gameState, const midMath::Vector3& targetPos, bool isNegative = false);
+	middle::Shape newVariable(middle::GameState* gameState, const std::string& label, const midMath::Vector3& targetPos, bool isNegative = false);
+	middle::Shape newEquals(middle::GameState* gameState, const midMath::Vector3& targetPos);
+	middle::Shape newInequals(middle::GameState* gameState, const midMath::Vector3& targetPos, bool equalOr);
+	middle::Shape newMultiplication(middle::GameState* gameState, const midMath::Vector3& targetPos);
+	middle::Shape newPower(middle::GameState* gameState, const midMath::Vector3& targetPos);
+	middle::Shape newFunction(middle::GameState* gameState, const std::string& label, const midMath::Vector3& targetPos);
+	middle::Shape newSummation(middle::GameState* gameState, const midMath::Vector3& targetPos);
+	middle::Shape newTextBubble(middle::GameState* gameState, const midMath::Vector3& targetPos);
+	middle::Shape newLogicBubble(middle::GameState* gameState, const midMath::Vector3& targetPos);
+	middle::Shape newGateBubble(middle::GameState* gameState, const midMath::Vector3& targetPos);
+	middle::Shape newSwapBubble(middle::GameState* gameState, const midMath::Vector3& targetPos);
+	middle::Id newSummationWithChildren(middle::GameState* gameState, const midMath::Vector3& targetPos);
+	middle::Id newPower(middle::GameState* gameState, middle::Id baseId, middle::Id exponentId, const midMath::Vector3& targetPos);
+	middle::Id newBubbleWithIntValue(middle::GameState* gameState, int value, const midMath::Vector3& targetPos);
 	bool isIntersecting(middle::GameState* gameState, middle::Shape& shape);
 	bool unitEquals(middle::GameState* gameState, middle::Id& idA, middle::Id& idB);
 	UnitValue unitValue(middle::GameState* gameState, middle::Id& containerId);

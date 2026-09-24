@@ -26,7 +26,7 @@ namespace entities{
 		reference->sceneName = sceneName;
 		reference->folder = folder;
 		loop->loopMemberIds = members;
-		Vector3 targetPos = { 0,0,0 };
+		midMath::Vector3 targetPos = { 0,0,0 };
 		if (members.size() == 1) {
 			targetPos = middle::getGlobalPosition(gameState, members[0]);
 		}

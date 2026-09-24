@@ -284,7 +284,7 @@ namespace bubequ {
 		outFile.close();
 	}
 
-	void saveBubequHead(const std::string& headName, const std::string& headHash, const std::unordered_map<std::string, std::string>& map, const BubTraversePath& traversePath, const Vector3& position, float localScale)
+	void saveBubequHead(const std::string& headName, const std::string& headHash, const std::unordered_map<std::string, std::string>& map, const BubTraversePath& traversePath, const midMath::Vector3& position, float localScale)
 	{
 		// write head ref
 		std::string path = std::string(bubblePaths::EQUATION_FOLDER) + "/" + headName + ".bubequ";
@@ -400,7 +400,7 @@ namespace bubequ {
 		return result;
 	}
 
-	Vector3 stringToVector(const std::string& s) {
+	midMath::Vector3 stringToVector(const std::string& s) {
 		std::string buffer;
 		float result[3];
 		int index = 0;
@@ -465,7 +465,7 @@ namespace bubequ {
 	}
 
 
-	std::shared_ptr<Scope> loadPreviousSnapshot(const std::string& headName, int historyOffset, int loadDepth, Vector3& loadedPos, float& loadedWorldScale, BubTraversePath& loadedTraversePath)
+	std::shared_ptr<Scope> loadPreviousSnapshot(const std::string& headName, int historyOffset, int loadDepth, midMath::Vector3& loadedPos, float& loadedWorldScale, BubTraversePath& loadedTraversePath)
 	{
 		auto lines = loadBubequLines(headName);
 		int elementOffset = elementSize * historyOffset;
@@ -546,8 +546,8 @@ namespace bubequ {
 		std::string path = std::string(bubblePaths::EQUATION_FOLDER) + "/" + name + ".bubequ";
 		bool fileExists = std::filesystem::exists(path);
 		auto& traversePath = gameState->bubbleAlgebraState.traversePath;
-		Vector3 localPos = middle::getLocalPosition(gameState, id);
-		Vector3 localScale = middle::getLocalScale(gameState, id);
+		midMath::Vector3 localPos = middle::getLocalPosition(gameState, id);
+		midMath::Vector3 localScale = middle::getLocalScale(gameState, id);
 		float scale = localScale.x;
 
 		std::shared_ptr<bubequ::Scope> root;

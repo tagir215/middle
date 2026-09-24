@@ -220,8 +220,8 @@ namespace equlab {
 
 
 	void AddEquals::execute(middle::GameState* gameState) {
-		middle::Shape bubAProto = bubble::newBubble(gameState, targetPos + Vector3{-1,0,0});
-		middle::Shape bubBProto = bubble::newBubble(gameState, targetPos + Vector3{1,0,0});
+		middle::Shape bubAProto = bubble::newBubble(gameState, targetPos + midMath::Vector3{-1,0,0});
+		middle::Shape bubBProto = bubble::newBubble(gameState, targetPos + midMath::Vector3{1,0,0});
 		middle::Shape equalsProto = bubble::newEquals(gameState, targetPos);
 		middle::Shape& bubA = middle::registerShape(gameState, bubAProto);
 		middle::Shape& bubB = middle::registerShape(gameState, bubBProto);
@@ -243,8 +243,8 @@ namespace equlab {
 	}
 
 	void AddInequals::execute(middle::GameState* gameState) {
-		middle::Shape bubAProto = bubble::newBubble(gameState, targetPos + Vector3{-1,0,0});
-		middle::Shape bubBProto = bubble::newBubble(gameState, targetPos + Vector3{1,0,0});
+		middle::Shape bubAProto = bubble::newBubble(gameState, targetPos + midMath::Vector3{-1,0,0});
+		middle::Shape bubBProto = bubble::newBubble(gameState, targetPos + midMath::Vector3{1,0,0});
 		middle::Shape inequalsProto = bubble::newInequals(gameState, targetPos, equalOr);
 		middle::Shape& bubA = middle::registerShape(gameState, bubAProto);
 		middle::Shape& bubB = middle::registerShape(gameState, bubBProto);
@@ -379,7 +379,7 @@ namespace equlab {
 	void ConnectPower::execute(middle::GameState* gameState) {
 		middle::Id oldParentId = middle::getParent(gameState, baseId);
 
-		Vector3 targetPos = (middle::getGlobalPosition(gameState, baseId)
+		midMath::Vector3 targetPos = (middle::getGlobalPosition(gameState, baseId)
 			+ middle::getGlobalPosition(gameState, exponentId)) * 0.5f;
 
 		middle::Shape newPowerProto = bubble::newPower(gameState, targetPos);
@@ -421,7 +421,7 @@ namespace equlab {
 			gameState->bubbleAlgebraState.traversePath,loadDist);
 		mendmicro("load bubequ head");
 		mstart();
-		middle::Id loadedId = bubequ::bubequToBubble(gameState, Vector3{0,0,0}, scope);
+		middle::Id loadedId = bubequ::bubequToBubble(gameState, midMath::Vector3{0,0,0}, scope);
 		mendmicro("bubequ to bubble");
 		mstart();
 		bubble::recursiveBubbleLayoutScaleUpdate(gameState, loadedId);

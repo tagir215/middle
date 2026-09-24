@@ -46,10 +46,10 @@ public:
 	void update(middle::GameState* gameState) override {
 		const float bubbleScaleRatioWithScreenHeight = 0.1f;
 		const float distanceFromNearPlane = 900;
-		const float screenAxisY = gameState->nearPlaneAxisY / gameState->nearPlaneDistance * distanceFromNearPlane;
+		const float screenAxisY = gameState->nearPlaneAxisY / gameState->middleState.nearPlaneDistance * distanceFromNearPlane;
 		const float spacing = bubble::bubbleAxis * 0.4f;
 		const float scale = 1;
-		const Vector3 itemScale = {scale,scale,scale};
+		const midMath::Vector3 itemScale = {scale,scale,scale};
 
 		auto invIt = cache->begin<components::Inventory>();
 		auto invPos = cache->begin<components::LocalPosition>();
@@ -63,12 +63,12 @@ public:
 			const float itemWidth = bubble::bubbleAxis * itemScale.x * 2;
 			const float inventoryWidth = itemWidth * inv->maxSize + (inv->maxSize -1) * spacing * itemScale.x;
 
-			Vector3 cameraPos = gameState->activeCamera.position;
-			Vector3 center = { cameraPos.x, cameraPos.y + distanceFromNearPlane, cameraPos.z -screenAxisY * 0.8f };
+			midMath::Vector3 cameraPos = gameState->middleState.activeCamera.position;
+			midMath::Vector3 center = { cameraPos.x, cameraPos.y + distanceFromNearPlane, cameraPos.z -screenAxisY * 0.8f };
 
-			Vector3 left = center - Vector3{inventoryWidth * 0.5f - itemWidth * 0.5f, 0, 0};
-			Vector3 advance = Vector3{ inventoryWidth / inv->maxSize, 0,0 };
-			Vector3 currentPos = left;
+			midMath::Vector3 left = center - midMath::Vector3{inventoryWidth * 0.5f - itemWidth * 0.5f, 0, 0};
+			midMath::Vector3 advance = midMath::Vector3{ inventoryWidth / inv->maxSize, 0,0 };
+			midMath::Vector3 currentPos = left;
 			
 			for (int i = 0; i < inv->maxSize; ++i) {
 				if (loop->loopMemberIds.size() > i && loop->loopMemberIds[i].index != middle::UNASSIGNED) {
@@ -89,9 +89,9 @@ public:
 				item.length = 0;
 				item.color = bubbleColors::DUMMY_GATE;
 				if (i == inv->activeIndex) {
-					item.color = BLUE;
+					item.color = { 0,0,255,255 };
 				}
-				gameState->renderData.push_back(item);
+				gameState->middleState.renderData.push_back(item);
 
 				currentPos += advance;
 			}
@@ -129,7 +129,7 @@ public:
 				}
 				ImGui::End();
 				};
-			gameState->uiSetups.push_back(ui);
+			middle::queueUi(gameState, ui);
 		}
 	}
 

@@ -9,7 +9,7 @@ namespace animationActions {
 
 	void LinearTranslation::update(middle::GameState* gameState) {
 		float t = progress / duration;
-		Vector3 pos = startPos + (targetPos - startPos) * t;
+		midMath::Vector3 pos = startPos + (targetPos - startPos) * t;
 		middle::setGlobalPosition(gameState, id, pos);
 	}
 

@@ -49,7 +49,7 @@ public:
 			const float minY = -100;
 			float maxY = minY - panSpan;
 
-			Vector3 oldPos = middle::getGlobalPosition(gameState, shape.id);
+			midMath::Vector3 oldPos = middle::getGlobalPosition(gameState, shape.id);
 			float zoomRatio = std::abs(oldPos.y - minY) / panSpan;
 			float panSpeed = 50 * zoomRatio;
 			const float minPanSpeed = 0.1f;
@@ -85,7 +85,7 @@ public:
 
 			middle::moveShape(gameState, shape.id.index, { camera->speedX,camera->speedY,camera->speedZ });
 
-			Vector3 newPos = middle::getGlobalPosition(gameState, shape.id);
+			midMath::Vector3 newPos = middle::getGlobalPosition(gameState, shape.id);
 
 			float deltaMinY = newPos.y - minY;
 			if (deltaMinY > 0) {
@@ -98,12 +98,12 @@ public:
 				newPos.y = maxY;
 			}
 
-			gameState->activeCamera.position = newPos;
-			gameState->activeCamera.target = { camera->targetX, camera->targetY, camera->targetZ };
+			gameState->middleState.activeCamera.position = newPos;
+			gameState->middleState.activeCamera.target = { camera->targetX, camera->targetY, camera->targetZ };
 
-			static const Vector3 forward = { 0,10000,0 };
-			Vector3 target = gameState->activeCamera.position + forward;
-			gameState->activeCamera.target = target;
+			static const midMath::Vector3 forward = { 0,10000,0 };
+			midMath::Vector3 target = gameState->middleState.activeCamera.position + forward;
+			gameState->middleState.activeCamera.target = target;
 			camera->targetX = target.x;
 			camera->targetY = target.y;
 			camera->targetZ = target.z;

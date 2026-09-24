@@ -16,9 +16,9 @@ namespace middle {
 	// creation of new spheres are here
 	class EditorActionNewSphere : public EditorActionContainer {
 	public:
-		Vector3 position;
+		midMath::Vector3 position;
 		int newIndex = UNASSIGNED;
-		EditorActionNewSphere(const Vector3& position) {
+		EditorActionNewSphere(const midMath::Vector3& position) {
 			this->position = position;
 		}
 		void execute(GameState* gameState) override;
@@ -169,13 +169,13 @@ namespace middle {
 	// new perspective 
 	class EditorActionNewCamera : public EditorActionContainer {
 	public:
-		Vector3 position;
-		Vector3 up;
-		Vector3 target;
+		midMath::Vector3 position;
+		midMath::Vector3 up;
+		midMath::Vector3 target;
 		float fieldOfView;
 		// projection 0 or 1
 		int projection;
-		EditorActionNewCamera(const Vector3& position, const Vector3& targetPos, const Vector3& up, float fovy, int projection) {
+		EditorActionNewCamera(const midMath::Vector3& position, const midMath::Vector3& targetPos, const midMath::Vector3& up, float fovy, int projection) {
 			this->position = position;
 			this->up = up;
 			this->target = targetPos;
@@ -328,8 +328,8 @@ namespace middle {
 	class EditorActionMove : public EditorActionContainer {
 	public:
 		std::vector<int> selectedShapes;
-		std::vector<Vector3>oldPositions;
-		std::vector<Vector3>newPositions;
+		std::vector<midMath::Vector3>oldPositions;
+		std::vector<midMath::Vector3>newPositions;
 		EditorActionMove(std::vector<int>& selectedShapes) {
 			this->selectedShapes = selectedShapes;
 		}

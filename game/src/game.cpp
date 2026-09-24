@@ -1,8 +1,6 @@
 #pragma once
-
 #include <iostream>
 #include "game.h"
-#include "descart_loop.h"
 #include "SystemReference.h"
 #include "Position.h"
 #include "middle_shape_utils.h"
@@ -10,9 +8,6 @@
 #include "bubble_paths.h"
 #include "profiler_helpers.h"
 #include "config.h"
-
-using namespace middle;
-
 
 namespace middle{
 
@@ -87,12 +82,12 @@ namespace middle{
 
 	void updateSystems(GameState* gameState, const std::vector<std::unique_ptr<MiddleGameplaySystem>>& systems) {
 		for (auto& system : systems) {
-			if (gameState->applicationMode == ApplicationMode::GAME_MODE
+			if (gameState->middleState.applicationMode == ApplicationMode::GAME_MODE
 				&& system->systemModeType == SystemModeType::EDITOR) {
 				continue;
 			}
 
-			if (gameState->applicationMode == ApplicationMode::EDITOR_MODE
+			if (gameState->middleState.applicationMode == ApplicationMode::EDITOR_MODE
 				&& system->systemModeType == SystemModeType::GAMEPLAY) {
 				continue;
 			}
@@ -154,12 +149,12 @@ namespace middle{
 			if (!system)
 				continue;
 
-			if (gameState->applicationMode == ApplicationMode::GAME_MODE
+			if (gameState->middleState.applicationMode == ApplicationMode::GAME_MODE
 				&& system->systemModeType == SystemModeType::EDITOR) {
 				continue;
 			}
 
-			if (gameState->applicationMode == ApplicationMode::EDITOR_MODE
+			if (gameState->middleState.applicationMode == ApplicationMode::EDITOR_MODE
 				&& system->systemModeType == SystemModeType::GAMEPLAY) {
 				continue;
 			}
@@ -216,7 +211,7 @@ static bool initialized = false;
 
 extern "C" {
 
-	__declspec(dllexport) void UpdateGame(GameState* gameState)
+	__declspec(dllexport) void UpdateGame(middle::GameState* gameState)
 	{
 
 		if (!initialized) {
@@ -256,13 +251,13 @@ extern "C" {
 
 		for (auto& renderSystem : gameState->engineRendererSystems) {
 
-			if (gameState->applicationMode == ApplicationMode::GAME_MODE
-				&& renderSystem->systemModeType == SystemModeType::EDITOR) {
+			if (gameState->middleState.applicationMode == middle::ApplicationMode::GAME_MODE
+				&& renderSystem->systemModeType == middle::SystemModeType::EDITOR) {
 				continue;
 			}
 
-			if (gameState->applicationMode == ApplicationMode::EDITOR_MODE
-				&& renderSystem->systemModeType == SystemModeType::GAMEPLAY) {
+			if (gameState->middleState.applicationMode == middle::ApplicationMode::EDITOR_MODE
+				&& renderSystem->systemModeType == middle::SystemModeType::GAMEPLAY) {
 				continue;
 			}
 
@@ -276,7 +271,7 @@ extern "C" {
 
 }
 
-void closeGame(GameState* gameState)
+void closeGame(middle::GameState* gameState)
 {
 	saveEditorState(gameState);
 }

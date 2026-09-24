@@ -32,7 +32,7 @@ class AutoSaveSystem : public middle::MiddleGameplaySystem {
 			ImGui::End();
 
 			};
-		gameState->uiSetups.push_back(ui);
+		middle::queueUi(gameState, ui);
 
 		for (middle::Id id : cache->relevantIdVector) {
 			middle::queueComponentDeletion<components::QueuedForSaveTag>(gameState, id);

@@ -97,7 +97,7 @@ public:
 								ImGui::InputText(field.name, string);
 							}
 							else if (field.type == middle::FieldType::Vector3) {
-								Vector3* vector = static_cast<Vector3*>(field.value);
+								midMath::Vector3* vector = static_cast<midMath::Vector3*>(field.value);
 								ImGui::Text(field.name);
 
 								std::string id1 = std::string(field.name) + ":x";
@@ -108,7 +108,7 @@ public:
 								ImGui::InputFloat(id3.c_str(), &vector->z);
 							}
 							else if (field.type == middle::FieldType::Vector2) {
-								Vector2* vector = static_cast<Vector2*>(field.value);
+								midMath::Vector2* vector = static_cast<midMath::Vector2*>(field.value);
 								ImGui::Text(field.name);
 								std::string id1 = std::string(field.name) + ":x";
 								std::string id2 = std::string(field.name) + ":y";
@@ -116,7 +116,7 @@ public:
 								ImGui::InputFloat(id2.c_str(), &vector->y);
 							}
 							else if (field.type == middle::FieldType::Quaternion) {
-								Quaternion* quat = static_cast<Quaternion*>(field.value);
+								midMath::Quaternion* quat = static_cast<midMath::Quaternion*>(field.value);
 								ImGui::Text(field.name);
 								std::string id1 = std::string(field.name) + ":x";
 								std::string id2 = std::string(field.name) + ":y";
@@ -128,7 +128,7 @@ public:
 								ImGui::InputFloat(id4.c_str(), &quat->w);
 							}
 							else if (field.type == middle::FieldType::Color) {
-								Color* color = static_cast<Color*>(field.value);
+								midPrimitive::Color* color = static_cast<midPrimitive::Color*>(field.value);
 								ImGui::Text(field.name);
 								int r = static_cast<int>(color->r);
 								int g = static_cast<int>(color->g);
@@ -211,11 +211,11 @@ public:
 
 
 					auto transform = middle::getComponent<components::GlobalTransform>(shape);
-					Vector3 displacement = { 0,0,0 };
+					midMath::Vector3 displacement = { 0,0,0 };
 					if (transform) {
 						displacement = transform->pos;
 						// move shape to origin
-						middle::moveShape(gameState, shape.id.index, Vector3Negate(displacement));
+						middle::moveShape(gameState, shape.id.index, midMath::Vector3Negate(displacement));
 					}
 
 					middle::resetGenerations(gameState);
@@ -230,7 +230,7 @@ public:
 				ImGui::End();
 				};
 
-				gameState->uiSetups.push_back(ui);
+				middle::queueUi(gameState, ui);
 		}
 	}
 };

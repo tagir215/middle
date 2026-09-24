@@ -7,6 +7,7 @@
 #include "GlobalTransform.h"
 #include "GrabbedTag.h"
 
+
 class TextGrabbingSystem : public middle::MiddleGameplaySystem {
 	components::CompCache* puzzleTextUnitCache;
 	components::CompCache* grabbedCache;
@@ -33,7 +34,7 @@ class TextGrabbingSystem : public middle::MiddleGameplaySystem {
 			// check intersection with mouse
 			float axisX = rect->width * 0.5f;
 			float axisZ = rect->height * 0.5f;
-			Vector3& mousePos = gameState->input.mouseXZ_PlanePos;
+			midMath::Vector3& mousePos = gameState->input.mouseXZ_PlanePos;
 			bool intersecting = mousePos.x > transform->pos.x - axisX && mousePos.x < transform->pos.x + axisX
 				&& mousePos.z > transform->pos.z - axisZ && mousePos.z < transform->pos.z + axisZ;
 
@@ -44,8 +45,9 @@ class TextGrabbingSystem : public middle::MiddleGameplaySystem {
 			item.center = transform->pos;
 			item.width = rect->width;
 			item.height = rect->height;
-			item.color = intersecting ? RED : WHITE;
-			gameState->renderData.push_back(item);
+			item.color = { 0,0,0,255 };
+			gameState->middleState.renderData.push_back(item);
+
 
 			if (intersecting && gameState->input.mouseClicked) {
 				middle::Id copyId = middle::deepCopyShapeGlobalCoordinates(gameState, id);

@@ -45,7 +45,7 @@ public:
 			}
 			if (gameState->editorState.creationMode == middle::CreationMode::CAMERA_MODE) {
 				if (gameState->input.newThing) {
-					Camera camera = gameState->editorState.camera;
+					midPrimitive::Camera camera = gameState->editorState.camera;
 					middle::queueEditorAction(gameState, std::make_shared<middle::EditorActionNewCamera>(camera.position, camera.target, camera.up, camera.fovy, camera.projection));
 				}
 				if (gameState->input.focus) {

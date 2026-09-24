@@ -31,7 +31,7 @@ public:
 
 
 		auto ui = [gameState, configs]() {
-			Vector3 referencePos = { 0,0,0 };
+			midMath::Vector3 referencePos = { 0,0,0 };
 
 			auto ImGuiDisplayText = [](const char* label, const char* text) {
 				if (ImGui::CollapsingHeader(label))
@@ -53,12 +53,12 @@ public:
 					ImGui::Text("%.25f", f);
 				};
 
-			auto ImGuiDisplayVector2 = [](const char* label, Vector2 v) {
+			auto ImGuiDisplayVector2 = [](const char* label, midMath::Vector2 v) {
 				if (ImGui::CollapsingHeader(label))
 					ImGui::Text("(%.2f, %.2f)", v.x, v.y);
 				};
 
-			auto ImGuiDisplayVector3 = [&referencePos](const char* label, Vector3 v) {
+			auto ImGuiDisplayVector3 = [&referencePos](const char* label, midMath::Vector3 v) {
 				if (ImGui::CollapsingHeader(label)) {
 					ImGui::Text("x: (%.25f)", v.x);
 					ImGui::Text("y: (%.25f)", v.y);
@@ -122,7 +122,7 @@ public:
 				}
 			}
 			if (ImGui::Button("PLAY")) {
-				gameState->applicationMode = middle::ApplicationMode::GAME_MODE;
+				gameState->middleState.applicationMode = middle::ApplicationMode::GAME_MODE;
 			}
 			ImGui::End();
 			ImGui::Begin("GameState");
@@ -375,7 +375,7 @@ public:
 			};
 
 
-		gameState->uiSetups.push_back(ui);
+		middle::queueUi(gameState, ui);
 	}
 
 	void gameEditorUi(middle::GameState* gameState) {
@@ -383,21 +383,21 @@ public:
 		auto ui = [gameState]() {
 			ImGui::Begin("Control");
 			if (ImGui::Button("Edit")) {
-				gameState->applicationMode = middle::ApplicationMode::EDITOR_MODE;
+				gameState->middleState.applicationMode = middle::ApplicationMode::EDITOR_MODE;
 			}
 			ImGui::End();
 			};
 
-		gameState->uiSetups.push_back(ui);
+		middle::queueUi(gameState, ui);
 	}
 
 	void update(middle::GameState* gameState) override {
 
 
-		if (gameState->applicationMode == middle::ApplicationMode::EDITOR_MODE) {
+		if (gameState->middleState.applicationMode == middle::ApplicationMode::EDITOR_MODE) {
 			editorUi(gameState);
 		}
-		if (gameState->applicationMode == middle::ApplicationMode::GAME_MODE) {
+		if (gameState->middleState.applicationMode == middle::ApplicationMode::GAME_MODE) {
 			gameEditorUi(gameState);
 		}
 	}

@@ -3,7 +3,7 @@
 #include "game_state.h"
 
 namespace bubble{
-	typedef std::vector<Vector2> BubbleLayout;
+	typedef std::vector<midMath::Vector2> BubbleLayout;
     inline std::vector<BubbleLayout> layouts =
     {
         // 1

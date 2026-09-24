@@ -1,9 +1,7 @@
 #pragma once
 #include "middle_constants.h"
 #include <string>
-#include "descart_constraints.h"
 #include "game_colors.h"
-#include "physics_body.h"
 #include <set>
 #include <memory>
 #include <unordered_map>
@@ -15,7 +13,7 @@ namespace middle {
 	static float DEF_RADIUS_CAMERA = 5;
 	static float DEF_RADIUS_SYSTEM = 4;
 	static float DEF_RADIUS_COMPONENT = 3;
-	static Color DEF_COLOR = UGLY_PINK;
+	static midPrimitive::Color DEF_COLOR = UGLY_PINK;
 	static float DEF_LIFETIME = INFINITY;
 	static float DEF_GRAVITY = 0;
 	static float DEF_DAMPING = 0.8f;

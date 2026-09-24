@@ -34,8 +34,8 @@ namespace bubequ {
 	std::string loadText(const std::string& path);
 	std::vector<std::string>getFilenames(const std::string directoryPath);
 	void saveBubble(middle::GameState* gameState, middle::Id id, const std::string& name);
-	void saveBubequHead(const std::string& headName, const std::string& headHash, const std::unordered_map<std::string, std::string>& map, const BubTraversePath& traversePath, const Vector3& position, float localScale);
+	void saveBubequHead(const std::string& headName, const std::string& headHash, const std::unordered_map<std::string, std::string>& map, const BubTraversePath& traversePath, const midMath::Vector3& position, float localScale);
 	std::shared_ptr<Scope> loadBubequHead(const std::string& headName, const BubTraversePath& traversePath, int loadDepth);
-	std::shared_ptr<Scope> loadPreviousSnapshot(const std::string& headName, int historyOffset, int loadDepth, Vector3& loadedPos, float& loadedWorldScale, BubTraversePath& loadedTraversePath);
+	std::shared_ptr<Scope> loadPreviousSnapshot(const std::string& headName, int historyOffset, int loadDepth, midMath::Vector3& loadedPos, float& loadedWorldScale, BubTraversePath& loadedTraversePath);
 	void eraseLastSave(const std::string& headName);
 }

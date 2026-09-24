@@ -19,26 +19,26 @@ public:
 		systemUpdateType = middle::SystemUpdateType::PREFRAME;
 	}
 
-	bool broadTest(middle::GameState* gameState, const Vector3& spherePos, float radius) {
-		Vector3 rayStart = gameState->input.mouseNearPlanePos;
-		Vector3 rayEnd = rayStart + Vector3Scale(gameState->input.mouseDir, 10000);
-		Vector3 intersectPos;
-		return middle::RayCastLineSphere(spherePos, radius, rayStart, rayEnd, intersectPos);
+	bool broadTest(middle::GameState* gameState, const midMath::Vector3& spherePos, float radius) {
+		midMath::Vector3 rayStart = gameState->input.mouseNearPlanePos;
+		midMath::Vector3 rayEnd = rayStart + midMath::Vector3Scale(gameState->input.mouseDir, 10000);
+		midMath::Vector3 intersectPos;
+		return midMath::RayCastLineSphere(spherePos, radius, rayStart, rayEnd, intersectPos);
 	}
 
 	struct AxisTestResult {
 		// 0 = X, 1 = Y, 2 = Z
 		int resultAxis = -1;
-		Vector3 collisionPos;
-		Vector3 axis;
+		midMath::Vector3 collisionPos;
+		midMath::Vector3 axis;
 	};
 
-	AxisTestResult axisTest(middle::GameState* gameState, const Vector3& spherePos, float radius) {
-		Vector3 rayStart = gameState->input.mouseNearPlanePos;
-		Vector3 rayDir = gameState->input.mouseDir;
-		Vector3 collisionPosX = middle::RayCastLinePlane(spherePos, { 0,1,0 }, rayStart, rayDir);
-		Vector3 collisionPosY = middle::RayCastLinePlane(spherePos, { 0,0,1 }, rayStart, rayDir);
-		Vector3 collisionPosZ = middle::RayCastLinePlane(spherePos, { 1,0,0 }, rayStart, rayDir);
+	AxisTestResult axisTest(middle::GameState* gameState, const midMath::Vector3& spherePos, float radius) {
+		midMath::Vector3 rayStart = gameState->input.mouseNearPlanePos;
+		midMath::Vector3 rayDir = gameState->input.mouseDir;
+		midMath::Vector3 collisionPosX = midMath::RayCastLinePlane(spherePos, { 0,1,0 }, rayStart, rayDir);
+		midMath::Vector3 collisionPosY = midMath::RayCastLinePlane(spherePos, { 0,0,1 }, rayStart, rayDir);
+		midMath::Vector3 collisionPosZ = midMath::RayCastLinePlane(spherePos, { 1,0,0 }, rayStart, rayDir);
 		std::vector<AxisTestResult>candidates = {
 			{ 0, collisionPosX, {0,1,0} },
 			{ 1, collisionPosY, {0,0,1} },
@@ -47,7 +47,7 @@ public:
 		// filter non collisions
 		float radiusSq = radius * radius;
 		for (int i = 2; i >= 0; --i) {
-			float distSq = Vector3DistanceSqr(candidates[i].collisionPos, spherePos);
+			float distSq = midMath::Vector3DistanceSqr(candidates[i].collisionPos, spherePos);
 			if (distSq - 0.4f> radiusSq) {
 				candidates.erase(candidates.begin() + i);
 			}
@@ -60,7 +60,7 @@ public:
 		float minDist = std::numeric_limits<float>::max();
 		int bestIndex = 0;
 		for(int i=0; i<candidates.size(); ++i){
-			float distSq = Vector3DistanceSqr(candidates[i].collisionPos, rayStart);
+			float distSq = midMath::Vector3DistanceSqr(candidates[i].collisionPos, rayStart);
 			if (distSq < minDist) {
 				bestIndex = i;
 				minDist = distSq;
@@ -70,7 +70,7 @@ public:
 		return candidates[bestIndex];
 	}
 
-	void renderAxis(middle::GameState* gameState, const Vector3& gizmoPos, const Color& color, const Vector3& axis, float gizmoRadius) {
+	void renderAxis(middle::GameState* gameState, const midMath::Vector3& gizmoPos, const midPrimitive::Color& color, const midMath::Vector3& axis, float gizmoRadius) {
 		middle::RenderItem cyl;
 		cyl.type = middle::RenderItemType::CYLINDER;
 		cyl.center = { 0,0,0 };
@@ -81,7 +81,7 @@ public:
 		cyl.transform.scale = { 1,1,1 };
 		cyl.transform.rotation = QuaternionFromVector3ToVector3({ 0,1,0 }, axis);
 		cyl.radius = gizmoRadius;
-		gameState->renderData.push_back(cyl);
+		middle::queueForRender(gameState, cyl);
 	}
 
 	void init(middle::GameState* gameState) override {
@@ -179,7 +179,7 @@ public:
 		//	}
 
 		//	// rotation
-		//	float rotateDelta = Vector3Subtract(gameState->input.mouseXZ_PlanePos, drag->dragStartPos).x;
+		//	float rotateDelta = midMath::Vector3Subtract(gameState->input.mouseXZ_PlanePos, drag->dragStartPos).x;
 		//	float scalor = 0.1f;
 		//	Quaternion axisQuat = QuaternionFromAxisAngle(drag->axis, rotateDelta * scalor);
 		//	rotation->rotation = QuaternionMultiply(drag->initRotation, axisQuat);

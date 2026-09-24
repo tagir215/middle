@@ -112,10 +112,10 @@ namespace middle {
 		}
 		// set position to centroid
 		else {
-			Vector3 centroid = { 0,0,0 };
+			midMath::Vector3 centroid = { 0,0,0 };
 			for (int i = 0; i < ids.size(); ++i) {
 				auto& shape = getShape(gameState, ids[i].index);
-				Vector3 pos = middle::getGlobalPosition(gameState, shape.id);
+				midMath::Vector3 pos = middle::getGlobalPosition(gameState, shape.id);
 				centroid += pos;
 			}
 			centroid *= 1.0f / ids.size();
@@ -171,7 +171,7 @@ namespace middle {
 	void EditorActionImportScene::execute(GameState* gameState)
 	{
 		newIndex = findFreeIndex(gameState);
-		loadScene(gameState, path, name, true, { 0,0,0 }, newIndex);
+		loadScene(gameState, path, name, true, midMath::Vector3{ 0,0,0 }, newIndex);
 	}
 
 	void EditorActionImportScene::undo(GameState* gameState)
@@ -224,7 +224,7 @@ namespace middle {
 	void EditorActionNewCamera::execute(GameState* gameState)
 	{
 		int freeIndex = findFreeIndex(gameState);
-		Vector3& pos = gameState->editorState.camera.position;
+		midMath::Vector3& pos = gameState->editorState.camera.position;
 		entities::initCamera(gameState, freeIndex, pos, up, target, fieldOfView, projection);
 	}
 
@@ -528,7 +528,7 @@ namespace middle {
 		}
 
 		for (int i = 0; i < newPositions.size(); ++i) {
-			Vector3 displacement = newPositions[i] - oldPositions[i];
+			midMath::Vector3 displacement = newPositions[i] - oldPositions[i];
 			middle::moveShape(gameState, selectedShapes[i], displacement);
 		}
 	}
@@ -537,8 +537,8 @@ namespace middle {
 	{
 		for (int i = 0; i < selectedShapes.size(); ++i) {
 			auto& shape = getShape(gameState, selectedShapes[i]);
-			Vector3 currentPos = middle::getGlobalPosition(gameState, shape.id);
-			Vector3 displacement = currentPos - oldPositions[i];
+			midMath::Vector3 currentPos = middle::getGlobalPosition(gameState, shape.id);
+			midMath::Vector3 displacement = currentPos - oldPositions[i];
 			middle::moveShape(gameState, selectedShapes[i], Vector3Negate(displacement));
 		}
 	}

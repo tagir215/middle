@@ -11,20 +11,18 @@ namespace middle {
 	int constraintExistsAt(GameState* gameState, Id idA, Id idB);
 	// unselect selected things
 	void unselect(GameState* gameState);
-	// drag shape and its children
-	void dragShape(GameState* gameState, int index, Vector3 linearVel);
 	// move shape and its chidlren
-	void moveShape(GameState* gameState, int index, const Vector3& displacement);
+	void moveShape(GameState* gameState, int index, const midMath::Vector3& displacement);
 	// set local pos in a way so it has this global pos
-	void setGlobalPosition(GameState* gameState, middle::Id id, const Vector3& targetPos);
+	void setGlobalPosition(GameState* gameState, middle::Id id, const midMath::Vector3& targetPos);
 	// set local pos
-	void setLocalPosition(GameState* gameState, middle::Id id, const Vector3& targetPos);
+	void setLocalPosition(GameState* gameState, middle::Id id, const midMath::Vector3& targetPos);
 	// find container of containers containers
 	int findHighestLevelContainer(GameState* gameState, int index);
 	// local scale
-	Vector3 getLocalScale(GameState* gameState, middle::Id id);
+	midMath::Vector3 getLocalScale(GameState* gameState, middle::Id id);
 	// set local scale
-	void setLocalScale(GameState* gameState, middle::Id id, const Vector3& targetScale);
+	void setLocalScale(GameState* gameState, middle::Id id, const midMath::Vector3& targetScale);
 	// loop the shape instances
 	int findHighestUsedIndex(GameState* gameState);
 	// find next usable ghost index
@@ -40,9 +38,9 @@ namespace middle {
 	// is id generation correct?  and is alive
 	bool isValidId(GameState* gameState, middle::Id id);
 	// get pos quickly
-	Vector3 getGlobalPosition(GameState* gameState, middle::Id id);
+	midMath::Vector3 getGlobalPosition(GameState* gameState, middle::Id id);
 	// get pos quickly very
-	Vector3 getLocalPosition(GameState* gameState, middle::Id id);
+	midMath::Vector3 getLocalPosition(GameState* gameState, middle::Id id);
 	// get shape instance
 	Shape& getShape(GameState* gameState, int index);
 	// delete shape , updates generational indexes
@@ -60,7 +58,7 @@ namespace middle {
 	// adds not serialized ghost shape and updates generations
 	Shape& addGhostShape(GameState* gameState);
 	// move camera in xz plane moving also the target 
-	void moveCameraXZ(Camera3D& initCamera, const Vector3& pos);
+	void moveCameraXZ(midPrimitive::Camera3D& initCamera, const midMath::Vector3& pos);
 	// get shapes selected..
 	std::vector<int>getSelectedShapes(GameState* gameState);
 	// return first shape intersect by mouse
@@ -74,9 +72,9 @@ namespace middle {
 	// copy shape and preserve its global coordinate
 	Id deepCopyShapeGlobalCoordinates(GameState* gameState, middle::Id id);
 	// get vertices of rectangles
-	std::vector<Vector3>getRectVertices(GameState* gameState, const Id& shapeId);
+	std::vector<midMath::Vector3>getRectVertices(GameState* gameState, const Id& shapeId);
 	// get scale and multiply it with all the parents scales
-	Vector3 getTotalScale(GameState* gameState, const Id& shapeId);
+	midMath::Vector3 getTotalScale(GameState* gameState, const Id& shapeId);
 	// get parent of shape with loopSocietyComponent
 	Id getParent(GameState* gameState, Id& id);
 	// get children in a flat array
@@ -104,19 +102,19 @@ namespace middle {
 	// queue action for editor, with undos
 	void queueEditorAction(GameState* gameState, std::shared_ptr<EditorActionContainer> container);
 	// get transform matrix for some id with components globaltransform, localPos, localScale, and probably rotation in future 
-	Matrix getTransformMatrix(GameState* gameState, middle::Id id);
+	midMath::Matrix getTransformMatrix(GameState* gameState, middle::Id id);
 	// project world coordinate as local coordinate 
-	Vector3 projectGlobalCoordinateToLocalCoordinate(GameState* gameState, const Vector3& globalCoord, middle::Id shapeId);
+	midMath::Vector3 projectGlobalCoordinateToLocalCoordinate(GameState* gameState, const midMath::Vector3& globalCoord, middle::Id shapeId);
 	// project local coordinate to match old global coordinate
 	void updateLocalCoordinateToProjectedGlobalCoordinate(GameState* gameState, middle::Id id, middle::Id oldParentId);
 	// project local scale to mathc old global scale
-	Vector3 projectGlobalScaleToLocalScale(GameState* gameState, middle::Id id, const Vector3& globalScale);
+	midMath::Vector3 projectGlobalScaleToLocalScale(GameState* gameState, middle::Id id, const midMath::Vector3& globalScale);
 	// get global scale parents scale multiplied
-	Vector3 getGlobalScale(GameState* gameState, middle::Id id);
+	midMath::Vector3 getGlobalScale(GameState* gameState, middle::Id id);
 	// get index on the loop
 	int getLoopIndex(GameState* gameState, middle::Id id);
 	// update global transforms
-	void updateGlobalTransforms(middle::GameState* gameState, middle::Id id, const Matrix& parentM, const Vector3& parentScale);
+	void updateGlobalTransforms(middle::GameState* gameState, middle::Id id, const midMath::Matrix& parentM, const midMath::Vector3& parentScale);
 	// notify structural changes for cache updates
 	void notifyStructuralChanges(middle::GameState* gameState, middle::Id id, middle::componentType componentType);
 	// check whether has comp
@@ -129,8 +127,14 @@ namespace middle {
 	void removeComp(middle::Shape& shape, int typeId);
 	// create shape... replace all the old initializations!
 	Shape createShape(middle::GameState* gameState);
+	// add to rendering list
+	void queueForRender(middle::GameState* gameState, middle::RenderItem item);
+	// add to ui list
+	void queueUi(middle::GameState* gameState, std::function<void()>ui);
+	// get Active camera pos
+	midPrimitive::Camera3D getActiveCam(middle::GameState* gameState);
 
-	void assertPos(const Vector3& pos);
+	void assertPos(const midMath::Vector3& pos);
 
 	template<typename F>
 	void loopInstances(GameState* gameState, F func) {

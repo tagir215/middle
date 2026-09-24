@@ -34,7 +34,7 @@ public:
 				{0,0,0,0},
 				transform->scale
 			};
-			gameState->renderData.push_back(renderItem);
+			middle::queueForRender(gameState, renderItem);
 		}
 	}
 };

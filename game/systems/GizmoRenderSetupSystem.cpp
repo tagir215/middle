@@ -31,52 +31,52 @@ public:
 			if (!selectable->selected) {
 				continue;
 			}
-			Vector3 pos = transform->pos;
-			Vector3 forward = Vector3RotateByQuaternion(middle::ROTATION_FORWARD, rotation->rotation);
+			midMath::Vector3 pos = transform->pos;
+			midMath::Vector3 forward = Vector3RotateByQuaternion(middle::ROTATION_FORWARD, rotation->rotation);
 			middle::RenderItem rotItem;
 			rotItem.type = middle::RenderItemType::VECTOR;
 			rotItem.center = { 0,0,0 };
-			rotItem.color = WHITE;
+			rotItem.color = {255,255,255,255};
 			rotItem.color.a = 50.0f;
 			rotItem.transform.translation = pos;
 			rotItem.transform.rotation = rotation->rotation;
 			rotItem.transform.scale = { 1,1,1 };
 			rotItem.length = 20;
 			rotItem.radius = 2;
-			gameState->renderData.push_back(rotItem);
+			middle::queueForRender(gameState, rotItem);
 
 			middle::RenderItem circleX;
 			circleX.type = middle::RenderItemType::CIRCLE;
 			circleX.center = { 0,0,0 };
-			circleX.color = BLUE;
+			circleX.color = { 0,0,255,255 };
 			circleX.ringRadius = 0.2f;
 			circleX.transform.translation = pos;
 			circleX.transform.scale = { 1,1,1 };
-			circleX.transform.rotation = QuaternionFromVector3ToVector3({ 0,1,0 }, { 1,0,0 });
+			circleX.transform.rotation = midMath::QuaternionFromVector3ToVector3({ 0,1,0 }, { 1,0,0 });
 			circleX.radius = 30;
-			gameState->renderData.push_back(circleX);
+			middle::queueForRender(gameState, circleX);
 
 			middle::RenderItem circleY;
 			circleY.type = middle::RenderItemType::CIRCLE;
 			circleY.center = { 0,0,0 };
-			circleY.color = GREEN;
+			circleY.color = { 0,255,0,255 };
 			circleY.ringRadius = 0.2f;
 			circleY.transform.translation = pos;
 			circleY.transform.scale = { 1,1,1 };
-			circleY.transform.rotation = QuaternionFromVector3ToVector3({ 0,1,0 }, { 0,1,0 });
+			circleY.transform.rotation = midMath::QuaternionFromVector3ToVector3({ 0,1,0 }, { 0,1,0 });
 			circleY.radius = 30;
-			gameState->renderData.push_back(circleY);
+			middle::queueForRender(gameState, circleY);
 
 			middle::RenderItem circleZ;
 			circleZ.type = middle::RenderItemType::CIRCLE;
 			circleZ.center = { 0,0,0 };
-			circleZ.color = RED;
+			circleZ.color = {255,0,0,255};
 			circleZ.ringRadius = 0.2f;
 			circleZ.transform.translation = pos;
 			circleZ.transform.scale = { 1,1,1 };
-			circleZ.transform.rotation = QuaternionFromVector3ToVector3({ 0,1,0 }, { 0,0,1 });
+			circleZ.transform.rotation = midMath::QuaternionFromVector3ToVector3({ 0,1,0 }, { 0,0,1 });
 			circleZ.radius = 30;
-			gameState->renderData.push_back(circleZ);
+			middle::queueForRender(gameState, circleZ);
 		}
 	}
 };

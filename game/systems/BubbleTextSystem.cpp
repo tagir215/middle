@@ -12,7 +12,6 @@
 #include "NeedsUpdateTag.h"
 #include "GlobalTransform.h"
 
-
 class BubbleTextSystem : public middle::MiddleGameplaySystem {
 	components::CompCache* cache;
 	components::CompCache* newTextBubbleCache;
@@ -33,7 +32,7 @@ class BubbleTextSystem : public middle::MiddleGameplaySystem {
 
 	// Get index position for a unicode character on font
 	// NOTE: If codepoint is not found in the font it fallbacks to '?'
-	int GetGlyphIndex(Font font, int codepoint)
+	int GetGlyphIndex(midPrimitive::Font font, int codepoint)
 	{
 		int index = 0;
 
@@ -116,9 +115,9 @@ class BubbleTextSystem : public middle::MiddleGameplaySystem {
 
 
 	// Measure string size for Font
-	Vector2 MeasureTextEx(Font font, const char* text, float fontSize, float spacing = 0)
+	midMath::Vector2 MeasureTextEx(midPrimitive::Font font, const char* text, float fontSize, float spacing = 0)
 	{
-		Vector2 textSize = { 0 };
+		midMath::Vector2 textSize = { 0 };
 
 		if ((font.texture.id == 0) || (text == NULL) || (text[0] == '\0')) return textSize; // Security check
 
@@ -193,20 +192,20 @@ class BubbleTextSystem : public middle::MiddleGameplaySystem {
 			auto text = *textIt;
 			auto rect = *rectIt;
 			// make sure Renderer is measuring text with linespacing 0 and spacing 0... 
-			Vector2 textSize = MeasureTextEx(gameState->globalFont, text->text.c_str(), 1);
+			//midMath::Vector2 textSize = MeasureTextEx(gameState->globalFont, text->text.c_str(), 1);
 
-			float cameraDist = std::abs(gameState->activeCamera.position.y);
-			float textSizeX = textSize.x;
+			//float cameraDist = std::abs(gameState->middleState.activeCamera.position.y);
+			//float textSizeX = textSize.x;
 
-			float ratioX = textSizeX;
+			//float ratioX = textSizeX;
 
 
-			if (textSizeX > 0) {
-				ratioX = rect->width / textSizeX;
-			}
-			float ratio = ratioX;
-			//ratio = 20;
-			text->fontSize = ratio;
+			//if (textSizeX > 0) {
+			//	ratioX = rect->width / textSizeX;
+			//}
+			//float ratio = ratioX;
+			////ratio = 20;
+			//text->fontSize = ratio;
 			middle::queueComponentDeletion<components::BubbleTextSizeChangedTag>(gameState, id);
 		}
 

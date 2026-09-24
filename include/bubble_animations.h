@@ -5,9 +5,9 @@
 namespace bubbleAnimations {
 
 	struct AnimationTransform {
-		Vector3 position = { 0,0,0 };
-		Vector3 scale = { 1,1,1 };
-		Quaternion rotation{ 0,0,0,0 };
+		midMath::Vector3 position = { 0,0,0 };
+		midMath::Vector3 scale = { 1,1,1 };
+		midMath::Quaternion rotation{ 0,0,0,0 };
 	};
 
 	typedef std::vector<AnimationTransform> AnimationTransforms;

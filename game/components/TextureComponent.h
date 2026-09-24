@@ -19,7 +19,7 @@ namespace components {
 		std::string filename;
 		float scale = 1;
 		int textureType = middleTextureType::BILLBOARD;
-		Texture2D texture;
+		midPrimitive::Texture2D texture;
 		bool initialized = false;
 
 		void serialize(std::ostream& ostream) override;

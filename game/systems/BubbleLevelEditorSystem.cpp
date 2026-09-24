@@ -51,7 +51,7 @@ public:
 		return middle::Id();
 	}
 
-	Vector3 randomOffset() {
+	midMath::Vector3 randomOffset() {
 		float randomX = (std::rand() % 50 + 1);
 		float randomZ = (std::rand() % 50 + 1);
 		return { 1.0f / randomX, 0, 1.0f / randomZ };

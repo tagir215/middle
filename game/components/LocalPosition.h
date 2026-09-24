@@ -6,7 +6,7 @@
 
 namespace components {
 	struct LocalPosition : public middle::Serializable{
-		Vector3 pos = { 0,0,0 };
+		midMath::Vector3 pos = { 0,0,0 };
 
 		void serialize(std::ostream& ostream) override;
 		void deserialize(const std::vector<std::string>& buffer, int indexOffset) override;

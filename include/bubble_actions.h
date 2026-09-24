@@ -280,8 +280,8 @@ namespace bubbleActions{
 		enum OutputRoles {
 			ID_RESULT_CONTAINER
 		};
-		Vector3 targetPosition;
-		NewAdditionTerm(middle::Id& shapeToAddIntoId, middle::Id& newTermId, const Vector3& targetPosition) {
+		midMath::Vector3 targetPosition;
+		NewAdditionTerm(middle::Id& shapeToAddIntoId, middle::Id& newTermId, const midMath::Vector3& targetPosition) {
 			inputs.push_back(shapeToAddIntoId);
 			inputs.push_back(newTermId);
 			this->targetPosition = targetPosition;
@@ -299,8 +299,8 @@ namespace bubbleActions{
 		enum OutputRoles {
 			ID_RESULT_CONTAINER
 		};
-		Vector3 targetPosition;
-		NewMultiplicationTerm(middle::Id& shapeToAddIntoId, middle::Id& newTermId, const Vector3& targetPosition) {
+		midMath::Vector3 targetPosition;
+		NewMultiplicationTerm(middle::Id& shapeToAddIntoId, middle::Id& newTermId, const midMath::Vector3& targetPosition) {
 			inputs.push_back(shapeToAddIntoId);
 			inputs.push_back(newTermId);
 			this->targetPosition = targetPosition;
@@ -318,8 +318,8 @@ namespace bubbleActions{
 		enum OutputRoles {
 			ID_RESULT_CONTAINER
 		};
-		Vector3 targetPosition;
-		NewPowerTerm(middle::Id& shapeToAddIntoId, middle::Id& newTermId, const Vector3& targetPosition) {
+		midMath::Vector3 targetPosition;
+		NewPowerTerm(middle::Id& shapeToAddIntoId, middle::Id& newTermId, const midMath::Vector3& targetPosition) {
 			inputs.push_back(shapeToAddIntoId);
 			inputs.push_back(newTermId);
 			this->targetPosition = targetPosition;
@@ -337,8 +337,8 @@ namespace bubbleActions{
 		enum OutputRoles {
 			ID_RESULT_CONTAINER
 		};
-		Vector3 targetPos;
-		InsertAsXOverX(middle::Id shapeToAddIntoId, middle::Id newTermId, const Vector3& targetPosition) {
+		midMath::Vector3 targetPos;
+		InsertAsXOverX(middle::Id shapeToAddIntoId, middle::Id newTermId, const midMath::Vector3& targetPosition) {
 			inputs.push_back(shapeToAddIntoId);
 			inputs.push_back(newTermId);
 			this->targetPos = targetPosition;
@@ -356,8 +356,8 @@ namespace bubbleActions{
 		enum OutputRoles {
 			ID_RESULT_CONTAINER
 		};
-		Vector3 targetPos;
-		InsertAsXMinusX(middle::Id shapeToAddIntoId, middle::Id newTermId, const Vector3& targetPosition) {
+		midMath::Vector3 targetPos;
+		InsertAsXMinusX(middle::Id shapeToAddIntoId, middle::Id newTermId, const midMath::Vector3& targetPosition) {
 			inputs.push_back(shapeToAddIntoId);
 			inputs.push_back(newTermId);
 			this->targetPos = targetPosition;
@@ -426,9 +426,9 @@ namespace bubbleActions{
 		enum OutputRoles {
 			ID_RESULT_COPY_HELPER
 		};
-		Vector3 targetPosition;
+		midMath::Vector3 targetPosition;
 		middle::Id copyShapeId;
-		CopyAsHelper(middle::Id shapeToCopyId, const Vector3& targetPosition) {
+		CopyAsHelper(middle::Id shapeToCopyId, const midMath::Vector3& targetPosition) {
 			inputs.push_back(shapeToCopyId);
 			this->targetPosition = targetPosition;
 		}
