@@ -3,7 +3,7 @@
 #include <list>
 #include "middle_gameplay_script.h"
 #include "middle_gameplay_script_map.h"
-#include "entity.h"
+#include "middle_serialize.h"
 #include <string>
 #include <memory>
 #include <functional>
