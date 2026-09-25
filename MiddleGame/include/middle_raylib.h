@@ -10,8 +10,9 @@
 #include <iostream>
 #include "assets_loading.h"
 #include "profiler_helpers.h"
-#include "middle/middleSystems/InputSystem.cpp"
-#include "middle/middleSystems/Renderer.cpp"
+#include "InputSystem.cpp"
+#include "Renderer.cpp"
+#include "config.h"
 
 #if defined(_DEBUG)
 static const char* DLL_PATH = "Debug/game.dll";
@@ -73,7 +74,8 @@ public:
 		};
 		int codepointCount = sizeof(codepoints) / sizeof(codepoints[0]);
 		const int fontUnitFactor = 1024;
-		rayState.globalFont = LoadFontEx("../assets/fonts/math-sans/NotoSansMath-Regular.ttf", fontUnitFactor, codepoints, codepointCount);
+		std::string fontPath = std::string(middlePaths::FONTS_FOLDER) + "/math-sans/NotoSansMath-Regular.ttf";
+		rayState.globalFont = LoadFontEx(fontPath.c_str(), fontUnitFactor, codepoints, codepointCount);
 		GenTextureMipmaps(&rayState.globalFont.texture);
 		SetTextureFilter(rayState.globalFont.texture, TEXTURE_FILTER_TRILINEAR);
 

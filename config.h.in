@@ -11,6 +11,8 @@ namespace middlePaths{
 	constexpr const char* SCENES_FOLDER = "@SCENES_DIR@";
 	constexpr const char* TEXTURES_FOLDER = "@TEXTURES_DIR@";
 	constexpr const char* SHADERS_FOLDER = "@SHADERS_DIR@";
+	constexpr const char* SOUNDS_FOLDER = "@SOUNDS_DIR@";
+	constexpr const char* FONTS_FOLDER = "@FONTS_DIR@";
 	constexpr const char* TEMP_FOLDER = "@TEMP_DIR@";
 	constexpr const char* MIDSC_FILE_EXTENSION = "@MIDDLE_SCENE_FILE_EXTENSION@";
 	constexpr const char* EDITOR_STATE = "@EDITOR_STATE_FILE@";
