@@ -4,6 +4,7 @@
 #include "middle_primitives.h"
 #include <functional>
 #include "input.h"
+#include <set>
 
 namespace middle {
 
