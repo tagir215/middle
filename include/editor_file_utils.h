@@ -4,6 +4,7 @@
 #include <any>
 #include <typeinfo>
 #include <string>
+#include "middle_serialize.h"
 
 namespace middle {
 	void loadSceneAndShapeNames(GameState* gameState);
@@ -18,9 +19,6 @@ namespace middle {
 	void loadEditorState(GameState* gameState);
 	void newSystemFile(GameState* gameState, const std::string& scriptName);
 	void newComponentFile(GameState* gameState, const std::string& componentName);
-	std::string fieldToString(const std::any& field);
-	FieldType fieldToType(const std::any& field);
-	void fillField(void* field, const std::string& fieldString, int indexOffset = 0);
 	void saveTempShape(GameState* gameState, Id& idToSave);
 	middle::Id loadTempShape(GameState* gameState, Id& idToLoad);
 	void resetGenerations(GameState* gameState);
