@@ -193,7 +193,7 @@ namespace middle {
 		}
 		case static_cast<char>(FieldType::Bool): {
 			bool* boolptr = static_cast<bool*>(field);
-			*boolptr = std::stoi(valueStr);
+			*boolptr = (std::stoi(valueStr) == 1);
 			return;
 		}
 		case static_cast<char>(FieldType::Vector3): {
