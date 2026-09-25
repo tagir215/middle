@@ -7,7 +7,7 @@
 #include "engine_system_names.h"
 #include "bubble_paths.h"
 #include "profiler_helpers.h"
-#include "config.h"
+#include "midconfig.h"
 
 namespace middle{
 

@@ -8,7 +8,7 @@
 #include <cassert>
 #include "sha256.h"
 #include "bubequ_mapping.h"
-#include "config.h"
+#include "midconfig.h"
 
 namespace bubequ {
 

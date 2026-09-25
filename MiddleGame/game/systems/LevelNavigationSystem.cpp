@@ -14,7 +14,7 @@
 #include "MidComp/Button.h"
 #include "imgui.h"
 #include "MidComp/GlobalTransform.h"
-#include "config.h"
+#include "midconfig.h"
 
 
 class LevelNavigationSystem : public middle::MiddleGameplaySystem {

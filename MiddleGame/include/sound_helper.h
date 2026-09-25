@@ -2,7 +2,7 @@
 #include "game_state.h"
 #include <filesystem>
 #include <raylib.h>
-#include "config.h"
+#include "midconfig.h"
 
 namespace middleSoundHelpers{
 	void loadSoundEffects(std::unordered_map<std::string, Sound>& soundMap, middle::GameState* gameState)

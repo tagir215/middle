@@ -20,7 +20,7 @@
 #include "bubequ_mapping.h"
 #include "MidComp/BubbleGateComponent.h"
 #include "MidComp/NonPhysicalBubbleTag.h"
-#include "config.h"
+#include "midconfig.h"
 
 class EqulabSystem : public middle::MiddleGameplaySystem {
 public:

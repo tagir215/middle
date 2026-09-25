@@ -100,6 +100,6 @@ add_custom_command(TARGET middle POST_BUILD
     $<TARGET_FILE_DIR:middle>
 )
 
-configure_file("${MIDDLE_GAME_DIR}/config.h.in" "${MIDDLE_GAME_DIR}/config.h")
+configure_file("${MIDDLE_GAME_DIR}/midconfig.h.in" "${MIDDLE_GAME_DIR}/midconfig.h")
 target_include_directories(middle PRIVATE "${MIDDLE_GAME_DIR}")
 target_include_directories(game PRIVATE "${MIDDLE_GAME_DIR}")

@@ -3,7 +3,7 @@
 #include "bubble_paths.h"
 #include <iostream>
 #include "raylib.h"
-#include "config.h"
+#include "midconfig.h"
 
 namespace bubbleAssets {
 

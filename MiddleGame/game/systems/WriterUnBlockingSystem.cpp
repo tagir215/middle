@@ -22,7 +22,7 @@
 #include "bubequ_mapping.h"
 #include "MidComp/IntersectingTag.h"
 #include "bubble_actions.h"
-#include "config.h"
+#include "midconfig.h"
 
 
 class WriterUnBlockingSystem : public middle::MiddleGameplaySystem {

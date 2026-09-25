@@ -11,7 +11,7 @@
 #include "MidComp/LoopSociety.h"
 #include "ReferenceEntity.h"
 #include <stack>
-#include "config.h"
+#include "midconfig.h"
 #include "middle_paths.h"
 
 namespace middle {

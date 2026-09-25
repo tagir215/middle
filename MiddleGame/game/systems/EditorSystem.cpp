@@ -13,7 +13,7 @@
 #include "Midcomp/MouseIntersectable.h"
 #include "engine_system_names.h"
 #include "middle_paths.h"
-#include "config.h"
+#include "midconfig.h"
 
 class EditorSystem : public middle::MiddleGameplaySystem {
 public:

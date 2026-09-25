@@ -12,7 +12,7 @@
 #include "profiler_helpers.h"
 #include "InputSystem.cpp"
 #include "Renderer.cpp"
-#include "config.h"
+#include "midconfig.h"
 
 #if defined(_DEBUG)
 static const char* DLL_PATH = "Debug/game.dll";

@@ -8,7 +8,7 @@
 #include "MidComp/NewBubbleTag.h"
 #include "alg_file_utils.h"
 #include "bubble_paths.h"
-#include "config.h"
+#include "midconfig.h"
 #include "MidComp/NeedsUpdateTag.h"
 #include "MidComp/GlobalTransform.h"
 

@@ -90,7 +90,7 @@ namespace middle {
 			return FieldType::IdVector;
 		}
 
-		assert(false, "no we are not supporting this");
+		assert(false && "no we are not supporting this");
 	}
 
 	inline std::string fieldToString(const std::any& field) {
@@ -131,7 +131,7 @@ namespace middle {
 		}
 		}
 
-		assert(false, "no we are not supporting this");
+		assert(false && "no we are not supporting this");
 	}
 
 

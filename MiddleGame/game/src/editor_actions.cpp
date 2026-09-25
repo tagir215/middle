@@ -21,7 +21,7 @@
 #include "CameraEntity.h"
 #include "MidComp/HiddenTag.h"
 #include "component_utils.h"
-#include "config.h"
+#include "midconfig.h"
 
 namespace middle {
 
