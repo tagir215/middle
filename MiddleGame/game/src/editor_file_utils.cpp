@@ -8,7 +8,7 @@
 #include <middle_shape_utils.h>
 #include "middle_component_table.h"
 #include <set>
-#include "LoopSociety.h"
+#include "MidComp/LoopSociety.h"
 #include "ReferenceEntity.h"
 #include <stack>
 #include "config.h"

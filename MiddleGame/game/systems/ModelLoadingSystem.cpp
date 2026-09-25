@@ -3,12 +3,12 @@
 #include "middle_system_registrar.h"
 #include "comp_cache.h"
 #include "middle_shape_utils.h"
-#include "ModelComponent.h"
-#include "MouseSelectable.h"
+#include "MidComp/ModelComponent.h"
+#include "MidComp/MouseSelectable.h"
 #include "editor_actions.h"
 #include "component_utils.h"
-#include "Rotation.h"
-#include "Scale.h"
+#include "MidComp/Rotation.h"
+#include "MidComp/Scale.h"
 
 
 class ModelLoadingSystem : public middle::MiddleGameplaySystem {

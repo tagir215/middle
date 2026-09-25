@@ -1,11 +1,11 @@
 #pragma once
 #include "game_state.h"
 #include "middle_system_registrar.h"
-#include "PuzzleTextUnit.h"
-#include "Rectangle.h"
+#include "MidComp/PuzzleTextUnit.h"
+#include "MidComp/Rectangle.h"
 #include "component_utils.h"
-#include "GlobalTransform.h"
-#include "GrabbedTag.h"
+#include "MidComp/GlobalTransform.h"
+#include "MidComp/GrabbedTag.h"
 
 
 class TextGrabbingSystem : public middle::MiddleGameplaySystem {

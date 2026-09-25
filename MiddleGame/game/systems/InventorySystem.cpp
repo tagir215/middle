@@ -1,14 +1,14 @@
 #pragma once
 #include "game_state.h"
 #include "middle_system_registrar.h"
-#include "Inventory.h"
-#include "LoopSociety.h"
+#include "MidComp/Inventory.h"
+#include "MidComp/LoopSociety.h"
 #include "middle_shape_utils.h"
-#include "Rectangle.h"
-#include "Position.h"
-#include "Offset.h"
+#include "MidComp/Rectangle.h"
+#include "MidComp/Position.h"
+#include "MidComp/Offset.h"
 #include "editor_file_utils.h"
-#include "InventoryItem.h"
+#include "MidComp/InventoryItem.h"
 
 class InventorySystem : public middle::MiddleGameplaySystem {
 

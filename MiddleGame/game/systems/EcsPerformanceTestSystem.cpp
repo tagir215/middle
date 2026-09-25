@@ -2,8 +2,8 @@
 #include "game_state.h"
 #include "middle_system_registrar.h"
 #include "middle_shape_utils.h"
-#include "EcsPerformanceTestConfigs.h"
-#include "TestComponent.h"
+#include "MidComp/EcsPerformanceTestConfigs.h"
+#include "MidComp/TestComponent.h"
 #include "component_utils.h"
 
 class EcsPerformanceTestSystem : public middle::MiddleGameplaySystem {

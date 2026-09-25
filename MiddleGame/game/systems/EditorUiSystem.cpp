@@ -4,8 +4,8 @@
 #include "middle_system_registrar.h"
 #include "imgui.h"
 #include "middle_shape_utils.h"
-#include "LoopSociety.h"
-#include "EditorConfigs.h"
+#include "MidComp/LoopSociety.h"
+#include "MidComp/EditorConfigs.h"
 
 class EditorUiSystem : public middle::MiddleGameplaySystem {
 public:

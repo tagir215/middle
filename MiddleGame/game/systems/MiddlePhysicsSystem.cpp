@@ -2,9 +2,9 @@
 #include "game_state.h"
 #include "middle_system_registrar.h"
 #include "middle_shape_utils.h"
-#include "Constraint.h"
-#include "PhysicsData.h"
-#include "LocalPosition.h"
+#include "MidComp/Constraint.h"
+#include "MidComp/PhysicsData.h"
+#include "MidComp/LocalPosition.h"
 
 class MiddlePhysicsSystem : public middle::MiddleGameplaySystem {
 public:

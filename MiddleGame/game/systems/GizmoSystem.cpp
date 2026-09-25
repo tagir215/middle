@@ -1,12 +1,12 @@
 #pragma once
 #include "game_state.h"
 #include "middle_system_registrar.h"
-#include "Rotation.h"
-#include "Scale.h"
-#include "MouseSelectable.h"
+#include "MidComp/Rotation.h"
+#include "MidComp/Scale.h"
+#include "MidComp/MouseSelectable.h"
 #include "middle_shape_utils.h"
 #include "middle_math.h"
-#include "DragStart.h"
+#include "MidComp/DragStart.h"
 #include "component_utils.h"
 
 class GizmoSystem : public middle::MiddleGameplaySystem {

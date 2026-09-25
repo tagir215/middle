@@ -2,10 +2,10 @@
 #include "game_state.h"
 #include "middle_system_registrar.h"
 #include "middle_shape_utils.h"
-#include "MouseSelectable.h"
-#include "Constraint.h"
+#include "MidComp/MouseSelectable.h"
+#include "MidComp/Constraint.h"
 #include "ConstraintEntity.h"
-#include "IntersectingTag.h"
+#include "MidComp/IntersectingTag.h"
 
 namespace MouseSelectionSystem {
 

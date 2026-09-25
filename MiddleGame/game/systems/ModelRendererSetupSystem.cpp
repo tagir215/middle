@@ -2,8 +2,8 @@
 #include "game_state.h"
 #include "middle_system_registrar.h"
 #include "middle_shape_utils.h"
-#include "ModelComponent.h"
-#include "GlobalTransform.h"
+#include "MidComp/ModelComponent.h"
+#include "MidComp/GlobalTransform.h"
 
 class ModelRendererSetupSystem : public middle::MiddleGameplaySystem {
 public:

@@ -2,7 +2,7 @@
 #include "game_state.h"
 #include "middle_system_registrar.h"
 #include "middle_shape_utils.h"
-#include "UiNode.h"
+#include "MidComp/UiNode.h"
 
 class FollowCameraSystem : public middle::MiddleGameplaySystem {
 public:

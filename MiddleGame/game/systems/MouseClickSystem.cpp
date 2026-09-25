@@ -2,11 +2,11 @@
 #include "game_state.h"
 #include "middle_system_registrar.h"
 #include "middle_shape_utils.h"
-#include "MouseClickComponent.h"
-#include "Button.h"
+#include "MidComp/MouseClickComponent.h"
+#include "MidComp/Button.h"
 #include "component_utils.h"
 #include "bubble_constants.h"
-#include "IntersectingTag.h"
+#include "MidComp/IntersectingTag.h"
 
 class MouseClickSystem : public middle::MiddleGameplaySystem {
 public:

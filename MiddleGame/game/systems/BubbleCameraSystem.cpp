@@ -3,8 +3,8 @@
 #include "middle_system_registrar.h"
 #include "middle_shape_utils.h"
 #include "middle_component_table.h"
-#include "CameraComponent.h"
-#include "Position.h"
+#include "MidComp/CameraComponent.h"
+#include "MidComp/Position.h"
 #include "comp_cache.h"
 
 class BubbleCameraSystem : public middle::MiddleGameplaySystem {

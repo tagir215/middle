@@ -1,11 +1,11 @@
 #include "bubble_layout.h"
 #include "middle_shape_utils.h"
-#include "BubbleSummationComponent.h"
+#include "MidComp/BubbleSummationComponent.h"
 #include "bubble_utils.h"
-#include "BubblePowerComponent.h"
-#include "GlobalRect.h"
+#include "MidComp/BubblePowerComponent.h"
+#include "MidComp/GlobalRect.h"
 #include "component_utils.h"
-#include "LocalScale.h"
+#include "MidComp/LocalScale.h"
 
 namespace bubble{
 

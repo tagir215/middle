@@ -1,17 +1,17 @@
 #pragma once
 #include "middle_component_table.h"
 #include "game_state.h"
-#include "LocalPosition.h"
-#include "LocalScale.h"
-#include "GlobalTransform.h"
-#include "Sphere.h"
-#include "MouseSelectable.h"
-#include "MouseIntersectable.h"
-#include "LoopSociety.h"
-#include "MouseGrabbable.h"
-#include "PhysicsData.h"
+#include "MidComp/LocalPosition.h"
+#include "MidComp/LocalScale.h"
+#include "MidComp/GlobalTransform.h"
+#include "MidComp/Sphere.h"
+#include "MidComp/MouseSelectable.h"
+#include "MidComp/MouseIntersectable.h"
+#include "MidComp/LoopSociety.h"
+#include "MidComp/MouseGrabbable.h"
+#include "MidComp/PhysicsData.h"
 #include "middle_shape_utils.h"
-#include "CameraComponent.h"
+#include "MidComp/CameraComponent.h"
 
 namespace entities{
 

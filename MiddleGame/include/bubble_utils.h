@@ -1,7 +1,7 @@
 #pragma once
-#include "LoopSociety.h"
+#include "MidComp/LoopSociety.h"
 #include "game_state.h"
-#include "AlgebraNode.h"
+#include "MidComp/AlgebraNode.h"
 #include "bubble_actions.h"
 #include "bubble_animations.h"
 

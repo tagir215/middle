@@ -1,14 +1,14 @@
 #pragma once
 #include "middle_component_table.h"
 #include "game_state.h"
-#include "MouseSelectable.h"
-#include "MouseIntersectable.h"
-#include "LoopSociety.h"
-#include "LoopTag.h"
+#include "MidComp/MouseSelectable.h"
+#include "MidComp/MouseIntersectable.h"
+#include "MidComp/LoopSociety.h"
+#include "MidComp/LoopTag.h"
 #include "editor_actions.h"
-#include "LocalPosition.h"
-#include "GlobalTransform.h"
-#include "LocalScale.h"
+#include "MidComp/LocalPosition.h"
+#include "MidComp/GlobalTransform.h"
+#include "MidComp/LocalScale.h"
 
 namespace entities{
 

@@ -44,7 +44,7 @@ file(GLOB SOURCES "${MIDDLE_GAME_DIR}/game/src/*.cpp")
 file(GLOB HEADERS "${MIDDLE_GAME_DIR}/include/*.h")
 file(GLOB SYSTEM_SOURCES "${SYSTEMS_DIR}/*.cpp")
 file(GLOB COMPONENT_HEADERS "${MIDDLE_COMPONENTS_DIR}/*.h")
-file(GLOB COMPONENT_SOURCES "${MIDDLE_COMPONENTS_DIR}/*.cpp")
+file(GLOB COMPONENT_SOURCES "${MIDDLE_COMPONENTS_DIR}/MidComp/*.cpp")
 file(GLOB ENTITIES_HEADERS "${MIDDLE_RAYLIB_DIR}/middle/middleEntities/*.h")
 
 # library game, (it's not only game, TODO rename)
@@ -100,6 +100,6 @@ add_custom_command(TARGET middle POST_BUILD
     $<TARGET_FILE_DIR:middle>
 )
 
-configure_file(config.h.in "${CMAKE_SOURCE_DIR}/config.h")
-target_include_directories(middle PRIVATE "${CMAKE_SOURCE_DIR}")
-target_include_directories(game PRIVATE "${CMAKE_SOURCE_DIR}")
+configure_file("${MIDDLE_GAME_DIR}/config.h.in" "${MIDDLE_GAME_DIR}/config.h")
+target_include_directories(middle PRIVATE "${MIDDLE_GAME_DIR}")
+target_include_directories(game PRIVATE "${MIDDLE_GAME_DIR}")

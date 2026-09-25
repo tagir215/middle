@@ -1,10 +1,10 @@
 #pragma once
 #include "game_state.h"
 #include "middle_system_registrar.h"
-#include "DeleteComponent.h"
+#include "MidComp/DeleteComponent.h"
 #include "middle_shape_utils.h"
 #include "bubble_actions.h"
-#include "DependencyComponent.h"
+#include "MidComp/DependencyComponent.h"
 
 class DeletionSystem : public middle::MiddleGameplaySystem {
 public:

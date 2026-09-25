@@ -1,12 +1,12 @@
 #pragma once
 #include "game_state.h"
 #include "middle_system_registrar.h"
-#include "PuzzleTextUnit.h"
+#include "MidComp/PuzzleTextUnit.h"
 #include "component_utils.h"
 #include "middle_shape_utils.h"
-#include "Text.h"
-#include "PuzzleTextPanel.h"
-#include "Rectangle.h"
+#include "MidComp/Text.h"
+#include "MidComp/PuzzleTextPanel.h"
+#include "MidComp/Rectangle.h"
 
 class PuzzleTextSystem : public middle::MiddleGameplaySystem {
 	components::CompCache* puzzlePanelCache;

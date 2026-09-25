@@ -1,16 +1,16 @@
 #pragma once
 #include "game_state.h"
 #include "middle_system_registrar.h"
-#include "BubbleTextComponent.h"
-#include "Rectangle.h"
+#include "MidComp/BubbleTextComponent.h"
+#include "MidComp/Rectangle.h"
 #include "component_utils.h"
-#include "BubbleTextSizeChangedTag.h"
-#include "NewBubbleTag.h"
+#include "MidComp/BubbleTextSizeChangedTag.h"
+#include "MidComp/NewBubbleTag.h"
 #include "alg_file_utils.h"
 #include "bubble_paths.h"
 #include "config.h"
-#include "NeedsUpdateTag.h"
-#include "GlobalTransform.h"
+#include "MidComp/NeedsUpdateTag.h"
+#include "MidComp/GlobalTransform.h"
 
 class BubbleTextSystem : public middle::MiddleGameplaySystem {
 	components::CompCache* cache;

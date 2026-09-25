@@ -2,11 +2,11 @@
 #include "game_state.h"
 #include "middle_system_registrar.h"
 #include "component_utils.h"
-#include "Text.h"
-#include "GlobalTransform.h"
-#include "HiddenTag.h"
-#include "EditorText.h"
-#include "SystemReference.h"
+#include "MidComp/Text.h"
+#include "MidComp/GlobalTransform.h"
+#include "MidComp/HiddenTag.h"
+#include "MidComp/EditorText.h"
+#include "MidComp/SystemReference.h"
 
 class TextRenderSetup : public middle::MiddleGameplaySystem {
 	components::CompCache* textCache;

@@ -1,11 +1,11 @@
 #pragma once
 #include "game_state.h"
 #include "middle_system_registrar.h"
-#include "SceneObjectComponent.h"
-#include "TopDogBubbleTag.h"
-#include "BubbleComponent.h"
+#include "MidComp/SceneObjectComponent.h"
+#include "MidComp/TopDogBubbleTag.h"
+#include "MidComp/BubbleComponent.h"
 #include "component_utils.h"
-#include "ActiveSceneEditableTag.h"
+#include "MidComp/ActiveSceneEditableTag.h"
 
 class SceneEditorSelectionSystem : public middle::MiddleGameplaySystem {
 	components::CompCache* topDogCache;

@@ -1,11 +1,11 @@
 #pragma once
 #include "middle_system_registrar.h"
-#include "GridElement.h"
-#include "EditorConfigs.h"
+#include "MidComp/GridElement.h"
+#include "MidComp/EditorConfigs.h"
 #include "middle_math.h"
 #include "comp_cache.h"
 #include "middle_shape_utils.h"
-#include "LocalPosition.h"
+#include "MidComp/LocalPosition.h"
 
 class GridSystem : public middle::MiddleGameplaySystem {
 public:

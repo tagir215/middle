@@ -1,7 +1,7 @@
 #include "bubble_animations.h"
 #include "middle_shape_utils.h"
-#include "PauseLayoutTag.h"
-#include "Rectangle.h"
+#include "MidComp/PauseLayoutTag.h"
+#include "MidComp/Rectangle.h"
 #include "animation_actions.h"
 #include "bubble_utils.h"
 

@@ -1,16 +1,16 @@
 #pragma once
 #include "game_state.h"
 #include "middle_system_registrar.h"
-#include "MouseIntersectable.h"
+#include "MidComp/MouseIntersectable.h"
 #include "middle_shape_utils.h"
-#include "MouseGrabbable.h"
-#include "GlobalTransform.h"
-#include "PlacementComponent.h"
-#include "LoopSociety.h"
+#include "MidComp/MouseGrabbable.h"
+#include "MidComp/GlobalTransform.h"
+#include "MidComp/PlacementComponent.h"
+#include "MidComp/LoopSociety.h"
 #include "editor_actions.h"
-#include "GridElement.h"
+#include "MidComp/GridElement.h"
 #include "component_utils.h"
-#include "MouseSelectable.h"
+#include "MidComp/MouseSelectable.h"
 
 namespace MouseGrabbingSystem {
 

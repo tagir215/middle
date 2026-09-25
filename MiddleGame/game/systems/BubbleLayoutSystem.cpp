@@ -2,16 +2,16 @@
 #include "game_state.h"
 #include "middle_system_registrar.h"
 #include "component_utils.h"
-#include "BubbleComponent.h"
-#include "Rectangle.h"
+#include "MidComp/BubbleComponent.h"
+#include "MidComp/Rectangle.h"
 #include "imgui.h"
-#include "PauseLayoutTag.h"
-#include "BubblePowerComponent.h"
+#include "MidComp/PauseLayoutTag.h"
+#include "MidComp/BubblePowerComponent.h"
 #include "bubble_utils.h"
-#include "BubbleSummationComponent.h"
+#include "MidComp/BubbleSummationComponent.h"
 #include "bubble_layout.h"
-#include "BubbleswapComponent.h"
-#include "InViewTag.h"
+#include "MidComp/BubbleswapComponent.h"
+#include "MidComp/InViewTag.h"
 
 class BubbleLayoutSystem : public middle::MiddleGameplaySystem {
 public:

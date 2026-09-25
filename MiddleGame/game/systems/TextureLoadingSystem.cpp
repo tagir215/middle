@@ -1,8 +1,8 @@
 #pragma once
 #include "game_state.h"
 #include "middle_system_registrar.h"
-#include "TextureComponent.h"
-#include "MouseSelectable.h"
+#include "MidComp/TextureComponent.h"
+#include "MidComp/MouseSelectable.h"
 #include "middle_shape_utils.h"
 #include "editor_actions.h"
 #include "component_utils.h"

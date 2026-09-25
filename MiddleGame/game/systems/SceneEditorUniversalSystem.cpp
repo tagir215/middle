@@ -1,7 +1,7 @@
 #pragma once
 #include "game_state.h"
 #include "middle_system_registrar.h"
-#include "ActiveSceneEditableTag.h"
+#include "MidComp/ActiveSceneEditableTag.h"
 #include "component_utils.h"
 #include "imgui.h"
 

@@ -2,12 +2,12 @@
 #include "game_state.h"
 #include "middle_system_registrar.h"
 #include "component_utils.h"
-#include "TopDogInViewTag.h"
-#include "LocalScale.h"
-#include "IntersectingTag.h"
-#include "LocalPosition.h"
-#include "TopDogBubbleTag.h"
-#include "NonPhysicalBubbleTag.h"
+#include "MidComp/TopDogInViewTag.h"
+#include "MidComp/LocalScale.h"
+#include "MidComp/IntersectingTag.h"
+#include "MidComp/LocalPosition.h"
+#include "MidComp/TopDogBubbleTag.h"
+#include "MidComp/NonPhysicalBubbleTag.h"
 #include "middle_debug_utils.h"
 
 class BubbleManualScalingSystem : public middle::MiddleGameplaySystem {

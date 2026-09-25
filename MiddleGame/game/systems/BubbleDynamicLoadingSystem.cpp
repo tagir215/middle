@@ -2,20 +2,20 @@
 #include "game_state.h"
 #include "middle_system_registrar.h"
 #include "component_utils.h"
-#include "BubbleComponent.h"
-#include "LocalScale.h"
-#include "GlobalTransform.h"
-#include "GlobalRect.h"
-#include "IntersectingTag.h"
+#include "MidComp/BubbleComponent.h"
+#include "MidComp/LocalScale.h"
+#include "MidComp/GlobalTransform.h"
+#include "MidComp/GlobalRect.h"
+#include "MidComp/IntersectingTag.h"
 #include <stack>
 #include "bubble_utils.h"
 #include "middle_debug_utils.h"
 #include "bubble_actions.h"
 #include "equlab_actions.h"
-#include "ActiveSceneEditableTag.h"
+#include "MidComp/ActiveSceneEditableTag.h"
 #include <queue>
-#include "InViewTag.h"
-#include "Layer.h"
+#include "MidComp/InViewTag.h"
+#include "MidComp/Layer.h"
 
 class BubbleDynamicLoadingSystem : public middle::MiddleGameplaySystem {
 public:

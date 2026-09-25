@@ -1,16 +1,16 @@
 #pragma once
 #include "game_state.h"
 #include "middle_system_registrar.h"
-#include "BubbleComponent.h"
-#include "BubbleUnit.h"
+#include "MidComp/BubbleComponent.h"
+#include "MidComp/BubbleUnit.h"
 #include "component_utils.h"
 #include "middle_shape_utils.h"
-#include "Layer.h"
+#include "MidComp/Layer.h"
 #include "bubble_utils.h"
-#include "IdRef.h"
-#include "SnapRef.h"
-#include "TopDogBubbleTag.h"
-#include "NonPhysicalBubbleTag.h"
+#include "MidComp/IdRef.h"
+#include "MidComp/SnapRef.h"
+#include "MidComp/TopDogBubbleTag.h"
+#include "MidComp/NonPhysicalBubbleTag.h"
 
 class BubbleLayerSystem : public middle::MiddleGameplaySystem {
 public:

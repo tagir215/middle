@@ -2,9 +2,9 @@
 #include "game_state.h"
 #include "middle_system_registrar.h"
 #include "middle_shape_utils.h"
-#include "Rotation.h" 
-#include "MouseSelectable.h"
-#include "GlobalTransform.h"
+#include "MidComp/Rotation.h" 
+#include "MidComp/MouseSelectable.h"
+#include "MidComp/GlobalTransform.h"
 
 class GizmoRenderSetupSystem : public middle::MiddleGameplaySystem {
 public:

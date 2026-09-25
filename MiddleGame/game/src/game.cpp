@@ -1,8 +1,8 @@
 #pragma once
 #include <iostream>
 #include "game.h"
-#include "SystemReference.h"
-#include "Position.h"
+#include "MidComp/SystemReference.h"
+#include "MidComp/Position.h"
 #include "middle_shape_utils.h"
 #include "engine_system_names.h"
 #include "bubble_paths.h"

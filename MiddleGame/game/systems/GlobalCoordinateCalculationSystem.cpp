@@ -1,15 +1,15 @@
 #pragma once
 #include "game_state.h"
 #include "middle_system_registrar.h"
-#include "GlobalTransform.h"
-#include "LocalPosition.h"
-#include "LocalScale.h"
+#include "MidComp/GlobalTransform.h"
+#include "MidComp/LocalPosition.h"
+#include "MidComp/LocalScale.h"
 #include "component_utils.h"
-#include "Position.h"
-#include "GlobalRadius.h"
-#include "Circle.h"
-#include "Rectangle.h"
-#include "GlobalRect.h"
+#include "MidComp/Position.h"
+#include "MidComp/GlobalRadius.h"
+#include "MidComp/Circle.h"
+#include "MidComp/Rectangle.h"
+#include "MidComp/GlobalRect.h"
 
 class GlobalCoordinateCalculationSystem : public middle::MiddleGameplaySystem {
 	components::CompCache* posScaleCache;

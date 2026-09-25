@@ -1,8 +1,8 @@
 #pragma once
 #include "game_state.h"
 #include "middle_system_registrar.h"
-#include "CameraComponent.h"
-#include "GlobalTransform.h"
+#include "MidComp/CameraComponent.h"
+#include "MidComp/GlobalTransform.h"
 #include "middle_shape_utils.h"
 
 class CameraSystem : public middle::MiddleGameplaySystem {

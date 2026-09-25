@@ -1,9 +1,9 @@
 #pragma once
 #include "middle_component_table.h"
 #include "game_state.h"
-#include "Constraint.h"
-#include "MouseSelectable.h"
-#include "MouseIntersectable.h"
+#include "MidComp/Constraint.h"
+#include "MidComp/MouseSelectable.h"
+#include "MidComp/MouseIntersectable.h"
 
 namespace entities{
 

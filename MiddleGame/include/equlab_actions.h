@@ -1,7 +1,7 @@
 #pragma once
 #include "editor_actions.h"
 #include "bubequ.h"
-#include "BubbleGateComponent.h"
+#include "MidComp/BubbleGateComponent.h"
 
 namespace equlab {
 

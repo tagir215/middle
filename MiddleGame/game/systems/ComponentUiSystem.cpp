@@ -2,14 +2,14 @@
 #include "game_state.h"
 #include "middle_system_registrar.h"
 #include "middle_shape_utils.h"
-#include "MouseSelectable.h"
+#include "MidComp/MouseSelectable.h"
 #include "editor_actions.h"
 #include <string>
 #include "imgui.h"
 #include <misc/cpp/imgui_stdlib.cpp>
-#include "GlobalTransform.h"
-#include "Text.h"
-#include "Rotation.h"
+#include "MidComp/GlobalTransform.h"
+#include "MidComp/Text.h"
+#include "MidComp/Rotation.h"
 
 class ComponentUiSystem : public middle::MiddleGameplaySystem {
 

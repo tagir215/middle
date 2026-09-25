@@ -3,13 +3,13 @@
 #include "middle_system_registrar.h"
 #include "middle_shape_utils.h"
 #include "middle_component_table.h"
-#include "Position.h"
-#include "LoopSociety.h"
-#include "BubbleComponent.h"
-#include "BubbleUnit.h"
-#include "PhysicsData.h"
-#include "MouseGrabbable.h"
-#include "BubbleMultiplyComponent.h"
+#include "MidComp/Position.h"
+#include "MidComp/LoopSociety.h"
+#include "MidComp/BubbleComponent.h"
+#include "MidComp/BubbleUnit.h"
+#include "MidComp/PhysicsData.h"
+#include "MidComp/MouseGrabbable.h"
+#include "MidComp/BubbleMultiplyComponent.h"
 
 class BubbleCollisionSystem : public middle::MiddleGameplaySystem {
 

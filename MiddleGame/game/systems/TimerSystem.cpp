@@ -3,7 +3,7 @@
 #include "middle_system_registrar.h"
 #include "middle_component_table.h"
 #include "middle_shape_utils.h"
-#include "TimerComponent.h"
+#include "MidComp/TimerComponent.h"
 #include "component_utils.h"
 
 class TimerSystem : public middle::MiddleGameplaySystem {
