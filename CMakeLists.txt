@@ -13,7 +13,7 @@ set(ASSETS_DIR "${CMAKE_SOURCE_DIR}/assets")
 set(SCENES_DIR "${ASSETS_DIR}/scenes")
 set(TEXTURES_DIR "${ASSETS_DIR}/textures")
 set(SHADERS_DIR "${ASSETS_DIR}/shaders")
-set(TEMP_DIR "${CMAKE_SOURCE_DIR}/middle/temp")
+set(TEMP_DIR "${CMAKE_SOURCE_DIR}/game/temp")
 set(EDITOR_STATE_FILE "${CMAKE_SOURCE_DIR}/middle/editorData/editor_state${MIDDLE_SCENE_FILE_EXTENSION}")
 
 #bubble paths

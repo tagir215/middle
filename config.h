@@ -11,7 +11,7 @@ namespace middlePaths{
 	constexpr const char* SCENES_FOLDER = "C:/Users/tagir/middle/assets/scenes";
 	constexpr const char* TEXTURES_FOLDER = "C:/Users/tagir/middle/assets/textures";
 	constexpr const char* SHADERS_FOLDER = "C:/Users/tagir/middle/assets/shaders";
-	constexpr const char* TEMP_FOLDER = "C:/Users/tagir/middle/middle/temp";
+	constexpr const char* TEMP_FOLDER = "C:/Users/tagir/middle/game/temp";
 	constexpr const char* MIDSC_FILE_EXTENSION = ".midsc";
 	constexpr const char* EDITOR_STATE = "C:/Users/tagir/middle/middle/editorData/editor_state.midsc";
 
