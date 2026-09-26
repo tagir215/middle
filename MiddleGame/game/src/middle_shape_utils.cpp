@@ -1,0 +1,993 @@
+#include "middle_shape_utils.h"
+#include "middle_math.h"
+#include "MidComp/LoopSociety.h"
+#include "MidComp/Sphere.h"
+#include "MidComp/Reference.h"
+#include "MidComp/Constraint.h"
+#include "MidComp/PhysicsData.h"
+#include "MidComp/MouseSelectable.h"
+#include "MidComp/IntersectingTag.h"
+#include "JointEntity.h"
+#include "LoopEntity.h"
+#include "MidComp/ComponentRefParent.h"
+#include "MidComp/PlacementComponent.h"
+#include "MidComp/Rectangle.h"
+#include "MidComp/Scale.h"
+#include "MidComp/GlobalTransform.h"
+#include "MidComp/LocalPosition.h"
+#include <stack>
+#include "component_utils.h"
+
+namespace middle {
+
+
+	std::vector<int>findConnectedConstraints(GameState* gameState, Id id) {
+		std::vector<int> result;
+		for (int i = 0; i < gameState->shapes.size(); ++i) {
+			Shape& shape = gameState->shapes[i];
+			auto constraint = getComponent<components::Constraint>(shape);
+			if (constraint == nullptr)
+				continue;
+
+			if (constraint->idA == id || constraint->idB == id)
+				result.push_back(i);
+		}
+		return result;
+	}
+
+	int constraintExistsAt(GameState* gameState, Id idA, Id idB) {
+		for (int i = 0; i < gameState->shapes.size(); ++i) {
+			Shape& shape = gameState->shapes[i];
+			if (!isValidId(gameState, shape.id))
+				continue;
+			auto constraint = getComponent<components::Constraint>(shape);
+			if (constraint == nullptr)
+				continue;
+
+			if (constraint->idA == idA && constraint->idB == idB)
+				return i;
+
+			if (constraint->idB == idA && constraint->idA == idB)
+				return i;
+		}
+
+		return UNASSIGNED;
+	}
+
+	int findFreeIndex(GameState* gameState)
+	{
+		for (int i = 0; i < gameState->shapes.size(); ++i) {
+			middle::Id id = gameState->ids[i];
+			if ((id.index == middle::UNASSIGNED
+				|| id != gameState->shapes[id.index].id
+				|| id.generation < 0)) {
+				return i;
+			}
+		}
+		assert(true);
+	}
+
+	void unselect(GameState* gameState) {
+		for (int i = 0; i < gameState->shapes.size(); ++i) {
+			auto& shape = gameState->shapes[i];
+			auto selectableComponent = getComponent<components::MouseSelectable>(shape);
+			if (selectableComponent) {
+				selectableComponent->selected = false;
+			}
+		}
+	}
+
+	int findHighestLevelContainer(GameState* gameState, int index)
+	{
+		if (!isValidId(gameState, gameState->ids[index]))
+			return UNASSIGNED;
+		Shape& shape = gameState->shapes[index];
+		middle::Id parentId = middle::getParent(gameState, shape.id);
+		if (parentId.index == UNASSIGNED) {
+			return index;
+		}
+
+		return findHighestLevelContainer(gameState, parentId.index);
+	}
+
+	midMath::Vector3 getLocalScale(GameState* gameState, middle::Id id)
+	{
+		auto localScale = middle::getComp<components::LocalScale>(gameState, id);
+		return localScale->scale;
+	}
+
+	void setGlobalScale(GameState* gameState, middle::Id id, const midMath::Vector3& targetScale)
+	{
+	}
+
+	void setLocalScale(GameState* gameState, middle::Id id, const midMath::Vector3& targetScale)
+	{
+		auto localScale = middle::getComp<components::LocalScale>(gameState, id);
+		localScale->scale = targetScale;
+		assert(localScale->scale.x >= 0);
+		assert(localScale->scale.y >= 0);
+		assert(localScale->scale.z >= 0);
+	}
+
+	int findHighestUsedIndex(GameState* gameState)
+	{
+		int highestI = 0;
+		for (int i = 0; i < gameState->shapes.size(); ++i) {
+			if (isValidId(gameState, gameState->ids[i])) {
+				highestI = i;
+			}
+		}
+		return highestI;
+	}
+
+	int findNextFreeGhostIndex(GameState* gameState)
+	{
+		int highestUsed = findHighestUsedIndex(gameState) + 1;
+		return highestUsed > GHOST_INDEX_OFFSET ? highestUsed : GHOST_INDEX_OFFSET;
+	}
+
+
+	void moveShape(GameState* gameState, int index, const midMath::Vector3& displacement)
+	{
+		Shape& shape = gameState->shapes[index];
+		auto pos = middle::getComponent<components::LocalPosition>(shape);
+		if (pos) {
+			pos->pos += displacement;
+		}
+	}
+
+	void setGlobalPosition(GameState* gameState, middle::Id id, const midMath::Vector3& targetPos)
+	{
+		middle::Id parentId = middle::getParent(gameState, id);
+		midMath::Vector3 localPos = projectGlobalCoordinateToLocalCoordinate(gameState, targetPos, parentId);
+		auto localPosComp = middle::getComp<components::LocalPosition>(gameState, id);
+		localPosComp->pos = localPos;
+		assertPos(localPos);
+	}
+
+	void setLocalPosition(GameState* gameState, middle::Id id, const midMath::Vector3& targetPos)
+	{
+		auto localPosComp = middle::getComp<components::LocalPosition>(gameState, id);
+		localPosComp->pos = targetPos;
+		assertPos(targetPos);
+	}
+
+	bool isGhostShape(int index)
+	{
+		return index >= GHOST_INDEX_OFFSET;
+	}
+
+	bool isRecursiveChildOf(GameState* gameState, int childIndex, int parentIndex)
+	{
+		auto& parent = getShape(gameState, parentIndex);
+		std::vector<middle::Id>children;
+		middle::getChildren(gameState, parent.id, children);
+
+		for (Id& id : children) {
+			if (id.index == childIndex) {
+				return true;
+			}
+			if (isRecursiveChildOf(gameState, childIndex, id.index)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	bool isEntityOfType(GameState* gameState, int index, const std::vector<int>& entity)
+	{
+		auto& shape = getShape(gameState, index);
+		if (shape.componentTypes.size() != entity.size()) {
+			return false;
+		}
+		for (int componentTypeId : entity) {
+			if (shape.componentOffsets[componentTypeId] == middle::UNASSIGNED) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	bool isShapeSelected(GameState* gameState, int index) {
+		auto& shape = gameState->shapes[index];
+		auto selectedComponent = getComponent<components::MouseSelectable>(shape);
+		if (selectedComponent) {
+			return selectedComponent->selected;
+		}
+		return false;
+	}
+
+	bool isMouseIntersectingShape(GameState* gameState, int index)
+	{
+		auto& shape = gameState->shapes[index];
+		auto intersectable = getComponent<components::IntersectingTag>(shape);
+		if (intersectable) {
+			return true;
+		}
+		return false;
+	}
+
+	bool isShapeAlive(GameState* gameState, int index) {
+		return gameState->shapes[index].id == gameState->ids[index] && gameState->shapes[index].id.generation >= 0 && gameState->shapes[index].componentTypes.size() > 0;
+	}
+
+	bool isValidId(GameState* gameState, middle::Id id)
+	{
+		return id.index != middle::UNASSIGNED
+			&& gameState->ids[id.index] == id
+			&& id == gameState->shapes[id.index].id
+			&& gameState->shapes[id.index].componentTypes.size() > 0
+			&& id.generation >= 0;
+	}
+
+
+	midMath::Vector3 getGlobalPosition(GameState* gameState, middle::Id id)
+	{
+		auto& shape = getShape(gameState, id.index);
+		middle::Id parentId = middle::getParent(gameState, shape.id);
+		midMath::Matrix m = middle::getTransformMatrix(gameState, parentId);
+		auto localPos = getComponent<components::LocalPosition>(shape);
+		if (!localPos) {
+			assert(false);
+		}
+		midMath::Vector3 pos = midMath::Vector3Transform(localPos->pos, m);
+		return pos;
+	}
+
+	midMath::Vector3 getLocalPosition(GameState* gameState, middle::Id id)
+	{
+		auto localPos = getComp<components::LocalPosition>(gameState, id);
+		if (!localPos) {
+			assert(false);
+		}
+		return localPos->pos;
+	}
+
+	Shape& getShape(GameState* gameState, int index)
+	{
+		if (gameState->shapes[index].id == gameState->ids[index]) {
+			return gameState->shapes[index];
+		}
+		assert(false);
+	}
+
+	void deleteShape(GameState* gameState, int index, bool deleteComponentsOnly) {
+		if (!isShapeAlive(gameState, index)) {
+			return;
+		}
+
+		// remove parent indexes if deleting loops from children
+		std::vector<middle::Id>children;
+		middle::getChildren(gameState, gameState->shapes[index].id, children);
+
+		// remove childs references to this shape
+		for (middle::Id& childId : children) {
+			if (isShapeAlive(gameState, childId.index)) {
+				auto& childShape = gameState->shapes[childId.index];
+				if (childShape.componentTypes.size() == 0) {
+					continue;
+				}
+				auto childLoop = getComponent<components::LoopSociety>(childShape);
+				childLoop->parentLoopId.index = UNASSIGNED;
+			}
+		}
+
+		middle::Id parentId = middle::getParent(gameState, gameState->shapes[index].id);
+		// remove parent refernce to this shape
+		if (parentId.index != middle::UNASSIGNED) {
+			auto& parentShape = getShape(gameState, parentId.index);
+			auto parentLoop = getComponent<components::LoopSociety>(parentShape);
+			for (int i = 0; i < parentLoop->loopMemberIds.size(); ++i) {
+				Id parentChildIndex = parentLoop->loopMemberIds[i];
+				if (parentChildIndex.index == index) {
+					parentLoop->loopMemberIds.erase(parentLoop->loopMemberIds.begin() + i);
+					break;
+				}
+			}
+		}
+
+		auto componentRefParent = getComponent<components::ComponentRefParent>(gameState->shapes[index]);
+		if (componentRefParent) {
+			for (Id childId : componentRefParent->memberIds) {
+				deleteShape(gameState, childId.index, deleteComponentsOnly);
+			}
+		}
+
+		auto& shape = gameState->shapes[index];
+		for (int typeId : shape.componentTypes) {
+			// store changed component typeids to trigger cache updates
+			middle::notifyStructuralChanges(gameState, shape.id, typeId);
+			int offset = middle::getCompOffset(shape, typeId);
+			componentListMap[typeId]->shrink(offset);
+		}
+
+		auto& delShape = gameState->shapes[index];
+		if (deleteComponentsOnly) {
+			delShape.componentTypes.clear();
+		}
+
+		if (!deleteComponentsOnly) {
+			int prevGeneration = gameState->shapes[index].id.generation;
+			gameState->shapes[index] = createShape(gameState);
+			delShape.id.generation = prevGeneration + 1;
+		}
+	}
+
+	void deleteShapeRecursive(GameState* gameState, int index, bool deleteComponentsOnly) {
+		if (!isShapeAlive(gameState, index)) {
+			return;
+		}
+		Shape& shape = gameState->shapes[index];
+		std::vector<middle::Id>children;
+		middle::getChildren(gameState, shape.id, children);
+		int size = children.size();
+		for (int i = size - 1; i >= 0; --i) {
+			middle::Id& childId = children[i];
+			deleteShapeRecursive(gameState, childId.index, deleteComponentsOnly);
+		}
+		deleteShape(gameState, index, deleteComponentsOnly);
+	}
+
+	Shape& registerShape(GameState* gameState, middle::Shape shape)
+	{
+		int freeIndex = findFreeIndex(gameState);
+		shape.id.generation = gameState->shapes[freeIndex].id.generation + 1;
+		shape.id.index = freeIndex;
+		gameState->ids[freeIndex] = shape.id;
+		gameState->shapes[freeIndex] = shape;
+		middle::Shape& newShape = gameState->shapes[freeIndex];
+		for (int typeId : newShape.componentTypes) {
+			notifyStructuralChanges(gameState, shape.id, typeId);
+		}
+		return newShape;
+	}
+
+	Shape& registerShapeAtIndex(GameState* gameState, middle::Shape shape, int index)
+	{
+		shape.id.generation = gameState->shapes[index].id.generation + 1;
+		shape.id.index = index;
+		gameState->ids[index] = shape.id;
+		gameState->shapes[index] = shape;
+		middle::Shape& newShape = gameState->shapes[index];
+		for (int typeId : shape.componentTypes) {
+			notifyStructuralChanges(gameState, shape.id, typeId);
+		}
+		return newShape;
+	}
+
+	Shape& registerAsGhostShape(GameState* gameState, middle::Shape shape) {
+		int freeIndex = findNextFreeGhostIndex(gameState);
+		shape.id.generation = gameState->shapes[freeIndex].id.generation + 1;
+		shape.id.index = freeIndex;
+		gameState->ids[freeIndex] = shape.id;
+		gameState->shapes[freeIndex] = shape;
+		middle::Shape& newShape = gameState->shapes[freeIndex];
+		middle::Id id = newShape.id;
+		for(int typeId : shape.componentTypes){
+			notifyStructuralChanges(gameState, id, typeId);
+		}
+		return newShape;
+	}
+
+	Shape& insertShape(GameState* gameState, middle::Id& id)
+	{
+		Shape shape = createShape(gameState);
+		shape.id = id;
+		gameState->ids[id.index] = id;
+		gameState->shapes[id.index] = shape;
+		return gameState->shapes[id.index];
+	}
+
+	Shape& addGhostShape(GameState* gameState) {
+		Shape shape = createShape(gameState);
+		int index = findNextFreeGhostIndex(gameState);
+		shape.id.generation = gameState->shapes[index].id.generation + 1;
+		shape.id.index = index;
+		gameState->ids[index] = shape.id;
+		gameState->shapes[index] = shape;
+		return gameState->shapes[index];
+	}
+
+	void moveCameraXZ(midPrimitive::Camera3D& initCamera, const midMath::Vector3& pos)
+	{
+		midMath::Vector3 displacement = pos - initCamera.position;
+		initCamera.position += displacement;
+		initCamera.target += displacement;
+	}
+	std::vector<int> getSelectedShapes(GameState* gameState)
+	{
+		std::vector<int>result;
+		loopInstances(gameState, [&result](int i, Shape& shape) {
+			auto selectable = getComponent<components::MouseSelectable>(shape);
+			if (selectable && selectable->selected) {
+				result.push_back(i);
+			}
+			return true;
+			});
+		return result;
+	}
+	int getMouseIntersectedShape(GameState* gameState)
+	{
+		for (int i = 0; i < gameState->shapes.size(); ++i) {
+			if (!isShapeAlive(gameState, i))
+				continue;
+			if (isMouseIntersectingShape(gameState, i)) {
+				return i;
+			}
+		}
+		return UNASSIGNED;
+	}
+
+	Id copyShape(GameState* gameState, int shapeToCopyIndex, int parentIndex) {
+		std::vector<FieldInfo> ogFields;
+		std::vector<FieldInfo> copyFields;
+		// resize with 100 probabbly no components with that many fields.. hopefully
+		int maxFieldCount = 100;
+		ogFields.resize(maxFieldCount);
+		copyFields.resize(maxFieldCount);
+
+		Shape& ogShape = getShape(gameState, shapeToCopyIndex);
+
+		int freeIndex;
+		if (isGhostShape(shapeToCopyIndex)) {
+			freeIndex = findNextFreeGhostIndex(gameState);
+		}
+		else {
+			freeIndex = findFreeIndex(gameState);
+		}
+		Shape newShape = createShape(gameState);
+
+		// copy components to the new shape
+		for(int typeId : ogShape.componentTypes){
+			int offset = getCompOffset(ogShape, typeId);
+
+			// grow component vector.. add new component for the copy
+			int copyOffset = componentListMap[typeId]->grow();
+
+			// get og serializable to get fields
+			Serializable* ogSerializable =
+				componentListMap[typeId]->getSerializable(offset);
+
+			// get fields
+			int ogSize = 0;
+			ogSerializable->getFields(ogFields, &ogSize);
+
+
+			// get copy serializable to get fields
+			auto copySerializable = componentListMap[typeId]->getSerializable(copyOffset);
+
+			// create component ref for the shape
+			setCompOffset(newShape, typeId, copyOffset);
+
+			int copySize = 0;
+			copySerializable->getFields(copyFields, &copySize);
+
+			// copy fields to components
+			for (int i = 0; i < ogSize; ++i) {
+				FieldInfo& ogField = ogFields[i];
+				FieldInfo& copyField = copyFields[i];
+				switch (ogField.type) {
+				case FieldType::Bool: {
+					bool* valueptr = static_cast<bool*>(copyField.value);
+					*valueptr = *static_cast<bool*>(ogField.value);
+					break;
+				}
+				case FieldType::Double: {
+					double* valueptr = static_cast<double*>(copyField.value);
+					*valueptr = *static_cast<double*>(ogField.value);
+					break;
+				}
+				case FieldType::Float: {
+					float* valueptr = static_cast<float*>(copyField.value);
+					*valueptr = *static_cast<float*>(ogField.value);
+					break;
+				}
+				case FieldType::Id: {
+					Id* valueptr = static_cast<Id*>(copyField.value);
+					//*valueptr = *static_cast<Id*>(ogField.value);
+					*valueptr = middle::Id();
+					break;
+				}
+				case FieldType::IdVector: {
+					std::vector<Id>* valueptr = static_cast<std::vector<Id>*>(copyField.value);
+					*valueptr = *static_cast<std::vector<Id>*>(ogField.value);
+					for (middle::Id& id : *valueptr) {
+						id = middle::Id();
+					}
+					break;
+				}
+				case FieldType::Int: {
+					int* valueptr = static_cast<int*>(copyField.value);
+					*valueptr = *static_cast<int*>(ogField.value);
+					break;
+				}
+				case FieldType::String: {
+					std::string* valueptr = static_cast<std::string*>(copyField.value);
+					*valueptr = *static_cast<std::string*>(ogField.value);
+					break;
+				}
+				case FieldType::Quaternion: {
+					midMath::Quaternion* valueptr = static_cast<midMath::Quaternion*>(copyField.value);
+					*valueptr = *static_cast<midMath::Quaternion*>(ogField.value);
+					break;
+				}
+				case FieldType::Vector3: {
+					midMath::Vector3* valueptr = static_cast<midMath::Vector3*>(copyField.value);
+					*valueptr = *static_cast<midMath::Vector3*>(ogField.value);
+					break;
+				}
+				case FieldType::Vector2: {
+					midMath::Vector2* valueptr = static_cast<midMath::Vector2*>(copyField.value);
+					*valueptr = *static_cast<midMath::Vector2*>(ogField.value);
+					break;
+				}
+				case FieldType::Color: {
+					midPrimitive::Color* valueptr = static_cast<midPrimitive::Color*>(copyField.value);
+					*valueptr = *static_cast<midPrimitive::Color*>(ogField.value);
+					break;
+				}
+				default:
+					assert(true, "not supported");
+				}
+			}
+		}
+
+		newShape = middle::registerShape(gameState, newShape);
+
+		return newShape.id;
+	}
+
+
+	Id deepCopyShape(GameState* gameState, int shapeToCopyIndex, int parentIndex) {
+
+		Shape& ogShape = getShape(gameState, shapeToCopyIndex);
+
+		middle::Id newShapeId = copyShape(gameState, shapeToCopyIndex, parentIndex);
+		auto& newShape = middle::getShape(gameState, newShapeId.index);
+
+		auto copyLoop = getComponent<components::LoopSociety>(newShape);
+		if (copyLoop) {
+
+			auto ogLoop = getComponent<components::LoopSociety>(ogShape);
+
+			if (parentIndex >= 0) {
+				Shape& parentShape = getShape(gameState, parentIndex);
+				copyLoop->parentLoopId = parentShape.id;
+			}
+			else {
+				copyLoop->parentLoopId = middle::Id();
+			}
+
+			// clear exact copies from earlier absolute copy
+			copyLoop->loopMemberIds.clear();
+
+			// copy children and assign their ids as children to the new copied shape
+			for (Id& id : ogLoop->loopMemberIds) {
+				Id childCopy = deepCopyShape(gameState, id.index, newShape.id.index);
+				// update pointer since deepcopy might rearrange component vector
+				copyLoop = getComponent<components::LoopSociety>(newShape);
+				copyLoop->loopMemberIds.push_back(childCopy);
+			}
+		}
+
+		return newShape.id;
+
+	}
+	Id deepCopyShapeGlobalCoordinates(GameState* gameState, middle::Id id)
+	{
+		middle::Id parentId = middle::getParent(gameState, id);
+		middle::Id copyId = deepCopyShape(gameState, id.index);
+		if (parentId.index != middle::UNASSIGNED) {
+			updateLocalCoordinateToProjectedGlobalCoordinate(gameState, copyId, parentId);
+		}
+		return copyId;
+	}
+
+	Id shallowCopyShapeGlobalCoordinates(GameState* gameState, middle::Id id) {
+		middle::Id parentId = middle::getParent(gameState, id);
+		middle::Id copyId = copyShape(gameState, id.index);
+		if (parentId.index != middle::UNASSIGNED) {
+			updateLocalCoordinateToProjectedGlobalCoordinate(gameState, copyId, parentId);
+		}
+		return copyId;
+	}
+
+	std::vector<midMath::Vector3> getRectVertices(GameState* gameState, const Id& shapeId)
+	{
+		auto& shape = getShape(gameState, shapeId.index);
+		auto rect = getComponent<components::Rectangle>(shape);
+		midMath::Vector3 position = getGlobalPosition(gameState, shapeId);
+		midMath::Vector3 s = getTotalScale(gameState, shapeId);
+		std::vector<midMath::Vector3> vertices;
+		vertices.resize(4);
+		vertices[0] = { -rect->width * 0.5f * s.x, 0, rect->height * 0.5f * s.z };
+		vertices[1] = { -rect->width * 0.5f * s.x, 0, -rect->height * 0.5f * s.z };
+		vertices[2] = { rect->width * 0.5f * s.x, 0, -rect->height * 0.5f * s.z };
+		vertices[3] = { rect->width * 0.5f * s.x, 0, rect->height * 0.5f * s.z };
+		vertices[0] += position;
+		vertices[1] += position;
+		vertices[2] += position;
+		vertices[3] += position;
+		return vertices;
+	}
+	midMath::Vector3 getTotalScale(GameState* gameState, const Id& shapeId)
+	{
+		auto& shape = getShape(gameState, shapeId.index);
+		auto scale = middle::getComponent<components::Scale>(shape);
+		if (!scale) {
+			return { 1,1,1 };
+		}
+		middle::Id parentId = middle::getParent(gameState, shape.id);
+		if (parentId.index != middle::UNASSIGNED) {
+			return scale->scale * getTotalScale(gameState, parentId);
+		}
+		return scale->scale;
+	}
+	Id getParent(GameState* gameState, Id& id)
+	{
+		Shape& shape = getShape(gameState, id.index);
+		auto loopSociety = middle::getComponent<components::LoopSociety>(shape);
+		if (!loopSociety) {
+			return middle::Id();
+		}
+		if (!isValidId(gameState, loopSociety->parentLoopId)) {
+			return middle::Id();
+		}
+		return loopSociety->parentLoopId;
+	}
+	void getChildren(GameState* gameState, Id id, std::vector<Id>& result)
+	{
+		Shape& shape = getShape(gameState, id.index);
+		auto loop = getComponent<components::LoopSociety>(shape);
+		if (loop) {
+			for (Id& childId : loop->loopMemberIds) {
+				if (isValidId(gameState, childId)) {
+					result.push_back(childId);
+				}
+			}
+		}
+	}
+
+	void getAllChildren(GameState* gameState, Id id, std::vector<Id>& result)
+	{
+		Shape& shape = getShape(gameState, id.index);
+		auto loop = getComponent<components::LoopSociety>(shape);
+		if (loop) {
+			for (Id& childId : loop->loopMemberIds) {
+				if (isValidId(gameState, childId)) {
+					result.push_back(childId);
+					getAllChildren(gameState, childId, result);
+				}
+			}
+		}
+	}
+
+	void getChildrenWithComp(GameState* gameState, Id id, std::vector<Id>& result, int typeId)
+	{
+		Shape& shape = getShape(gameState, id.index);
+		auto loop = getComponent<components::LoopSociety>(shape);
+		if (loop) {
+			for (Id& childId : loop->loopMemberIds) {
+				if (isValidId(gameState, childId)) {
+					auto& child = middle::getShape(gameState, childId.index);
+					if (hasComp(shape, typeId)) {
+						result.push_back(childId);
+					}
+				}
+			}
+		}
+	}
+
+	void getAllChildrenWithComp(GameState* gameState, Id id, std::vector<Id>& result, int typeId)
+	{
+		Shape& shape = getShape(gameState, id.index);
+		auto loop = getComponent<components::LoopSociety>(shape);
+		if (loop) {
+			for (Id& childId : loop->loopMemberIds) {
+				if (isValidId(gameState, childId)) {
+					auto& child = middle::getShape(gameState, childId.index);
+					if (hasComp(shape, typeId)) {
+						result.push_back(childId);
+					}
+					getAllChildrenWithComp(gameState, childId, result, typeId);
+				}
+			}
+		}
+
+	}
+
+
+
+	middle::Id getFirstChildWithComponent(GameState* gameState, Id& id, int typeId)
+	{
+		std::vector<middle::Id>children;
+		middle::getChildren(gameState, id, children);
+		for (middle::Id& childId : children) {
+			auto& childShape = middle::getShape(gameState, childId.index);
+			if (hasComp(childShape, typeId)) {
+				return childId;
+			}
+		}
+		return middle::Id();
+	}
+	int getLoopIndex(GameState* gameState, Id& parentId, Id& childId)
+	{
+		auto& parentShape = getShape(gameState, parentId.index);
+		std::vector<middle::Id>children;
+		middle::getChildren(gameState, parentId, children);
+		for (int i = 0; i < children.size(); ++i) {
+			if (children[i] == childId) {
+				return i;
+			}
+		}
+		return middle::UNASSIGNED;
+	}
+	middle::Id findFirstShapeWithComp(GameState* gameState, int typeId)
+	{
+		middle::Id id;
+		middle::loopInstances(gameState, [gameState, &id, &typeId](int i, middle::Shape& shape) {
+			if (hasComp(shape, typeId)) {
+				id = shape.id;
+				return false;
+			}
+			return true;
+			});
+		return id;
+	}
+	void findShapesWithComp(GameState* gameState, std::vector<Id>& result, int typeId)
+	{
+		middle::loopInstances(gameState, [gameState, &result, &typeId](int i, middle::Shape& shape) {
+			if (hasComp(shape, typeId)) {
+				result.push_back(shape.id);
+			}
+			return true;
+			});
+	}
+	bool isIdCurrent(GameState* gameState, middle::Id& id)
+	{
+		if (id.index == middle::UNASSIGNED) {
+			return false;
+		}
+		assert(gameState->ids[id.index] == gameState->shapes[id.index].id);
+		return gameState->ids[id.index] == id;
+	}
+
+	components::CompCache* newCompCache(GameState* gameState, const std::string& systemName)
+	{
+		auto newCache = std::make_unique<components::CompCache>();
+		newCache->systemName = systemName;
+		gameState->compCaches.push_back(
+			std::move(newCache)
+		);
+		return gameState->compCaches.back().get();
+	}
+
+	void queueAction(GameState* gameState, std::shared_ptr<EditorActionContainer> container)
+	{
+		container->callerSystem = gameState->activeSystemName;
+		gameState->actionQueue.push(container);
+	}
+
+	void queueEditorAction(GameState* gameState, std::shared_ptr<EditorActionContainer> container)
+	{
+		gameState->actionQueue.push(container);
+		while (gameState->editorState.historySinkDepth > 0) {
+			gameState->editorState.actionHistory.pop_back();
+			--gameState->editorState.historySinkDepth;
+		}
+		gameState->editorState.actionHistory.push_back(container);
+	}
+
+	midMath::Matrix getTransformMatrix(GameState* gameState, middle::Id id) {
+		if (id.index == middle::UNASSIGNED) {
+			return midMath::MatrixIdentity();
+		}
+
+		std::stack<middle::Id>parentStack;
+		parentStack.push(id);
+		while (true) {
+			middle::Id parentId = middle::getParent(gameState, parentStack.top());
+			if (parentId.index == middle::UNASSIGNED) {
+				break;
+			}
+			parentStack.push(parentId);
+		}
+		midMath::Matrix transform = midMath::MatrixIdentity();
+		while (parentStack.size() > 0) {
+			middle::Id id = parentStack.top();
+			parentStack.pop();
+			auto& shape = middle::getShape(gameState, id.index);
+			auto localPos = middle::getComponent<components::LocalPosition>(shape);
+			auto localScale = middle::getComponent<components::LocalScale>(shape);
+			midMath::Matrix translateM = midMath::MatrixTranslate(localPos->pos.x, localPos->pos.y, localPos->pos.z);
+			midMath::Matrix scaleM = midMath::MatrixScale(localScale->scale.x, localScale->scale.y, localScale->scale.z);
+			midMath::Matrix localM = midMath::MatrixMultiply(scaleM, translateM);
+			transform = midMath::MatrixMultiply(localM, transform);
+		}
+		return transform;
+	}
+
+	midMath::Vector3 getGlobalScale(GameState* gameState, middle::Id id) {
+		midMath::Vector3 result = { 1,1,1 };
+		if (id.index == middle::UNASSIGNED) {
+			return result;
+		}
+		middle::Id currentId = id;
+		while (true) {
+			auto& parentShape = middle::getShape(gameState, currentId.index);
+			auto localScale = middle::getComponent<components::LocalScale>(parentShape);
+			result *= localScale->scale;
+
+			middle::Id parentId = middle::getParent(gameState, currentId);
+			if (parentId.index == middle::UNASSIGNED) {
+				break;
+			}
+			currentId = parentId;
+		}
+		return result;
+	}
+
+	int getLoopIndex(GameState* gameState, middle::Id id)
+	{
+		middle::Id parentId = middle::getParent(gameState, id);
+		std::vector<middle::Id>children;
+		middle::getChildren(gameState, parentId, children);
+		for (int i = 0; i < children.size(); ++i) {
+			if (children[i] == id) {
+				return i;
+			}
+		}
+		return -1;
+	}
+
+	void assertPos(const midMath::Vector3& pos)
+	{
+		assert(!std::isnan(pos.x));
+		assert(!std::isnan(pos.y));
+		assert(!std::isnan(pos.z));
+	}
+
+	midMath::Vector3 projectGlobalCoordinateToLocalCoordinate(GameState* gameState, const midMath::Vector3& globalCoord, middle::Id parentId)
+	{
+		midMath::Matrix transformM = getTransformMatrix(gameState, parentId);
+		midMath::Matrix inverseM = midMath::MatrixInvert(transformM);
+		midMath::Vector3 localCoord = midMath::Vector3Transform(globalCoord, inverseM);
+		if (std::isnan(localCoord.x + localCoord.y + localCoord.z)) {
+			return {0,0,0};
+		}
+		return localCoord;
+	}
+
+	midMath::Vector3 projectGlobalScaleToLocalScale(GameState* gameState, middle::Id id, const midMath::Vector3& globalScale)
+	{
+		midMath::Vector3 currentScale = middle::getGlobalScale(gameState, id);
+		midMath::Vector3 scalarV = midMath::Vector3Divide(globalScale, currentScale);
+		midMath::Vector3 localScale = middle::getLocalScale(gameState, id);
+		return midMath::Vector3Multiply(localScale, scalarV);
+	}
+
+	void updateLocalCoordinateToProjectedGlobalCoordinate(GameState* gameState, middle::Id id, middle::Id oldParentId)
+	{
+		auto shape = middle::getShape(gameState, id.index);
+		auto localPos = middle::getComponent<components::LocalPosition>(shape);
+		auto localScale = middle::getComponent<components::LocalScale>(shape);
+		if (localPos && localScale) {
+			midMath::Matrix oldTransform = getTransformMatrix(gameState, oldParentId);
+			midMath::Vector3 globalPos = midMath::Vector3Transform(localPos->pos, oldTransform);
+			middle::Id parentId = middle::getParent(gameState, id);
+			midMath::Vector3 projLocalPos = middle::projectGlobalCoordinateToLocalCoordinate(gameState, 
+				globalPos, parentId);
+			localPos->pos = projLocalPos;
+			assertPos(projLocalPos);
+
+			midMath::Vector3 oldParentScale = getGlobalScale(gameState, oldParentId);
+			midMath::Vector3 newParentScale = getGlobalScale(gameState, parentId);
+			midMath::Vector3 ratio = oldParentScale / newParentScale;
+			localScale->scale *= ratio;
+		}
+	}
+
+
+
+	void updateGlobalTransforms(middle::GameState* gameState, middle::Id id, const midMath::Matrix& parentM, const midMath::Vector3& parentScale) {
+		auto& shape = middle::getShape(gameState, id.index);
+		auto scaleComp = middle::getComponent<components::LocalScale>(shape);
+		auto posComp = middle::getComponent<components::LocalPosition>(shape);
+		if (!scaleComp) {
+			middle::attachComponent<components::LocalScale>(gameState, shape.id);
+			return;
+		}
+		if (!posComp) {
+			auto pos = middle::attachComponent<components::LocalPosition>(gameState, shape.id);
+			return;
+		}
+		if (!middle::getComponent<components::GlobalTransform>(shape)) {
+			middle::attachComponent<components::GlobalTransform>(gameState, id);
+			return;
+		}
+		const midMath::Vector3& scale = scaleComp->scale;
+		const midMath::Vector3& pos = posComp->pos;
+		midMath::Matrix scaleM = midMath::MatrixScale(scale.x, scale.y, scale.z);
+		midMath::Matrix translateM = midMath::MatrixTranslate(pos.x, pos.y, pos.z);
+
+		midMath::Matrix m = parentM;
+		midMath::Matrix localM = midMath::MatrixMultiply(scaleM, translateM);
+		m = midMath::MatrixMultiply(localM, m);
+
+		auto globalT = middle::getComponent<components::GlobalTransform>(shape);
+		const midMath::Quaternion assumedRotation = { 0,0,0,0 };
+		globalT->pos = midMath::Vector3Transform(midMath::Vector3{ 0,0,0 }, m);
+		globalT->scale = scaleComp->scale * parentScale;
+		globalT->rotation = assumedRotation;
+
+		std::vector<middle::Id>children;
+		middle::getChildren(gameState, id, children);
+		for (middle::Id childId : children) {
+			updateGlobalTransforms(gameState, childId, m, globalT->scale);
+		}
+
+	}
+
+	void notifyStructuralChanges(middle::GameState* gameState, middle::Id id, middle::componentType componentType)
+	{
+		auto& changes = gameState->structuralChangesMap;
+		if (changes.find(componentType) == changes.end()) {
+			changes[componentType] = {};
+		}
+		changes[componentType].push_back(id);
+	}
+
+	bool hasComp(middle::Shape& shape, int typeId)
+	{
+		return shape.componentOffsets[typeId] != middle::UNASSIGNED;
+	}
+
+	middle::componentOffset getCompOffset(middle::Shape& shape, int typeId)
+	{
+		return shape.componentOffsets[typeId];
+	}
+
+	void setCompOffset(middle::Shape& shape, int typeId, int offset)
+	{
+		assert(!hasComp(shape, typeId));
+		shape.componentOffsets[typeId] = offset;
+		shape.componentTypes.push_back(typeId);
+	}
+
+	void removeComp(middle::Shape& shape, int typeId)
+	{
+		shape.componentOffsets[typeId] = middle::UNASSIGNED;
+		for (int i = 0; i < shape.componentTypes.size(); ++i) {
+			if (shape.componentTypes[i] == typeId) {
+				shape.componentTypes.erase(shape.componentTypes.begin() + i);
+				break;
+			}
+		}
+	}
+
+	Shape createShape(middle::GameState* gameState) {
+		Shape shape;
+		shape.componentOffsets.resize(globalTypeCounter);
+		for (int& i : shape.componentOffsets) {
+			i = middle::UNASSIGNED;
+		}
+		return shape;
+	}
+
+	void queueForRender(middle::GameState* gameState, middle::RenderItem item)
+	{
+		gameState->middleState.renderData.push_back(item);
+	}
+	void queueUi(middle::GameState* gameState, std::function<void()> ui)
+	{
+		gameState->middleState.uiSetups.push_back(ui);
+	}
+	void insertInputBlock(middle::GameState* gameState, middle::InputBlockers block)
+	{
+		gameState->middleState.inputBlockers.insert(block);
+	}
+	midPrimitive::Camera3D getActiveCam(middle::GameState* gameState)
+	{
+		return gameState->middleState.activeCamera;
+	}
+}

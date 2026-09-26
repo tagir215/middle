@@ -1,0 +1,114 @@
+#pragma once
+#include "game_state.h"
+#include "middle_system_registrar.h"
+#include "middle_shape_utils.h"
+#include "middle_component_table.h"
+#include "MidComp/CameraComponent.h"
+#include "MidComp/Position.h"
+#include "comp_cache.h"
+
+class BubbleCameraSystem : public middle::MiddleGameplaySystem {
+public:
+
+	components::CompCache* compCache;
+
+	void init(middle::GameState* gameState) {
+		compCache = middle::newCompCache(gameState, systemName);
+		compCache->addType<components::CameraComponent>();
+	}
+
+	void update(middle::GameState* gameState) override {
+
+
+		auto cameraIt = compCache->begin<components::CameraComponent>();
+
+		int size = compCache->getSize();
+		for (int i = 0; i < compCache->getSize(); ++i) {
+			auto camera = *cameraIt;
+			auto& shape = middle::getShape(gameState, compCache->relevantIdVector[i].index);
+
+			const float minDeceleration = 10;
+			float oldSpeedY = camera->speedY;;
+			float speedMag = std::abs(camera->speedY);
+			float yDeceleration = speedMag * 0.3f;
+			yDeceleration = yDeceleration > minDeceleration ? yDeceleration : minDeceleration;
+			if (speedMag > 0) {
+				camera->speedY -= yDeceleration * (camera->speedY / speedMag);
+				if (camera->speedY * oldSpeedY <= 0) {
+					camera->speedY = 0;
+				}
+			}
+			float mouseWheelMove = gameState->middleInputState.gameInput.mouseWheelMove;
+			//const float wheelMouseMultiplier = 70;
+			const float wheelMouseMultiplier = 0;
+			camera->speedY += mouseWheelMove * wheelMouseMultiplier;
+			camera->speedX = 0;
+			camera->speedZ = 0;
+
+			const float panSpan = 3500;
+			const float minY = -100;
+			float maxY = minY - panSpan;
+
+			midMath::Vector3 oldPos = middle::getGlobalPosition(gameState, shape.id);
+			float zoomRatio = std::abs(oldPos.y - minY) / panSpan;
+			float panSpeed = 50 * zoomRatio;
+			const float minPanSpeed = 0.1f;
+			if (panSpeed < minPanSpeed) {
+				panSpeed = minPanSpeed;
+			}
+
+			const float centerOffsetX = 200;
+			const float centerOffsetZ = 0;
+			const float xzCamAxis = 1000400;
+			const float minX = -xzCamAxis + centerOffsetX;
+			const float maxX = xzCamAxis + centerOffsetX;
+			const float minZ = -xzCamAxis + centerOffsetZ;
+			const float maxZ = xzCamAxis + centerOffsetZ;
+
+			if (gameState->middleInputState.equlabInput.ctrlHeld) {
+				panSpeed = 0;
+			}
+
+			if (gameState->middleInputState.gameInput.panLeft && oldPos.x > minX) {
+				camera->speedX = -panSpeed;
+			}
+			if (gameState->middleInputState.gameInput.panRight && oldPos.x < maxX) {
+				camera->speedX = panSpeed;
+			}
+			if (gameState->middleInputState.gameInput.panUp && oldPos.z < maxZ) {
+				camera->speedZ = panSpeed;
+			}
+			if (gameState->middleInputState.gameInput.panDown && oldPos.z > minZ) {
+				camera->speedZ = -panSpeed;
+			}
+
+
+			middle::moveShape(gameState, shape.id.index, { camera->speedX,camera->speedY,camera->speedZ });
+
+			midMath::Vector3 newPos = middle::getGlobalPosition(gameState, shape.id);
+
+			float deltaMinY = newPos.y - minY;
+			if (deltaMinY > 0) {
+				middle::moveShape(gameState, shape.id.index, { camera->speedX,-deltaMinY,camera->speedZ });
+				newPos.y = minY;
+			}
+			float deltaMaxY = newPos.y - maxY;
+			if (deltaMaxY < 0) {
+				middle::moveShape(gameState, shape.id.index, { camera->speedX,-deltaMaxY,camera->speedZ });
+				newPos.y = maxY;
+			}
+
+			gameState->middleState.activeCamera.position = newPos;
+			gameState->middleState.activeCamera.target = { camera->targetX, camera->targetY, camera->targetZ };
+
+			static const midMath::Vector3 forward = { 0,10000,0 };
+			midMath::Vector3 target = gameState->middleState.activeCamera.position + forward;
+			gameState->middleState.activeCamera.target = target;
+			camera->targetX = target.x;
+			camera->targetY = target.y;
+			camera->targetZ = target.z;
+		}
+	}
+};
+
+static middle::SystemRegistrar<BubbleCameraSystem> reg("BubbleCameraSystem");

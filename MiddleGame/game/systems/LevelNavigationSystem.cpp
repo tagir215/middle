@@ -1,0 +1,136 @@
+#pragma once
+#include "game_state.h"
+#include "middle_system_registrar.h"
+#include "middle_shape_utils.h"
+#include "MidComp/LevelReference.h"
+#include "MidComp/MouseClickComponent.h"
+#include "editor_actions.h"
+#include "MidComp/Circle.h"
+#include "bubble_constants.h"
+#include "MidComp/IdRef.h"
+#include "component_utils.h"
+#include "MidComp/CameraComponent.h"
+#include "MidComp/InitializedTag.h"
+#include "MidComp/Button.h"
+#include "imgui.h"
+#include "MidComp/GlobalTransform.h"
+#include "midconfig.h"
+
+
+class LevelNavigationSystem : public middle::MiddleGameplaySystem {
+public:
+	components::CompCache* clickedCache;
+	components::CompCache* levelCache;
+	components::CompCache* unInitializedLevelCache;
+	components::CompCache* cameraCache;
+	components::CompCache* buttonCache;
+
+	void init(middle::GameState* gameState) {
+		clickedCache = middle::newCompCache(gameState, systemName);
+		clickedCache->addType<components::LevelReference>();
+		clickedCache->addType<components::MouseClickComponent>();
+		levelCache = middle::newCompCache(gameState, systemName);
+		levelCache->addType<components::LevelReference>();
+		levelCache->addType<components::GlobalTransform>();
+		levelCache->addType<components::Circle>();
+		unInitializedLevelCache = middle::newCompCache(gameState, systemName);
+		unInitializedLevelCache->addType<components::LevelReference>();
+		unInitializedLevelCache->addType<components::InitializedTag>(components::NOTINTERESTED);
+		cameraCache = middle::newCompCache(gameState, systemName);
+		cameraCache->addType<components::CameraComponent>();
+		buttonCache = middle::newCompCache(gameState, systemName);
+		buttonCache->addType<components::Button>();
+		buttonCache->addType<components::MouseClickComponent>();
+	}
+
+	void saveState(middle::GameState* gameState) {
+		std::string name = gameState->activeSceneName;
+		if (name == "LevelSelect") {
+			middle::saveScene(gameState, name);
+		}
+	}
+
+	bool initialized = false;
+
+	void queueLevelNavigation(middle::GameState* gameState, const std::string& name) {
+			middle::queueAction(gameState, std::make_shared<middle::CustomAction>(
+				[name,this](middle::GameState* gameState) {
+					saveState(gameState);
+					middle::resetScene(gameState);
+					middle::loadScene(gameState, std::string(middlePaths::SCENES_FOLDER), name, false);
+					gameState->activeSceneName = name;
+				}));
+			initialized = false;
+	}
+
+	void update(middle::GameState* gameState) override {
+
+		auto backButtonUi = [this, gameState]() {
+			ImGui::Begin("levelNavigation");
+			if (ImGui::Button("Back")) {
+				queueLevelNavigation(gameState, "LevelSelect");
+			}
+			ImGui::End();
+			};
+		middle::queueUi(gameState, backButtonUi);
+
+		auto clickedLevelIt = clickedCache->begin<components::LevelReference>();
+		for (int i = 0; i < clickedCache->getSize(); ++i) {
+			auto levelRef = *clickedLevelIt;
+			std::string name = levelRef->levelName;
+			queueLevelNavigation(gameState, name);
+		}
+
+		bool reset = false;
+		auto buttonIt = buttonCache->begin<components::Button>();
+		for (int i = 0; i < buttonCache->relevantIdVector.size() > 0; ++i) {
+			auto button = *buttonIt;
+			if (button->function == bubbleButton::RESET_PROGRESS) {
+				reset = true;
+			}
+		}
+
+		auto levelIt = levelCache->begin<components::LevelReference>();
+		auto levelTransformIt = levelCache->begin<components::GlobalTransform>();
+		auto circleIt = levelCache->begin<components::Circle>();
+		for (int i = 0; i < levelCache->getSize(); ++i) {
+			auto levelRef = *levelIt;
+			auto transform = *levelTransformIt;
+			auto circle = *circleIt;
+			if (reset) {
+				levelRef->complete = false;
+			}
+
+
+			if (levelRef->complete) {
+				middle::RenderItem completeInd;
+				completeInd.type = middle::RenderItemType::CYLINDER;
+				completeInd.radius = circle->radius;
+				completeInd.ringRadius = circle->radius;
+				const float offsetY = 0.5f;
+				completeInd.transform.translation = transform->pos;
+				completeInd.color = { 0,255,0,255 };
+				completeInd.color.a = 40;
+				completeInd.length = 0.1f;
+				completeInd.center = { 0,0,0 };
+				middle::queueForRender(gameState, completeInd);
+			}
+
+		}
+
+		if (reset) {
+			saveState(gameState);
+		}
+
+		auto unLevelIt = unInitializedLevelCache->begin<components::LevelReference>();
+		for (int i = 0; i < unInitializedLevelCache->getSize(); ++i) {
+			auto levelRef = *unLevelIt;
+			auto& shape = middle::getShape(gameState, unInitializedLevelCache->relevantIdVector[i].index);
+
+			middle::attachComponent<components::InitializedTag>(gameState, shape.id);
+
+		}
+	}
+};
+
+static middle::SystemRegistrar<LevelNavigationSystem> reg("LevelNavigationSystem");

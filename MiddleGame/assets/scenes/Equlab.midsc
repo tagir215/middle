@@ -1,0 +1,1414 @@
+#scene
+s  Equlab
+__q  0_0
+SystemReference
+s  EditorSystem
+LoopSociety
+q  -1_0
+p  
+MouseSelectable
+MouseGrabbable
+MouseIntersectable
+LocalPosition
+v  
+190.211304
+200.000000
+61.803402
+LocalScale
+v  
+1.000000
+1.000000
+1.000000
+GlobalTransform
+v  
+190.211304
+200.000000
+61.803402
+v  
+1.000000
+1.000000
+1.000000
+r  
+0.000000
+0.000000
+0.000000
+0.000000
+
+EditorText
+s  EditorSystem
+__q  1_0
+SystemReference
+s  MouseIntersectDetectionSystem
+LoopSociety
+q  -1_0
+p  
+MouseSelectable
+MouseGrabbable
+MouseIntersectable
+LocalPosition
+v  
+165.094376
+200.000000
+112.888649
+LocalScale
+v  
+1.000000
+1.000000
+1.000000
+GlobalTransform
+v  
+165.094376
+200.000000
+112.888649
+v  
+1.000000
+1.000000
+1.000000
+r  
+0.000000
+0.000000
+0.000000
+0.000000
+
+EditorText
+s  MouseIntersectDetectionSystem
+__q  2_0
+SystemReference
+s  MouseGrabbingSystem
+LoopSociety
+q  -1_0
+p  
+MouseSelectable
+MouseGrabbable
+MouseIntersectable
+LocalPosition
+v  
+126.602486
+200.000000
+154.828339
+LocalScale
+v  
+1.000000
+1.000000
+1.000000
+GlobalTransform
+v  
+126.602486
+200.000000
+154.828339
+v  
+1.000000
+1.000000
+1.000000
+r  
+0.000000
+0.000000
+0.000000
+0.000000
+
+EditorText
+s  MouseGrabbingSystem
+__q  3_0
+SystemReference
+s  MouseSelectionSystem
+LoopSociety
+q  -1_0
+p  
+MouseSelectable
+MouseGrabbable
+MouseIntersectable
+LocalPosition
+v  
+77.854004
+200.000000
+184.224731
+LocalScale
+v  
+1.000000
+1.000000
+1.000000
+GlobalTransform
+v  
+77.854004
+200.000000
+184.224731
+v  
+1.000000
+1.000000
+1.000000
+r  
+0.000000
+0.000000
+0.000000
+0.000000
+
+EditorText
+s  MouseSelectionSystem
+__q  4_0
+SystemReference
+s  EnviromentalFileNavigationSystem
+LoopSociety
+q  -1_0
+p  
+MouseSelectable
+MouseGrabbable
+MouseIntersectable
+LocalPosition
+v  
+22.798265
+200.000000
+198.696350
+LocalScale
+v  
+1.000000
+1.000000
+1.000000
+GlobalTransform
+v  
+22.798265
+200.000000
+198.696350
+v  
+1.000000
+1.000000
+1.000000
+r  
+0.000000
+0.000000
+0.000000
+0.000000
+
+EditorText
+s  EnviromentalFileNavigationSystem
+__q  5_0
+SystemReference
+s  EditorHotKeySystem
+LoopSociety
+q  -1_0
+p  
+MouseSelectable
+MouseGrabbable
+MouseIntersectable
+LocalPosition
+v  
+-34.104458
+200.000000
+197.070770
+LocalScale
+v  
+1.000000
+1.000000
+1.000000
+GlobalTransform
+v  
+-34.104458
+200.000000
+197.070770
+v  
+1.000000
+1.000000
+1.000000
+r  
+0.000000
+0.000000
+0.000000
+0.000000
+
+EditorText
+s  EditorHotKeySystem
+__q  6_0
+SystemReference
+s  CameraSystem
+LoopSociety
+q  -1_0
+p  
+MouseSelectable
+MouseGrabbable
+MouseIntersectable
+LocalPosition
+v  
+-88.244225
+200.000000
+179.479675
+LocalScale
+v  
+1.000000
+1.000000
+1.000000
+GlobalTransform
+v  
+-88.244225
+200.000000
+179.479675
+v  
+1.000000
+1.000000
+1.000000
+r  
+0.000000
+0.000000
+0.000000
+0.000000
+
+EditorText
+s  CameraSystem
+__q  7_0
+SystemReference
+s  MiddlePhysicsSystem
+LoopSociety
+q  -1_0
+p  
+MouseSelectable
+MouseGrabbable
+MouseIntersectable
+LocalPosition
+v  
+-135.235001
+200.000000
+147.348206
+LocalScale
+v  
+1.000000
+1.000000
+1.000000
+GlobalTransform
+v  
+-135.235001
+200.000000
+147.348206
+v  
+1.000000
+1.000000
+1.000000
+r  
+0.000000
+0.000000
+0.000000
+0.000000
+
+EditorText
+s  MiddlePhysicsSystem
+__q  8_0
+SystemReference
+s  EditorRenderSetupSystem
+LoopSociety
+q  -1_0
+p  
+MouseSelectable
+MouseGrabbable
+MouseIntersectable
+LocalPosition
+v  
+-171.269836
+200.000000
+103.279449
+LocalScale
+v  
+1.000000
+1.000000
+1.000000
+GlobalTransform
+v  
+-171.269836
+200.000000
+103.279449
+v  
+1.000000
+1.000000
+1.000000
+r  
+0.000000
+0.000000
+0.000000
+0.000000
+
+EditorText
+s  EditorRenderSetupSystem
+__q  9_0
+SystemReference
+s  EditorUiSystem
+LoopSociety
+q  -1_0
+p  
+MouseSelectable
+MouseGrabbable
+MouseIntersectable
+LocalPosition
+v  
+-211.059784
+199.999924
+47.516548
+LocalScale
+v  
+1.000000
+1.000000
+1.000000
+GlobalTransform
+v  
+-211.059784
+199.999924
+47.516548
+v  
+1.000000
+1.000000
+1.000000
+r  
+0.000000
+0.000000
+0.000000
+0.000000
+
+EditorText
+s  EditorUiSystem
+__q  10_0
+SystemReference
+s  ComponentUiSystem
+LoopSociety
+q  -1_0
+p  
+MouseSelectable
+MouseGrabbable
+MouseIntersectable
+LocalPosition
+v  
+-238.926529
+200.000000
+-13.826559
+LocalScale
+v  
+1.000000
+1.000000
+1.000000
+GlobalTransform
+v  
+-238.926529
+200.000000
+-13.826559
+v  
+1.000000
+1.000000
+1.000000
+r  
+0.000000
+0.000000
+0.000000
+0.000000
+
+EditorText
+s  ComponentUiSystem
+__q  11_0
+LoopSociety
+q  -1_0
+p  
+SystemReference
+s  EqulabSystem
+MouseSelectable
+LocalPosition
+v  
+-363.377502
+0.000092
+-184.420929
+MouseGrabbable
+MouseIntersectable
+GlobalTransform
+v  
+-363.377502
+0.000092
+-184.420929
+v  
+1.000000
+1.000000
+1.000000
+r  
+0.000000
+0.000000
+0.000000
+0.000000
+
+LocalScale
+v  
+1.000000
+1.000000
+1.000000
+EditorText
+s  EqulabSystem
+__q  12_0
+SystemReference
+s  WriterUnBlockingSystem
+LoopSociety
+q  -1_0
+p  
+MouseSelectable
+LocalPosition
+v  
+-469.916016
+-0.000001
+-152.073685
+MouseGrabbable
+MouseIntersectable
+GlobalTransform
+v  
+-469.916016
+-0.000001
+-152.073685
+v  
+1.000000
+1.000000
+1.000000
+r  
+0.000000
+0.000000
+0.000000
+0.000000
+
+LocalScale
+v  
+1.000000
+1.000000
+1.000000
+EditorText
+s  WriterUnBlockingSystem
+__q  13_0
+MouseSelectable
+LocalPosition
+v  
+-238.175873
+-0.000122
+-326.171631
+MouseGrabbable
+MouseIntersectable
+GlobalTransform
+v  
+-238.175873
+-0.000122
+-326.171631
+v  
+1.000000
+1.000000
+1.000000
+r  
+0.000000
+0.000000
+0.000000
+0.000000
+
+LoopSociety
+q  -1_0
+p  
+SystemReference
+s  GlobalCoordinateCalculationSystem
+LocalScale
+v  
+1.000000
+1.000000
+1.000000
+EditorText
+s  GlobalCoordinateCalculationSystem
+__q  14_0
+MouseSelectable
+LocalPosition
+v  
+217.788422
+0.000061
+-63.027203
+MouseIntersectable
+GlobalTransform
+v  
+217.788422
+0.000061
+-63.027203
+v  
+1.000000
+1.000000
+1.000000
+r  
+0.000000
+0.000000
+0.000000
+0.000000
+
+MouseGrabbable
+SystemReference
+s  BubbleInsertSystem
+LoopSociety
+q  -1_0
+p  
+LocalScale
+v  
+1.000000
+1.000000
+1.000000
+EditorText
+s  BubbleInsertSystem
+__q  15_0
+MouseSelectable
+LocalPosition
+v  
+217.391342
+-0.000061
+-91.989372
+MouseIntersectable
+GlobalTransform
+v  
+217.391342
+-0.000061
+-91.989372
+v  
+1.000000
+1.000000
+1.000000
+r  
+0.000000
+0.000000
+0.000000
+0.000000
+
+MouseGrabbable
+SystemReference
+s  BubbleCameraSystem
+LoopSociety
+q  -1_0
+p  
+LocalScale
+v  
+1.000000
+1.000000
+1.000000
+EditorText
+s  BubbleCameraSystem
+__q  16_0
+LocalPosition
+v  
+213.264587
+-0.000061
+-247.039215
+MouseSelectable
+MouseGrabbable
+MouseIntersectable
+GlobalTransform
+v  
+213.264587
+-0.000061
+-247.039215
+v  
+1.000000
+1.000000
+1.000000
+r  
+0.000000
+0.000000
+0.000000
+0.000000
+
+LoopSociety
+q  -1_0
+p  
+SystemReference
+s  AlgebraProblemSystem
+LocalScale
+v  
+1.000000
+1.000000
+1.000000
+EditorText
+s  AlgebraProblemSystem
+__q  17_0
+LocalScale
+v  
+1.000000
+1.000000
+1.000000
+Sphere
+f  2.000000
+LocalPosition
+v  
+226.512756
+-1034.988403
+-401.976685
+MouseSelectable
+MouseGrabbable
+MouseIntersectable
+GlobalTransform
+v  
+226.512756
+-1034.988403
+-401.976685
+v  
+1.000000
+1.000000
+1.000000
+r  
+0.000000
+0.000000
+0.000000
+0.000000
+
+CameraComponent
+f  226.512756
+f  8965.011719
+f  -401.976685
+f  0.000000
+f  0.000000
+f  1.000000
+f  45.000000
+i  0
+b  0
+LoopSociety
+q  -1_0
+p  
+__q  18_0
+SystemReference
+s  PuzzleTextSystem
+LoopSociety
+q  -1_0
+p  
+MouseSelectable
+LocalPosition
+v  
+-469.475433
+-0.000062
+-182.215210
+MouseGrabbable
+MouseIntersectable
+GlobalTransform
+v  
+-469.475433
+-0.000062
+-182.215210
+v  
+1.000000
+1.000000
+1.000000
+r  
+0.000000
+0.000000
+0.000000
+0.000000
+
+LocalScale
+v  
+1.000000
+1.000000
+1.000000
+EditorText
+s  PuzzleTextSystem
+__q  19_0
+MouseSelectable
+LocalPosition
+v  
+-471.766632
+-0.000000
+-217.663162
+MouseGrabbable
+MouseIntersectable
+GlobalTransform
+v  
+-471.766632
+0.000000
+-217.663162
+v  
+1.000000
+1.000000
+1.000000
+r  
+0.000000
+0.000000
+0.000000
+0.000000
+
+LoopSociety
+q  -1_0
+p  
+SystemReference
+s  TextGrabbingSystem
+LocalScale
+v  
+1.000000
+1.000000
+1.000000
+EditorText
+s  TextGrabbingSystem
+__q  20_0
+MouseSelectable
+LocalPosition
+v  
+-240.270416
+0.000031
+-262.652344
+MouseGrabbable
+MouseIntersectable
+GlobalTransform
+v  
+-240.270416
+0.000031
+-262.652344
+v  
+1.000000
+1.000000
+1.000000
+r  
+0.000000
+0.000000
+0.000000
+0.000000
+
+LoopSociety
+q  -1_0
+p  
+SystemReference
+s  SceneEditorSelectionSystem
+LocalScale
+v  
+1.000000
+1.000000
+1.000000
+EditorText
+s  SceneEditorSelectionSystem
+__q  21_0
+MouseSelectable
+LocalPosition
+v  
+-237.676056
+-0.000031
+-295.495087
+MouseGrabbable
+MouseIntersectable
+GlobalTransform
+v  
+-237.676056
+-0.000031
+-295.495087
+v  
+1.000000
+1.000000
+1.000000
+r  
+0.000000
+0.000000
+0.000000
+0.000000
+
+SystemReference
+s  SceneEditorUniversalSystem
+LoopSociety
+q  -1_0
+p  
+LocalScale
+v  
+1.000000
+1.000000
+1.000000
+EditorText
+s  SceneEditorUniversalSystem
+__q  22_0
+MouseSelectable
+MouseGrabbable
+MouseIntersectable
+LoopSociety
+q  -1_0
+p  
+SystemReference
+s  BubbleInventorySystem
+EditorText
+s  BubbleInventorySystem
+LocalPosition
+v  
+216.799805
+0.000061
+-138.073486
+GlobalTransform
+v  
+216.799805
+0.000061
+-138.073486
+v  
+1.000000
+1.000000
+1.000000
+r  
+0.000000
+0.000000
+0.000000
+0.000000
+
+LocalScale
+v  
+1.000000
+1.000000
+1.000000
+__q  23_0
+MouseSelectable
+LocalPosition
+v  
+213.157593
+-0.000000
+-372.654022
+MouseIntersectable
+GlobalTransform
+v  
+213.157593
+0.000000
+-372.654022
+v  
+1.000000
+1.000000
+1.000000
+r  
+0.000000
+0.000000
+0.000000
+0.000000
+
+MouseGrabbable
+SystemReference
+s  DeletionSystem
+LoopSociety
+q  -1_0
+p  
+LocalScale
+v  
+1.000000
+1.000000
+1.000000
+EditorText
+s  DeletionSystem
+__q  24_0
+Sphere
+f  2.000000
+LocalPosition
+v  
+-13.622169
+0.000000
+-371.200195
+LocalScale
+v  
+1.000000
+1.000000
+1.000000
+GlobalTransform
+v  
+-13.622169
+0.000000
+-371.200195
+v  
+1.000000
+1.000000
+1.000000
+r  
+0.000000
+0.000000
+0.000000
+0.000000
+
+MouseSelectable
+MouseGrabbable
+MouseIntersectable
+LoopSociety
+q  -1_0
+p  
+Inventory
+i  5
+__q  25_0
+MouseSelectable
+LocalPosition
+v  
+215.261017
+-0.000031
+-180.018967
+MouseIntersectable
+GlobalTransform
+v  
+215.261017
+-0.000031
+-180.018967
+v  
+1.000000
+1.000000
+1.000000
+r  
+0.000000
+0.000000
+0.000000
+0.000000
+
+MouseGrabbable
+SystemReference
+s  BubbleManipulationSystem
+LoopSociety
+q  -1_0
+p  
+LocalScale
+v  
+1.000000
+1.000000
+1.000000
+EditorText
+s  BubbleManipulationSystem
+__q  26_0
+MouseSelectable
+LocalPosition
+v  
+214.308075
+-0.000031
+-214.308395
+MouseIntersectable
+GlobalTransform
+v  
+214.308075
+-0.000031
+-214.308395
+v  
+1.000000
+1.000000
+1.000000
+r  
+0.000000
+0.000000
+0.000000
+0.000000
+
+MouseGrabbable
+SystemReference
+s  BubbleModificationSystem
+LoopSociety
+q  -1_0
+p  
+LocalScale
+v  
+1.000000
+1.000000
+1.000000
+EditorText
+s  BubbleModificationSystem
+__q  27_0
+LocalPosition
+v  
+212.446213
+0.000122
+-275.337280
+MouseSelectable
+MouseGrabbable
+MouseIntersectable
+GlobalTransform
+v  
+212.446213
+0.000122
+-275.337280
+v  
+1.000000
+1.000000
+1.000000
+r  
+0.000000
+0.000000
+0.000000
+0.000000
+
+LoopSociety
+q  -1_0
+p  
+SystemReference
+s  BubbleLayerSystem
+LocalScale
+v  
+1.000000
+1.000000
+1.000000
+EditorText
+s  BubbleLayerSystem
+__q  28_0
+LocalPosition
+v  
+212.588318
+-0.000000
+-304.159424
+MouseSelectable
+MouseGrabbable
+MouseIntersectable
+GlobalTransform
+v  
+212.588318
+0.000000
+-304.159424
+v  
+1.000000
+1.000000
+1.000000
+r  
+0.000000
+0.000000
+0.000000
+0.000000
+
+LoopSociety
+q  -1_0
+p  
+SystemReference
+s  BubblePhysics
+LocalScale
+v  
+1.000000
+1.000000
+1.000000
+EditorText
+s  BubblePhysics
+__q  29_0
+LocalPosition
+v  
+212.445129
+-0.000061
+-337.267059
+MouseSelectable
+MouseGrabbable
+MouseIntersectable
+GlobalTransform
+v  
+212.445129
+-0.000061
+-337.267059
+v  
+1.000000
+1.000000
+1.000000
+r  
+0.000000
+0.000000
+0.000000
+0.000000
+
+LoopSociety
+q  -1_0
+p  
+SystemReference
+s  NewBubbleOutlineSystem
+LocalScale
+v  
+1.000000
+1.000000
+1.000000
+EditorText
+s  NewBubbleOutlineSystem
+__q  30_0
+MouseSelectable
+LocalPosition
+v  
+215.020996
+-0.000000
+-402.651489
+MouseGrabbable
+MouseIntersectable
+GlobalTransform
+v  
+215.020996
+0.000000
+-402.651489
+v  
+1.000000
+1.000000
+1.000000
+r  
+0.000000
+0.000000
+0.000000
+0.000000
+
+EditorText
+s  BubbleScalingSystem
+SystemReference
+s  BubbleScalingSystem
+LoopSociety
+q  -1_0
+p  
+LocalScale
+v  
+1.000000
+1.000000
+1.000000
+__q  31_0
+LocalPosition
+v  
+217.571381
+0.000122
+-437.084564
+MouseSelectable
+MouseGrabbable
+GlobalTransform
+v  
+217.571381
+0.000122
+-437.084564
+v  
+1.000000
+1.000000
+1.000000
+r  
+0.000000
+0.000000
+0.000000
+0.000000
+
+MouseIntersectable
+LoopSociety
+q  -1_0
+p  
+EditorText
+s  BubbleManualScalingSystem
+SystemReference
+s  BubbleManualScalingSystem
+LocalScale
+v  
+1.000000
+1.000000
+1.000000
+__q  32_0
+MouseSelectable
+MouseGrabbable
+MouseIntersectable
+LoopSociety
+q  -1_0
+p  
+SystemReference
+s  BubbleLayerSystem
+EditorText
+s  BubbleLayerSystem
+LocalPosition
+v  
+217.033112
+-0.000000
+-113.919701
+GlobalTransform
+v  
+217.033112
+0.000000
+-113.919701
+v  
+1.000000
+1.000000
+1.000000
+r  
+0.000000
+0.000000
+0.000000
+0.000000
+
+LocalScale
+v  
+1.000000
+1.000000
+1.000000
+__q  33_0
+LocalPosition
+v  
+217.707626
+-0.000122
+-490.576843
+MouseSelectable
+MouseGrabbable
+GlobalTransform
+v  
+217.707626
+-0.000122
+-490.576843
+v  
+1.000000
+1.000000
+1.000000
+r  
+0.000000
+0.000000
+0.000000
+0.000000
+
+MouseIntersectable
+LoopSociety
+q  -1_0
+p  
+EditorText
+s  BubbleDynamicLoadingSystem
+SystemReference
+s  BubbleDynamicLoadingSystem
+LocalScale
+v  
+1.000000
+1.000000
+1.000000
+__q  34_0
+MouseSelectable
+MouseGrabbable
+MouseIntersectable
+LoopSociety
+q  -1_0
+p  
+SystemReference
+s  BubbleTextSystem
+EditorText
+s  BubbleTextSystem
+LocalPosition
+v  
+214.212463
+-0.000000
+-528.928467
+GlobalTransform
+v  
+214.212463
+0.000000
+-528.928467
+v  
+1.000000
+1.000000
+1.000000
+r  
+0.000000
+0.000000
+0.000000
+0.000000
+
+LocalScale
+v  
+1.000000
+1.000000
+1.000000
+__q  35_0
+MouseSelectable
+MouseGrabbable
+MouseIntersectable
+LoopSociety
+q  -1_0
+p  
+SystemReference
+s  BubbleSwapSystem
+EditorText
+s  BubbleSwapSystem
+LocalPosition
+v  
+215.078888
+0.000122
+-563.682007
+GlobalTransform
+v  
+215.078888
+0.000122
+-563.682007
+v  
+1.000000
+1.000000
+1.000000
+r  
+0.000000
+0.000000
+0.000000
+0.000000
+
+LocalScale
+v  
+1.000000
+1.000000
+1.000000
+__q  36_0
+MouseSelectable
+MouseGrabbable
+MouseIntersectable
+LoopSociety
+q  -1_0
+p  
+SystemReference
+s  MouseClickSystem
+EditorText
+s  MouseClickSystem
+LocalPosition
+v  
+214.201462
+0.000122
+-597.658936
+GlobalTransform
+v  
+214.201462
+0.000122
+-597.658936
+v  
+1.000000
+1.000000
+1.000000
+r  
+0.000000
+0.000000
+0.000000
+0.000000
+
+LocalScale
+v  
+1.000000
+1.000000
+1.000000
+__q  37_0
+MouseSelectable
+MouseGrabbable
+MouseIntersectable
+LoopSociety
+q  -1_0
+p  
+SystemReference
+s  BubbleLogicSystem
+EditorText
+s  BubbleLogicSystem
+LocalPosition
+v  
+210.788696
+-0.000244
+-639.255554
+GlobalTransform
+v  
+210.788696
+-0.000244
+-639.255554
+v  
+1.000000
+1.000000
+1.000000
+r  
+0.000000
+0.000000
+0.000000
+0.000000
+
+LocalScale
+v  
+1.000000
+1.000000
+1.000000
+__q  38_0
+MouseSelectable
+MouseGrabbable
+MouseIntersectable
+LoopSociety
+q  -1_0
+p  
+SystemReference
+s  BubbleLayoutSystem
+EditorText
+s  BubbleLayoutSystem
+LocalPosition
+v  
+213.631897
+-0.000000
+-159.689896
+GlobalTransform
+v  
+213.631897
+-0.000000
+-159.689896
+v  
+1.000000
+1.000000
+1.000000
+r  
+0.000000
+0.000000
+0.000000
+0.000000
+
+LocalScale
+v  
+1.000000
+1.000000
+1.000000

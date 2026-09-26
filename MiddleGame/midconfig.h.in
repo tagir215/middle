@@ -1,0 +1,27 @@
+#pragma once
+
+namespace middlePaths{
+	constexpr const char* COMPONENT_FOLDER = "@MIDDLE_COMPONENTS_DIR@";
+	constexpr const char* COMPONENT_TEMPLATE_HEADER = "@COMPONENT_TEMPLATE_HEADER@";
+	constexpr const char* COMPONENT_TEMPLATE_SOURCE = "@COMPONENT_TEMPLATE_SOURCE@";
+	constexpr const char* SYSTEM_TEMPLATE = "@SYSTEM_TEMPLATE_SOURCE@";
+	constexpr const char* SYSTEMS_FOLDER = "@SYSTEMS_DIR@";
+
+	constexpr const char* ASSETS = "@ASSETS_DIR@";
+	constexpr const char* SCENES_FOLDER = "@SCENES_DIR@";
+	constexpr const char* TEXTURES_FOLDER = "@TEXTURES_DIR@";
+	constexpr const char* SHADERS_FOLDER = "@SHADERS_DIR@";
+	constexpr const char* SOUNDS_FOLDER = "@SOUNDS_DIR@";
+	constexpr const char* FONTS_FOLDER = "@FONTS_DIR@";
+	constexpr const char* TEMP_FOLDER = "@TEMP_DIR@";
+	constexpr const char* MIDSC_FILE_EXTENSION = "@MIDDLE_SCENE_FILE_EXTENSION@";
+	constexpr const char* EDITOR_STATE = "@EDITOR_STATE_FILE@";
+
+}
+
+namespace bubblePaths{
+	constexpr const char* EQUATION_FOLDER = "@EQUATION_DIR@";
+	constexpr const char* BUBBLE_TREE_FOLDER = "@BUBBLE_TREE_DIR@";
+	constexpr const char* WORD_PROBLEMS_FOLDER = "@WORD_PROBLEMS_DIR@";
+}
+

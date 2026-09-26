@@ -1,0 +1,634 @@
+#include "editor_actions.h"
+#include <thread>
+#include "middle_shape_utils.h"
+#include "editor_file_utils.h"
+#include "middle_math.h"
+#include <unordered_map>
+#include <set>
+#include "middle_component_table.h"
+#include "script_opener.h"
+#include "MidComp/LoopSociety.h"
+#include "MidComp/Reference.h"
+#include "MidComp/MouseSelectable.h"
+#include "JointEntity.h"
+#include "ConstraintEntity.h"
+#include "LoopEntity.h"
+#include "MidComp/LoopTag.h"
+#include "SystemEntity.h"
+#include "MidComp/ComponentReference.h"
+#include "MidComp/ComponentRefParent.h"
+#include "MidComp/PlacementComponent.h"
+#include "CameraEntity.h"
+#include "MidComp/HiddenTag.h"
+#include "component_utils.h"
+#include "midconfig.h"
+
+namespace middle {
+
+	void EditorActionNewSphere::execute(GameState* gameState) {
+		auto& shapes = gameState->shapes;
+		int freeIndex = findFreeIndex(gameState);
+		entities::initJoint(gameState, freeIndex, position);
+		newIndex = freeIndex;
+	}
+	void EditorActionNewSphere::undo(GameState* gameState)
+	{
+		deleteShape(gameState, newIndex);
+	}
+
+	void EditorActionNewConstraint::execute(GameState* gameState) {
+
+	}
+
+	void EditorActionNewConstraint::undo(GameState* gameState)
+	{
+		deleteShape(gameState, newIndex);
+	}
+
+	void EditorActionDelete::execute(GameState* gameState) {
+
+		for (int i = 0; i < selectedIndexes.size(); ++i) {
+			int shapeIndex = selectedIndexes[i];
+			if (middle::isValidId(gameState, gameState->ids[shapeIndex])) {
+				auto delAction = std::make_unique<middle::EditorActionDeleteSingle>(getShape(gameState, shapeIndex).id);
+				delAction->execute(gameState);
+				actions.push_back(std::move(delAction));
+			}
+		}
+	}
+
+	void EditorActionDelete::undo(GameState* gameState)
+	{
+		while (actions.size() > 0) {
+			actions.back()->undo(gameState);
+			actions.pop_back();
+		}
+	}
+
+	void EditorActionSaveScene::execute(GameState* gameState) {
+		middle::resetGenerations(gameState);
+		// sync generations
+		middle::loopInstances(gameState, [gameState](int j, middle::Shape& shape) {
+			auto loop = middle::getComponent<components::LoopSociety>(shape);
+			if (loop) {
+				for (int index = 0; index < loop->loopMemberIds.size(); ++index) {
+					loop->loopMemberIds[index] = gameState->ids[loop->loopMemberIds[index].index];
+				}
+			}
+			return true;
+			});
+		saveScene(gameState, sceneName);
+	}
+
+	void EditorActionSaveScene::undo(GameState* gameState)
+	{
+	}
+
+	void EditorActionBuild::execute(GameState* gameState) {
+		// TODO
+		std::string command = "python ../middle/editor_scripts/build_project.py";
+		system(command.c_str());
+	}
+
+	void EditorActionBuild::undo(GameState* gameState)
+	{
+	}
+
+	void EditorActionCreateLoop::execute(GameState* gameState) {
+		newIndex = findFreeIndex(gameState);
+		int loopIndex = gameState->loopIndex;
+
+		std::vector<Id>ids;
+		for (int i : memberIndexes) {
+			ids.push_back(gameState->ids[i]);
+			auto& memberShape = middle::getShape(gameState, i);
+			auto loop = middle::getComponent<components::LoopSociety>(memberShape);
+			oldParents.push_back(loop->parentLoopId);
+		}
+
+		// set position to mouse pos
+		if (memberIndexes.size() == 0) {
+			entities::initLoop(gameState, newIndex, ids, gameState->mouseState.mouseXZ_PlanePos);
+		}
+		// set position to centroid
+		else {
+			midMath::Vector3 centroid = { 0,0,0 };
+			for (int i = 0; i < ids.size(); ++i) {
+				auto& shape = getShape(gameState, ids[i].index);
+				midMath::Vector3 pos = middle::getGlobalPosition(gameState, shape.id);
+				centroid += pos;
+			}
+			centroid *= 1.0f / ids.size();
+			entities::initLoop(gameState, newIndex, ids, centroid);
+		}
+
+		// auto unselect
+		unselect(gameState);
+	}
+
+	void EditorActionCreateLoop::undo(GameState* gameState)
+	{
+		for (int i = 0; i < memberIndexes.size(); ++i) {
+			auto reparent = EditorActionReparent(oldParents[i].index, memberIndexes[i]);
+			reparent.execute(gameState);
+		}
+
+		deleteShape(gameState, newIndex);
+	}
+
+
+	void EditorActionLoadScene::execute(GameState* gameState)
+	{
+		middle::resetScene(gameState);
+		// reload?
+
+		gameState->activeSceneName = sceneName;
+		gameState->loopIndex = 0;
+	}
+
+	void EditorActionLoadScene::undo(GameState* gameState)
+	{
+	}
+
+	void EditorActionNewScene::execute(GameState* gameState)
+	{
+		// DELETE EVERYTHING
+		for (int i = 0; i < gameState->shapes.size(); ++i) {
+			deleteShape(gameState, i);
+		}
+		gameState->sceneNames.push_back(sceneName);
+		int index = gameState->sceneNames.size() - 1;
+		gameState->activeSceneName = sceneName;
+		gameState->reset = true;
+		saveScene(gameState, sceneName);
+	}
+
+	void EditorActionNewScene::undo(GameState* gameState)
+	{
+	}
+
+	void EditorActionImportScene::execute(GameState* gameState)
+	{
+		newIndex = findFreeIndex(gameState);
+		loadScene(gameState, path, name, true, midMath::Vector3{ 0,0,0 }, newIndex);
+	}
+
+	void EditorActionImportScene::undo(GameState* gameState)
+	{
+		deleteShape(gameState, newIndex);
+	}
+
+
+	void EditorActionOpenSystem::execute(GameState* gameState)
+	{
+		std::string name = systemName;
+		shell_open_file(std::string(middlePaths::SYSTEMS_FOLDER) + "/" + systemName + ".cpp");
+	}
+
+	void EditorActionOpenSystem::undo(GameState* gameState)
+	{
+	}
+
+	void EditorActionNewSystem::execute(GameState* gameState)
+	{
+		if (gameState->gameplaySystems.find(systemName) == gameState->gameplaySystems.end()) {
+			newSystemFile(gameState, systemName);
+		}
+
+		shell_open_file(std::string(middlePaths::SYSTEMS_FOLDER) + "/" + systemName + ".cpp");
+
+		// TODO
+		std::string command = "python ../middle/editor_scripts/build_project.py";
+		system(command.c_str());
+
+
+		gameState->middleState.closeGame = true;
+	}
+
+	void EditorActionNewSystem::undo(GameState* gameState)
+	{
+	}
+
+	void EditorActionImportSystem::execute(GameState* gameState)
+	{
+		newIndex = findFreeIndex(gameState);
+		entities::initSystem(gameState, newIndex, { 0,0,0 }, systemName);
+	}
+
+	void EditorActionImportSystem::undo(GameState* gameState)
+	{
+		deleteShape(gameState, newIndex);
+	}
+
+	void EditorActionNewCamera::execute(GameState* gameState)
+	{
+		int freeIndex = findFreeIndex(gameState);
+		midMath::Vector3& pos = gameState->editorState.camera.position;
+		entities::initCamera(gameState, freeIndex, pos, up, target, fieldOfView, projection);
+	}
+
+	void EditorActionNewCamera::undo(GameState* gameState)
+	{
+	}
+
+	void EditorActionSelectCamera::execute(GameState* gameState)
+	{
+
+	}
+
+	void EditorActionSelectCamera::undo(GameState* gameState)
+	{
+	}
+
+
+	void EditorActionNewComponent::execute(GameState* gameState)
+	{
+		if (gameState->gameplaySystems.find(componentName) == gameState->gameplaySystems.end()) {
+			newComponentFile(gameState, componentName);
+		}
+
+		shell_open_file(std::string(middlePaths::COMPONENT_FOLDER) + "/" + componentName + ".cpp");
+
+		//TODO
+		std::string command = "python ../middle/editor_scripts/build_project.py";
+		system(command.c_str());
+
+		gameState->middleState.closeGame = true;
+	}
+
+	void EditorActionNewComponent::undo(GameState* gameState)
+	{
+	}
+
+	void EditorActionImportComponent::execute(GameState* gameState)
+	{
+		for (int i : selectedIndexes) {
+			auto& shape = gameState->shapes[i];
+			int componentTypeId = componentTypeMap[componentName];
+			if (hasComp(shape, componentTypeId)) {
+				return;
+			}
+			middle::setCompOffset(shape, componentTypeId, componentListMap[componentTypeId]->grow());
+			middle::notifyStructuralChanges(gameState, shape.id, componentTypeId);
+		};
+	}
+
+	void EditorActionImportComponent::undo(GameState* gameState)
+	{
+		for (int i : selectedIndexes) {
+			auto& shape = gameState->shapes[i];
+			int componentTypeId = componentTypeMap[componentName];
+			assert(hasComp(shape, componentTypeId));
+			int offset = getCompOffset(shape, componentTypeId);
+			componentListMap[componentTypeId]->shrink(offset);
+			removeComp(shape, componentTypeId);
+			middle::notifyStructuralChanges(gameState, shape.id, componentTypeId);
+		}
+	}
+
+	void EditorActionRemoveComponent::execute(GameState* gameState)
+	{
+		auto importAction = EditorActionImportComponent(componentName, selectedIndexes);
+		importAction.undo(gameState);
+	}
+
+	void EditorActionRemoveComponent::undo(GameState* gameState)
+	{
+		auto importAction = EditorActionImportComponent(componentName, selectedIndexes);
+		importAction.execute(gameState);
+	}
+
+
+	void EditorActionOpenComponent::execute(GameState* gameState)
+	{
+		shell_open_file(std::string(middlePaths::COMPONENT_FOLDER) + "/" + componentName + ".h");
+		unselect(gameState);
+	}
+
+	void EditorActionOpenComponent::undo(GameState* gameState)
+	{
+	}
+
+	void EditorActionRemoveFromLoop::execute(GameState* gameState)
+	{
+		Shape& childShape = getShape(gameState, childIndex);
+		auto childLoop = getComponent<components::LoopSociety>(childShape);
+		assert(childLoop);
+		middle::Id parentId = middle::getParent(gameState, childShape.id);
+		if (parentId.index == UNASSIGNED) {
+			return;
+		}
+
+		middle::Id oldParentId = childLoop->parentLoopId;
+		oldParentIndex = childLoop->parentLoopId.index;
+
+		Shape& parentShape = getShape(gameState, childLoop->parentLoopId.index);
+		auto parentLoop = getComponent<components::LoopSociety>(parentShape);
+		assert(parentLoop);
+
+		childLoop->parentLoopId = Id();
+		for (int i = 0; i < parentLoop->loopMemberIds.size(); ++i) {
+			auto& id = parentLoop->loopMemberIds[i];
+			if (id == childShape.id) {
+				parentLoop->loopMemberIds.erase(parentLoop->loopMemberIds.begin() + i);
+				loopIndex = i;
+				middle::updateLocalCoordinateToProjectedGlobalCoordinate(gameState, childShape.id, oldParentId);
+				return;
+			}
+		}
+
+		assert(loopIndex != middle::UNASSIGNED);
+	}
+
+	void EditorActionRemoveFromLoop::undo(GameState* gameState)
+	{
+		middle::Id childId = gameState->ids[childIndex];
+		middle::Id currentParentId = middle::getParent(gameState, childId);
+		EditorActionReparent(oldParentIndex, childIndex).execute(gameState);
+		EditorActionChangeLoopMemberIndex(oldParentIndex, childIndex, loopIndex).execute(gameState);
+	}
+
+	void checkCircularReferences(GameState* gameState, middle::Id& parentId, middle::Id& id) {
+		auto& parent = getShape(gameState, parentId.index);
+		assert(parentId != id);
+		middle::Id parentParentId = middle::getParent(gameState, parent.id);
+		if (parentParentId.index != UNASSIGNED) {
+			checkCircularReferences(gameState, parentParentId, id);
+		}
+	}
+
+	void EditorActionReparent::execute(GameState* gameState)
+	{
+		assert(parentIndex != childIndex);
+		Shape& childShape = getShape(gameState, childIndex);
+		auto childLoop = getComponent<components::LoopSociety>(childShape);
+		middle::Id oldParentId = childLoop->parentLoopId;
+		oldParentIndex = childLoop->parentLoopId.index;
+
+		// remove from old parent 
+		if (childLoop->parentLoopId.index != UNASSIGNED) {
+			auto removeAction = EditorActionRemoveFromLoop(childIndex);
+			removeAction.execute(gameState);
+			// update this for local coordinate recalculation at end
+			oldParentId = middle::Id();
+		}
+
+
+		if (parentIndex != UNASSIGNED) {
+			Shape& parentShape = getShape(gameState, parentIndex);
+			auto parentLoop = getComponent<components::LoopSociety>(parentShape);
+			for (Id id : parentLoop->loopMemberIds) {
+				if (id == childShape.id) {
+					return;
+				}
+			}
+
+			parentLoop->loopMemberIds.push_back(childShape.id);
+			childLoop->parentLoopId = parentShape.id;
+			checkCircularReferences(gameState, parentShape.id, childShape.id);
+		}
+		// set parent as unassigned
+		else {
+			childLoop->parentLoopId = middle::Id();
+		}
+
+		updateLocalCoordinateToProjectedGlobalCoordinate(gameState, childShape.id, oldParentId);
+	}
+
+	void EditorActionReparent::undo(GameState* gameState)
+	{
+		middle::Id currentParentId = middle::getParent(gameState, gameState->ids[childIndex]);
+		if (oldParentIndex != middle::UNASSIGNED) {
+			auto metaReparent = EditorActionReparent(oldParentIndex, childIndex);
+			metaReparent.execute(gameState);
+		}
+		else {
+			auto removeFromLoop = EditorActionRemoveFromLoop(childIndex);
+			removeFromLoop.execute(gameState);
+		}
+
+	}
+
+	void EditorActionChangeLoopMemberIndex::execute(GameState* gameState)
+	{
+		auto& parentShape = middle::getShape(gameState, parentIndex);
+		auto& childShape = middle::getShape(gameState, childIndex);
+		auto loop = middle::getComponent<components::LoopSociety>(parentShape);
+		assert(loop);
+
+		oldLoopIndex = UNASSIGNED;
+		int loopSize = loop->loopMemberIds.size();
+		for (int i = 0; i < loopSize; ++i) {
+			if (loop->loopMemberIds[i] == childShape.id) {
+				oldLoopIndex = i;
+			}
+		}
+		assert(oldLoopIndex != UNASSIGNED);
+
+		loop->loopMemberIds.erase(loop->loopMemberIds.begin() + oldLoopIndex);
+		assert(newLoopIndex <= loop->loopMemberIds.size());
+		loop->loopMemberIds.insert(loop->loopMemberIds.begin() + newLoopIndex, childShape.id);
+	}
+
+	void EditorActionChangeLoopMemberIndex::undo(GameState* gameState)
+	{
+		auto metaChangeIndex = EditorActionChangeLoopMemberIndex(parentIndex, childIndex, oldLoopIndex);
+		metaChangeIndex.execute(gameState);
+	}
+
+	void EditorActionCopy::execute(GameState* gameState)
+	{
+		unselect(gameState);
+
+		for (int shapeIndex : selectedShapes) {
+			// create new shape
+			auto& ogShape = getShape(gameState, shapeIndex);
+
+			// store parent id
+			middle::Id parentId = middle::getParent(gameState, ogShape.id);
+
+			Id& newId = deepCopyShape(gameState, shapeIndex, parentId.index);
+			auto& copyShape = getShape(gameState, newId.index);
+			newCopyShapes.push_back(newId.index);
+
+			// add new copy as child to parent of the shape that was copied
+			if (parentId.index != UNASSIGNED) {
+				auto& parentShape = getShape(gameState, parentId.index);
+				auto parentLoop = getComponent<components::LoopSociety>(parentShape);
+				parentLoop->loopMemberIds.push_back(newId);
+			}
+
+			// placement component until placing is done
+			auto position = middle::getComponent<components::LocalPosition>(copyShape);
+			if (position) {
+				auto placable = middle::attachComponent<components::PlacementComponent>(gameState, copyShape.id);
+				placable->grabbing = true;
+			}
+
+			// placement component to children
+			std::vector<Id>children;
+			getAllChildren(gameState, copyShape.id, children);
+			for (Id& id : children) {
+				Shape& child = getShape(gameState, id.index);
+				middle::queueComponentAttachment<components::PlacementComponent>(gameState, child.id);
+			}
+		}
+	}
+
+	void EditorActionCopy::undo(GameState* gameState)
+	{
+		for (int shapeIndex : newCopyShapes) {
+			deleteShapeRecursive(gameState, shapeIndex);
+		}
+	}
+
+
+	void EditorActionHide::execute(GameState* gameState)
+	{
+		for (int index : selectedShapes) {
+			auto& shape = middle::getShape(gameState, index);
+			middle::queueComponentAttachment<components::HiddenTag>(gameState, shape.id);
+		}
+	}
+
+	void EditorActionHide::undo(GameState* gameState)
+	{
+		for (int index : selectedShapes) {
+			auto& shape = middle::getShape(gameState, index);
+			middle::queueComponentDeletion<components::HiddenTag>(gameState, shape.id);
+		}
+	}
+
+	void EditorActionUnhide::execute(GameState* gameState)
+	{
+		std::vector<int>& unhidded = unhidIndexes;
+		loopInstances(gameState, [&unhidded, gameState](int i, middle::Shape& shape) {
+			if (middle::getComponent<components::HiddenTag>(shape)) {
+				queueComponentDeletion<components::HiddenTag>(gameState, shape.id);
+				unhidded.push_back(shape.id.index);
+			}
+			return true;
+			});
+	}
+
+	void EditorActionUnhide::undo(GameState* gameState)
+	{
+		auto hide = EditorActionHide(unhidIndexes);
+		hide.execute(gameState);
+	}
+
+	void EditorActionMove::execute(GameState* gameState)
+	{
+		oldPositions.resize(selectedShapes.size());
+
+		for (int i = 0; i < selectedShapes.size(); ++i) {
+			auto& shape = getShape(gameState, selectedShapes[i]);
+			oldPositions[i] = middle::getGlobalPosition(gameState, shape.id);
+		}
+
+		for (int i = 0; i < newPositions.size(); ++i) {
+			midMath::Vector3 displacement = newPositions[i] - oldPositions[i];
+			middle::moveShape(gameState, selectedShapes[i], displacement);
+		}
+	}
+
+	void EditorActionMove::undo(GameState* gameState)
+	{
+		for (int i = 0; i < selectedShapes.size(); ++i) {
+			auto& shape = getShape(gameState, selectedShapes[i]);
+			midMath::Vector3 currentPos = middle::getGlobalPosition(gameState, shape.id);
+			midMath::Vector3 displacement = currentPos - oldPositions[i];
+			middle::moveShape(gameState, selectedShapes[i], Vector3Negate(displacement));
+		}
+	}
+
+	void EditorActionDeleteSingle::execute(GameState* gameState)
+	{
+		middle::Id parentId = middle::getParent(gameState, id);
+		if (parentId.index != middle::UNASSIGNED) {
+			removeFromLoop = std::make_unique<EditorActionRemoveFromLoop>(id.index);
+			removeFromLoop->execute(gameState);
+		}
+		middle::saveTempShape(gameState, id);
+		middle::deleteShapeRecursive(gameState, id.index, true);
+	}
+
+	void EditorActionDeleteSingle::undo(GameState* gameState)
+	{
+		middle::loadTempShape(gameState, id);
+		if (removeFromLoop) {
+			removeFromLoop->undo(gameState);
+		}
+	}
+
+	void EditorActionCopySingle::execute(GameState* gameState)
+	{
+		resultId = middle::deepCopyShapeGlobalCoordinates(gameState, id);
+	}
+
+	void EditorActionCopySingle::undo(GameState* gameState)
+	{
+		middle::deleteShapeRecursive(gameState, resultId.index);
+	}
+
+	void EditorActionRegisterShape::execute(GameState* gameState)
+	{
+		int freeIndex = middle::findFreeIndex(gameState);
+		middle::Shape& registeredShape = middle::registerShape(gameState, shapeToRegister);
+		newShapeId = registeredShape.id;
+	}
+
+	void EditorActionRegisterShape::undo(GameState* gameState)
+	{
+		middle::deleteShapeRecursive(gameState, newShapeId.index);
+	}
+
+	void EditorActionRegisterId::execute(GameState* gameState)
+	{
+		auto& shape = middle::getShape(gameState, id.index);
+		middle::Id idToRegister = id;
+		for(int typeId : shape.componentTypes){
+			middle::notifyStructuralChanges(gameState, idToRegister, typeId);
+		}
+	}
+
+	void EditorActionRegisterId::undo(GameState* gameState)
+	{
+		middle::deleteShapeRecursive(gameState, id.index);
+	}
+
+	void CustomAction::execute(GameState* gameState)
+	{
+		this->func(gameState);
+	}
+
+	void CustomAction::undo(GameState* gameState)
+	{
+	}
+
+
+	void CustomActionWithUndo::execute(GameState* gameState)
+	{
+		this->func(gameState);
+	}
+
+	void CustomActionWithUndo::undo(GameState* gameState)
+	{
+		this->undoFunc(gameState);
+	}
+
+	void MultiAction::execute(GameState* gameState)
+	{
+		for (auto action : actionList) {
+			action->execute(gameState);
+		}
+	}
+
+	void MultiAction::undo(GameState* gameState)
+	{
+		for (int i = actionList.size() - 1; i >= 0; --i) {
+			actionList[i]->undo(gameState);
+		}
+	}
+
+}

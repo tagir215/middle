@@ -1,0 +1,154 @@
+#pragma once
+#include "game_state.h"
+#include "middle_system_registrar.h"
+#include "middle_shape_utils.h"
+#include "MidComp/LoopSociety.h"
+#include "MidComp/BubbleComponent.h"
+#include "bubble_utils.h"
+#include "MidComp/MouseGrabbable.h"
+#include "MidComp/MouseIntersectable.h"
+#include "MidComp/BubbleUnit.h"
+#include "MidComp/FractionalComponent.h"
+#include "middle_math.h"
+#include "MidComp/Sphere.h"
+#include "MidComp/Rectangle.h"
+#include "MidComp/PlacementComponent.h"
+#include "MidComp/InventoryItem.h"
+#include "MidComp/UiComponent.h"
+#include "MidComp/UnIntersectableWindowComponent.h"
+#include "component_utils.h"
+#include "MidComp/GlobalTransform.h"
+#include "MidComp/GlobalRect.h"
+#include "MidComp/IntersectingTag.h"
+#include "MidComp/BottomDogBubbleTag.h"
+#include "MidComp/InViewTag.h"
+#include "MidComp/NonPhysicalBubbleTag.h"
+#include "MidComp/BubbleLockedComponent.h"
+#include "MidComp/BubbleGateComponent.h"
+
+class BubbleIntersectSystem : public middle::MiddleGameplaySystem {
+public:
+
+	components::CompCache* bubbleCache;
+	components::CompCache* intersectingBubbleCache;
+	components::CompCache* unIntersectableBubbleCache;
+
+	void init(middle::GameState* gameState) {
+
+		systemUpdateType = middle::SystemUpdateType::INITFRAME;
+		systemModeType = middle::SystemModeType::GAMEPLAY;
+
+		bubbleCache = middle::newCompCache(gameState, systemName);
+		bubbleCache->addType<components::BubbleComponent>();
+		bubbleCache->addType<components::InViewTag>();
+		bubbleCache->addType<components::MouseIntersectable>();
+		bubbleCache->addType<components::Rectangle>();
+		bubbleCache->addType<components::GlobalRect>();
+		bubbleCache->addType<components::GlobalTransform>();
+		bubbleCache->addType<components::UnIntersectableWindowComponent>(components::NOTINTERESTED);
+		bubbleCache->addType<components::BottomDogBubbleTag>(components::NOTINTERESTED);
+		bubbleCache->addType<components::BubbleLockedComponent>(components::NOTINTERESTED);
+
+		intersectingBubbleCache = middle::newCompCache(gameState, systemName);
+		intersectingBubbleCache->addType<components::BubbleComponent>();
+		intersectingBubbleCache->addType<components::MouseIntersectable>();
+		intersectingBubbleCache->addType<components::Rectangle>();
+		intersectingBubbleCache->addType<components::GlobalRect>();
+		intersectingBubbleCache->addType<components::GlobalTransform>();
+		intersectingBubbleCache->addType<components::IntersectingTag>();
+		intersectingBubbleCache->addType<components::UnIntersectableWindowComponent>(components::NOTINTERESTED);
+		intersectingBubbleCache->addType<components::BubbleLockedComponent>(components::NOTINTERESTED);
+
+		unIntersectableBubbleCache = middle::newCompCache(gameState, systemName);
+		unIntersectableBubbleCache->addType<components::BubbleComponent>();
+		unIntersectableBubbleCache->addType<components::UnIntersectableWindowComponent>();
+	}
+
+	bool isPlacedRecursive(middle::GameState* gameState, middle::Id& id) {
+		auto& shape = middle::getShape(gameState, id.index);
+		auto placement = middle::getComponent<components::PlacementComponent>(shape);
+		if (placement) {
+			return true;
+		}
+		middle::Id parentId = middle::getParent(gameState, shape.id);
+		if (parentId.index != middle::UNASSIGNED) {
+			return isPlacedRecursive(gameState, parentId);
+		}
+		return false;
+	}
+
+
+	void update(middle::GameState* gameState) override {
+
+		auto unintersectableIt = unIntersectableBubbleCache->begin<components::UnIntersectableWindowComponent>();
+		for (middle::Id& id : unIntersectableBubbleCache->relevantIdVector) {
+			auto unIntersectable = *unintersectableIt;
+			unIntersectable->timeLeft -= gameState->middleInputState.frameTime;
+			if (unIntersectable->timeLeft <= 0) {
+				middle::queueComponentDeletion<components::UnIntersectableWindowComponent>(gameState, id);
+			}
+		}
+
+		// delete tag if not itersecting anymore
+		auto intersectingTransformIt = intersectingBubbleCache->begin<components::GlobalTransform>();
+		auto intersectingGlobalRectIt = intersectingBubbleCache->begin<components::GlobalRect>();
+		for (middle::Id id : intersectingBubbleCache->relevantIdVector) {
+			auto transform = *intersectingTransformIt;
+			auto globalR = *intersectingGlobalRectIt;
+			midMath::Vector3 pos = transform->pos;
+			midMath::Vector3 mousePos = midMath::RayCastLinePlane(pos, { 0,1,0 }, gameState->middleState.activeCamera.position, gameState->mouseState.mouseDir);
+			bool intersecting = mousePos.x > pos.x - globalR->width * 0.5f
+				&& mousePos.x < pos.x + globalR->width * 0.5f
+				&& mousePos.z > pos.z - globalR->height * 0.5f 
+				&& mousePos.z < pos.z + globalR->height * 0.5f;
+			if (!intersecting) {
+				middle::queueComponentDeletion<components::IntersectingTag>(gameState, id);
+			}
+		}
+
+		// add tag to newly intersecting shapes, and update intersecting top value 
+		auto bubbleIntersectableIt = bubbleCache->begin<components::MouseIntersectable>();
+		auto bubbleTransformIt = bubbleCache->begin<components::GlobalTransform>();
+		auto bubbleGlobalRadiusIt = bubbleCache->begin<components::GlobalRect>();
+		for (middle::Id id : bubbleCache->relevantIdVector) {
+			auto intersectable = *bubbleIntersectableIt;
+			auto transform = *bubbleTransformIt;
+			auto globalR = *bubbleGlobalRadiusIt;
+
+			midMath::Vector3 pos = transform->pos;
+			auto tag = middle::getComp<components::IntersectingTag>(gameState, id);
+			bool intersecting = tag != nullptr;
+
+			if (!intersecting) {
+				midMath::Vector3 mousePos = midMath::RayCastLinePlane(pos, { 0,1,0 }, gameState->middleState.activeCamera.position, gameState->mouseState.mouseDir);
+				intersecting = mousePos.x > pos.x - globalR->width * 0.5f
+					&& mousePos.x < pos.x + globalR->width * 0.5f
+					&& mousePos.z > pos.z - globalR->height * 0.5f
+					&& mousePos.z < pos.z + globalR->height * 0.5f;
+			}
+
+			if (intersecting) {
+				// check that children are not already intersecting or grabbing 
+				bool alreadyIntersecting = false;
+				std::vector<middle::Id>children;
+				middle::getAllChildren(gameState, id, children);
+				for (auto& childId : children) {
+					auto intersecting = middle::getComp<components::IntersectingTag>(gameState, childId);
+					if (intersecting) {
+						alreadyIntersecting = true;
+					}
+				}
+				if (!tag) {
+					tag = middle::attachComponent<components::IntersectingTag>(gameState, id);
+				}
+				if (tag) {
+					tag->intersectingTop = !alreadyIntersecting;
+				}
+			}
+		}
+
+
+	}
+};
+
+static middle::SystemRegistrar<BubbleIntersectSystem> reg("BubbleIntersectSystem");
