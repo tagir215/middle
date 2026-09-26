@@ -83,7 +83,7 @@ public:
 		auto unintersectableIt = unIntersectableBubbleCache->begin<components::UnIntersectableWindowComponent>();
 		for (middle::Id& id : unIntersectableBubbleCache->relevantIdVector) {
 			auto unIntersectable = *unintersectableIt;
-			unIntersectable->timeLeft -= gameState->middleState.frameTime;
+			unIntersectable->timeLeft -= gameState->middleInputState.frameTime;
 			if (unIntersectable->timeLeft <= 0) {
 				middle::queueComponentDeletion<components::UnIntersectableWindowComponent>(gameState, id);
 			}
@@ -96,7 +96,7 @@ public:
 			auto transform = *intersectingTransformIt;
 			auto globalR = *intersectingGlobalRectIt;
 			midMath::Vector3 pos = transform->pos;
-			midMath::Vector3 mousePos = midMath::RayCastLinePlane(pos, { 0,1,0 }, gameState->middleState.activeCamera.position, gameState->middleState.input.mouseDir);
+			midMath::Vector3 mousePos = midMath::RayCastLinePlane(pos, { 0,1,0 }, gameState->middleState.activeCamera.position, gameState->mouseState.mouseDir);
 			bool intersecting = mousePos.x > pos.x - globalR->width * 0.5f
 				&& mousePos.x < pos.x + globalR->width * 0.5f
 				&& mousePos.z > pos.z - globalR->height * 0.5f 
@@ -120,7 +120,7 @@ public:
 			bool intersecting = tag != nullptr;
 
 			if (!intersecting) {
-				midMath::Vector3 mousePos = midMath::RayCastLinePlane(pos, { 0,1,0 }, gameState->middleState.activeCamera.position, gameState->middleState.input.mouseDir);
+				midMath::Vector3 mousePos = midMath::RayCastLinePlane(pos, { 0,1,0 }, gameState->middleState.activeCamera.position, gameState->mouseState.mouseDir);
 				intersecting = mousePos.x > pos.x - globalR->width * 0.5f
 					&& mousePos.x < pos.x + globalR->width * 0.5f
 					&& mousePos.z > pos.z - globalR->height * 0.5f

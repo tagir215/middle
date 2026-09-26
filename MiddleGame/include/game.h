@@ -5,7 +5,7 @@
 
 extern "C"
 {
-	__declspec(dllexport) void UpdateGame(middle::GameState* gameState);
+	__declspec(dllexport) void UpdateGame(const middle::MiddleInputState& inputState, middle::MiddleOutputState** outputState);
 }
 
 void closeGame(middle::GameState* gameState);

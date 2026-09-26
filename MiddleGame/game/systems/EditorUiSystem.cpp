@@ -71,9 +71,9 @@ public:
 			}
 
 			ImGui::Begin("Control");
-			if (!gameState->middleState.paused) {
+			if (!gameState->paused) {
 				if (ImGui::Button("pause")) {
-					gameState->middleState.paused = true;
+					gameState->paused = true;
 				}
 				if (ImGui::Button("undo")) {
 					if (gameState->editorState.actionHistory.size() > 0) {
@@ -96,7 +96,7 @@ public:
 			}
 			else {
 				if (ImGui::Button("continue")) {
-					gameState->middleState.paused = false;
+					gameState->paused = false;
 					gameState->editorState.stepDir = 1;
 				}
 				if (ImGui::Button("next step")) {
@@ -109,7 +109,7 @@ public:
 				}
 			}
 			if (ImGui::Button("reset")) {
-				gameState->middleState.reset = true;
+				gameState->reset = true;
 			}
 			if (configs) {
 				if (ImGui::Button("increase grid")) {
@@ -122,22 +122,22 @@ public:
 				}
 			}
 			if (ImGui::Button("PLAY")) {
-				gameState->middleState.applicationMode = middle::ApplicationMode::GAME_MODE;
+				gameState->applicationMode = middle::ApplicationMode::GAME_MODE;
 			}
 			ImGui::End();
-			auto& input = gameState->middleState.input;
+			auto& input = gameState->middleInputState.editorInput;
 			ImGui::Begin("GameState");
 			ImGuiDisplayVector3("camera position", gameState->editorState.camera.position);
 			ImGuiDisplayVector3("camera up", gameState->editorState.camera.up);
 			ImGuiDisplayVector3("camera target", gameState->editorState.camera.target);
-			ImGuiDisplayVector2("mousePos", input.mousePos);
-			ImGuiDisplayVector3("mouse near plane pos", input.mouseNearPlanePos);
-			ImGuiDisplayVector2("mouse normalized pos", input.mouseNormalizedPos);
-			ImGuiDisplayVector3("mouse dir", input.mouseDir);
-			ImGuiDisplayVector3("mouse xz pos", input.mouseXZ_PlanePos);
-			ImGuiDisplayVector3("mouse xz vel", input.mouseXZ_PlaneVelocity);
-			ImGuiDisplayInt("screen width", gameState->middleState.screenWidth);
-			ImGuiDisplayInt("screen height", gameState->middleState.screenHeight);
+			ImGuiDisplayVector2("mousePos", { input.mouseX, input.mouseY });
+			ImGuiDisplayVector3("mouse near plane pos", gameState->mouseState.mouseNearPlanePos);
+			ImGuiDisplayVector2("mouse normalized pos", gameState->mouseState.mouseNormalizedPos);
+			ImGuiDisplayVector3("mouse dir", gameState->mouseState.mouseDir);
+			ImGuiDisplayVector3("mouse xz pos", gameState->mouseState.mouseXZ_PlanePos);
+			ImGuiDisplayVector3("mouse xz vel", gameState->mouseState.mouseXZ_PlaneVelocity);
+			ImGuiDisplayInt("screen width", gameState->middleInputState.screenWidth);
+			ImGuiDisplayInt("screen height", gameState->middleInputState.screenHeight);
 			ImGui::End();
 
 			ImGui::Begin("Editor");
@@ -380,7 +380,7 @@ public:
 		auto ui = [gameState]() {
 			ImGui::Begin("Control");
 			if (ImGui::Button("Edit")) {
-				gameState->middleState.applicationMode = middle::ApplicationMode::EDITOR_MODE;
+				gameState->applicationMode = middle::ApplicationMode::EDITOR_MODE;
 			}
 			ImGui::End();
 			};
@@ -391,10 +391,10 @@ public:
 	void update(middle::GameState* gameState) override {
 
 
-		if (gameState->middleState.applicationMode == middle::ApplicationMode::EDITOR_MODE) {
+		if (gameState->applicationMode == middle::ApplicationMode::EDITOR_MODE) {
 			editorUi(gameState);
 		}
-		if (gameState->middleState.applicationMode == middle::ApplicationMode::GAME_MODE) {
+		if (gameState->applicationMode == middle::ApplicationMode::GAME_MODE) {
 			gameEditorUi(gameState);
 		}
 	}

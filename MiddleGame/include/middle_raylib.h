@@ -3,7 +3,6 @@
 #include <chrono>
 #include <thread>
 #include <rlImGui.h>
-#include "game_state.h"
 #include "game.h"
 #include "sound_helper.h"
 #include "init_external_systems.h"
@@ -24,13 +23,14 @@ static const char* TEMP_DLL_NAME = "Release/game.load";
 bool gameMode = true;
 #endif
 
-std::unique_ptr<middle::GameState> gameState;
 struct RayState{
 	Font globalFont;
-	std::unordered_map<std::string, Sound>soundMap;
+	std::vector<Sound>sounds;
+	std::vector<Texture>textures;
+	std::vector<Shader>shaders;
 };
 
-void UpdateGame(middle::GameState* gameState);
+void UpdateGame(const middle::MiddleInputState& inputState, middle::MiddleOutputState** outputState);
 void ReloadGameDLL();
 
 typedef decltype(UpdateGame) UpdateGameType;
@@ -38,49 +38,29 @@ static UpdateGameType* updateGamePtr;
 
 class MiddleRaylibEngine {
 
+const int fps = 60;
+
 public:
 	RayState rayState;
+	float frameTimeAccumulator = 0;
+	middle::MiddleOutputState* outputState = nullptr;
 
 	void init() {
-		const int fps = 60;
 		SetTargetFPS(fps);               
 		rlImGuiSetup(true);
 
-		gameState = std::make_unique<middle::GameState>();
-		bubbleAssets::loadAssets(gameState.get());
+		bubbleAssets::loadAssets(rayState.shaders, rayState.textures);
+		bubbleAssets::loadGlobalFont(rayState.globalFont);
+	}
+
+	middle::MiddleInputState updateInputState() {
+		middle::MiddleInputState inputState;
 		const float fixedTimeStep = 1.0f / (float)fps;
-		gameState->middleState.frameTime = fixedTimeStep;
-		if (gameMode) {
-			gameState->middleState.applicationMode = middle::ApplicationMode::GAME_MODE;
-			gameState->middleState.releaseBuild = true;
-		}
-		gameState->middleState.startGame = true;
-
-
-		// load font TODO move somewhere
-		int codepoints[] = {
-			// Basic ASCII (32 to 126) for standard numbers and text
-			32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49,
-			50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67,
-			68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85,
-			86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99, 100, 101, 102,
-			103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116,
-			117, 118, 119, 120, 121, 122, 123, 124, 125, 126,
-
-			// Custom Math Codepoints
-			0x00D7,   // Multiplication sign (×)
-			0x22C5,   // Dot operator (⋅)
-			0x2211,    // Summation operator (∑)
-		};
-		int codepointCount = sizeof(codepoints) / sizeof(codepoints[0]);
-		const int fontUnitFactor = 1024;
-		std::string fontPath = std::string(middlePaths::FONTS_FOLDER) + "/math-sans/NotoSansMath-Regular.ttf";
-		rayState.globalFont = LoadFontEx(fontPath.c_str(), fontUnitFactor, codepoints, codepointCount);
-		GenTextureMipmaps(&rayState.globalFont.texture);
-		SetTextureFilter(rayState.globalFont.texture, TEXTURE_FILTER_TRILINEAR);
-
-		std::unordered_map<std::string, Sound>soundMap;
-		middleSoundHelpers::loadSoundEffects(soundMap, gameState.get());
+		inputState.frameTime = fixedTimeStep;
+		inputState.frameTimeAccumulator = frameTimeAccumulator + GetFrameTime();
+		inputState.screenWidth = GetScreenWidth();
+		inputState.screenHeight = GetScreenHeight();
+		return inputState;
 	}
 
 	void start() {
@@ -93,26 +73,21 @@ public:
 			//----------------------------------------------------------------------------------
 			ReloadGameDLL();
 
-			gameState->middleState.screenWidth = GetScreenWidth();
-			gameState->middleState.screenHeight = GetScreenHeight();
+			auto inputState = updateInputState();
+			InputSystem::update(&inputState, outputState);
 
-			InputSystem::update(&gameState->middleState);
+			UpdateGame(inputState, &outputState);
 
-			gameState->middleState.frameTimeAccumulator += GetFrameTime();
-			UpdateGame(gameState.get());
+			renderer::RendererSystem::update(outputState, rayState.globalFont, rayState.shaders, rayState.textures, false);
 
-			renderer::RendererSystem::update(&gameState->middleState, rayState.globalFont, false);
-
-			gameState->debugInfo.clear();
-
-			if (gameState->middleState.closeGame) {
+			if (outputState->closeGame) {
 				break;
 			}
 		}
 
-		gameState->middleState.closeGame = true;
-		UpdateGame(gameState.get());
-
+		auto inputState = updateInputState();
+		inputState.closeGame = true;
+		UpdateGame(inputState, &outputState);
 	}
 
 };
@@ -120,9 +95,9 @@ public:
 
 
 
-void UpdateGame(middle::GameState* gameState)
+void UpdateGame(const middle::MiddleInputState& inputState, middle::MiddleOutputState** outputState)
 {
-	updateGamePtr(gameState);
+	updateGamePtr(inputState, outputState);
 }
 
 void ReloadGameDLL()
@@ -170,9 +145,6 @@ void ReloadGameDLL()
 			return;
 		}
 		gameDLL = platform_load_dynamic_library(loadPath.data());
-
-		gameState->middleState.reload = true;
-		gameState->systemsRegistered = false;
 
 		updateGamePtr = (UpdateGameType*)platform_load_dynamic_function(gameDLL, "UpdateGame");
 		lastWriteTime = writeTime;

@@ -20,7 +20,7 @@ public:
 		for (int i = 0; i < cache->getSize(); ++i) {
 			auto timer = *timerIt;
 			middle::Id& id = cache->relevantIdVector[i];
-			timer->timeLeft -= gameState->middleState.frameTime;
+			timer->timeLeft -= gameState->middleInputState.frameTime;
 			if (timer->timeLeft < 0) {
 				middle::queueComponentDeletion<components::TimerComponent>(gameState, id);
 			}

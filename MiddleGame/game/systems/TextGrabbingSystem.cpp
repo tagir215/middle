@@ -34,7 +34,7 @@ class TextGrabbingSystem : public middle::MiddleGameplaySystem {
 			// check intersection with mouse
 			float axisX = rect->width * 0.5f;
 			float axisZ = rect->height * 0.5f;
-			midMath::Vector3& mousePos = gameState->middleState.input.mouseXZ_PlanePos;
+			midMath::Vector3& mousePos = gameState->mouseState.mouseXZ_PlanePos;
 			bool intersecting = mousePos.x > transform->pos.x - axisX && mousePos.x < transform->pos.x + axisX
 				&& mousePos.z > transform->pos.z - axisZ && mousePos.z < transform->pos.z + axisZ;
 
@@ -49,7 +49,7 @@ class TextGrabbingSystem : public middle::MiddleGameplaySystem {
 			gameState->middleState.renderData.push_back(item);
 
 
-			if (intersecting && gameState->middleState.input.mouseClicked) {
+			if (intersecting && gameState->middleInputState.editorInput.mouseClicked) {
 				middle::Id copyId = middle::deepCopyShapeGlobalCoordinates(gameState, id);
 				middle::EditorActionRemoveFromLoop(copyId.index).execute(gameState);
 				middle::attachComponent<components::GrabbedTag>(gameState, copyId);
@@ -57,13 +57,13 @@ class TextGrabbingSystem : public middle::MiddleGameplaySystem {
 		}
 
 		for (middle::Id& id : grabbedCache->relevantIdVector) {
-			if (gameState->middleState.input.mouseReleased) {
+			if (gameState->middleInputState.editorInput.mouseReleased) {
 				auto del = std::make_shared<middle::EditorActionDeleteSingle>(id);
 				middle::queueAction(gameState, del);
 				continue;
 			}
 
-			middle::moveShape(gameState, id.index, gameState->middleState.input.mouseXZ_PlaneVelocity * gameState->middleState.frameTime);
+			middle::moveShape(gameState, id.index, gameState->mouseState.mouseXZ_PlaneVelocity * gameState->middleInputState.frameTime);
 		}
 	}
 };

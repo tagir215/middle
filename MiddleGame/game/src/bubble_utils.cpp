@@ -194,7 +194,7 @@ namespace bubble {
 
 	bool buttonClicked(middle::GameState* gameState, middle::Shape& shape, int function)
 	{
-		if (!gameState->middleState.input.mouseClicked) {
+		if (!gameState->middleInputState.editorInput.mouseClicked) {
 			return false;
 		}
 		auto button = middle::getComponent<components::Button>(shape);

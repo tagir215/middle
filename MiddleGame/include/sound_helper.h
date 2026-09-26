@@ -5,11 +5,9 @@
 #include "midconfig.h"
 
 namespace middleSoundHelpers{
-	void loadSoundEffects(std::unordered_map<std::string, Sound>& soundMap, middle::GameState* gameState)
+	void loadSoundEffects(std::unordered_map<std::string, Sound>& soundMap)
 	{
 		namespace fs = std::filesystem;
-		std::vector<std::string>& soundFileNames = gameState->sceneNames;
-
 		std::string folder = std::string(middlePaths::SOUNDS_FOLDER) + "/";
 		for (const auto& entry : fs::directory_iterator(folder)) {
 			std::string name = entry.path().stem().string();

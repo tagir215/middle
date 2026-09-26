@@ -34,12 +34,12 @@ namespace MouseSelectionSystem {
 
 		void update(middle::GameState* gameState) override {
 
-			if (gameState->middleState.input.mouseClicked) {
+			if (gameState->middleInputState.editorInput.mouseClicked) {
 				gameState->editorState.selectChangeCountAfterClick = 0;
 			}
 
 			if (gameState->editorState.creationMode == middle::CreationMode::LOOP_MODE) {
-				if (gameState->middleState.input.mouseClicked || gameState->editorState.selectCount > 1) {
+				if (gameState->middleInputState.editorInput.mouseClicked || gameState->editorState.selectCount > 1) {
 					unselect();
 				}
 			}
@@ -60,19 +60,19 @@ namespace MouseSelectionSystem {
 				}
 
 				// when holding down, don't immediatedly toggle once when starting intersect
-				if (intersecting && intersecting->framesIntersected < 2 && intersecting->intersectingTop && gameState->middleState.input.mouseHeld) {
+				if (intersecting && intersecting->framesIntersected < 2 && intersecting->intersectingTop && gameState->middleInputState.editorInput.mouseHeld) {
 					selectable->selected = !selectable->selected;
 					++gameState->editorState.selectChangeCountAfterClick;
 				}
 
 				// toggle selection when clicking
-				if (intersecting && intersecting->intersectingTop && gameState->middleState.input.mouseClicked) {
+				if (intersecting && intersecting->intersectingTop && gameState->middleInputState.editorInput.mouseClicked) {
 					selectable->selected = !selectable->selected;
 					++gameState->editorState.selectChangeCountAfterClick;
 				}
 
 				// grabbing activates selected if there's no selections yet, except can't grab constraints
-				if (intersecting && intersecting->intersectingTop && gameState->middleState.input.grabDown && gameState->editorState.selectCount == 0) {
+				if (intersecting && intersecting->intersectingTop && gameState->middleInputState.editorInput.grabDown && gameState->editorState.selectCount == 0) {
 					auto constraint = middle::getComponent<components::Constraint>(shape);
 					if (!constraint) {
 						selectable->selected = true;
@@ -96,7 +96,7 @@ namespace MouseSelectionSystem {
 			}
 
 			// unselect
-			if (gameState->middleState.input.mouseReleased && gameState->editorState.selectChangeCountAfterClick == 0) {
+			if (gameState->middleInputState.editorInput.mouseReleased && gameState->editorState.selectChangeCountAfterClick == 0) {
 				unselect();
 			}
 

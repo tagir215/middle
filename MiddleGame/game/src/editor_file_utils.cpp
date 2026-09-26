@@ -78,6 +78,7 @@ namespace middle {
 		if (gameState->bubbleAlgebraState.bubbleActions.size() > 0) {
 			gameState->bubbleAlgebraState.bubbleActions.clear();
 		}
+		gameState->reset = false;
 	}
 
 

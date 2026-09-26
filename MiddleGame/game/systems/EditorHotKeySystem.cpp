@@ -14,7 +14,7 @@ public:
 
 	}
 	void update(middle::GameState* gameState) override {
-		auto& input = gameState->middleState.input;
+		auto& input = gameState->middleInputState.editorInput;
 
 		if (input.selectModeClick) {
 			gameState->editorState.creationMode = middle::CreationMode::SELECT_MODE;
@@ -35,7 +35,7 @@ public:
 		if (gameState->editorState.creationMode != middle::CreationMode::SELECT_MODE) {
 
 			if (gameState->editorState.creationMode == middle::CreationMode::SPHERE_MODE && input.newThing) {
-				middle::queueEditorAction(gameState, std::make_shared<middle::EditorActionNewSphere>(input.mouseXZ_PlanePos));
+				middle::queueEditorAction(gameState, std::make_shared<middle::EditorActionNewSphere>(gameState->mouseState.mouseXZ_PlanePos));
 			}
 			if (gameState->editorState.creationMode == middle::CreationMode::CONSTRAINT_MODE) {
 				std::vector<int> selectedIndexes = middle::getSelectedShapes(gameState);

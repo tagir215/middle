@@ -108,7 +108,7 @@ namespace middle {
 
 		// set position to mouse pos
 		if (memberIndexes.size() == 0) {
-			entities::initLoop(gameState, newIndex, ids, gameState->middleState.input.mouseXZ_PlanePos);
+			entities::initLoop(gameState, newIndex, ids, gameState->mouseState.mouseXZ_PlanePos);
 		}
 		// set position to centroid
 		else {
@@ -140,7 +140,7 @@ namespace middle {
 	void EditorActionLoadScene::execute(GameState* gameState)
 	{
 		middle::resetScene(gameState);
-		gameState->middleState.reload = true;
+		// reload?
 
 		gameState->activeSceneName = sceneName;
 		gameState->loopIndex = 0;
@@ -159,8 +159,7 @@ namespace middle {
 		gameState->sceneNames.push_back(sceneName);
 		int index = gameState->sceneNames.size() - 1;
 		gameState->activeSceneName = sceneName;
-		gameState->middleState.reload = true;
-		gameState->middleState.reset = true;
+		gameState->reset = true;
 		saveScene(gameState, sceneName);
 	}
 

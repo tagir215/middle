@@ -18,7 +18,7 @@ inline static Transform toRTransform(const midPrimitive::Transform& tra) {
 		toRVec(tra.scale)
 	};
 }
-inline static Camera3D toRCam(midPrimitive::Camera& cam) {
+inline static Camera3D toRCam(const midPrimitive::Camera& cam) {
 	return Camera3D{
 		toRVec(cam.position),
 		toRVec(cam.target),

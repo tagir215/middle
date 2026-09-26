@@ -58,7 +58,7 @@ namespace renderer {
 		return vertices;
 	}
 
-	static void drawRect(middle::MiddleState* middleState, const std::vector<Vector3>& vertices, const midPrimitive::Color& color) {
+	static void drawRect(const std::vector<Vector3>& vertices, const midPrimitive::Color& color) {
 		Color rcolor = toRColor(color);
 		DrawLine3D(vertices[0], vertices[1], rcolor);
 		DrawLine3D(vertices[1], vertices[2], rcolor);
@@ -66,12 +66,7 @@ namespace renderer {
 		DrawLine3D(vertices[3], vertices[0], rcolor);
 	}
 
-	static void draw3D(middle::MiddleState* middleState, bool disabledDepthTest, const Camera& camera, int layerPass = 0) {
-
-		if (middleState->applicationMode == middle::ApplicationMode::EDITOR_MODE) {
-			// center indicator
-			DrawCube({ 0,5,0 }, 5, 5, 5, BLACK);
-		}
+	static void draw3D(const middle::MiddleOutputState* const middleState, bool disabledDepthTest, const Camera& const camera, const std::vector<Shader>& shaders, const std::vector<Texture>& textures, int layerPass = 0) {
 
 
 		rlSetClipPlanes(middleState->nearPlaneDistance, middleState->farPlaneDistance);
@@ -103,7 +98,7 @@ namespace renderer {
 				pos.y += item.layer * layerGap;
 				if (item.color.a != 0) {
 					std::vector<Vector3>vertices = getRectVertices(item.center, item.scale, item.width, item.height);
-					drawRect(middleState, vertices, item.color);
+					drawRect(vertices, item.color);
 				}
 				if (item.backgroundColor.a != 0) {
 					DrawCube(toRVec(item.center), item.width, item.length, item.height, toRColor(item.backgroundColor));
@@ -187,14 +182,16 @@ namespace renderer {
 				rlLoadIdentity();
 				rlMultMatrixf(MatrixToFloatV(M).v);
 				Vector3 pos = toRVec(item.center);
-				if (item.texture == nullptr) {
+				if (item.texture == middleAssets::TEXTURE::TEXTURE_NONE) {
 					DrawCube(pos, 4, 4, 4, BLACK);
 				}
 				else {
-					if (item.shader)
-						BeginShaderMode(toRShader(*item.shader));
-					DrawBillboard(camera, toRTexture(*item.texture), pos, item.textureScale, toRColor(item.color));
-					if (item.shader)
+					if (item.shader != middleAssets::SHADER::SHADER_NONE)
+						BeginShaderMode(shaders[item.shader]);
+
+					DrawBillboard(camera, textures[item.texture], pos, item.textureScale, toRColor(item.color));
+
+					if (item.shader != middleAssets::SHADER::SHADER_NONE)
 						EndShaderMode();
 				}
 				rlPopMatrix();
@@ -214,11 +211,11 @@ namespace renderer {
 				Vector2 scale = { item.textureScale, item.textureScale };
 				Vector2 origin = { scale.x * 0.5f, scale.y * 0.5f };
 				float rotation = 0;
-				if (item.texture == nullptr) {
+				if (item.texture == middleAssets::TEXTURE_NONE) {
 					DrawCube(pos, 4, 4, 4, BLACK);
 				}
 				else {
-					DrawBillboardPro(camera, toRTexture(*item.texture), backgroundRect, pos, up, scale, origin, rotation, toRColor(item.color));
+					DrawBillboardPro(camera, textures[item.texture], backgroundRect, pos, up, scale, origin, rotation, toRColor(item.color));
 				}
 				rlPopMatrix();
 			}
@@ -228,9 +225,9 @@ namespace renderer {
 		EndMode3D();
 	}
 
-	static void drawText(middle::MiddleState* middleState, bool uiText, const Font& font, const Camera& camera) {
+	static void drawText(const middle::MiddleOutputState* const middleState, bool uiText, const Font& font, const Camera& camera) {
 		for (int i = 0; i < middleState->renderData.size(); ++i) {
-			middle::RenderItem& item = middleState->renderData[i];
+			const middle::RenderItem& item = middleState->renderData[i];
 			if (item.disableDepthTest != uiText) {
 				continue;
 			}
@@ -255,7 +252,7 @@ namespace renderer {
 
 	class RendererSystem {
 	public:
-		static void update(middle::MiddleState* middleState, const Font& font, bool releaseBuild)  {
+		static void update(const middle::MiddleOutputState* const middleState, const Font& font, const std::vector<Shader>& shaders, const std::vector<Texture>& textures, bool releaseBuild)  {
 
 			BeginDrawing();
 
@@ -265,7 +262,7 @@ namespace renderer {
 			Camera camera = toRCam(middleState->activeCamera);
 
 			BeginMode3D(camera);
-			draw3D(middleState, false, camera);
+			draw3D(middleState, false, camera, shaders, textures);
 			EndMode3D();
 
 			drawText(middleState, false, font, camera);
@@ -274,7 +271,7 @@ namespace renderer {
 			for (int i = -1; i < maxLayers; ++i) {
 				BeginMode3D(camera);
 				rlDisableDepthTest();
-				draw3D(middleState, true, camera, i);
+				draw3D(middleState, true, camera, shaders, textures, i);
 				rlEnableDepthTest();
 				EndMode3D();
 			}
@@ -289,20 +286,14 @@ namespace renderer {
 			if (!releaseBuild) {
 				rlImGuiBegin();
 
-				while (middleState->uiSetups.size() > 0) {
-					middleState->uiSetups.back()();
-					middleState->uiSetups.pop_back();
+				for (const auto& ui : middleState->uiSetups) {
+					ui();
 				}
 
 				rlImGuiEnd();
 			}
-			else {
-				middleState->uiSetups.clear();
-			}
 
 			EndDrawing();
-
-			middleState->renderData.clear();
 		}
 	};
 

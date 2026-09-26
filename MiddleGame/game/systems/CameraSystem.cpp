@@ -21,11 +21,11 @@ public:
 
 	void update(middle::GameState* gameState) override {
 
-		if (gameState->middleState.applicationMode == middle::ApplicationMode::EDITOR_MODE) {
-			auto& input = gameState->middleState.input;
+		if (gameState->applicationMode == middle::ApplicationMode::EDITOR_MODE) {
+			auto& input = gameState->middleInputState.editorInput;
 			// camera controls
 			const float maxCameraSpeed = 60;
-			float mouseCamRatio = input.mousePos.y / gameState->middleState.screenHeight;
+			float mouseCamRatio = input.mouseY / gameState->middleInputState.screenHeight;
 			const float cameraSpeed = mouseCamRatio * mouseCamRatio * mouseCamRatio * maxCameraSpeed;
 			midMath::Vector3 cameraMovementDir = { 0,0,0 };
 			if (!input.altDown && input.w)
@@ -47,7 +47,7 @@ public:
 			gameState->middleState.activeCamera = gameState->editorState.camera;
 		}
 
-		if (gameState->middleState.applicationMode == middle::ApplicationMode::GAME_MODE) {
+		if (gameState->applicationMode == middle::ApplicationMode::GAME_MODE) {
 			auto cameraIt = cameraCache->begin<components::CameraComponent>();
 			for (int i = 0; i < cameraCache->getSize(); ++i) {
 				auto cameraComponent = *cameraIt;

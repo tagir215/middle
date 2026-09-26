@@ -10,13 +10,8 @@ namespace middle {
 	};
 
 	struct EditorInput {
-		midMath::Vector2 mousePos;
-		midMath::Vector2 mouseNormalizedPos;
-		midMath::Vector3 mouseNearPlanePos;
-		midMath::Vector3 mouseXZ_PlanePos;
-		midMath::Vector3 mouseXZ_PlaneVelocity;
-		midMath::Vector3 mouseDir;
-		midMath::Matrix screenOrientorM;
+		float mouseX;
+		float mouseY;
 		bool mouseClicked = false;
 		bool mouseReleased = false;
 		bool mouseHeld = false;
@@ -51,6 +46,7 @@ namespace middle {
 		bool newThing = false;
 		bool reparentClick = false;
 		bool seaprateFromParentClick = false;
+		bool nextScene = false;
 	};
 
 	struct GameInput {

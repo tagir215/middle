@@ -42,10 +42,10 @@ set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
 # globbing
 file(GLOB SOURCES "${MIDDLE_GAME_DIR}/game/src/*.cpp")
 file(GLOB HEADERS "${MIDDLE_GAME_DIR}/include/*.h")
+file(GLOB ENTITIES_HEADERS "${MIDDLE_GAME_DIR}/game/middleEntities/*.h")
 file(GLOB SYSTEM_SOURCES "${SYSTEMS_DIR}/*.cpp")
 file(GLOB COMPONENT_HEADERS "${MIDDLE_COMPONENTS_DIR}/*.h")
 file(GLOB COMPONENT_SOURCES "${MIDDLE_COMPONENTS_DIR}/MidComp/*.cpp")
-file(GLOB ENTITIES_HEADERS "${MIDDLE_RAYLIB_DIR}/middle/middleEntities/*.h")
 
 # library game, (it's not only game, TODO rename)
 add_library(game SHARED 
@@ -57,8 +57,8 @@ add_library(game SHARED
     ${ENTITIES_HEADERS}
 )
 target_include_directories(game PUBLIC ${MIDDLE_GAME_DIR}/include)
+target_include_directories(game PUBLIC ${MIDDLE_GAME_DIR}/game/middleEntities)
 target_include_directories(game PUBLIC ${MIDDLE_COMPONENTS_DIR})
-target_include_directories(game PUBLIC ${MIDDLE_RAYLIB_DIR}/middle/middleEntities)
 
 # raylib middle implementation
 add_executable(middle 

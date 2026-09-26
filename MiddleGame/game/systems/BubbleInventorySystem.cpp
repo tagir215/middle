@@ -46,7 +46,7 @@ public:
 	void update(middle::GameState* gameState) override {
 		const float bubbleScaleRatioWithScreenHeight = 0.1f;
 		const float distanceFromNearPlane = 900;
-		const float screenAxisY = gameState->middleState.nearPlaneAxisY / gameState->middleState.nearPlaneDistance * distanceFromNearPlane;
+		const float screenAxisY = gameState->nearPlaneAxisY / gameState->middleState.nearPlaneDistance * distanceFromNearPlane;
 		const float spacing = bubble::bubbleAxis * 0.4f;
 		const float scale = 1;
 		const midMath::Vector3 itemScale = {scale,scale,scale};

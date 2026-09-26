@@ -1,6 +1,9 @@
 #pragma once
-#include "game_state.h"
+#include <unordered_map>
+#include <raylib.h>
+#include <string>
 
 namespace bubbleAssets{
-	void loadAssets(middle::GameState* gameState);
+	void loadAssets(std::vector<Shader>& shaders, std::vector<Texture>& textures);
+	void loadGlobalFont(Font& font);
 }

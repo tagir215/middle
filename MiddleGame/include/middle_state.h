@@ -5,6 +5,7 @@
 #include <functional>
 #include "input.h"
 #include <set>
+#include "asset_enums.h"
 
 namespace middle {
 
@@ -50,9 +51,10 @@ namespace middle {
 		int fontSize = 10;
 		bool disableDepthTest = false;
 		std::string text = "";
-		midPrimitive::Model* model = nullptr;
-		midPrimitive::Texture2D* texture = nullptr;
-		midPrimitive::Shader* shader = nullptr;
+		middleAssets::MODEL model;
+		middleAssets::TEXTURE texture;
+		middleAssets::SHADER shader;
+
 
 		RenderItem() {
 			transform.translation = { 0,0,0 };
@@ -66,36 +68,29 @@ namespace middle {
 		GAME_MODE,
 	};
 
-	struct MiddleState {
-		bool paused = false;
+	struct MiddleInputState {
 		bool closeGame = false;
-		bool startGame = false;
-		bool reload = true;
-		bool reset = false;
-		bool loaded = false;
-		bool quit = false;
 		bool releaseBuild = false;
-
 		float aspectRatio;
 		float screenWidth;
 		float screenHeight;
 		float frameTime;
 		float frameTimeAccumulator = 0;
-		float nearPlaneAxisX = 0;
-		float nearPlaneAxisY = 0;
-		const double nearPlaneDistance = 10;
-		const double farPlaneDistance = 4000;
+		EditorInput editorInput;
+		GameInput gameInput;
+		EqulabInput equlabInput;
+	};
 
+	struct MiddleOutputState {
 		std::vector<middle::RenderItem> renderData;
 		std::vector<std::function<void()>>uiSetups;
 		midPrimitive::Color backgroundColor = { 188, 144, 181, 255 };
 		midPrimitive::Camera activeCamera;
-		ApplicationMode applicationMode;
-
-		EditorInput input;
-		GameInput gameInput;
-		EqulabInput equlabInput;
 		std::set<InputBlockers> inputBlockers;
+		float frameTimeAccumulator = 0;
+		double nearPlaneDistance = 10;
+		double farPlaneDistance = 4000;
+		bool closeGame;
 	};
 
 }

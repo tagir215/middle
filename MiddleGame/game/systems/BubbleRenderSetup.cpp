@@ -48,6 +48,7 @@
 #include "MidComp/InViewTag.h"
 #include "MidComp/BubbleLockedComponent.h"
 #include "MidComp/BubbleManipulatable.h"
+#include "asset_enums.h"
 
 
 class BubbleRenderSetup : public middle::MiddleGameplaySystem {
@@ -267,12 +268,12 @@ public:
 	}
 
 	void renderBubbleIcon(middle::GameState* gameState, components::GlobalTransform* transform, float height, 
-		const std::string& textureName, int layer, IconPos pos) {
+		const middleAssets::TEXTURE iconTexture, int layer, IconPos pos) {
 
 		middle::RenderItem icon;
 		icon.type = middle::RenderItemType::BILLBOARD;
-		icon.shader = &gameState->shaderMap[bubbleShaderNames::BUBBLE_SHADER].shader;
-		icon.texture = &gameState->textureMap[textureName].texture;
+		icon.shader = middleAssets::BUBBLE_SHADER;
+		icon.texture = iconTexture;
 		icon.layer = layer;
 		setTransform(icon, transform);
 		icon.transform.scale.x *= scaleCorrection;
@@ -306,7 +307,7 @@ public:
 
 		float camDist = gameState->middleState.activeCamera.position.y;
 		// todo... is cosntant
-		float axisY = gameState->middleState.nearPlaneAxisY / gameState->middleState.nearPlaneDistance * -camDist;
+		float axisY = gameState->nearPlaneAxisY / gameState->middleState.nearPlaneDistance * -camDist;
 
 		const float firstStepScale = axisY / bubble::bubbleAxis;
 
@@ -389,8 +390,8 @@ public:
 
 		middle::RenderItem texture;
 		texture.type = middle::RenderItemType::BILLBOARD;
-		texture.shader = &gameState->shaderMap[bubbleShaderNames::BUBBLE_SHADER].shader;
-		texture.texture = &gameState->textureMap[bubbleTextureNames::TEXTURE_BACKGROUND].texture;
+		texture.shader = middleAssets::BUBBLE_SHADER;
+		texture.texture = middleAssets::BACKGROUND;
 		texture.layer = layer;
 		setTransform(texture, transform);
 		texture.transform.scale.x *= scaleCorrection;
@@ -450,7 +451,7 @@ public:
 			auto rect = *logicRectIt;
 			Color color = calculateFadedColor(gameState, bubbleColors::LOGIC, transform, getLayer(gameState, layer));
 			renderBubble(gameState, getLayer(gameState, layer), color, transform);
-			renderBubbleIcon(gameState, transform, rect->height, bubbleTextureNames::TEXTURE_AND_GATE, getLayer(gameState, layer) + 1, IconPos::TOP);
+			renderBubbleIcon(gameState, transform, rect->height, middleAssets::AND_ICON, getLayer(gameState, layer) + 1, IconPos::TOP);
 		}
 
 		auto gateLayerIt = gateCache->begin<components::Layer>();
@@ -473,7 +474,7 @@ public:
 			renderBubble(gameState, getLayer(gameState, layer), fadedColor, transform);
 
 			if (gate->status != components::BubbleGateStatus::OPEN) {
-				renderBubbleIcon(gameState, transform, rect->height, bubbleTextureNames::TEXTURE_CLOSED_GATE, getLayer(gameState, layer) + 1, IconPos::CENTER);
+				renderBubbleIcon(gameState, transform, rect->height, middleAssets::GATE_ICON, getLayer(gameState, layer) + 1, IconPos::CENTER);
 			}
 		}
 

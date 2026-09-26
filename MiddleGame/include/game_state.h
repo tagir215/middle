@@ -71,6 +71,8 @@ namespace middle {
 		int historySinkDepth = 0;
 		std::vector<std::shared_ptr<EditorActionContainer>>actionHistory;
 		bool grabbing = false;
+		bool startGame = true;
+		bool reload = false;
 	};
 
 
@@ -128,10 +130,28 @@ namespace middle {
 	typedef int shapeIndex;
 	typedef int componentType;
 
+	struct MouseState {
+		midMath::Vector2 mousePos;
+		midMath::Vector2 mouseNormalizedPos;
+		midMath::Vector3 mouseNearPlanePos;
+		midMath::Vector3 mouseDir;
+		midMath::Vector3 mouseXZ_PlanePos;
+		midMath::Vector3 mouseXZ_PlaneVelocity;
+	};
+
 	struct GameState {
 	public:
+		MiddleInputState middleInputState;
+		MiddleOutputState middleState;
+		ApplicationMode applicationMode;
+		MouseState mouseState;
+		bool paused = false;
+		bool reset = false;
+		bool loaded = false;
+		float nearPlaneAxisX = 0;
+		float nearPlaneAxisY = 0;
+		float aspectRatio;
 		bool systemsRegistered = false;
-		MiddleState middleState;
 		EditorState editorState;
 		// shapes
 		std::array<Id, MAX_SHAPE_COUNT>ids;
@@ -168,8 +188,6 @@ namespace middle {
 		std::queue<std::shared_ptr<EditorActionContainer>>actionQueue;
 		std::queue<std::shared_ptr<EditorActionContainer>>undoQueue;
 		std::vector<ModelContainer> loadedModels;
-		std::unordered_map<std::string, TextureContainer>textureMap;
-		std::unordered_map<std::string, ShaderContainer>shaderMap;
 		std::queue<std::string>modelsToLoadQueue;
 		std::queue<midPrimitive::Sound>soundQueue;
 		std::vector<std::shared_ptr<Animation>>animations;

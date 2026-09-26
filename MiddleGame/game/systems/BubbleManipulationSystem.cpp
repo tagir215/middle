@@ -49,8 +49,8 @@ public:
 		float yDistance = std::abs(cameraPos.y);
 		if (yDistance == 0)
 			yDistance = 0.001f;
-		midMath::Vector3 xzVel = Vector3Scale(gameState->middleState.input.mouseXZ_PlaneVelocity, objYDistance / yDistance);
-		moveShape(gameState, shape.id.index, Vector3Scale(xzVel, gameState->middleState.frameTime));
+		midMath::Vector3 xzVel = Vector3Scale(gameState->mouseState.mouseXZ_PlaneVelocity, objYDistance / yDistance);
+		moveShape(gameState, shape.id.index, Vector3Scale(xzVel, gameState->middleInputState.frameTime));
 	}
 
 	void attachNonPhysical(middle::GameState* gameState, middle::Id id) {
@@ -65,7 +65,7 @@ public:
 	void attachComponents(middle::GameState* gameState, middle::Shape& shape, components::MouseGrabbable* grabbable) {
 
 		bool intersecting = bubble::isIntersecting(gameState, shape);
-		if (gameState->middleState.input.mouseClicked && intersecting && gameState->bubbleAlgebraState.grabbedId.index == middle::UNASSIGNED) {
+		if (gameState->middleInputState.editorInput.mouseClicked && intersecting && gameState->bubbleAlgebraState.grabbedId.index == middle::UNASSIGNED) {
 
 			// copy as grabbed
 			middle::Id oldParentId = middle::getParent(gameState, shape.id);
@@ -83,7 +83,7 @@ public:
 		}
 
 
-		if (gameState->bubbleAlgebraState.grabbedId.index != middle::UNASSIGNED && grabbable->grabbing && !gameState->middleState.input.mouseHeld) {
+		if (gameState->bubbleAlgebraState.grabbedId.index != middle::UNASSIGNED && grabbable->grabbing && !gameState->middleInputState.editorInput.mouseHeld) {
 			// set grabbable for deletion
 			grabbable->grabbing = false;
 			gameState->bubbleAlgebraState.grabbedId = middle::Id();
@@ -95,16 +95,16 @@ public:
 	void update(middle::GameState* gameState) override {
 
 		// todo figure input stuff at some point
-		if (gameState->middleState.gameInput.one ||
-			gameState->middleState.gameInput.two ||
-			gameState->middleState.gameInput.three ||
-			gameState->middleState.gameInput.four ||
-			gameState->middleState.gameInput.five ||
-			gameState->middleState.gameInput.six ||
-			gameState->middleState.gameInput.seven ||
-			gameState->middleState.gameInput.eight ||
-			gameState->middleState.gameInput.nine ||
-			gameState->middleState.gameInput.zero
+		if (gameState->middleInputState.gameInput.one ||
+			gameState->middleInputState.gameInput.two ||
+			gameState->middleInputState.gameInput.three ||
+			gameState->middleInputState.gameInput.four ||
+			gameState->middleInputState.gameInput.five ||
+			gameState->middleInputState.gameInput.six ||
+			gameState->middleInputState.gameInput.seven ||
+			gameState->middleInputState.gameInput.eight ||
+			gameState->middleInputState.gameInput.nine ||
+			gameState->middleInputState.gameInput.zero
 			) {
 			return;
 		}

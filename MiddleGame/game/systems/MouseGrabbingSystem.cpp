@@ -39,7 +39,7 @@ namespace MouseGrabbingSystem {
 			midMath::Vector3 pos = middle::getGlobalPosition(gameState, shape.id);
 			auto grid = middle::getComponent<components::GridElement>(shape);
 
-			auto& input = gameState->middleState.input;
+			auto& input = gameState->middleInputState.editorInput;
 
 			if (!grid) {
 				midMath::Vector3 cameraPos = gameState->editorState.camera.position;
@@ -47,11 +47,11 @@ namespace MouseGrabbingSystem {
 				float yDistance = std::abs(cameraPos.y);
 				if (yDistance == 0)
 					yDistance = 0.001f;
-				midMath::Vector3 xzVel = midMath::Vector3Scale(input.mouseXZ_PlaneVelocity * gameState->middleState.frameTime, objYDistance / yDistance);
+				midMath::Vector3 xzVel = midMath::Vector3Scale(gameState->mouseState.mouseXZ_PlaneVelocity * gameState->middleInputState.frameTime, objYDistance / yDistance);
 				middle::moveShape(gameState, shape.id.index, xzVel);
 			}
 			else {
-				midMath::Vector3 targetPos = input.mouseXZ_PlanePos;
+				midMath::Vector3 targetPos = gameState->mouseState.mouseXZ_PlanePos;
 				middle::moveShape(gameState, shape.id.index, targetPos - pos);
 			}
 		}
@@ -78,10 +78,10 @@ namespace MouseGrabbingSystem {
 		}
 
 		void update(middle::GameState* gameState) override {
-			auto& input = gameState->middleState.input;
+			auto& input = gameState->middleInputState.editorInput;
 
 			// setup editor action for movement
-			if (gameState->editorState.selectCount > 0 && gameState->middleState.input.grabDown && !gameState->editorState.grabbing) {
+			if (gameState->editorState.selectCount > 0 && gameState->middleInputState.editorInput.grabDown && !gameState->editorState.grabbing) {
 				middle::queueEditorAction(gameState, std::make_shared<middle::EditorActionMove>(middle::getSelectedShapes(gameState)));
 				gameState->editorState.grabbing = true;
 				return;
