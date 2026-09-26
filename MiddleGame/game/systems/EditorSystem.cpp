@@ -66,6 +66,14 @@ public:
 			gameState->editorState.startGame = false;
 			gameState->editorState.reload = true;
 			gameState->reset = true;
+			gameState->editorState.camera = 
+			{
+				{0,-100,0},
+				{0,0,0},
+				{0,0,1},
+				45,
+				0 // RAYLIB CAMERA_PERSPECTIVE
+			};
 		}
 
 		// update

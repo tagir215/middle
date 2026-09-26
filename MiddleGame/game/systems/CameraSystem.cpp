@@ -25,7 +25,7 @@ public:
 			auto& input = gameState->middleInputState.editorInput;
 			// camera controls
 			const float maxCameraSpeed = 60;
-			float mouseCamRatio = input.mouseY / gameState->middleInputState.screenHeight;
+			float mouseCamRatio = gameState->mouseState.mousePos.y / gameState->middleInputState.screenHeight;
 			const float cameraSpeed = mouseCamRatio * mouseCamRatio * mouseCamRatio * maxCameraSpeed;
 			midMath::Vector3 cameraMovementDir = { 0,0,0 };
 			if (!input.altDown && input.w)

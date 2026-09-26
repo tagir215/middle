@@ -52,14 +52,7 @@ namespace middle {
 
 	struct EditorState {
 		CreationMode creationMode;
-		midPrimitive::Camera3D camera = 
-		{
-			{0,-100,0},
-			{0,0,0},
-			{0,0,1},
-			45,
-			0 // RAYLIB CAMERA_PERSPECTIVE
-		};
+		midPrimitive::Camera3D camera;
 		bool initialized = false;
 		bool doOneStep = false;
 		bool showAllInfo = false;
